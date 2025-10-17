@@ -9,7 +9,9 @@ module.exports = {
             type: "umd",
             name: "NXTCM-COMPONENTS"
         },
-        clean: true
+        clean: {
+            keep: /\.d\.ts$/, // Keep all .d.ts files
+        },
     },
     resolve: {
         extensions: [".tsx", ".ts", ".js"],
