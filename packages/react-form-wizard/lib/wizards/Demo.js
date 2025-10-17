@@ -1,0 +1,264 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Masthead, MastheadBrand, MastheadContent, MastheadMain, MastheadToggle, Nav, NavItem, NavList, Page, PageSidebar, PageToggleButton, Title, PageSidebarBody, Icon, MastheadLogo, } from '@patternfly/react-core';
+import { AnsibleTowerIcon, ApplicationsIcon, BarsIcon, ClusterIcon, GithubIcon, LockIcon, RedhatIcon } from '@patternfly/react-icons';
+import { BrowserRouter, Link, useHistory, useLocation } from 'react-router-dom';
+import { AnsibleExample } from './Ansible/AnsibleExample';
+import { ApplicationExample } from './Application/ApplicationExample';
+import { AppExample } from './AppWizard/AppExample';
+import { ApplicationSetExamples, CreateApplicationSet, EditApplicationSet } from './Argo/ArgoExamples';
+import ArgoIcon from './Argo/logos/ArgoIcon.svg';
+import { Catalog } from './Catalog';
+import { ClusterForm } from './Cluster/ClusterForm';
+import { ControlPlaneCatalog, CreateCluster, ProviderCatalog } from './Cluster/Provider';
+import { CredentialsExample } from './Credentials/CredentialsExample';
+import AWSIcon from './Credentials/icons/AWSIcon';
+import { HomeWizard } from './Home/HomeWizard';
+import { AmazonHypershiftWizardExample } from './Hypershift/AWSHypershiftWizardExample';
+import { InputsWizard } from './Inputs/InputsWizard';
+import { CreatePlacement, CreatePlacementRule, EditPlacement, EditPlacementRule, EditPlacements, PlacementExamples, } from './Placement/PlacementExamples';
+import { CreatePolicy, EditPolicyCertificate, EditPolicyComplianceOperatorCisScan, EditPolicyComplianceOperatorE8Scan, EditPolicyComplianceOperatorInstall, EditPolicyEtcdEncryption, EditPolicyGatekeeperOperatorDownstream, EditPolicyImageManifestVuln, EditPolicyLimitClusterAdmin, EditPolicyLimitMemory, EditPolicyNamespace, EditPolicyPod, EditPolicyPsp, EditPolicyRole, EditPolicyRoleBinding, EditPolicyScc, PolicyExamples, } from './Policy/PolicyExamples';
+import { CreatePolicyAutomation, EditPolicyAutomation, PolicyAutomationExamples } from './PolicyAutomation/PolicyAutomationExamples';
+import { CreatePolicySet, EditPolicySet1, EditPolicySet2, EditPolicySet3, EditPolicySet4, EditPolicySet5, EditPolicySet6, EditPolicySet7, EditPolicySet8, PolicySetExamples, } from './PolicySet/PolicySetExamples';
+import { RosaExample } from './ROSA/RosaExample';
+import { RouteE } from './Routes';
+var StateE;
+(function (StateE) {
+    StateE["prototype"] = "Prototype";
+    StateE["alpha"] = "Alpha";
+    StateE["beta"] = "Beta";
+    StateE["production"] = "Production";
+    StateE["techPreview"] = "Tech preview";
+})(StateE || (StateE = {}));
+const wizards = [
+    {
+        icon: (_jsx(Icon, { size: "lg", children: _jsx(AWSIcon, {}) })),
+        shortName: 'AmazonHyperShift',
+        name: 'Amazon HyperShift Cluster',
+        route: RouteE.AmazonHyperShift,
+        description: 'Run OpenShift in a hyperscale manner with many control planes hosted on a central hosting service cluster.',
+        labels: ['Advanced Cluster Management'],
+        state: StateE.prototype,
+    },
+    {
+        icon: (_jsx("span", { style: { color: '#EE0000' }, children: _jsxs(Icon, { size: "lg", isInline: true, children: [_jsx(AnsibleTowerIcon, {}), ' '] }) })),
+        shortName: 'Ansible',
+        name: 'Ansible automation',
+        route: RouteE.Ansible,
+        description: 'Multi-Cluster Engine uses ansible to run ansible jobs during cluster provisioning and upgrade.',
+        labels: ['Multi-Cluster Engine'],
+        state: StateE.beta,
+    },
+    {
+        icon: (_jsx(Icon, { size: "lg", children: _jsx(ApplicationsIcon, {}) })),
+        shortName: 'Application',
+        name: 'Application',
+        route: RouteE.Application,
+        description: 'Advanced Cluster Management configures applications for deployment to clusters managed by ACM.',
+        labels: ['Advanced Cluster Management'],
+        state: StateE.alpha,
+    },
+    {
+        icon: _jsx(ArgoIcon, {}),
+        shortName: 'ArgoCD',
+        name: 'ArgoCD',
+        route: RouteE.ArgoCD,
+        description: 'Advanced Cluster Management configures applications for deployment to clusters managed by ACM.',
+        labels: ['Advanced Cluster Management'],
+        state: StateE.beta,
+    },
+    {
+        icon: (_jsx(Icon, { size: "lg", children: _jsx(ClusterIcon, {}) })),
+        shortName: 'Cluster',
+        name: 'Cluster',
+        route: RouteE.Cluster,
+        state: StateE.prototype,
+        description: 'Multi-Cluster Engine creates clusters on cloud providers. This is an early prototype of a possible cluster wizard flow.',
+        labels: ['Multi-Cluster Engine'],
+    },
+    {
+        icon: (_jsx(Icon, { size: "lg", children: _jsx(LockIcon, {}) })),
+        shortName: 'Credentials',
+        name: 'Credentials',
+        route: RouteE.Credentials,
+        description: 'Multi-Cluster Engine uses credentials to provision clusters on cloud providers. Credentials are also used for integrations such as automation using Ansible.',
+        labels: ['Multi-Cluster Engine'],
+        state: StateE.alpha,
+    },
+    {
+        shortName: 'Placement',
+        name: 'Placement',
+        route: RouteE.Placement,
+        description: 'Advanced Cluster Management has placement custom resources to control the placement of various resources on managed clusters. This is an early prototype of common wizard functionality for handling placement.',
+        labels: ['Advanced Cluster Management'],
+        state: StateE.prototype,
+    },
+    {
+        shortName: 'Policy',
+        name: 'Policy',
+        route: RouteE.Policy,
+        description: 'Advanced Cluster Management uses policies to generate reports and validate a cluster compliance based on specified security standards, categories, and controls.',
+        labels: ['Advanced Cluster Management'],
+        state: StateE.beta,
+    },
+    {
+        icon: (_jsx("span", { style: { color: '#EE0000' }, children: _jsxs(Icon, { size: "lg", isInline: true, children: [_jsx(AnsibleTowerIcon, {}), ' '] }) })),
+        shortName: 'Policy Automation',
+        name: 'Policy Automation',
+        route: RouteE.PolicyAutomation,
+        description: 'Advanced Cluster Management uses policy automation to automate Ansible jobs with policies.',
+        labels: ['Advanced Cluster Management'],
+        state: StateE.beta,
+    },
+    {
+        shortName: 'Policy Set',
+        name: 'Policy Set',
+        route: RouteE.PolicySet,
+        description: 'Advanced Cluster Management groups policies in policy sets.',
+        labels: ['Advanced Cluster Management'],
+    },
+    {
+        icon: (_jsx("span", { style: { color: '#EE0000' }, children: _jsx(Icon, { size: "lg", isInline: true, children: _jsx(RedhatIcon, {}) }) })),
+        shortName: 'ROSA',
+        name: 'ROSA',
+        route: RouteE.ROSA,
+        description: "Red Hat OpenShift Service on AWS provides a model that allows Red Hat to deploy clusters into a customer's existing Amazon Web Service (AWS) account.",
+        state: StateE.prototype,
+    },
+];
+export default function Demo() {
+    return (_jsx(BrowserRouter, { children: _jsx(Page, { masthead: _jsx(DemoHeader, {}), sidebar: _jsx(DemoSidebar, {}), isManagedSidebar: true, defaultManagedSidebarIsOpen: true, style: { height: '100vh' }, children: _jsx(DemoRouter, {}) }) }));
+}
+export function DemoRouter() {
+    const location = useLocation();
+    switch (location.search) {
+        case RouteE.AmazonHyperShift:
+            return _jsx(AmazonHypershiftWizardExample, {});
+        case RouteE.Ansible:
+            return _jsx(AnsibleExample, {});
+        case RouteE.Application:
+            return _jsx(ApplicationExample, {});
+        case RouteE.ArgoCD:
+            return _jsx(ApplicationSetExamples, {});
+        case RouteE.CreateArgoCD:
+            return _jsx(CreateApplicationSet, {});
+        case RouteE.EditArgoCD:
+            return _jsx(EditApplicationSet, {});
+        case RouteE.App:
+            return _jsx(AppExample, {});
+        case RouteE.Cluster:
+            return _jsx(ClusterForm, {});
+        case RouteE.Credentials:
+            return _jsx(CredentialsExample, {});
+        case RouteE.PolicyAutomation:
+            return _jsx(PolicyAutomationExamples, {});
+        case RouteE.CreatePolicyAutomation:
+            return _jsx(CreatePolicyAutomation, {});
+        case RouteE.EditPolicyAutomation:
+            return _jsx(EditPolicyAutomation, {});
+        case RouteE.Policy:
+            return _jsx(PolicyExamples, {});
+        case RouteE.CreatePolicy:
+            return _jsx(CreatePolicy, {});
+        case RouteE.EditPolicyLimitClusterAdmin:
+            return _jsx(EditPolicyLimitClusterAdmin, {});
+        case RouteE.EditPolicyRole:
+            return _jsx(EditPolicyRole, {});
+        case RouteE.EditPolicyRoleBinding:
+            return _jsx(EditPolicyRoleBinding, {});
+        case RouteE.EditPolicyComplianceOperatorInstall:
+            return _jsx(EditPolicyComplianceOperatorInstall, {});
+        case RouteE.EditPolicyComplianceOperatorCisScan:
+            return _jsx(EditPolicyComplianceOperatorCisScan, {});
+        case RouteE.EditPolicyComplianceOperatorE8Scan:
+            return _jsx(EditPolicyComplianceOperatorE8Scan, {});
+        case RouteE.EditPolicyGatekeeperOperatorDownstream:
+            return _jsx(EditPolicyGatekeeperOperatorDownstream, {});
+        case RouteE.EditPolicyNamespace:
+            return _jsx(EditPolicyNamespace, {});
+        case RouteE.EditPolicyPod:
+            return _jsx(EditPolicyPod, {});
+        case RouteE.EditPolicyCertificate:
+            return _jsx(EditPolicyCertificate, {});
+        case RouteE.EditPolicyEtcdEncryption:
+            return _jsx(EditPolicyEtcdEncryption, {});
+        case RouteE.EditPolicyLimitMemory:
+            return _jsx(EditPolicyLimitMemory, {});
+        case RouteE.EditPolicyImageManifestVuln:
+            return _jsx(EditPolicyImageManifestVuln, {});
+        case RouteE.EditPolicyPsp:
+            return _jsx(EditPolicyPsp, {});
+        case RouteE.EditPolicyScc:
+            return _jsx(EditPolicyScc, {});
+        case RouteE.Placement:
+            return _jsx(PlacementExamples, {});
+        case RouteE.CreatePlacement:
+            return _jsx(CreatePlacement, {});
+        case RouteE.CreatePlacementRule:
+            return _jsx(CreatePlacementRule, {});
+        case RouteE.EditPlacement:
+            return _jsx(EditPlacement, {});
+        case RouteE.EditPlacementRule:
+            return _jsx(EditPlacementRule, {});
+        case RouteE.EditPlacements:
+            return _jsx(EditPlacements, {});
+        case RouteE.PolicySet:
+            return _jsx(PolicySetExamples, {});
+        case RouteE.CreatePolicySet:
+            return _jsx(CreatePolicySet, {});
+        case RouteE.EditPolicySet1:
+            return _jsx(EditPolicySet1, {});
+        case RouteE.EditPolicySet2:
+            return _jsx(EditPolicySet2, {});
+        case RouteE.EditPolicySet3:
+            return _jsx(EditPolicySet3, {});
+        case RouteE.EditPolicySet4:
+            return _jsx(EditPolicySet4, {});
+        case RouteE.EditPolicySet5:
+            return _jsx(EditPolicySet5, {});
+        case RouteE.EditPolicySet6:
+            return _jsx(EditPolicySet6, {});
+        case RouteE.EditPolicySet7:
+            return _jsx(EditPolicySet7, {});
+        case RouteE.EditPolicySet8:
+            return _jsx(EditPolicySet8, {});
+        case RouteE.ROSA:
+            return _jsx(RosaExample, {});
+        case RouteE.Inputs:
+            return _jsx(InputsWizard, {});
+        case RouteE.Wizards:
+            return _jsx(ExampleWizards, {});
+        case RouteE.Provider:
+            return _jsx(ProviderCatalog, {});
+        case RouteE.ControlPlane:
+            return _jsx(ControlPlaneCatalog, {});
+        case RouteE.CreateCluster:
+            return _jsx(CreateCluster, {});
+        default:
+            return _jsx(HomeWizard, {});
+    }
+}
+function ExampleWizards() {
+    const history = useHistory();
+    return (_jsx(Catalog, { title: "Example Wizards", breadcrumbs: [{ label: 'Example Wizards' }], filterGroups: [
+            {
+                id: 'labels',
+                label: 'Products',
+                filters: [{ value: 'Advanced Cluster Management' }, { value: 'Multi-Cluster Engine' }],
+            },
+        ], cards: wizards.map((wizard) => ({
+            icon: wizard.icon,
+            title: wizard.name,
+            descriptions: wizard.description ? [wizard.description] : undefined,
+            labels: wizard.labels,
+            badge: wizard.state,
+            onClick: () => history.push(wizard.route),
+        })) }));
+}
+function DemoHeader() {
+    return (_jsxs(Masthead, { display: { default: 'inline' }, children: [_jsx(MastheadToggle, { children: _jsx(PageToggleButton, { variant: "plain", "aria-label": "Global navigation", children: _jsx(BarsIcon, {}) }) }), _jsx(MastheadMain, { children: _jsx(MastheadBrand, { children: _jsx(MastheadLogo, { component: "a", children: _jsxs("div", { style: { display: 'flex', gap: 8, alignItems: 'start' }, children: [_jsxs("svg", { width: "45", height: "40.5", viewBox: "0 0 30 27", xmlns: "http://www.w3.org/2000/svg", children: [_jsx("defs", { children: _jsxs("linearGradient", { x1: "50%", y1: "0%", x2: "50%", y2: "100%", id: "prefix__a", children: [_jsx("stop", { stopColor: "#7DC3E8", stopOpacity: ".6", offset: "0%" }), _jsx("stop", { stopColor: "#007BBA", offset: "100%" })] }) }), _jsx("path", { d: "M29.305 13.607L14.803.092 14.696 0l-.136.092L.087 13.607 0 13.69l.068.092 5.756 7.789.058.074h.097l4.3-.925 4.281 5.716.117.158.116-.158 4.3-5.753 4.29.925h.098l.058-.074 5.766-7.789.068-.092-.068-.046zm-8.31 1.563l.506 1.082-2.718 3.626-1.204-.259 3.417-4.449zm.166-1.425l-5.077-10.97L23.22 11.1l-2.058 2.645zm1.165 2.655l.048-.065v-.074l-.815-1.757 2.553-3.404h.058l-.068-.083-5.145-6.004 9.455 8.806L26.47 16.4l-3.32 4.486-3.6-.786 2.776-3.7zm-10.057 3.848l2.398 3.127.126.166.117-.166 2.213-3.127 1.194.268-3.62 4.847-3.622-4.847 1.194-.268zm.602-.425l1.825-16.937 1.806 16.937-1.748 2.47-1.883-2.47zm.97-16.475l-1.717 15.466-3.388-4.393 5.106-11.073zM6.175 11.1l7.144-8.325-5.087 10.97L6.174 11.1zm4.26-6.105L5.29 10.998l-.068.102.068.083 2.592 3.367-.815 1.758v.138L9.794 20.1l-3.591.786L.97 13.773l9.464-8.778zm1.38 14.652l-1.204.259L7.9 16.252l.495-1.082 3.417 4.477zM15.53 3.348l5.115 11.1-3.378 4.394-1.737-15.494z", fill: "url(#prefix__a)" })] }), _jsxs("div", { style: { color: 'white' }, children: [_jsx(Title, { headingLevel: "h4", style: { fontWeight: 'bold', lineHeight: 1.3 }, children: "PatternFly Labs" }), _jsx(Title, { headingLevel: "h3", style: { fontWeight: 'lighter', lineHeight: 1.3 }, children: "React Form Wizard" })] })] }) }) }) }), _jsxs(MastheadContent, { children: [_jsx("span", { style: { flexGrow: 1 } }), _jsx("a", { href: "https://github.com/patternfly-labs/react-form-wizard", style: { color: 'white' }, children: _jsx(Icon, { size: "lg", children: _jsx(GithubIcon, {}) }) })] })] }));
+}
+function DemoSidebar() {
+    const location = useLocation();
+    return (_jsx(PageSidebar, { children: _jsx(PageSidebarBody, { children: _jsx(Nav, { children: _jsxs(NavList, { children: [_jsx(NavItem, { isActive: location.search === '', children: _jsx(Link, { to: RouteE.Home, children: "Home" }) }), _jsx(NavItem, { isActive: location.search === RouteE.Inputs, children: _jsx(Link, { to: RouteE.Inputs, children: "Inputs" }) }), _jsx(NavItem, { isActive: location.search === RouteE.Wizards, children: _jsx(Link, { to: RouteE.Wizards, children: "Example Wizards" }) })] }) }) }) }));
+}
+//# sourceMappingURL=Demo.js.map

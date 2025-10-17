@@ -1,1 +1,1 @@
-export * from "./components/ActionsDropdown/ActionsDropdown";
+export * from "./components";

@@ -1,0 +1,11 @@
+import { IPlacement } from '../common/resources/IPlacement';
+import { IPlacementRule } from '../common/resources/IPlacementRule';
+import { IResource } from '../../src/common/resource';
+import { IClusterSetBinding } from './resources/IClusterSetBinding';
+export declare const namespaces: string[];
+export declare const policies: IResource[];
+export declare const clusterSets: IResource[];
+export declare const clusterSetBindings: IClusterSetBinding[];
+export declare const placements: IPlacement[];
+export declare const placementRules: IPlacementRule[];
+export declare const clusters: IResource[];

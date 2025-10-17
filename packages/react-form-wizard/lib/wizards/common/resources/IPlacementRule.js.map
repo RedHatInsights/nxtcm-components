@@ -1,0 +1,1 @@
+{"version":3,"file":"IPlacementRule.js","sourceRoot":"","sources":["../../../../wizards/common/resources/IPlacementRule.ts"],"names":[],"mappings":"AAIA,MAAM,CAAC,MAAM,qBAAqB,GAAG,iCAAiC,CAAA;AACtE,MAAM,CAAC,MAAM,uBAAuB,GAAG,GAAG,qBAAqB,KAAK,CAAA;AACpE,MAAM,CAAC,MAAM,iBAAiB,GAAG,eAAe,CAAA;AAChD,MAAM,CAAC,MAAM,iBAAiB,GAAG,EAAE,UAAU,EAAE,uBAAuB,EAAE,IAAI,EAAE,iBAAiB,EAAE,CAAA"}

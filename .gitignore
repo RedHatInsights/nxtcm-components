@@ -30,3 +30,5 @@ npm-debug.log*
 
 *storybook.log
 storybook-static
+
+packages/*/node_modules

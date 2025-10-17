@@ -1,0 +1,41 @@
+/// <reference types="react" />
+export interface WizardStrings {
+    reviewLabel: string;
+    unknownError: string;
+    errorString: string;
+    stepsAriaLabel: string;
+    contentAriaLabel: string;
+    actionAriaLabel: string;
+    detailsAriaLabel: string;
+    sortableMoveItemUpAriaLabel: string;
+    sortableMoveItemDownAriaLabel: string;
+    removeItemAriaLabel: string;
+    deselectAllAriaLabel: string;
+    selectAllAriaLabel: string;
+    clearButtonTooltip: string;
+    pasteButtonTooltip: string;
+    backButtonText: string;
+    cancelButtonText: string;
+    nextButtonText: string;
+    fixValidationErrorsMsg: string;
+    fixEditorValidationErrorsMsg: string;
+    waitforEditorValidationErrorsMsg: string;
+    submitText: string;
+    submittingText: string;
+    moreInfo: string;
+    hideSecretTooltip: string;
+    showSecretTooltip: string;
+    spinnerButtonTooltip: string;
+    syncButtonTooltip: string;
+    required: string;
+    expandToFixValidationErrors: string;
+    selectNoItems: string;
+    selected: (count: number) => string;
+    selectPageItems: (count: number) => string;
+    selectAllItems: (count: number) => string;
+    noResults: string;
+    createOption: string;
+}
+export declare const defaultStrings: WizardStrings;
+export declare const StringContext: import("react").Context<WizardStrings>;
+export declare function useStringContext(): WizardStrings;

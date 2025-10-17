@@ -1,0 +1,20 @@
+import { EditMode, WizardCancel, WizardSubmit } from '../../src';
+import { IResource } from '../../src/common/resource';
+import { IClusterSetBinding } from '../common/resources/IClusterSetBinding';
+export declare function PlacementWizard(props: {
+    title: string;
+    namespaces: string[];
+    policies: IResource[];
+    placements: IResource[];
+    placementRules: IResource[];
+    clusters: IResource[];
+    clusterSets: IResource[];
+    clusterSetBindings: IClusterSetBinding[];
+    editMode?: EditMode;
+    resources?: IResource[];
+    onSubmit: WizardSubmit;
+    onCancel: WizardCancel;
+    bindingSubjectKind: string;
+    bindingSubjectApiGroup: string;
+    defaultPlacementType: 'Placement' | 'PlacementRule';
+}): import("react/jsx-runtime").JSX.Element;
