@@ -41,6 +41,7 @@ type WizSelectCommonProps<T> = InputCommonProps<T> & {
   placeholder?: string;
   footer?: ReactNode;
   label: string;
+  style?: T;
 
   /** key path is the path to get the key of the value
    * Used in cases where the value is an object, but we need to track select by a string or number

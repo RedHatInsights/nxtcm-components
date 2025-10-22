@@ -1,56 +1,114 @@
-import { Step, WizardCancel, WizardPage, WizardSubmit } from '@patternfly-labs/react-form-wizard';
-import { stepId, stepName } from './constants';
-import { ControlPlaneStep } from './Steps/ControlPlane/ControlPlaneStep';
-type ClassNameProps = Record<string, never>;
+import {
+  ExpandableStep,
+  Step,
+  WizardCancel,
+  WizardPage,
+  WizardSubmit,
+} from "@patternfly-labs/react-form-wizard";
+import { ClusterUpdatesSubstep, NetworkingOptionalSubstep, EncryptionSubstep } from "./Steps/AdditionalSetupStep";
+import { DetailsSubStep, NetworkingAndSubnetsSubStep, RolesAndPoliciesSubStep } from "./Steps/BasicSetupStep";
 
-type ControlPlaneProps = {
-  classNames: ClassNameProps;
-  AwsControlPlaneLink: React.ReactNode;
-  allowAlertFeatureFlag: boolean;
-  rosaArchitectureRenaimingAlertLink: React.ReactNode;
-  showRosaCliRequirement: boolean;
-  rosaHostedCliMinVersion: string;
-  productName: string;
-  virtualPrivateCloudLink: React.ReactNode;
-  isTileSelected: string;
-  handleChange: () => void;
-  isHCPDisabled: boolean;
-  linkToGetStarted: React.ReactNode;
-  rosaHomeGetStartedLink: React.ReactNode;
-  hasHostedProductQuota: boolean;
+export type BasicSetupStepProps = {
+  openShiftVersions: any;
+  awsInfrastructureAccounts: any;
+  awsBillingAccounts: any;
+  publicSubnets: any;
+  privateSubnets: any;
+  vpcList: any;
+  region: any;
 };
 
-type StepsProps = {
-  constrolPlane: ControlPlaneProps;
+type WizardStepsData = {
+  basicSetupStep: BasicSetupStepProps;
 };
 
 type RosaWizardProps = {
   onSubmit: WizardSubmit;
   onCancel: WizardCancel;
-  history: any;
   title: string;
-  stepsProps: StepsProps;
-  defaultData: any;
+  wizardsStepsData: WizardStepsData;
 };
 
 export const RosaWizard = ({
   onSubmit,
   onCancel,
-  history: _history,
   title,
-  stepsProps,
-  defaultData,
+  wizardsStepsData,
 }: RosaWizardProps) => {
   return (
     <WizardPage
       onSubmit={onSubmit}
       onCancel={() => onCancel()}
       title={title}
-      defaultData={defaultData}
+      defaultData={{}}
     >
-      <Step id={stepId.CONTROL_PLANE} label={stepName.CONTROL_PLANE}>
-        <ControlPlaneStep controlPlaneStepProps={stepsProps.constrolPlane} />
-      </Step>
+      <ExpandableStep
+        id="basic-setup-step-id-expandable-section"
+        label="Basic setup"
+        key="basic-setup-step-expandable-section-key"
+        isExpandable
+        steps={[
+          <Step
+            label="Details"
+            id="basic-setup-step-details"
+            key="basic-setup-details"
+          >
+            <DetailsSubStep
+              openShiftVersions={
+                wizardsStepsData.basicSetupStep.openShiftVersions
+              }
+              awsInfrastructureAccounts={
+                wizardsStepsData.basicSetupStep.awsInfrastructureAccounts
+              }
+              awsBillingAccounts={
+                wizardsStepsData.basicSetupStep.awsBillingAccounts
+              }
+            />
+          </Step>,
+          <Step
+            id="roles-and-policies-sub-step"
+            label="Roles and policies"
+            key="roles-and-policies-sub-step-key"
+          >
+            <RolesAndPoliciesSubStep
+              installerRoles={
+                wizardsStepsData.basicSetupStep.awsBillingAccounts
+              }
+              supportRoles={wizardsStepsData.basicSetupStep.awsBillingAccounts}
+              workerRoles={wizardsStepsData.basicSetupStep.awsBillingAccounts}
+            />
+          </Step>,
+          <Step
+            id="networking-sub-step"
+            label="Networking"
+            key="networking-sub-step-key"
+          >
+            <NetworkingAndSubnetsSubStep
+              vpcList={wizardsStepsData.basicSetupStep.vpcList}
+              publicSubnets={wizardsStepsData.basicSetupStep.publicSubnets}
+              privateSubnets={wizardsStepsData.basicSetupStep.privateSubnets}
+            />
+          </Step>,
+        ]}
+      />
+
+      <ExpandableStep id="additional-setup-step-id-expandable-section"
+        label="Additional setup"
+        key="additional-setup-step-expandable-section-key"
+        isExpandable
+        steps={[
+          <Step id="additional-setup-encryption" key="additional-setup-encryption-key" label="Encryption (optional)">
+            <EncryptionSubstep />
+          </Step>,
+          <Step id="additional-setup-networking" key="additional-setup-networking-key" label="Networking (optional)">
+            <NetworkingOptionalSubstep />
+          </Step>,
+          <Step id="additional-setup-cluster-updates" key="additional-setup-cluster-updates-key" label="Cluster updates (optional)">
+            <ClusterUpdatesSubstep />
+          </Step>
+        ]}
+      />
+
     </WizardPage>
   );
 };

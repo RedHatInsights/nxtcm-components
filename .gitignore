@@ -16,6 +16,7 @@ test-report.xml
 /build
 /dist
 /plugins/**/package.json
+/packages/rect-form-wizard
 
 # misc
 .DS_Store
@@ -42,3 +43,6 @@ packages/*/node_modules
 docs/
 test-ci-local.sh
 fix-all.sh
+/packages/*/node_modules
+
+/packages/*/lib/

@@ -21,11 +21,19 @@ export const WizardWrapper = <T extends BaseProductProps>({ product }: WizardWra
     case ProductName.RosaClassic:
       return (
         <RosaWizard
-          stepsProps={product.stepProps}
-          defaultData={product.defaultData}
+          wizardsStepsData={{
+            basicSetupStep: {
+              openShiftVersions: [],
+              awsInfrastructureAccounts: [],
+              awsBillingAccounts: [],
+              region: [],
+              publicSubnets: [],
+              privateSubnets: [],
+              vpcList: [],
+            },
+          }}
           onSubmit={product.onSubmit}
           onCancel={product.onCancel}
-          history={product.history}
           title={product.title}
         />
       );

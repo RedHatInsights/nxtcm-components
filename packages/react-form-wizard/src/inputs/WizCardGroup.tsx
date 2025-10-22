@@ -1,10 +1,5 @@
 /* Copyright Contributors to the Open Cluster Management project */
 import {
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  CardTitle,
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
