@@ -23,7 +23,6 @@ import {
     LabelGroup,
     List,
     ListItem,
-    Page,
     PageSection,
     SearchInput,
     Split,
