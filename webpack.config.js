@@ -28,7 +28,23 @@ module.exports = {
                 use: 'babel-loader'
             },
             {
+                test: /\.module\.s?css$/,
+                use: [
+                    "style-loader",
+                    {
+                        loader: "css-loader",
+                        options: {
+                            modules: {
+                                localIdentName: "[name]__[local]--[hash:base64:5]",
+                            },
+                        },
+                    },
+                    "sass-loader",
+                ],
+            },
+            {
                 test: /\.s?css$/,
+                exclude: /\.module\.s?css$/,
                 use: ["style-loader", "css-loader", "sass-loader"],
             },
         ],

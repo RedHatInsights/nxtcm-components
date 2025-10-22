@@ -1,0 +1,8 @@
+.danger {
+  padding-top: var(--pf-t--global--spacer--xl) !important;
+  color: var(--pf-t--global--text--color--status--danger--default);
+  font-size: var(--pf-t--global--font--size--heading--h2);
+  svg {
+    color: var(--pf-t--global--icon--color--status--danger--default);
+  }
+}
