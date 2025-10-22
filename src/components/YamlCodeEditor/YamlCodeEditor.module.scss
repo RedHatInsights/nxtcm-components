@@ -1,0 +1,205 @@
+.editor {
+  display: flex;
+  position: relative;
+  border: 1px solid var(--pf-v6-global--BorderColor--100, #d2d2d2);
+  border-radius: 3px;
+  background-color: var(--pf-v6-global--BackgroundColor--100, #fff);
+  font-family: 'Red Hat Mono', 'Monaco', 'Consolas', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+.lineNumbers {
+  flex-shrink: 0;
+  width: 45px;
+  padding: 8px 4px;
+  text-align: right;
+  background-color: var(--pf-v6-global--BackgroundColor--200, #f0f0f0);
+  color: var(--pf-v6-global--Color--200, #6a6e73);
+  user-select: none;
+  overflow: hidden;
+  white-space: pre;
+  border-right: 1px solid var(--pf-v6-global--BorderColor--100, #d2d2d2);
+}
+
+.contentWrapper {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+  background-color: transparent;
+}
+
+.highlightContent {
+  margin: 0;
+  padding: 8px 12px;
+  border: none;
+  white-space: pre;
+  word-wrap: normal;
+  overflow-wrap: normal;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  // Default text color for unhighlighted content (whitespace, etc.)
+  color: var(--pf-v6-global--Color--100, #151515);
+  background-color: transparent;
+
+  // Syntax highlighting colors
+  :global {
+    .yaml-key {
+      color: #0066cc;
+      font-weight: 600;
+    }
+
+    .yaml-string {
+      color: #0f811f;
+    }
+
+    .yaml-number {
+      color: #c94c05;
+    }
+
+    .yaml-boolean {
+      color: #7e3ff2;
+    }
+
+    .yaml-comment {
+      color: #6a6e73;
+      font-style: italic;
+    }
+
+    .yaml-punctuation {
+      color: #4d5d75;
+    }
+
+    .yaml-directive {
+      color: #6a6e73;
+      font-weight: 600;
+    }
+
+    .yaml-anchor {
+      color: #a52a2a;
+      font-weight: 600;
+    }
+  }
+}
+
+.textarea {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  padding: 8px 12px;
+  border: none;
+  outline: none;
+  resize: none;
+  overflow: auto;
+  background-color: transparent;
+  // Make text transparent so highlights show through - using both methods for better browser support
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  // But keep caret visible
+  caret-color: var(--pf-v6-global--Color--100, #151515);
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  white-space: pre;
+  word-wrap: normal;
+  overflow-wrap: normal;
+
+  &:focus {
+    box-shadow: none;
+  }
+
+  &:read-only {
+    cursor: default;
+    background-color: var(--pf-v6-global--BackgroundColor--200, #f0f0f0);
+  }
+}
+
+// When syntax highlighting is disabled, show normal text
+.textareaNoHighlight {
+  color: var(--pf-v6-global--Color--100, #151515) !important;
+  -webkit-text-fill-color: var(--pf-v6-global--Color--100, #151515) !important;
+}
+
+// Dark theme support
+@media (prefers-color-scheme: dark) {
+  .editor {
+    background-color: var(--pf-v6-global--BackgroundColor--100, #1f1f1f);
+    border-color: var(--pf-v6-global--BorderColor--100, #4f4f4f);
+  }
+
+  .lineNumbers {
+    background-color: var(--pf-v6-global--BackgroundColor--200, #2a2a2a);
+    color: var(--pf-v6-global--Color--200, #a3a3a3);
+    border-right-color: var(--pf-v6-global--BorderColor--100, #4f4f4f);
+  }
+
+  .textarea {
+    // Keep text transparent in dark mode too
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    caret-color: var(--pf-v6-global--Color--100, #f0f0f0);
+
+    &:read-only {
+      background-color: var(--pf-v6-global--BackgroundColor--200, #2a2a2a);
+    }
+  }
+
+  .textareaNoHighlight {
+    color: var(--pf-v6-global--Color--100, #f0f0f0) !important;
+    -webkit-text-fill-color: var(--pf-v6-global--Color--100, #f0f0f0) !important;
+  }
+
+  .highlightContent {
+    // Default text color for dark mode
+    color: var(--pf-v6-global--Color--100, #f0f0f0);
+    
+    :global {
+      .yaml-key {
+        color: #73bcf7;
+      }
+
+      .yaml-string {
+        color: #5fc82f;
+      }
+
+      .yaml-number {
+        color: #f99b63;
+      }
+
+      .yaml-boolean {
+        color: #c298ff;
+      }
+
+      .yaml-comment {
+        color: #a3a3a3;
+      }
+
+      .yaml-punctuation {
+        color: #9cb1c9;
+      }
+
+      .yaml-directive {
+        color: #a3a3a3;
+      }
+
+      .yaml-anchor {
+        color: #ff6b6b;
+      }
+    }
+  }
+}
+
