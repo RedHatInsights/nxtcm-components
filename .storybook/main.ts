@@ -21,6 +21,18 @@ const config: StorybookConfig = {
         '@patternfly-labs/react-form-wizard': path.resolve(__dirname, '../packages/react-form-wizard/src'),
       };
     }
+
+    // Add SCSS module support
+    config.module = config.module || {};
+    config.module.rules = config.module.rules || [];
+
+    // Add regular SCSS rule
+    config.module.rules.push({
+      test: /\.scss$/,
+      exclude: /\.module\.scss$/,
+      use: ['style-loader', 'css-loader', 'sass-loader'],
+    });
+
     return config;
   },
 };

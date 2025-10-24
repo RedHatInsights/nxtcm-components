@@ -1,0 +1,39 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--pf-v6-global--spacer--sm);
+}
+
+.headerTitle {
+  font-weight: var(--pf-t--global--font--weight--body--bold);
+}
+
+.headerBadge {
+  font-size: var(--pf-t--global--font--size--2xl);
+}
+
+.notificationTitle {
+  color: var(--pf-v6-global--link--Color);
+}
+
+.clickableRow {
+  cursor: pointer;
+}
+
+.paginationContainer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: var(--pf-v6-global--spacer--sm) var(--pf-v6-global--spacer--md);
+  border-top: var(--pf-v6-global--BorderWidth--sm) solid var(--pf-v6-global--BorderColor--100);
+  gap: var(--pf-v6-global--spacer--sm);
+}
+
+.paginationText {
+  font-size: var(--pf-t--global--font--size--body--sm);
+}
+
+.paginationButton {
+  padding: var(--pf-v6-global--spacer--xs) var(--pf-v6-global--spacer--sm);
+}
+
