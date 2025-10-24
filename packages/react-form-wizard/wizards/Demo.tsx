@@ -14,7 +14,6 @@ import {
     PageSidebarBody,
     Icon,
     MastheadLogo,
-    Brand,
     Flex,
     FlexItem,
 } from '@patternfly/react-core'

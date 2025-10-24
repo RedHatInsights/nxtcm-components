@@ -26,6 +26,7 @@ export interface StepProps {
   id: string;
   hidden?: HiddenFn;
   autohide?: boolean;
+  steps?: any
 }
 
 export function Step(props: StepProps) {
@@ -77,6 +78,7 @@ export function StepInternal(props: StepProps) {
     // Don't use forms in steps which are forms
     return <Fragment>{props.children}</Fragment>;
   }
+
   return (
     <Form
       onSubmit={(event) => {

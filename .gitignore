@@ -16,6 +16,7 @@ test-report.xml
 /build
 /dist
 /plugins/**/package.json
+/packages/rect-form-wizard
 
 # misc
 .DS_Store
@@ -39,3 +40,6 @@ node_modules/
 /playwright/.cache/
 /playwright/.auth/
 packages/*/node_modules
+/packages/*/node_modules
+
+/packages/*/lib/
