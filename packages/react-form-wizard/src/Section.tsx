@@ -57,7 +57,6 @@ function SectionInternal(props: SectionProps) {
     props.defaultExpanded === undefined ? true : props.defaultExpanded
   );
   const hidden = useInputHidden(props);
-  console.log("DAVID HIDDEN", hidden);
   const setHasInputs = useSetHasInputs();
   useEffect(() => {
     if (props.autohide === false) setHasInputs();

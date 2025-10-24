@@ -6,7 +6,7 @@ import { Alert, Content, ContentVariants, Flex, FlexItem } from "@patternfly/rea
 export const EncryptionSubstep = (props: any) => {
     const { value } = useInput(props);
     const { metadata } = value;
-    console.log("VALUE", value)
+
     return (
         <Section label="Advanced encryption" id="encryption-substep-section" key="encryption-substep-section-key">
             <WizRadioGroup id="encryption-keys-radio-group"

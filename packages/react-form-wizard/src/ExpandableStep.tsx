@@ -28,7 +28,6 @@ export interface ExpandableStepProps {
 }
 
 export function ExpandableStep(props: ExpandableStepProps) {
-  console.log("PROPS IN ExpandableStep", props)
   return (
     <div id={props.id}>
       <HasInputsProvider key={props.id}>
@@ -86,7 +85,7 @@ export function ExpandableStepInternal(props: ExpandableStepProps) {
       </Fragment>
     );
   }
-console.log("PROPSDAZ", props)
+
   return (
     <Form
       onSubmit={(event) => {

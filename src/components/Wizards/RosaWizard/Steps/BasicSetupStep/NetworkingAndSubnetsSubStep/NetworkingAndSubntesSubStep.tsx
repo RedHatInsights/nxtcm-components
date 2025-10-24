@@ -26,7 +26,7 @@ import {
 export const NetworkingAndSubnetsSubStep = (props: any) => {
   const { value } = useInput(props);
   const { metadata } = value;
-  console.log("DAZ VALUE", value)
+
   return (
     <>
       <Section label="Networking" id="networking-section" key="networking-section-key">
