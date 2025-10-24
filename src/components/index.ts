@@ -6,3 +6,4 @@ export * from "./ActionsDropdown";
 export * from "./ConsoleBreadcrumbs";
 export * from "./PageHeader";
 export * from "./Wizards";
+export * from "./dashboard/StorageCard";

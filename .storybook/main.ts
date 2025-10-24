@@ -21,6 +21,27 @@ const config: StorybookConfig = {
         '@patternfly-labs/react-form-wizard': path.resolve(__dirname, '../packages/react-form-wizard/src'),
       };
     }
+
+    // Add SCSS module support for dashboard components
+    config.module = config.module || {};
+    config.module.rules = config.module.rules || [];
+    
+    config.module.rules.push({
+      test: /\.module\.scss$/,
+      use: [
+        'style-loader',
+        {
+          loader: 'css-loader',
+          options: {
+            modules: {
+              localIdentName: '[name]__[local]--[hash:base64:5]',
+            },
+          },
+        },
+        'sass-loader',
+      ],
+    });
+
     return config;
   },
 };
