@@ -4,5 +4,6 @@ import "~@patternfly/patternfly/patternfly-addons.css";
 
 export * from "./ActionsDropdown";
 export * from "./ConsoleBreadcrumbs";
+export * from "./Dashboard";
 export * from "./PageHeader";
 export * from "./Wizards";

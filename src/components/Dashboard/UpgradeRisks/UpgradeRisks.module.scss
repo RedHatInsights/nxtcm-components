@@ -1,0 +1,91 @@
+.upgradeRisksCard {
+  max-width: 400px;
+  min-width: 300px;
+
+  :global(.pf-v6-c-card__header) {
+    padding-bottom: 0;
+  }
+}
+
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--pf-t--global--text--color--regular);
+}
+
+.totalSection {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--pf-t--global--border--color--default);
+}
+
+.totalNumber {
+  font-size: 2.5rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--pf-t--global--text--color--regular);
+}
+
+.totalLabel {
+  font-size: 0.875rem;
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+.riskIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.criticalIcon {
+  color: var(--pf-t--global--icon--color--status--danger--default);
+}
+
+.warningIcon {
+  color: var(--pf-t--global--icon--color--status--warning--default);
+}
+
+.infoIcon {
+  color: var(--pf-t--global--icon--color--status--info--default);
+}
+
+.riskCount {
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--pf-t--global--text--color--regular);
+}
+
+.riskLabel {
+  font-size: 0.875rem;
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+.viewLink {
+  padding-top: 0.5rem;
+}
+
+.linkButton {
+  background: none;
+  border: none;
+  color: var(--pf-t--global--color--brand--default);
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+  
+  &:hover {
+    color: var(--pf-t--global--color--brand--hover);
+    text-decoration: underline;
+  }
+  
+  &:focus {
+    outline: 2px solid var(--pf-t--global--color--brand--default);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
