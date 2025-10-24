@@ -190,7 +190,6 @@ function WizardInternal({
     ),
     [children]
   );
-  console.log("children stepcomponents", stepComponents)
   const reviewStep: StepComponent = useMemo(
     () => ({
       id: "review-step",
@@ -236,7 +235,6 @@ function WizardInternal({
               </Split>
             ),
             component: <Fragment key={step.props?.id}>{step}</Fragment>,
-
           }
         });
         return {
@@ -291,7 +289,6 @@ function WizardInternal({
     stepShowValidation,
   ]);
 
-  console.log("DAVID STEPS", steps);
   return (
     <Fragment>
       <PFWizard
@@ -323,7 +320,6 @@ function WizardInternal({
                 />
               )
             }
-
             return (
               <WizardStep key={id} id={id} name={name}>
                 {component}
@@ -331,53 +327,11 @@ function WizardInternal({
             );
           }
         )}
-
-
       </PFWizard>
     </Fragment>
   );
 }
-// if (isExpandable) {
-//   return (
-//     <WizardStep
-//       key={id}
-//       id={id}
-//       name={name}
-//       isExpandable={isExpandable}
-//       steps={expandableStepComponent?.map((step: any) => {
-//         const name = (
-//           <Split hasGutter>
-//             <SplitItem isFilled>{step.props?.label}</SplitItem>
-//             {(showValidation ||
-//               stepShowValidation[step.props?.id]) &&
-//               stepHasValidationError[step.props?.id] && (
-//                 <SplitItem>
-//                   <Icon status="danger">
-//                     <ExclamationCircleIcon />
-//                   </Icon>
-//                 </SplitItem>
-//               )}
-//           </Split>
-//         );
-//         return (
-//           <WizardStep
-//             id={step.props.id}
-//             key={step.props.id}
-//             name={name}
-//           >
-//             <Form
-//       onSubmit={(event) => {
-//         event.preventDefault();
-//       }}
-//     >
-//             {step.props.children}
-//             </Form>
-//           </WizardStep>
-//         );
-//       })}
-//     />
-//   );
-// }
+
 function MyFooter(props: WizardFooterProps) {
   const {
     activeStep,
@@ -388,7 +342,7 @@ function MyFooter(props: WizardFooterProps) {
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
-  console.log("ACTIVE STEP", activeStep)
+
   const { onSubmit, submitButtonText, submittingButtonText } = props;
 
   const { unknownError } = useStringContext();

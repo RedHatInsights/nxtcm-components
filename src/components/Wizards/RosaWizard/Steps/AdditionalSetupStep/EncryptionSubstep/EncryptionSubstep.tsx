@@ -1,8 +1,12 @@
-import { Radio, Section, WizCheckbox, WizRadioGroup } from "@patternfly-labs/react-form-wizard"
+import { Radio, Section, WizCheckbox, WizRadioGroup, WizTextInput } from "@patternfly-labs/react-form-wizard"
+import { useInput } from "@patternfly-labs/react-form-wizard/inputs/Input"
 import { Alert, Content, ContentVariants, Flex, FlexItem } from "@patternfly/react-core"
 
 
-export const EncryptionSubstep = () => {
+export const EncryptionSubstep = (props: any) => {
+    const { value } = useInput(props);
+    const { metadata } = value;
+    console.log("VALUE", value)
     return (
         <Section label="Advanced encryption" id="encryption-substep-section" key="encryption-substep-section-key">
             <WizRadioGroup id="encryption-keys-radio-group"
@@ -18,9 +22,22 @@ export const EncryptionSubstep = () => {
                 </Flex>
 
             </WizRadioGroup>
+            {
+                metadata?.["encryption-keys"] === "custom" && (
+                    <WizTextInput path="metadata.custom-key-arn" label="Key ARN" required labelHelp="The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID.
+                        {HERE GOES EXTERNAL LINK: Finding the key ID and ARN}"/>
+                )
+            }
 
             <WizCheckbox path="metadata.etcd-encryption" title="etcd encryption" label="Enable additional etcd encryption" helperText="Optionally, add a unique customer-managed AWS KMS key to encrypt etcd. {HERE GOES A LINK: Learn more}" />
 
+
+            {
+                metadata?.["etcd-encryption"] && (
+                    <WizTextInput path="metadata.custom-key-arn" label="Key ARN" required labelHelp="The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID.
+                        {HERE GOES EXTERNAL LINK: Finding the key ID and ARN}"/>
+                )
+            }
             <Alert variant="info" title="Take a not of the keys associated with your cluster. If you delete your keys, the cluster will not be available" ouiaId="encryptionKeysAlert" />
         </Section>
     )

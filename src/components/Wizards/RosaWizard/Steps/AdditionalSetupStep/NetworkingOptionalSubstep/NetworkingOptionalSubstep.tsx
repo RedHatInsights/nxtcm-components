@@ -4,7 +4,10 @@ import { Alert, Content, ContentVariants } from "@patternfly/react-core"
 
 
 export const NetworkingOptionalSubstep = (props: any) => {
-
+    const {value} = useInput(props)
+    const {metadata} = value;
+    const defaultCidrValue = metadata?.cidrDefault;
+    console.log("VALUE", defaultCidrValue)
     return(
         <>
         <Section id="optional-networking-substep-section" key="optional-networking-substep-section-key" label="Networking">
@@ -23,22 +26,26 @@ export const NetworkingOptionalSubstep = (props: any) => {
                     HERE GOES LINK: Learn more about configureing network settings (needs external link icon)
                 </Content>
             </Alert>
-        <WizCheckbox id="use-cidr-default-values" path="metadata.cidr-default" label="Use default values" helperText="The values are safe defaults. However, you must ensure that the Machine CIDR matches the selected VPC subnets." />
+        <WizCheckbox id="use-cidr-default-values" path="metadata.cidrDefault" label="Use default values" helperText="The values are safe defaults. However, you must ensure that the Machine CIDR matches the selected VPC subnets." />
 
         <WizTextInput path="metadata.machine-cidr" label="Machine CIDR" 
         helperText="Subnet mask must be between /16 and /25"
+         disabled={defaultCidrValue}
         />
 
         <WizTextInput path="metadata.service-cidr" label="Service CIDR" 
         helperText="Subnet mask must be at most /24"
+        disabled={defaultCidrValue}
         />
 
         <WizTextInput path="metadata.pod-cidr" label="Pod CIDR" 
         helperText="Subnet mask must allow for at least 32 nodes"
+         disabled={defaultCidrValue}
         />
 
         <WizTextInput path="metadata.host-prefix" label="Host prefix" 
         helperText="Must be between /23 and /26"
+         disabled={defaultCidrValue}
         />
 
         </Section>

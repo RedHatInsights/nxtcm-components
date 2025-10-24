@@ -4,6 +4,9 @@ import {
   WizSelect,
   WizTextInput,
 } from "@patternfly-labs/react-form-wizard";
+import { Button, Content, ContentVariants, Drawer, DrawerActions, DrawerCloseButton, DrawerContent, DrawerHead, DrawerPanelContent, useWizardContext } from "@patternfly/react-core";
+import React from "react";
+import { StepDrawer } from "../../../common/StepDrawer";
 
 type DetailsSubStepProps = {
   openShiftVersions: any;
@@ -16,8 +19,16 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   awsInfrastructureAccounts,
   awsBillingAccounts,
 }) => {
+
+  const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false)
+  const { activeStep } = useWizardContext();
+  const drawerRef = React.useRef<HTMLSpanElement>(null);
+
+  const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
+
   return (
     <Section label="Details">
+      <StepDrawer isDrawerExpanded={isDrawerExpanded} setIsDrawerExpanded={setIsDrawerExpanded} onWizardExpand={onWizardExpand}>
       <WizTextInput
         path="metadata.name"
         label="Cluster name"
@@ -42,6 +53,11 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
         options={awsInfrastructureAccounts}
         required
       />
+      {!isDrawerExpanded && (
+            <Button isInline variant="link" onClick={() => setIsDrawerExpanded((prevExpanded) => !prevExpanded)}>
+              Associate a new AWS account
+            </Button>
+          )}
       {/* 
                     TODO: HERE GOES LINK WITH ASSOCIATE A NEW AWS ACCOUNT
                 */}
@@ -65,6 +81,11 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
         options={openShiftVersions}
         required
       />
+      </StepDrawer>
     </Section>
   );
 };
+
+
+
+

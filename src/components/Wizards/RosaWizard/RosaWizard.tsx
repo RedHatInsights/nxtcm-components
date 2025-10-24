@@ -1,12 +1,14 @@
 import {
   ExpandableStep,
   Step,
+  useItem,
   WizardCancel,
   WizardPage,
   WizardSubmit,
 } from "@patternfly-labs/react-form-wizard";
 import { ClusterUpdatesSubstep, NetworkingOptionalSubstep, EncryptionSubstep } from "./Steps/AdditionalSetupStep";
 import { DetailsSubStep, NetworkingAndSubnetsSubStep, RolesAndPoliciesSubStep } from "./Steps/BasicSetupStep";
+import { InputCommonProps, useInput } from "@patternfly-labs/react-form-wizard/inputs/Input";
 
 export type BasicSetupStepProps = {
   openShiftVersions: any;
@@ -22,19 +24,19 @@ type WizardStepsData = {
   basicSetupStep: BasicSetupStepProps;
 };
 
-type RosaWizardProps = {
+type RosaWizardProps = InputCommonProps & {
   onSubmit: WizardSubmit;
   onCancel: WizardCancel;
   title: string;
   wizardsStepsData: WizardStepsData;
 };
 
-export const RosaWizard = ({
-  onSubmit,
-  onCancel,
-  title,
-  wizardsStepsData,
-}: RosaWizardProps) => {
+export const RosaWizard = (props: any) => {
+  const {onSubmit, onCancel, title, wizardsStepsData} = props;
+  const {value} = useInput(props);
+const data = useItem();
+  console.log("WIZARD VALUE", data)
+
   return (
     <WizardPage
       onSubmit={onSubmit}
