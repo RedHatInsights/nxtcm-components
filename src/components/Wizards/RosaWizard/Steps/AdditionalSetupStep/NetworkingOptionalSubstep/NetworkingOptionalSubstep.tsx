@@ -7,7 +7,7 @@ export const NetworkingOptionalSubstep = (props: any) => {
     const {value} = useInput(props)
     const {metadata} = value;
     const defaultCidrValue = metadata?.cidrDefault;
-    console.log("VALUE", defaultCidrValue)
+
     return(
         <>
         <Section id="optional-networking-substep-section" key="optional-networking-substep-section-key" label="Networking">

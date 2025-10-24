@@ -312,7 +312,6 @@ function WizardInternal({
                   id={id} key={id} name={name}
                   isExpandable
                   steps={subSteps.map((subStep: any) => {
-                    console.log("subStep", subStep)
                     return (
                       <WizardStep id={subStep.id} key={subStep.id} name={subStep.name}>{subStep.component}</WizardStep>
                     )

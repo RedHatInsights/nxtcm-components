@@ -33,9 +33,6 @@ type RosaWizardProps = InputCommonProps & {
 
 export const RosaWizard = (props: any) => {
   const {onSubmit, onCancel, title, wizardsStepsData} = props;
-  const {value} = useInput(props);
-const data = useItem();
-  console.log("WIZARD VALUE", data)
 
   return (
     <WizardPage

@@ -71,10 +71,6 @@ export function StepInternal(props: StepProps) {
     }
   }, [hasInputs, displayMode, props.id, setStepHasInputs]);
 
-  //  if (props.steps && props.steps.length > 0) {
-  //   return null;
-  // }
-
   const hidden = useInputHidden(props);
   if (hidden && props.autohide !== false) return <Fragment />;
 
@@ -83,31 +79,6 @@ export function StepInternal(props: StepProps) {
     return <Fragment>{props.children}</Fragment>;
   }
 
-  // if(props.steps) {
-  //   console.log("CHILDREN INSIDE", props.steps)
-  //   return (
-  //     <Form
-  //     onSubmit={(event) => {
-  //       event.preventDefault();
-  //     }}
-  //   >
-  //     {props.steps}
-  //   </Form>
-  //   )
-  // }
-
-  // if(props.steps) {
-  //   const children = props.steps.map((step: any) => step.props.children)
-  //   console.log("CHILDREN INSIDE", children)
-  //   return  <Form
-  //     onSubmit={(event) => {
-  //       event.preventDefault();
-  //     }}
-  //   >
-  //     {children}
-  //   </Form>
-  // }
-  console.log("CHILDREN OUTSIDE", props.children)
   return (
     <Form
       onSubmit={(event) => {
