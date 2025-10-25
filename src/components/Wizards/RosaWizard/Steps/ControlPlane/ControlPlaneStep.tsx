@@ -10,10 +10,10 @@ import {
   Stack,
   StackItem,
   Title,
-} from "@patternfly/react-core";
-import { PrerequisitesInfoBox } from "./components/PrerequisitesInfoBox/PrerequisitesInfoBox";
-import { RosaArchitectureRenamingAlert } from "./components/RosaArchitectureRenamingAlert/RosaArchitectureRenamingAlert";
-import { ControlPlaneField } from "./components/ControlPlaneField/ControlPlaneField";
+} from '@patternfly/react-core';
+import { PrerequisitesInfoBox } from './components/PrerequisitesInfoBox/PrerequisitesInfoBox';
+import { RosaArchitectureRenamingAlert } from './components/RosaArchitectureRenamingAlert/RosaArchitectureRenamingAlert';
+import { ControlPlaneField } from './components/ControlPlaneField/ControlPlaneField';
 
 type ControlPlaneStepPropsDetails = {
   AwsControlPlaneLink: React.ReactNode;
@@ -33,9 +33,9 @@ type ControlPlaneStepProps = {
   controlPlaneStepProps: ControlPlaneStepPropsDetails;
 };
 
-export const ControlPlaneStep: React.FunctionComponent<
-  ControlPlaneStepProps
-> = ({ controlPlaneStepProps }) => {
+export const ControlPlaneStep: React.FunctionComponent<ControlPlaneStepProps> = ({
+  controlPlaneStepProps,
+}) => {
   const {
     productName,
     rosaHostedCliMinVersion,
@@ -48,7 +48,7 @@ export const ControlPlaneStep: React.FunctionComponent<
     isHCPDisabled,
     linkToGetStarted,
     rosaHomeGetStartedLink,
-    hasHostedProductQuota,
+    hasHostedProductQuota: _hasHostedProductQuota,
   } = controlPlaneStepProps;
   return (
     <Form
@@ -64,8 +64,7 @@ export const ControlPlaneStep: React.FunctionComponent<
               Welcome to Red Hat OpenShift Service on AWS (ROSA)
             </Content>
             <Content component={ContentVariants.p}>
-              Create a managed OpenShift cluster on an existing Amazon Web
-              Services (AWS) account.
+              Create a managed OpenShift cluster on an existing Amazon Web Services (AWS) account.
             </Content>
           </Content>
         </GridItem>
@@ -79,21 +78,18 @@ export const ControlPlaneStep: React.FunctionComponent<
         </GridItem>
         <GridItem span={10}>
           <Title headingLevel="h3" className="pf-v6-u-mb-sm">
-            Select the ROSA architecture based on your control plane
-            requirements
+            Select the ROSA architecture based on your control plane requirements
           </Title>
           <Stack hasGutter>
             <StackItem>
               <RosaArchitectureRenamingAlert
-                rosaArchitectureRenaimingAlertLink={
-                  rosaArchitectureRenaimingAlertLink
-                }
+                rosaArchitectureRenaimingAlertLink={rosaArchitectureRenaimingAlertLink}
                 allowAlertFeatureFlag={allowAlertFeatureFlag}
               />
             </StackItem>
             <StackItem>
               <Content component={ContentVariants.p}>
-                Not sure what to choose?{" "}
+                Not sure what to choose?{' '}
                 {/* <ExternalLink href={links.AWS_CONTROL_PLANE_URL}>
                   Learn more about control plane architecture
                 </ExternalLink> */}

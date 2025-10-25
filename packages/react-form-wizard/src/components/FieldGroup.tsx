@@ -19,6 +19,7 @@ export function FieldGroup(props: FieldGroupProps) {
     ...extraProps
   } = props;
   return (
+    // @ts-expect-error - React types version mismatch between root and package node_modules
     <InternalFormFieldGroup
       className="input-field-group"
       header={!isExpanded && header}
