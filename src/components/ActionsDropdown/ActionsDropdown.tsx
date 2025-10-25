@@ -101,6 +101,8 @@ const MenuItems = forwardRef<HTMLDivElement, any>(({ menuItems, onSelect, ...men
   </Menu>
 ));
 
+MenuItems.displayName = 'MenuItems';
+
 export function ActionsDropdown<T extends string | number>(props: DropdownProps<T>) {
   const {
     dropdownItems,
