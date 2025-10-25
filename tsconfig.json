@@ -22,10 +22,12 @@
         "types": ["node", "jest", "@testing-library/jest-dom"]
     },
     "include": [
-        "src"
+        "src",
+        "**/*.stories.tsx"
     ],
     "exclude": [
         "node_modules",
-        "dist"
+        "dist",
+        "packages"
     ]
 }
