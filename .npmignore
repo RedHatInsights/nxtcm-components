@@ -1,0 +1,46 @@
+# Source files
+src/
+packages/
+
+# Configuration files
+.storybook/
+.github/
+.vscode/
+*.config.js
+*.config.ts
+tsconfig*.json
+babel.config.js
+jest.config.js
+jest.setup.js
+
+# Test files
+**/*.test.tsx
+**/*.test.ts
+**/*.spec.tsx
+**/*.spec.ts
+**/*.stories.tsx
+**/*.stories.ts
+__tests__/
+cypress/
+playwright/
+
+# Build artifacts
+node_modules/
+coverage/
+storybook-static/
+.DS_Store
+
+# Development files
+*.log
+npm-debug.log*
+.env*
+.yalc
+yalc.lock
+
+# Documentation (keep README and LICENSE)
+!README.md
+!LICENSE
+
+# Only include dist folder
+!dist/
+

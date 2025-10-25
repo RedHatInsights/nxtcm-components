@@ -1,0 +1,26 @@
+# Build outputs
+dist/
+build/
+coverage/
+storybook-static/
+
+# Dependencies
+node_modules/
+packages/*/node_modules/
+
+# Generated files
+*.d.ts
+*.js.map
+
+# Config files
+package-lock.json
+
+# Template files
+*.hbs
+
+# SVG files
+*.svg
+
+# Log files
+*.log
+
