@@ -60,6 +60,8 @@ const defaultStepsProps = {
     handleChange: () => console.log("Tile selection changed"),
     isHCPDisabled: false,
     linkToGetStarted: MockRosaGetStartedLink,
+    rosaHomeGetStartedLink: MockRosaGetStartedLink,
+    hasHostedProductQuota: true,
   },
 };
 

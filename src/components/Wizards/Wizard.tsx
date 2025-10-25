@@ -1,14 +1,8 @@
 import {
-  Banner,
-  PageSection,
-  Spinner,
   Wizard,
-  WizardStep,
-  WizardStepChangeScope,
-  WizardStepType,
+  WizardStep
 } from "@patternfly/react-core";
 import { StepId, StepName } from "./constants";
-import { BillingModelStep } from "./Steps/BillingModel/BillingModelStep";
 
 export type NxtcmWizardProp = {
   navigate: (url: string) => void;

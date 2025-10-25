@@ -26,7 +26,7 @@ export function FieldGroup(props: FieldGroupProps) {
       isExpanded={props.isExpanded}
       toggleAriaLabel={toggleAriaLabel}
       onToggle={() => setIsExpanded(!props.isExpanded)}
-      {...extraProps}
+      {...(extraProps as any)}
     >
       {children}
     </InternalFormFieldGroup>
@@ -34,7 +34,7 @@ export function FieldGroup(props: FieldGroupProps) {
 }
 
 export interface InternalFormFieldGroupProps
-  extends Omit<React.HTMLProps<HTMLDivElement>, "label"> {
+  extends Omit<React.HTMLProps<HTMLDivElement>, "label" | "style"> {
   /** Anything that can be rendered as form field group content. */
   children?: React.ReactNode;
   /** Additional classes added to the form field group. */
@@ -49,6 +49,8 @@ export interface InternalFormFieldGroupProps
   onToggle?: () => void;
   /** Aria-label to use on the form filed group toggle button */
   toggleAriaLabel?: string;
+  /** Optional style prop */
+  style?: React.CSSProperties;
 }
 
 export const InternalFormFieldGroup: React.FunctionComponent<
