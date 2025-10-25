@@ -17,21 +17,21 @@ import {
   StackItem,
   Title,
   TitleSizes,
-} from "@patternfly/react-core";
-import { ReadOnlyBanner } from "../ReadOnlyBanner/ReadOnlyBanner";
-import OutlinedQuestionCircleIcon from "@patternfly/react-icons/dist/esm/icons/outlined-question-circle-icon";
-import { ConsoleBreadcrumbs } from "../ConsoleBreadcrumbs";
-import RefreshButton from "../RefreshButton/RefreshButton";
+} from '@patternfly/react-core';
+import { ReadOnlyBanner } from '../ReadOnlyBanner/ReadOnlyBanner';
+import OutlinedQuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/outlined-question-circle-icon';
+import { ConsoleBreadcrumbs } from '../ConsoleBreadcrumbs';
+import RefreshButton from '../RefreshButton/RefreshButton';
 
 export type CommonPageHeaderProps = {
   title: string | React.ReactNode;
   titleTooltip?: string | React.ReactNode;
-  titleHeadingLevel: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+  titleHeadingLevel: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   titleHeadingSize?: TitleSizes;
-  popoverPosition?: PopoverProps["position"];
-  popoverAutoWidth?: PopoverProps["hasAutoWidth"];
+  popoverPosition?: PopoverProps['position'];
+  popoverAutoWidth?: PopoverProps['hasAutoWidth'];
   label?: string | React.ReactNode;
-  labelColor?: LabelProps["color"];
+  labelColor?: LabelProps['color'];
   description?: string | React.ReactNode;
   breadcrumbs?: { text: string; to?: string }[];
   navigation?: NavigationItem[];
@@ -73,10 +73,10 @@ type NavigationItem = {
 };
 
 export enum PageSectionUpdatedVariants {
-  default = "default",
-  light = "light",
-  dark = "dark",
-  darker = "darker",
+  default = 'default',
+  light = 'light',
+  dark = 'dark',
+  darker = 'darker',
 }
 
 export function ConsoleSecondaryNav(props: { children: React.ReactNode }) {
@@ -143,7 +143,7 @@ export const PageHeader = <P,>({
       <PageSection
         hasBodyWrapper={hasBodyWrapper}
         variant={variant}
-        padding={{ default: "noPadding" }}
+        padding={{ default: 'noPadding' }}
       >
         <Split>
           <SplitItem isFilled>
@@ -152,9 +152,9 @@ export const PageHeader = <P,>({
                 <PageSection
                   variant={PageSectionVariants.default}
                   style={{
-                    paddingBottom: navigation ? "inherit" : undefined,
+                    paddingBottom: navigation ? 'inherit' : undefined,
                     paddingTop: breadcrumbs
-                      ? "var(--pf-v6-c-page__main-breadcrumb--PaddingTop)"
+                      ? 'var(--pf-v6-c-page__main-breadcrumb--PaddingTop)'
                       : undefined,
                   }}
                 >
@@ -163,9 +163,7 @@ export const PageHeader = <P,>({
                       <StackItem>
                         <ConsoleBreadcrumbs
                           items={breadcrumbs}
-                          getLabel={(item: any) =>
-                            item.text ? item.text : item.label
-                          }
+                          getLabel={(item: any) => (item.text ? item.text : item.label)}
                           getTo={(item: any) => (item.to ? item.to : item.path)}
                           LinkComponent={Link}
                         />
@@ -174,10 +172,7 @@ export const PageHeader = <P,>({
                     <StackItem isFilled>
                       <Split hasGutter>
                         <SplitItem>
-                          <Title
-                            headingLevel={titleHeadingLevel}
-                            size={titleHeadingSize}
-                          >
+                          <Title headingLevel={titleHeadingLevel} size={titleHeadingSize}>
                             {title}
                             {titleTooltip && (
                               <Popover
@@ -188,15 +183,15 @@ export const PageHeader = <P,>({
                                 }
                                 position={
                                   /* istanbul ignore next */
-                                  popoverPosition ?? "right"
+                                  popoverPosition ?? 'right'
                                 }
                               >
                                 <Button
                                   variant="plain"
                                   style={{
                                     padding: 0,
-                                    marginLeft: "8px",
-                                    verticalAlign: "middle",
+                                    marginLeft: '8px',
+                                    verticalAlign: 'middle',
                                   }}
                                 >
                                   <OutlinedQuestionCircleIcon />
@@ -215,10 +210,10 @@ export const PageHeader = <P,>({
                           <SplitItem>
                             <span
                               style={{
-                                paddingLeft: "24px",
-                                height: "100%",
-                                display: "flex",
-                                alignItems: "center",
+                                paddingLeft: '24px',
+                                height: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
                               }}
                             >
                               {switches}
@@ -227,21 +222,17 @@ export const PageHeader = <P,>({
                         )}
                         {isRefreshing && (
                           <SplitItem>
-                            <Spinner
-                              size="lg"
-                              aria-label="Loading..."
-                              className="pf-v6-u-ma-md"
-                            />
+                            <Spinner size="lg" aria-label="Loading..." className="pf-v6-u-ma-md" />
                           </SplitItem>
                         )}
                         {error && <SplitItem>{errorTriangle}</SplitItem>}
                       </Split>
                       {description && (
-                        <div style={{ paddingTop: "8px" }}>
+                        <div style={{ paddingTop: '8px' }}>
                           {clusterClaimName && (
                             <span
                               style={{
-                                color: "var(--pf-v6-global--Color--200)",
+                                color: 'var(--pf-v6-global--Color--200)',
                               }}
                             >
                               {clusterClaimName}
@@ -262,16 +253,10 @@ export const PageHeader = <P,>({
                   >
                     <ConsoleSecondaryNav>
                       {navigation
-                        .filter(
-                          (navItem: NavigationItem) =>
-                            navItem.shouldDisplayNavItem,
-                        )
+                        .filter((navItem: NavigationItem) => navItem.shouldDisplayNavItem)
                         .map((navItem: NavigationItem, index: number) => {
                           return (
-                            <ConsoleSecondaryNavItem
-                              key={index}
-                              isActive={navItem.isActive}
-                            >
+                            <ConsoleSecondaryNavItem key={index} isActive={navItem.isActive}>
                               <Link to={navItem.linkTo}>{navItem.title}</Link>
                             </ConsoleSecondaryNavItem>
                           );
@@ -286,16 +271,16 @@ export const PageHeader = <P,>({
           {shouldShowRefreshBtn && (
             <SplitItem
               style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-end",
-                justifyContent: "flex-end",
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-end',
+                justifyContent: 'flex-end',
               }}
             >
               <Flex
-                flexWrap={{ default: "nowrap" }}
-                alignItems={{ default: "alignItemsCenter" }}
-                spaceItems={{ default: "spaceItemsSm" }}
+                flexWrap={{ default: 'nowrap' }}
+                alignItems={{ default: 'alignItemsCenter' }}
+                spaceItems={{ default: 'spaceItemsSm' }}
                 id="cl-details-btns"
               >
                 {!isArchived && !isDeprovisioned ? (
@@ -323,20 +308,20 @@ export const PageHeader = <P,>({
               <PageSection
                 variant={PageSectionVariants.default}
                 style={{
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-end",
-                  justifyContent: "flex-end",
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-end',
+                  justifyContent: 'flex-end',
                 }}
               >
                 <Stack hasGutter>
                   {searchbar && (
                     <SplitItem
                       style={{
-                        marginLeft: "auto",
-                        display: "flex",
-                        alignItems: "center",
+                        marginLeft: 'auto',
+                        display: 'flex',
+                        alignItems: 'center',
                       }}
                     >
                       {searchbar}
@@ -345,9 +330,9 @@ export const PageHeader = <P,>({
                   {controls && (
                     <StackItem
                       style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-end",
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-end',
                       }}
                     >
                       {controls}
@@ -355,9 +340,9 @@ export const PageHeader = <P,>({
                   )}
                   {acmActions && (
                     <Flex
-                      flexWrap={{ default: "nowrap" }}
-                      alignItems={{ default: "alignItemsCenter" }}
-                      spaceItems={{ default: "spaceItemsSm" }}
+                      flexWrap={{ default: 'nowrap' }}
+                      alignItems={{ default: 'alignItemsCenter' }}
+                      spaceItems={{ default: 'spaceItemsSm' }}
                     >
                       {acmActions}
                     </Flex>

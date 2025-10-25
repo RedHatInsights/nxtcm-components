@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 /**
  * Translation function type that takes a string key and returns a translated string.
@@ -8,8 +8,7 @@ export type TranslationFunction = (key: string) => string;
 
 const defaultTranslate: TranslationFunction = (key: string) => key;
 
-const TranslationContext =
-  React.createContext<TranslationFunction>(defaultTranslate);
+const TranslationContext = React.createContext<TranslationFunction>(defaultTranslate);
 
 export interface TranslationProviderProps {
   /**
@@ -22,7 +21,7 @@ export interface TranslationProviderProps {
 
 /**
  * Provider component that makes translation function available to all child components.
- * 
+ *
  * @example
  * ```tsx
  * <TranslationProvider translate={(key) => myI18n.t(key)}>
@@ -47,4 +46,3 @@ export const useTranslation = () => {
   const t = React.useContext(TranslationContext);
   return { t };
 };
-
