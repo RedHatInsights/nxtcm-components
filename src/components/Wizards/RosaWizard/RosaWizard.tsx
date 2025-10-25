@@ -1,12 +1,7 @@
-import {
-  Step,
-  WizardCancel,
-  WizardPage,
-  WizardSubmit,
-} from "@patternfly-labs/react-form-wizard";
-import { stepId, stepName } from "./constants";
-import { ControlPlaneStep } from "./Steps/ControlPlane/ControlPlaneStep";
-type ClassNameProps = {};
+import { Step, WizardCancel, WizardPage, WizardSubmit } from '@patternfly-labs/react-form-wizard';
+import { stepId, stepName } from './constants';
+import { ControlPlaneStep } from './Steps/ControlPlane/ControlPlaneStep';
+type ClassNameProps = Record<string, never>;
 
 type ControlPlaneProps = {
   classNames: ClassNameProps;
@@ -41,7 +36,7 @@ type RosaWizardProps = {
 export const RosaWizard = ({
   onSubmit,
   onCancel,
-  history,
+  history: _history,
   title,
   stepsProps,
   defaultData,

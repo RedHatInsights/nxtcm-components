@@ -1,4 +1,4 @@
-import { CardGroup, Tile } from "@patternfly-labs/react-form-wizard";
+import { CardGroup } from '@patternfly-labs/react-form-wizard';
 import {
   GridItem,
   Content,
@@ -7,11 +7,10 @@ import {
   ListItem,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   CardTitle,
-} from "@patternfly/react-core";
-import { CheckIcon } from "@patternfly/react-icons";
+} from '@patternfly/react-core';
+import { CheckIcon } from '@patternfly/react-icons';
 
 export const StandAloneTile = (props: any) => {
   return (
@@ -32,37 +31,32 @@ export const StandAloneTile = (props: any) => {
         >
           <CardHeader
             selectableActions={{
-              variant: "single",
-              onChange: () => console.log("false"),
+              variant: 'single',
+              onChange: () => {
+                // Stand-alone architecture selected
+              },
               isHidden: true,
-              selectableActionAriaLabelledby:
-                "standalone-control-plane-card-title",
+              selectableActionAriaLabelledby: 'standalone-control-plane-card-title',
             }}
           >
             <CardTitle id="standalone-control-plane-card">
-              "ROSA classic architecture"
+              &quot;ROSA classic architecture&quot;
             </CardTitle>
           </CardHeader>
           <CardBody>
             <Content component={ContentVariants.p} className="pf-v6-u-mb-md">
-              The Red Hat OpenShift Service on AWS (classic architecture) runs
-              an OpenShift cluster with a coupled control and data plane, hosted
-              on dedicated nodes with a shared network.
+              The Red Hat OpenShift Service on AWS (classic architecture) runs an OpenShift cluster
+              with a coupled control and data plane, hosted on dedicated nodes with a shared
+              network.
             </Content>
             <List isPlain className="pf-v6-u-mb-md">
-              <ListItem
-                icon={<CheckIcon className="pf-v6-u-active-color-100" />}
-              >
+              <ListItem icon={<CheckIcon className="pf-v6-u-active-color-100" />}>
                 Control plane resources are hosted in your own AWS account
               </ListItem>
-              <ListItem
-                icon={<CheckIcon className="pf-v6-u-active-color-100" />}
-              >
+              <ListItem icon={<CheckIcon className="pf-v6-u-active-color-100" />}>
                 Full compliance certifications
               </ListItem>
-              <ListItem
-                icon={<CheckIcon className="pf-v6-u-active-color-100" />}
-              >
+              <ListItem icon={<CheckIcon className="pf-v6-u-active-color-100" />}>
                 Red Hat SRE managed
               </ListItem>
             </List>

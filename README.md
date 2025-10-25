@@ -17,8 +17,25 @@ This repository provides reusable React components built with PatternFly that se
 
 ## Prerequisites
 
-- Node.js (version 18 or higher recommended)
+- Node.js (version 20 recommended - see `.nvmrc`)
 - npm (comes with Node.js)
+
+## Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/RedHatInsights/nxtcm-components.git
+cd nxtcm-components
+
+# Install dependencies
+npm install
+
+# Start development server
+npm start
+
+# Or start Storybook
+npm run storybook
+```
 
 ## Installation
 
@@ -153,6 +170,22 @@ function App() {
 }
 ```
 
+### Required CSS
+
+This library requires PatternFly CSS. Import it in your application:
+
+```typescript
+// In your main application entry file (e.g., index.ts or App.tsx)
+import '@patternfly/react-core/dist/styles/base.css';
+import '@patternfly/patternfly/patternfly.css';
+```
+
+Or include it in your HTML:
+
+```html
+<link rel="stylesheet" href="node_modules/@patternfly/patternfly/patternfly.css">
+```
+
 ### Using with ACM or OCM
 
 The components are designed to work seamlessly with both ACM and OCM projects. They use PatternFly's flexible design system to accommodate different requirements while maintaining consistency.
@@ -205,26 +238,82 @@ Components in this library follow these principles:
 - **Storybook**: Component documentation and development
 - **Jest**: Unit testing framework
 - **React Testing Library**: Testing utilities
+- **Playwright**: End-to-end and component testing
 - **Vite**: Lightning-fast build tool and dev server
+- **ESLint**: Code linting with React, TypeScript, and a11y rules
+- **Prettier**: Code formatting
 - **SASS**: CSS preprocessing
+
+## Configuration Files
+
+The repository includes the following configuration files:
+
+| File | Purpose |
+|------|---------|
+| `.eslintrc.json` | ESLint configuration with React, TypeScript, and accessibility rules |
+| `.prettierrc` | Prettier code formatting rules |
+| `.prettierignore` | Files to exclude from Prettier formatting |
+| `.npmignore` | Files to exclude from npm package |
+| `.nvmrc` | Node.js version specification (v20) |
+| `tsconfig.json` | TypeScript compiler configuration |
+| `vite.config.ts` | Vite build tool configuration |
+| `jest.config.js` | Jest testing framework configuration |
+| `playwright.config.ts` | Playwright E2E testing configuration |
+| `.github/workflows/ci.yml` | GitHub Actions CI/CD pipeline |
+
+## Continuous Integration
+
+This project uses GitHub Actions for CI/CD. On every pull request and push to main, the following checks run automatically:
+
+- ✅ **Lint**: ESLint and Prettier checks
+- ✅ **Type Check**: TypeScript compilation
+- ✅ **Unit Tests**: Jest tests with coverage
+- ✅ **Build**: Library build verification
+- ✅ **E2E Tests**: Playwright end-to-end tests
+- ✅ **Storybook Build**: Documentation build verification
+
+See [`.github/workflows/ci.yml`](.github/workflows/ci.yml) for the complete workflow configuration.
 
 ## Scripts Reference
 
+### Development
+
 | Command | Description |
 |---------|-------------|
-| `npm start` | Start Vite dev server |
-| `npm run build` | Build library for production |
+| `npm start` | Start Vite dev server on port 4004 |
+| `npm run storybook` | Start Storybook dev server on port 6006 |
 | `npm run preview` | Preview production build locally |
-| `npm run type-check` | Run TypeScript type checking |
-| `npm run prettier:fix` | Format code with Prettier |
-| `npm test` | Run all tests |
-| `npm test:watch` | Run tests in watch mode |
-| `npm run storybook` | Start Storybook dev server |
-| `npm run build-storybook` | Build static Storybook |
+
+### Building
+
+| Command | Description |
+|---------|-------------|
+| `npm run build` | Build library for production (outputs to `dist/`) |
+| `npm run build-storybook` | Build static Storybook site |
+
+### Code Quality
+
+| Command | Description |
+|---------|-------------|
+| `npm run type-check` | Run TypeScript type checking without emitting files |
+| `npm run lint` | Check code for linting errors (ESLint) |
+| `npm run lint:fix` | Auto-fix linting errors where possible |
+| `npm run prettier:check` | Check if files are formatted correctly |
+| `npm run prettier:fix` | Auto-format code with Prettier |
+
+### Testing
+
+| Command | Description |
+|---------|-------------|
+| `npm test` | Run all unit tests with Jest |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:coverage` | Run tests with coverage report |
+| `npm run test:e2e` | Run Playwright end-to-end tests |
+| `npm run test:ct` | Run Playwright component tests |
 
 ## License
 
-[License information to be added]
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## Support
 

@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 
-import { Button, Tooltip, TooltipPosition } from "@patternfly/react-core";
-import { RedoIcon } from "@patternfly/react-icons/dist/esm/icons/redo-icon";
+import { Button, Tooltip, TooltipPosition } from '@patternfly/react-core';
+import { RedoIcon } from '@patternfly/react-icons/dist/esm/icons/redo-icon';
 
 type Props = {
   classOptions?: string;
@@ -46,7 +46,7 @@ const RefreshBtn = ({
 }: Props) => {
   const [shortTimerTries, setShortTimerTries] = React.useState(0);
   const [interValTime, setInterValTime] = React.useState(
-    useShortTimer ? shortTimerSeconds : longTimerSeconds,
+    useShortTimer ? shortTimerSeconds : longTimerSeconds
   );
 
   useInterval(() => {
@@ -65,7 +65,7 @@ const RefreshBtn = ({
     // "online" state check allows to avoid refreshes when the network is offline.
     if (
       autoRefresh &&
-      document.visibilityState === "visible" &&
+      document.visibilityState === 'visible' &&
       navigator.onLine &&
       !isDisabled &&
       refreshFunc

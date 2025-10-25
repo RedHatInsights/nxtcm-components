@@ -1,5 +1,5 @@
-import React from "react";
-import { Breadcrumb, BreadcrumbItem } from "@patternfly/react-core";
+import React from 'react';
+import { Breadcrumb, BreadcrumbItem } from '@patternfly/react-core';
 
 export type BreadcrumbItemShape = {
   /** Breadcrumb text label */
@@ -31,7 +31,7 @@ export const ConsoleBreadcrumbs = <T,>({
         label: getLabel(item),
         to: getTo(item),
       })),
-    [items, getLabel, getTo],
+    [items, getLabel, getTo]
   );
 
   if (normalizedItems.length === 0) {
@@ -52,11 +52,11 @@ export const ConsoleBreadcrumbs = <T,>({
         }
 
         let linkPath = item.to;
-        if (item.label === "Cluster List" && !linkPath) {
-          linkPath = "/cluster-list";
+        if (item.label === 'Cluster List' && !linkPath) {
+          linkPath = '/cluster-list';
         }
 
-        const finalPath = linkPath || "/overview";
+        const finalPath = linkPath || '/overview';
 
         return (
           <BreadcrumbItem
