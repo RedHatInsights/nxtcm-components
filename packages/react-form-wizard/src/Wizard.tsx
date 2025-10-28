@@ -15,6 +15,7 @@ import {
   WizardFooterWrapper,
   WizardStep,
   WizardStepProps,
+  WizardStepType,
 } from "@patternfly/react-core";
 import { ExclamationCircleIcon } from "@patternfly/react-icons";
 import { klona } from "klona/json";
@@ -76,6 +77,8 @@ export interface WizardProps {
   yamlEditor?: () => ReactNode;
   submitButtonText?: string;
   submittingButtonText?: string;
+  onStepChange?: (event: React.MouseEvent<HTMLButtonElement>, currentStep: WizardStepType) => void;
+  setUseWizardContext?: any;
 }
 
 export type WizardSubmit = (data: unknown) => Promise<void>;
@@ -123,6 +126,8 @@ export function Wizard(
                                 value={wizardStrings || defaultStrings}
                               >
                                 <WizardInternal
+                                setUseWizardContext={props.setUseWizardContext}
+                                  onStepChange={props.onStepChange}
                                   title={props.title}
                                   onSubmit={props.onSubmit}
                                   onCancel={props.onCancel}
@@ -165,6 +170,7 @@ type WizardFooterProps = {
   submitButtonText?: string;
   submittingButtonText?: string;
   steps: ReactElement[];
+  setUseWizardContext?: any;
 };
 
 type WizardInternalProps = Omit<WizardFooterProps, "steps"> & {
@@ -172,6 +178,8 @@ type WizardInternalProps = Omit<WizardFooterProps, "steps"> & {
   children: ReactNode;
   onCancel: WizardCancel;
   hasButtons?: boolean;
+  onStepChange?: (event: React.MouseEvent<HTMLButtonElement>, currentStep: WizardStepType) => void;
+  setUseWizardContext?: any;
 };
 
 function WizardInternal({
@@ -180,6 +188,8 @@ function WizardInternal({
   onCancel,
   submitButtonText,
   submittingButtonText,
+  onStepChange,
+  setUseWizardContext
 }: WizardInternalProps) {
   const { reviewLabel, stepsAriaLabel, contentAriaLabel } = useStringContext();
   const stepComponents = useMemo(
@@ -190,6 +200,7 @@ function WizardInternal({
     ),
     [children]
   );
+  console.log("children", children)
   const reviewStep: StepComponent = useMemo(
     () => ({
       id: "review-step",
@@ -279,7 +290,7 @@ function WizardInternal({
         expandableStepComponent: component.props?.steps,
       };
     });
-    steps.push(reviewStep);
+    //steps.push(reviewStep);
     return steps;
   }, [
     reviewStep,
@@ -294,8 +305,10 @@ function WizardInternal({
       <PFWizard
         navAriaLabel={`${stepsAriaLabel}`}
         aria-label={`${contentAriaLabel}`}
+        onStepChange={onStepChange}
         footer={
           <MyFooter
+            setUseWizardContext={setUseWizardContext}
             onSubmit={onSubmit}
             steps={stepComponents}
             submitButtonText={submitButtonText}
@@ -338,6 +351,14 @@ function MyFooter(props: WizardFooterProps) {
     goToPrevStep: onBack,
     close: onClose,
   } = useWizardContext();
+
+  const test = useWizardContext();
+
+  console.log("ACTIVESTEP", test)
+
+  useEffect(() => {
+    props.setUseWizardContext(test);
+  }, [props.setUseWizardContext])
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");

@@ -127,7 +127,7 @@ export function Radio(props: {
             isDisabled={radioGroupContext.disabled}
             readOnly={radioGroupContext.readonly}
             name={radioGroupContext.radioGroup ?? ""}
-
+            description={props.description}
           />
         </FlexItem>
         <FlexItem>

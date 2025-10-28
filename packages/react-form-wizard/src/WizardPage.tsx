@@ -5,6 +5,7 @@ import {
   Switch,
   Content,
   Title,
+  WizardStepType,
 } from "@patternfly/react-core";
 import { ReactNode, useCallback, useState } from "react";
 import { WizardYamlEditor } from "./components/YamlEditor";
@@ -14,6 +15,8 @@ export type WizardPageProps = {
   breadcrumb?: { label: string; to?: string }[];
   yaml?: boolean;
   yamlEditor?: () => ReactNode;
+  onStepChange?: (event: React.MouseEvent<HTMLButtonElement>, currentStep: WizardStepType) => void;
+  setUseWizardContext?: any;
 } & WizardProps;
 
 function getWizardYamlEditor() {
@@ -59,6 +62,8 @@ export function WizardPage(props: WizardPageProps) {
         showHeader={false}
         showYaml={drawerExpanded}
         yamlEditor={yamlEditor}
+        setUseWizardContext={props.setUseWizardContext}
+        onStepChange={props.onStepChange}
       >
         {props.children}
       </Wizard>

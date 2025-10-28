@@ -25,20 +25,20 @@ import {
 
 export const NetworkingAndSubnetsSubStep = (props: any) => {
   const { value } = useInput(props);
-  const { metadata } = value;
+  const { cluster } = value;
 
   return (
     <>
       <Section label="Networking" id="networking-section" key="networking-section-key">
         <WizRadioGroup
           id="public-private-subnet-radio-group"
-          path="metadata.public-private-subnet"
+          path="cluster.cluster_privacy"
           label="Install your cluster with all public or private API endpoints and application routes."
         >
           <Radio
             id="public"
             label="Public"
-            value="public"
+            value="external"
             popover={
               <LabelHelp
                 id="subnet-label-help"
@@ -48,7 +48,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
           >
             <WizSelect
               label="Public subnet name"
-              path="metadata.public-private-subnet.public-subnet"
+              path="cluster.cluster_privacy_public_subnet_id"
               options={props.publicSubnets}
               placeholder="Select public subnet name"
             />
@@ -57,7 +57,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
           <Radio
             id="private"
             label="Private"
-            value="private"
+            value="internal"
             popover={
               <LabelHelp
                 id="subnet-label-help"
@@ -78,9 +78,9 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
         </Content>
 
         <WizSelect
-          label="Select a VPC to install your machine pools into your selected regions: {HERE GOES REGION} "
-          path="metadata.selected-vpc"
-          placeholder="Select a VPC to instaall your machine pools into"
+          label={`Select a VPC to install your machine pools into your selected regions: ${cluster?.region}`}
+          path="cluster.selected_vpc"
+          placeholder="Select a VPC to install your machine pools into"
           required
           labelHelp="To create a cluster hosted by Red Hat, you must have a Virtual Private Cloud (VPC) available to create clusters on. {HERE GOES THE LINK: Learn more about VPCs}"
           options={props.vpcList}
@@ -88,7 +88,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
 
         <WizSelect
           label="Compute node instance type"
-          path="metadata.node-instance-type"
+          path="cluster.machine_type"
           required
           labelHelp="Instance types are made from varying combinations of CPU, memory, storage, and networking capacity. Instance type availability depends on regional availability and your AWS account configuration. {HERE GOES THE LINK: Learn more }"
           options={props.vpcList}
@@ -96,17 +96,17 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
         <WizCheckbox
           title="Autoscaling"
           helperText="Autoscaling automatically adds and removes nodes from the machine pool based on resource requirements. {HERE GOES LINK: Learn more about autscaling with ROSA.}"
-          path="metadata.autoscaling"
+          path="cluster.autoscaling"
           label="Enable autoscaling"
           required
         />
         {
-          metadata?.autoscaling ? (
+          cluster?.autoscaling ? (
             <Flex>
               <FlexItem>
                 <WizNumberInput
                   required
-                  path="metadata.compute-min-node-count"
+                  path="cluster.min_replicas"
                   label="Min compute node count"
                   labelHelp="The number of compute nodes to provision for your initial machine pool. {HERE GOES LINK: Learn more about compute node count}."
                 />
@@ -114,7 +114,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
               <FlexItem>
                 <WizNumberInput
                   required
-                  path="metadata.compute-max-node-count"
+                  path="cluster.max_replicas"
                   label="Max compute node count"
                   labelHelp="The number of compute nodes to provision for your initial machine pool. {HERE GOES LINK: Learn more about compute node count}."
                 />
@@ -124,7 +124,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
           ) : (
             <WizNumberInput
               required
-              path="metadata.compute-node-count"
+              path="cluster.nodes_compute"
               label="Compute node count"
               labelHelp="The number of compute nodes to provision for your initial machine pool. {HERE GOES LINK: Learn more about compute node count}."
             />
@@ -133,7 +133,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
 
 
         <WizArrayInput
-          path="metadata.machine-pools"
+          path="cluster.machine_pools_subnets"
           label="Machine pools"
           placeholder="Add machine pool"
           collapsedContent={<WizTextDetail path="name" placeholder="Expand to edit the machine pool details" />}
@@ -144,7 +144,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
               <Content component={ContentVariants.p}>Machine pool 1</Content>
             </FlexItem>
             <FlexItem>
-              <WizSelect path="metadata.machine-pool-private-subnet" label="Private subnet name" options={['default']} />
+              <WizSelect path="machine_pool_subnet" label="Private subnet name" options={['default']} />
             </FlexItem>
           </Flex>
         </WizArrayInput>

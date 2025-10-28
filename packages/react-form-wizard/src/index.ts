@@ -30,6 +30,7 @@ export * from "./inputs/WizTextInput";
 export * from "./inputs/WizTiles";
 export * from "./inputs/WizTimeRange";
 export * from "./inputs/WizCardGroup";
+export * from "./inputs/WizFileUpload";
 export * from "./Section";
 export * from "./Step";
 export * from "./Sync";

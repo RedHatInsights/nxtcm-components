@@ -9,6 +9,10 @@ import {
 import { ClusterUpdatesSubstep, NetworkingOptionalSubstep, EncryptionSubstep } from "./Steps/AdditionalSetupStep";
 import { DetailsSubStep, NetworkingAndSubnetsSubStep, RolesAndPoliciesSubStep } from "./Steps/BasicSetupStep";
 import { InputCommonProps, useInput } from "@patternfly-labs/react-form-wizard/inputs/Input";
+import React from "react";
+import { ClusterWideProxySubstep } from "./Steps/AdditionalSetupStep/ClusterWideProxySubstep/ClusterWideProxySubstep";
+import { ReviewStepData } from "./Steps/ReviewStepData";
+import { WizardStepType } from "@patternfly/react-core";
 
 export type BasicSetupStepProps = {
   openShiftVersions: any;
@@ -33,13 +37,21 @@ type RosaWizardProps = InputCommonProps & {
 
 export const RosaWizard = (props: any) => {
   const {onSubmit, onCancel, title, wizardsStepsData} = props;
-
+  const [isClusterWideProxySelected, setIsClusterWideProxySelected] = React.useState<boolean>(false);
+  const [currentStep, setCurrentStep] = React.useState<WizardStepType>();
+  const onStepChange = (_event: React.MouseEvent<HTMLButtonElement>, currentStep: WizardStepType) =>
+    setCurrentStep(currentStep);
+  const [getUseWizardContext, setUseWizardContext] = React.useState();
+  
+  console.log("CURRENT STEP", getUseWizardContext)
   return (
     <WizardPage
       onSubmit={onSubmit}
       onCancel={() => onCancel()}
       title={title}
       defaultData={{}}
+      setUseWizardContext={setUseWizardContext}
+      onStepChange={onStepChange}
     >
       <ExpandableStep
         id="basic-setup-step-id-expandable-section"
@@ -100,13 +112,22 @@ export const RosaWizard = (props: any) => {
             <EncryptionSubstep />
           </Step>,
           <Step id="additional-setup-networking" key="additional-setup-networking-key" label="Networking (optional)">
-            <NetworkingOptionalSubstep />
+            <NetworkingOptionalSubstep setIsClusterWideProxySelected={setIsClusterWideProxySelected}/>
           </Step>,
+          ...(isClusterWideProxySelected ? [
+             <Step id="additional-setup-cluster-wide-proxy" key="additional-setup-cluster-wide-proxy-key" label="Cluster-wide proxy">
+            <ClusterWideProxySubstep />
+          </Step>
+          ] : []),
           <Step id="additional-setup-cluster-updates" key="additional-setup-cluster-updates-key" label="Cluster updates (optional)">
             <ClusterUpdatesSubstep />
           </Step>
         ]}
       />
+
+      <Step label={"Review"} id={"review-step-id"}>
+        <ReviewStepData goToStepId={getUseWizardContext}/>
+      </Step>
 
     </WizardPage>
   );
