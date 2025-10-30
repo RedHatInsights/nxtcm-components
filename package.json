@@ -4,7 +4,7 @@
   "description": "Shared React component library for Red Hat Insights ACM and OCM projects built with PatternFly",
   "main": "dist/index.umd.js",
   "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "files": [
     "dist",
     "README.md",
