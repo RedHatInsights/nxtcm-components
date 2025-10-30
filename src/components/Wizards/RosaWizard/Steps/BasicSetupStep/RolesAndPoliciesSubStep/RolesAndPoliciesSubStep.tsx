@@ -39,7 +39,6 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<
           placeholder="Select an Installer role"
           labelHelp="An AWS IAM role used by the ROSA installer {SHOULD BE LINK HERE}"
           options={installerRoles}
-          hasRefreshButton
           required
         />
         <ExpandableSection
