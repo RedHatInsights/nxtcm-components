@@ -1,6 +1,6 @@
 import { Radio, Section, WizCheckbox, WizRadioGroup, WizTextInput } from "@patternfly-labs/react-form-wizard"
 import { useInput } from "@patternfly-labs/react-form-wizard/inputs/Input"
-import { Alert, Content, ContentVariants, Flex, FlexItem } from "@patternfly/react-core"
+import { Alert, Flex, FlexItem } from "@patternfly/react-core"
 
 
 export const EncryptionSubstep = (props: any) => {

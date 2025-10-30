@@ -1,4 +1,4 @@
-import { Section, WizRadioGroup, Radio, WizSelect } from "@patternfly-labs/react-form-wizard"
+import { Section, WizRadioGroup, Radio } from "@patternfly-labs/react-form-wizard"
 import { Content, ContentVariants } from "@patternfly/react-core"
 
 

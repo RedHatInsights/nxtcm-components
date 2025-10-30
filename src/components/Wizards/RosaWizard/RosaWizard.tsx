@@ -1,27 +1,30 @@
 import {
   ExpandableStep,
   Step,
-  useItem,
   WizardCancel,
   WizardPage,
   WizardSubmit,
 } from "@patternfly-labs/react-form-wizard";
 import { ClusterUpdatesSubstep, NetworkingOptionalSubstep, EncryptionSubstep } from "./Steps/AdditionalSetupStep";
 import { DetailsSubStep, NetworkingAndSubnetsSubStep, RolesAndPoliciesSubStep } from "./Steps/BasicSetupStep";
-import { InputCommonProps, useInput } from "@patternfly-labs/react-form-wizard/inputs/Input";
+import { InputCommonProps } from "@patternfly-labs/react-form-wizard/inputs/Input";
 import React from "react";
 import { ClusterWideProxySubstep } from "./Steps/AdditionalSetupStep/ClusterWideProxySubstep/ClusterWideProxySubstep";
 import { ReviewStepData } from "./Steps/ReviewStepData";
 import { WizardStepType } from "@patternfly/react-core";
+import { MachineTypesDropdownType, OIDCConfig, Roles, SelectDropdownType, VPC } from "../types";
 
 export type BasicSetupStepProps = {
-  openShiftVersions: any;
-  awsInfrastructureAccounts: any;
-  awsBillingAccounts: any;
-  publicSubnets: any;
-  privateSubnets: any;
-  vpcList: any;
-  region: any;
+  openShiftVersions: SelectDropdownType[];
+  awsInfrastructureAccounts: SelectDropdownType[];
+  awsBillingAccounts: SelectDropdownType[];
+  publicSubnets: SelectDropdownType[];
+  privateSubnets: SelectDropdownType[];
+  vpcList: VPC[];
+  regions: SelectDropdownType[];
+  roles: Roles;
+  oicdConfig: OIDCConfig[];
+  machineTypes: MachineTypesDropdownType[];
 };
 
 type WizardStepsData = {
@@ -43,7 +46,6 @@ export const RosaWizard = (props: any) => {
     setCurrentStep(currentStep);
   const [getUseWizardContext, setUseWizardContext] = React.useState();
   
-  console.log("CURRENT STEP", getUseWizardContext)
   return (
     <WizardPage
       onSubmit={onSubmit}
@@ -74,6 +76,9 @@ export const RosaWizard = (props: any) => {
               awsBillingAccounts={
                 wizardsStepsData.basicSetupStep.awsBillingAccounts
               }
+              regions={
+                wizardsStepsData.basicSetupStep.regions
+              }
             />
           </Step>,
           <Step
@@ -83,10 +88,11 @@ export const RosaWizard = (props: any) => {
           >
             <RolesAndPoliciesSubStep
               installerRoles={
-                wizardsStepsData.basicSetupStep.awsBillingAccounts
+                wizardsStepsData.basicSetupStep.roles.installerRoles
               }
-              supportRoles={wizardsStepsData.basicSetupStep.awsBillingAccounts}
-              workerRoles={wizardsStepsData.basicSetupStep.awsBillingAccounts}
+              supportRoles={wizardsStepsData.basicSetupStep.roles.supportRoles}
+              workerRoles={wizardsStepsData.basicSetupStep.roles.workerRoles}
+              oicdConfig={wizardsStepsData.basicSetupStep.oicdConfig}
             />
           </Step>,
           <Step
@@ -95,6 +101,7 @@ export const RosaWizard = (props: any) => {
             key="networking-sub-step-key"
           >
             <NetworkingAndSubnetsSubStep
+              machineTypes={wizardsStepsData.basicSetupStep.machineTypes}
               vpcList={wizardsStepsData.basicSetupStep.vpcList}
               publicSubnets={wizardsStepsData.basicSetupStep.publicSubnets}
               privateSubnets={wizardsStepsData.basicSetupStep.privateSubnets}

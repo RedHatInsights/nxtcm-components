@@ -1,23 +1,25 @@
 import {
   Section,
-  Step,
   WizSelect,
   WizTextInput,
 } from "@patternfly-labs/react-form-wizard";
-import { Button, Content, ContentVariants, Drawer, DrawerActions, DrawerCloseButton, DrawerContent, DrawerHead, DrawerPanelContent, Stack, StackItem, useWizardContext } from "@patternfly/react-core";
+import { Button, Stack, StackItem, useWizardContext } from "@patternfly/react-core";
 import React from "react";
 import { StepDrawer } from "../../../common/StepDrawer";
+import { SelectDropdownType } from "../../../../types";
 
 type DetailsSubStepProps = {
-  openShiftVersions: any;
-  awsInfrastructureAccounts: any;
-  awsBillingAccounts: any;
+  openShiftVersions: SelectDropdownType[];
+  awsInfrastructureAccounts: SelectDropdownType[];
+  awsBillingAccounts: SelectDropdownType[];
+  regions: SelectDropdownType[];
 };
 
 export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   openShiftVersions,
   awsInfrastructureAccounts,
   awsBillingAccounts,
+  regions
 }) => {
 
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false)
@@ -42,7 +44,6 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
 
           <StackItem>
             <WizSelect
-            style={{width: "50%"}}
               path="cluster.cluster_version"
               label="OpenShift version"
               placeholder="Select an OpenShift version"
@@ -87,7 +88,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
               label="Region"
               placeholder="Select a region"
               labelHelp="The AWS Region where your compute nodes and control plane will be located. (should be link: Learn more abut AWS Regions.)"
-              options={openShiftVersions}
+              options={regions}
               required
             />
           </StackItem>

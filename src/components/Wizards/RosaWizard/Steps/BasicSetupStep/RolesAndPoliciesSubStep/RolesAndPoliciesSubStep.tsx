@@ -9,26 +9,26 @@ import {
   ExpandableSection,
   Stack,
   StackItem,
-  useWizardContext,
 } from "@patternfly/react-core";
 import React from "react";
 import PopoverHintWithTitle from "../../../common/PopoverHitWithTitle";
 import { OIDCConfigHint } from "../../../common/OIDCConfigHint";
+import { OIDCConfig, SelectDropdownType } from "../../../../types";
 
 type RolesAndPoliciesSubStep = {
-  installerRoles: any;
-  supportRoles: any;
-  workerRoles: any;
+  installerRoles: SelectDropdownType[];
+  supportRoles: SelectDropdownType[];
+  workerRoles: SelectDropdownType[];
+  oicdConfig: OIDCConfig[];
 };
 
 export const RolesAndPoliciesSubStep: React.FunctionComponent<
   RolesAndPoliciesSubStep
-> = ({ installerRoles, supportRoles, workerRoles }) => {
+> = ({ installerRoles, supportRoles, workerRoles, oicdConfig }) => {
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] =
     React.useState<boolean>(true);
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
-
-   const {cluster} = useItem();
+  const { cluster } = useItem();
 
   return (
     <>
@@ -39,6 +39,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<
           placeholder="Select an Installer role"
           labelHelp="An AWS IAM role used by the ROSA installer {SHOULD BE LINK HERE}"
           options={installerRoles}
+          hasRefreshButton
           required
         />
         <ExpandableSection
@@ -67,14 +68,23 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<
       <Section label="Operator roles">
         <Stack>
           <StackItem>
-        <WizSelect path="cluster.byo_oidc_config_id" label="OIDC config ID" required placeholder="Selec an OIDC config ID" labelHelp="The OIDC configuration ID created by running the command: rosa create oidc-config"/>
 
+            <WizSelect path="cluster.byo_oidc_config_id" label="OIDC config ID"
+              required placeholder="Selec an OIDC config ID" labelHelp="The OIDC configuration ID created by running the command: rosa create oidc-config"
+              options={oicdConfig.map((config) => {
+                return ({
+                  label: config.label,
+                  value: config.value,
+                  description: config.issuer_url
+                })
+              })}
+            />
           </StackItem>
           <StackItem>
-            <PopoverHintWithTitle displayHintIcon title="Create a new OIDC config id" bodyContent={<OIDCConfigHint />}/>
+            <PopoverHintWithTitle displayHintIcon title="Create a new OIDC config id" bodyContent={<OIDCConfigHint />} />
           </StackItem>
         </Stack>
-        
+
         <ExpandableSection
           isExpanded={isOperatorRolesOpen}
           onToggle={() => setIsOperatorRolesOpen(!isOperatorRolesOpen)}
@@ -88,13 +98,13 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<
             required
           />
           <ClipboardCopy
-          variant="expansion"
-          copyAriaLabel="Copy read-only example" isReadOnly hoverTip="Copy" clickTip="Copied" style={{marginTop: "1rem"}}>
+            variant="expansion"
+            copyAriaLabel="Copy read-only example" isReadOnly hoverTip="Copy" clickTip="Copied" style={{ marginTop: "1rem" }}>
             rosa create operator-roles --prefix "{cluster?.custom_operator_roles_prefix}" --oidc-config-id "{cluster?.byo_oidc_config_id}" --hosted-cp --installer-role-arn {cluster?.installer_role_arn}
           </ClipboardCopy>
         </ExpandableSection>
       </Section>
-      
+
     </>
   );
 };

@@ -1,5 +1,4 @@
-import { Section } from "@patternfly-labs/react-form-wizard"
-import { Content, ContentVariants, ExpandableSection, Title } from "@patternfly/react-core"
+import { ExpandableSection, Title } from "@patternfly/react-core"
 import React from "react";
 
 

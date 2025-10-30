@@ -1,6 +1,7 @@
 import {
   Radio,
   Section,
+  useData,
   WizArrayInput,
   WizCheckbox,
   WizNumberInput,
@@ -9,23 +10,38 @@ import {
   WizTextDetail,
 } from "@patternfly-labs/react-form-wizard";
 import { LabelHelp } from "@patternfly-labs/react-form-wizard/components/LabelHelp";
-import { InputCommonProps, useInput } from "@patternfly-labs/react-form-wizard/inputs/Input";
+import { useInput } from "@patternfly-labs/react-form-wizard/inputs/Input";
 import {
   Content,
   ContentVariants,
   Flex,
   FlexItem,
 } from "@patternfly/react-core";
-
-// type NetworkingAndSubnetsSubStepProps = InputCommonProps & {
-//   publicSubnets: any;
-//   privateSubnets: any;
-//   vpcList: any;
-// };
+import { Subnet, VPC } from "../../../../types";
+import React from "react";
 
 export const NetworkingAndSubnetsSubStep = (props: any) => {
   const { value } = useInput(props);
+  const { update } = useData();
   const { cluster } = value;
+
+  const selectedVPC = props.vpcList.find((vpc: VPC) => vpc.id === cluster?.selected_vpc);
+
+  const privateSubnets = selectedVPC?.aws_subnets.filter((privateSubnet: Subnet) => privateSubnet.name.includes('private'));
+  const publicSubnets = selectedVPC?.aws_subnets.filter((publicSubnet: Subnet) => publicSubnet.name.includes('public'));
+
+  // Resets cluster_privacy_public_subnet_id when user selects private
+  React.useEffect(() => {
+  if (cluster?.cluster_privacy === 'internal') {
+    update({
+       
+        cluster: {
+          ...cluster,
+          cluster_privacy_public_subnet_id: ""
+        }
+    })
+    }
+  }, [cluster?.cluster_privacy])
 
   return (
     <>
@@ -49,7 +65,12 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
             <WizSelect
               label="Public subnet name"
               path="cluster.cluster_privacy_public_subnet_id"
-              options={props.publicSubnets}
+              options={publicSubnets?.map((subnet: Subnet) => {
+                return({
+                  label: subnet.name,
+                  value: subnet.subnet_id
+                })
+              })}
               placeholder="Select public subnet name"
             />
           </Radio>
@@ -64,6 +85,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
                 labelHelp="Access Kubernetes API endpoint and application routes from direct private connections only."
               />
             }
+            
           >
           </Radio>
         </WizRadioGroup>
@@ -83,7 +105,12 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
           placeholder="Select a VPC to install your machine pools into"
           required
           labelHelp="To create a cluster hosted by Red Hat, you must have a Virtual Private Cloud (VPC) available to create clusters on. {HERE GOES THE LINK: Learn more about VPCs}"
-          options={props.vpcList}
+          options={props.vpcList.map((vpc: any) => {
+            return ({
+              label: vpc.name,
+              value: vpc.id
+            })
+          })}
         />
 
         <WizSelect
@@ -91,14 +118,13 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
           path="cluster.machine_type"
           required
           labelHelp="Instance types are made from varying combinations of CPU, memory, storage, and networking capacity. Instance type availability depends on regional availability and your AWS account configuration. {HERE GOES THE LINK: Learn more }"
-          options={props.vpcList}
+          options={props.machineTypes}
         />
         <WizCheckbox
           title="Autoscaling"
           helperText="Autoscaling automatically adds and removes nodes from the machine pool based on resource requirements. {HERE GOES LINK: Learn more about autscaling with ROSA.}"
           path="cluster.autoscaling"
           label="Enable autoscaling"
-          required
         />
         {
           cluster?.autoscaling ? (
@@ -141,10 +167,15 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
           <Flex>
             <FlexItem>
               <Content component={ContentVariants.p} style={{ fontWeight: '500' }}>Machine Pool</Content>
-              <Content component={ContentVariants.p}>Machine pool 1</Content>
+              <Content component={ContentVariants.p}>Machine pool: </Content>
             </FlexItem>
             <FlexItem>
-              <WizSelect path="machine_pool_subnet" label="Private subnet name" options={['default']} />
+              <WizSelect path="machine_pool_subnet" label="Private subnet name" options={privateSubnets?.map((subnet: Subnet) => {
+                return({
+                  label: subnet.name,
+                  value: subnet.subnet_id
+                })
+              })} />
             </FlexItem>
           </Flex>
         </WizArrayInput>

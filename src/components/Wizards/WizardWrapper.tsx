@@ -14,24 +14,18 @@ interface BaseProductProps {
 
 type WizardWrapperProps<T extends BaseProductProps> = {
   product: T;
+  wizardsStepsData: T;
 };
 
-export const WizardWrapper = <T extends BaseProductProps>({ product }: WizardWrapperProps<T>) => {
+export const WizardWrapper = <T extends BaseProductProps>({
+  product,
+  wizardsStepsData
+}: WizardWrapperProps<T>) => {
   switch (product.type) {
     case ProductName.RosaClassic:
       return (
         <RosaWizard
-          wizardsStepsData={{
-            basicSetupStep: {
-              openShiftVersions: [],
-              awsInfrastructureAccounts: [],
-              awsBillingAccounts: [],
-              region: [],
-              publicSubnets: [],
-              privateSubnets: [],
-              vpcList: [],
-            },
-          }}
+          wizardsStepsData={wizardsStepsData}
           onSubmit={product.onSubmit}
           onCancel={product.onCancel}
           title={product.title}
@@ -39,5 +33,3 @@ export const WizardWrapper = <T extends BaseProductProps>({ product }: WizardWra
       );
   }
 };
-
-export default WizardWrapper;

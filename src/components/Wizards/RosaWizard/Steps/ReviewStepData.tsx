@@ -1,14 +1,12 @@
 import React from 'react';
-import { Section, useItem, WizCheckbox, WizTextInput } from "@patternfly-labs/react-form-wizard"
-import { Alert, Button, ExpandableSection, Flex, FlexItem, Split, SplitItem, Stack, StackItem, useWizardContext } from "@patternfly/react-core";
+import { Section, useItem, WizCheckbox } from "@patternfly-labs/react-form-wizard"
+import { Alert, Button, ExpandableSection, Flex, FlexItem, Split, SplitItem, Stack, StackItem } from "@patternfly/react-core";
 import { LockIcon } from '@patternfly/react-icons';
 import { ReviewAndCreateStepItem } from './ReviewAndCreateStep/ReviewAndCreateStepItem';
 import { MachinePoolsReviewAndCreateStepItem } from './ReviewAndCreateStep/MachinePoolsReviewAndCreateStepItem';
 
 export const ReviewStepData = (props: any) => {
     const { cluster } = useItem();
-
-
 
     const [isDetailsSectionExpanded, setIsDetailsSectionExpanded] = React.useState<boolean>(true);
     const [isRolesAndPoliciesExpanded, setIsRolesAndPoliciesExpanded] = React.useState<boolean>(true);
@@ -202,30 +200,31 @@ export const ReviewStepData = (props: any) => {
                 <SplitItem isFilled>
                     <ExpandableSection
                         isWidthLimited
+                        isIndented
                         isExpanded={isOptionalNetworkingExpanded}
                         onToggle={() => setIsOptionalNetworkingExpanded(!isOptionalNetworkingExpanded)}
                         toggleText="Networking (optional)"
                     >
                         <Stack hasGutter>
-                               <ReviewAndCreateStepItem
+                            <ReviewAndCreateStepItem
                                 label="Machine CIDR"
                                 value={cluster?.network_machine_cidr}
                                 hasIcon
                             />
 
-                               <ReviewAndCreateStepItem
+                            <ReviewAndCreateStepItem
                                 label="Service CIDR"
                                 value={cluster?.network_service_cidr}
                                 hasIcon
                             />
 
-                               <ReviewAndCreateStepItem
+                            <ReviewAndCreateStepItem
                                 label="Pod CIDR"
                                 value={cluster?.network_pod_cidr}
                                 hasIcon
                             />
 
-                               <ReviewAndCreateStepItem
+                            <ReviewAndCreateStepItem
                                 label="Host prefix"
                                 value={cluster?.network_host_prefix}
                                 hasIcon
@@ -241,21 +240,22 @@ export const ReviewStepData = (props: any) => {
             <Split>
                 <SplitItem isFilled>
                     <ExpandableSection
+                        isWidthLimited
+                        isIndented
                         isExpanded={isOptionalClusterUpgradesExpanded}
                         onToggle={() => setIsOptionalClusterUpgradesExpanded(!isOptionalClusterUpgradesExpanded)}
                         toggleText="Cluster updates (optional)"
                     >
                         <Stack hasGutter>
-                             <ReviewAndCreateStepItem
+                            <ReviewAndCreateStepItem
                                 label="Cluster update stratedy"
                                 value={cluster?.upgrade_policy === "manual" ? "Individual updates" : "Automatic updates"}
                                 hasIcon
                             />
                         </Stack>
-                        <span style={{display: "none"}}>
- <WizCheckbox path={""} />
+                        <span style={{ display: "none" }}>
+                            <WizCheckbox path={""} />
                         </span>
-                       
                     </ExpandableSection>
                 </SplitItem>
                 <SplitItem>

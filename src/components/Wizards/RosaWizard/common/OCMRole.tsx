@@ -1,4 +1,4 @@
-import { Alert, AlertVariant, ClipboardCopy, clipboardCopyFunc, Content, ContentVariants, Title } from "@patternfly/react-core"
+import { Alert, AlertVariant, Content, ContentVariants, Title } from "@patternfly/react-core"
 import { CopyInstruction } from "./CopyInstruction"
 import { TabGroup } from "./TabGroup"
 import PopoverHintWithTitle from "./PopoverHitWithTitle"
