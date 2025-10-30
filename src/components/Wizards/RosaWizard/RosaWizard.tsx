@@ -11,8 +11,8 @@ import { InputCommonProps } from "@patternfly-labs/react-form-wizard/inputs/Inpu
 import React from "react";
 import { ClusterWideProxySubstep } from "./Steps/AdditionalSetupStep/ClusterWideProxySubstep/ClusterWideProxySubstep";
 import { ReviewStepData } from "./Steps/ReviewStepData";
-import { WizardStepType } from "@patternfly/react-core";
 import { MachineTypesDropdownType, OIDCConfig, Roles, SelectDropdownType, VPC } from "../types";
+import { WizardStepType } from "@patternfly/react-core";
 
 export type BasicSetupStepProps = {
   openShiftVersions: SelectDropdownType[];
