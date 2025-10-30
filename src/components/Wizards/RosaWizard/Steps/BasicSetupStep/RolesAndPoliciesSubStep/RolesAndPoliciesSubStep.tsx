@@ -1,19 +1,9 @@
-import {
-  Section,
-  useItem,
-  WizSelect,
-  WizTextInput,
-} from "@patternfly-labs/react-form-wizard";
-import {
-  ClipboardCopy,
-  ExpandableSection,
-  Stack,
-  StackItem,
-} from "@patternfly/react-core";
-import React from "react";
-import PopoverHintWithTitle from "../../../common/PopoverHitWithTitle";
-import { OIDCConfigHint } from "../../../common/OIDCConfigHint";
-import { OIDCConfig, SelectDropdownType } from "../../../../types";
+import { Section, useItem, WizSelect, WizTextInput } from '@patternfly-labs/react-form-wizard';
+import { ClipboardCopy, ExpandableSection, Stack, StackItem } from '@patternfly/react-core';
+import React from 'react';
+import PopoverHintWithTitle from '../../../common/PopoverHitWithTitle';
+import { OIDCConfigHint } from '../../../common/OIDCConfigHint';
+import { OIDCConfig, SelectDropdownType } from '../../../../types';
 
 type RolesAndPoliciesSubStep = {
   installerRoles: SelectDropdownType[];
@@ -22,11 +12,13 @@ type RolesAndPoliciesSubStep = {
   oicdConfig: OIDCConfig[];
 };
 
-export const RolesAndPoliciesSubStep: React.FunctionComponent<
-  RolesAndPoliciesSubStep
-> = ({ installerRoles, supportRoles, workerRoles, oicdConfig }) => {
-  const [isOperatorRolesOpen, setIsOperatorRolesOpen] =
-    React.useState<boolean>(true);
+export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSubStep> = ({
+  installerRoles,
+  supportRoles,
+  workerRoles,
+  oicdConfig,
+}) => {
+  const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
   const { cluster } = useItem();
 
@@ -67,20 +59,27 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<
       <Section label="Operator roles">
         <Stack>
           <StackItem>
-
-            <WizSelect path="cluster.byo_oidc_config_id" label="OIDC config ID"
-              required placeholder="Selec an OIDC config ID" labelHelp="The OIDC configuration ID created by running the command: rosa create oidc-config"
+            <WizSelect
+              path="cluster.byo_oidc_config_id"
+              label="OIDC config ID"
+              required
+              placeholder="Selec an OIDC config ID"
+              labelHelp="The OIDC configuration ID created by running the command: rosa create oidc-config"
               options={oicdConfig.map((config) => {
-                return ({
+                return {
                   label: config.label,
                   value: config.value,
-                  description: config.issuer_url
-                })
+                  description: config.issuer_url,
+                };
               })}
             />
           </StackItem>
           <StackItem>
-            <PopoverHintWithTitle displayHintIcon title="Create a new OIDC config id" bodyContent={<OIDCConfigHint />} />
+            <PopoverHintWithTitle
+              displayHintIcon
+              title="Create a new OIDC config id"
+              bodyContent={<OIDCConfigHint />}
+            />
           </StackItem>
         </Stack>
 
@@ -98,12 +97,18 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<
           />
           <ClipboardCopy
             variant="expansion"
-            copyAriaLabel="Copy read-only example" isReadOnly hoverTip="Copy" clickTip="Copied" style={{ marginTop: "1rem" }}>
-            rosa create operator-roles --prefix "{cluster?.custom_operator_roles_prefix}" --oidc-config-id "{cluster?.byo_oidc_config_id}" --hosted-cp --installer-role-arn {cluster?.installer_role_arn}
+            copyAriaLabel="Copy read-only example"
+            isReadOnly
+            hoverTip="Copy"
+            clickTip="Copied"
+            style={{ marginTop: '1rem' }}
+          >
+            rosa create operator-roles --prefix "{cluster?.custom_operator_roles_prefix}"
+            --oidc-config-id "{cluster?.byo_oidc_config_id}" --hosted-cp --installer-role-arn{' '}
+            {cluster?.installer_role_arn}
           </ClipboardCopy>
         </ExpandableSection>
       </Section>
-
     </>
   );
 };

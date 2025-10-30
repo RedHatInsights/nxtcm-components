@@ -1,12 +1,8 @@
-import {
-  Section,
-  WizSelect,
-  WizTextInput,
-} from "@patternfly-labs/react-form-wizard";
-import { Button, Stack, StackItem, useWizardContext } from "@patternfly/react-core";
-import React from "react";
-import { StepDrawer } from "../../../common/StepDrawer";
-import { SelectDropdownType } from "../../../../types";
+import { Section, WizSelect, WizTextInput } from '@patternfly-labs/react-form-wizard';
+import { Button, Stack, StackItem, useWizardContext } from '@patternfly/react-core';
+import React from 'react';
+import { StepDrawer } from '../../../common/StepDrawer';
+import { SelectDropdownType } from '../../../../types';
 
 type DetailsSubStepProps = {
   openShiftVersions: SelectDropdownType[];
@@ -19,10 +15,9 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   openShiftVersions,
   awsInfrastructureAccounts,
   awsBillingAccounts,
-  regions
+  regions,
 }) => {
-
-  const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false)
+  const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const { activeStep } = useWizardContext();
   const drawerRef = React.useRef<HTMLSpanElement>(null);
 
@@ -30,7 +25,11 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
 
   return (
     <Section label="Details">
-      <StepDrawer isDrawerExpanded={isDrawerExpanded} setIsDrawerExpanded={setIsDrawerExpanded} onWizardExpand={onWizardExpand}>
+      <StepDrawer
+        isDrawerExpanded={isDrawerExpanded}
+        setIsDrawerExpanded={setIsDrawerExpanded}
+        onWizardExpand={onWizardExpand}
+      >
         <Stack hasGutter>
           <StackItem>
             <WizTextInput
@@ -62,7 +61,11 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
               required
             />
             {!isDrawerExpanded && (
-              <Button isInline variant="link" onClick={() => setIsDrawerExpanded((prevExpanded) => !prevExpanded)}>
+              <Button
+                isInline
+                variant="link"
+                onClick={() => setIsDrawerExpanded((prevExpanded) => !prevExpanded)}
+              >
                 Associate a new AWS account
               </Button>
             )}
@@ -97,7 +100,3 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
     </Section>
   );
 };
-
-
-
-

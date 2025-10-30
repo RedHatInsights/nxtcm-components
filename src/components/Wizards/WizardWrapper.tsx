@@ -19,7 +19,7 @@ type WizardWrapperProps<T extends BaseProductProps> = {
 
 export const WizardWrapper = <T extends BaseProductProps>({
   product,
-  wizardsStepsData
+  wizardsStepsData,
 }: WizardWrapperProps<T>) => {
   switch (product.type) {
     case ProductName.RosaClassic:

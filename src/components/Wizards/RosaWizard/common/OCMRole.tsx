@@ -1,21 +1,18 @@
-import { Alert, AlertVariant, Content, ContentVariants, Title } from "@patternfly/react-core"
-import { CopyInstruction } from "./CopyInstruction"
-import { TabGroup } from "./TabGroup"
-import PopoverHintWithTitle from "./PopoverHitWithTitle"
-
+import { Alert, AlertVariant, Content, ContentVariants, Title } from '@patternfly/react-core';
+import { CopyInstruction } from './CopyInstruction';
+import { TabGroup } from './TabGroup';
+import PopoverHintWithTitle from './PopoverHitWithTitle';
 
 export const OCMRole = (props: any) => {
-    return (
-        <>
-            <Title headingLevel="h3" className="pf-v6-u-mb-md" size="md">
-                First, check if a role exists and is linked with:
-            </Title>
+  return (
+    <>
+      <Title headingLevel="h3" className="pf-v6-u-mb-md" size="md">
+        First, check if a role exists and is linked with:
+      </Title>
 
-           <CopyInstruction>
-            rosa list ocm-role
-           </CopyInstruction>
+      <CopyInstruction>rosa list ocm-role</CopyInstruction>
 
-                 <Alert
+      <Alert
         variant={AlertVariant.info}
         isInline
         isPlain
@@ -27,7 +24,7 @@ export const OCMRole = (props: any) => {
         Next, is there an existing role that isn&apos;t linked?
       </Title>
 
- <TabGroup
+      <TabGroup
         tabs={[
           {
             'data-testid': 'copy-ocm-role-tab-no',
@@ -95,8 +92,6 @@ export const OCMRole = (props: any) => {
           },
         ]}
       />
-
-        </>
-    )
-
-}
+    </>
+  );
+};

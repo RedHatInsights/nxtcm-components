@@ -1,13 +1,12 @@
-import { Alert, AlertVariant, Title } from "@patternfly/react-core"
-import { CopyInstruction } from "./CopyInstruction"
-import { TabGroup } from "./TabGroup"
-import PopoverHint from "./PopoverHint"
-
+import { Alert, AlertVariant, Title } from '@patternfly/react-core';
+import { CopyInstruction } from './CopyInstruction';
+import { TabGroup } from './TabGroup';
+import PopoverHint from './PopoverHint';
 
 export const UserRole = () => {
-    return(
-        <>
-         <Title headingLevel="h3" className="pf-v6-u-mb-md" size="md">
+  return (
+    <>
+      <Title headingLevel="h3" className="pf-v6-u-mb-md" size="md">
         First, check if a role exists and is linked with:
       </Title>
 
@@ -65,6 +64,6 @@ export const UserRole = () => {
           },
         ]}
       />
-        </>
-    )
-}
+    </>
+  );
+};

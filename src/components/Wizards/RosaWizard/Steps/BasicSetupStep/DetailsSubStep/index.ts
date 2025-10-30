@@ -1,1 +1,1 @@
-export * from "./DetailsSubStep";
+export * from './DetailsSubStep';

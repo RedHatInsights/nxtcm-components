@@ -28,7 +28,7 @@ const PopoverHintWithTitle = ({
         bodyContent={bodyContent}
         footerContent={footer}
         aria-label="help"
-        maxWidth='25rem'
+        maxWidth="25rem"
         {...popoverProps}
       >
         <Button
@@ -44,10 +44,8 @@ const PopoverHintWithTitle = ({
                 </Button>
               ) : (
                 <>
-                {!displayHintIcon && (
-                   <OutlinedQuestionCircleIcon />
-                )}
-                 
+                  {!displayHintIcon && <OutlinedQuestionCircleIcon />}
+
                   {` ${title}`}
                 </>
               )}

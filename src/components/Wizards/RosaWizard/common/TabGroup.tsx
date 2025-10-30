@@ -1,13 +1,18 @@
-import { ToggleGroupItemProps, Stack, StackItem, ToggleGroup, ToggleGroupItem } from "@patternfly/react-core";
-import { ReactElement, useState } from "react";
+import {
+  ToggleGroupItemProps,
+  Stack,
+  StackItem,
+  ToggleGroup,
+  ToggleGroupItem,
+} from '@patternfly/react-core';
+import { ReactElement, useState } from 'react';
 
 type ToggleGroupTabsProps = {
   tabs: { title: string; body: ReactElement; 'data-testid'?: string; id: string }[];
 };
 
-
-export const TabGroup: React.FunctionComponent<ToggleGroupTabsProps> = ({tabs}) => {
-    const [activeTab, setActiveTab] = useState(tabs[0]);
+export const TabGroup: React.FunctionComponent<ToggleGroupTabsProps> = ({ tabs }) => {
+  const [activeTab, setActiveTab] = useState(tabs[0]);
   const [isSelected, setIsSelected] = useState<string>(tabs[0].id);
 
   const handleToggleChange: ToggleGroupItemProps['onChange'] = (event) => {
@@ -38,4 +43,4 @@ export const TabGroup: React.FunctionComponent<ToggleGroupTabsProps> = ({tabs}) 
       <StackItem className="ocm-instruction-block">{activeTab.body}</StackItem>
     </Stack>
   );
-}
+};

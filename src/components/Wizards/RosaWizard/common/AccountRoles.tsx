@@ -1,10 +1,10 @@
-import { Alert, AlertVariant, Content, ContentVariants } from "@patternfly/react-core"
-import { CopyInstruction } from "./CopyInstruction"
-
+import { Alert, AlertVariant, Content, ContentVariants } from '@patternfly/react-core';
+import { CopyInstruction } from './CopyInstruction';
 
 export const AccountRoles = () => {
-    return(<>
-     <Content component={ContentVariants.p} className="pf-v6-u-mb-lg">
+  return (
+    <>
+      <Content component={ContentVariants.p} className="pf-v6-u-mb-lg">
         To create the necessary account-wide roles and policies quickly, use the default auto method
         that&apos;s provided by the ROSA CLI.
       </Content>
@@ -32,5 +32,6 @@ export const AccountRoles = () => {
           </>
         }
       />
-    </>)
-}
+    </>
+  );
+};
