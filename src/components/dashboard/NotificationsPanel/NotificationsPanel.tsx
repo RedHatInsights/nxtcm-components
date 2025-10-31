@@ -73,12 +73,14 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
     <Panel variant="raised">
       <PanelHeader>
         <div className={styles.header}>
-          <span className={styles.headerTitle}>New notifications</span>
+          <span className={styles.headerTitle} data-testid="header">
+            New notifications
+          </span>
         </div>
         <div className={styles.headerBadge}>
           <BellIcon />
           &nbsp;
-          {totalItems}
+          <span data-testid="notification-count">{totalItems}</span>
         </div>
       </PanelHeader>
       <PanelMain>
@@ -96,15 +98,25 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
                 {currentNotifications.map((notification) => (
                   <Tr
                     key={notification.id}
+                    data-testid={`notification-${notification.id}`}
                     isClickable
                     onClick={() => handleNotificationClick(notification)}
                     className={styles.clickableRow}
                   >
                     <Td dataLabel="Notification">
-                      <span className={styles.notificationTitle}>{notification.title}</span>
+                      <span
+                        className={styles.notificationTitle}
+                        data-testid={`notification-title-${notification.id}`}
+                      >
+                        {notification.title}
+                      </span>
                     </Td>
-                    <Td dataLabel="Type">{notification.type}</Td>
-                    <Td dataLabel="Time">{notification.time}</Td>
+                    <Td dataLabel="Type" data-testid={`notification-type-${notification.id}`}>
+                      {notification.type}
+                    </Td>
+                    <Td dataLabel="Time" data-testid={`notification-time-${notification.id}`}>
+                      {notification.time}
+                    </Td>
                   </Tr>
                 ))}
               </Tbody>

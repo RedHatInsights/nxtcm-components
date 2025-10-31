@@ -10,21 +10,23 @@ export type CriticalProps = {
 
 export const Critical = ({ count, onViewRecommendations }: CriticalProps) => (
   <Flex direction={{ default: 'column' }} style={{ height: '100%', padding: '1rem' }}>
-    <FlexItem>
+    <FlexItem data-testid="critical-title">
       <h3>Critical recommendations</h3>
     </FlexItem>
-    <FlexItem>
+    <FlexItem data-testid="critical-description">
       <p>Conditions that cause issues have been detected actively detected on your systems.</p>
       <Flex direction={{ default: 'column' }} alignItems={{ default: 'alignItemsCenter' }}>
-        <FlexItem className={styles.danger}>
+        <FlexItem className={styles.danger} data-testid="critical-count">
           <CriticalRiskIcon /> {count}
         </FlexItem>
         <FlexItem>Critical recommendations</FlexItem>
-        <FlexItem>
-          <Button variant="secondary" onClick={onViewRecommendations}>
-            View recommendations
-          </Button>
-        </FlexItem>
+        {count > 0 && (
+          <FlexItem>
+            <Button variant="secondary" onClick={onViewRecommendations}>
+              View recommendations
+            </Button>
+          </FlexItem>
+        )}
       </Flex>
     </FlexItem>
   </Flex>

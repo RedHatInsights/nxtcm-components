@@ -39,7 +39,7 @@ export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMor
 
   return (
     <Card className={styles.storageCard}>
-      <CardTitle>Storage</CardTitle>
+      <CardTitle data-testid="header">Storage</CardTitle>
       <CardBody>
         <div className={styles.content}>
           {/* circular progress indicator */}
@@ -63,7 +63,9 @@ export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMor
               />
             </svg>
             <div className={styles.percentageLabel}>
-              <div className={styles.percentage}>{usagePercentage}%</div>
+              <div className={styles.percentage} data-testid="percentage">
+                {usagePercentage}%
+              </div>
               <div className={styles.sublabel}>of {totalStorage.toFixed(2)} TiB used</div>
             </div>
           </div>
@@ -71,7 +73,9 @@ export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMor
           {/* storage details */}
           <div className={styles.details}>
             <div className={styles.totalStorage}>
-              <div className={styles.totalValue}>{totalUsed.toFixed(2)} TiB</div>
+              <div className={styles.totalValue} data-testid="total-used">
+                {totalUsed.toFixed(2)} TiB
+              </div>
               <div className={styles.totalLabel}>Total storage used</div>
             </div>
 
@@ -79,21 +83,29 @@ export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMor
               <div className={styles.breakdownItem}>
                 <span className={`${styles.dot} ${styles.rosaDot}`}></span>
                 <span className={styles.label}>ROSA clusters:</span>
-                <span className={styles.value}>{rosaClusters.toFixed(2)} TiB</span>
+                <span className={styles.value} data-testid="rosa-clusters">
+                  {rosaClusters.toFixed(2)} TiB
+                </span>
               </div>
               <div className={styles.breakdownItem}>
                 <span className={`${styles.dot} ${styles.aroDot}`}></span>
                 <span className={styles.label}>ARO Clusters:</span>
-                <span className={styles.value}>{aroClusters.toFixed(2)} TiB</span>
+                <span className={styles.value} data-testid="aro-clusters">
+                  {aroClusters.toFixed(2)} TiB
+                </span>
               </div>
               <div className={styles.breakdownItem}>
                 <span className={`${styles.dot} ${styles.osdDot}`}></span>
                 <span className={styles.label}>OSD Clusters:</span>
-                <span className={styles.value}>{osdClusters.toFixed(2)} TiB</span>
+                <span className={styles.value} data-testid="osd-clusters">
+                  {osdClusters.toFixed(2)} TiB
+                </span>
               </div>
               <div className={styles.breakdownItem}>
                 <span className={styles.label}>Available:</span>
-                <span className={styles.value}>{available.toFixed(2)} TiB</span>
+                <span className={styles.value} data-testid="available">
+                  {available.toFixed(2)} TiB
+                </span>
               </div>
             </div>
           </div>

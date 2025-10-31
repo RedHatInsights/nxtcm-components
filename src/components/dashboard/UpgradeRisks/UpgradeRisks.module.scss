@@ -68,24 +68,4 @@
   padding-top: 0.5rem;
 }
 
-.linkButton {
-  background: none;
-  border: none;
-  color: var(--pf-t--global--color--brand--default);
-  font-size: 0.875rem;
-  cursor: pointer;
-  padding: 0;
-  text-decoration: none;
-  
-  &:hover {
-    color: var(--pf-t--global--color--brand--hover);
-    text-decoration: underline;
-  }
-  
-  &:focus {
-    outline: 2px solid var(--pf-t--global--color--brand--default);
-    outline-offset: 2px;
-    border-radius: 2px;
-  }
-}
 

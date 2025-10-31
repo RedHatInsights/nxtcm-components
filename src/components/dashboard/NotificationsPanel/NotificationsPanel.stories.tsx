@@ -49,7 +49,7 @@ const manyNotifications: NotificationItem[] = Array.from({ length: 36 }, (_, i) 
 }));
 
 const meta: Meta<typeof NotificationsPanel> = {
-  title: 'Components/NotificationsPanel',
+  title: 'Components/Dashboard/NotificationsPanel',
   component: NotificationsPanel,
   tags: ['autodocs'],
   argTypes: {

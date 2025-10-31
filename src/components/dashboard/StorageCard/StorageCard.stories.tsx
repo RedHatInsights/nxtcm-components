@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { StorageCard } from './StorageCard';
 
 const meta: Meta<typeof StorageCard> = {
-  title: 'Dashboard/StorageCard',
+  title: 'Components/Dashboard/StorageCard',
   component: StorageCard,
   parameters: {
     layout: 'padded',

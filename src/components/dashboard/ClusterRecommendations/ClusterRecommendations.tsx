@@ -13,6 +13,6 @@ export const ClusterRecommendations = ({
 }: ClusterRecommendationProps) => (
   <>
     <Critical count={count} onViewRecommendations={onViewRecommendations} />
-    <RecommendationByCategory {...rest} />
+    {count > 1 && <RecommendationByCategory {...rest} />}
   </>
 );

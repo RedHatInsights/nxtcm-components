@@ -1,5 +1,13 @@
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardBody, Flex, FlexItem } from '@patternfly/react-core';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardBody,
+  Flex,
+  FlexItem,
+  Button,
+} from '@patternfly/react-core';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon';
 import InfoCircleIcon from '@patternfly/react-icons/dist/esm/icons/info-circle-icon';
@@ -24,7 +32,7 @@ export const UpgradeRisks: React.FC<UpgradeRisksProps> = ({
 }) => {
   return (
     <Card className={`${styles.upgradeRisksCard} ${className}`}>
-      <CardHeader>
+      <CardHeader data-testid="header">
         <CardTitle className={styles.cardTitle}>Upgrade risks</CardTitle>
       </CardHeader>
       <CardBody>
@@ -34,7 +42,9 @@ export const UpgradeRisks: React.FC<UpgradeRisksProps> = ({
             spaceItems={{ default: 'spaceItemsXs' }}
             className={styles.totalSection}
           >
-            <FlexItem className={styles.totalNumber}>{totalRisks}</FlexItem>
+            <FlexItem className={styles.totalNumber} data-testid="total-risks">
+              {totalRisks}
+            </FlexItem>
             <FlexItem className={styles.totalLabel}>total number of upgrade risks</FlexItem>
           </Flex>
 
@@ -51,7 +61,9 @@ export const UpgradeRisks: React.FC<UpgradeRisksProps> = ({
               <FlexItem className={styles.riskIcon}>
                 <ExclamationCircleIcon className={styles.criticalIcon} />
               </FlexItem>
-              <FlexItem className={styles.riskCount}>{criticalCount}</FlexItem>
+              <FlexItem className={styles.riskCount} data-testid="criticalCount">
+                {criticalCount}
+              </FlexItem>
               <FlexItem className={styles.riskLabel}>Critical</FlexItem>
             </Flex>
 
@@ -64,7 +76,9 @@ export const UpgradeRisks: React.FC<UpgradeRisksProps> = ({
               <FlexItem className={styles.riskIcon}>
                 <ExclamationTriangleIcon className={styles.warningIcon} />
               </FlexItem>
-              <FlexItem className={styles.riskCount}>{warningCount}</FlexItem>
+              <FlexItem className={styles.riskCount} data-testid="warningCount">
+                {warningCount}
+              </FlexItem>
               <FlexItem className={styles.riskLabel}>Warning</FlexItem>
             </Flex>
 
@@ -77,7 +91,9 @@ export const UpgradeRisks: React.FC<UpgradeRisksProps> = ({
               <FlexItem className={styles.riskIcon}>
                 <InfoCircleIcon className={styles.infoIcon} />
               </FlexItem>
-              <FlexItem className={styles.riskCount}>{infoCount}</FlexItem>
+              <FlexItem className={styles.riskCount} data-testid="infoCount">
+                {infoCount}
+              </FlexItem>
               <FlexItem className={styles.riskLabel}>Info</FlexItem>
             </Flex>
           </Flex>
@@ -85,9 +101,9 @@ export const UpgradeRisks: React.FC<UpgradeRisksProps> = ({
           {onViewRisks && (
             <Flex justifyContent={{ default: 'justifyContentFlexEnd' }} className={styles.viewLink}>
               <FlexItem>
-                <button className={styles.linkButton} onClick={onViewRisks}>
+                <Button variant="link" onClick={onViewRisks}>
                   View upgrade risks
-                </button>
+                </Button>
               </FlexItem>
             </Flex>
           )}

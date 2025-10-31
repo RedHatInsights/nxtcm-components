@@ -19,7 +19,7 @@ const defaultCVEData: CVEData[] = [
 ];
 
 const meta: Meta<typeof CVECard> = {
-  title: 'Components/CVECard',
+  title: 'Components/Dashboard/CVECard',
   component: CVECard,
   tags: ['autodocs'],
   argTypes: {

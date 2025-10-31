@@ -46,9 +46,11 @@ export const CVECard: React.FC<CVECardProps> = ({
       style={{ height: '100%', padding: '1rem' }}
       className={className}
     >
-      <FlexItem>{title}</FlexItem>
+      <FlexItem data-testid="title">{title}</FlexItem>
       <FlexItem flex={{ default: 'flex_1' }}>
-        <div className={styles.description}>{description}</div>
+        <div className={styles.description} data-testid="description">
+          {description}
+        </div>
         <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }} className={styles.content}>
           {cveData.map((data) => {
             const config = severityConfig[data.severity];
@@ -57,7 +59,11 @@ export const CVECard: React.FC<CVECardProps> = ({
               data.severity === 'critical' ? styles.countCritical : styles.countImportant;
 
             return (
-              <FlexItem key={data.severity} flex={{ default: 'flex_1' }}>
+              <FlexItem
+                key={data.severity}
+                flex={{ default: 'flex_1' }}
+                data-testid={`cve-${data.severity}`}
+              >
                 <Flex
                   direction={{ default: 'column' }}
                   spaceItems={{ default: 'spaceItemsSm' }}
@@ -69,7 +75,9 @@ export const CVECard: React.FC<CVECardProps> = ({
                       spaceItems={{ default: 'spaceItemsXs' }}
                     >
                       <Icon color={config.iconColor} className={styles.severityIcon} />
-                      <span className={countClassName}>{data.count}</span>
+                      <span className={countClassName} data-testid={`count-${data.severity}`}>
+                        {data.count}
+                      </span>
                     </Flex>
                   </FlexItem>
                   <FlexItem>
