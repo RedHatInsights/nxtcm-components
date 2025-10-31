@@ -3,7 +3,7 @@
     "parserOptions": {
         "ecmaVersion": "latest",
         "sourceType": "module",
-        "project": ["./tsconfig.json"]
+        "project": ["./tsconfig.json", "./tsconfig.playwright.json"]
     },
     "extends": [
         "eslint:recommended",
@@ -53,6 +53,13 @@
             "files": ["*.test.tsx", "*.test.ts"],
             "rules": {
                 "@typescript-eslint/no-unused-vars": "off"
+            }
+        },
+        {
+            "files": ["playwright/**/*.ts", "playwright/**/*.tsx"],
+            "rules": {
+                "no-console": "off",
+                "@typescript-eslint/require-await": "off"
             }
         }
     ],
