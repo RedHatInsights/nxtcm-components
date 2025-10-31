@@ -195,13 +195,50 @@ The components are designed to work seamlessly with both ACM and OCM projects. T
 We welcome contributions! Please follow these guidelines:
 
 1. **Fork the repository** and create a feature branch
-2. **Follow coding standards**: Run `npm run prettier:fix` before committing
+2. **Follow coding standards**: Pre-commit hooks will automatically check your code
 3. **Write tests**: Add unit tests for new components or features
 4. **Update documentation**: Add or update Storybook stories
 5. **Fill out the PR template**: Provide clear description and testing steps
 6. **Request reviews**: Tag appropriate team members
 
 See our [Pull Request Template](.github/pull_request_template.md) for detailed submission guidelines.
+
+### Pre-Commit Hooks
+
+This repository uses **Husky** and **lint-staged** to automatically check code quality before every commit:
+
+**What happens when you commit:**
+- ✅ **ESLint** runs on staged TypeScript files and auto-fixes issues
+- ✅ **Prettier** formats staged files automatically
+- ✅ Only checks files you're committing (fast!)
+- ❌ Commit is blocked if unfixable errors are found
+
+**Setup (Automatic):**
+```bash
+npm install  # Installs Git hooks automatically
+```
+
+**Example workflow:**
+```bash
+# Make changes
+vim src/components/MyComponent.tsx
+
+# Stage changes
+git add src/components/MyComponent.tsx
+
+# Commit (hooks run automatically!)
+git commit -m "feat: add MyComponent"
+# → ESLint checks MyComponent.tsx
+# → Prettier formats MyComponent.tsx
+# → If all pass, commit succeeds ✅
+```
+
+**Bypass hooks (emergency only):**
+```bash
+git commit --no-verify -m "emergency fix"
+```
+
+⚠️ **Note**: Use `--no-verify` sparingly, as it bypasses all quality checks.
 
 ## Testing in ACM/OCM
 
@@ -242,6 +279,8 @@ Components in this library follow these principles:
 - **Vite**: Lightning-fast build tool and dev server
 - **ESLint**: Code linting with React, TypeScript, and a11y rules
 - **Prettier**: Code formatting
+- **Husky**: Git hooks for pre-commit quality checks
+- **lint-staged**: Run linters only on staged files
 - **SASS**: CSS preprocessing
 
 ## Configuration Files
@@ -255,6 +294,8 @@ The repository includes the following configuration files:
 | `.prettierignore` | Files to exclude from Prettier formatting |
 | `.npmignore` | Files to exclude from npm package |
 | `.nvmrc` | Node.js version specification (v20) |
+| `.husky/pre-commit` | Pre-commit Git hook (runs lint-staged) |
+| `package.json` → `lint-staged` | Configuration for running linters on staged files |
 | `tsconfig.json` | TypeScript compiler configuration |
 | `vite.config.ts` | Vite build tool configuration |
 | `jest.config.js` | Jest testing framework configuration |
