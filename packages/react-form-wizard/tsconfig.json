@@ -4,7 +4,7 @@
 
         "jsx": "react-jsx",
         "esModuleInterop": true,
-        "types": ["node"],
+        "types": ["node", "react", "react-dom"],
 
         "lib": ["ES2020", "DOM"],
         "module": "ES2020",

@@ -15,6 +15,7 @@ import {
   WizardFooterWrapper,
   WizardStep,
   WizardStepProps,
+  WizardStepType,
 } from "@patternfly/react-core";
 import { ExclamationCircleIcon } from "@patternfly/react-icons";
 import { klona } from "klona/json";
@@ -29,7 +30,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { EditMode, ExpandableStep} from ".";
+import { EditMode } from ".";
 import { DataContext } from "./contexts/DataContext";
 import { DisplayMode, DisplayModeContext } from "./contexts/DisplayModeContext";
 import { EditModeContext } from "./contexts/EditModeContext";
@@ -76,6 +77,8 @@ export interface WizardProps {
   yamlEditor?: () => ReactNode;
   submitButtonText?: string;
   submittingButtonText?: string;
+  onStepChange?: (event: React.MouseEvent<HTMLButtonElement>, currentStep: WizardStepType) => void;
+  setUseWizardContext?: any;
 }
 
 export type WizardSubmit = (data: unknown) => Promise<void>;
@@ -123,6 +126,8 @@ export function Wizard(
                                 value={wizardStrings || defaultStrings}
                               >
                                 <WizardInternal
+                                setUseWizardContext={props.setUseWizardContext}
+                                  onStepChange={props.onStepChange}
                                   title={props.title}
                                   onSubmit={props.onSubmit}
                                   onCancel={props.onCancel}
@@ -154,8 +159,9 @@ export function Wizard(
 type StepComponent = {
   id: string;
   name: ReactNode;
-  component: ReactNode;
+  component?: ReactNode;
   isExpandable?: boolean;
+  subSteps?: any;
   expandableStepComponent?: React.ReactElement<WizardStepProps>[];
 };
 
@@ -164,6 +170,7 @@ type WizardFooterProps = {
   submitButtonText?: string;
   submittingButtonText?: string;
   steps: ReactElement[];
+  setUseWizardContext?: any;
 };
 
 type WizardInternalProps = Omit<WizardFooterProps, "steps"> & {
@@ -171,6 +178,8 @@ type WizardInternalProps = Omit<WizardFooterProps, "steps"> & {
   children: ReactNode;
   onCancel: WizardCancel;
   hasButtons?: boolean;
+  onStepChange?: (event: React.MouseEvent<HTMLButtonElement>, currentStep: WizardStepType) => void;
+  setUseWizardContext?: any;
 };
 
 function WizardInternal({
@@ -179,17 +188,19 @@ function WizardInternal({
   onCancel,
   submitButtonText,
   submittingButtonText,
+  onStepChange,
+  setUseWizardContext
 }: WizardInternalProps) {
   const { reviewLabel, stepsAriaLabel, contentAriaLabel } = useStringContext();
   const stepComponents = useMemo(
-    () =>
+    () => (
       Children.toArray(children).filter(
         (child) =>
-          (isValidElement(child) && child.type === Step) || ExpandableStep
-      ) as ReactElement[],
+          (isValidElement(child))) as ReactElement[]
+    ),
     [children]
   );
-
+  console.log("children", children)
   const reviewStep: StepComponent = useMemo(
     () => ({
       id: "review-step",
@@ -217,6 +228,48 @@ function WizardInternal({
 
   const steps = useMemo(() => {
     const steps: StepComponent[] = stepComponents.map((component) => {
+      if (component.props.steps) {
+        const subSteps = component.props?.steps.map((step: any) => {
+          return {
+            id: step.props.id,
+            name: (
+              <Split hasGutter>
+                <SplitItem isFilled>{step.props?.label}</SplitItem>
+                {(showValidation || stepShowValidation[step.props?.id]) &&
+                  stepHasValidationError[step.props?.id] && (
+                    <SplitItem>
+                      <Icon status="danger">
+                        <ExclamationCircleIcon />
+                      </Icon>
+                    </SplitItem>
+                  )}
+              </Split>
+            ),
+            component: <Fragment key={step.props?.id}>{step}</Fragment>,
+          }
+        });
+        return {
+          id: component.props?.id,
+          name: (
+            <Split hasGutter>
+              <SplitItem isFilled>{component.props?.label}</SplitItem>
+              {(showValidation || stepShowValidation[component.props?.id]) &&
+                stepHasValidationError[component.props?.id] && (
+                  <SplitItem>
+                    <Icon status="danger">
+                      <ExclamationCircleIcon />
+                    </Icon>
+                  </SplitItem>
+                )}
+            </Split>
+          ),
+          component: <Fragment key={component.props?.id}>{component}</Fragment>,
+          isExpandable: component.props?.isExpandable,
+          expandableStepComponent: component.props?.steps,
+          subSteps: subSteps
+        };
+      }
+
       return {
         id: component.props?.id,
         name: (
@@ -237,7 +290,7 @@ function WizardInternal({
         expandableStepComponent: component.props?.steps,
       };
     });
-    steps.push(reviewStep);
+    //steps.push(reviewStep);
     return steps;
   }, [
     reviewStep,
@@ -247,14 +300,15 @@ function WizardInternal({
     stepShowValidation,
   ]);
 
-  console.log("DAVID STEPS", steps);
   return (
     <Fragment>
       <PFWizard
         navAriaLabel={`${stepsAriaLabel}`}
         aria-label={`${contentAriaLabel}`}
+        onStepChange={onStepChange}
         footer={
           <MyFooter
+            setUseWizardContext={setUseWizardContext}
             onSubmit={onSubmit}
             steps={stepComponents}
             submitButtonText={submitButtonText}
@@ -264,41 +318,19 @@ function WizardInternal({
         onClose={onCancel}
       >
         {steps.map(
-          ({ id, name, component, isExpandable, expandableStepComponent }) => {
-            if (isExpandable) {
+          ({ id, name, component, subSteps }) => {
+            if (subSteps) {
               return (
                 <WizardStep
-                  key={id}
-                  id={id}
-                  name={name}
-                  isExpandable={isExpandable}
-                  steps={expandableStepComponent?.map((step: any) => {
-                    const name = (
-                      <Split hasGutter>
-                        <SplitItem isFilled>{step.props?.label}</SplitItem>
-                        {(showValidation ||
-                          stepShowValidation[step.props?.id]) &&
-                          stepHasValidationError[step.props?.id] && (
-                            <SplitItem>
-                              <Icon status="danger">
-                                <ExclamationCircleIcon />
-                              </Icon>
-                            </SplitItem>
-                          )}
-                      </Split>
-                    );
+                  id={id} key={id} name={name}
+                  isExpandable
+                  steps={subSteps.map((subStep: any) => {
                     return (
-                      <WizardStep
-                        id={step.props.id}
-                        key={step.props.id}
-                        name={name}
-                      >
-                        {step.props.children}
-                      </WizardStep>
-                    );
+                      <WizardStep id={subStep.id} key={subStep.id} name={subStep.name}>{subStep.component}</WizardStep>
+                    )
                   })}
                 />
-              );
+              )
             }
             return (
               <WizardStep key={id} id={id} name={name}>
@@ -319,6 +351,14 @@ function MyFooter(props: WizardFooterProps) {
     goToPrevStep: onBack,
     close: onClose,
   } = useWizardContext();
+
+  const test = useWizardContext();
+
+  console.log("ACTIVESTEP", test)
+
+  useEffect(() => {
+    props.setUseWizardContext(test);
+  }, [props.setUseWizardContext])
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");

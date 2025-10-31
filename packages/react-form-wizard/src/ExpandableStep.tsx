@@ -24,11 +24,10 @@ export interface ExpandableStepProps {
   autohide?: boolean;
 
   isExpandable?: boolean;
-  steps?: React.ReactNode;
+  steps?: React.ReactNode[];
 }
 
 export function ExpandableStep(props: ExpandableStepProps) {
-  console.log("PROPS", props);
   return (
     <div id={props.id}>
       <HasInputsProvider key={props.id}>
@@ -46,7 +45,6 @@ export function ExpandableStep(props: ExpandableStepProps) {
 
 export function ExpandableStepInternal(props: ExpandableStepProps) {
   const displayMode = useDisplayMode();
-  console.log("DAVE PROPS", props);
   const setShowValidation = useSetShowValidation();
   const stepShowValidation = useStepShowValidation();
   useLayoutEffect(() => {
@@ -71,6 +69,10 @@ export function ExpandableStepInternal(props: ExpandableStepProps) {
       setStepHasInputs(props.id, hasInputs);
     }
   }, [hasInputs, displayMode, props.id, setStepHasInputs]);
+
+  if(props.steps && props.steps.length > 0) {
+    return null
+  }
 
   const hidden = useInputHidden(props);
   if (hidden && props.autohide !== false) return <Fragment />;

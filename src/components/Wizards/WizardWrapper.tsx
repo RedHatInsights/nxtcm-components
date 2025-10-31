@@ -14,22 +14,22 @@ interface BaseProductProps {
 
 type WizardWrapperProps<T extends BaseProductProps> = {
   product: T;
+  wizardsStepsData: T;
 };
 
-export const WizardWrapper = <T extends BaseProductProps>({ product }: WizardWrapperProps<T>) => {
+export const WizardWrapper = <T extends BaseProductProps>({
+  product,
+  wizardsStepsData,
+}: WizardWrapperProps<T>) => {
   switch (product.type) {
     case ProductName.RosaClassic:
       return (
         <RosaWizard
-          stepsProps={product.stepProps}
-          defaultData={product.defaultData}
+          wizardsStepsData={wizardsStepsData}
           onSubmit={product.onSubmit}
           onCancel={product.onCancel}
-          history={product.history}
           title={product.title}
         />
       );
   }
 };
-
-export default WizardWrapper;

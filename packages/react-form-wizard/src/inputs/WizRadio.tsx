@@ -3,6 +3,8 @@ import {
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
+  Flex,
+  FlexItem,
   Radio as PfRadio,
 } from "@patternfly/react-core";
 import {
@@ -103,27 +105,35 @@ export function Radio(props: {
   value: string | number | boolean | undefined;
   description?: string;
   children?: ReactNode;
+  popover?: ReactNode;
 }) {
   const radioGroupContext = useContext(RadioGroupContext);
   return (
     <Fragment>
-      <PfRadio
-        id={
-          radioGroupContext.radioGroup
-            ? props.id + "-" + radioGroupContext.radioGroup
-            : props.id
-        }
-        label={props.label}
-        description={props.description}
-        isChecked={
-          radioGroupContext.value === props.value ||
-          (props.value === undefined && !radioGroupContext.value)
-        }
-        onChange={() => radioGroupContext.setValue?.(props.value)}
-        isDisabled={radioGroupContext.disabled}
-        readOnly={radioGroupContext.readonly}
-        name={radioGroupContext.radioGroup ?? ""}
-      />
+      <Flex>
+        <FlexItem>
+          <PfRadio
+            id={
+              radioGroupContext.radioGroup
+                ? props.id + "-" + radioGroupContext.radioGroup
+                : props.id
+            }
+            label={props.label}
+            isChecked={
+              radioGroupContext.value === props.value ||
+              (props.value === undefined && !radioGroupContext.value)
+            }
+            onChange={() => radioGroupContext.setValue?.(props.value)}
+            isDisabled={radioGroupContext.disabled}
+            readOnly={radioGroupContext.readonly}
+            name={radioGroupContext.radioGroup ?? ""}
+            description={props.description}
+          />
+        </FlexItem>
+        <FlexItem>
+          {props.popover}
+        </FlexItem>
+      </Flex>
       {radioGroupContext.value === props.value && (
         <Indented paddingBottom={16}>{props.children}</Indented>
       )}
