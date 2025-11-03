@@ -12,7 +12,8 @@
     "test:watch": "jest --watch",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test-ct": "playwright test -c playwright-ct.config.ts"
+    "test-ct": "playwright test -c playwright-ct.config.ts",
+    "test-ct:watch": "playwright test -c playwright-ct.config.ts --ui"
   },
   "dependencies": {
     "@patternfly/patternfly": "^6.4.0",
