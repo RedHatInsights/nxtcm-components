@@ -26,7 +26,7 @@ test.describe("ActionsDropdown", () => {
         text="My Actions"
       />,
     );
-    await expect(component.getByRole("button", { name: /My Actions/i })).toBeVisible();
+    await expect(component.getByRole("button", { name: "My Actions" })).toBeVisible();
   });
 
   test("should render as a kebab toggle when isKebab is true", async ({
@@ -35,7 +35,7 @@ test.describe("ActionsDropdown", () => {
     const component = await mount(
       <ActionsDropdown id="test-kebab" dropdownItems={mockItems} isKebab />,
     );
-    await expect(component.getByRole("button", { name: /Actions/i })).toBeVisible();
+    await expect(component.getByRole("button", { name: "Actions" })).toBeVisible();
   });
 
   test("should allow overriding the kebab aria-label", async ({ mount }) => {
@@ -47,7 +47,7 @@ test.describe("ActionsDropdown", () => {
         kebabAriaLabel="More Options"
       />,
     );
-    await expect(component.getByRole("button", { name: /More Options/i })).toBeVisible();
+    await expect(component.getByRole("button", { name: "More Options" })).toBeVisible();
   });
 
   test("should render a disabled toggle when isDisabled is true", async ({
@@ -61,7 +61,7 @@ test.describe("ActionsDropdown", () => {
         isDisabled
       />,
     );
-    await expect(component.getByRole("button", { name: /Disabled/i })).toBeDisabled();
+    await expect(component.getByRole("button", { name: "Disabled" })).toBeDisabled();
   });
 
   test("should open and close the menu on toggle click", async ({ mount }) => {
@@ -75,11 +75,11 @@ test.describe("ActionsDropdown", () => {
 
     await expect(component.getByText("Item One")).not.toBeVisible();
 
-    await component.getByRole("button", { name: /Toggle Me/i }).click();
+    await component.getByRole("button", { name: "Toggle Me" }).click();
     await expect(component.getByText("Item One")).toBeVisible();
     await expect(component.getByText("Item Two")).toBeVisible();
 
-    await component.getByRole("button", { name: /Toggle Me/i }).click();
+    await component.getByRole("button", { name: "Toggle Me" }).click();
     await expect(component.getByText("Item One")).not.toBeVisible();
   });
 
@@ -100,7 +100,7 @@ test.describe("ActionsDropdown", () => {
       />,
     );
 
-    await component.getByRole("button", { name: /Select Item/i }).click();
+    await component.getByRole("button", { name: "Select Item" }).click();
     await component.getByText("Item One").click();
 
     expect(selectedId).toBe("item1");
@@ -125,7 +125,7 @@ test.describe("ActionsDropdown", () => {
       />,
     );
 
-    await component.getByRole("button", { name: /Item Select Test/i }).click();
+    await component.getByRole("button", { name: "Item Select Test" }).click();
     await component.getByText("Item with onSelect").click();
 
     expect(itemOnSelectCalled).toBe(true);
@@ -142,7 +142,7 @@ test.describe("ActionsDropdown", () => {
         text="Escape Test"
       />,
     );
-    const toggleButton = component.getByRole("button", { name: /Escape Test/i });
+    const toggleButton = component.getByRole("button", { name: "Escape Test" });
 
     await toggleButton.click();
     await expect(component.getByText("Item One")).toBeVisible();
@@ -161,13 +161,13 @@ test.describe("ActionsDropdown", () => {
           text="Outside Click"
         />
         <button>Outside Button</button>
-      </div>,
+      </div>
     );
 
-    await component.getByLabel("Outside Click").click();
+    await component.getByRole("button", { name: "Outside Click" }).click();
     await expect(component.getByText("Item One")).toBeVisible();
 
-    await component.getByRole("button", { name: "Outside Button" }).click();
+    await page.locator('body').click({ position: { x: 0, y: 0 } });
     await expect(component.getByText("Item One")).not.toBeVisible();
   });
 
@@ -186,10 +186,10 @@ test.describe("ActionsDropdown", () => {
       />,
     );
 
-    await component.getByRole("button", { name: /Disabled Item Test/i }).click();
-    const disabledItem = component.getByText("Item Two");
+    await component.getByRole("button", { name: "Disabled Item Test" }).click();
+    const disabledItem = component.getByRole("menuitem", { name: "Item Two" });
 
-    await expect(disabledItem.locator("..")).toHaveAttribute(
+    await expect(disabledItem).toHaveAttribute(
       "aria-disabled",
       "true",
     );
@@ -218,7 +218,7 @@ test.describe("ActionsDropdown", () => {
         />,
       );
 
-      await component.getByRole("button", { name: /Flyout Test/i }).click();
+      await component.getByRole("button", { name: "Flyout Test" }).click();
       const flyoutParent = component.getByText("Flyout Menu");
 
       await flyoutParent.hover();
@@ -249,7 +249,7 @@ test.describe("ActionsDropdown", () => {
         />,
       );
 
-      await component.getByRole("button", { name: /Flyout Parent Test/i }).click();
+      await component.getByRole("button", { name: "Flyout Parent Test" }).click();
 
       const flyoutParent = component.getByText("Flyout Menu");
       await flyoutParent.click();
