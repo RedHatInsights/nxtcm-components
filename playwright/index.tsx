@@ -1,2 +1,2 @@
-// Import styles, initialize component theme here.
-// import '../src/common.css';
+import '@patternfly/react-core/dist/styles/base.css';
+import '@patternfly/patternfly/patternfly-addons.css';

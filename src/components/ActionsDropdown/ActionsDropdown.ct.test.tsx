@@ -167,7 +167,7 @@ test.describe("ActionsDropdown", () => {
     await component.getByRole("button", { name: "Outside Click" }).click();
     await expect(component.getByText("Item One")).toBeVisible();
 
-    await page.locator('body').click({ position: { x: 0, y: 0 } });
+    await component.getByRole("button", { name: "Outside Button" }).click({force: true});
     await expect(component.getByText("Item One")).not.toBeVisible();
   });
 
