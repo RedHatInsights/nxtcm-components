@@ -54,8 +54,7 @@
     "test:ct:debug": "playwright test -c playwright-ct.config.ts --debug",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "prepare": "husky",
-    "test-ct:watch": "playwright test -c playwright-ct.config.ts --ui"
+    "prepare": "husky"
   },
   "dependencies": {
     "@patternfly/patternfly": "^6.4.0",
