@@ -1,5 +1,4 @@
-import { Hint, HintTitle, HintBody } from "@patternfly/react-core";
-import { Link } from "storybook/internal/router";
+import { Hint, HintTitle, HintBody } from '@patternfly/react-core';
 
 type PrerequisitesInfoBoxProps = {
   showRosaCliRequirement: boolean;
@@ -8,9 +7,7 @@ type PrerequisitesInfoBoxProps = {
   linkToGetStarted: React.ReactNode;
 };
 
-export const PrerequisitesInfoBox: React.FunctionComponent<
-  PrerequisitesInfoBoxProps
-> = ({
+export const PrerequisitesInfoBox: React.FunctionComponent<PrerequisitesInfoBoxProps> = ({
   showRosaCliRequirement = true,
   rosaHostedCliMinVersion,
   productName,
@@ -23,14 +20,14 @@ export const PrerequisitesInfoBox: React.FunctionComponent<
       </HintTitle>
       <HintBody>
         <p>
-          To create a {productName} (ROSA) cluster via the web interface, you
-          must complete the prerequisite steps on the {linkToGetStarted}.
+          To create a {productName} (ROSA) cluster via the web interface, you must complete the
+          prerequisite steps on the {linkToGetStarted}.
           {/* <Link to="/create/rosa/getstarted">Set up ROSA page</Link> */}
         </p>
         {showRosaCliRequirement && (
           <p>
-            Make sure you are using ROSA CLI version {rosaHostedCliMinVersion}{" "}
-            or above for hosted control plane architecture.
+            Make sure you are using ROSA CLI version {rosaHostedCliMinVersion} or above for hosted
+            control plane architecture.
           </p>
         )}
       </HintBody>

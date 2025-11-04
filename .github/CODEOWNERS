@@ -1,5 +1,0 @@
-# Global code owners for the entire repository
-
-# Default owners for everything in the repo
-# These owners will be requested for review when someone opens a pull request
-*       @aneelac22 @kdoberst @davidaznaur @edewit @nitin-dhevar @jloss-redhat @vishsanghishetty

@@ -1,0 +1,123 @@
+.storageCard {
+  min-width: 400px;
+  max-width: 600px;
+}
+
+.content {
+  display: flex;
+  gap: var(--pf-t--global--spacer--lg);
+  align-items: center;
+  padding: var(--pf-t--global--spacer--md) 0;
+}
+
+.circularProgress {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  flex-shrink: 0;
+}
+
+.progressCircle {
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.percentageLabel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.percentage {
+  font-size: var(--pf-t--global--font--size--2xl);
+  font-weight: var(--pf-t--global--font--weight--bold);
+  color: var(--pf-t--global--text--color--regular);
+}
+
+.sublabel {
+  font-size: var(--pf-t--global--font--size--sm);
+  color: var(--pf-t--global--text--color--subtle);
+  margin-top: var(--pf-t--global--spacer--xs);
+}
+
+.details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--pf-t--global--spacer--md);
+}
+
+.totalStorage {
+  padding-bottom: var(--pf-t--global--spacer--md);
+  border-bottom: 1px solid var(--pf-t--global--border--color--default);
+}
+
+.totalValue {
+  font-size: var(--pf-t--global--font--size--xl);
+  font-weight: var(--pf-t--global--font--weight--bold);
+  color: var(--pf-t--global--text--color--regular);
+}
+
+.totalLabel {
+  font-size: var(--pf-t--global--font--size--sm);
+  color: var(--pf-t--global--text--color--subtle);
+  margin-top: var(--pf-t--global--spacer--xs);
+}
+
+.breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pf-t--global--spacer--sm);
+}
+
+.breakdownItem {
+  display: flex;
+  align-items: center;
+  gap: var(--pf-t--global--spacer--sm);
+  font-size: var(--pf-t--global--font--size--body);
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.rosaDot {
+  background-color: #0066cc;
+}
+
+.aroDot {
+  background-color: #73bcf7;
+}
+
+.osdDot {
+  background-color: #004080;
+}
+
+.label {
+  color: var(--pf-t--global--text--color--regular);
+  flex: 1;
+}
+
+.value {
+  font-weight: var(--pf-t--global--font--weight--bold);
+  color: var(--pf-t--global--text--color--regular);
+}
+
+.viewMore {
+  background: none;
+  border: none;
+  color: var(--pf-t--global--color--brand--default);
+  cursor: pointer;
+  padding: 0;
+  font-size: var(--pf-t--global--font--size--body);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+

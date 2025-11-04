@@ -10,7 +10,7 @@
         "skipLibCheck": true,
         "moduleResolution": "node",
         "resolveJsonModule": true,
-         "paths": {
+        "paths": {
             "@patternfly-labs/react-form-wizard": ["./packages/react-form-wizard/src"],
             "@patternfly-labs/react-form-wizard/*": ["./packages/react-form-wizard/src/*"]
         },
@@ -22,10 +22,11 @@
         "types": ["node", "jest", "@testing-library/jest-dom"]
     },
     "include": [
-        "src"
+        "src/**/*"
     ],
     "exclude": [
         "node_modules",
-        "dist"
+        "dist",
+        "packages/**/*"
     ]
 }

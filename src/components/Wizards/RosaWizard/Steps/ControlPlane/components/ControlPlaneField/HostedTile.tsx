@@ -1,4 +1,4 @@
-import { CardGroup, Tile } from "@patternfly-labs/react-form-wizard";
+import { CardGroup } from '@patternfly-labs/react-form-wizard';
 import {
   Alert,
   Content,
@@ -7,10 +7,10 @@ import {
   Label,
   List,
   ListItem,
-} from "@patternfly/react-core";
-import StarIcon from "@patternfly/react-icons/dist/esm/icons/star-icon";
-import { defaultMarginBottomSpacing } from "./constants";
-import CheckIcon from "@patternfly/react-icons/dist/esm/icons/check-icon";
+} from '@patternfly/react-core';
+import StarIcon from '@patternfly/react-icons/dist/esm/icons/star-icon';
+import { defaultMarginBottomSpacing } from './constants';
+import CheckIcon from '@patternfly/react-icons/dist/esm/icons/check-icon';
 
 type HostedTielProps = {
   isHostedDisabled: boolean;
@@ -58,10 +58,9 @@ export const HostedTile: React.FunctionComponent<HostedTielProps> = ({
           />
         )}
         <Content component={ContentVariants.p} className="pf-v6-u-mb-md">
-          The Red Hat OpenShift Service on AWS with a hosted control plane
-          architecture (ROSA HCP) runs an OpenShift cluster with a decoupled
-          control plane as a multi-tenant workload and a data plane on a
-          separate network for segmented management and workload traffic.
+          The Red Hat OpenShift Service on AWS with a hosted control plane architecture (ROSA HCP)
+          runs an OpenShift cluster with a decoupled control plane as a multi-tenant workload and a
+          data plane on a separate network for segmented management and workload traffic.
         </Content>
         <List isPlain className="pf-v6-u-mb-md">
           <ListItem icon={<CheckIcon className="pf-v6-u-active-color-100" />}>
@@ -87,7 +86,7 @@ export const HostedTile: React.FunctionComponent<HostedTielProps> = ({
           title="A Virtual Private Cloud is required for ROSA clusters hosted by Red Hat"
           className={defaultMarginBottomSpacing}
           // NOTE style is needed because alerts are not clickable in a card (This is a PatternFly Bug)
-          style={{ position: "inherit" }}
+          style={{ position: 'inherit' }}
         />
       </CardGroup>
     </GridItem>

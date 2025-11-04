@@ -13,12 +13,29 @@ This repository provides reusable React components built with PatternFly that se
 - **TypeScript Support**: Fully typed components with TypeScript
 - **Storybook**: Interactive component documentation and development environment
 - **Testing**: Comprehensive unit tests with Jest and React Testing Library
-- **Modern Tooling**: Webpack, Babel, and modern JavaScript features
+- **Modern Tooling**: Vite, modern JavaScript features, and fast HMR
 
 ## Prerequisites
 
-- Node.js (version 18 or higher recommended)
+- Node.js (version 20 recommended - see `.nvmrc`)
 - npm (comes with Node.js)
+
+## Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/RedHatInsights/nxtcm-components.git
+cd nxtcm-components
+
+# Install dependencies
+npm install
+
+# Start development server
+npm start
+
+# Or start Storybook
+npm run storybook
+```
 
 ## Installation
 
@@ -108,10 +125,16 @@ npm run prettier:fix
 
 ### Development Server
 
-Start the webpack development server:
+Start the Vite development server:
 
 ```bash
 npm start
+```
+
+Preview the production build:
+
+```bash
+npm run preview
 ```
 
 ## Project Structure
@@ -119,18 +142,18 @@ npm start
 ```
 nxtcm-components/
 ├── .github/              # GitHub configuration files
-│   ├── CODEOWNERS        # Code ownership definitions
+│   ├── REVIEW_PROCESS.md # PR review guidelines
 │   └── pull_request_template.md
 ├── .storybook/           # Storybook configuration
 ├── public/               # Public assets
 ├── src/                  # Source code
 │   ├── index.ts          # Main entry point
 │   └── index.scss        # Global styles
-├── babel.config.js       # Babel configuration
+├── babel.config.js       # Babel configuration (for Jest)
 ├── jest.config.js        # Jest test configuration
 ├── jest.setup.js         # Jest setup file
 ├── tsconfig.json         # TypeScript configuration
-└── webpack.config.js     # Webpack configuration
+└── vite.config.ts        # Vite configuration
 ```
 
 ## Usage
@@ -147,6 +170,22 @@ function App() {
 }
 ```
 
+### Required CSS
+
+This library requires PatternFly CSS. Import it in your application:
+
+```typescript
+// In your main application entry file (e.g., index.ts or App.tsx)
+import '@patternfly/react-core/dist/styles/base.css';
+import '@patternfly/patternfly/patternfly.css';
+```
+
+Or include it in your HTML:
+
+```html
+<link rel="stylesheet" href="node_modules/@patternfly/patternfly/patternfly.css">
+```
+
 ### Using with ACM or OCM
 
 The components are designed to work seamlessly with both ACM and OCM projects. They use PatternFly's flexible design system to accommodate different requirements while maintaining consistency.
@@ -156,13 +195,50 @@ The components are designed to work seamlessly with both ACM and OCM projects. T
 We welcome contributions! Please follow these guidelines:
 
 1. **Fork the repository** and create a feature branch
-2. **Follow coding standards**: Run `npm run prettier:fix` before committing
+2. **Follow coding standards**: Pre-commit hooks will automatically check your code
 3. **Write tests**: Add unit tests for new components or features
 4. **Update documentation**: Add or update Storybook stories
 5. **Fill out the PR template**: Provide clear description and testing steps
 6. **Request reviews**: Tag appropriate team members
 
 See our [Pull Request Template](.github/pull_request_template.md) for detailed submission guidelines.
+
+### Pre-Commit Hooks
+
+This repository uses **Husky** and **lint-staged** to automatically check code quality before every commit:
+
+**What happens when you commit:**
+- ✅ **ESLint** runs on staged TypeScript files and auto-fixes issues
+- ✅ **Prettier** formats staged files automatically
+- ✅ Only checks files you're committing (fast!)
+- ❌ Commit is blocked if unfixable errors are found
+
+**Setup (Automatic):**
+```bash
+npm install  # Installs Git hooks automatically
+```
+
+**Example workflow:**
+```bash
+# Make changes
+vim src/components/MyComponent.tsx
+
+# Stage changes
+git add src/components/MyComponent.tsx
+
+# Commit (hooks run automatically!)
+git commit -m "feat: add MyComponent"
+# → ESLint checks MyComponent.tsx
+# → Prettier formats MyComponent.tsx
+# → If all pass, commit succeeds ✅
+```
+
+**Bypass hooks (emergency only):**
+```bash
+git commit --no-verify -m "emergency fix"
+```
+
+⚠️ **Note**: Use `--no-verify` sparingly, as it bypasses all quality checks.
 
 ## Testing in ACM/OCM
 
@@ -199,26 +275,86 @@ Components in this library follow these principles:
 - **Storybook**: Component documentation and development
 - **Jest**: Unit testing framework
 - **React Testing Library**: Testing utilities
-- **Webpack**: Module bundler
-- **Babel**: JavaScript compiler
+- **Playwright**: End-to-end and component testing
+- **Vite**: Lightning-fast build tool and dev server
+- **ESLint**: Code linting with React, TypeScript, and a11y rules
+- **Prettier**: Code formatting
+- **Husky**: Git hooks for pre-commit quality checks
+- **lint-staged**: Run linters only on staged files
 - **SASS**: CSS preprocessing
+
+## Configuration Files
+
+The repository includes the following configuration files:
+
+| File | Purpose |
+|------|---------|
+| `.eslintrc.json` | ESLint configuration with React, TypeScript, and accessibility rules |
+| `.prettierrc` | Prettier code formatting rules |
+| `.prettierignore` | Files to exclude from Prettier formatting |
+| `.npmignore` | Files to exclude from npm package |
+| `.nvmrc` | Node.js version specification (v20) |
+| `.husky/pre-commit` | Pre-commit Git hook (runs lint-staged) |
+| `package.json` → `lint-staged` | Configuration for running linters on staged files |
+| `tsconfig.json` | TypeScript compiler configuration |
+| `vite.config.ts` | Vite build tool configuration |
+| `jest.config.js` | Jest testing framework configuration |
+| `playwright.config.ts` | Playwright E2E testing configuration |
+| `.github/workflows/ci.yml` | GitHub Actions CI/CD pipeline |
+
+## Continuous Integration
+
+This project uses GitHub Actions for CI/CD. On every pull request and push to main, the following checks run automatically:
+
+- ✅ **Lint**: ESLint and Prettier checks
+- ✅ **Type Check**: TypeScript compilation
+- ✅ **Unit Tests**: Jest tests with coverage
+- ✅ **Build**: Library build verification
+- ✅ **E2E Tests**: Playwright end-to-end tests
+- ✅ **Storybook Build**: Documentation build verification
+
+See [`.github/workflows/ci.yml`](.github/workflows/ci.yml) for the complete workflow configuration.
 
 ## Scripts Reference
 
+### Development
+
 | Command | Description |
 |---------|-------------|
-| `npm start` | Start webpack dev server |
-| `npm run build` | Build library for production |
-| `npm run type-check` | Run TypeScript type checking |
-| `npm run prettier:fix` | Format code with Prettier |
-| `npm test` | Run all tests |
-| `npm test:watch` | Run tests in watch mode |
-| `npm run storybook` | Start Storybook dev server |
-| `npm run build-storybook` | Build static Storybook |
+| `npm start` | Start Vite dev server on port 4004 |
+| `npm run storybook` | Start Storybook dev server on port 6006 |
+| `npm run preview` | Preview production build locally |
+
+### Building
+
+| Command | Description |
+|---------|-------------|
+| `npm run build` | Build library for production (outputs to `dist/`) |
+| `npm run build-storybook` | Build static Storybook site |
+
+### Code Quality
+
+| Command | Description |
+|---------|-------------|
+| `npm run type-check` | Run TypeScript type checking without emitting files |
+| `npm run lint` | Check code for linting errors (ESLint) |
+| `npm run lint:fix` | Auto-fix linting errors where possible |
+| `npm run prettier:check` | Check if files are formatted correctly |
+| `npm run prettier:fix` | Auto-format code with Prettier |
+
+### Testing
+
+| Command | Description |
+|---------|-------------|
+| `npm test` | Run all unit tests with Jest |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:coverage` | Run tests with coverage report |
+| `npm run test:e2e` | Run Playwright end-to-end tests |
+| `npm run test:ct` | Run Playwright component tests |
 
 ## License
 
-[License information to be added]
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## Support
 
@@ -226,7 +362,7 @@ For questions, issues, or contributions:
 
 - **Issues**: [GitHub Issues](https://github.com/RedHatInsights/nxtcm-components/issues)
 - **Pull Requests**: [GitHub PRs](https://github.com/RedHatInsights/nxtcm-components/pulls)
-- **Maintainers**: See [CODEOWNERS](.github/CODEOWNERS)
+- **Review Process**: See [REVIEW_PROCESS.md](.github/REVIEW_PROCESS.md)
 
 ## Related Projects
 

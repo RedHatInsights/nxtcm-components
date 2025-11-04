@@ -1,0 +1,32 @@
+.description {
+  font-size: var(--pf-t--global--font--size--sm);
+}
+
+.content {
+  margin-top: var(--pf-t--global--spacer--md);
+}
+
+.severityIcon {
+  font-size: var(--pf-t--global--icon--size--xl);
+}
+
+.count {
+  font-size: var(--pf-t--global--font--size--2xl);
+  font-weight: var(--pf-t--global--font--weight--heading--bold);
+}
+
+.countCritical {
+  composes: count;
+  color: var(--pf-t--global--color--status--danger--default);
+}
+
+.countImportant {
+  composes: count;
+  color: var(--pf-t--global--color--status--warning--default);
+}
+
+.label {
+  text-align: center;
+  font-size: var(--pf-t--global--font--size--sm);
+}
+

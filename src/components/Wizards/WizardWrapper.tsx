@@ -1,6 +1,6 @@
-import { WizardCancel, WizardSubmit } from "@patternfly-labs/react-form-wizard";
-import { ProductName } from "./constants";
-import { RosaWizard } from "./RosaWizard/RosaWizard";
+import { WizardCancel, WizardSubmit } from '@patternfly-labs/react-form-wizard';
+import { ProductName } from './constants';
+import { RosaWizard } from './RosaWizard/RosaWizard';
 
 interface BaseProductProps {
   type: ProductName;
@@ -16,9 +16,7 @@ type WizardWrapperProps<T extends BaseProductProps> = {
   product: T;
 };
 
-export const WizardWrapper = <T extends BaseProductProps>({
-  product,
-}: WizardWrapperProps<T>) => {
+export const WizardWrapper = <T extends BaseProductProps>({ product }: WizardWrapperProps<T>) => {
   switch (product.type) {
     case ProductName.RosaClassic:
       return (

@@ -39,3 +39,6 @@ node_modules/
 /playwright/.cache/
 /playwright/.auth/
 packages/*/node_modules
+docs/
+test-ci-local.sh
+fix-all.sh

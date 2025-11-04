@@ -1,4 +1,4 @@
-import { Alert, List, ListItem } from "@patternfly/react-core";
+import { Alert, List, ListItem } from '@patternfly/react-core';
 
 type RosaArchitectureRenamingAlertProps = {
   allowAlertFeatureFlag: boolean;
@@ -26,12 +26,12 @@ export const RosaArchitectureRenamingAlert: React.FunctionComponent<
     >
       <List>
         <ListItem>
-          ROSA Classic architecture will be renamed to &quot;Red Hat OpenShift
-          Service on AWS (classic architecture)&quot;.
+          ROSA Classic architecture will be renamed to &quot;Red Hat OpenShift Service on AWS
+          (classic architecture)&quot;.
         </ListItem>
         <ListItem>
-          ROSA architecture with hosted control planes will be renamed to
-          &quot;Red Hat OpenShift Service on AWS&quot;.
+          ROSA architecture with hosted control planes will be renamed to &quot;Red Hat OpenShift
+          Service on AWS&quot;.
         </ListItem>
       </List>
     </Alert>
