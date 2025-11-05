@@ -16,6 +16,7 @@ test-report.xml
 /build
 /dist
 /plugins/**/package.json
+packages/*/lib
 
 # misc
 .DS_Store
