@@ -1,6 +1,7 @@
 # Source files
 src/
 packages/
+**/examples/
 
 # Configuration files
 .storybook/
@@ -12,6 +13,8 @@ tsconfig*.json
 babel.config.js
 jest.config.js
 jest.setup.js
+pf-docs.config.mjs
+docs-scope.mjs
 
 # Test files
 **/*.test.tsx
@@ -23,12 +26,17 @@ jest.setup.js
 __tests__/
 cypress/
 playwright/
+test-results/
 
 # Build artifacts
 node_modules/
 coverage/
 storybook-static/
+playwright-report/
 .DS_Store
+
+# Documentation artifacts (but keep README and LICENSE)
+dist/docs/
 
 # Development files
 *.log
@@ -37,10 +45,11 @@ npm-debug.log*
 .yalc
 yalc.lock
 
-# Documentation (keep README and LICENSE)
+# Keep README and LICENSE
 !README.md
 !LICENSE
 
-# Only include dist folder
+# Only include dist folder (but not docs)
 !dist/
+dist/docs/
 
