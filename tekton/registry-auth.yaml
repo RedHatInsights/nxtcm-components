@@ -1,0 +1,101 @@
+# Registry Authentication for Tekton Pipeline
+# Use this to pull images from private registries like Quay.io
+
+---
+# Method 1: Docker Config Secret (for Quay.io)
+# Create a secret with your registry credentials
+apiVersion: v1
+kind: Secret
+metadata:
+  name: quay-registry-secret
+  annotations:
+    tekton.dev/docker-0: https://quay.io
+type: kubernetes.io/basic-auth
+stringData:
+  username: YOUR_QUAY_USERNAME
+  password: YOUR_QUAY_PASSWORD
+
+---
+# Method 2: Docker Config JSON Secret
+# If you already have a .docker/config.json
+apiVersion: v1
+kind: Secret
+metadata:
+  name: registry-config-secret
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: BASE64_ENCODED_DOCKER_CONFIG
+
+---
+# Service Account with Registry Credentials
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tekton-pipeline-sa
+secrets:
+  - name: quay-registry-secret
+imagePullSecrets:
+  - name: registry-config-secret
+
+---
+# PipelineRun using the Service Account
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  generateName: nxtcm-components-ci-private-registry-
+spec:
+  pipelineRef:
+    name: nxtcm-components-ci
+  
+  # Use the service account with registry credentials
+  serviceAccountName: tekton-pipeline-sa
+  
+  params:
+    - name: repo-url
+      value: https://github.com/RedHatInsights/nxtcm-components.git
+    - name: revision
+      value: main
+    - name: node-version
+      value: "20"
+  
+  workspaces:
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 5Gi
+    - name: npm-cache
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 2Gi
+  
+  timeouts:
+    pipeline: "1h"
+
+---
+# How to create the secrets using kubectl:
+#
+# For basic auth (Quay.io username/password):
+#   kubectl create secret docker-registry quay-registry-secret \
+#     --docker-server=quay.io \
+#     --docker-username=YOUR_USERNAME \
+#     --docker-password=YOUR_PASSWORD \
+#     --docker-email=YOUR_EMAIL
+#
+# For docker config JSON:
+#   kubectl create secret generic registry-config-secret \
+#     --from-file=.dockerconfigjson=$HOME/.docker/config.json \
+#     --type=kubernetes.io/dockerconfigjson
+#
+# For Red Hat registry pull secret:
+#   kubectl create secret generic redhat-registry-secret \
+#     --from-file=.dockerconfigjson=/path/to/pull-secret.json \
+#     --type=kubernetes.io/dockerconfigjson
+

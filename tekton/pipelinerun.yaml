@@ -1,0 +1,40 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  generateName: nxtcm-components-ci-run-
+  labels:
+    app: nxtcm-components
+spec:
+  pipelineRef:
+    name: nxtcm-components-ci
+  
+  params:
+    - name: repo-url
+      value: https://github.com/RedHatInsights/nxtcm-components.git
+    - name: revision
+      value: main
+    - name: node-version
+      value: "20"
+  
+  workspaces:
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 5Gi
+    
+    - name: npm-cache
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 2Gi
+  
+  timeouts:
+    pipeline: "1h"
+

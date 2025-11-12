@@ -1,0 +1,144 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: nxtcm-components-ci
+  annotations:
+    description: CI pipeline for nxtcm-components library
+spec:
+  params:
+    - name: repo-url
+      type: string
+      description: Git repository URL
+      default: https://github.com/RedHatInsights/nxtcm-components.git
+    - name: revision
+      type: string
+      description: Git revision (branch, tag, or commit SHA)
+      default: main
+    - name: node-version
+      type: string
+      description: Node.js version to use
+      default: "22"
+  
+  workspaces:
+    - name: shared-workspace
+      description: Shared workspace for source code and artifacts
+    - name: npm-cache
+      description: NPM cache to speed up builds
+      optional: true
+
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      params:
+        - name: url
+          value: $(params.repo-url)
+        - name: revision
+          value: $(params.revision)
+        - name: deleteExisting
+          value: "true"
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+
+    - name: install-dependencies
+      taskRef:
+        name: npm-install
+      runAfter:
+        - fetch-repository
+      params:
+        - name: node-version
+          value: $(params.node-version)
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: npm-cache
+          workspace: npm-cache
+
+    - name: lint
+      taskRef:
+        name: npm-lint
+      runAfter:
+        - install-dependencies
+      params:
+        - name: node-version
+          value: $(params.node-version)
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: npm-cache
+          workspace: npm-cache
+
+    - name: type-check
+      taskRef:
+        name: npm-type-check
+      runAfter:
+        - install-dependencies
+      params:
+        - name: node-version
+          value: $(params.node-version)
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: npm-cache
+          workspace: npm-cache
+
+    - name: build
+      taskRef:
+        name: npm-build
+      runAfter:
+        - lint
+        - type-check
+      params:
+        - name: node-version
+          value: $(params.node-version)
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: npm-cache
+          workspace: npm-cache
+
+    - name: component-tests
+      taskRef:
+        name: playwright-component-tests
+      runAfter:
+        - install-dependencies
+      params:
+        - name: node-version
+          value: $(params.node-version)
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: npm-cache
+          workspace: npm-cache
+
+    - name: e2e-tests
+      taskRef:
+        name: playwright-e2e-tests
+      runAfter:
+        - build
+      params:
+        - name: node-version
+          value: $(params.node-version)
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: npm-cache
+          workspace: npm-cache
+
+    - name: build-storybook
+      taskRef:
+        name: npm-build-storybook
+      runAfter:
+        - lint
+        - type-check
+      params:
+        - name: node-version
+          value: $(params.node-version)
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: npm-cache
+          workspace: npm-cache
+

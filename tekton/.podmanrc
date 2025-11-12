@@ -1,0 +1,34 @@
+# Podman Runner Configuration
+# Source this file or export these variables before running the scripts
+
+# Container Registry Configuration
+# Using official Node.js Alpine images from Docker Hub
+export NODE_IMAGE="docker.io/library/node:20-alpine"
+export PLAYWRIGHT_IMAGE="mcr.microsoft.com/playwright:v1.56.1-noble"
+
+# Node Version
+export NODE_VERSION="20"
+
+# Playwright Version
+export PLAYWRIGHT_VERSION="v1.56.1-noble"
+
+# Parallel Jobs (for parallel runner)
+export PARALLEL_JOBS="4"
+
+# Alternative Registry Examples:
+# For Docker Hub:
+# export NODE_IMAGE="docker.io/library/node:20"
+
+# For Red Hat Container Catalog:
+# export NODE_IMAGE="registry.access.redhat.com/ubi8/nodejs-20"
+
+# For Private Quay Registry:
+# export NODE_IMAGE="quay.io/your-org/node:20"
+# export PLAYWRIGHT_IMAGE="quay.io/your-org/playwright:v1.56.1"
+
+# For Google Container Registry:
+# export NODE_IMAGE="gcr.io/your-project/node:20"
+
+# For AWS ECR:
+# export NODE_IMAGE="123456789012.dkr.ecr.us-east-1.amazonaws.com/node:20"
+
