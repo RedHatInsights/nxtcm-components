@@ -1,5 +1,8 @@
 /* Copyright Contributors to the Open Cluster Management project */
 import {
+  ActionList,
+  ActionListGroup,
+  ActionListItem,
   Alert,
   Button,
   DescriptionList,
@@ -16,9 +19,9 @@ import {
   WizardStep,
   WizardStepProps,
   WizardStepType,
-} from "@patternfly/react-core";
-import { ExclamationCircleIcon } from "@patternfly/react-icons";
-import { klona } from "klona/json";
+} from '@patternfly/react-core';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
+import { klona } from 'klona/json';
 import {
   Children,
   Fragment,
@@ -29,40 +32,40 @@ import {
   useEffect,
   useMemo,
   useState,
-} from "react";
-import { EditMode } from ".";
-import { DataContext } from "./contexts/DataContext";
-import { DisplayMode, DisplayModeContext } from "./contexts/DisplayModeContext";
-import { EditModeContext } from "./contexts/EditModeContext";
-import { ItemContext, useItem } from "./contexts/ItemContext";
+} from 'react';
+import { EditMode } from '.';
+import { DataContext } from './contexts/DataContext';
+import { DisplayMode, DisplayModeContext } from './contexts/DisplayModeContext';
+import { EditModeContext } from './contexts/EditModeContext';
+import { ItemContext, useItem } from './contexts/ItemContext';
 import {
   ShowValidationProvider,
   useSetShowValidation,
   useShowValidation,
-} from "./contexts/ShowValidationProvider";
-import { StepHasInputsProvider } from "./contexts/StepHasInputsProvider";
+} from './contexts/ShowValidationProvider';
+import { StepHasInputsProvider } from './contexts/StepHasInputsProvider';
 import {
   StepShowValidationProvider,
   useSetStepShowValidation,
   useStepShowValidation,
-} from "./contexts/StepShowValidationProvider";
+} from './contexts/StepShowValidationProvider';
 import {
   StepValidationProvider,
   useStepHasValidationError,
-} from "./contexts/StepValidationProvider";
+} from './contexts/StepValidationProvider';
 import {
   defaultStrings,
   StringContext,
   useStringContext,
   WizardStrings,
-} from "./contexts/StringContext";
+} from './contexts/StringContext';
 import {
   EditorValidationStatus,
   useEditorValidationStatus,
   useHasValidationError,
   ValidationProvider,
-} from "./contexts/ValidationProvider";
-import { Step } from "./Step";
+} from './contexts/ValidationProvider';
+import { Step } from './Step';
 
 export interface WizardProps {
   wizardStrings?: WizardStrings;
@@ -84,12 +87,8 @@ export interface WizardProps {
 export type WizardSubmit = (data: unknown) => Promise<void>;
 export type WizardCancel = () => void;
 
-export function Wizard(
-  props: WizardProps & { showHeader?: boolean; showYaml?: boolean }
-) {
-  const [data, setData] = useState(
-    props.defaultData ? klona(props.defaultData) : {}
-  );
+export function Wizard(props: WizardProps & { showHeader?: boolean; showYaml?: boolean }) {
+  const [data, setData] = useState(props.defaultData ? klona(props.defaultData) : {});
   const update = useCallback(
     (newData: any) => setData((data: unknown) => klona(newData ?? data)),
     []
@@ -116,26 +115,20 @@ export function Wizard(
                     <ValidationProvider>
                       <Drawer isExpanded={drawerExpanded} isInline>
                         <DrawerContent
-                          panelContent={
-                            <WizardDrawer yamlEditor={props.yamlEditor} />
-                          }
+                          panelContent={<WizardDrawer yamlEditor={props.yamlEditor} />}
                         >
                           <DrawerContentBody>
                             <ItemContext.Provider value={data}>
-                              <StringContext.Provider
-                                value={wizardStrings || defaultStrings}
-                              >
+                              <StringContext.Provider value={wizardStrings || defaultStrings}>
                                 <WizardInternal
-                                setUseWizardContext={props.setUseWizardContext}
+                                  setUseWizardContext={props.setUseWizardContext}
                                   onStepChange={props.onStepChange}
                                   title={props.title}
                                   onSubmit={props.onSubmit}
                                   onCancel={props.onCancel}
                                   hasButtons={props.hasButtons}
                                   submitButtonText={props.submitButtonText}
-                                  submittingButtonText={
-                                    props.submittingButtonText
-                                  }
+                                  submittingButtonText={props.submittingButtonText}
                                 >
                                   {props.children}
                                 </WizardInternal>
@@ -173,7 +166,7 @@ type WizardFooterProps = {
   setUseWizardContext?: any;
 };
 
-type WizardInternalProps = Omit<WizardFooterProps, "steps"> & {
+type WizardInternalProps = Omit<WizardFooterProps, 'steps'> & {
   title: string;
   children: ReactNode;
   onCancel: WizardCancel;
@@ -189,21 +182,17 @@ function WizardInternal({
   submitButtonText,
   submittingButtonText,
   onStepChange,
-  setUseWizardContext
+  setUseWizardContext,
 }: WizardInternalProps) {
   const { reviewLabel, stepsAriaLabel, contentAriaLabel } = useStringContext();
   const stepComponents = useMemo(
-    () => (
-      Children.toArray(children).filter(
-        (child) =>
-          (isValidElement(child))) as ReactElement[]
-    ),
+    () => Children.toArray(children).filter((child) => isValidElement(child)) as ReactElement[],
     [children]
   );
-  console.log("children", children)
+
   const reviewStep: StepComponent = useMemo(
     () => ({
-      id: "review-step",
+      id: 'review-step',
       name: reviewLabel,
       component: (
         <Step label={reviewLabel} id="review">
@@ -229,6 +218,7 @@ function WizardInternal({
   const steps = useMemo(() => {
     const steps: StepComponent[] = stepComponents.map((component) => {
       if (component.props.steps) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         const subSteps = component.props?.steps.map((step: any) => {
           return {
             id: step.props.id,
@@ -246,7 +236,7 @@ function WizardInternal({
               </Split>
             ),
             component: <Fragment key={step.props?.id}>{step}</Fragment>,
-          }
+          };
         });
         return {
           id: component.props?.id,
@@ -266,7 +256,7 @@ function WizardInternal({
           component: <Fragment key={component.props?.id}>{component}</Fragment>,
           isExpandable: component.props?.isExpandable,
           expandableStepComponent: component.props?.steps,
-          subSteps: subSteps
+          subSteps: subSteps,
         };
       }
 
@@ -292,13 +282,8 @@ function WizardInternal({
     });
     //steps.push(reviewStep);
     return steps;
-  }, [
-    reviewStep,
-    showValidation,
-    stepComponents,
-    stepHasValidationError,
-    stepShowValidation,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reviewStep, showValidation, stepComponents, stepHasValidationError, stepShowValidation]);
 
   return (
     <Fragment>
@@ -317,28 +302,31 @@ function WizardInternal({
         }
         onClose={onCancel}
       >
-        {steps.map(
-          ({ id, name, component, subSteps }) => {
-            if (subSteps) {
-              return (
-                <WizardStep
-                  id={id} key={id} name={name}
-                  isExpandable
-                  steps={subSteps.map((subStep: any) => {
-                    return (
-                      <WizardStep id={subStep.id} key={subStep.id} name={subStep.name}>{subStep.component}</WizardStep>
-                    )
-                  })}
-                />
-              )
-            }
+        {steps.map(({ id, name, component, subSteps }) => {
+          if (subSteps) {
             return (
-              <WizardStep key={id} id={id} name={name}>
-                {component}
-              </WizardStep>
+              <WizardStep
+                id={id}
+                key={id}
+                name={name}
+                isExpandable
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                steps={subSteps.map((subStep: any) => {
+                  return (
+                    <WizardStep id={subStep.id} key={subStep.id} name={subStep.name}>
+                      {subStep.component}
+                    </WizardStep>
+                  );
+                })}
+              />
             );
           }
-        )}
+          return (
+            <WizardStep key={id} id={id} name={name}>
+              {component}
+            </WizardStep>
+          );
+        })}
       </PFWizard>
     </Fragment>
   );
@@ -354,14 +342,14 @@ function MyFooter(props: WizardFooterProps) {
 
   const wizContext = useWizardContext();
 
-  console.log("ACTIVESTEP", wizContext)
-
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     props.setUseWizardContext(wizContext);
-  }, [props.setUseWizardContext])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.setUseWizardContext]);
 
   const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState("");
+  const [submitError, setSubmitError] = useState('');
 
   const { onSubmit, submitButtonText, submittingButtonText } = props;
 
@@ -370,7 +358,7 @@ function MyFooter(props: WizardFooterProps) {
   const onSubmitClickHandler = useCallback(
     (data: object) => {
       async function asyncSubmit() {
-        setSubmitError("");
+        setSubmitError('');
         setSubmitting(true);
         try {
           await onSubmit(data);
@@ -410,19 +398,14 @@ function MyFooter(props: WizardFooterProps) {
   const setStepShowValidation = useSetStepShowValidation();
 
   const onNextClick = useCallback(async () => {
-    const stepID = activeStep.id?.toString() ?? "";
+    const stepID = activeStep.id?.toString() ?? '';
     setStepShowValidation(stepID, true);
     if (!activeStepHasValidationError) {
       await onNext();
     }
-  }, [
-    activeStep.id,
-    activeStepHasValidationError,
-    onNext,
-    setStepShowValidation,
-  ]);
+  }, [activeStep.id, activeStepHasValidationError, onNext, setStepShowValidation]);
 
-  const isLastStep = activeStep.id === "review-step";
+  const isLastStep = activeStep.id === 'review-step';
   useEffect(() => {
     if (isLastStep) {
       // We are on the review step - show validation for all steps
@@ -430,7 +413,7 @@ function MyFooter(props: WizardFooterProps) {
     } else {
       // if not on review step and there was a submit error
       // assume user went back and fixed something
-      setSubmitError("");
+      setSubmitError('');
     }
   }, [activeStep, setShowValidation, isLastStep]);
 
@@ -448,56 +431,56 @@ function MyFooter(props: WizardFooterProps) {
   if (isLastStep) {
     return (
       <div className="pf-v6-u-box-shadow-sm-top">
-        {editorValidationStatus === EditorValidationStatus.failure &&
-          showWizardValidation && (
-            <Alert
-              title={fixEditorValidationErrorsMsg}
-              isInline
-              variant="danger"
-            />
-          )}
+        {editorValidationStatus === EditorValidationStatus.failure && showWizardValidation && (
+          <Alert title={fixEditorValidationErrorsMsg} isInline variant="danger" />
+        )}
         {wizardHasValidationError && showWizardValidation && (
           <Alert title={fixValidationErrorsMsg} isInline variant="danger" />
         )}
-        {editorValidationStatus === EditorValidationStatus.pending &&
-          showWizardValidation && (
-            <Alert
-              title={waitforEditorValidationErrorsMsg}
-              isInline
-              variant="warning"
-            />
-          )}
+        {editorValidationStatus === EditorValidationStatus.pending && showWizardValidation && (
+          <Alert title={waitforEditorValidationErrorsMsg} isInline variant="warning" />
+        )}
         {submitError && <Alert title={submitError} isInline variant="danger" />}
         <WizardFooterWrapper>
-          <Button
-            onClick={onSubmitClick}
-            isDisabled={
-              ((wizardHasValidationError ||
-                editorValidationStatus !== EditorValidationStatus.success) &&
-                showWizardValidation) ||
-              submitting
-            }
-            isLoading={submitting}
-            type="submit"
-          >
-            {!submitButtonText && (submitting ? submittingText : submitText)}
-            {submitting ? submittingButtonText : submitButtonText}
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              void (async () => {
-                await onBack();
-              })();
-            }}
-          >
-            {backButtonText}
-          </Button>
-          <div className="pf-v6-c-wizard__footer-cancel">
-            <Button variant="link" onClick={onClose}>
-              {cancelButtonText}
-            </Button>
-          </div>
+          <ActionList>
+            <ActionListGroup>
+              <ActionListItem>
+                <Button
+                  onClick={onSubmitClick}
+                  isDisabled={
+                    ((wizardHasValidationError ||
+                      editorValidationStatus !== EditorValidationStatus.success) &&
+                      showWizardValidation) ||
+                    submitting
+                  }
+                  isLoading={submitting}
+                  type="submit"
+                >
+                  {!submitButtonText && (submitting ? submittingText : submitText)}
+                  {submitting ? submittingButtonText : submitButtonText}
+                </Button>
+              </ActionListItem>
+              <ActionListItem>
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    void (async () => {
+                      await onBack();
+                    })();
+                  }}
+                >
+                  {backButtonText}
+                </Button>
+              </ActionListItem>
+            </ActionListGroup>
+            <ActionListGroup>
+              <ActionListItem>
+                <Button variant="link" onClick={onClose}>
+                  {cancelButtonText}
+                </Button>
+              </ActionListItem>
+            </ActionListGroup>
+          </ActionList>
         </WizardFooterWrapper>
         <RenderHiddenSteps stepComponents={props.steps} />
       </div>
@@ -510,41 +493,56 @@ function MyFooter(props: WizardFooterProps) {
         <Alert title={fixValidationErrorsMsg} isInline variant="danger" />
       )}
       <WizardFooterWrapper>
-        <Button
-          variant="primary"
-          onClick={() => {
-            void (async () => {
-              await onNextClick();
-            })();
-          }}
-          isDisabled={
-            (activeStepHasValidationError && activeStepShowValidation) ||
-            submitting
-          }
-        >
-          {nextButtonText}
-        </Button>
-        {
-          (wizContext.activeStep.index == 6 || wizContext.activeStep.index == 7 || wizContext.activeStep.index == 8) && (
-            <Button variant="secondary" onClick={() => wizContext.goToStepById("review-step")}>SKIP TO REVIEW</Button>
-          )
-        }
-        <Button
-          variant="secondary"
-          onClick={() => {
-            void (async () => {
-              await onBack();
-            })();
-          }}
-          isDisabled={activeStep.index === 1}
-        >
-          {backButtonText}
-        </Button>
-        <div className="pf-v6-c-wizard__footer-cancel">
-          <Button variant="link" onClick={onClose}>
-            {cancelButtonText}
-          </Button>
-        </div>
+        <ActionList>
+          <ActionListGroup>
+            <ActionListItem>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  void (async () => {
+                    await onNextClick();
+                  })();
+                }}
+                isDisabled={
+                  (activeStepHasValidationError && activeStepShowValidation) || submitting
+                }
+              >
+                {nextButtonText}
+              </Button>
+            </ActionListItem>
+
+            {(wizContext.activeStep.index == 6 ||
+              wizContext.activeStep.index == 7 ||
+              wizContext.activeStep.index == 8) && (
+              <ActionListItem>
+                <Button variant="secondary" onClick={() => wizContext.goToStepById('review-step')}>
+                  Skip to review
+                </Button>
+              </ActionListItem>
+            )}
+
+            <ActionListItem>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  void (async () => {
+                    await onBack();
+                  })();
+                }}
+                isDisabled={activeStep.index === 1}
+              >
+                {backButtonText}
+              </Button>
+            </ActionListItem>
+          </ActionListGroup>
+          <ActionListGroup>
+            <ActionListItem>
+              <Button variant="link" onClick={onClose}>
+                {cancelButtonText}
+              </Button>
+            </ActionListItem>
+          </ActionListGroup>
+        </ActionList>
       </WizardFooterWrapper>
       <RenderHiddenSteps stepComponents={props.steps} />
     </div>
@@ -555,7 +553,7 @@ function RenderHiddenSteps(props: { stepComponents: ReactElement[] }) {
   const { activeStep } = useWizardContext();
   return (
     <DisplayModeContext.Provider value={DisplayMode.StepsHidden}>
-      <div style={{ display: "none" }}>
+      <div style={{ display: 'none' }}>
         {props.stepComponents.filter(
           (component) => component.props.id !== activeStep.id.toString()
         )}

@@ -2,11 +2,15 @@
     "extends": "./tsconfig.json",
     "include": [
         "src/**/*",
-        "wizards/**/*"
+        ".storybook/**/*",
+        "packages/**/*"
     ],
     "exclude": [
         "node_modules",
         "dist",
-        "lib"
+        "build",
+        "**/lib",
+        "coverage"
     ]
 }
+
