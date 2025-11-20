@@ -20,6 +20,7 @@ import { ClusterWideProxySubstep } from './Steps/AdditionalSetupStep/ClusterWide
 import { ReviewStepData } from './Steps/ReviewStepData';
 import { MachineTypesDropdownType, OIDCConfig, Roles, SelectDropdownType, VPC } from '../types';
 import { WizardStepType } from '@patternfly/react-core';
+import { useTranslation } from '../../../context/TranslationContext';
 
 export type BasicSetupStepProps = {
   openShiftVersions: SelectDropdownType[];
@@ -45,6 +46,7 @@ type RosaWizardProps = {
 };
 
 export const RosaWizard = (props: RosaWizardProps) => {
+  const { t } = useTranslation();
   const { onSubmit, onCancel, title, wizardsStepsData } = props;
   const [isClusterWideProxySelected, setIsClusterWideProxySelected] =
     React.useState<boolean>(false);
@@ -66,11 +68,11 @@ export const RosaWizard = (props: RosaWizardProps) => {
     >
       <ExpandableStep
         id="basic-setup-step-id-expandable-section"
-        label="Basic setup"
+        label={t('Basic setup')}
         key="basic-setup-step-expandable-section-key"
         isExpandable
         steps={[
-          <Step label="Details" id="basic-setup-step-details" key="basic-setup-details">
+          <Step label={t('Details')} id="basic-setup-step-details" key="basic-setup-details">
             <DetailsSubStep
               openShiftVersions={wizardsStepsData.basicSetupStep.openShiftVersions}
               awsInfrastructureAccounts={wizardsStepsData.basicSetupStep.awsInfrastructureAccounts}
@@ -81,7 +83,7 @@ export const RosaWizard = (props: RosaWizardProps) => {
           </Step>,
           <Step
             id="roles-and-policies-sub-step"
-            label="Roles and policies"
+            label={t('Roles and policies')}
             key="roles-and-policies-sub-step-key"
           >
             <RolesAndPoliciesSubStep
@@ -91,7 +93,7 @@ export const RosaWizard = (props: RosaWizardProps) => {
               oicdConfig={wizardsStepsData.basicSetupStep.oicdConfig}
             />
           </Step>,
-          <Step id="networking-sub-step" label="Networking" key="networking-sub-step-key">
+          <Step id="networking-sub-step" label={t('Networking')} key="networking-sub-step-key">
             <NetworkingAndSubnetsSubStep
               machineTypes={wizardsStepsData.basicSetupStep.machineTypes}
               vpcList={wizardsStepsData.basicSetupStep.vpcList}
@@ -102,21 +104,21 @@ export const RosaWizard = (props: RosaWizardProps) => {
 
       <ExpandableStep
         id="additional-setup-step-id-expandable-section"
-        label="Additional setup"
+        label={t('Additional setup')}
         key="additional-setup-step-expandable-section-key"
         isExpandable
         steps={[
           <Step
             id="additional-setup-encryption"
             key="additional-setup-encryption-key"
-            label="Encryption (optional)"
+            label={t('Encryption (optional)')}
           >
             <EncryptionSubstep />
           </Step>,
           <Step
             id="additional-setup-networking"
             key="additional-setup-networking-key"
-            label="Networking (optional)"
+            label={t('Networking (optional)')}
           >
             <NetworkingOptionalSubstep
               setIsClusterWideProxySelected={setIsClusterWideProxySelected}
@@ -127,7 +129,7 @@ export const RosaWizard = (props: RosaWizardProps) => {
                 <Step
                   id="additional-setup-cluster-wide-proxy"
                   key="additional-setup-cluster-wide-proxy-key"
-                  label="Cluster-wide proxy"
+                  label={t('Cluster-wide proxy')}
                 >
                   <ClusterWideProxySubstep />
                 </Step>,
@@ -136,14 +138,14 @@ export const RosaWizard = (props: RosaWizardProps) => {
           <Step
             id="additional-setup-cluster-updates"
             key="additional-setup-cluster-updates-key"
-            label="Cluster updates (optional)"
+            label={t('Cluster updates (optional)')}
           >
             <ClusterUpdatesSubstep />
           </Step>,
         ]}
       />
 
-      <Step label={'Review'} id={'review-step'}>
+      <Step label={t('Review')} id={'review-step'}>
         <ReviewStepData goToStepId={getUseWizardContext} />
       </Step>
     </WizardPage>

@@ -3,6 +3,7 @@ import { Button, Stack, StackItem } from '@patternfly/react-core';
 import React from 'react';
 import { StepDrawer } from '../../../common/StepDrawer';
 import { SelectDropdownType } from '../../../../types';
+import { useTranslation } from '../../../../../../context/TranslationContext';
 
 type DetailsSubStepProps = {
   openShiftVersions: SelectDropdownType[];
@@ -19,11 +20,12 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   regions,
   awsAccountDataCallback,
 }) => {
+  const { t } = useTranslation();
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const drawerRef = React.useRef<HTMLSpanElement>(null);
   const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
   return (
-    <Section label="Details">
+    <Section label={t('Details')}>
       <StepDrawer
         isDrawerExpanded={isDrawerExpanded}
         setIsDrawerExpanded={setIsDrawerExpanded}
@@ -33,18 +35,20 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
           <StackItem>
             <WizTextInput
               path="cluster.name"
-              label="Cluster name"
-              placeholder="Enter the cluster name"
+              label={t('Cluster name')}
+              placeholder={t('Enter the cluster name')}
               required
-              labelHelp="This will be how we refer to your cluster in the OpenShift cluster list and will form part of the cluster console subdomain."
+              labelHelp={t(
+                'This will be how we refer to your cluster in the OpenShift cluster list and will form part of the cluster console subdomain.'
+              )}
             />
           </StackItem>
 
           <StackItem>
             <WizSelect
               path="cluster.cluster_version"
-              label="OpenShift version"
-              placeholder="Select an OpenShift version"
+              label={t('OpenShift version')}
+              placeholder={t('Select an OpenShift version')}
               options={openShiftVersions}
               required
             />
@@ -53,9 +57,11 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
           <StackItem>
             <WizSelect
               path="cluster.associated_aws_id"
-              label="Associated AWS infrastructure account"
-              placeholder="Select an AWS infrastructure account"
-              labelHelp="Your cluster's cloud resources will be created in the associated AWS infrastructure account. To continue, you must associate at least 1 account."
+              label={t('Associated AWS infrastructure account')}
+              placeholder={t('Select an AWS infrastructure account')}
+              labelHelp={t(
+                "Your cluster's cloud resources will be created in the associated AWS infrastructure account. To continue, you must associate at least 1 account."
+              )}
               options={awsInfrastructureAccounts}
               callbackFunction={awsAccountDataCallback}
               onValueChange={(_value, item) => {
@@ -71,7 +77,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                 variant="link"
                 onClick={() => setIsDrawerExpanded((prevExpanded) => !prevExpanded)}
               >
-                Associate a new AWS account
+                {t('Associate a new AWS account')}
               </Button>
             )}
           </StackItem>
@@ -79,9 +85,11 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
           <StackItem>
             <WizSelect
               path="cluster.billing_account_id"
-              label="Associated AWS billing account"
-              placeholder="Select an AWS billing account"
-              labelHelp="The AWS billing account is often the same as your Associated AWS infrastructure account, but does not have to be."
+              label={t('Associated AWS billing account')}
+              placeholder={t('Select an AWS billing account')}
+              labelHelp={t(
+                'The AWS billing account is often the same as your Associated AWS infrastructure account, but does not have to be.'
+              )}
               options={awsBillingAccounts}
               required
             />
@@ -93,9 +101,11 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
           <StackItem>
             <WizSelect
               path="cluster.region"
-              label="Region"
-              placeholder="Select a region"
-              labelHelp="The AWS Region where your compute nodes and control plane will be located. (should be link: Learn more abut AWS Regions.)"
+              label={t('Region')}
+              placeholder={t('Select a region')}
+              labelHelp={t(
+                'The AWS Region where your compute nodes and control plane will be located. (should be link: Learn more abut AWS Regions.)'
+              )}
               options={regions}
               required
             />
