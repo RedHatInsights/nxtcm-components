@@ -11,24 +11,17 @@ import {
   TextInputGroup,
   TextInputGroupMain,
   TextInputGroupUtilities,
-} from "@patternfly/react-core";
-import { TimesIcon } from "@patternfly/react-icons";
-import {
-  FormEvent,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { useStringContext } from "../contexts/StringContext";
-import { OptionType } from "./WizSelect";
+} from '@patternfly/react-core';
+import { TimesIcon } from '@patternfly/react-icons';
+import { FormEvent, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { useStringContext } from '../contexts/StringContext';
+import { Option, OptionType } from './WizSelect';
 
-type InputSelectProps = {
+type InputSelectProps<T> = {
   disabled?: boolean;
-  validated?: "error";
-  options: string[];
-  setOptions: (options: string[]) => void;
+  validated?: 'error';
+  options: (OptionType<T> | string)[];
+  setOptions: (options: (OptionType<T> | string)[]) => void;
   placeholder: string;
   value: string;
   onSelect: (value: string | undefined) => void;
@@ -38,7 +31,7 @@ type InputSelectProps = {
   required?: boolean;
 };
 
-export const InputSelect = ({
+export function InputSelect<T>({
   required,
   disabled,
   validated,
@@ -50,8 +43,8 @@ export const InputSelect = ({
   toggleRef,
   open,
   setOpen,
-}: InputSelectProps) => {
-  const [inputValue, setInputValue] = useState("");
+}: InputSelectProps<T>) {
+  const [inputValue, setInputValue] = useState('');
   const textInputRef = useRef<HTMLInputElement>(null);
   const onInputClick = useCallback(() => setOpen(!open), [open, setOpen]);
 
@@ -59,40 +52,59 @@ export const InputSelect = ({
     () =>
       setOptions([
         ...options.filter((option) =>
-          option.toLowerCase().includes(inputValue.toLowerCase())
+          typeof option === 'string' || typeof option === 'number'
+            ? option.toString().toLowerCase().includes(inputValue.toLowerCase())
+            : (option as Option<T>).label
+                .toString()
+                .toLowerCase()
+                .includes(inputValue.toLowerCase())
         ),
         inputValue,
-      ]),
+      ] as OptionType<T>[]),
     [inputValue, options, setOptions]
   );
 
   const onClear = useCallback(() => {
     onSelect(undefined);
-    setInputValue("");
+    setInputValue('');
     textInputRef?.current?.focus();
   }, [onSelect]);
 
   const onInputKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
-      if (!Array.isArray(value)) {
-        onSelect("");
-      }
-      setOpen(true);
-      switch (event.key) {
-        case "Backspace":
-          !Array.isArray(value) && onSelect("");
-          break;
+      if (!disabled) {
+        if (!Array.isArray(value)) {
+          onSelect('');
+        }
+        setOpen(true);
+        switch (event.key) {
+          case 'Backspace':
+            !Array.isArray(value) && onSelect('');
+            break;
+        }
       }
     },
     [onSelect, open, setOpen, value]
   );
 
-  const onTextInputChange = useCallback(
-    (_event: FormEvent<HTMLInputElement>, value: string) => {
-      setInputValue(value);
-    },
-    []
-  );
+  const onTextInputChange = useCallback((_event: FormEvent<HTMLInputElement>, value: string) => {
+    setInputValue(value);
+  }, []);
+
+  const valueString = useCallback(() => {
+    //can you add a check to see if the options array is a string or number?
+    const isSimpleOption = options.every(
+      (option) => typeof option === 'string' || typeof option === 'number'
+    );
+    if (isSimpleOption) {
+      return value;
+    } else {
+      return (
+        (options.find((option) => (option as OptionType<T>).value === value) as OptionType<T>)
+          ?.label ?? ''.toString()
+      );
+    }
+  }, [options, value]);
 
   return (
     <MenuToggle
@@ -102,11 +114,11 @@ export const InputSelect = ({
       isExpanded={open}
       isDisabled={disabled}
       isFullWidth
-      status={validated === "error" ? "danger" : undefined}
+      status={validated === 'error' ? 'danger' : undefined}
     >
       <TextInputGroup isPlain>
         <TextInputGroupMain
-          value={!Array.isArray(value) ? value || inputValue : inputValue}
+          value={!Array.isArray(value) ? valueString() || inputValue : inputValue}
           onClick={onInputClick}
           onChange={onTextInputChange}
           onKeyDown={onInputKeyDown}
@@ -119,7 +131,7 @@ export const InputSelect = ({
           aria-controls="select-typeahead-listbox"
         >
           {Array.isArray(value) && (
-            <LabelGroup style={{ marginTop: -8, marginBottom: -8 }}>
+            <LabelGroup style={{ marginTop: -8, marginBottom: -8 }} numLabels={9999}>
               {value.map((selection) => (
                 <Label readOnly key={selection}>
                   {selection}
@@ -130,9 +142,7 @@ export const InputSelect = ({
         </TextInputGroupMain>
 
         <TextInputGroupUtilities
-          {...((!inputValue && !value) || required
-            ? { style: { display: "none" } }
-            : {})}
+          {...((!inputValue && !value) || required ? { style: { display: 'none' } } : {})}
         >
           <Button variant="plain" onClick={onClear}>
             <TimesIcon aria-hidden />
@@ -141,11 +151,11 @@ export const InputSelect = ({
       </TextInputGroup>
     </MenuToggle>
   );
-};
+}
 
 type SelectListOptionsProps<T = any> = {
   value: string;
-  options: string[] | OptionType<T>[];
+  options: (string | OptionType<T>)[];
   footer?: ReactNode;
   isCreatable?: boolean;
   onCreate?: (value: string) => void;
@@ -166,13 +176,11 @@ export const SelectListOptions = ({
       {options.map((option, index) => {
         const isLastItem = index === options.length - 1;
         const isSingleItem = options.length === 1;
-        const isSimpleOption = typeof option === "string";
+        const isSimpleOption = typeof option === 'string';
         const valueString = String(isSimpleOption ? option : option.value);
-        const isCreateOption =
-          isSingleItem && isCreatable && value !== valueString;
+        const isCreateOption = isSingleItem && isCreatable && value !== valueString;
         const shouldSkipLastItem =
-          isLastItem &&
-          (!isSingleItem || (isCreatable && value === valueString));
+          isLastItem && (!isSingleItem || (isCreatable && value === valueString));
 
         if (shouldSkipLastItem) {
           return null;
@@ -189,8 +197,7 @@ export const SelectListOptions = ({
           displayText = option.label;
         }
 
-        const isDisabled =
-          displayText === noResults || (!isSimpleOption && option.disabled);
+        const isDisabled = displayText === noResults || (!isSimpleOption && option.disabled);
         const optionValue = !isSimpleOption ? option.id : option;
 
         return (
@@ -201,9 +208,7 @@ export const SelectListOptions = ({
             description={!isSimpleOption ? option.description : undefined}
             isDisabled={isDisabled}
             onClick={
-              isCreateOption
-                ? () => onCreate?.(!isSimpleOption ? option.value : option)
-                : undefined
+              isCreateOption ? () => onCreate?.(!isSimpleOption ? option.value : option) : undefined
             }
             isSelected={
               !isDisabled && !isCreateOption && Array.isArray(value)

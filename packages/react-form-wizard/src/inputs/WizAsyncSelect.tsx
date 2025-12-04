@@ -7,17 +7,18 @@ import {
   InputGroupItem,
   MenuToggleElement,
   Select as PfSelect,
-} from "@patternfly/react-core";
-import { ReactNode, useCallback, useEffect, useState } from "react";
-import { SpinnerButton } from "../components/SpinnerButton";
-import { SyncButton } from "../components/SyncButton";
-import { DisplayMode } from "../contexts/DisplayModeContext";
-import { useStringContext } from "../contexts/StringContext";
-import { InputCommonProps, getSelectPlaceholder, useInput } from "./Input";
-import { InputSelect, SelectListOptions } from "./InputSelect";
-import { WizFormGroup } from "./WizFormGroup";
+} from '@patternfly/react-core';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { SpinnerButton } from '../components/SpinnerButton';
+import { SyncButton } from '../components/SyncButton';
+import { DisplayMode } from '../contexts/DisplayModeContext';
+import { useStringContext } from '../contexts/StringContext';
+import { InputCommonProps, getSelectPlaceholder, useInput } from './Input';
+import { InputSelect, SelectListOptions } from './InputSelect';
+import { WizFormGroup } from './WizFormGroup';
+import { OptionType } from './WizSelect';
 
-import "./Select.css";
+import './Select.css';
 
 type WizAsyncSelectProps = InputCommonProps<string> & {
   label: string;
@@ -29,8 +30,7 @@ type WizAsyncSelectProps = InputCommonProps<string> & {
 
 export function WizAsyncSelect(props: WizAsyncSelectProps) {
   const { asyncCallback, isCreatable, footer } = props;
-  const { displayMode, value, setValue, validated, hidden, id, disabled } =
-    useInput(props);
+  const { displayMode, value, setValue, validated, hidden, id, disabled } = useInput(props);
   const { noResults } = useStringContext();
   const placeholder = getSelectPlaceholder(props);
   const [open, setOpen] = useState(false);
@@ -46,13 +46,16 @@ export function WizAsyncSelect(props: WizAsyncSelectProps) {
     [setValue]
   );
 
-  const handleSetOptions = useCallback((o: string[]) => {
-    if (o.length > 0) {
-      setFilteredOptions(o);
-    } else {
-      setFilteredOptions([noResults]);
-    }
-  }, []);
+  const handleSetOptions = useCallback(
+    (o: (OptionType<string> | string)[]) => {
+      if (o.length > 0 && typeof o[0] === 'string') {
+        setFilteredOptions(o as string[]);
+      } else {
+        setFilteredOptions([noResults]);
+      }
+    },
+    [noResults]
+  );
 
   const sync = useCallback(() => {
     if (displayMode !== DisplayMode.Step) return;
@@ -62,15 +65,12 @@ export function WizAsyncSelect(props: WizAsyncSelectProps) {
         if (asyncCallback) {
           asyncCallback()
             .then((options) => {
-              if (
-                Array.isArray(options) &&
-                options.every((option) => typeof option === "string")
-              ) {
+              if (Array.isArray(options) && options.every((option) => typeof option === 'string')) {
                 setOptions(options);
                 setFilteredOptions(options);
               } else {
                 // eslint-disable-next-line no-console
-                console.warn("AsyncSelect: options is not an array of strings");
+                console.warn('AsyncSelect: options is not an array of strings');
                 setOptions([]);
               }
             })
@@ -121,7 +121,7 @@ export function WizAsyncSelect(props: WizAsyncSelectProps) {
               />
             )}
             selected={value}
-            onSelect={(_event, value) => onSelect(value?.toString() ?? "")}
+            onSelect={(_event, value) => onSelect(value?.toString() ?? '')}
             shouldFocusFirstItemOnOpen={false}
           >
             <SelectListOptions

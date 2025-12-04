@@ -5,15 +5,16 @@ import {
   DescriptionListTerm,
   MenuToggleElement,
   Select as PfSelect,
-} from "@patternfly/react-core";
-import { ReactNode, useCallback, useState } from "react";
-import { DisplayMode } from "../contexts/DisplayModeContext";
-import { useStringContext } from "../contexts/StringContext";
-import { InputCommonProps, getSelectPlaceholder, useInput } from "./Input";
-import { InputSelect, SelectListOptions } from "./InputSelect";
-import { WizFormGroup } from "./WizFormGroup";
+} from '@patternfly/react-core';
+import { ReactNode, useCallback, useState } from 'react';
+import { DisplayMode } from '../contexts/DisplayModeContext';
+import { useStringContext } from '../contexts/StringContext';
+import { InputCommonProps, getSelectPlaceholder, useInput } from './Input';
+import { InputSelect, SelectListOptions } from './InputSelect';
+import { WizFormGroup } from './WizFormGroup';
+import { OptionType } from './WizSelect';
 
-import "./Select.css";
+import './Select.css';
 
 export type WizMultiSelectProps = InputCommonProps<string[]> & {
   placeholder?: string;
@@ -24,28 +25,23 @@ export type WizMultiSelectProps = InputCommonProps<string[]> & {
 };
 
 export function WizMultiSelect(props: WizMultiSelectProps) {
-  const {
-    displayMode: mode,
-    value,
-    setValue,
-    validated,
-    hidden,
-    id,
-    disabled,
-  } = useInput(props);
+  const { displayMode: mode, value, setValue, validated, hidden, id, disabled } = useInput(props);
   const { noResults } = useStringContext();
   const { isCreatable, options, footer } = props;
   const placeholder = getSelectPlaceholder(props);
   const [open, setOpen] = useState(false);
   const [filteredOptions, setFilteredOptions] = useState<string[]>([]);
 
-  const handleSetOptions = useCallback((o: string[]) => {
-    if (o.length > 0) {
-      setFilteredOptions(o);
-    } else {
-      setFilteredOptions([noResults]);
-    }
-  }, []);
+  const handleSetOptions = useCallback(
+    (o: (string | OptionType<any>)[]) => {
+      if (o.length > 0 && o.every((option) => typeof option === 'string')) {
+        setFilteredOptions(o as string[]);
+      } else {
+        setFilteredOptions([noResults]);
+      }
+    },
+    [noResults]
+  );
 
   const onSelect = useCallback(
     (selectedString: string | undefined) => {
@@ -78,9 +74,7 @@ export function WizMultiSelect(props: WizMultiSelectProps) {
           {value.length > 5 ? (
             `${value.length as string} selected`
           ) : (
-            <div
-              style={{ display: "flex", flexDirection: "column", rowGap: 8 }}
-            >
+            <div style={{ display: 'flex', flexDirection: 'column', rowGap: 8 }}>
               {(value as string[]).map((selection, index) => (
                 <div key={index}>{selection}</div>
               ))}
@@ -114,7 +108,7 @@ export function WizMultiSelect(props: WizMultiSelectProps) {
             />
           )}
           selected={value}
-          onSelect={(_event, value) => onSelect(value?.toString() ?? "")}
+          onSelect={(_event, value) => onSelect(value?.toString() ?? '')}
         >
           <SelectListOptions
             value={value}
