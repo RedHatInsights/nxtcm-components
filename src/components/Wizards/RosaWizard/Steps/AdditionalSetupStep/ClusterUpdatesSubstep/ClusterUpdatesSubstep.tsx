@@ -26,13 +26,13 @@ export const ClusterUpdatesSubstep = () => {
         <Radio
           id="cluster-upgrade-strategy-individual-radio-btn"
           label="Individual updates"
-          value="automatic"
+          value="manual"
           description="Schedule each update individually. When planning updates, make sure to consider the end of life dates from the {HERE GOES LINK WITH EXTERNAL ICON: lifecycle policy"
         />
         <Radio
           id="cluster-upgrade-strategy-recurring-radio-btn"
           label="Recurring updates"
-          value="manual"
+          value="automatic"
           description="The cluster control plan will be automatically updated based on your preferred day and start time when new patch updates ({HERE GOES LINK WITH EXTERNAL ICON: z-stream}) are available. When a new minor version is available, you'll be notified and must manually allow the cluster to update the next minor version. The compute nodes will need to be manually updated."
         />
       </WizRadioGroup>
