@@ -8,7 +8,7 @@ import {
   WizardStepType,
 } from "@patternfly/react-core";
 import { ReactNode, useCallback, useState } from "react";
-import { WizardYamlEditor } from "./components/YamlEditor";
+import { WizardYamlEditor } from "./components/WizardYamlEditor";
 import { Wizard, WizardProps } from "./Wizard";
 
 export type WizardPageProps = {

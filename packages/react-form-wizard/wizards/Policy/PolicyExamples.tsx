@@ -1,7 +1,7 @@
 /* Copyright Contributors to the Open Cluster Management project */
 import { useHistory } from 'react-router-dom'
 import { EditMode } from '../../src'
-import { YamlToObject } from '../../src/components/YamlEditor'
+import { YamlToObject } from '../../src/utils/yaml'
 import { Catalog } from '../Catalog'
 import {
   clusters,
