@@ -11,7 +11,6 @@ export const NetworkingOptionalSubstep = (props: any) => {
   const { cluster } = value;
   const defaultCidrValue = cluster?.cidr_default;
   const clusterWideProxy = cluster?.['configure_proxy'];
-
   React.useEffect(() => {
     setIsClusterWideProxySelected(!!clusterWideProxy);
     // eslint-disable-next-line react-hooks/exhaustive-deps

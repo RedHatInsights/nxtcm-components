@@ -57,12 +57,29 @@ export const RosaWizard = (props: RosaWizardProps) => {
 
   const callbackFunction = wizardsStepsData.callbackFunctions;
 
+  const defaultClusterData = {
+    cluster: {
+      encryption_keys: 'default',
+      etcd_encryption: false,
+      configure_proxy: false,
+      cidr_default: true,
+      network_machine_cidr: '10.0.0.0/16',
+      network_service_cidr: '172.30.0.0/16',
+      network_pod_cidr: '10.128.0.0/14',
+      network_host_prefix: '/23',
+      autoscaling: false,
+      nodes_compute: 2,
+      upgrade_policy: 'automatic',
+      cluster_privacy: 'external',
+    },
+  };
+
   return (
     <WizardPage
       onSubmit={onSubmit}
       onCancel={() => onCancel()}
       title={title}
-      defaultData={{}}
+      defaultData={defaultClusterData}
       setUseWizardContext={setUseWizardContext}
       onStepChange={onStepChange}
     >
