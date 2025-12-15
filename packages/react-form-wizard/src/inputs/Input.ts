@@ -1,25 +1,21 @@
 /* Copyright Contributors to the Open Cluster Management project */
-import get from "get-value";
-import { ReactNode, useCallback, useContext, useState } from "react";
-import set from "set-value";
-import { EditMode } from "..";
-import { useData } from "../contexts/DataContext";
-import { useDisplayMode } from "../contexts/DisplayModeContext";
-import { useEditMode } from "../contexts/EditModeContext";
-import {
-  useHasInputs,
-  useSetHasInputs,
-  useUpdateHasInputs,
-} from "../contexts/HasInputsProvider";
-import { useHasValue, useSetHasValue } from "../contexts/HasValueProvider";
-import { ItemContext } from "../contexts/ItemContext";
-import { useShowValidation } from "../contexts/ShowValidationProvider";
-import { useStringContext } from "../contexts/StringContext";
+import get from 'get-value';
+import { ReactNode, useCallback, useContext, useState } from 'react';
+import set from 'set-value';
+import { EditMode } from '..';
+import { useData } from '../contexts/DataContext';
+import { useDisplayMode } from '../contexts/DisplayModeContext';
+import { useEditMode } from '../contexts/EditModeContext';
+import { useHasInputs, useSetHasInputs, useUpdateHasInputs } from '../contexts/HasInputsProvider';
+import { useHasValue, useSetHasValue } from '../contexts/HasValueProvider';
+import { ItemContext } from '../contexts/ItemContext';
+import { useShowValidation } from '../contexts/ShowValidationProvider';
+import { useStringContext } from '../contexts/StringContext';
 import {
   useHasValidationError,
   useSetHasValidationError,
   useValidate,
-} from "../contexts/ValidationProvider";
+} from '../contexts/ValidationProvider';
 
 export type HiddenFn = (item: any) => boolean;
 
@@ -43,22 +39,18 @@ export type InputCommonProps<ValueT = any> = {
   inputValueToPathValue?: (inputValue: unknown, pathValue: unknown) => unknown;
   pathValueToInputValue?: (pathValue: unknown) => unknown;
   onValueChange?: (value: unknown, item?: any) => void;
+  validateOnBlur?: boolean;
 };
 
 export function convertId(props: { id?: string; path: string }) {
   if (props.id) return props.id;
-  return props.path?.toLowerCase().split(".").join("-") ?? "";
+  return props.path?.toLowerCase().split('.').join('-') ?? '';
 }
 
 export function useValue(
   props: Pick<
     InputCommonProps,
-    | "id"
-    | "path"
-    | "label"
-    | "inputValueToPathValue"
-    | "pathValueToInputValue"
-    | "onValueChange"
+    'id' | 'path' | 'label' | 'inputValueToPathValue' | 'pathValueToInputValue' | 'onValueChange'
   >,
   defaultValue: any
 ): [value: any, setValue: (value: any) => void] {
@@ -85,27 +77,21 @@ export function useValue(
 }
 
 export function useInputValidation(
-  props: Pick<
-    InputCommonProps,
-    "id" | "path" | "label" | "required" | "validation"
-  >
+  props: Pick<InputCommonProps, 'id' | 'path' | 'label' | 'required' | 'validation'>
 ) {
-  const [value] = useValue(props, "");
+  const [value] = useValue(props, '');
   const showValidation = useShowValidation();
   const item = useContext(ItemContext);
   const { required } = useStringContext();
   let error: string | undefined = undefined;
-  let validated: "error" | undefined = undefined;
-  if (
-    props.required &&
-    (!value || (Array.isArray(value) && value.length === 0))
-  ) {
+  let validated: 'error' | undefined = undefined;
+  if (props.required && (!value || (Array.isArray(value) && value.length === 0))) {
     error = required;
   } else if (props.validation) {
     error = props.validation(value, item);
   }
   if (showValidation) {
-    validated = error ? "error" : undefined;
+    validated = error ? 'error' : undefined;
   }
   return { validated, error };
 }
@@ -118,7 +104,7 @@ export function useInputHidden(props: { hidden?: (item: any) => boolean }) {
 export function useInput(props: InputCommonProps) {
   const editMode = useEditMode();
   const displayMode = useDisplayMode();
-  const [value, setValue] = useValue(props, "");
+  const [value, setValue] = useValue(props, '');
   const hidden = useInputHidden(props);
 
   const setHasInputs = useSetHasInputs();
@@ -130,6 +116,7 @@ export function useInput(props: InputCommonProps) {
   }
 
   const { validated, error } = useInputValidation(props);
+
   const hasValidationError = useHasValidationError();
   const setHasValidationError = useSetHasValidationError();
   if (!hidden && error && !hasValidationError) {
@@ -144,11 +131,7 @@ export function useInput(props: InputCommonProps) {
   const [previousError, setPreviousError] = useState(error);
   const validate = useValidate();
 
-  if (
-    value !== previousValue ||
-    hidden !== previousHidden ||
-    error !== previousError
-  ) {
+  if (value !== previousValue || hidden !== previousHidden || error !== previousError) {
     setPreviousValue(value);
     setPreviousHidden(hidden);
     setPreviousError(error);
@@ -194,31 +177,21 @@ function lowercaseFirst(label: string) {
   return label;
 }
 
-export function getEnterPlaceholder(props: {
-  label?: string;
-  placeholder?: string;
-}) {
+export function getEnterPlaceholder(props: { label?: string; placeholder?: string }) {
   return (
     props.placeholder ??
-    (props.label && props.label.length
-      ? `Enter the ${lowercaseFirst(props.label)}`
-      : "")
+    (props.label && props.label.length ? `Enter the ${lowercaseFirst(props.label)}` : '')
   );
 }
 
-export function getSelectPlaceholder(props: {
-  label: string;
-  placeholder?: string;
-}) {
+export function getSelectPlaceholder(props: { label: string; placeholder?: string }) {
   return props.placeholder ?? `Select the ${lowercaseFirst(props.label)}`;
 }
 
-export function getCollapsedPlaceholder(props: {
-  collapsedPlaceholder?: ReactNode;
-}) {
-  return props.collapsedPlaceholder ?? "Expand to edit";
+export function getCollapsedPlaceholder(props: { collapsedPlaceholder?: ReactNode }) {
+  return props.collapsedPlaceholder ?? 'Expand to edit';
 }
 
 export function getAddPlaceholder(props: { placeholder?: string }) {
-  return props.placeholder ?? "Add";
+  return props.placeholder ?? 'Add';
 }

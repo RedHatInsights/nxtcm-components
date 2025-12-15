@@ -22,7 +22,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
   const { update } = useData();
   const { cluster } = value;
 
-  const selectedVPC = props.vpcList.find((vpc: VPC) => vpc.id === cluster?.selected_vpc);
+  const selectedVPC = props.vpcList.find((vpc: VPC) => vpc.id === cluster?.selected_vpc.id);
 
   const privateSubnets = selectedVPC?.aws_subnets.filter((privateSubnet: Subnet) =>
     privateSubnet.name.includes('private')
@@ -111,6 +111,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
         <WizSelect
           label={`${t('Select a VPC to install your machine pools into your selected regions:')} ${cluster?.region}`}
           path="cluster.selected_vpc"
+          keyPath="id"
           placeholder={t('Select a VPC to install your machine pools into')}
           required
           labelHelp={t(
@@ -119,9 +120,12 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
           options={props.vpcList.map((vpc: any) => {
             return {
               label: vpc.name,
-              value: vpc.id,
+              value: vpc,
             };
           })}
+          pathValueToInputValue={(vpc: any) => {
+            return vpc?.name ?? '';
+          }}
         />
 
         <WizSelect

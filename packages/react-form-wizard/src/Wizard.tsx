@@ -66,6 +66,10 @@ import {
   ValidationProvider,
 } from './contexts/ValidationProvider';
 import { Step } from './Step';
+import {
+  StepTouchedValidationProvider,
+  useStepHasTouchedValidationError,
+} from './contexts/TouchedValidationProvider';
 
 export interface WizardProps {
   wizardStrings?: WizardStrings;
@@ -108,40 +112,42 @@ export function Wizard(props: WizardProps & { showHeader?: boolean; showYaml?: b
       <StepHasInputsProvider>
         <StepShowValidationProvider>
           <StepValidationProvider>
-            <DisplayModeContext.Provider value={displayMode}>
-              <DataContext.Provider value={{ update }}>
-                <ItemContext.Provider value={data}>
-                  <ShowValidationProvider>
-                    <ValidationProvider>
-                      <Drawer isExpanded={drawerExpanded} isInline>
-                        <DrawerContent
-                          panelContent={<WizardDrawer yamlEditor={props.yamlEditor} />}
-                        >
-                          <DrawerContentBody>
-                            <ItemContext.Provider value={data}>
-                              <StringContext.Provider value={wizardStrings || defaultStrings}>
-                                <WizardInternal
-                                  setUseWizardContext={props.setUseWizardContext}
-                                  onStepChange={props.onStepChange}
-                                  title={props.title}
-                                  onSubmit={props.onSubmit}
-                                  onCancel={props.onCancel}
-                                  hasButtons={props.hasButtons}
-                                  submitButtonText={props.submitButtonText}
-                                  submittingButtonText={props.submittingButtonText}
-                                >
-                                  {props.children}
-                                </WizardInternal>
-                              </StringContext.Provider>
-                            </ItemContext.Provider>
-                          </DrawerContentBody>
-                        </DrawerContent>
-                      </Drawer>
-                    </ValidationProvider>
-                  </ShowValidationProvider>
-                </ItemContext.Provider>
-              </DataContext.Provider>
-            </DisplayModeContext.Provider>
+            <StepTouchedValidationProvider>
+              <DisplayModeContext.Provider value={displayMode}>
+                <DataContext.Provider value={{ update }}>
+                  <ItemContext.Provider value={data}>
+                    <ShowValidationProvider>
+                      <ValidationProvider>
+                        <Drawer isExpanded={drawerExpanded} isInline>
+                          <DrawerContent
+                            panelContent={<WizardDrawer yamlEditor={props.yamlEditor} />}
+                          >
+                            <DrawerContentBody>
+                              <ItemContext.Provider value={data}>
+                                <StringContext.Provider value={wizardStrings || defaultStrings}>
+                                  <WizardInternal
+                                    setUseWizardContext={props.setUseWizardContext}
+                                    onStepChange={props.onStepChange}
+                                    title={props.title}
+                                    onSubmit={props.onSubmit}
+                                    onCancel={props.onCancel}
+                                    hasButtons={props.hasButtons}
+                                    submitButtonText={props.submitButtonText}
+                                    submittingButtonText={props.submittingButtonText}
+                                  >
+                                    {props.children}
+                                  </WizardInternal>
+                                </StringContext.Provider>
+                              </ItemContext.Provider>
+                            </DrawerContentBody>
+                          </DrawerContent>
+                        </Drawer>
+                      </ValidationProvider>
+                    </ShowValidationProvider>
+                  </ItemContext.Provider>
+                </DataContext.Provider>
+              </DisplayModeContext.Provider>
+            </StepTouchedValidationProvider>
           </StepValidationProvider>
         </StepShowValidationProvider>
       </StepHasInputsProvider>
@@ -391,6 +397,9 @@ function MyFooter(props: WizardFooterProps) {
 
   const stepHasValidationError = useStepHasValidationError();
   const activeStepId = activeStep.id.toString();
+
+  const stepHasTouchedValidationError = useStepHasTouchedValidationError();
+  const activeStepHasTouchedError = Object.values(stepHasTouchedValidationError).some(Boolean);
   const activeStepHasValidationError = stepHasValidationError[activeStepId];
   const stepShowValidation = useStepShowValidation();
   const activeStepShowValidation = stepShowValidation[activeStepId];
@@ -504,7 +513,9 @@ function MyFooter(props: WizardFooterProps) {
                   })();
                 }}
                 isDisabled={
-                  (activeStepHasValidationError && activeStepShowValidation) || submitting
+                  (activeStepHasValidationError &&
+                    (activeStepShowValidation || activeStepHasTouchedError)) ||
+                  submitting
                 }
               >
                 {nextButtonText}
