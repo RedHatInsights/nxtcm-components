@@ -24,11 +24,35 @@ export const ReviewStepData = (props: any) => {
   const [isRolesAndPoliciesExpanded, setIsRolesAndPoliciesExpanded] = React.useState<boolean>(true);
   const [isNetworkingAndSubnetsExpanded, setIsNetworkingAndSubnetsExpanded] =
     React.useState<boolean>(true);
-  const [isEncryptionExpanded, setIsEncryptionExpanded] = React.useState<boolean>(true);
+  const [isEncryptionExpanded, setIsEncryptionExpanded] = React.useState<boolean>(false);
   const [isOptionalNetworkingExpanded, setIsOptionalNetworkingExpanded] =
-    React.useState<boolean>(true);
+    React.useState<boolean>(false);
   const [isOptionalClusterUpgradesExpanded, setIsOptionalClusterUpgradesExpanded] =
-    React.useState<boolean>(true);
+    React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    if (
+      (cluster?.encryption_keys && cluster?.encryption_keys !== 'default') ||
+      cluster?.etcd_encryption ||
+      cluster?.etcd_key_arn ||
+      cluster?.kms_key_arn
+    ) {
+      setIsEncryptionExpanded(true);
+    }
+    if (cluster?.cidr_default && cluster?.cidr_default === false) {
+      setIsOptionalNetworkingExpanded(true);
+    }
+    if (cluster?.upgrade_policy === 'manual') {
+      setIsOptionalClusterUpgradesExpanded(true);
+    }
+  }, [
+    cluster?.cidr_default,
+    cluster?.encryption_keys,
+    cluster?.etcd_encryption,
+    cluster?.etcd_key_arn,
+    cluster?.kms_key_arn,
+    cluster?.upgrade_policy,
+  ]);
 
   return (
     <Section label={t('Review your ROSA cluster')}>
