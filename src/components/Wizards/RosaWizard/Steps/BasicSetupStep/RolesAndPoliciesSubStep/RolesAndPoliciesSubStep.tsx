@@ -5,6 +5,8 @@ import PopoverHintWithTitle from '../../../common/PopoverHitWithTitle';
 import { OIDCConfigHint } from '../../../common/OIDCConfigHint';
 import { OIDCConfig, SelectDropdownType } from '../../../../types';
 import { useTranslation } from '../../../../../../context/TranslationContext';
+import { validateCustomOperatorRolesPrefix } from '../../../validators';
+import { createOperatorRolesPrefix } from '../../../helpers';
 
 type RolesAndPoliciesSubStep = {
   installerRoles: SelectDropdownType[];
@@ -23,6 +25,12 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
   const { cluster } = useItem();
+
+  React.useEffect(() => {
+    if (cluster?.name && !cluster.custom_operator_roles_prefix) {
+      cluster.custom_operator_roles_prefix = createOperatorRolesPrefix(cluster.name);
+    }
+  }, [cluster]);
 
   const rosaCommand = `rosa create operator-roles --prefix "${cluster?.custom_operator_roles_prefix}" --oidc-config-id "${cluster?.byo_oidc_config_id}" --hosted-cp --installer-role-arn ${cluster?.installer_role_arn}`;
 
@@ -99,6 +107,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
           toggleText={t('Operator role prefix')}
         >
           <WizTextInput
+            validation={validateCustomOperatorRolesPrefix}
             path="cluster.custom_operator_roles_prefix"
             label={t('Operator roles prefix')}
             labelHelp={t(

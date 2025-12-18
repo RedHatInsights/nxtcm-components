@@ -4,6 +4,7 @@ import React from 'react';
 import { StepDrawer } from '../../../common/StepDrawer';
 import { SelectDropdownType } from '../../../../types';
 import { useTranslation } from '../../../../../../context/TranslationContext';
+import { validateClusterName } from '../../../validators';
 
 type DetailsSubStepProps = {
   openShiftVersions: SelectDropdownType[];
@@ -24,6 +25,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const drawerRef = React.useRef<HTMLSpanElement>(null);
   const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
+
   return (
     <Section label={t('Details')}>
       <StepDrawer
@@ -34,8 +36,10 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
         <Stack hasGutter>
           <StackItem>
             <WizTextInput
+              validation={validateClusterName}
               path="cluster.name"
               label={t('Cluster name')}
+              validateOnBlur
               placeholder={t('Enter the cluster name')}
               required
               labelHelp={t(

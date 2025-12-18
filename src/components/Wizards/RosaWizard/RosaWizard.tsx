@@ -139,6 +139,7 @@ export const RosaWizard = (props: RosaWizardProps) => {
           >
             <NetworkingOptionalSubstep
               setIsClusterWideProxySelected={setIsClusterWideProxySelected}
+              vpcList={wizardsStepsData.basicSetupStep.vpcList}
             />
           </Step>,
           ...(isClusterWideProxySelected
