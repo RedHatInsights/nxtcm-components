@@ -1,5 +1,6 @@
+/* Copyright Contributors to the Open Cluster Management project */
 import React, { useEffect, useRef } from 'react';
-import styles from './YamlCodeEditor.module.scss';
+import styles from './YamlCodeEditor.module.css';
 import { highlightYaml } from './syntaxHighlighter';
 
 export interface YamlCodeEditorProps {
@@ -132,3 +133,4 @@ export const YamlCodeEditor: React.FC<YamlCodeEditorProps> = ({
     </div>
   );
 };
+
