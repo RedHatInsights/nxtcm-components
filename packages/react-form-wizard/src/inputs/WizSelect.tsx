@@ -7,16 +7,15 @@ import {
   InputGroupItem,
   MenuToggleElement,
   Select as PfSelect,
-} from "@patternfly/react-core";
-import get from "get-value";
-import { ReactNode, useCallback, useMemo, useState } from "react";
-import { DisplayMode } from "../contexts/DisplayModeContext";
-import { useStringContext } from "../contexts/StringContext";
-import { InputCommonProps, getSelectPlaceholder, useInput } from "./Input";
-import { InputSelect, SelectListOptions } from "./InputSelect";
-import { WizFormGroup } from "./WizFormGroup";
+} from '@patternfly/react-core';
+import get from 'get-value';
+import { ReactNode, useCallback, useMemo, useState } from 'react';
+import { DisplayMode } from '../contexts/DisplayModeContext';
+import { InputCommonProps, getSelectPlaceholder, useInput } from './Input';
+import { InputSelect, SelectListOptions } from './InputSelect';
+import { WizFormGroup } from './WizFormGroup';
 
-import "./Select.css";
+import './Select.css';
 
 export interface Option<T> {
   id?: string;
@@ -26,7 +25,7 @@ export interface Option<T> {
   disabled?: boolean;
 }
 
-export type OptionType<T> = Omit<Option<T>, "value"> & {
+export type OptionType<T> = Omit<Option<T>, 'value'> & {
   value: string | number | T;
   keyedValue: string | number;
 };
@@ -53,11 +52,11 @@ type WizSelectCommonProps<T> = InputCommonProps<T> & {
 };
 
 interface WizSelectSingleProps<T> extends WizSelectCommonProps<T> {
-  variant: "single";
+  variant: 'single';
   options?: (Option<T> | string | number)[];
 }
 
-export function WizSelect<T>(props: Omit<WizSelectSingleProps<T>, "variant">) {
+export function WizSelect<T>(props: Omit<WizSelectSingleProps<T>, 'variant'>) {
   return <WizSelectBase<T> {...props} variant="single" />;
 }
 
@@ -75,13 +74,12 @@ function WizSelectBase<T = any>(props: SelectProps<T>) {
     required,
   } = useInput(props);
 
-  const { noResults } = useStringContext();
   const placeholder = getSelectPlaceholder(props);
   const keyPath = props.keyPath ?? props.path;
   const isCreatable = props.isCreatable;
   const [open, setOpen] = useState(false);
 
-  const [filteredOptions, setFilteredOptions] = useState<OptionType<T>[]>([]);
+  const [filteredOptions, setFilteredOptions] = useState<(string | OptionType<T>)[]>([]);
 
   // The drop down items with descriptions - optionally grouped
   const selectOptions: OptionType<T>[] | undefined = useMemo(() => {
@@ -91,7 +89,7 @@ function WizSelectBase<T = any>(props: SelectProps<T>) {
       let value: string | number | T;
       let keyedValue: string | number;
       let description: string | undefined;
-      if (typeof option === "string" || typeof option === "number") {
+      if (typeof option === 'string' || typeof option === 'number') {
         id = option.toString();
         label = option.toString();
         value = option;
@@ -99,58 +97,27 @@ function WizSelectBase<T = any>(props: SelectProps<T>) {
       } else {
         id = option.id ?? option.label;
         label = option.label;
-        if (!keyPath) throw new Error("keyPath is required");
+        if (!keyPath) throw new Error('keyPath is required');
         value = option.value;
         description = option.description;
         keyedValue = get(value as any, keyPath);
         switch (typeof keyedValue) {
-          case "string":
-          case "number":
+          case 'string':
+          case 'number':
             break;
           default:
-            throw new Error("keyedValue is not a string or number");
+            throw new Error('keyedValue is not a string or number');
         }
       }
       return { id, label, value, keyedValue, description };
     });
   }, [props.options, keyPath]);
 
-  const inputSelectOptions = useMemo(() => {
-    return selectOptions?.map((option) => option.value?.toString() ?? "") ?? [];
-  }, [selectOptions]);
-
-  const handleSetOptions = useCallback(
-    (o: string[]) => {
-      const filtered =
-        selectOptions?.filter((option) => {
-          const valueStr =
-            typeof option.value === "string"
-              ? option.value
-              : typeof option.value === "number"
-              ? option.value.toString()
-              : String(option.value);
-          return o.includes(valueStr);
-        }) ?? [];
-
-      if (filtered.length > 0) {
-        setFilteredOptions([
-          ...filtered,
-          { id: "input", label: "", value: o[0], keyedValue: "" },
-        ]);
-      } else {
-        setFilteredOptions([
-          { id: o[0], label: noResults, value: o[0], keyedValue: "" },
-        ]);
-      }
-    },
-    [selectOptions]
-  );
-
   const onSelect = useCallback(
     (selectOptionObject: string | undefined) => {
       const idOption = selectOptions?.find((o) => o.id === selectOptionObject);
       if (idOption) {
-        props.callbackFunction?.(idOption.value)
+        props.callbackFunction?.(idOption.value);
         setValue(idOption.value);
       } else {
         setValue(selectOptionObject);
@@ -188,8 +155,8 @@ function WizSelectBase<T = any>(props: SelectProps<T>) {
                   disabled={disabled}
                   validated={validated}
                   placeholder={placeholder}
-                  options={inputSelectOptions}
-                  setOptions={handleSetOptions}
+                  options={selectOptions ?? []}
+                  setOptions={setFilteredOptions}
                   toggleRef={toggleRef}
                   value={value}
                   onSelect={onSelect}
@@ -198,7 +165,7 @@ function WizSelectBase<T = any>(props: SelectProps<T>) {
                 />
               )}
               selected={value}
-              onSelect={(_event, value) => onSelect(value?.toString() ?? "")}
+              onSelect={(_event, value) => onSelect(value?.toString() ?? '')}
             >
               <SelectListOptions
                 value={value}
@@ -206,6 +173,7 @@ function WizSelectBase<T = any>(props: SelectProps<T>) {
                 isCreatable={isCreatable}
                 onCreate={props.onCreate}
                 footer={props.footer}
+                isMultiSelect={false}
               />
             </PfSelect>
           </InputGroupItem>
