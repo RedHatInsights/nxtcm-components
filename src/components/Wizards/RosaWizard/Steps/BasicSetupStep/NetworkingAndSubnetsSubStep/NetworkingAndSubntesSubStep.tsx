@@ -22,7 +22,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
   const { update } = useData();
   const { cluster } = value;
 
-  const selectedVPC = props.vpcList.find((vpc: VPC) => vpc.id === cluster?.selected_vpc.id);
+  const selectedVPC = props.vpcList.find((vpc: VPC) => vpc.id === cluster?.selected_vpc?.id);
 
   const privateSubnets = selectedVPC?.aws_subnets.filter((privateSubnet: Subnet) =>
     privateSubnet.name.includes('private')
