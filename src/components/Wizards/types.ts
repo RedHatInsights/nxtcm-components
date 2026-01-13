@@ -44,6 +44,12 @@ export type Subnet = {
   availability_zone: string;
 };
 
+export type CIDRSubnet = {
+  cidr_block: string;
+  name: string;
+  subnet_id: string;
+};
+
 export type VPC = {
   id: string;
   name: string;

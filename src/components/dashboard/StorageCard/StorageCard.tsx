@@ -1,5 +1,5 @@
+import { Flex, FlexItem } from '@patternfly/react-core';
 import React from 'react';
-import { Card, CardTitle, CardBody, CardFooter } from '@patternfly/react-core';
 import styles from './StorageCard.module.scss';
 
 export interface StorageData {
@@ -38,86 +38,85 @@ export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMor
   const strokeOffset = circumference - (usagePercentage / 100) * circumference;
 
   return (
-    <Card className={styles.storageCard}>
-      <CardTitle data-testid="header">Storage</CardTitle>
-      <CardBody>
-        <div className={styles.content}>
-          {/* circular progress indicator */}
-          <div className={styles.circularProgress}>
-            <svg width="200" height="200" viewBox="0 0 200 200">
-              {/* background circle */}
-              <circle cx="100" cy="100" r={radius} fill="none" stroke="#d2d2d2" strokeWidth="16" />
-              {/* progress circle */}
-              <circle
-                cx="100"
-                cy="100"
-                r={radius}
-                fill="none"
-                stroke="#0066cc"
-                strokeWidth="16"
-                strokeDasharray={circumference}
-                strokeDashoffset={strokeOffset}
-                strokeLinecap="round"
-                transform="rotate(-90 100 100)"
-                className={styles.progressCircle}
-              />
-            </svg>
-            <div className={styles.percentageLabel}>
-              <div className={styles.percentage} data-testid="percentage">
-                {usagePercentage}%
-              </div>
-              <div className={styles.sublabel}>of {totalStorage.toFixed(2)} TiB used</div>
+    <>
+      <div className={styles.content}>
+        {/* circular progress indicator */}
+        <div className={styles.circularProgress}>
+          <svg width="200" height="200" viewBox="0 0 200 200">
+            {/* background circle */}
+            <circle cx="100" cy="100" r={radius} fill="none" stroke="#d2d2d2" strokeWidth="16" />
+            {/* progress circle */}
+            <circle
+              cx="100"
+              cy="100"
+              r={radius}
+              fill="none"
+              stroke="#0066cc"
+              strokeWidth="16"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeOffset}
+              strokeLinecap="round"
+              transform="rotate(-90 100 100)"
+              className={styles.progressCircle}
+            />
+          </svg>
+          <div className={styles.percentageLabel}>
+            <div className={styles.percentage} data-testid="percentage">
+              {usagePercentage}%
             </div>
+            <div className={styles.sublabel}>of {totalStorage.toFixed(2)} TiB used</div>
+          </div>
+        </div>
+
+        {/* storage details */}
+        <div className={styles.details}>
+          <div className={styles.totalStorage}>
+            <div className={styles.totalValue} data-testid="total-used">
+              {totalUsed.toFixed(2)} TiB
+            </div>
+            <div className={styles.totalLabel}>Total storage used</div>
           </div>
 
-          {/* storage details */}
-          <div className={styles.details}>
-            <div className={styles.totalStorage}>
-              <div className={styles.totalValue} data-testid="total-used">
-                {totalUsed.toFixed(2)} TiB
-              </div>
-              <div className={styles.totalLabel}>Total storage used</div>
+          <div className={styles.breakdown}>
+            <div className={styles.breakdownItem}>
+              <span className={`${styles.dot} ${styles.rosaDot}`}></span>
+              <span className={styles.label}>ROSA clusters:</span>
+              <span className={styles.value} data-testid="rosa-clusters">
+                {rosaClusters.toFixed(2)} TiB
+              </span>
             </div>
-
-            <div className={styles.breakdown}>
-              <div className={styles.breakdownItem}>
-                <span className={`${styles.dot} ${styles.rosaDot}`}></span>
-                <span className={styles.label}>ROSA clusters:</span>
-                <span className={styles.value} data-testid="rosa-clusters">
-                  {rosaClusters.toFixed(2)} TiB
-                </span>
-              </div>
-              <div className={styles.breakdownItem}>
-                <span className={`${styles.dot} ${styles.aroDot}`}></span>
-                <span className={styles.label}>ARO Clusters:</span>
-                <span className={styles.value} data-testid="aro-clusters">
-                  {aroClusters.toFixed(2)} TiB
-                </span>
-              </div>
-              <div className={styles.breakdownItem}>
-                <span className={`${styles.dot} ${styles.osdDot}`}></span>
-                <span className={styles.label}>OSD Clusters:</span>
-                <span className={styles.value} data-testid="osd-clusters">
-                  {osdClusters.toFixed(2)} TiB
-                </span>
-              </div>
-              <div className={styles.breakdownItem}>
-                <span className={styles.label}>Available:</span>
-                <span className={styles.value} data-testid="available">
-                  {available.toFixed(2)} TiB
-                </span>
-              </div>
+            <div className={styles.breakdownItem}>
+              <span className={`${styles.dot} ${styles.aroDot}`}></span>
+              <span className={styles.label}>ARO Clusters:</span>
+              <span className={styles.value} data-testid="aro-clusters">
+                {aroClusters.toFixed(2)} TiB
+              </span>
+            </div>
+            <div className={styles.breakdownItem}>
+              <span className={`${styles.dot} ${styles.osdDot}`}></span>
+              <span className={styles.label}>OSD Clusters:</span>
+              <span className={styles.value} data-testid="osd-clusters">
+                {osdClusters.toFixed(2)} TiB
+              </span>
+            </div>
+            <div className={styles.breakdownItem}>
+              <span className={styles.label}>Available:</span>
+              <span className={styles.value} data-testid="available">
+                {available.toFixed(2)} TiB
+              </span>
             </div>
           </div>
         </div>
-      </CardBody>
+      </div>
       {onViewMore && (
-        <CardFooter>
-          <button onClick={onViewMore} className={styles.viewMore}>
-            View more
-          </button>
-        </CardFooter>
+        <Flex justifyContent={{ default: 'justifyContentFlexEnd' }} className={styles.viewLink}>
+          <FlexItem>
+            <button onClick={onViewMore} className={styles.viewMore}>
+              View more
+            </button>
+          </FlexItem>
+        </Flex>
       )}
-    </Card>
+    </>
   );
 };

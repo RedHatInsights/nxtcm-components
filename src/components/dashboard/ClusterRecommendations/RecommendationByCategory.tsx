@@ -22,7 +22,7 @@ export const RecommendationByCategory = ({
 }: RecommendationByCategoryProps) => {
   const total = serviceAvailability + performance + security + faultTolerance;
   return (
-    <Flex direction={{ default: 'column' }} style={{ height: '100%', padding: '1rem' }}>
+    <Flex direction={{ default: 'column' }} style={{ padding: '1rem' }}>
       <FlexItem data-testid="recommendation-title">
         <h3>Recommendation by Category</h3>
       </FlexItem>

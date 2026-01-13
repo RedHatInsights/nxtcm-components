@@ -14,8 +14,7 @@
 }
 
 .totalSection {
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--pf-t--global--border--color--default);
+  padding: 1rem;
 }
 
 .totalNumber {
@@ -60,12 +59,11 @@
 }
 
 .riskLabel {
-  font-size: 0.875rem;
   color: var(--pf-t--global--text--color--subtle);
 }
 
 .viewLink {
-  padding-top: 0.5rem;
+  padding: 1rem 0;
 }
 
 

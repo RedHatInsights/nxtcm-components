@@ -24,6 +24,9 @@ const config: StorybookConfig = {
           ),
         },
       },
+      optimizeDeps: {
+        include: ['ip-address', 'ip-cidr'],
+      },
     });
   },
 };

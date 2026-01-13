@@ -70,7 +70,7 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
   };
 
   return (
-    <Panel variant="raised">
+    <Panel variant="secondary">
       <PanelHeader>
         <div className={styles.header}>
           <span className={styles.headerTitle} data-testid="header">

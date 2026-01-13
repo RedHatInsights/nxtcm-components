@@ -4,7 +4,7 @@ import {
   RecommendationByCategoryProps,
 } from './RecommendationByCategory';
 
-type ClusterRecommendationProps = CriticalProps & RecommendationByCategoryProps;
+export type ClusterRecommendationProps = CriticalProps & RecommendationByCategoryProps;
 
 export const ClusterRecommendations = ({
   count,

@@ -4,6 +4,9 @@ import React from 'react';
 import PopoverHintWithTitle from '../../../common/PopoverHitWithTitle';
 import { OIDCConfigHint } from '../../../common/OIDCConfigHint';
 import { OIDCConfig, SelectDropdownType } from '../../../../types';
+import { useTranslation } from '../../../../../../context/TranslationContext';
+import { validateCustomOperatorRolesPrefix } from '../../../validators';
+import { createOperatorRolesPrefix } from '../../../helpers';
 
 type RolesAndPoliciesSubStep = {
   installerRoles: SelectDropdownType[];
@@ -18,41 +21,52 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
   workerRoles,
   oicdConfig,
 }) => {
+  const { t } = useTranslation();
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
   const { cluster } = useItem();
+
+  React.useEffect(() => {
+    if (cluster?.name && !cluster.custom_operator_roles_prefix) {
+      cluster.custom_operator_roles_prefix = createOperatorRolesPrefix(cluster.name);
+    }
+  }, [cluster]);
 
   const rosaCommand = `rosa create operator-roles --prefix "${cluster?.custom_operator_roles_prefix}" --oidc-config-id "${cluster?.byo_oidc_config_id}" --hosted-cp --installer-role-arn ${cluster?.installer_role_arn}`;
 
   return (
     <>
-      <Section label="Account roles">
+      <Section label={t('Account roles')}>
         <WizSelect
           path="cluster.installer_role_arn"
-          label="Installer role"
-          placeholder="Select an Installer role"
-          labelHelp="An AWS IAM role used by the ROSA installer {SHOULD BE LINK HERE}"
+          label={t('Installer role')}
+          placeholder={t('Select an Installer role')}
+          labelHelp={t('An AWS IAM role used by the ROSA installer {SHOULD BE LINK HERE}')}
           options={installerRoles}
           required
         />
         <ExpandableSection
           isExpanded={isArnsOpen}
           onToggle={() => setIsArnsOpen(!isArnsOpen)}
-          toggleText="Amazon Resource Names (ARNs)"
+          toggleText={t('Amazon Resource Names (ARNs)')}
         >
           <WizSelect
             path="cluster.support_role_arn"
-            label="Support role"
-            placeholder="Select an AWS infrastructure account"
-            labelHelp="An IAM role used by the Red Hat Site Reliability Engineering (SRE) support team. The role is used with the corresponding policy resource to provide the Red Hat SRE support team with the permissions required to support ROSA clusters."
+            label={t('Support role')}
+            placeholder={t('Select an AWS infrastructure account')}
+            labelHelp={t(
+              'An IAM role used by the Red Hat Site Reliability Engineering (SRE) support team. The role is used with the corresponding policy resource to provide the Red Hat SRE support team with the permissions required to support ROSA clusters.'
+            )}
             options={supportRoles}
             required
           />
           <WizSelect
             path="cluster.worker_role_arn"
-            label="Worker role"
-            placeholder="Select an AWS infrastructure account"
-            labelHelp="An IAM role used by the ROSA compute instances. The role is used with the corresponding policy resource to provide the compute instances with the permissions required to manage their components."
+            label={t('Worker role')}
+            placeholder={t('Select an AWS infrastructure account')}
+            labelHelp={t(
+              'An IAM role used by the ROSA compute instances. The role is used with the corresponding policy resource to provide the compute instances with the permissions required to manage their components.'
+            )}
             options={workerRoles}
             required
           />
@@ -63,10 +77,12 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
           <StackItem>
             <WizSelect
               path="cluster.byo_oidc_config_id"
-              label="OIDC config ID"
+              label={t('OIDC config ID')}
               required
-              placeholder="Selec an OIDC config ID"
-              labelHelp="The OIDC configuration ID created by running the command: rosa create oidc-config"
+              placeholder={t('Selec an OIDC config ID')}
+              labelHelp={t(
+                'The OIDC configuration ID created by running the command: rosa create oidc-config'
+              )}
               options={oicdConfig.map((config) => {
                 return {
                   label: config.label,
@@ -79,7 +95,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
           <StackItem>
             <PopoverHintWithTitle
               displayHintIcon
-              title="Create a new OIDC config id"
+              title={t('Create a new OIDC config id')}
               bodyContent={<OIDCConfigHint />}
             />
           </StackItem>
@@ -88,21 +104,26 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
         <ExpandableSection
           isExpanded={isOperatorRolesOpen}
           onToggle={() => setIsOperatorRolesOpen(!isOperatorRolesOpen)}
-          toggleText="Operator role prefix"
+          toggleText={t('Operator role prefix')}
         >
           <WizTextInput
+            validation={validateCustomOperatorRolesPrefix}
             path="cluster.custom_operator_roles_prefix"
-            label="Operator roles prefix"
-            labelHelp="You can specify a custom prefix for the Operator AWS IAM roles. {LINK HERE: Learn more and see examples}."
-            helperText="32 characters maximum. This is autogenerated by the cluster name, but you can cahnge it."
+            label={t('Operator roles prefix')}
+            labelHelp={t(
+              'You can specify a custom prefix for the Operator AWS IAM roles. {LINK HERE: Learn more and see examples}.'
+            )}
+            helperText={t(
+              '32 characters maximum. This is autogenerated by the cluster name, but you can cahnge it.'
+            )}
             required
           />
           <ClipboardCopy
             variant="expansion"
             copyAriaLabel="Copy read-only example"
             isReadOnly
-            hoverTip="Copy"
-            clickTip="Copied"
+            hoverTip={t('Copy')}
+            clickTip={t('Copied')}
             style={{ marginTop: '1rem' }}
           >
             {rosaCommand}

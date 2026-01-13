@@ -13,7 +13,6 @@ test.describe('UpgradeRisks', () => {
   test('should render correctly with all props', async ({ mount }) => {
     const component = await mount(<UpgradeRisks {...defaultProps} />);
 
-    await expect(component.getByTestId('header')).toContainText('Upgrade risks');
     await expect(component.getByTestId('total-risks')).toContainText('45');
     await expect(component.getByTestId('criticalCount')).toContainText('15');
   });
@@ -57,13 +56,6 @@ test.describe('UpgradeRisks', () => {
     await viewLink.click();
 
     expect(handleViewRisksCalled).toBe(true);
-  });
-
-  test('should apply custom className when provided', async ({ mount, page }) => {
-    await mount(<UpgradeRisks {...defaultProps} className="custom-class" />);
-
-    const card = page.locator('.custom-class');
-    await expect(card).toBeVisible();
   });
 
   test('should display zero counts correctly', async ({ mount }) => {

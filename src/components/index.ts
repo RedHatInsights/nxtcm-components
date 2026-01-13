@@ -12,3 +12,6 @@ export * from './dashboard/NotificationsPanel';
 export * from './dashboard/StorageCard';
 export * from './dashboard/CVECard';
 export * from './dashboard/UpgradeRisks';
+export * from './dashboard/ClusterRecommendations';
+export * from './dashboard/Subscriptions';
+export * from './dashboard/LoadingPanel';

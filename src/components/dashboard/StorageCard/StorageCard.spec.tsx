@@ -12,7 +12,7 @@ const mockStorageData: StorageCardProps['storageData'] = {
 test.describe('StorageCard', () => {
   test('should render the component with correct title', async ({ mount }) => {
     const component = await mount(<StorageCard storageData={mockStorageData} />);
-    await expect(component.getByTestId('header')).toContainText('Storage');
+    await expect(component.getByTestId('total-used')).toBeVisible();
   });
 
   test('should display the total storage used', async ({ mount }) => {

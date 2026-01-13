@@ -9,7 +9,7 @@ export type CriticalProps = {
 };
 
 export const Critical = ({ count, onViewRecommendations }: CriticalProps) => (
-  <Flex direction={{ default: 'column' }} style={{ height: '100%', padding: '1rem' }}>
+  <Flex direction={{ default: 'column' }} style={{ padding: '1rem' }}>
     <FlexItem data-testid="critical-title">
       <h3>Critical recommendations</h3>
     </FlexItem>
