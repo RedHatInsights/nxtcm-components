@@ -34,7 +34,25 @@
   font-size: 2.5rem;
   font-weight: 300;
   line-height: 1;
+  color: var(--pf-t--global--text--color--regular);
+}
+
+.clickableCount {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
   color: var(--pf-t--global--color--link--default);
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--pf-t--global--color--link--hover);
+    text-decoration: underline;
+  }
+
+  &:active {
+    color: var(--pf-t--global--color--link--clicked);
+  }
 }
 
 .icon {

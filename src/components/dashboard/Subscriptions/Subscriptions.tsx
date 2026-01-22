@@ -7,12 +7,16 @@ export type SubscriptionsProps = {
   subscriptionCount: number;
   instanceCount: number;
   onViewSubscriptions?: () => void;
+  onSubscriptionsClick?: () => void;
+  onInstancesClick?: () => void;
 };
 
 export const Subscriptions = ({
   subscriptionCount,
   instanceCount,
   onViewSubscriptions,
+  onSubscriptionsClick,
+  onInstancesClick,
 }: SubscriptionsProps) => {
   return (
     <Flex direction={{ default: 'column' }} className={styles.subscriptions}>
@@ -31,8 +35,20 @@ export const Subscriptions = ({
           spaceItems={{ default: 'spaceItemsXs' }}
           flex={{ default: 'flex_1' }}
         >
-          <FlexItem className={styles.count} data-testid="subscription-count">
-            {subscriptionCount}
+          <FlexItem>
+            {onSubscriptionsClick ? (
+              <button
+                className={`${styles.count} ${styles.clickableCount}`}
+                onClick={onSubscriptionsClick}
+                data-testid="subscription-count"
+              >
+                {subscriptionCount}
+              </button>
+            ) : (
+              <span className={styles.count} data-testid="subscription-count">
+                {subscriptionCount}
+              </span>
+            )}
           </FlexItem>
           <FlexItem>
             <Flex
@@ -51,8 +67,20 @@ export const Subscriptions = ({
           spaceItems={{ default: 'spaceItemsXs' }}
           flex={{ default: 'flex_1' }}
         >
-          <FlexItem className={styles.count} data-testid="instance-count">
-            {instanceCount}
+          <FlexItem>
+            {onInstancesClick ? (
+              <button
+                className={`${styles.count} ${styles.clickableCount}`}
+                onClick={onInstancesClick}
+                data-testid="instance-count"
+              >
+                {instanceCount}
+              </button>
+            ) : (
+              <span className={styles.count} data-testid="instance-count">
+                {instanceCount}
+              </span>
+            )}
           </FlexItem>
           <FlexItem>
             <Flex
