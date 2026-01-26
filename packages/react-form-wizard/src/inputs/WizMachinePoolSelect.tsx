@@ -156,7 +156,7 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
 
       {/* Machine Pool Rows */}
       {values.map((pool, index) => (
-        <ValidationProvider key={index}>
+        <ValidationProvider key={`${pool?.machine_pool_subnet ?? 'unset'}-${index}`}>
           <MachinePoolRow
             index={index}
             value={pool.machine_pool_subnet ?? ''}
