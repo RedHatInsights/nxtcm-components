@@ -88,9 +88,13 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
   const removeItem = useCallback(
     (index: number) => {
       if (values.length <= minItems) {
-        setValue([]);
+        const newArray = [...values];
+        newArray[index] = { ...newArray[index], machine_pool_subnet: '' };
+        setValue(newArray);
         update();
+        return;
       }
+
       const newArray = [...values];
       newArray.splice(index, 1);
       setValue(newArray);
