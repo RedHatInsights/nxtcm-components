@@ -120,12 +120,9 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
           options={props.vpcList.map((vpc: any) => {
             return {
               label: vpc.name,
-              value: vpc,
+              value: vpc.id,
             };
           })}
-          pathValueToInputValue={(vpc: any) => {
-            return vpc?.name ?? '';
-          }}
         />
 
         <WizSelect
