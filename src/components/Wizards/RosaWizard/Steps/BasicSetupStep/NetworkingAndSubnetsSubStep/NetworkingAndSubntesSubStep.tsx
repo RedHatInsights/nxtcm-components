@@ -1,13 +1,11 @@
 import {
   Radio,
   Section,
-  useData,
-  WizArrayInput,
   WizCheckbox,
   WizNumberInput,
   WizRadioGroup,
   WizSelect,
-  WizTextDetail,
+  WizMachinePoolSelect,
 } from '@patternfly-labs/react-form-wizard';
 import { LabelHelp } from '@patternfly-labs/react-form-wizard/components/LabelHelp';
 import { useInput } from '@patternfly-labs/react-form-wizard/inputs/Input';
@@ -19,7 +17,6 @@ import { useTranslation } from '../../../../../../context/TranslationContext';
 export const NetworkingAndSubnetsSubStep = (props: any) => {
   const { t } = useTranslation();
   const { value } = useInput(props);
-  const { update } = useData();
   const { cluster } = value;
 
   const selectedVPC = props.vpcList.find((vpc: VPC) => vpc.id === cluster?.selected_vpc?.id);
@@ -34,12 +31,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
   // Resets cluster_privacy_public_subnet_id when user selects private
   React.useEffect(() => {
     if (cluster?.cluster_privacy === 'internal') {
-      update({
-        cluster: {
-          ...cluster,
-          cluster_privacy_public_subnet_id: '',
-        },
-      });
+      cluster.cluster_privacy_public_subnet_id = '';
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cluster]);
@@ -176,35 +168,19 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
           />
         )}
 
-        <WizArrayInput
+        <WizMachinePoolSelect
           path="cluster.machine_pools_subnets"
-          label={t('Machine pools')}
+          machinePoolLabel={t('Machine pool')}
+          subnetLabel={t('Private subnet name')}
           placeholder={t('Add machine pool')}
-          collapsedContent={
-            <WizTextDetail path="name" placeholder={t('Expand to edit the machine pool details')} />
-          }
-        >
-          <Flex>
-            <FlexItem>
-              <Content component={ContentVariants.p} style={{ fontWeight: '500' }}>
-                {t('Machine Pool')}
-              </Content>
-              <Content component={ContentVariants.p}>{t('Machine pool')}: </Content>
-            </FlexItem>
-            <FlexItem>
-              <WizSelect
-                path="machine_pool_subnet"
-                label={t('Private subnet name')}
-                options={privateSubnets?.map((subnet: Subnet) => {
-                  return {
-                    label: subnet.name,
-                    value: subnet.subnet_id,
-                  };
-                })}
-              />
-            </FlexItem>
-          </Flex>
-        </WizArrayInput>
+          selectPlaceholder={t('Select private subnet')}
+          subnetOptions={privateSubnets?.map((subnet: Subnet) => ({
+            label: subnet.name,
+            value: subnet.subnet_id,
+          }))}
+          newValue={{ machine_pool_subnet: '' }}
+          minItems={1}
+        />
       </Section>
     </>
   );
