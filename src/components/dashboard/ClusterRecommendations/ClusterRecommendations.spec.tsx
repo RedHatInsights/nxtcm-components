@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/experimental-ct-react';
+import { test, expect, MountResult } from '@playwright/experimental-ct-react';
 import React from 'react';
 import { ClusterRecommendations } from './ClusterRecommendations';
 import { Category } from './RecommendationByCategory';
@@ -13,28 +13,30 @@ const defaultProps = {
   onCategoryClick: () => {},
 };
 
+const getCriticalCount = (component: MountResult, value: string) => {
+  return component
+    .locator('text="Critical recommendations"')
+    .locator('..') // go up one level
+    .locator('..') // go to parent div
+    .getByText(value);
+};
+
 test.describe('ClusterRecommendations', () => {
   test('should render both Critical and RecommendationByCategory components', async ({ mount }) => {
     const component = await mount(<ClusterRecommendations {...defaultProps} />);
 
     // Check for Critical component
-    await expect(component.getByTestId('critical-title')).toContainText('Critical recommendations');
-    await expect(component.getByTestId('critical-count')).toContainText('25');
+    await expect(
+      component.getByRole('heading', { name: 'Critical recommendations' })
+    ).toBeVisible();
+
+    const criticalCount = getCriticalCount(component, '25');
+    await expect(criticalCount).toBeVisible();
 
     // Check for RecommendationByCategory component
-    await expect(component.getByTestId('recommendation-title')).toContainText(
-      'Recommendation by Category'
-    );
-  });
-
-  test('should display critical recommendations section with correct count', async ({ mount }) => {
-    const component = await mount(<ClusterRecommendations {...defaultProps} />);
-
-    await expect(component.getByTestId('critical-title')).toContainText('Critical recommendations');
-    await expect(component.getByTestId('critical-count')).toContainText('25');
-    await expect(component.getByTestId('critical-description')).toContainText(
-      'Conditions that cause issues have been detected actively detected on your systems.'
-    );
+    await expect(
+      component.getByRole('heading', { name: 'Recommendation by Category' })
+    ).toBeVisible();
   });
 
   test('should display View recommendations button', async ({ mount }) => {
@@ -66,12 +68,10 @@ test.describe('ClusterRecommendations', () => {
   }) => {
     const component = await mount(<ClusterRecommendations {...defaultProps} />);
 
-    await expect(component.getByTestId('serviceAvailability')).toContainText(
-      'Service availability: 10'
-    );
-    await expect(component.getByTestId('performance')).toContainText('Performance: 20');
-    await expect(component.getByTestId('security')).toContainText('Security: 15');
-    await expect(component.getByTestId('faultTolerance')).toContainText('Fault tolerance: 5');
+    await expect(component.getByText(/Service availability/)).toContainText('10');
+    await expect(component.getByText(/Performance/)).toContainText('20');
+    await expect(component.getByText(/Security/)).toContainText('15');
+    await expect(component.getByText(/Fault tolerance/)).toContainText('5');
   });
 
   test('should call onCategoryClick when a category is clicked', async ({ mount }) => {
@@ -83,23 +83,27 @@ test.describe('ClusterRecommendations', () => {
     const component = await mount(
       <ClusterRecommendations {...defaultProps} onCategoryClick={handleCategoryClick} />
     );
-
-    await component.getByTestId('performance').click();
+    //  Performance
+    await component.getByRole('button', { name: /Performance/ }).click();
 
     expect(clickedCategory).toBe('performance');
   });
 
   test('should render with different critical count', async ({ mount }) => {
     const component = await mount(<ClusterRecommendations {...defaultProps} count={100} />);
+    const criticalCount = getCriticalCount(component, '100');
 
-    await expect(component.getByTestId('critical-count')).toContainText('100');
+    await expect(criticalCount).toBeVisible();
   });
 
   test('should render with zero critical recommendations', async ({ mount }) => {
     const component = await mount(<ClusterRecommendations {...defaultProps} count={0} />);
+    const criticalCount = getCriticalCount(component, '0');
+    await expect(criticalCount).toBeVisible();
 
-    await expect(component.getByTestId('critical-count')).toContainText('0');
-    await expect(component.getByTestId('critical-title')).toContainText('Critical recommendations');
+    await expect(
+      component.getByRole('heading', { name: 'Critical recommendations' })
+    ).toBeVisible();
   });
 
   test('should render with different category values', async ({ mount }) => {
@@ -112,31 +116,31 @@ test.describe('ClusterRecommendations', () => {
     };
 
     const component = await mount(<ClusterRecommendations {...customProps} />);
-
-    await expect(component.getByTestId('serviceAvailability')).toContainText(
-      'Service availability: 50'
-    );
-    await expect(component.getByTestId('performance')).toContainText('Performance: 30');
-    await expect(component.getByTestId('security')).toContainText('Security: 15');
-    await expect(component.getByTestId('faultTolerance')).toContainText('Fault tolerance: 5');
+    await expect(component.getByText(/Service availability/)).toContainText('50');
+    await expect(component.getByText(/Performance/)).toContainText('30');
+    await expect(component.getByText(/Security/)).toContainText('15');
+    await expect(component.getByText(/Fault tolerance/)).toContainText('5');
   });
 
-  test('should render critical icon', async ({ mount, page }) => {
+  test('should render critical icons', async ({ mount, page }) => {
     await mount(<ClusterRecommendations {...defaultProps} />);
 
-    // Check that SVG icons are present
-    const icons = page.locator('svg');
-    expect(await icons.count()).toBeGreaterThan(0);
+    // NOTE svgs are hidden so won't be picked up by .getByRole('img')
+    // I'm not sure this test is providing any value
+    const icons = page.locator('svg[role="img"]');
+    expect(await icons.count()).toBe(5);
   });
 
   test('should have proper component structure with both sections', async ({ mount }) => {
     const component = await mount(<ClusterRecommendations {...defaultProps} />);
 
     // Verify both main sections exist
-    await expect(component.getByTestId('critical-title')).toContainText('Critical recommendations');
-    await expect(component.getByTestId('recommendation-title')).toContainText(
-      'Recommendation by Category'
-    );
+    await expect(
+      component.getByRole('heading', { name: 'Critical recommendations' })
+    ).toBeVisible();
+    await expect(
+      component.getByRole('heading', { name: 'Recommendation by Category' })
+    ).toBeVisible();
 
     // Verify the button exists
     await expect(component.getByRole('button', { name: /View recommendations/i })).toBeVisible();
@@ -154,8 +158,8 @@ test.describe('ClusterRecommendations', () => {
       <ClusterRecommendations {...defaultProps} onCategoryClick={handleCategoryClick} />
     );
 
-    await component.getByTestId('serviceAvailability').click();
-    await component.getByTestId('security').click();
+    await component.getByRole('button', { name: /Service availability/ }).click();
+    await component.getByRole('button', { name: /Security/ }).click();
 
     expect(clickCount).toBe(2);
     expect(categories).toEqual(['serviceAvailability', 'security']);
