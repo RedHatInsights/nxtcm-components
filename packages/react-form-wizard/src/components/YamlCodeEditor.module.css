@@ -1,3 +1,4 @@
+/* Copyright Contributors to the Open Cluster Management project */
 .editor {
   display: flex;
   position: relative;
@@ -8,11 +9,11 @@
   font-size: 14px;
   line-height: 1.5;
   overflow: hidden;
+}
 
-  &.readOnly {
-    background-color: var(--pf-v6-global--BackgroundColor--200, #f5f5f5);
-    border-color: var(--pf-v6-global--BorderColor--200, #c7c7c7);
-  }
+.editor.readOnly {
+  background-color: var(--pf-v6-global--BackgroundColor--200, #f5f5f5);
+  border-color: var(--pf-v6-global--BorderColor--200, #c7c7c7);
 }
 
 .lineNumbers {
@@ -56,48 +57,44 @@
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
-  // Default text color for unhighlighted content (whitespace, etc.)
   color: var(--pf-v6-global--Color--100, #151515);
   background-color: transparent;
+}
 
-  // Syntax highlighting colors
-  :global {
-    .yaml-key {
-      color: #0066cc;
-      font-weight: 600;
-    }
+.highlightContent :global(.yaml-key) {
+  color: #0066cc;
+  font-weight: 600;
+}
 
-    .yaml-string {
-      color: #0f811f;
-    }
+.highlightContent :global(.yaml-string) {
+  color: #0f811f;
+}
 
-    .yaml-number {
-      color: #c94c05;
-    }
+.highlightContent :global(.yaml-number) {
+  color: #c94c05;
+}
 
-    .yaml-boolean {
-      color: #7e3ff2;
-    }
+.highlightContent :global(.yaml-boolean) {
+  color: #7e3ff2;
+}
 
-    .yaml-comment {
-      color: #6a6e73;
-      font-style: italic;
-    }
+.highlightContent :global(.yaml-comment) {
+  color: #6a6e73;
+  font-style: italic;
+}
 
-    .yaml-punctuation {
-      color: #4d5d75;
-    }
+.highlightContent :global(.yaml-punctuation) {
+  color: #4d5d75;
+}
 
-    .yaml-directive {
-      color: #6a6e73;
-      font-weight: 600;
-    }
+.highlightContent :global(.yaml-directive) {
+  color: #6a6e73;
+  font-weight: 600;
+}
 
-    .yaml-anchor {
-      color: #a52a2a;
-      font-weight: 600;
-    }
-  }
+.highlightContent :global(.yaml-anchor) {
+  color: #a52a2a;
+  font-weight: 600;
 }
 
 .textarea {
@@ -111,10 +108,8 @@
   resize: none;
   overflow: auto;
   background-color: transparent;
-  // Make text transparent so highlights show through - using both methods for better browser support
   color: transparent !important;
   -webkit-text-fill-color: transparent !important;
-  // But keep caret visible
   caret-color: var(--pf-v6-global--Color--100, #151515);
   font-family: inherit;
   font-size: inherit;
@@ -122,38 +117,35 @@
   white-space: pre;
   word-wrap: normal;
   overflow-wrap: normal;
-
-  &:focus {
-    box-shadow: none;
-  }
-
-  &:read-only {
-    cursor: default;
-    // Keep background transparent in read-only mode to show syntax highlighting
-  }
 }
 
-// When syntax highlighting is disabled, show normal text
+.textarea:focus {
+  box-shadow: none;
+}
+
+.textarea:read-only {
+  cursor: default;
+}
+
 .textareaNoHighlight {
   color: var(--pf-v6-global--Color--100, #151515) !important;
   -webkit-text-fill-color: var(--pf-v6-global--Color--100, #151515) !important;
-
-  // When read-only without syntax highlighting, apply a background for clear visual distinction
-  &:read-only {
-    background-color: var(--pf-v6-global--BackgroundColor--200, #f0f0f0);
-  }
 }
 
-// Dark theme support
+.textareaNoHighlight:read-only {
+  background-color: var(--pf-v6-global--BackgroundColor--200, #f0f0f0);
+}
+
+/* Dark theme support */
 @media (prefers-color-scheme: dark) {
   .editor {
     background-color: var(--pf-v6-global--BackgroundColor--100, #1f1f1f);
     border-color: var(--pf-v6-global--BorderColor--100, #4f4f4f);
+  }
 
-    &.readOnly {
-      background-color: var(--pf-v6-global--BackgroundColor--200, #2a2a2a);
-      border-color: var(--pf-v6-global--BorderColor--200, #6a6a6a);
-    }
+  .editor.readOnly {
+    background-color: var(--pf-v6-global--BackgroundColor--200, #2a2a2a);
+    border-color: var(--pf-v6-global--BorderColor--200, #6a6a6a);
   }
 
   .lineNumbers {
@@ -163,63 +155,54 @@
   }
 
   .textarea {
-    // Keep text transparent in dark mode too
     color: transparent !important;
     -webkit-text-fill-color: transparent !important;
     caret-color: var(--pf-v6-global--Color--100, #f0f0f0);
-
-    &:read-only {
-      // Keep background transparent in read-only mode to show syntax highlighting
-    }
   }
 
   .textareaNoHighlight {
     color: var(--pf-v6-global--Color--100, #f0f0f0) !important;
     -webkit-text-fill-color: var(--pf-v6-global--Color--100, #f0f0f0) !important;
+  }
 
-    // When read-only without syntax highlighting, apply a background for clear visual distinction
-    &:read-only {
-      background-color: var(--pf-v6-global--BackgroundColor--200, #2a2a2a);
-    }
+  .textareaNoHighlight:read-only {
+    background-color: var(--pf-v6-global--BackgroundColor--200, #2a2a2a);
   }
 
   .highlightContent {
-    // Default text color for dark mode
     color: var(--pf-v6-global--Color--100, #f0f0f0);
-    
-    :global {
-      .yaml-key {
-        color: #73bcf7;
-      }
+  }
+  
+  .highlightContent :global(.yaml-key) {
+    color: #73bcf7;
+  }
 
-      .yaml-string {
-        color: #5fc82f;
-      }
+  .highlightContent :global(.yaml-string) {
+    color: #5fc82f;
+  }
 
-      .yaml-number {
-        color: #f99b63;
-      }
+  .highlightContent :global(.yaml-number) {
+    color: #f99b63;
+  }
 
-      .yaml-boolean {
-        color: #c298ff;
-      }
+  .highlightContent :global(.yaml-boolean) {
+    color: #c298ff;
+  }
 
-      .yaml-comment {
-        color: #a3a3a3;
-      }
+  .highlightContent :global(.yaml-comment) {
+    color: #a3a3a3;
+  }
 
-      .yaml-punctuation {
-        color: #9cb1c9;
-      }
+  .highlightContent :global(.yaml-punctuation) {
+    color: #9cb1c9;
+  }
 
-      .yaml-directive {
-        color: #a3a3a3;
-      }
+  .highlightContent :global(.yaml-directive) {
+    color: #a3a3a3;
+  }
 
-      .yaml-anchor {
-        color: #ff6b6b;
-      }
-    }
+  .highlightContent :global(.yaml-anchor) {
+    color: #ff6b6b;
   }
 }
 
