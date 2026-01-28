@@ -1,7 +1,13 @@
 import { test, expect } from '@playwright/experimental-ct-react';
 import { YamlCodeEditor } from './YamlCodeEditor';
+import { checkAccessibility } from '../../test-helpers';
 
 test.describe('YamlCodeEditor', () => {
+  test('should pass accessibility tests', async ({ mount }) => {
+    const component = await mount(<YamlCodeEditor />);
+    await checkAccessibility({ component });
+  });
+
   test('should render with default props', async ({ mount }) => {
     const component = await mount(<YamlCodeEditor />);
     const textarea = component.getByRole('textbox');

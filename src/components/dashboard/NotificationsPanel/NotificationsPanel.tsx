@@ -74,6 +74,7 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
       <PanelHeader>
         <div className={styles.header}>
           <span className={styles.headerTitle} data-testid="header">
+            {/* TODO: consider making this a heading */}
             New notifications
           </span>
         </div>

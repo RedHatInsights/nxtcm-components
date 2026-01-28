@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/experimental-ct-react';
 import React from 'react';
 import { ConsoleBreadcrumbs, ConsoleBreadcrumbsProps } from './ConsoleBreadcrumbs';
+import { checkAccessibility } from '../../test-helpers';
 
 // Simple LinkComponent for testing
 // Note: PatternFly's BreadcrumbItem render prop has limitations in Playwright CT
@@ -25,6 +26,16 @@ const getProps = (items: SampleItem[]): ConsoleBreadcrumbsProps<SampleItem> => (
 });
 
 test.describe('ConsoleBreadcrumbs', () => {
+  test('should pass accessibility tests', async ({ mount }) => {
+    const items: SampleItem[] = [
+      { id: 1, title: 'Home', url: '/' },
+      { id: 2, title: 'Users', url: '/users' },
+      { id: 3, title: 'User Details' },
+    ];
+    const component = await mount(<ConsoleBreadcrumbs {...getProps(items)} />);
+    await checkAccessibility({ component });
+  });
+
   test('should render null if the items array is empty', async ({ mount }) => {
     const component = await mount(<ConsoleBreadcrumbs {...getProps([])} />);
     await expect(component).toBeEmpty();

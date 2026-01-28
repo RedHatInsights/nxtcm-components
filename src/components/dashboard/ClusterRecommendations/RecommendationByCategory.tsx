@@ -23,30 +23,30 @@ export const RecommendationByCategory = ({
   const total = serviceAvailability + performance + security + faultTolerance;
   return (
     <Flex direction={{ default: 'column' }} style={{ padding: '1rem' }}>
-      <FlexItem data-testid="recommendation-title">
+      <FlexItem>
         <h3>Recommendation by Category</h3>
       </FlexItem>
-      <FlexItem flex={{ default: 'flex_1' }} data-testid="recommendation-description">
+      <FlexItem flex={{ default: 'flex_1' }}>
         <Flex className={styles.legend}>
-          <FlexItem data-testid="serviceAvailability">
+          <FlexItem>
             <SquareFullIcon className={styles.serviceAvailability} />
             <Button onClick={() => onCategoryClick('serviceAvailability')} variant="link">
               Service availability: {serviceAvailability}
             </Button>
           </FlexItem>
-          <FlexItem data-testid="performance">
+          <FlexItem>
             <SquareFullIcon className={styles.performance} />
             <Button onClick={() => onCategoryClick('performance')} variant="link">
               Performance: {performance}
             </Button>
           </FlexItem>
-          <FlexItem data-testid="security">
+          <FlexItem>
             <SquareFullIcon className={styles.security} />
             <Button onClick={() => onCategoryClick('security')} variant="link">
               Security: {security}
             </Button>
           </FlexItem>
-          <FlexItem data-testid="faultTolerance">
+          <FlexItem>
             <SquareFullIcon className={styles.faultTolerance} />
             <Button onClick={() => onCategoryClick('faultTolerance')} variant="link">
               Fault tolerance: {faultTolerance}
