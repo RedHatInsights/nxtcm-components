@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/experimental-ct-react';
 import React from 'react';
 import { StorageCard, StorageCardProps } from './StorageCard';
+import { checkAccessibility } from '../../../test-helpers';
 
 const mockStorageData: StorageCardProps['storageData'] = {
   rosaClusters: 63.02,
@@ -10,6 +11,11 @@ const mockStorageData: StorageCardProps['storageData'] = {
 };
 
 test.describe('StorageCard', () => {
+  test('should pass accessibility tests', async ({ mount }) => {
+    const component = await mount(<StorageCard storageData={mockStorageData} />);
+    await checkAccessibility({ component });
+  });
+
   test('should display the total storage used', async ({ mount }) => {
     const component = await mount(<StorageCard storageData={mockStorageData} />);
 

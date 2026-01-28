@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/experimental-ct-react';
 import React from 'react';
 import { CVECard, CVEData } from './CVECard';
+import { checkAccessibility } from '../../../test-helpers';
 
 const mockCVEData: CVEData[] = [
   {
@@ -20,6 +21,13 @@ const mockCVEData: CVEData[] = [
 ];
 
 test.describe('CVECard', () => {
+  test.skip('should pass accessibility tests', async ({ mount }) => {
+    // This test is failing due to an in a color contrast violation the the default colors in PatternFly
+    // TODO: See if we can override the colors to fix this
+    const component = await mount(<CVECard cveData={mockCVEData} />);
+    await checkAccessibility({ component });
+  });
+
   test('should render the card with default title', async ({ mount }) => {
     const component = await mount(<CVECard cveData={mockCVEData} />);
     await expect(component.getByText('CVEs', { exact: true })).toBeVisible();

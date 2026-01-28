@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/experimental-ct-react';
 import React from 'react';
 import { NotificationsPanel, NotificationItem } from './NotificationsPanel';
+import { checkAccessibility } from '../../../test-helpers';
 
 const mockNotifications: NotificationItem[] = [
   {
@@ -42,6 +43,11 @@ const mockNotifications: NotificationItem[] = [
 ];
 
 test.describe('NotificationsPanel', () => {
+  test('should pass accessibility tests', async ({ mount }) => {
+    const component = await mount(<NotificationsPanel notifications={mockNotifications} />);
+    await checkAccessibility({ component });
+  });
+
   test('should render the panel with notification count badge', async ({ mount }) => {
     const component = await mount(<NotificationsPanel notifications={mockNotifications} />);
     await expect(component.getByText('New notifications', { exact: true })).toBeVisible();

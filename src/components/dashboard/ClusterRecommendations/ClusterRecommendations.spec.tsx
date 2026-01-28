@@ -2,6 +2,7 @@ import { test, expect, MountResult } from '@playwright/experimental-ct-react';
 import React from 'react';
 import { ClusterRecommendations } from './ClusterRecommendations';
 import { Category } from './RecommendationByCategory';
+import { checkAccessibility } from '../../../test-helpers';
 
 const defaultProps = {
   count: 25,
@@ -22,6 +23,11 @@ const getCriticalCount = (component: MountResult, value: string) => {
 };
 
 test.describe('ClusterRecommendations', () => {
+  test('should pass accessibility tests', async ({ mount }) => {
+    const component = await mount(<ClusterRecommendations {...defaultProps} />);
+    await checkAccessibility({ component });
+  });
+
   test('should render both Critical and RecommendationByCategory components', async ({ mount }) => {
     const component = await mount(<ClusterRecommendations {...defaultProps} />);
 

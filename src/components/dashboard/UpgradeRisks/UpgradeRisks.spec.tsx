@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/experimental-ct-react';
 import React from 'react';
 import { UpgradeRisks } from './UpgradeRisks';
+import { checkAccessibility } from '../../../test-helpers';
 
 test.describe('UpgradeRisks', () => {
   const defaultProps = {
@@ -9,6 +10,11 @@ test.describe('UpgradeRisks', () => {
     warningCount: 15,
     infoCount: 15,
   };
+
+  test('should pass accessibility tests', async ({ mount }) => {
+    const component = await mount(<UpgradeRisks {...defaultProps} />);
+    await checkAccessibility({ component });
+  });
 
   test('should render correctly with all props', async ({ mount }) => {
     const component = await mount(<UpgradeRisks {...defaultProps} />);
