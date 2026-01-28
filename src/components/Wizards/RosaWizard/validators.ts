@@ -439,3 +439,82 @@ export const awsSubnetMask =
     }
     return undefined;
   };
+
+export const required = (value?: string): string | undefined =>
+  value && value.trim() ? undefined : 'Field is required';
+
+export const validateNumericInput = (
+  input: string | undefined,
+  { allowDecimal = false, allowNeg = false, allowZero = false, max = NaN, min = NaN } = {}
+) => {
+  if (!input) {
+    return undefined; // accept empty input. Further validation done according to field
+  }
+  const value = Number(input);
+  if (Number.isNaN(value)) {
+    return 'Input must be a number.';
+  }
+  if (!Number.isNaN(min) && value < min) {
+    return `Input cannot be less than ${min}.`;
+  }
+  if (!allowNeg && !allowZero && value <= 0) {
+    return 'Input must be a positive number.';
+  }
+  if (!allowNeg && allowZero && value < 0) {
+    return 'Input must be a non-negative number.';
+  }
+  if (!allowDecimal && input.toString().includes('.')) {
+    return 'Input must be an integer.';
+  }
+  if (!Number.isNaN(max) && value > max) {
+    return `Input cannot be more than ${max}.`;
+  }
+  return undefined;
+};
+
+export const validatePositiveInteger = (value: number | undefined): string | undefined => {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+  if (!Number.isInteger(value)) {
+    return 'Input must be an integer.';
+  }
+  if (value <= 0) {
+    return 'Input must be a positive number.';
+  }
+  return undefined;
+};
+
+export const validateMinReplicas = (
+  value: number | undefined,
+  item?: unknown
+): string | undefined => {
+  const positiveError = validatePositiveInteger(value);
+  if (positiveError) return positiveError;
+  const typedItem = item as { cluster?: { max_replicas?: number } } | undefined;
+  if (value !== undefined && typedItem?.cluster?.max_replicas !== undefined) {
+    if (value > typedItem?.cluster?.max_replicas) {
+      return 'Min nodes cannot be greater than max nodes.';
+    }
+  }
+  return undefined;
+};
+
+export const validateMaxReplicas = (
+  value: number | undefined,
+  item?: unknown
+): string | undefined => {
+  const positiveError = validatePositiveInteger(value);
+  if (positiveError) return positiveError;
+  const typedItem = item as { cluster?: { min_replicas?: number } } | undefined;
+  if (value !== undefined && typedItem?.cluster?.min_replicas !== undefined) {
+    if (value < typedItem?.cluster?.min_replicas) {
+      return 'Max nodes must be greater than or equal to min nodes.';
+    }
+  }
+  return undefined;
+};
+
+export const validateComputeNodes = (value: number | undefined): string | undefined => {
+  return validatePositiveInteger(value);
+};

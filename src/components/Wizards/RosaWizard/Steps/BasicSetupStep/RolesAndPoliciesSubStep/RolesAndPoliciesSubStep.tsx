@@ -109,6 +109,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
           <WizTextInput
             validation={validateCustomOperatorRolesPrefix}
             path="cluster.custom_operator_roles_prefix"
+            validateOnBlur
             label={t('Operator roles prefix')}
             labelHelp={t(
               'You can specify a custom prefix for the Operator AWS IAM roles. {LINK HERE: Learn more and see examples}.'
