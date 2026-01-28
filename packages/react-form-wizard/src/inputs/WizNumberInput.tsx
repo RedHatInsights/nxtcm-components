@@ -5,13 +5,13 @@ import {
   DescriptionListTerm,
   NumberInputProps,
   NumberInput as PFNumberInput,
-} from "@patternfly/react-core";
-import { Fragment, useCallback } from "react";
-import { DisplayMode } from "../contexts/DisplayModeContext";
-import { getEnterPlaceholder, InputCommonProps, useInput } from "./Input";
-import { WizFormGroup } from "./WizFormGroup";
+} from '@patternfly/react-core';
+import { Fragment, useCallback } from 'react';
+import { DisplayMode } from '../contexts/DisplayModeContext';
+import { getEnterPlaceholder, InputCommonProps, useInput } from './Input';
+import { WizFormGroup } from './WizFormGroup';
 
-export type WizNumberInputProps = InputCommonProps<string> & {
+export type WizNumberInputProps<T> = InputCommonProps<T> & {
   label: string;
   placeholder?: string;
   secret?: boolean;
@@ -20,18 +20,20 @@ export type WizNumberInputProps = InputCommonProps<string> & {
   zeroIsUndefined?: boolean;
 };
 
-export function WizNumberInput(props: WizNumberInputProps) {
+export function WizNumberInput<T>(props: WizNumberInputProps<T>) {
   const {
     displayMode: mode,
     value,
     setValue,
     disabled,
+    validated,
     hidden,
     id,
+    error,
   } = useInput(props);
 
   const onMinus = useCallback(() => {
-    const newValue = typeof value === "number" ? value - 1 : 0;
+    const newValue = typeof value === 'number' ? value - 1 : 0;
     if (props.zeroIsUndefined && newValue === 0) {
       setValue(undefined);
     } else {
@@ -39,7 +41,7 @@ export function WizNumberInput(props: WizNumberInputProps) {
     }
   }, [props.zeroIsUndefined, setValue, value]);
 
-  const onChange = useCallback<Required<NumberInputProps>["onChange"]>(
+  const onChange = useCallback<Required<NumberInputProps>['onChange']>(
     (event) => {
       const newValue = Number((event.target as HTMLInputElement).value);
       if (props.zeroIsUndefined && newValue === 0) {
@@ -51,7 +53,7 @@ export function WizNumberInput(props: WizNumberInputProps) {
     [props.zeroIsUndefined, setValue]
   );
   const onPlus = useCallback(() => {
-    if (typeof value === "number") setValue(value + 1);
+    if (typeof value === 'number') setValue(value + 1);
     else setValue(1);
   }, [setValue, value]);
 
@@ -69,13 +71,14 @@ export function WizNumberInput(props: WizNumberInputProps) {
   }
 
   const placeholder = getEnterPlaceholder(props);
+  const effectiveValidated = error ? 'error' : validated;
 
   return (
-    <WizFormGroup {...props} id={id}>
+    <WizFormGroup {...props} id={id} validatedOverride={effectiveValidated}>
       <PFNumberInput
         id={id}
         placeholder={placeholder}
-        // validated={validated}
+        validated={effectiveValidated}
         value={value}
         onMinus={onMinus}
         onChange={onChange}
