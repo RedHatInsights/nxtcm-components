@@ -27,8 +27,13 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
         label={t('Enable autoscaling')}
         onValueChange={(checked, item) => {
           if (checked) {
+            delete item.cluster.nodes_compute;
             item.cluster.min_replicas = 2;
             item.cluster.max_replicas = 4;
+          } else {
+            delete item.cluster.min_replicas;
+            delete item.cluster.max_replicas;
+            item.cluster.nodes_compute = 2;
           }
         }}
       />

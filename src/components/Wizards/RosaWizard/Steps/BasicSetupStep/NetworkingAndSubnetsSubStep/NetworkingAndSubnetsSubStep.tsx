@@ -7,7 +7,7 @@ import {
 } from '@patternfly-labs/react-form-wizard';
 import { LabelHelp } from '@patternfly-labs/react-form-wizard/components/LabelHelp';
 import { useInput } from '@patternfly-labs/react-form-wizard/inputs/Input';
-import { Content, ContentVariants, Flex, FlexItem } from '@patternfly/react-core';
+import { Content, ContentVariants } from '@patternfly/react-core';
 import { Subnet, VPC } from '../../../../types';
 import React from 'react';
 import { useTranslation } from '../../../../../../context/TranslationContext';
