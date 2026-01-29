@@ -172,7 +172,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
           path="cluster.machine_pools_subnets"
           machinePoolLabel={t('Machine pool')}
           subnetLabel={t('Private subnet name')}
-          placeholder={t('Add machine pool')}
+          addMachinePoolBtnLabel={t('Add machine pool')}
           selectPlaceholder={t('Select private subnet')}
           subnetOptions={privateSubnets?.map((subnet: Subnet) => ({
             label: subnet.name,

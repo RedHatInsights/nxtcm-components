@@ -6,6 +6,8 @@ import {
   ContentVariants,
   InputGroup,
   InputGroupItem,
+  Grid,
+  GridItem,
 } from '@patternfly/react-core';
 import { MinusCircleIcon, PlusCircleIcon } from '@patternfly/react-icons';
 import get from 'get-value';
@@ -28,10 +30,10 @@ export type MachinePoolSubnet = {
 
 export type WizMachinePoolSelectProps = Omit<InputCommonProps, 'path'> & {
   path: string;
-  machinePoolLabel?: string;
-  subnetLabel?: string;
-  placeholder?: string;
-  selectPlaceholder?: string;
+  machinePoolLabel: string;
+  selectPlaceholder: string;
+  subnetLabel: string;
+  addMachinePoolBtnLabel: string;
   subnetOptions?: Option<string>[];
   selectedSubnets?: string[];
   viewUsedSubnetsLabel?: string;
@@ -123,7 +125,7 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
         <div>
           {values.map((pool, index) => (
             <div key={index}>
-              {props.machinePoolLabel ?? 'Machine pool'} {index + 1}:{' '}
+              {props.machinePoolLabel} {index + 1}:{' '}
               {props.subnetOptions?.find((opt) => opt.value === pool.machine_pool_subnet)?.label ||
                 pool.machine_pool_subnet}
             </div>
@@ -134,54 +136,46 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
   }
 
   return (
-    <div id={id}>
-      {/* Column Headers */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 2fr auto',
-          gap: '16px',
-          alignItems: 'center',
-          paddingBottom: '8px',
-        }}
-      >
-        <Content component={ContentVariants.p} style={{ fontWeight: 600 }}>
-          {props.machinePoolLabel ?? 'Machine pools'}
+    <Grid hasGutter span={6} id={id}>
+      <GridItem span={2}>
+        <Content component={ContentVariants.p} className="pf-v6-u-font-weight-bold">
+          {props.machinePoolLabel}
         </Content>
-        <Content component={ContentVariants.p} style={{ fontWeight: 600 }}>
-          {props.subnetLabel ?? 'Private subnet name'}
+      </GridItem>
+      <GridItem>
+        <Content component={ContentVariants.p} className="pf-v6-u-font-weight-bold">
+          {props.subnetLabel}
         </Content>
-        <div style={{ width: '32px' }} /> {/* Spacer for remove button column */}
-      </div>
+      </GridItem>
 
-      {/* Machine Pool Rows */}
-      {values.map((pool, index) => (
-        <ValidationProvider key={`${pool?.machine_pool_subnet ?? 'unset'}-${index}`}>
-          <MachinePoolRow
-            index={index}
-            value={pool.machine_pool_subnet ?? ''}
-            machinePoolLabel={props.machinePoolLabel ?? 'Machine pool'}
-            selectPlaceholder={props.selectPlaceholder ?? 'Select private subnet'}
-            subnetOptions={props.subnetOptions}
-            selectedSubnets={selectedSubnets}
-            onChange={(newValue) => updateItem(index, newValue)}
-            onRemove={() => removeItem(index)}
-          />
-        </ValidationProvider>
-      ))}
+      <GridItem>
+        {values.map((pool, index) => (
+          <ValidationProvider key={`${pool?.machine_pool_subnet ?? 'unset'}-${index}`}>
+            <MachinePoolRow
+              index={index}
+              value={pool.machine_pool_subnet ?? ''}
+              machinePoolLabel={props.machinePoolLabel}
+              selectPlaceholder={props.selectPlaceholder}
+              subnetOptions={props.subnetOptions}
+              selectedSubnets={selectedSubnets}
+              onChange={(newValue) => updateItem(index, newValue)}
+              onRemove={() => removeItem(index)}
+            />
+          </ValidationProvider>
+        ))}
+      </GridItem>
 
-      {/* Add Machine Pool Button */}
-      <div style={{ paddingTop: '8px' }}>
+      <GridItem span={12}>
         <Button
           variant="link"
           size="sm"
           icon={<PlusCircleIcon />}
           onClick={() => addItem(props.newValue ?? { machine_pool_subnet: '' })}
         >
-          {props.placeholder ?? 'Add machine pool'}
+          {props.addMachinePoolBtnLabel}
         </Button>
-      </div>
-    </div>
+      </GridItem>
+    </Grid>
   );
 }
 
