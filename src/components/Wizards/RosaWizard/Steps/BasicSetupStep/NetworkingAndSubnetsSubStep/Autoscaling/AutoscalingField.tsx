@@ -25,6 +25,12 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
         )}
         path="cluster.autoscaling"
         label={t('Enable autoscaling')}
+        onValueChange={(checked, item) => {
+          if (checked) {
+            item.cluster.min_replicas = 2;
+            item.cluster.max_replicas = 4;
+          }
+        }}
       />
       {autoscaling ? (
         <Flex>
