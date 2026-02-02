@@ -4,6 +4,7 @@ globs: src/**/*.test.ts, src/**/*.test.tsx, src/**/*.test.js, src/**/*.test.jsx
 alwaysApply: false
 ---
 
+- Test files should be named `ComponentName.spec.tsx`
 - Playwright component testing should be used for testing components
 - Follow the Arrange-Act-Assert pattern when writing unit tests
 - Write descriptive test names that clearly describe what is being tested

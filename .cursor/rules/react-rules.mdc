@@ -5,6 +5,9 @@ alwaysApply: false
 ---
 
 - Use functional components with hooks instead of class components
+- Export components using arrow functions: `export const ComponentName = (props: Props) => {}`
+- Avoid using `React.FC` or `React.FunctionComponent` type annotations
+- Import React only when explicitly needed (React 17+ doesn't require it for JSX)
 - Keep components small and focused on a single responsibility
 - Use PascalCase for component names and component files
 - Use descriptive component names that indicate the component's purpose
@@ -13,6 +16,8 @@ alwaysApply: false
 - Boolean props should be prefixed with `is`, `has`, `can`, or `should`
 - Use optional props sparingly and provide defaults when needed
 - Keep props interface small and focused
+- Co-locate props types with their components (same file)
+- Export props types when they need to be used by other components or tests
 - Don't store derived data in state
 - Name custom hooks with `use` prefix
 - Keep useEffect effects focused and specific
@@ -21,10 +26,12 @@ alwaysApply: false
 - Use `useCallback` for functions passed to child components
 - Avoid props drilling where props are only passed down to child components
 - Do not mutate props or state. Create a copy array or object if possible
-- Avoid using index as the key prop value.
-- Avoid using inline functions in jsx or tsx blocks
+- Avoid using index as the key prop value
+- Avoid using inline functions in jsx or tsx blocks for event handlers and callbacks passed to child components. Use `useCallback` instead
+- Inline functions in map/filter callbacks are acceptable: `items.map((item) => <div key={item.id}>{item.name}</div>)`
 - When possible use ternary operators for conditional display. Use this pattern `{shouldShow? <MyComponent />:null}` instead of `{shouldShow && <MyComponent />}`
 - Implement proper cleanup in useEffect hooks when needed
 - Use Redux hooks (`useSelector`, `useDispatch`) instead of connect HOC
 - Use `react-query` for server state management
-- Avoid using custom CSS. If possible, use PatternFly variables or utility classes
+- Avoid using custom CSS. Always use PatternFly components, variables, and utility classes
+- File organization: Component.tsx, Component.spec.tsx, Component.stories.tsx

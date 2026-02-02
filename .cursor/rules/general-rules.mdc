@@ -17,3 +17,6 @@ alwaysApply: false
 - Use an early return pattern in functions or methods
 - If code has been modified or added, check to see if there are unit tests that cover these changes. If no unit tests exist that cover the changes, suggest that unit tests be created or modified
 - Use `UPPER_SNAKE_CASE` for constants that are truly constant values
+- Story files should be named `ComponentName.stories.tsx`
+- Use lowercase comments in code (e.g., "calculate totals" not "Calculate Totals")
+- Group related functionality with blank lines for readability
