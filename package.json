@@ -48,6 +48,7 @@
     "prettier:check": "prettier --check '{src,cypress,scripts}/**/*.{js,ts,mjs,jsx,tsx}'",
     "prettier:fix": "prettier --write '{src,cypress,scripts}/**/*.{js,ts,mjs,jsx,tsx}'",
     "test": "jest",
+    "test:all": "npm run test && npm run test:ct",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:e2e": "playwright test",
@@ -72,6 +73,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
     "@babel/core": "^7.22.10",
     "@babel/preset-env": "^7.22.10",
     "@babel/preset-react": "^7.22.5",
@@ -83,9 +85,6 @@
     "@storybook/addon-docs": "^9.1.10",
     "@storybook/react": "^9.1.15",
     "@storybook/react-vite": "^9.1.10",
-    "@testing-library/jest-dom": "^6.4.8",
-    "@testing-library/react": "^16.0.0",
-    "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^29.5.12",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.9.1",
@@ -109,6 +108,7 @@
     "klona": "^2.0.6",
     "lint-staged": "^16.2.6",
     "prettier": "^3.6.2",
+    "pretty-html-log": "^1.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sass": "^1.93.2",

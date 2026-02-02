@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/experimental-ct-react';
 import { ActionsDropdown, DropdownItem } from './ActionsDropdown';
 import { TranslationProvider } from '../../context/TranslationContext';
+import { checkAccessibility } from '../../test-helpers';
 
 const mockItems: DropdownItem<string>[] = [
   { id: 'item1', text: 'Item One' },
@@ -17,6 +18,13 @@ const mockItems: DropdownItem<string>[] = [
 ];
 
 test.describe('ActionsDropdown', () => {
+  test('should pass accessibility tests', async ({ mount }) => {
+    const component = await mount(
+      <ActionsDropdown id="test-dropdown" dropdownItems={mockItems} text="My Actions" />
+    );
+    await checkAccessibility({ component });
+  });
+
   test('should render the toggle button with the provided text', async ({ mount }) => {
     const component = await mount(
       <ActionsDropdown id="test-dropdown" dropdownItems={mockItems} text="My Actions" />
