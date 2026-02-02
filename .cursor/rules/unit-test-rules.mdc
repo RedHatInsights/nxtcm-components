@@ -1,0 +1,20 @@
+---
+description: Unit testing rules and best practices
+globs: src/**/*.test.ts, src/**/*.test.tsx, src/**/*.test.js, src/**/*.test.jsx
+alwaysApply: false
+---
+
+- Playwright component testing should be used for testing components
+- Follow the Arrange-Act-Assert pattern when writing unit tests
+- Write descriptive test names that clearly describe what is being tested
+- Test behavior, not implementation details
+- Keep mocks simple and focused on the specific functionality being tested
+- Avoid mocking child react components unless necessary for isolation
+- Use the the appropriate query using this order of priority: `getByRole`, `getByLabelText`, `getByPlaceholderText`, `getByText`, `getByDisplayValue`, `getByAltText`, `getByTitle`, `getByTestId`
+- Test accessibility with `checkAccessibility` utility when appropriate
+- Mock external dependencies and API calls consistently
+- Create meaningful test fixtures and move them to separate fixture files
+- Use `jest.clearAllMocks()` in `beforeEach` or `afterEach` hooks
+- Test error states and loading states in components
+- Use descriptive assertion messages when the test failure might be unclear
+- Avoid try/catch blocks in unit tests
