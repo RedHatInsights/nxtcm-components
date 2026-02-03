@@ -20,7 +20,7 @@ export const Subscriptions = ({
 }: SubscriptionsProps) => {
   return (
     <Flex direction={{ default: 'column' }} className={styles.subscriptions}>
-      <FlexItem className={styles.description} data-testid="subscriptions-description">
+      <FlexItem className={styles.description}>
         Monitor your OpenShift usage for both Annual and On-Demand subscriptions.
       </FlexItem>
 
@@ -40,14 +40,11 @@ export const Subscriptions = ({
               <button
                 className={`${styles.count} ${styles.clickableCount}`}
                 onClick={onSubscriptionsClick}
-                data-testid="subscription-count"
               >
                 {subscriptionCount}
               </button>
             ) : (
-              <span className={styles.count} data-testid="subscription-count">
-                {subscriptionCount}
-              </span>
+              <span className={styles.count}>{subscriptionCount}</span>
             )}
           </FlexItem>
           <FlexItem>
@@ -72,14 +69,11 @@ export const Subscriptions = ({
               <button
                 className={`${styles.count} ${styles.clickableCount}`}
                 onClick={onInstancesClick}
-                data-testid="instance-count"
               >
                 {instanceCount}
               </button>
             ) : (
-              <span className={styles.count} data-testid="instance-count">
-                {instanceCount}
-              </span>
+              <span className={styles.count}>{instanceCount}</span>
             )}
           </FlexItem>
           <FlexItem>
