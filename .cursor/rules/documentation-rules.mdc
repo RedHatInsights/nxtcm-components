@@ -1,0 +1,13 @@
+---
+description: Documentation and comment standards
+globs: src/**/*.tsx, src/**/*.ts
+alwaysApply: false
+---
+
+- Add JSDoc comments to exported components, types, and complex functions
+- JSDoc should include a brief description and @param tags for parameters
+- Use inline comments to explain complex logic or business rules
+- Comments should explain "why", not "what" (code shows what)
+- Keep comments concise and up-to-date with code changes
+- Use lowercase for inline comments (e.g., "calculate totals" not "Calculate Totals")
+- Add JSDoc to exported types with descriptions of each property when the purpose isn't obvious
