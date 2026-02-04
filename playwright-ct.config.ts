@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/experimental-ct-react';
+import path from 'path';
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -28,7 +29,15 @@ export default defineConfig({
 
     /* Port to use for Playwright component endpoint. */
     ctPort: 3100,
+    ctViteConfig: {
+      resolve: {
+        alias: {
+          '@patternfly-labs/react-form-wizard': path.resolve(__dirname, './packages/react-form-wizard/src'),
+        },
+      },
+    },
   },
+  
 
   /* Configure projects for major browsers */
   projects: [
