@@ -7,6 +7,8 @@ const meta: Meta<typeof Subscriptions> = {
   tags: ['autodocs'],
   argTypes: {
     onViewSubscriptions: { action: 'view subscriptions clicked' },
+    onSubscriptionsClick: { action: 'subscriptions count clicked' },
+    onInstancesClick: { action: 'instances count clicked' },
   },
 };
 
@@ -49,5 +51,31 @@ export const ZeroCounts: Story = {
     subscriptionCount: 0,
     instanceCount: 0,
     onViewSubscriptions: () => console.log('View subscriptions clicked'),
+  },
+};
+
+export const WithClickableCounts: Story = {
+  args: {
+    subscriptionCount: 3,
+    instanceCount: 11,
+    onViewSubscriptions: () => console.log('View subscriptions clicked'),
+    onSubscriptionsClick: () => console.log('Subscriptions count clicked'),
+    onInstancesClick: () => console.log('Instances count clicked'),
+  },
+};
+
+export const OnlySubscriptionsClickable: Story = {
+  args: {
+    subscriptionCount: 5,
+    instanceCount: 20,
+    onSubscriptionsClick: () => console.log('Subscriptions count clicked'),
+  },
+};
+
+export const OnlyInstancesClickable: Story = {
+  args: {
+    subscriptionCount: 5,
+    instanceCount: 20,
+    onInstancesClick: () => console.log('Instances count clicked'),
   },
 };
