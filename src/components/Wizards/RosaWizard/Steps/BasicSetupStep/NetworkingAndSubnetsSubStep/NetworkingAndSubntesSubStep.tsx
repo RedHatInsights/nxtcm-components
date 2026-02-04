@@ -1,7 +1,6 @@
 import {
   Radio,
   Section,
-  useData,
   WizArrayInput,
   WizCheckbox,
   WizNumberInput,
@@ -19,7 +18,6 @@ import { useTranslation } from '../../../../../../context/TranslationContext';
 export const NetworkingAndSubnetsSubStep = (props: any) => {
   const { t } = useTranslation();
   const { value } = useInput(props);
-  const { update } = useData();
   const { cluster } = value;
 
   const selectedVPC = props.vpcList.find((vpc: VPC) => vpc.id === cluster?.selected_vpc?.id);
@@ -34,12 +32,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
   // Resets cluster_privacy_public_subnet_id when user selects private
   React.useEffect(() => {
     if (cluster?.cluster_privacy === 'internal') {
-      update({
-        cluster: {
-          ...cluster,
-          cluster_privacy_public_subnet_id: '',
-        },
-      });
+      cluster.cluster_privacy_public_subnet_id = '';
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cluster]);
