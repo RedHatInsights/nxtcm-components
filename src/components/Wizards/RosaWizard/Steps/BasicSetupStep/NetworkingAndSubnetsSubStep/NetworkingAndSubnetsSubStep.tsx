@@ -19,7 +19,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
   const { value } = useInput(props);
   const { cluster } = value;
 
-  const selectedVPC = props.vpcList.find((vpc: VPC) => vpc.id === cluster?.selected_vpc?.id);
+  const selectedVPC = props.vpcList.find((vpc: VPC) => vpc.id === cluster?.selected_vpc);
 
   const privateSubnets = selectedVPC?.aws_subnets.filter((privateSubnet: Subnet) =>
     privateSubnet.name.includes('private')
@@ -34,7 +34,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
       cluster.cluster_privacy_public_subnet_id = '';
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cluster]);
+  }, []);
 
   return (
     <>
@@ -169,6 +169,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
         )}
 
         <WizMachinePoolSelect
+          required
           path="cluster.machine_pools_subnets"
           machinePoolLabel={t('Machine pool')}
           subnetLabel={t('Private subnet name')}

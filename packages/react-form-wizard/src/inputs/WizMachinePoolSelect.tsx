@@ -8,6 +8,9 @@ import {
   InputGroupItem,
   Grid,
   GridItem,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
 } from '@patternfly/react-core';
 import { MinusCircleIcon, PlusCircleIcon } from '@patternfly/react-icons';
 import get from 'get-value';
@@ -17,8 +20,10 @@ import { ItemContext } from '../contexts/ItemContext';
 import { DisplayMode } from '../contexts/DisplayModeContext';
 import { InputCommonProps, useInput } from './Input';
 import { InputSelect, SelectListOptions } from './InputSelect';
-import { ValidationProvider } from '../contexts/ValidationProvider';
+import { ValidationProvider, useSetHasValidationError, useValidate } from '../contexts/ValidationProvider';
 import { Option, OptionType } from './WizSelect';
+import { useShowValidation } from '../contexts/ShowValidationProvider';
+import { useStringContext } from '../contexts/StringContext';
 
 import './Select.css';
 
@@ -158,6 +163,7 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
               selectPlaceholder={props.selectPlaceholder}
               subnetOptions={props.subnetOptions}
               selectedSubnets={selectedSubnets}
+              required={props.required}
               onChange={(newValue) => updateItem(index, newValue)}
               onRemove={() => removeItem(index)}
             />
@@ -190,6 +196,7 @@ interface MachinePoolRowProps {
   onViewUsedSubnets?: () => void;
   onChange: (value: string) => void;
   onRemove: () => void;
+  required?: boolean;
 }
 
 function MachinePoolRow(props: MachinePoolRowProps) {
@@ -202,17 +209,37 @@ function MachinePoolRow(props: MachinePoolRowProps) {
     selectedSubnets,
     onChange,
     onRemove,
+    required,
   } = props;
 
   const [open, setOpen] = useState(false);
   const [filteredOptions, setFilteredOptions] = useState<(string | OptionType<string>)[]>([]);
 
+  const showValidation = useShowValidation();
+  const { required: requiredErrorMessage } = useStringContext();
+
+  const setHasValidationError = useSetHasValidationError();
+  const validate = useValidate();
+
+  const hasError = required && !value;
+
+  const [previousHasError, setPreviousHasError] = useState(hasError);
+
+  if (hasError !== previousHasError) {
+    setPreviousHasError(hasError);
+    validate();
+  }
+
+  if (hasError) {
+    setHasValidationError();
+  }
+
+  const validated = showValidation && hasError ? 'error' : undefined;
+  const errorMessage = hasError ? requiredErrorMessage : undefined;
+
   const selectOptionsTyped: OptionType<string>[] | undefined = useMemo(() => {
     return subnetOptions
       ?.filter((option) => {
-        // Keep the option if:
-        // 1. It's the currently selected value for this row, OR
-        // 2. It's not selected by any other machine pool
         return option.value === value || !selectedSubnets?.includes(option.value);
       })
       .map((option) => ({
@@ -234,61 +261,64 @@ function MachinePoolRow(props: MachinePoolRowProps) {
     [onChange]
   );
 
-  const hasValidationError = !value;
-
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 2fr auto',
-        gap: '16px',
-        alignItems: 'center',
-        paddingBottom: '8px',
-      }}
-    >
-      {/* Machine Pool Label */}
-      <Content component={ContentVariants.p}>
-        {machinePoolLabel} {index + 1}
-      </Content>
-
-      {/* Subnet Dropdown */}
-      <InputGroup>
-        <InputGroupItem isFill>
-          <PfSelect
-            onOpenChange={(isOpen) => !isOpen && setOpen(false)}
-            isOpen={open}
-            toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-              <InputSelect
-                required
-                disabled={false}
-                validated={hasValidationError ? 'error' : undefined}
-                placeholder={selectPlaceholder}
-                options={selectOptionsTyped ?? []}
-                setOptions={setFilteredOptions}
-                toggleRef={toggleRef}
+    <Grid hasGutter>
+      <GridItem span={3}>
+        <Content component={ContentVariants.p} style={{ paddingTop: '6px' }}>
+          {machinePoolLabel} {index + 1}
+        </Content>
+      </GridItem>
+      <GridItem span={6} rowSpan={2}>
+        <InputGroup>
+          <InputGroupItem isFill>
+            <PfSelect
+              onOpenChange={(isOpen) => !isOpen && setOpen(false)}
+              isOpen={open}
+              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                <InputSelect
+                  required={required}
+                  disabled={false}
+                  validated={validated}
+                  placeholder={selectPlaceholder}
+                  options={selectOptionsTyped ?? []}
+                  setOptions={setFilteredOptions}
+                  toggleRef={toggleRef}
+                  value={value}
+                  onSelect={onSelect}
+                  open={open}
+                  setOpen={setOpen}
+                />
+              )}
+              selected={value}
+              onSelect={(_event, val) => onSelect(val?.toString() ?? '')}
+            >
+              <SelectListOptions
                 value={value}
-                onSelect={onSelect}
-                open={open}
-                setOpen={setOpen}
+                options={filteredOptions}
+                isCreatable={false}
+                isMultiSelect={false}
               />
-            )}
-            selected={value}
-            onSelect={(_event, val) => onSelect(val?.toString() ?? '')}
-          >
-            <SelectListOptions
-              value={value}
-              options={filteredOptions}
-              isCreatable={false}
-              isMultiSelect={false}
-            />
-          </PfSelect>
-        </InputGroupItem>
-      </InputGroup>
-
-      {/* Remove Button */}
-      <Button variant="plain" aria-label={`Remove machine pool ${index + 1}`} onClick={onRemove}>
-        <MinusCircleIcon />
-      </Button>
-    </div>
+            </PfSelect>
+          </InputGroupItem>
+        </InputGroup>
+        {validated === 'error' && errorMessage && (
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem variant="error">{errorMessage}</HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+        )}
+      </GridItem>
+      <GridItem span={2}>
+        <Button
+          variant="plain"
+          aria-label={`Remove machine pool ${index + 1}`}
+          onClick={onRemove}
+          style={{ paddingTop: '6px' }}
+        >
+          <MinusCircleIcon />
+        </Button>
+      </GridItem>
+    </Grid>
   );
-}
+};
