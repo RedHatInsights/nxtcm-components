@@ -1,0 +1,17 @@
+.totalValue {
+  font-size: var(--pf-t--global--font--size--2xl);
+  font-weight: var(--pf-t--global--font--weight--bold);
+  color: var(--pf-t--global--text--color--regular);
+}
+
+.totalLabel {
+  font-size: var(--pf-t--global--font--size--body);
+  font-weight: var(--pf-t--global--font--weight--bold);
+  color: var(--pf-t--global--text--color--regular);
+}
+
+.description {
+  font-size: var(--pf-t--global--font--size--sm);
+  font-weight: var(--pf-t--global--font--weight--bold);
+  color: var(--pf-t--global--text--color--subtle);
+}
