@@ -44,13 +44,14 @@ export const composeValidators =
 export function validateClusterName(value: string, _item: unknown, t?: any) {
   t = t ? t : (value: any) => value;
   if (!value) return undefined;
-  if (value.length > 253) return `${t('This value can contain at most 253 characters')}`;
+  if (value.length > 54) return `${t('This value can contain at most 54 characters')}`;
   for (const char of value) {
     if (!lowercaseAlphaNumericCharacters.includes(char) && char !== '-' && char !== '.')
       return `${t("This value can only contain lowercase alphanumeric characters or '-' or '.'")}`;
   }
   if (!lowercaseAlphaNumericCharacters.includes(value[0]))
     return `${t('This value must start with an alphanumeric character')}`;
+  if (/^[0-9]/.test(value[0])) return `${t('This value must not start with a number')}`;
   if (!lowercaseAlphaNumericCharacters.includes(value[value.length - 1]))
     return `${t('This value must end with an alphanumeric character')}`;
   return undefined;
@@ -492,6 +493,9 @@ export const validateMinReplicas = (
   const positiveError = validatePositiveInteger(value);
   if (positiveError) return positiveError;
   const typedItem = item as { cluster?: { max_replicas?: number } } | undefined;
+  if (value !== undefined && value > 500) {
+    return 'Input cannot be more than 500.';
+  }
   if (value !== undefined && typedItem?.cluster?.max_replicas !== undefined) {
     if (value > typedItem?.cluster?.max_replicas) {
       return 'Min nodes cannot be greater than max nodes.';
@@ -507,6 +511,9 @@ export const validateMaxReplicas = (
   const positiveError = validatePositiveInteger(value);
   if (positiveError) return positiveError;
   const typedItem = item as { cluster?: { min_replicas?: number } } | undefined;
+  if (value !== undefined && value > 500) {
+    return 'Input cannot be more than 500.';
+  }
   if (value !== undefined && typedItem?.cluster?.min_replicas !== undefined) {
     if (value < typedItem?.cluster?.min_replicas) {
       return 'Max nodes must be greater than or equal to min nodes.';

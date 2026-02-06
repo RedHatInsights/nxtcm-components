@@ -48,6 +48,7 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
                 'The number of compute nodes to provision for your initial machine pool. {HERE GOES LINK: Learn more about compute node count}.'
               )}
               min={1}
+              max={500}
               validation={validateMinReplicas}
             />
           </FlexItem>
@@ -60,6 +61,7 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
                 'The number of compute nodes to provision for your initial machine pool. {HERE GOES LINK: Learn more about compute node count}.'
               )}
               min={1}
+              max={500}
               validation={validateMaxReplicas}
             />
           </FlexItem>
