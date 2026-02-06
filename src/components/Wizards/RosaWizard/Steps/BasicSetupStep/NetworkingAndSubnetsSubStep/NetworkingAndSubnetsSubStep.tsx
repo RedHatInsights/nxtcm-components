@@ -1,18 +1,17 @@
 import {
   Radio,
   Section,
-  WizCheckbox,
-  WizNumberInput,
   WizRadioGroup,
   WizSelect,
   WizMachinePoolSelect,
 } from '@patternfly-labs/react-form-wizard';
 import { LabelHelp } from '@patternfly-labs/react-form-wizard/components/LabelHelp';
 import { useInput } from '@patternfly-labs/react-form-wizard/inputs/Input';
-import { Content, ContentVariants, Flex, FlexItem } from '@patternfly/react-core';
+import { Content, ContentVariants } from '@patternfly/react-core';
 import { Subnet, VPC } from '../../../../types';
 import React from 'react';
 import { useTranslation } from '../../../../../../context/TranslationContext';
+import { AutoscalingField } from './Autoscaling/AutoscalingField';
 
 export const NetworkingAndSubnetsSubStep = (props: any) => {
   const { t } = useTranslation();
@@ -126,47 +125,8 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
           )}
           options={props.machineTypes}
         />
-        <WizCheckbox
-          title={t('Autoscaling')}
-          helperText={t(
-            'Autoscaling automatically adds and removes nodes from the machine pool based on resource requirements. {HERE GOES LINK: Learn more about autscaling with ROSA.}'
-          )}
-          path="cluster.autoscaling"
-          label={t('Enable autoscaling')}
-        />
-        {cluster?.autoscaling ? (
-          <Flex>
-            <FlexItem>
-              <WizNumberInput
-                required
-                path="cluster.min_replicas"
-                label={t('Min compute node count')}
-                labelHelp={t(
-                  'The number of compute nodes to provision for your initial machine pool. {HERE GOES LINK: Learn more about compute node count}.'
-                )}
-              />
-            </FlexItem>
-            <FlexItem>
-              <WizNumberInput
-                required
-                path="cluster.max_replicas"
-                label={t('Max compute node count')}
-                labelHelp={t(
-                  'The number of compute nodes to provision for your initial machine pool. {HERE GOES LINK: Learn more about compute node count}.'
-                )}
-              />
-            </FlexItem>
-          </Flex>
-        ) : (
-          <WizNumberInput
-            required
-            path="cluster.nodes_compute"
-            label={t('Compute node count')}
-            labelHelp={t(
-              'The number of compute nodes to provision for your initial machine pool. {HERE GOES LINK: Learn more about compute node count}.'
-            )}
-          />
-        )}
+
+        <AutoscalingField autoscaling={cluster?.autoscaling} />
 
         <WizMachinePoolSelect
           required
