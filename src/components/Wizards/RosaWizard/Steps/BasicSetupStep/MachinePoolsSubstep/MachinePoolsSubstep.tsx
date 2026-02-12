@@ -1,11 +1,17 @@
 import React from 'react';
-import { Section, WizMachinePoolSelect, WizSelect } from '@patternfly-labs/react-form-wizard';
+import {
+  Section,
+  WizMachinePoolSelect,
+  WizNumberInput,
+  WizSelect,
+} from '@patternfly-labs/react-form-wizard';
 import { useInput } from '@patternfly-labs/react-form-wizard/inputs/Input';
 import { Content, ContentVariants } from '@patternfly/react-core';
 import { useTranslation } from '../../../../../../context/TranslationContext';
 import { subnetsFilter } from '../../../helpers';
 import { Subnet, VPC } from '../../../../types';
 import { AutoscalingField } from './Autoscaling/AutoscalingField';
+import { validateRootDiskSize } from '../../../validators';
 
 export const MachinePoolsSubstep = (props: any) => {
   const { t } = useTranslation();
@@ -86,6 +92,18 @@ export const MachinePoolsSubstep = (props: any) => {
         />
 
         <AutoscalingField autoscaling={cluster?.autoscaling} />
+
+        <WizNumberInput
+          required
+          path="cluster.compute_root_volume.aws.size"
+          label={t('Root disk size')}
+          labelHelp={t(
+            'Root disks are AWS EBS volumes attached as the primary disk for AWS EC2 instances. The root disk size for this machine pool group of nodes must be between 75GiB and 16384GiB.'
+          )}
+          min={75}
+          max={16384}
+          validation={validateRootDiskSize}
+        />
       </Section>
     </>
   );

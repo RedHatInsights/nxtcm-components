@@ -7,7 +7,10 @@ import {
   DisplayModeContext,
   DisplayMode,
 } from '@patternfly-labs/react-form-wizard/contexts/DisplayModeContext';
-import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
+import {
+  ShowValidationProvider,
+  ShowValidationContext,
+} from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
 import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
 import { VPC, Subnet, MachineTypesDropdownType } from '../../../../types';
 
@@ -83,6 +86,7 @@ export const createMockClusterData = (overrides: Record<string, unknown> = {}) =
     max_replicas: 4,
     nodes_compute: 2,
     machine_pools_subnets: [],
+    compute_root_volume: { aws: { size: 128 } },
     ...overrides,
   },
 });
@@ -92,6 +96,7 @@ export interface MachinePoolsSubstepStoryProps {
   vpcList?: VPC[];
   machineTypes?: MachineTypesDropdownType[];
   clusterOverrides?: Record<string, unknown>;
+  showValidation?: boolean;
 }
 
 // Wrapped component that can be mounted in tests
@@ -99,6 +104,7 @@ export const MachinePoolsSubstepStory: React.FC<MachinePoolsSubstepStoryProps> =
   vpcList = mockVpcList,
   machineTypes = mockMachineTypes,
   clusterOverrides = {},
+  showValidation = false,
 }) => {
   const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
 
@@ -107,17 +113,25 @@ export const MachinePoolsSubstepStory: React.FC<MachinePoolsSubstepStoryProps> =
     setData((currentData) => ({ ...currentData }));
   }, []);
 
+  const validationWrapper = showValidation ? (
+    <ShowValidationContext.Provider value={true}>
+      <ValidationProvider>
+        <MachinePoolsSubstep vpcList={vpcList} machineTypes={machineTypes} path="" />
+      </ValidationProvider>
+    </ShowValidationContext.Provider>
+  ) : (
+    <ShowValidationProvider>
+      <ValidationProvider>
+        <MachinePoolsSubstep vpcList={vpcList} machineTypes={machineTypes} path="" />
+      </ValidationProvider>
+    </ShowValidationProvider>
+  );
+
   return (
     <TranslationProvider>
       <DataContext.Provider value={{ update }}>
         <DisplayModeContext.Provider value={DisplayMode.Step}>
-          <ItemContext.Provider value={data}>
-            <ShowValidationProvider>
-              <ValidationProvider>
-                <MachinePoolsSubstep vpcList={vpcList} machineTypes={machineTypes} path="" />
-              </ValidationProvider>
-            </ShowValidationProvider>
-          </ItemContext.Provider>
+          <ItemContext.Provider value={data}>{validationWrapper}</ItemContext.Provider>
         </DisplayModeContext.Provider>
       </DataContext.Provider>
     </TranslationProvider>

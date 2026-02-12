@@ -525,3 +525,19 @@ export const validateMaxReplicas = (
 export const validateComputeNodes = (value: number | undefined): string | undefined => {
   return validatePositiveInteger(value);
 };
+
+export const validateRootDiskSize = (value: number | undefined): string | undefined => {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+  if (!Number.isInteger(value)) {
+    return 'Root disk size must be an integer.';
+  }
+  if (value < 75) {
+    return 'Root disk size must be at least 75 GiB.';
+  }
+  if (value > 16384) {
+    return 'Root disk size must not exceed 16384 GiB.';
+  }
+  return undefined;
+};

@@ -97,4 +97,87 @@ test.describe('MachinePoolsSubstep', () => {
       component.getByText(/The following settings apply to all machine pools/)
     ).toBeVisible();
   });
+
+  test('should display Root disk size field', async ({ mount }) => {
+    const component = await mount(<MachinePoolsSubstepStory />);
+
+    await expect(component.getByText('Root disk size', { exact: true })).toBeVisible();
+  });
+
+  test('should display Root disk size with default value', async ({ mount }) => {
+    const component = await mount(
+      <MachinePoolsSubstepStory
+        clusterOverrides={{ compute_root_volume: { aws: { size: 128 } } }}
+      />
+    );
+
+    const rootDiskFormGroup = component.locator('#cluster-compute_root_volume-aws-size-form-group');
+    const rootDiskInput = rootDiskFormGroup.locator('input[type="number"]');
+    await expect(rootDiskInput).toBeVisible();
+    await expect(rootDiskInput).toHaveValue('128');
+  });
+
+  test('should show validation error when Root disk size is below 75', async ({ mount }) => {
+    const component = await mount(
+      <MachinePoolsSubstepStory
+        clusterOverrides={{ compute_root_volume: { aws: { size: 50 } } }}
+        showValidation={true}
+      />
+    );
+
+    await expect(component.getByText('Root disk size must be at least 75 GiB.')).toBeVisible();
+  });
+
+  test('should show validation error when Root disk size is above 16384', async ({ mount }) => {
+    const component = await mount(
+      <MachinePoolsSubstepStory
+        clusterOverrides={{ compute_root_volume: { aws: { size: 20000 } } }}
+        showValidation={true}
+      />
+    );
+
+    await expect(component.getByText('Root disk size must not exceed 16384 GiB.')).toBeVisible();
+  });
+
+  test('should not show validation error when Root disk size is valid', async ({ mount }) => {
+    const component = await mount(
+      <MachinePoolsSubstepStory
+        clusterOverrides={{ compute_root_volume: { aws: { size: 128 } } }}
+        showValidation={true}
+      />
+    );
+
+    await expect(component.getByText('Root disk size must be at least 75 GiB.')).not.toBeVisible();
+    await expect(
+      component.getByText('Root disk size must not exceed 16384 GiB.')
+    ).not.toBeVisible();
+  });
+
+  test('should accept boundary value of 75 for Root disk size', async ({ mount }) => {
+    const component = await mount(
+      <MachinePoolsSubstepStory
+        clusterOverrides={{ compute_root_volume: { aws: { size: 75 } } }}
+        showValidation={true}
+      />
+    );
+
+    await expect(component.getByText('Root disk size must be at least 75 GiB.')).not.toBeVisible();
+    await expect(
+      component.getByText('Root disk size must not exceed 16384 GiB.')
+    ).not.toBeVisible();
+  });
+
+  test('should accept boundary value of 16384 for Root disk size', async ({ mount }) => {
+    const component = await mount(
+      <MachinePoolsSubstepStory
+        clusterOverrides={{ compute_root_volume: { aws: { size: 16384 } } }}
+        showValidation={true}
+      />
+    );
+
+    await expect(component.getByText('Root disk size must be at least 75 GiB.')).not.toBeVisible();
+    await expect(
+      component.getByText('Root disk size must not exceed 16384 GiB.')
+    ).not.toBeVisible();
+  });
 });
