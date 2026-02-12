@@ -49,6 +49,7 @@ type WizSelectCommonProps<T> = InputCommonProps<T> & {
   isCreatable?: boolean;
   onCreate?: (value: string) => void;
   callbackFunction?: (value: unknown) => void;
+  isFill?: boolean;
 };
 
 interface WizSelectSingleProps<T> extends WizSelectCommonProps<T> {
@@ -143,7 +144,7 @@ function WizSelectBase<T = any>(props: SelectProps<T>) {
     <div id={id}>
       <WizFormGroup {...props}>
         <InputGroup>
-          <InputGroupItem isFill>
+          <InputGroupItem isFill={props.isFill}>
             <PfSelect
               onOpenChange={(isOpen) => {
                 !isOpen && setOpen(false);

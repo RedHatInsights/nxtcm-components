@@ -1,4 +1,4 @@
-import { CIDRSubnet, Subnet } from '../types';
+import { CIDRSubnet, Subnet, VPC } from '../types';
 import { MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH } from './constants';
 
 const OPERATOR_ROLES_HASH_LENGTH = 4;
@@ -89,10 +89,26 @@ const constructSelectedSubnets = (formValues?: Record<string, any>) => {
   return selectedSubnets;
 };
 
+const subnetsFilter = (selectedVPC: VPC) => {
+  const privateSubnets = selectedVPC?.aws_subnets.filter((privateSubnet: Subnet) =>
+    privateSubnet.name.includes('private')
+  );
+
+  const publicSubnets = selectedVPC?.aws_subnets.filter((publicSubnet: Subnet) =>
+    publicSubnet.name.includes('public')
+  );
+
+  return {
+    publicSubnets,
+    privateSubnets,
+  };
+};
+
 export {
   createOperatorRolesPrefix,
   stringToArray,
   arrayToString,
   parseCIDRSubnetLength,
   constructSelectedSubnets,
+  subnetsFilter,
 };

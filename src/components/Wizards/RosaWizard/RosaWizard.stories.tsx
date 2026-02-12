@@ -172,7 +172,7 @@ const meta: Meta<typeof RosaWizard> = {
     docs: {
       description: {
         component:
-          'ROSA (Red Hat OpenShift Service on AWS) Wizard component for creating ROSA clusters with a step-by-step interface.',
+          'ROSA (Red Hat OpenShift Service on AWS) Wizard component for creating ROSA clusters with a step-by-step interface. The wizard includes Basic setup steps (Details, Roles & Policies, Machine Pools, Networking), Additional setup steps (Encryption, Networking, Cluster-wide proxy, Cluster updates), and a Review step.',
       },
     },
   },
@@ -354,9 +354,45 @@ export const ExtensiveOptions: Story = {
           label: `Billing Account ${i + 1} (${100000000000 + i})`,
           value: `billing-${i + 1}-${100000000000 + i}`,
         })),
-        vpcList: mockVPCs,
+        vpcList: [
+          ...mockVPCs,
+          ...Array.from({ length: 5 }, (_, i) => ({
+            name: `extensive-vpc-${i + 3}`,
+            id: `vpc-extensive-${i + 3}`,
+            aws_subnets: [
+              {
+                subnet_id: `subnet-ext-private-${i}-a`,
+                name: `extensive-vpc-${i + 3}-subnet-private1-us-east-1a`,
+                availability_zone: 'us-east-1a',
+              },
+              {
+                subnet_id: `subnet-ext-public-${i}-a`,
+                name: `extensive-vpc-${i + 3}-subnet-public1-us-east-1a`,
+                availability_zone: 'us-east-1a',
+              },
+              {
+                subnet_id: `subnet-ext-private-${i}-b`,
+                name: `extensive-vpc-${i + 3}-subnet-private1-us-east-1b`,
+                availability_zone: 'us-east-1b',
+              },
+              {
+                subnet_id: `subnet-ext-public-${i}-b`,
+                name: `extensive-vpc-${i + 3}-subnet-public1-us-east-1b`,
+                availability_zone: 'us-east-1b',
+              },
+            ],
+          })),
+        ],
         oicdConfig: mockOicdConfig,
-        machineTypes: mockMachineTypes,
+        machineTypes: [
+          ...mockMachineTypes,
+          ...Array.from({ length: 10 }, (_, i) => ({
+            id: `ext-instance-${i + 1}`,
+            label: `ext-instance-${i + 1}.xlarge`,
+            description: `${(i + 2) * 2} vCPU ${(i + 2) * 8} GiB RAM`,
+            value: `ext-instance-${i + 1}.xlarge`,
+          })),
+        ],
         regions: mockRegions,
         roles: mockRoles,
       },
@@ -423,6 +459,103 @@ export const WithErrorHandling: Story = {
         vpcList: mockVPCs,
         oicdConfig: mockOicdConfig,
         machineTypes: mockMachineTypes,
+      },
+      callbackFunctions: {
+        onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
+      },
+    },
+  },
+};
+
+/**
+ * Wizard with rich machine pool options - demonstrates the Machine Pools step
+ * with a variety of compute node instance types and VPC configurations with
+ * multiple private/public subnets across availability zones.
+ */
+export const WithMachinePoolsOptions: Story = {
+  args: {
+    title: 'Create ROSA Cluster - Machine Pools',
+    onSubmit: async (data: any) => {
+      console.log('Wizard submitted with data:', data);
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+    },
+    onCancel: () => {
+      console.log('Wizard cancelled');
+    },
+    wizardsStepsData: {
+      basicSetupStep: {
+        openShiftVersions: mockOpenShiftVersions,
+        awsInfrastructureAccounts: mockAwsInfrastructureAccounts,
+        awsBillingAccounts: mockAwsBillingAccounts,
+        regions: mockRegions,
+        roles: mockRoles,
+        oicdConfig: mockOicdConfig,
+        machineTypes: [
+          ...mockMachineTypes,
+          {
+            id: 'c5.2xlarge',
+            label: 'c5.2xlarge',
+            description: '8 vCPU 16 GiB RAM',
+            value: 'c5.2xlarge',
+          },
+          {
+            id: 'r5.xlarge',
+            label: 'r5.xlarge',
+            description: '4 vCPU 32 GiB RAM',
+            value: 'r5.xlarge',
+          },
+          {
+            id: 'm5.4xlarge',
+            label: 'm5.4xlarge',
+            description: '16 vCPU 64 GiB RAM',
+            value: 'm5.4xlarge',
+          },
+          {
+            id: 'c6i.8xlarge',
+            label: 'c6i.8xlarge',
+            description: '32 vCPU 64 GiB RAM',
+            value: 'c6i.8xlarge',
+          },
+        ],
+        vpcList: [
+          {
+            name: 'prod-vpc-multi-az',
+            id: 'vpc-prod-multi-az-001',
+            aws_subnets: [
+              {
+                subnet_id: 'subnet-mp-private-1a',
+                name: 'prod-vpc-subnet-private1-us-east-1a',
+                availability_zone: 'us-east-1a',
+              },
+              {
+                subnet_id: 'subnet-mp-public-1a',
+                name: 'prod-vpc-subnet-public1-us-east-1a',
+                availability_zone: 'us-east-1a',
+              },
+              {
+                subnet_id: 'subnet-mp-private-1b',
+                name: 'prod-vpc-subnet-private1-us-east-1b',
+                availability_zone: 'us-east-1b',
+              },
+              {
+                subnet_id: 'subnet-mp-public-1b',
+                name: 'prod-vpc-subnet-public1-us-east-1b',
+                availability_zone: 'us-east-1b',
+              },
+              {
+                subnet_id: 'subnet-mp-private-1c',
+                name: 'prod-vpc-subnet-private1-us-east-1c',
+                availability_zone: 'us-east-1c',
+              },
+              {
+                subnet_id: 'subnet-mp-public-1c',
+                name: 'prod-vpc-subnet-public1-us-east-1c',
+                availability_zone: 'us-east-1c',
+              },
+            ],
+          },
+          ...mockVPCs,
+        ],
       },
       callbackFunctions: {
         onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
