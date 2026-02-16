@@ -20,7 +20,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
         <WizRadioGroup
           id="public-private-subnet-radio-group"
           path="cluster.cluster_privacy"
-          label={t(
+          helperText={t(
             'Install your cluster with all public or private API endpoints and application routes.'
           )}
         >
