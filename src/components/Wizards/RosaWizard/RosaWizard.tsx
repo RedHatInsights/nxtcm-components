@@ -21,6 +21,7 @@ import { ReviewStepData } from './Steps/ReviewStepData';
 import { MachineTypesDropdownType, OIDCConfig, Roles, SelectDropdownType, VPC } from '../types';
 import { WizardStepType } from '@patternfly/react-core';
 import { useTranslation } from '../../../context/TranslationContext';
+import { MachinePoolsSubstep } from './Steps/BasicSetupStep/MachinePoolsSubstep/MachinePoolsSubstep';
 
 export type BasicSetupStepProps = {
   openShiftVersions: SelectDropdownType[];
@@ -110,11 +111,18 @@ export const RosaWizard = (props: RosaWizardProps) => {
               oicdConfig={wizardsStepsData.basicSetupStep.oicdConfig}
             />
           </Step>,
-          <Step id="networking-sub-step" label={t('Networking')} key="networking-sub-step-key">
-            <NetworkingAndSubnetsSubStep
-              machineTypes={wizardsStepsData.basicSetupStep.machineTypes}
+          <Step
+            id="machinepools-sub-step"
+            label={t('Machine pools')}
+            key="machinepools-sub-step-key"
+          >
+            <MachinePoolsSubstep
               vpcList={wizardsStepsData.basicSetupStep.vpcList}
+              machineTypes={wizardsStepsData.basicSetupStep.machineTypes}
             />
+          </Step>,
+          <Step id="networking-sub-step" label={t('Networking')} key="networking-sub-step-key">
+            <NetworkingAndSubnetsSubStep vpcList={wizardsStepsData.basicSetupStep.vpcList} />
           </Step>,
         ]}
       />
