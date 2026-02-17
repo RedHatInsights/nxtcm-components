@@ -15,6 +15,8 @@ import {
   validateRange,
 } from '../../../validators';
 import { constructSelectedSubnets } from '../../../helpers';
+import ExternalLink from '../../../common/ExternalLink';
+import links from '../../../externalLinks';
 
 export const NetworkingOptionalSubstep = (props: any) => {
   const { t } = useTranslation();
@@ -97,8 +99,9 @@ export const NetworkingOptionalSubstep = (props: any) => {
           </Content>
 
           <Content component={ContentVariants.p}>
-            {t(`HERE GOES LINK: Learn more about configureing network settings (needs external link
-            icon)`)}
+            <ExternalLink href={links.CIDR_RANGE_DEFINITIONS_ROSA}>
+              Learn more about configuring network settings
+            </ExternalLink>
           </Content>
         </Alert>
         <WizCheckbox

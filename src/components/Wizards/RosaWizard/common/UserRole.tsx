@@ -1,7 +1,10 @@
-import { Alert, AlertVariant, Title } from '@patternfly/react-core';
+import { Alert, AlertVariant, Content, ContentVariants, Title } from '@patternfly/react-core';
 import { CopyInstruction } from './CopyInstruction';
 import { TabGroup } from './TabGroup';
 import PopoverHint from './PopoverHint';
+import ExternalLink from './ExternalLink';
+import links from '../externalLinks';
+import PopoverHintWithTitle from './PopoverHitWithTitle';
 
 export const UserRole = () => {
   return (
@@ -26,9 +29,21 @@ export const UserRole = () => {
         className="pf-v6-u-mb-lg"
       />
 
-      <Title headingLevel="h3" size="md" className="pf-v6-u-mb-lg">
+      <Content component={ContentVariants.h3}>
         Next, is there an existing role that isn&apos;t linked?
-      </Title>
+      </Content>
+
+      <PopoverHintWithTitle
+        title="Why do I need to link my account?"
+        bodyContent={
+          <>
+            The link creates a trust policy between the role and the link cluster installer.{' '}
+            <ExternalLink href={links.ROSA_AWS_ACCOUNT_ASSOCIATION} noIcon>
+              Review the AWS policy permissions for the basic and admin OCM roles.
+            </ExternalLink>
+          </>
+        }
+      />
 
       <TabGroup
         tabs={[

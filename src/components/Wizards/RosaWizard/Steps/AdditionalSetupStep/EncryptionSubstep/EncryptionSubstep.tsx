@@ -9,6 +9,8 @@ import { useInput } from '@patternfly-labs/react-form-wizard/inputs/Input';
 import { Alert, Flex, FlexItem } from '@patternfly/react-core';
 import { useTranslation } from '../../../../../../context/TranslationContext';
 import { validateAWSKMSKeyARN } from '../../../validators';
+import ExternalLink from '../../../common/ExternalLink';
+import links from '../../../externalLinks';
 
 export const EncryptionSubstep = (props: any) => {
   const { t } = useTranslation();
@@ -25,9 +27,14 @@ export const EncryptionSubstep = (props: any) => {
         id="encryption-keys-radio-group"
         path="cluster.encryption_keys"
         label={t('Encryption Keys')}
-        helperText={t(
-          'You can use your default or a custom AWS KMS key to encrypt the root disks for your OpenShift nodes. {HERE GOES A LINK: Learn more}'
-        )}
+        helperText={
+          <>
+            {t(
+              'You can use your default or a custom AWS KMS key to encrypt the root disks for your OpenShift nodes.'
+            )}{' '}
+            <ExternalLink href={links.AWS_DATA_PROTECTION}>Learn more</ExternalLink>
+          </>
+        }
       >
         <Flex>
           <FlexItem>
@@ -40,7 +47,7 @@ export const EncryptionSubstep = (props: any) => {
           <FlexItem>
             <Radio
               id="custom-aws-kms-key-radio-btn"
-              label={t('Use custom AWS KSM key')}
+              label={t('Use custom AWS KMS key')}
               value="custom"
             />
           </FlexItem>
@@ -54,7 +61,7 @@ export const EncryptionSubstep = (props: any) => {
           validation={(value) => validateAWSKMSKeyARN(value, cluster.region, t)}
           required
           labelHelp={t(
-            'The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID. {HERE GOES EXTERNAL LINK: Finding the key ID and ARN}'
+            'The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID.'
           )}
         />
       )}
@@ -63,9 +70,12 @@ export const EncryptionSubstep = (props: any) => {
         path="cluster.etcd_encryption"
         title={t('etcd encryption')}
         label={t('Enable additional etcd encryption')}
-        helperText={t(
-          'Optionally, add a unique customer-managed AWS KMS key to encrypt etcd. {HERE GOES A LINK: Learn more}'
-        )}
+        helperText={
+          <>
+            {t('Optionally, add a unique customer-managed AWS KMS key to encrypt etcd.')}{' '}
+            <ExternalLink href={links.ROSA_SERVICE_ETCD_ENCRYPTION}>Learn more</ExternalLink>
+          </>
+        }
       />
 
       {cluster?.['etcd_encryption'] && (
@@ -76,7 +86,7 @@ export const EncryptionSubstep = (props: any) => {
           validateOnBlur
           required
           labelHelp={t(
-            'The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID. {HERE GOES EXTERNAL LINK: Finding the key ID and ARN}'
+            'The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID.'
           )}
         />
       )}

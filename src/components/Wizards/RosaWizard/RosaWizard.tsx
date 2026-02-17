@@ -166,7 +166,7 @@ export const RosaWizard = (props: RosaWizardProps) => {
             key="additional-setup-cluster-updates-key"
             label={t('Cluster updates (optional)')}
           >
-            <ClusterUpdatesSubstep />
+            <ClusterUpdatesSubstep goToStepId={getUseWizardContext} />
           </Step>,
         ]}
       />

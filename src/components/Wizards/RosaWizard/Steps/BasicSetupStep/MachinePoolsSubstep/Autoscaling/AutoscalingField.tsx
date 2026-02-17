@@ -6,6 +6,8 @@ import {
   validateMaxReplicas,
   validateComputeNodes,
 } from '../../../../validators';
+import ExternalLink from '../../../../common/ExternalLink';
+import links from '../../../../externalLinks';
 
 type AutoscalingFieldProps = {
   autoscaling: boolean;
@@ -20,9 +22,16 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
     <>
       <WizCheckbox
         title={t('Autoscaling')}
-        helperText={t(
-          'Autoscaling automatically adds and removes nodes from the machine pool based on resource requirements. {HERE GOES LINK: Learn more about autscaling with ROSA.}'
-        )}
+        helperText={
+          <>
+            {t(
+              'Autoscaling automatically adds and removes nodes from the machine pool based on resource requirements.'
+            )}{' '}
+            <ExternalLink href={links.ROSA_CLUSTER_AUTOSCALING}>
+              Learn more about autscaling with ROSA.
+            </ExternalLink>
+          </>
+        }
         path="cluster.autoscaling"
         label={t('Enable autoscaling')}
         onValueChange={(checked, item) => {
@@ -44,9 +53,14 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
               required
               path="cluster.min_replicas"
               label={t('Min compute node count')}
-              labelHelp={t(
-                'The number of compute nodes to provision for your initial machine pool. {HERE GOES LINK: Learn more about compute node count}.'
-              )}
+              labelHelp={
+                <>
+                  {t('The number of compute nodes to provision for your initial machine pool.')}
+                  <ExternalLink href={links.ROSA_WORKER_NODE_COUNT}>
+                    Learn more about compute node count
+                  </ExternalLink>
+                </>
+              }
               min={1}
               max={500}
               validation={validateMinReplicas}
@@ -57,9 +71,14 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
               required
               path="cluster.max_replicas"
               label={t('Max compute node count')}
-              labelHelp={t(
-                'The number of compute nodes to provision for your initial machine pool. {HERE GOES LINK: Learn more about compute node count}.'
-              )}
+              labelHelp={
+                <>
+                  {t('The number of compute nodes to provision for your initial machine pool.')}
+                  <ExternalLink href={links.ROSA_WORKER_NODE_COUNT}>
+                    Learn more about compute node count
+                  </ExternalLink>
+                </>
+              }
               min={1}
               max={500}
               validation={validateMaxReplicas}
@@ -71,9 +90,14 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
           required
           path="cluster.nodes_compute"
           label={t('Compute node count')}
-          labelHelp={t(
-            'The number of compute nodes to provision for your initial machine pool. {HERE GOES LINK: Learn more about compute node count}.'
-          )}
+          labelHelp={
+            <>
+              {t('The number of compute nodes to provision for your initial machine pool.')}
+              <ExternalLink href={links.ROSA_WORKER_NODE_COUNT}>
+                Learn more about compute node count
+              </ExternalLink>
+            </>
+          }
           min={1}
           validation={validateComputeNodes}
         />
