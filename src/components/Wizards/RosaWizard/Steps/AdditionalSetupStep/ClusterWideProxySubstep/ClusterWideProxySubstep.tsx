@@ -7,6 +7,8 @@ import {
   validateCA,
   validateUrl,
 } from '../../../validators';
+import ExternalLink from '../../../common/ExternalLink';
+import links from '../../../externalLinks';
 
 export const ClusterWideProxySubstep = () => {
   const { t } = useTranslation();
@@ -32,7 +34,9 @@ export const ClusterWideProxySubstep = () => {
           'Enable an HTTP or HTTPS proxy to deny direct access to the internet from your cluster.'
         )}
       </Content>
-      {'HERE GOES EXTERNAL LINK: Learn more about configuring a cluster-wide proxy'}
+      <ExternalLink href={links.CONFIGURE_PROXY_URL}>
+        Learn more about configuring a cluster-wide proxy
+      </ExternalLink>
       <Alert
         variant="info"
         isInline
@@ -45,6 +49,7 @@ export const ClusterWideProxySubstep = () => {
         label={t('HTTP proxy URL')}
         helperText={t('Specify a proxy URL to use for HTTP connections outside the cluster.')}
         path="cluster.http_proxy_url"
+        placeholder="http://<user>:<password>@<ipaddr>:<port>"
       />
       <WizTextInput
         validation={composeValidators(validateUrlHttps, validateAtLeastOne)}
@@ -52,6 +57,7 @@ export const ClusterWideProxySubstep = () => {
         label={t('HTTPS proxy URL')}
         helperText={t('Specify a proxy URL to use for HTTPS connections outside the cluster.')}
         path="cluster.https_proxy_url"
+        placeholder="https://<user>:<password>@<ipaddr>:<port>"
       />
       <WizTextInput
         disabled={!cluster.http_proxy_url && !cluster.https_proxy_url}
@@ -62,13 +68,17 @@ export const ClusterWideProxySubstep = () => {
           'Preface a domain with . to match subdomains only. For example, .y.com matches x.y.com, but not y.com. Use * to bypass proxy for all destinations.'
         )}
         path="cluster.no_proxy_domains"
+        placeholder="HTTP/HTTPS URL must be provided in order to use No proxy domain"
       />
 
-      {'HERE GOES FILE UPLOAD THAT NEEDS TO BE CREATED IN REACT-FORM-WIZARD'}
       <WizFileUpload
         label={t('Additional trust bundle')}
         path="cluster.additional_trust_bundle"
         validation={composeValidators(validateCA, validateAtLeastOne)}
+        placeholder={`----BEGIN CERTIFICATE----
+                      '<MY_TRUSTED_CA_CERT>'
+                      ----END CERTIFICATE---
+        `}
       />
     </Section>
   );

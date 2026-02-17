@@ -1,5 +1,7 @@
 import { Alert, AlertVariant, Content, ContentVariants } from '@patternfly/react-core';
 import { CopyInstruction } from './CopyInstruction';
+import ExternalLink from './ExternalLink';
+import links from '../externalLinks';
 
 export const AccountRoles = () => {
   return (
@@ -25,9 +27,9 @@ export const AccountRoles = () => {
           <>
             If you would prefer to manually create the required roles and policies within your AWS
             account, then follow{' '}
-            {`HERE GOES A LINK: <ExternalLink href={links.AWS_CLI_GETTING_STARTED_MANUAL} noIcon>
+            <ExternalLink href={links.AWS_CLI_GETTING_STARTED_MANUAL} noIcon>
               these instructions
-            </ExternalLink>`}
+            </ExternalLink>
             .
           </>
         }
