@@ -29,7 +29,10 @@ type ClusterRecommendationsData = Omit<
 
 type UpdateRisksData = Omit<UpgradeRisksProps, 'onViewRisks'>;
 
-type SubscriptionsData = Omit<SubscriptionsProps, 'onViewSubscriptions'>;
+type SubscriptionsData = Omit<
+  SubscriptionsProps,
+  'onViewSubscriptions' | 'onSubscriptionsClick' | 'onInstancesClick'
+>;
 
 type DashboardProps = {
   clusterRecommendations: {
@@ -43,6 +46,8 @@ type DashboardProps = {
   subscriptions: {
     load: () => Promise<SubscriptionsData>;
     onViewSubscriptions: () => void;
+    onSubscriptionsClick?: () => void;
+    onInstancesClick?: () => void;
   };
   updateRisks: {
     load: () => Promise<UpdateRisksData>;
@@ -119,7 +124,12 @@ const widgetMapping: (props: DashboardProps) => WidgetMapping = ({
             return <ErrorState bodyText={error?.message || 'Unknown error'} />;
           }
           return (
-            <Subscriptions {...data} onViewSubscriptions={subscriptions.onViewSubscriptions} />
+            <Subscriptions
+              {...data}
+              onViewSubscriptions={subscriptions.onViewSubscriptions}
+              onSubscriptionsClick={subscriptions.onSubscriptionsClick}
+              onInstancesClick={subscriptions.onInstancesClick}
+            />
           );
         }}
       </LoadingPanel>
