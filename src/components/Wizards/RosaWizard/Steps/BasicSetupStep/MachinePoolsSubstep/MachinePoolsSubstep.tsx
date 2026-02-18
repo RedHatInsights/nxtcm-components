@@ -6,6 +6,8 @@ import { useTranslation } from '../../../../../../context/TranslationContext';
 import { subnetsFilter } from '../../../helpers';
 import { Subnet, VPC } from '../../../../types';
 import { AutoscalingField } from './Autoscaling/AutoscalingField';
+import ExternalLink from '../../../common/ExternalLink';
+import links from '../../../externalLinks';
 
 export const MachinePoolsSubstep = (props: any) => {
   const { t } = useTranslation();
@@ -39,9 +41,14 @@ export const MachinePoolsSubstep = (props: any) => {
           keyPath="id"
           placeholder={t('Select a VPC to install your machine pools into')}
           required
-          labelHelp={t(
-            'To create a cluster hosted by Red Hat, you must have a Virtual Private Cloud (VPC) available to create clusters on. {HERE GOES THE LINK: Learn more about VPCs}'
-          )}
+          labelHelp={
+            <>
+              {t(
+                'To create a cluster hosted by Red Hat, you must have a Virtual Private Cloud (VPC) available to create clusters on.'
+              )}{' '}
+              <ExternalLink href={links.ROSA_SHARED_VPC}>Learn more about VPCs.</ExternalLink>
+            </>
+          }
           options={props.vpcList.map((vpc: any) => {
             return {
               label: vpc.name,
@@ -79,9 +86,14 @@ export const MachinePoolsSubstep = (props: any) => {
           label={t('Compute node instance type')}
           path="cluster.machine_type"
           required
-          labelHelp={t(
-            'Instance types are made from varying combinations of CPU, memory, storage, and networking capacity. Instance type availability depends on regional availability and your AWS account configuration. {HERE GOES THE LINK: Learn more }'
-          )}
+          labelHelp={
+            <>
+              {t(
+                'Instance types are made from varying combinations of CPU, memory, storage, and networking capacity. Instance type availability depends on regional availability and your AWS account configuration.'
+              )}{' '}
+              <ExternalLink href={links.ROSA_INSTANCE_TYPES}>Learn more.</ExternalLink>
+            </>
+          }
           options={props.machineTypes}
         />
 

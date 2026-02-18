@@ -9,7 +9,7 @@ The imported file should be single nested object with the following structure:
 
 */
 
-import rosaWizardExternalLinks from '../src/components/Wizards/RosaWizard/externalLinks.mjs';
+import rosaWizardExternalLinks from '../src/components/Wizards/RosaWizard/externalLinks';
 
 const externalLinks = {
   // add all external links here

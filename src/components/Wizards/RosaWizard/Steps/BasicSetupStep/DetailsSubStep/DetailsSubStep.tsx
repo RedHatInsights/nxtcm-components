@@ -5,6 +5,8 @@ import { StepDrawer } from '../../../common/StepDrawer';
 import { SelectDropdownType } from '../../../../types';
 import { useTranslation } from '../../../../../../context/TranslationContext';
 import { validateClusterName } from '../../../validators';
+import ExternalLink from '../../../common/ExternalLink';
+import links from '../../../externalLinks';
 
 type DetailsSubStepProps = {
   openShiftVersions: SelectDropdownType[];
@@ -97,10 +99,14 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
               options={awsBillingAccounts}
               required
             />
-            &quot;LINK TO ASSOCIATE NEW BILLING ACCOUNT URL&quot;
-            {/* 
-                    TODO: HERE GOES LINK WITH CONNECT A NEW AWS BILLING ACCOUNT
-                */}
+            <ExternalLink
+              variant="secondary"
+              className="pf-v6-u-mt-md"
+              href={links.AWS_CONSOLE_ROSA_HOME}
+              noIcon
+            >
+              Connect ROSA to a new AWS billing account
+            </ExternalLink>
           </StackItem>
           <StackItem>
             <WizSelect
@@ -108,7 +114,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
               label={t('Region')}
               placeholder={t('Select a region')}
               labelHelp={t(
-                'The AWS Region where your compute nodes and control plane will be located. (should be link: Learn more abut AWS Regions.)'
+                'The AWS Region where your compute nodes and control plane will be located.'
               )}
               options={regions}
               required
