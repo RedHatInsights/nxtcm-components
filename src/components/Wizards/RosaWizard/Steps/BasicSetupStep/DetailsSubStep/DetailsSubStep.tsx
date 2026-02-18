@@ -114,7 +114,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
               label={t('Region')}
               placeholder={t('Select a region')}
               labelHelp={t(
-                'The AWS Region where your compute nodes and control plane will be located. (should be link: Learn more abut AWS Regions.)'
+                'The AWS Region where your compute nodes and control plane will be located.'
               )}
               options={regions}
               required

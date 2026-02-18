@@ -21,5 +21,7 @@ const links = {
   ROSA_WORKER_NODE_COUNT: `${redHatRosaDocsBaseUrl}/introduction_to_rosa/policies-and-service-definition#rosa-sdpolicy-compute_rosa-service-definition`,
   ROSA_INSTANCE_TYPES: `${redHatRosaDocsBaseUrl}/introduction_to_rosa/policies-and-service-definition#rosa-hcp-instance-types`,
   ROSA_SHARED_VPC: `${redHatRosaDocsBaseUrl}/install_clusters/rosa-hcp-shared-vpc-config`,
+  ROSA_ROLES_LEARN_MORE: `${redHatRosaDocsBaseUrl}/introduction_to_rosa/rosa-hcp-about-iam-resources`,
+  ROSA_OIDC_LEARN_MORE: `${redHatRosaDocsBaseUrl}/introduction_to_rosa/rosa-hcp-about-iam-resources#rosa-sts-oidc-provider-requirements-for-operators_rosa-sts-about-iam-resources`,
 };
 export default links;
