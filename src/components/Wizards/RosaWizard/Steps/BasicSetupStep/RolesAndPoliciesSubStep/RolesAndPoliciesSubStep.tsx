@@ -1,5 +1,12 @@
 import { Section, useItem, WizSelect, WizTextInput } from '@patternfly-labs/react-form-wizard';
-import { ClipboardCopy, ExpandableSection, Stack, StackItem } from '@patternfly/react-core';
+import {
+  ClipboardCopy,
+  ExpandableSection,
+  Grid,
+  GridItem,
+  Stack,
+  StackItem,
+} from '@patternfly/react-core';
 import React from 'react';
 import PopoverHintWithTitle from '../../../common/PopoverHitWithTitle';
 import { OIDCConfigHint } from '../../../common/OIDCConfigHint';
@@ -39,6 +46,8 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
   return (
     <>
       <Section label={t('Account roles')}>
+<Grid hasGutter>
+          <GridItem span={7}>
         <WizSelect
           path="cluster.installer_role_arn"
           label={t('Installer role')}
@@ -54,67 +63,84 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
           options={installerRoles}
           required
         />
+        </GridItem>
+        </Grid>
         <ExpandableSection
           isExpanded={isArnsOpen}
           onToggle={() => setIsArnsOpen(!isArnsOpen)}
           toggleText={t('Amazon Resource Names (ARNs)')}
         >
-          <WizSelect
-            path="cluster.support_role_arn"
-            label={t('Support role')}
-            placeholder={t('Select an AWS infrastructure account')}
-            labelHelp={t(
-              'An IAM role used by the Red Hat Site Reliability Engineering (SRE) support team. The role is used with the corresponding policy resource to provide the Red Hat SRE support team with the permissions required to support ROSA clusters.'
-            )}
-            options={supportRoles}
-            required
-          />
-          <WizSelect
-            path="cluster.worker_role_arn"
-            label={t('Worker role')}
-            placeholder={t('Select an AWS infrastructure account')}
-            labelHelp={t(
-              'An IAM role used by the ROSA compute instances. The role is used with the corresponding policy resource to provide the compute instances with the permissions required to manage their components.'
-            )}
-            options={workerRoles}
-            required
-          />
+          <Grid hasGutter>
+            <GridItem span={7}>
+              <WizSelect
+                isFill
+                path="cluster.support_role_arn"
+                label={t('Support role')}
+                placeholder={t('Select an AWS infrastructure account')}
+                labelHelp={t(
+                  'An IAM role used by the Red Hat Site Reliability Engineering (SRE) support team. The role is used with the corresponding policy resource to provide the Red Hat SRE support team with the permissions required to support ROSA clusters.'
+                )}
+                options={supportRoles}
+                required
+              />
+            </GridItem>
+            <GridItem span={7}>
+              <WizSelect
+                isFill
+                path="cluster.worker_role_arn"
+                label={t('Worker role')}
+                placeholder={t('Select an AWS infrastructure account')}
+                labelHelp={t(
+                  'An IAM role used by the ROSA compute instances. The role is used with the corresponding policy resource to provide the compute instances with the permissions required to manage their components.'
+                )}
+                options={workerRoles}
+                required
+              />
+            </GridItem>
+          </Grid>
         </ExpandableSection>
       </Section>
       <Section label="Operator roles">
-        <Stack>
-          <StackItem>
-            <WizSelect
-              path="cluster.byo_oidc_config_id"
-              label={t('OIDC config ID')}
-              required
-              placeholder={t('Selec an OIDC config ID')}
-              labelHelp={t(
-                'The OIDC configuration ID created by running the command: rosa create oidc-config'
-              )}
-              options={oicdConfig.map((config) => {
-                return {
-                  label: config.label,
-                  value: config.value,
-                  description: config.issuer_url,
-                };
-              })}
-            />
-          </StackItem>
-          <StackItem>
-            <PopoverHintWithTitle
-              displayHintIcon
-              title={t('Create a new OIDC config id')}
-              bodyContent={<OIDCConfigHint />}
-            />
-          </StackItem>
-        </Stack>
+        <Grid>
+          <GridItem span={7}>
+            <Stack>
+              <StackItem>
+                <WizSelect
+                  isFill
+                  path="cluster.byo_oidc_config_id"
+                  label={t('OIDC config ID')}
+                  required
+                  placeholder={t('Selec an OIDC config ID')}
+                  labelHelp={t(
+                    'The OIDC configuration ID created by running the command: rosa create oidc-config'
+                  )}
+                  options={oicdConfig.map((config) => {
+                    return {
+                      label: config.label,
+                      value: config.value,
+                      description: config.issuer_url,
+                    };
+                  })}
+                />
+              </StackItem>
+              <StackItem>
+                <PopoverHintWithTitle
+                  displayHintIcon
+                  title={t('Create a new OIDC config id')}
+                  bodyContent={<OIDCConfigHint />}
+                />
+              </StackItem>
+            </Stack>
+          </GridItem>
+        </Grid>
 
         <ExpandableSection
           isExpanded={isOperatorRolesOpen}
           onToggle={() => setIsOperatorRolesOpen(!isOperatorRolesOpen)}
           toggleText={t('Operator role prefix')}
         >
+<Grid>
+            <GridItem span={4}>
           <WizTextInput
             validation={validateCustomOperatorRolesPrefix}
             path="cluster.custom_operator_roles_prefix"
@@ -133,6 +159,8 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
             )}
             required
           />
+          </GridItem>
+          </Grid>
           <ClipboardCopy
             variant="expansion"
             copyAriaLabel="Copy read-only example"

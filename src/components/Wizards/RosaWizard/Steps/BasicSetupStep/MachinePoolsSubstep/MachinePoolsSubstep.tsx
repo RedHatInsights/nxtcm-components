@@ -1,7 +1,7 @@
 import React from 'react';
 import { Section, WizMachinePoolSelect, WizSelect } from '@patternfly-labs/react-form-wizard';
 import { useInput } from '@patternfly-labs/react-form-wizard/inputs/Input';
-import { Content, ContentVariants } from '@patternfly/react-core';
+import { Content, ContentVariants, Grid, GridItem } from '@patternfly/react-core';
 import { useTranslation } from '../../../../../../context/TranslationContext';
 import { subnetsFilter } from '../../../helpers';
 import { Subnet, VPC } from '../../../../types';
@@ -35,6 +35,8 @@ export const MachinePoolsSubstep = (props: any) => {
           )}
         </Content>
 
+ <Grid>
+          <GridItem span={5}>
         <WizSelect
           label={`${t('Select a VPC to install your machine pools into your selected regions:')} ${cluster?.region}`}
           path="cluster.selected_vpc"
@@ -56,6 +58,8 @@ export const MachinePoolsSubstep = (props: any) => {
             };
           })}
         />
+        </GridItem>
+        </Grid>
 
         <WizMachinePoolSelect
           required
@@ -82,6 +86,8 @@ export const MachinePoolsSubstep = (props: any) => {
             'The following settings apply to all machine pools created during cluster install. Additional machine pools can be created after cluster creation.'
           )}
         </Content>
+<Grid>
+          <GridItem span={5}>
         <WizSelect
           label={t('Compute node instance type')}
           path="cluster.machine_type"
@@ -96,6 +102,8 @@ export const MachinePoolsSubstep = (props: any) => {
           }
           options={props.machineTypes}
         />
+        </GridItem>
+        </Grid>
 
         <AutoscalingField autoscaling={cluster?.autoscaling} />
       </Section>

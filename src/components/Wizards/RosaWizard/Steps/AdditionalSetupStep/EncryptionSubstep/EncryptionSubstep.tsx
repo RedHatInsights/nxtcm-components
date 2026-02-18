@@ -6,7 +6,7 @@ import {
   WizTextInput,
 } from '@patternfly-labs/react-form-wizard';
 import { useInput } from '@patternfly-labs/react-form-wizard/inputs/Input';
-import { Alert, Flex, FlexItem } from '@patternfly/react-core';
+import { Alert, Flex, FlexItem, Grid, GridItem } from '@patternfly/react-core';
 import { useTranslation } from '../../../../../../context/TranslationContext';
 import { validateAWSKMSKeyARN } from '../../../validators';
 import ExternalLink from '../../../common/ExternalLink';
@@ -36,7 +36,7 @@ export const EncryptionSubstep = (props: any) => {
           </>
         }
       >
-        <Flex>
+        <Flex direction={{ default: 'column' }}>
           <FlexItem>
             <Radio
               id="default-aws-kms-key-radio-btn"
@@ -54,6 +54,8 @@ export const EncryptionSubstep = (props: any) => {
         </Flex>
       </WizRadioGroup>
       {cluster?.['encryption_keys'] === 'custom' && (
+<Grid>
+          <GridItem span={8}>
         <WizTextInput
           path="cluster.kms_key_arn"
           label={t('Key ARN')}
@@ -64,6 +66,8 @@ export const EncryptionSubstep = (props: any) => {
             'The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID.'
           )}
         />
+        </GridItem>
+        </Grid>
       )}
 
       <WizCheckbox
@@ -79,6 +83,8 @@ export const EncryptionSubstep = (props: any) => {
       />
 
       {cluster?.['etcd_encryption'] && (
+ <Grid>
+          <GridItem span={8}>
         <WizTextInput
           path="cluster.etcd_key_arn"
           validation={(value) => validateAWSKMSKeyARN(value, cluster.region, t)}
@@ -89,14 +95,20 @@ export const EncryptionSubstep = (props: any) => {
             'The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID.'
           )}
         />
+        </GridItem>
+        </Grid>
       )}
-      <Alert
-        variant="info"
-        title={t(
-          'Take a note of the keys associated with your cluster. If you delete your keys, the cluster will not be available'
-        )}
-        ouiaId="encryptionKeysAlert"
-      />
+      <Grid>
+        <GridItem span={9}>
+          <Alert
+            variant="info"
+            title={t(
+              'Take a not of the keys associated with your cluster. If you delete your keys, the cluster will not be available'
+            )}
+            ouiaId="encryptionKeysAlert"
+          />
+        </GridItem>
+      </Grid>
     </Section>
   );
 };

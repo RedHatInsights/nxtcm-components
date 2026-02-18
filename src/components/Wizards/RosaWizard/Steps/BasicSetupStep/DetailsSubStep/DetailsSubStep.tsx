@@ -1,5 +1,5 @@
 import { Section, WizSelect, WizTextInput } from '@patternfly-labs/react-form-wizard';
-import { Button, Stack, StackItem } from '@patternfly/react-core';
+import { Button, Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
 import React from 'react';
 import { StepDrawer } from '../../../common/StepDrawer';
 import { SelectDropdownType } from '../../../../types';
@@ -7,6 +7,7 @@ import { useTranslation } from '../../../../../../context/TranslationContext';
 import { validateClusterName } from '../../../validators';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
+import { RedoIcon } from '@patternfly/react-icons';
 
 type DetailsSubStepProps = {
   openShiftVersions: SelectDropdownType[];
@@ -37,46 +38,64 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
       >
         <Stack hasGutter>
           <StackItem>
-            <WizTextInput
-              validation={validateClusterName}
-              path="cluster.name"
-              label={t('Cluster name')}
-              validateOnBlur
-              placeholder={t('Enter the cluster name')}
-              required
-              labelHelp={t(
-                'This will be how we refer to your cluster in the OpenShift cluster list and will form part of the cluster console subdomain.'
-              )}
-            />
+            <Grid>
+              <GridItem span={4}>
+                <WizTextInput
+                  validation={validateClusterName}
+                  path="cluster.name"
+                  label={t('Cluster name')}
+                  validateOnBlur
+                  placeholder={t('Enter the cluster name')}
+                  required
+                  labelHelp={t(
+                    'This will be how we refer to your cluster in the OpenShift cluster list and will form part of the cluster console subdomain.'
+                  )}
+                />
+              </GridItem>
+            </Grid>
           </StackItem>
 
           <StackItem>
-            <WizSelect
-              path="cluster.cluster_version"
-              label={t('OpenShift version')}
-              placeholder={t('Select an OpenShift version')}
-              options={openShiftVersions}
-              required
-            />
+            <Grid>
+              <GridItem span={4}>
+                <WizSelect
+                  isFill
+                  path="cluster.cluster_version"
+                  label={t('OpenShift version')}
+                  placeholder={t('Select an OpenShift version')}
+                  options={openShiftVersions}
+                  required
+                />
+              </GridItem>
+            </Grid>
           </StackItem>
 
           <StackItem>
-            <WizSelect
-              path="cluster.associated_aws_id"
-              label={t('Associated AWS infrastructure account')}
-              placeholder={t('Select an AWS infrastructure account')}
-              labelHelp={t(
-                "Your cluster's cloud resources will be created in the associated AWS infrastructure account. To continue, you must associate at least 1 account."
-              )}
-              options={awsInfrastructureAccounts}
-              callbackFunction={awsAccountDataCallback}
-              onValueChange={(_value, item) => {
-                item.cluster.installer_role_arn = undefined;
-                item.cluster.worker_role_arn = undefined;
-                item.cluster.support_role_arn = undefined;
-              }}
-              required
-            />
+            <Grid hasGutter>
+              <GridItem span={4}>
+                <WizSelect
+                  isFill
+                  path="cluster.associated_aws_id"
+                  label={t('Associated AWS infrastructure account')}
+                  placeholder={t('Select an AWS infrastructure account')}
+                  labelHelp={t(
+                    "Your cluster's cloud resources will be created in the associated AWS infrastructure account. To continue, you must associate at least 1 account."
+                  )}
+                  options={awsInfrastructureAccounts}
+                  callbackFunction={awsAccountDataCallback}
+                  onValueChange={(_value, item) => {
+                    item.cluster.installer_role_arn = undefined;
+                    item.cluster.worker_role_arn = undefined;
+                    item.cluster.support_role_arn = undefined;
+                  }}
+                  required
+                />
+              </GridItem>
+
+              <GridItem span={1} style={{ alignSelf: 'end' }}>
+                <Button variant="control" aria-label="Copy" icon={<RedoIcon />} />
+              </GridItem>
+            </Grid>
             {!isDrawerExpanded && (
               <Button
                 isInline
@@ -89,17 +108,25 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
           </StackItem>
 
           <StackItem>
-            <WizSelect
-              path="cluster.billing_account_id"
-              label={t('Associated AWS billing account')}
-              placeholder={t('Select an AWS billing account')}
-              labelHelp={t(
-                'The AWS billing account is often the same as your Associated AWS infrastructure account, but does not have to be.'
-              )}
-              options={awsBillingAccounts}
-              required
-            />
-            <ExternalLink
+            <Grid hasGutter>
+              <GridItem span={4}>
+                <WizSelect
+                  isFill
+                  path="cluster.billing_account_id"
+                  label={t('Associated AWS billing account')}
+                  placeholder={t('Select an AWS billing account')}
+                  labelHelp={t(
+                    'The AWS billing account is often the same as your Associated AWS infrastructure account, but does not have to be.'
+                  )}
+                  options={awsBillingAccounts}
+                  required
+                />
+              </GridItem>
+              <GridItem span={1} style={{ alignSelf: 'end' }}>
+                <Button variant="control" aria-label="Copy" icon={<RedoIcon />} />
+              </GridItem>
+            </Grid>
+                        <ExternalLink
               variant="secondary"
               className="pf-v6-u-mt-md"
               href={links.AWS_CONSOLE_ROSA_HOME}
@@ -109,16 +136,21 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
             </ExternalLink>
           </StackItem>
           <StackItem>
-            <WizSelect
-              path="cluster.region"
-              label={t('Region')}
-              placeholder={t('Select a region')}
-              labelHelp={t(
-                'The AWS Region where your compute nodes and control plane will be located.'
-              )}
-              options={regions}
-              required
-            />
+            <Grid>
+              <GridItem span={4}>
+                <WizSelect
+                  isFill
+                  path="cluster.region"
+                  label={t('Region')}
+                  placeholder={t('Select a region')}
+                  labelHelp={t(
+                    'The AWS Region where your compute nodes and control plane will be located. (should be link: Learn more abut AWS Regions.)'
+                  )}
+                  options={regions}
+                  required
+                />
+              </GridItem>
+            </Grid>
           </StackItem>
         </Stack>
       </StepDrawer>

@@ -141,13 +141,13 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
   }
 
   return (
-    <Grid hasGutter span={6} id={id}>
-      <GridItem span={2}>
+    <Grid hasGutter span={12} id={id}>
+      <GridItem span={3}>
         <Content component={ContentVariants.p} className="pf-v6-u-font-weight-bold">
           {props.machinePoolLabel}
         </Content>
       </GridItem>
-      <GridItem>
+      <GridItem span={2}>
         <Content component={ContentVariants.p} className="pf-v6-u-font-weight-bold">
           {props.subnetLabel}
         </Content>
@@ -268,7 +268,7 @@ function MachinePoolRow(props: MachinePoolRowProps) {
           {machinePoolLabel} {index + 1}
         </Content>
       </GridItem>
-      <GridItem span={6} rowSpan={2}>
+      <GridItem span={4} rowSpan={2}>
         <InputGroup>
           <InputGroupItem isFill>
             <PfSelect
