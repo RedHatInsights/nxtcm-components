@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Flex, FlexItem } from '@patternfly/react-core';
+import { Button, Flex, FlexItem, Title } from '@patternfly/react-core';
 import styles from './TotalCost.module.scss';
 
 export interface TotalCostProps {
@@ -11,7 +11,9 @@ export interface TotalCostProps {
 export const TotalCost: React.FC<TotalCostProps> = ({ totalCost, currency = '$', onViewMore }) => (
   <Flex direction={{ default: 'column' }} style={{ height: '100%', padding: '1rem' }}>
     <FlexItem data-testid="cost-title">
-      <h3>Cost Management</h3>
+      <Title headingLevel="h3" size="md">
+        Cost Management
+      </Title>
     </FlexItem>
     <FlexItem data-testid="cost-description">
       <Flex direction={{ default: 'column' }} spaceItems={{ default: 'spaceItemsSm' }}>

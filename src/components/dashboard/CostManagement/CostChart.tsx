@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, FlexItem } from '@patternfly/react-core';
+import { Flex, FlexItem, Title } from '@patternfly/react-core';
 import { Chart, ChartAxis, ChartBar, ChartLegend } from '@patternfly/react-charts/victory';
 import styles from './CostChart.module.scss';
 
@@ -44,7 +44,9 @@ export const CostChart: React.FC<CostChartProps> = ({ costData, currency = '$' }
   return (
     <Flex direction={{ default: 'column' }} style={{ height: '100%', padding: '1rem' }}>
       <FlexItem data-testid="chart-title">
-        <h3>Type of clusters cost</h3>
+        <Title headingLevel="h3" size="md">
+          Type of clusters cost
+        </Title>
       </FlexItem>
       <FlexItem flex={{ default: 'flex_1' }}>
         <div className={styles.chartContainer}>
