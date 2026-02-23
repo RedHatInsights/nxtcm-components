@@ -37,12 +37,13 @@ export const Subscriptions = ({
         >
           <FlexItem>
             {onSubscriptionsClick ? (
-              <button
+              <Button
+                variant="plain"
                 className={`${styles.count} ${styles.clickableCount}`}
                 onClick={onSubscriptionsClick}
               >
                 {subscriptionCount}
-              </button>
+              </Button>
             ) : (
               <span className={styles.count}>{subscriptionCount}</span>
             )}
@@ -66,12 +67,13 @@ export const Subscriptions = ({
         >
           <FlexItem>
             {onInstancesClick ? (
-              <button
+              <Button
+                variant="plain"
                 className={`${styles.count} ${styles.clickableCount}`}
                 onClick={onInstancesClick}
               >
                 {instanceCount}
-              </button>
+              </Button>
             ) : (
               <span className={styles.count}>{instanceCount}</span>
             )}
