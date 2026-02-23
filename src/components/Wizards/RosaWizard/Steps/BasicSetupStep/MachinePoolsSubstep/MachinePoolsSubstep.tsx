@@ -1,5 +1,12 @@
 import React from 'react';
-import { Section, WizMachinePoolSelect, WizSelect } from '@patternfly-labs/react-form-wizard';
+import {
+  Radio,
+  Section,
+  WizMachinePoolSelect,
+  WizNumberInput,
+  WizRadioGroup,
+  WizSelect,
+} from '@patternfly-labs/react-form-wizard';
 import { useInput } from '@patternfly-labs/react-form-wizard/inputs/Input';
 import {
   Content,
@@ -15,6 +22,7 @@ import { AutoscalingField } from './Autoscaling/AutoscalingField';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 import { Indented } from '@patternfly-labs/react-form-wizard/components/Indented';
+import { validateRootDiskSize } from '../../../validators';
 
 export const MachinePoolsSubstep = (props: any) => {
   const { t } = useTranslation();
@@ -117,9 +125,50 @@ export const MachinePoolsSubstep = (props: any) => {
 
       <ExpandableSection toggleText="Advanced machine pool configuration (optional)">
         <Indented>
-          {/*
-              TODO: implementation of ROOT DISK SIZE and IMDS fields
-              */}
+          <WizRadioGroup
+            labelHelpTitle="Amazon EC2 Instance Metadata Service (IMDS)"
+            labelHelp={
+              <>
+                <Content component={ContentVariants.p}>
+                  Instance metadata is data that is related to an Amazon Elastic Compute Cloud
+                  (Amazon EC2) instance that applications can use to configure or manage the running
+                  instance.
+                </Content>
+                <Content component={ContentVariants.p}>
+                  {/* TODO: External link component is in another PR */}
+                  {/* <ExternalLink href={links.AWS_IMDS}>Learn more about IMDS</ExternalLink> */}
+                </Content>
+              </>
+            }
+            label="Instance Metadata Service"
+            path="cluster.imds"
+          >
+            <Radio
+              id="cluster-metadata-service-imdsv1-imdsv2-btn"
+              label={t('Use both IMDSv1 and IMDSv2')}
+              value="imdsv1andimdsv2"
+              description={t('Allows use of both IMDS versions for backward compatibility')}
+            />
+            <Radio
+              id="cluster-metadata-service-imdsv2-only-btn"
+              label={t('Use IMDSv2 only')}
+              value="imdsv2only"
+              description={t('A session-oriented method with enhanced security')}
+            />
+          </WizRadioGroup>
+
+          <WizNumberInput
+            path="cluster.compute_root_volume"
+            label={t('Root disk size')}
+            labelHelp={t(
+              'Root disks are AWS EBS volumes attached as the primary disk for AWS EC2 instances. The root disk size for this machine pool group of nodes must be between 75GiB and 16384GiB.'
+            )}
+            min={75}
+            max={16384}
+            validation={validateRootDiskSize}
+          />
+
+          {/* TODO: Additional security groups expandable section */}
         </Indented>
       </ExpandableSection>
     </>

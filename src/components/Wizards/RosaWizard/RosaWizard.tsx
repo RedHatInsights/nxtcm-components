@@ -68,6 +68,7 @@ export const RosaWizard = (props: RosaWizardProps) => {
       nodes_compute: 2,
       upgrade_policy: 'automatic',
       cluster_privacy: 'external',
+      compute_root_volume: 300,
     },
   };
 

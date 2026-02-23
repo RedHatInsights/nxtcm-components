@@ -152,7 +152,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
             </StackItem>
             {clusterWideProxy ? (
               <Indented>
-                <StackItem> 
+                <StackItem>
                   <Alert
                     variant="info"
                     isInline
