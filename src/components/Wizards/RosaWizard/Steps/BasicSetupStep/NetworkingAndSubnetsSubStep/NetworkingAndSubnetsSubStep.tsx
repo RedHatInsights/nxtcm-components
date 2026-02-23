@@ -59,7 +59,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
   const podDisjointSubnets = disjointSubnets('network_pod_cidr');
   const awsServiceSubnetMask = awsSubnetMask('network_service_cidr');
 
-  const hostPrexiValidators = (value: string) => hostPrefix(value);
+  const hostPrefixValidators = (value: string) => hostPrefix(value);
   const cidrValidators = (value: string) => cidr(value) || validateRange(value) || undefined;
 
   const machineCidrValidators = (value: string) =>
@@ -152,7 +152,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
             </StackItem>
             {clusterWideProxy ? (
               <Indented>
-                <StackItem>
+                <StackItem> 
                   <Alert
                     variant="info"
                     isInline
@@ -232,7 +232,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
             </GridItem>
             <GridItem span={7}>
               <WizTextInput
-                validation={hostPrexiValidators}
+                validation={hostPrefixValidators}
                 validateOnBlur
                 path="cluster.network_host_prefix"
                 label={t('Host prefix')}

@@ -103,7 +103,7 @@ export const EncryptionSubstep = (props: any) => {
           <Alert
             variant="info"
             title={t(
-              'Take a not of the keys associated with your cluster. If you delete your keys, the cluster will not be available'
+              'Take a note of the keys associated with your cluster. If you delete your keys, the cluster will not be available'
             )}
             ouiaId="encryptionKeysAlert"
           />

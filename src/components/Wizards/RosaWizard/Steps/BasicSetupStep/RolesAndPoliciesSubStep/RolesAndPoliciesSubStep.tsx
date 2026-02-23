@@ -110,7 +110,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                   path="cluster.byo_oidc_config_id"
                   label={t('OIDC config ID')}
                   required
-                  placeholder={t('Selec an OIDC config ID')}
+                  placeholder={t('Select an OIDC config ID')}
                   labelHelp={t(
                     'The OIDC configuration ID created by running the command: rosa create oidc-config'
                   )}

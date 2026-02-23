@@ -184,7 +184,7 @@ function WizSelectBase<T = any>(props: SelectProps<T>) {
           </InputGroupItem>
           {
             props.refreshCallback ? (
-              <InputGroupItem><Button variant="control" aria-label="Copy" onClick={props.refreshCallback} icon={<RedoIcon />} /></InputGroupItem>
+              <InputGroupItem><Button variant="control" aria-label="Refresh" onClick={props.refreshCallback} icon={<RedoIcon />} /></InputGroupItem>
             ) : null
           }
         </InputGroup>
