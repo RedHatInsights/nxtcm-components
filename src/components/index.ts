@@ -7,6 +7,7 @@ export * from './ConsoleBreadcrumbs';
 export * from './PageHeader';
 export * from './Wizards';
 export * from './YamlCodeEditor';
+export * from './dashboard/CostManagement';
 export * from './dashboard/NotificationsPanel';
 export * from './dashboard/StorageCard';
 export * from './dashboard/CVECard';
