@@ -7,16 +7,20 @@ export type SubscriptionsProps = {
   subscriptionCount: number;
   instanceCount: number;
   onViewSubscriptions?: () => void;
+  onSubscriptionsClick?: () => void;
+  onInstancesClick?: () => void;
 };
 
 export const Subscriptions = ({
   subscriptionCount,
   instanceCount,
   onViewSubscriptions,
+  onSubscriptionsClick,
+  onInstancesClick,
 }: SubscriptionsProps) => {
   return (
     <Flex direction={{ default: 'column' }} className={styles.subscriptions}>
-      <FlexItem className={styles.description} data-testid="subscriptions-description">
+      <FlexItem className={styles.description}>
         Monitor your OpenShift usage for both Annual and On-Demand subscriptions.
       </FlexItem>
 
@@ -31,8 +35,18 @@ export const Subscriptions = ({
           spaceItems={{ default: 'spaceItemsXs' }}
           flex={{ default: 'flex_1' }}
         >
-          <FlexItem className={styles.count} data-testid="subscription-count">
-            {subscriptionCount}
+          <FlexItem>
+            {onSubscriptionsClick ? (
+              <Button
+                variant="plain"
+                className={`${styles.count} ${styles.clickableCount}`}
+                onClick={onSubscriptionsClick}
+              >
+                {subscriptionCount}
+              </Button>
+            ) : (
+              <span className={styles.count}>{subscriptionCount}</span>
+            )}
           </FlexItem>
           <FlexItem>
             <Flex
@@ -51,8 +65,18 @@ export const Subscriptions = ({
           spaceItems={{ default: 'spaceItemsXs' }}
           flex={{ default: 'flex_1' }}
         >
-          <FlexItem className={styles.count} data-testid="instance-count">
-            {instanceCount}
+          <FlexItem>
+            {onInstancesClick ? (
+              <Button
+                variant="plain"
+                className={`${styles.count} ${styles.clickableCount}`}
+                onClick={onInstancesClick}
+              >
+                {instanceCount}
+              </Button>
+            ) : (
+              <span className={styles.count}>{instanceCount}</span>
+            )}
           </FlexItem>
           <FlexItem>
             <Flex
