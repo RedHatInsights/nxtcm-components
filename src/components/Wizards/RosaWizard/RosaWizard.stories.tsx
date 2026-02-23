@@ -228,6 +228,8 @@ export const Default: Story = {
       },
       callbackFunctions: {
         onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
+        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
+        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
       },
     },
   },
@@ -291,6 +293,8 @@ export const MinimalOptions: Story = {
       },
       callbackFunctions: {
         onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
+        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
+        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
       },
     },
   },
@@ -322,6 +326,8 @@ export const EmptyOptions: Story = {
       },
       callbackFunctions: {
         onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
+        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
+        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
       },
     },
   },
@@ -398,6 +404,8 @@ export const ExtensiveOptions: Story = {
       },
       callbackFunctions: {
         onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
+        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
+        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
       },
     },
   },
@@ -429,6 +437,8 @@ export const CustomTitle: Story = {
       },
       callbackFunctions: {
         onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
+        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
+        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
       },
     },
   },
@@ -462,6 +472,8 @@ export const WithErrorHandling: Story = {
       },
       callbackFunctions: {
         onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
+        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
+        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
       },
     },
   },
@@ -559,6 +571,8 @@ export const WithMachinePoolsOptions: Story = {
       },
       callbackFunctions: {
         onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
+        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
+        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
       },
     },
   },
@@ -629,6 +643,8 @@ export const ProductionSetup: Story = {
       },
       callbackFunctions: {
         onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
+        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
+        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
       },
     },
   },

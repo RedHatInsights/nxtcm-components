@@ -114,7 +114,7 @@ export const MachinePoolsSubstepStory: React.FC<MachinePoolsSubstepStoryProps> =
           <ItemContext.Provider value={data}>
             <ShowValidationProvider>
               <ValidationProvider>
-                <MachinePoolsSubstep vpcList={vpcList} machineTypes={machineTypes} path="" />
+                <MachinePoolsSubstep vpcList={vpcList} machineTypes={machineTypes} />
               </ValidationProvider>
             </ShowValidationProvider>
           </ItemContext.Provider>

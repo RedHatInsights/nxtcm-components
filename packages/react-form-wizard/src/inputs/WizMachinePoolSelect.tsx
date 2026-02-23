@@ -12,7 +12,7 @@ import {
   HelperText,
   HelperTextItem,
 } from '@patternfly/react-core';
-import { MinusCircleIcon, PlusCircleIcon } from '@patternfly/react-icons';
+import { MinusCircleIcon } from '@patternfly/react-icons';
 import get from 'get-value';
 import { Fragment, useCallback, useContext, useMemo, useState } from 'react';
 import { useData } from '../contexts/DataContext';
@@ -171,7 +171,8 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
         ))}
       </GridItem>
 
-      <GridItem span={12}>
+      {/* Keeping this if the mockups change again */}
+      {/* <GridItem span={12}>
         <Button
           variant="link"
           size="sm"
@@ -180,7 +181,7 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
         >
           {props.addMachinePoolBtnLabel}
         </Button>
-      </GridItem>
+      </GridItem> */}
     </Grid>
   );
 }

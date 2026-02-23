@@ -49,7 +49,6 @@ test.describe('MachinePoolsSubstep', () => {
 
     await expect(component.getByText('Machine pool', { exact: true })).toBeVisible();
     await expect(component.getByText('Private subnet name', { exact: true })).toBeVisible();
-    await expect(component.getByRole('button', { name: 'Add machine pool' })).toBeVisible();
   });
 
   test('should render with empty VPC list', async ({ mount }) => {
@@ -71,14 +70,6 @@ test.describe('MachinePoolsSubstep', () => {
     await expect(autoscalingCheckbox).toBeVisible();
     await expect(autoscalingCheckbox).toBeEnabled();
     await autoscalingCheckbox.click();
-  });
-
-  test('should click Add machine pool button', async ({ mount }) => {
-    const component = await mount(<MachinePoolsSubstepStory />);
-
-    const addButton = component.getByRole('button', { name: 'Add machine pool' });
-    await expect(addButton).toBeVisible();
-    await addButton.click();
   });
 
   test('should display helper text for autoscaling', async ({ mount }) => {

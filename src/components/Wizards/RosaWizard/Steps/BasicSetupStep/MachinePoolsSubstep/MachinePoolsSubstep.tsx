@@ -1,13 +1,20 @@
 import React from 'react';
 import { Section, WizMachinePoolSelect, WizSelect } from '@patternfly-labs/react-form-wizard';
 import { useInput } from '@patternfly-labs/react-form-wizard/inputs/Input';
-import { Content, ContentVariants, Grid, GridItem } from '@patternfly/react-core';
+import {
+  Content,
+  ContentVariants,
+  ExpandableSection,
+  Grid,
+  GridItem,
+} from '@patternfly/react-core';
 import { useTranslation } from '../../../../../../context/TranslationContext';
 import { subnetsFilter } from '../../../helpers';
 import { Subnet, VPC } from '../../../../types';
 import { AutoscalingField } from './Autoscaling/AutoscalingField';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
+import { Indented } from '@patternfly-labs/react-form-wizard/components/Indented';
 
 export const MachinePoolsSubstep = (props: any) => {
   const { t } = useTranslation();
@@ -107,6 +114,14 @@ export const MachinePoolsSubstep = (props: any) => {
 
         <AutoscalingField autoscaling={cluster?.autoscaling} />
       </Section>
+
+      <ExpandableSection toggleText="Advanced machine pool configuration (optional)">
+        <Indented>
+          {/*
+              TODO: implementation of ROOT DISK SIZE and IMDS fields
+              */}
+        </Indented>
+      </ExpandableSection>
     </>
   );
 };

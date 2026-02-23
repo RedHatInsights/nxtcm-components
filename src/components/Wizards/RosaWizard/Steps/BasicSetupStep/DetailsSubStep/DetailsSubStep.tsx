@@ -15,6 +15,8 @@ type DetailsSubStepProps = {
   awsBillingAccounts: SelectDropdownType[];
   regions: SelectDropdownType[];
   awsAccountDataCallback: any;
+  refreshAwsAccountDataCallback: () => void;
+  refreshAwsBillingAccountCallback: () => void;
 };
 
 export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
@@ -23,6 +25,8 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   awsBillingAccounts,
   regions,
   awsAccountDataCallback,
+  refreshAwsAccountDataCallback,
+  refreshAwsBillingAccountCallback,
 }) => {
   const { t } = useTranslation();
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
@@ -89,11 +93,8 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                     item.cluster.support_role_arn = undefined;
                   }}
                   required
+                  refreshCallback={refreshAwsAccountDataCallback}
                 />
-              </GridItem>
-
-              <GridItem span={1} style={{ alignSelf: 'end' }}>
-                <Button variant="control" aria-label="Copy" icon={<RedoIcon />} />
               </GridItem>
             </Grid>
             {!isDrawerExpanded && (
@@ -120,10 +121,8 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   )}
                   options={awsBillingAccounts}
                   required
+                  refreshCallback={refreshAwsBillingAccountCallback}
                 />
-              </GridItem>
-              <GridItem span={1} style={{ alignSelf: 'end' }}>
-                <Button variant="control" aria-label="Copy" icon={<RedoIcon />} />
               </GridItem>
             </Grid>
                         <ExternalLink

@@ -1,5 +1,6 @@
 /* Copyright Contributors to the Open Cluster Management project */
 import {
+  Button,
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
@@ -16,6 +17,7 @@ import { InputSelect, SelectListOptions } from './InputSelect';
 import { WizFormGroup } from './WizFormGroup';
 
 import './Select.css';
+import { RedoIcon } from '@patternfly/react-icons';
 
 export interface Option<T> {
   id?: string;
@@ -50,6 +52,7 @@ type WizSelectCommonProps<T> = InputCommonProps<T> & {
   onCreate?: (value: string) => void;
   callbackFunction?: (value: unknown) => void;
   isFill?: boolean;
+  refreshCallback?: () => void;
 };
 
 interface WizSelectSingleProps<T> extends WizSelectCommonProps<T> {
@@ -177,7 +180,13 @@ function WizSelectBase<T = any>(props: SelectProps<T>) {
                 isMultiSelect={false}
               />
             </PfSelect>
+
           </InputGroupItem>
+          {
+            props.refreshCallback ? (
+              <InputGroupItem><Button variant="control" aria-label="Copy" onClick={props.refreshCallback} icon={<RedoIcon />} /></InputGroupItem>
+            ) : null
+          }
         </InputGroup>
       </WizFormGroup>
     </div>
