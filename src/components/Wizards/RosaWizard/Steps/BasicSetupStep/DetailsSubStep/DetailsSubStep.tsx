@@ -7,7 +7,6 @@ import { useTranslation } from '../../../../../../context/TranslationContext';
 import { validateClusterName } from '../../../validators';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
-import { RedoIcon } from '@patternfly/react-icons';
 
 type DetailsSubStepProps = {
   openShiftVersions: SelectDropdownType[];
@@ -125,7 +124,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                 />
               </GridItem>
             </Grid>
-                        <ExternalLink
+            <ExternalLink
               variant="secondary"
               className="pf-v6-u-mt-md"
               href={links.AWS_CONSOLE_ROSA_HOME}

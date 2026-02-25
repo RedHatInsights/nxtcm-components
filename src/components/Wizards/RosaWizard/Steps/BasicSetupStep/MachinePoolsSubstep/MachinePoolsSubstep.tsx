@@ -50,30 +50,30 @@ export const MachinePoolsSubstep = (props: any) => {
           )}
         </Content>
 
- <Grid>
+        <Grid>
           <GridItem span={5}>
-        <WizSelect
-          label={`${t('Select a VPC to install your machine pools into your selected regions:')} ${cluster?.region}`}
-          path="cluster.selected_vpc"
-          keyPath="id"
-          placeholder={t('Select a VPC to install your machine pools into')}
-          required
-          labelHelp={
-            <>
-              {t(
-                'To create a cluster hosted by Red Hat, you must have a Virtual Private Cloud (VPC) available to create clusters on.'
-              )}{' '}
-              <ExternalLink href={links.ROSA_SHARED_VPC}>Learn more about VPCs.</ExternalLink>
-            </>
-          }
-          options={props.vpcList.map((vpc: any) => {
-            return {
-              label: vpc.name,
-              value: vpc.id,
-            };
-          })}
-        />
-        </GridItem>
+            <WizSelect
+              label={`${t('Select a VPC to install your machine pools into your selected regions:')} ${cluster?.region}`}
+              path="cluster.selected_vpc"
+              keyPath="id"
+              placeholder={t('Select a VPC to install your machine pools into')}
+              required
+              labelHelp={
+                <>
+                  {t(
+                    'To create a cluster hosted by Red Hat, you must have a Virtual Private Cloud (VPC) available to create clusters on.'
+                  )}{' '}
+                  <ExternalLink href={links.ROSA_SHARED_VPC}>Learn more about VPCs.</ExternalLink>
+                </>
+              }
+              options={props.vpcList.map((vpc: any) => {
+                return {
+                  label: vpc.name,
+                  value: vpc.id,
+                };
+              })}
+            />
+          </GridItem>
         </Grid>
 
         <WizMachinePoolSelect
@@ -101,23 +101,23 @@ export const MachinePoolsSubstep = (props: any) => {
             'The following settings apply to all machine pools created during cluster install. Additional machine pools can be created after cluster creation.'
           )}
         </Content>
-<Grid>
+        <Grid>
           <GridItem span={5}>
-        <WizSelect
-          label={t('Compute node instance type')}
-          path="cluster.machine_type"
-          required
-          labelHelp={
-            <>
-              {t(
-                'Instance types are made from varying combinations of CPU, memory, storage, and networking capacity. Instance type availability depends on regional availability and your AWS account configuration.'
-              )}{' '}
-              <ExternalLink href={links.ROSA_INSTANCE_TYPES}>Learn more.</ExternalLink>
-            </>
-          }
-          options={props.machineTypes}
-        />
-        </GridItem>
+            <WizSelect
+              label={t('Compute node instance type')}
+              path="cluster.machine_type"
+              required
+              labelHelp={
+                <>
+                  {t(
+                    'Instance types are made from varying combinations of CPU, memory, storage, and networking capacity. Instance type availability depends on regional availability and your AWS account configuration.'
+                  )}{' '}
+                  <ExternalLink href={links.ROSA_INSTANCE_TYPES}>Learn more.</ExternalLink>
+                </>
+              }
+              options={props.machineTypes}
+            />
+          </GridItem>
         </Grid>
 
         <AutoscalingField autoscaling={cluster?.autoscaling} />

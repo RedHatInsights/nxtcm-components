@@ -54,19 +54,19 @@ export const EncryptionSubstep = (props: any) => {
         </Flex>
       </WizRadioGroup>
       {cluster?.['encryption_keys'] === 'custom' && (
-<Grid>
+        <Grid>
           <GridItem span={8}>
-        <WizTextInput
-          path="cluster.kms_key_arn"
-          label={t('Key ARN')}
-          validateOnBlur
-          validation={(value) => validateAWSKMSKeyARN(value, cluster.region, t)}
-          required
-          labelHelp={t(
-            'The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID.'
-          )}
-        />
-        </GridItem>
+            <WizTextInput
+              path="cluster.kms_key_arn"
+              label={t('Key ARN')}
+              validateOnBlur
+              validation={(value) => validateAWSKMSKeyARN(value, cluster.region, t)}
+              required
+              labelHelp={t(
+                'The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID.'
+              )}
+            />
+          </GridItem>
         </Grid>
       )}
 
@@ -83,19 +83,19 @@ export const EncryptionSubstep = (props: any) => {
       />
 
       {cluster?.['etcd_encryption'] && (
- <Grid>
+        <Grid>
           <GridItem span={8}>
-        <WizTextInput
-          path="cluster.etcd_key_arn"
-          validation={(value) => validateAWSKMSKeyARN(value, cluster.region, t)}
-          label={t('Key ARN')}
-          validateOnBlur
-          required
-          labelHelp={t(
-            'The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID.'
-          )}
-        />
-        </GridItem>
+            <WizTextInput
+              path="cluster.etcd_key_arn"
+              validation={(value) => validateAWSKMSKeyARN(value, cluster.region, t)}
+              label={t('Key ARN')}
+              validateOnBlur
+              required
+              labelHelp={t(
+                'The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID.'
+              )}
+            />
+          </GridItem>
         </Grid>
       )}
       <Grid>
