@@ -103,7 +103,7 @@ export function Radio(props: {
   id: string;
   label: string;
   value: string | number | boolean | undefined;
-  description?: string;
+  description?: string | React.ReactNode;
   children?: ReactNode;
   popover?: ReactNode;
 }) {
