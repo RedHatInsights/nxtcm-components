@@ -5,11 +5,7 @@ import {
   WizardPage,
   WizardSubmit,
 } from '@patternfly-labs/react-form-wizard';
-import {
-  ClusterUpdatesSubstep,
-  NetworkingOptionalSubstep,
-  EncryptionSubstep,
-} from './Steps/AdditionalSetupStep';
+import { ClusterUpdatesSubstep, EncryptionSubstep } from './Steps/AdditionalSetupStep';
 import {
   DetailsSubStep,
   NetworkingAndSubnetsSubStep,
@@ -56,7 +52,7 @@ export const RosaWizard = (props: RosaWizardProps) => {
     setCurrentStep(currentStep);
   const [getUseWizardContext, setUseWizardContext] = React.useState();
 
-  const callbackFunction = wizardsStepsData.callbackFunctions;
+  const callbackFunctions = wizardsStepsData.callbackFunctions;
 
   const defaultClusterData = {
     cluster: {
@@ -72,6 +68,7 @@ export const RosaWizard = (props: RosaWizardProps) => {
       nodes_compute: 2,
       upgrade_policy: 'automatic',
       cluster_privacy: 'external',
+      compute_root_volume: 300,
     },
   };
 
@@ -96,7 +93,9 @@ export const RosaWizard = (props: RosaWizardProps) => {
               awsInfrastructureAccounts={wizardsStepsData.basicSetupStep.awsInfrastructureAccounts}
               awsBillingAccounts={wizardsStepsData.basicSetupStep.awsBillingAccounts}
               regions={wizardsStepsData.basicSetupStep.regions}
-              awsAccountDataCallback={callbackFunction.onAWSAccountChange}
+              awsAccountDataCallback={callbackFunctions.onAWSAccountChange}
+              refreshAwsAccountDataCallback={callbackFunctions.refreshAwsAccountDataCallback}
+              refreshAwsBillingAccountCallback={callbackFunctions.refreshAwsBillingAccountCallback}
             />
           </Step>,
           <Step
@@ -122,8 +121,22 @@ export const RosaWizard = (props: RosaWizardProps) => {
             />
           </Step>,
           <Step id="networking-sub-step" label={t('Networking')} key="networking-sub-step-key">
-            <NetworkingAndSubnetsSubStep vpcList={wizardsStepsData.basicSetupStep.vpcList} />
+            <NetworkingAndSubnetsSubStep
+              vpcList={wizardsStepsData.basicSetupStep.vpcList}
+              setIsClusterWideProxySelected={setIsClusterWideProxySelected}
+            />
           </Step>,
+          ...(isClusterWideProxySelected
+            ? [
+                <Step
+                  id="additional-setup-cluster-wide-proxy"
+                  key="additional-setup-cluster-wide-proxy-key"
+                  label={t('Cluster-wide proxy')}
+                >
+                  <ClusterWideProxySubstep />
+                </Step>,
+              ]
+            : []),
         ]}
       />
 
@@ -140,27 +153,6 @@ export const RosaWizard = (props: RosaWizardProps) => {
           >
             <EncryptionSubstep />
           </Step>,
-          <Step
-            id="additional-setup-networking"
-            key="additional-setup-networking-key"
-            label={t('Networking (optional)')}
-          >
-            <NetworkingOptionalSubstep
-              setIsClusterWideProxySelected={setIsClusterWideProxySelected}
-              vpcList={wizardsStepsData.basicSetupStep.vpcList}
-            />
-          </Step>,
-          ...(isClusterWideProxySelected
-            ? [
-                <Step
-                  id="additional-setup-cluster-wide-proxy"
-                  key="additional-setup-cluster-wide-proxy-key"
-                  label={t('Cluster-wide proxy')}
-                >
-                  <ClusterWideProxySubstep />
-                </Step>,
-              ]
-            : []),
           <Step
             id="additional-setup-cluster-updates"
             key="additional-setup-cluster-updates-key"

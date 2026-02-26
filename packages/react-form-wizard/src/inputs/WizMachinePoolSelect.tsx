@@ -12,7 +12,7 @@ import {
   HelperText,
   HelperTextItem,
 } from '@patternfly/react-core';
-import { MinusCircleIcon, PlusCircleIcon } from '@patternfly/react-icons';
+import { MinusCircleIcon } from '@patternfly/react-icons';
 import get from 'get-value';
 import { Fragment, useCallback, useContext, useMemo, useState } from 'react';
 import { useData } from '../contexts/DataContext';
@@ -141,13 +141,13 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
   }
 
   return (
-    <Grid hasGutter span={6} id={id}>
-      <GridItem span={2}>
+    <Grid hasGutter span={12} id={id}>
+      <GridItem span={3}>
         <Content component={ContentVariants.p} className="pf-v6-u-font-weight-bold">
           {props.machinePoolLabel}
         </Content>
       </GridItem>
-      <GridItem>
+      <GridItem span={2}>
         <Content component={ContentVariants.p} className="pf-v6-u-font-weight-bold">
           {props.subnetLabel}
         </Content>
@@ -171,7 +171,8 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
         ))}
       </GridItem>
 
-      <GridItem span={12}>
+      {/* Keeping this if the mockups change again */}
+      {/* <GridItem span={12}>
         <Button
           variant="link"
           size="sm"
@@ -180,7 +181,7 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
         >
           {props.addMachinePoolBtnLabel}
         </Button>
-      </GridItem>
+      </GridItem> */}
     </Grid>
   );
 }
@@ -268,7 +269,7 @@ function MachinePoolRow(props: MachinePoolRowProps) {
           {machinePoolLabel} {index + 1}
         </Content>
       </GridItem>
-      <GridItem span={6} rowSpan={2}>
+      <GridItem span={4} rowSpan={2}>
         <InputGroup>
           <InputGroupItem isFill>
             <PfSelect

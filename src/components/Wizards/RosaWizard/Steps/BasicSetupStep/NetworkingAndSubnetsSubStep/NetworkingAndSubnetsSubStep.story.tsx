@@ -83,6 +83,12 @@ export const createMockClusterData = (overrides: Record<string, unknown> = {}) =
     max_replicas: 4,
     nodes_compute: 2,
     machine_pools_subnets: [],
+    configure_proxy: false,
+    cidr_default: true,
+    network_machine_cidr: '10.0.0.0/16',
+    network_service_cidr: '172.30.0.0/16',
+    network_pod_cidr: '10.128.0.0/14',
+    network_host_prefix: '/23',
     ...overrides,
   },
 });
@@ -92,6 +98,7 @@ export interface NetworkingSubStepStoryProps {
   vpcList?: VPC[];
   machineTypes?: MachineTypesDropdownType[];
   clusterOverrides?: Record<string, unknown>;
+  onClusterWideProxySelected?: (selected: boolean) => void;
 }
 
 // Wrapped component that can be mounted in tests
@@ -99,13 +106,20 @@ export const NetworkingSubStepStory: React.FC<NetworkingSubStepStoryProps> = ({
   vpcList = mockVpcList,
   machineTypes = mockMachineTypes,
   clusterOverrides = {},
+  onClusterWideProxySelected,
 }) => {
   const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
 
   const update = useCallback(() => {
-    // Force re-render by creating a new object reference
     setData((currentData) => ({ ...currentData }));
   }, []);
+
+  const setIsClusterWideProxySelected = useCallback(
+    (selected: boolean) => {
+      onClusterWideProxySelected?.(selected);
+    },
+    [onClusterWideProxySelected]
+  );
 
   return (
     <TranslationProvider>
@@ -117,7 +131,7 @@ export const NetworkingSubStepStory: React.FC<NetworkingSubStepStoryProps> = ({
                 <NetworkingAndSubnetsSubStep
                   vpcList={vpcList}
                   machineTypes={machineTypes}
-                  path=""
+                  setIsClusterWideProxySelected={setIsClusterWideProxySelected}
                 />
               </ValidationProvider>
             </ShowValidationProvider>

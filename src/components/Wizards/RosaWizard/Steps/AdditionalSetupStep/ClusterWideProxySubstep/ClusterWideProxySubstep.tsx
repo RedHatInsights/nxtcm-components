@@ -1,5 +1,5 @@
 import { Section, WizTextInput, WizFileUpload, useItem } from '@patternfly-labs/react-form-wizard';
-import { Alert, Content, ContentVariants } from '@patternfly/react-core';
+import { Alert, Content, ContentVariants, Grid, GridItem } from '@patternfly/react-core';
 import { useTranslation } from '../../../../../../context/TranslationContext';
 import {
   checkNoProxyDomains,
@@ -43,43 +43,45 @@ export const ClusterWideProxySubstep = () => {
         isPlain
         title={t('Configure at least 1 of the following fields:')}
       />
-      <WizTextInput
-        validation={composeValidators(validateUrlHttp, validateAtLeastOne)}
-        validateOnBlur
-        label={t('HTTP proxy URL')}
-        helperText={t('Specify a proxy URL to use for HTTP connections outside the cluster.')}
-        path="cluster.http_proxy_url"
-        placeholder="http://<user>:<password>@<ipaddr>:<port>"
-      />
-      <WizTextInput
-        validation={composeValidators(validateUrlHttps, validateAtLeastOne)}
-        validateOnBlur
-        label={t('HTTPS proxy URL')}
-        helperText={t('Specify a proxy URL to use for HTTPS connections outside the cluster.')}
-        path="cluster.https_proxy_url"
-        placeholder="https://<user>:<password>@<ipaddr>:<port>"
-      />
-      <WizTextInput
-        disabled={!cluster.http_proxy_url && !cluster.https_proxy_url}
-        validateOnBlur
-        validation={(value) => checkNoProxyDomains(value)}
-        label={t('No Proxy domains')}
-        helperText={t(
-          'Preface a domain with . to match subdomains only. For example, .y.com matches x.y.com, but not y.com. Use * to bypass proxy for all destinations.'
-        )}
-        path="cluster.no_proxy_domains"
-        placeholder="HTTP/HTTPS URL must be provided in order to use No proxy domain"
-      />
-
-      <WizFileUpload
-        label={t('Additional trust bundle')}
-        path="cluster.additional_trust_bundle"
-        validation={composeValidators(validateCA, validateAtLeastOne)}
-        placeholder={`----BEGIN CERTIFICATE----
-                      '<MY_TRUSTED_CA_CERT>'
-                      ----END CERTIFICATE---
-        `}
-      />
+      <Grid>
+        <GridItem span={7}>
+          <WizTextInput
+            validation={composeValidators(validateUrlHttp, validateAtLeastOne)}
+            validateOnBlur
+            label={t('HTTP proxy URL')}
+            helperText={t('Specify a proxy URL to use for HTTP connections outside the cluster.')}
+            path="cluster.http_proxy_url"
+          />
+        </GridItem>
+        <GridItem span={7}>
+          <WizTextInput
+            validation={composeValidators(validateUrlHttps, validateAtLeastOne)}
+            validateOnBlur
+            label={t('HTTPS proxy URL')}
+            helperText={t('Specify a proxy URL to use for HTTPS connections outside the cluster.')}
+            path="cluster.https_proxy_url"
+          />
+        </GridItem>
+        <GridItem span={7}>
+          <WizTextInput
+            disabled={!cluster.http_proxy_url && !cluster.https_proxy_url}
+            validateOnBlur
+            validation={(value) => checkNoProxyDomains(value)}
+            label={t('No Proxy domains')}
+            helperText={t(
+              'Preface a domain with . to match subdomains only. For example, .y.com matches x.y.com, but not y.com. Use * to bypass proxy for all destinations.'
+            )}
+            path="cluster.no_proxy_domains"
+          />
+        </GridItem>
+        <GridItem span={7}>
+          <WizFileUpload
+            label={t('Additional trust bundle')}
+            path="cluster.additional_trust_bundle"
+            validation={composeValidators(validateCA, validateAtLeastOne)}
+          />
+        </GridItem>
+      </Grid>
     </Section>
   );
 };

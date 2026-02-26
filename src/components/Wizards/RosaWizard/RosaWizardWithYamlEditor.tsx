@@ -5,11 +5,7 @@ import {
   WizardPage,
   WizardSubmit,
 } from '@patternfly-labs/react-form-wizard';
-import {
-  ClusterUpdatesSubstep,
-  NetworkingOptionalSubstep,
-  EncryptionSubstep,
-} from './Steps/AdditionalSetupStep';
+import { ClusterUpdatesSubstep, EncryptionSubstep } from './Steps/AdditionalSetupStep';
 import {
   DetailsSubStep,
   NetworkingAndSubnetsSubStep,
@@ -79,6 +75,8 @@ export const RosaWizardWithYamlEditor = (props: RosaWizardWithYamlEditorProps) =
               awsBillingAccounts={wizardsStepsData.basicSetupStep.awsBillingAccounts}
               regions={wizardsStepsData.basicSetupStep.regions}
               awsAccountDataCallback={callbackFunction?.onAWSAccountChange}
+              refreshAwsAccountDataCallback={callbackFunction?.refreshAwsAccountDataCallback}
+              refreshAwsBillingAccountCallback={callbackFunction?.refreshAwsBillingAccountCallback}
             />
           </Step>,
           <Step
@@ -97,8 +95,20 @@ export const RosaWizardWithYamlEditor = (props: RosaWizardWithYamlEditorProps) =
             <NetworkingAndSubnetsSubStep
               machineTypes={wizardsStepsData.basicSetupStep.machineTypes}
               vpcList={wizardsStepsData.basicSetupStep.vpcList}
+              setIsClusterWideProxySelected={setIsClusterWideProxySelected}
             />
           </Step>,
+          ...(isClusterWideProxySelected
+            ? [
+                <Step
+                  id="additional-setup-cluster-wide-proxy"
+                  key="additional-setup-cluster-wide-proxy-key"
+                  label="Cluster-wide proxy"
+                >
+                  <ClusterWideProxySubstep />
+                </Step>,
+              ]
+            : []),
         ]}
       />
 
@@ -115,26 +125,6 @@ export const RosaWizardWithYamlEditor = (props: RosaWizardWithYamlEditorProps) =
           >
             <EncryptionSubstep />
           </Step>,
-          <Step
-            id="additional-setup-networking"
-            key="additional-setup-networking-key"
-            label="Networking (optional)"
-          >
-            <NetworkingOptionalSubstep
-              setIsClusterWideProxySelected={setIsClusterWideProxySelected}
-            />
-          </Step>,
-          ...(isClusterWideProxySelected
-            ? [
-                <Step
-                  id="additional-setup-cluster-wide-proxy"
-                  key="additional-setup-cluster-wide-proxy-key"
-                  label="Cluster-wide proxy"
-                >
-                  <ClusterWideProxySubstep />
-                </Step>,
-              ]
-            : []),
           <Step
             id="additional-setup-cluster-updates"
             key="additional-setup-cluster-updates-key"
