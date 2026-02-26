@@ -104,6 +104,13 @@ const subnetsFilter = (selectedVPC: VPC) => {
   };
 };
 
+const truncateTextWithEllipsis = (text: string, maxLength?: number) => {
+  if (text && maxLength && text.length > maxLength) {
+    return `${text.slice(0, maxLength / 3)}... ${text.slice((-maxLength * 2) / 3)}`;
+  }
+  return text;
+};
+
 export {
   createOperatorRolesPrefix,
   stringToArray,
@@ -111,4 +118,5 @@ export {
   parseCIDRSubnetLength,
   constructSelectedSubnets,
   subnetsFilter,
+  truncateTextWithEllipsis,
 };

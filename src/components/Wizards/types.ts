@@ -50,8 +50,15 @@ export type CIDRSubnet = {
   subnet_id: string;
 };
 
+export type SecurityGroup = {
+  id?: string;
+  name?: string;
+  red_hat_managed?: boolean;
+};
+
 export type VPC = {
   id: string;
   name: string;
   aws_subnets: Subnet[];
+  aws_security_groups?: SecurityGroup[];
 };

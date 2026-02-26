@@ -89,3 +89,151 @@ test.describe('MachinePoolsSubstep', () => {
     ).toBeVisible();
   });
 });
+
+test.describe('SecurityGroupsSection', () => {
+  const vpcWithSecurityGroups = 'vpc-123';
+  const vpcWithNoSecurityGroups = 'vpc-456';
+
+  test('should not show security groups section when no VPC is selected', async ({ mount }) => {
+    const component = await mount(<MachinePoolsSubstepStory />);
+
+    const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
+    await advancedToggle.click();
+
+    await expect(component.getByText('Additional security groups')).not.toBeVisible();
+  });
+
+  test('should show security groups section when a VPC is selected', async ({ mount }) => {
+    const component = await mount(
+      <MachinePoolsSubstepStory clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
+    );
+
+    const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
+    await advancedToggle.click();
+
+    await expect(component.getByText('Additional security groups')).toBeVisible();
+  });
+
+  test('should show no-edit alert and security groups selector when expanded with a VPC that has security groups', async ({
+    mount,
+  }) => {
+    const component = await mount(
+      <MachinePoolsSubstepStory clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
+    );
+
+    const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
+    await advancedToggle.click();
+
+    const securityGroupsToggle = component.getByText('Additional security groups');
+    await securityGroupsToggle.click();
+
+    await expect(
+      component.getByText(/You cannot add or edit security groups associated with machine pools/)
+    ).toBeVisible();
+
+    await expect(component.getByText('Select security groups')).toBeVisible();
+  });
+
+  test('should show empty alert when VPC has no security groups', async ({ mount }) => {
+    const component = await mount(
+      <MachinePoolsSubstepStory clusterOverrides={{ selected_vpc: vpcWithNoSecurityGroups }} />
+    );
+
+    const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
+    await advancedToggle.click();
+
+    const securityGroupsToggle = component.getByText('Additional security groups');
+    await securityGroupsToggle.click();
+
+    await expect(
+      component.getByText('There are no security groups for this Virtual Private Cloud')
+    ).toBeVisible();
+
+    await expect(component.getByText('Refresh Security Groups')).toBeVisible();
+  });
+
+  test('should display security group options in the dropdown', async ({ mount, page }) => {
+    const component = await mount(
+      <MachinePoolsSubstepStory clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
+    );
+
+    const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
+    await advancedToggle.click();
+
+    const securityGroupsToggle = component.getByText('Additional security groups');
+    await securityGroupsToggle.click();
+
+    await component.getByText('Select security groups').click();
+
+    const expectedSecurityGroupNames = [
+      'default',
+      'k8s-traffic-rules',
+      'web-server-sg',
+      'database-access-sg',
+    ];
+    for (const name of expectedSecurityGroupNames) {
+      await expect(page.getByText(name, { exact: true })).toBeVisible();
+    }
+  });
+
+  test('should select a security group and show it as a label', async ({ mount, page }) => {
+    const component = await mount(
+      <MachinePoolsSubstepStory clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
+    );
+
+    const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
+    await advancedToggle.click();
+
+    const securityGroupsToggle = component.getByText('Additional security groups');
+    await securityGroupsToggle.click();
+
+    await component.getByText('Select security groups').click();
+    await page.getByText('default', { exact: true }).click();
+
+    await expect(component.locator('.pf-v6-c-label').getByText('default')).toBeVisible();
+  });
+
+  test('should show refresh button for security groups', async ({ mount }) => {
+    const component = await mount(
+      <MachinePoolsSubstepStory clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
+    );
+
+    const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
+    await advancedToggle.click();
+
+    const securityGroupsToggle = component.getByText('Additional security groups');
+    await securityGroupsToggle.click();
+
+    const refreshButton = component.locator('#refreshSecurityGroupsButton');
+    await expect(refreshButton).toBeVisible();
+  });
+
+  test('should clear selected security groups when VPC is changed', async ({ mount, page }) => {
+    const component = await mount(
+      <MachinePoolsSubstepStory clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
+    );
+
+    const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
+    await advancedToggle.click();
+
+    const securityGroupsToggle = component.getByText('Additional security groups');
+    await securityGroupsToggle.click();
+
+    await component.getByText('Select security groups').click();
+    await page.getByText('default', { exact: true }).click();
+
+    await expect(component.locator('.pf-v6-c-label').getByText('default')).toBeVisible();
+
+    await page.keyboard.press('Escape');
+
+    const vpcInput = component.locator('#cluster-selected_vpc [role="combobox"]');
+
+    await vpcInput.click();
+    await page.getByText('my-staging-vpc', { exact: true }).click();
+
+    await vpcInput.click();
+    await page.getByText('my-production-vpc', { exact: true }).click();
+
+    await expect(component.locator('.pf-v6-c-label').getByText('default')).not.toBeVisible();
+  });
+});

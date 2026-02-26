@@ -93,6 +93,14 @@ const mockMachineTypes = [
   },
 ];
 
+const mockSecurityGroups = [
+  { id: 'sg-0a1b2c3d4e5f00001', name: 'default' },
+  { id: 'sg-0a1b2c3d4e5f00002', name: 'k8s-traffic-rules' },
+  { id: 'sg-0a1b2c3d4e5f00003', name: 'web-server-sg' },
+  { id: 'sg-0a1b2c3d4e5f00004', name: 'database-access-sg' },
+  { id: 'sg-0a1b2c3d4e5f00005', name: '' },
+];
+
 const mockVPCs = [
   {
     name: 'test-vpc-1',
@@ -135,6 +143,7 @@ const mockVPCs = [
         cidr_block: '10.0.160.0/20',
       },
     ],
+    aws_security_groups: mockSecurityGroups,
   },
   {
     name: 'test-2-vpc',
@@ -565,9 +574,48 @@ export const WithMachinePoolsOptions: Story = {
                 availability_zone: 'us-east-1c',
               },
             ],
+            aws_security_groups: mockSecurityGroups,
           },
           ...mockVPCs,
         ],
+      },
+      callbackFunctions: {
+        onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
+        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
+        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
+      },
+    },
+  },
+};
+
+/**
+ * Wizard demonstrating the empty security groups state - when a VPC has no
+ * security groups, an info alert is shown with a link to the AWS console
+ * and a refresh button.
+ */
+export const NoSecurityGroups: Story = {
+  args: {
+    title: 'Create ROSA Cluster - No Security Groups',
+    onSubmit: async (data: any) => {
+      console.log('Wizard submitted with data:', data);
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+    },
+    onCancel: () => {
+      console.log('Wizard cancelled');
+    },
+    wizardsStepsData: {
+      basicSetupStep: {
+        openShiftVersions: mockOpenShiftVersions,
+        awsInfrastructureAccounts: mockAwsInfrastructureAccounts,
+        awsBillingAccounts: mockAwsBillingAccounts,
+        regions: mockRegions,
+        roles: mockRoles,
+        oicdConfig: mockOicdConfig,
+        machineTypes: mockMachineTypes,
+        vpcList: mockVPCs.map((vpc) => ({
+          ...vpc,
+          aws_security_groups: [],
+        })),
       },
       callbackFunctions: {
         onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
