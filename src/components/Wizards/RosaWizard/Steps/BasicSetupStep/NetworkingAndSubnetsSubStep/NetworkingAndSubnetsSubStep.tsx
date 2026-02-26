@@ -174,7 +174,7 @@ export const NetworkingAndSubnetsSubStep = (props: any) => {
                 ouiaId="encryptionKeysAlert"
               >
                 <Content component={ContentVariants.p}>
-                  {t(`Specify non-overelapping ranges for machine, service, and pod ranges. Make sure that
+                  {t(`Specify non-overlapping ranges for machine, service, and pod ranges. Make sure that
                         your internal organization&apos;s networking ranges do not overlap with ours, which are
                         Kubernetes. Each range should correspond to the first IP address in their subnet.`)}
                 </Content>
