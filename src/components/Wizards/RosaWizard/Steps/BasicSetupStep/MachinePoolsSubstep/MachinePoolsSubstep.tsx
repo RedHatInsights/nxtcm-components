@@ -23,6 +23,7 @@ import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 import { Indented } from '@patternfly-labs/react-form-wizard/components/Indented';
 import { validateRootDiskSize } from '../../../validators';
+import { SecurityGroupsSection } from './SecurityGroupSection/SecurityGroupSection';
 
 export const MachinePoolsSubstep = (props: any) => {
   const { t } = useTranslation();
@@ -53,6 +54,11 @@ export const MachinePoolsSubstep = (props: any) => {
         <Grid>
           <GridItem span={5}>
             <WizSelect
+              onValueChange={(_newVpc, item) => {
+                if (item?.cluster) {
+                  item.cluster.security_groups_worker = [];
+                }
+              }}
               label={`${t('Select a VPC to install your machine pools into your selected regions:')} ${cluster?.region}`}
               path="cluster.selected_vpc"
               keyPath="id"
@@ -168,7 +174,7 @@ export const MachinePoolsSubstep = (props: any) => {
             validation={validateRootDiskSize}
           />
 
-          {/* TODO: Additional security groups expandable section */}
+          <SecurityGroupsSection selectedVPC={selectedVPC} refreshVPCs={() => {}} />
         </Indented>
       </ExpandableSection>
     </>

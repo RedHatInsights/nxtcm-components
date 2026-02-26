@@ -541,3 +541,10 @@ export const validateRootDiskSize = (value: number | undefined): string | undefi
   }
   return undefined;
 };
+
+export const validateSecurityGroups = (securityGroups: string[]) => {
+  const maxSecurityGroups = 10;
+  return securityGroups?.length && securityGroups.length > maxSecurityGroups
+    ? `A maximum of ${maxSecurityGroups} security groups can be selected.`
+    : undefined;
+};
