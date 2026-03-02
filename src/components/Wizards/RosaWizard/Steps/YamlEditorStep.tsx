@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useItem, useData } from '@patternfly-labs/react-form-wizard';
 import { Alert, AlertVariant, Stack, StackItem, Title } from '@patternfly/react-core';
-import { YamlCodeEditor } from '../../../YamlCodeEditor/YamlCodeEditor';
+import Editor from '@monaco-editor/react';
 import { parseYaml, objectToYaml } from '../../../YamlCodeEditor/yamlUtils';
 
 export const YamlEditorStep = () => {
@@ -20,7 +20,8 @@ export const YamlEditorStep = () => {
     }
   }, [data]);
 
-  const handleYamlChange = (newYaml: string) => {
+  const handleYamlChange = (value: string | undefined) => {
+    const newYaml = value ?? '';
     setYamlContent(newYaml);
 
     const result = parseYaml(newYaml);
@@ -50,11 +51,19 @@ export const YamlEditorStep = () => {
       )}
 
       <StackItem>
-        <YamlCodeEditor
-          code={yamlContent}
+        <Editor
+          defaultLanguage="yaml"
+          value={yamlContent}
           onChange={handleYamlChange}
           height="600px"
-          aria-label="Cluster configuration YAML editor"
+          options={{
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+            fontSize: 14,
+            tabSize: 2,
+            automaticLayout: true,
+            wordWrap: 'on',
+          }}
         />
       </StackItem>
     </Stack>
