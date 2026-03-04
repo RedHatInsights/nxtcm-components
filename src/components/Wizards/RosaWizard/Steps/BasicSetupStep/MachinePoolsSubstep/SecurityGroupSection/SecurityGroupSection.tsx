@@ -37,7 +37,7 @@ export const SecurityGroupsSection = ({
 
   return (
     <ExpandableSection
-      toggleText="Additional security groups"
+      toggleText="Additional security groups (optional)"
       isExpanded={isExpanded}
       isIndented
       onToggle={() => setIsExpanded(!isExpanded)}

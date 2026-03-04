@@ -173,10 +173,9 @@ export const MachinePoolsSubstep = (props: any) => {
             max={16384}
             validation={validateRootDiskSize}
           />
-
-          <SecurityGroupsSection selectedVPC={selectedVPC} refreshVPCs={() => {}} />
         </Indented>
       </ExpandableSection>
+      <SecurityGroupsSection selectedVPC={selectedVPC} refreshVPCs={() => {}} />
     </>
   );
 };
