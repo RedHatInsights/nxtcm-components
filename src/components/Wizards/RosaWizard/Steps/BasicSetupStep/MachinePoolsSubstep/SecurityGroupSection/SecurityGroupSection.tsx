@@ -45,8 +45,6 @@ export const SecurityGroupsSection = ({
       {showEmptyAlert && <SecurityGroupsEmptyAlert refreshVPCCallback={refreshVPCs} />}
       {!showEmptyAlert && (
         <>
-          <SecurityGroupsNoEditAlert />
-          <br />
           <EditSecurityGroups
             selectedVPC={selectedVPC}
             selectedGroupIds={selectedGroupIds ?? []}
@@ -54,6 +52,8 @@ export const SecurityGroupsSection = ({
             isReadOnly={false}
             refreshVPCCallback={refreshVPCs}
           />
+          <br />
+          <SecurityGroupsNoEditAlert />
         </>
       )}
     </ExpandableSection>

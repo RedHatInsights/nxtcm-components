@@ -12,6 +12,8 @@ import {
   SelectList,
   SelectOption,
   SelectProps,
+  Stack,
+  StackItem,
   Tooltip,
 } from '@patternfly/react-core';
 import RedoIcon from '@patternfly/react-icons/dist/esm/icons/redo-icon';
@@ -133,36 +135,45 @@ const EditSecurityGroups = ({
       <FormGroup fieldId="securityGroupIds" label={label} className="pf-v6-u-mt-md">
         <Grid>
           <GridItem span={10}>
-            <SecurityGroupsViewList securityGroups={selectedOptions} onCloseItem={onDeleteGroup} />
-            <Select
-              role="menu"
-              isOpen={isOpen}
-              selected={selectedGroupIds}
-              toggle={toggle}
-              onSelect={onSelect}
-              onOpenChange={(isOpen) => setIsOpen(isOpen)}
-              data-testid="securitygroups-id"
-              aria-labelledby="Select AWS security groups"
-              maxMenuHeight="300px"
-            >
-              <SelectList>
-                {vpcSecurityGroups.map(({ id = '', name = '' }) => {
-                  const { displayName, isCut } = getDisplayName(name);
-                  return (
-                    <SelectOption
-                      key={id}
-                      value={id}
-                      description={id}
-                      title={isCut ? name : ''}
-                      hasCheckbox
-                      isSelected={selectedGroupIds.includes(id)}
-                    >
-                      {displayName}
-                    </SelectOption>
-                  );
-                })}
-              </SelectList>
-            </Select>
+            <Stack hasGutter>
+              <StackItem>
+                <Select
+                  role="menu"
+                  isOpen={isOpen}
+                  selected={selectedGroupIds}
+                  toggle={toggle}
+                  onSelect={onSelect}
+                  onOpenChange={(isOpen) => setIsOpen(isOpen)}
+                  data-testid="securitygroups-id"
+                  aria-labelledby="Select AWS security groups"
+                  maxMenuHeight="300px"
+                >
+                  <SelectList>
+                    {vpcSecurityGroups.map(({ id = '', name = '' }) => {
+                      const { displayName, isCut } = getDisplayName(name);
+                      return (
+                        <SelectOption
+                          key={id}
+                          value={id}
+                          description={id}
+                          title={isCut ? name : ''}
+                          hasCheckbox
+                          isSelected={selectedGroupIds.includes(id)}
+                        >
+                          {displayName}
+                        </SelectOption>
+                      );
+                    })}
+                  </SelectList>
+                </Select>
+              </StackItem>
+              <StackItem>
+                <SecurityGroupsViewList
+                  securityGroups={selectedOptions}
+                  onCloseItem={onDeleteGroup}
+                />
+              </StackItem>
+            </Stack>
           </GridItem>
           {refreshVPCCallback && (
             <GridItem span={2} style={{ textAlign: 'left' }}>
