@@ -14,7 +14,15 @@ import {
 import React from 'react';
 import { ClusterWideProxySubstep } from './Steps/AdditionalSetupStep/ClusterWideProxySubstep/ClusterWideProxySubstep';
 import { ReviewStepData } from './Steps/ReviewStepData';
-import { MachineTypesDropdownType, OIDCConfig, Roles, SelectDropdownType, VPC } from '../types';
+import {
+  MachineTypesDropdownType,
+  OIDCConfig,
+  Roles,
+  SelectDropdownType,
+  VPC,
+  WizardCallbackFunctions,
+  WizardNavigationContext,
+} from '../types';
 import { WizardStepType } from '@patternfly/react-core';
 import { useTranslation } from '../../../context/TranslationContext';
 import { MachinePoolsSubstep } from './Steps/BasicSetupStep/MachinePoolsSubstep/MachinePoolsSubstep';
@@ -30,9 +38,9 @@ export type BasicSetupStepProps = {
   machineTypes: MachineTypesDropdownType[];
 };
 
-type WizardStepsData = {
+export type WizardStepsData = {
   basicSetupStep: BasicSetupStepProps;
-  callbackFunctions?: any;
+  callbackFunctions?: WizardCallbackFunctions;
 };
 
 type RosaWizardProps = {
@@ -50,7 +58,9 @@ export const RosaWizard = (props: RosaWizardProps) => {
   const [, setCurrentStep] = React.useState<WizardStepType>();
   const onStepChange = (_event: React.MouseEvent<HTMLButtonElement>, currentStep: WizardStepType) =>
     setCurrentStep(currentStep);
-  const [getUseWizardContext, setUseWizardContext] = React.useState();
+  const [getUseWizardContext, setUseWizardContext] = React.useState<
+    WizardNavigationContext | undefined
+  >();
 
   const callbackFunctions = wizardsStepsData.callbackFunctions;
 
@@ -93,9 +103,9 @@ export const RosaWizard = (props: RosaWizardProps) => {
               awsInfrastructureAccounts={wizardsStepsData.basicSetupStep.awsInfrastructureAccounts}
               awsBillingAccounts={wizardsStepsData.basicSetupStep.awsBillingAccounts}
               regions={wizardsStepsData.basicSetupStep.regions}
-              awsAccountDataCallback={callbackFunctions.onAWSAccountChange}
-              refreshAwsAccountDataCallback={callbackFunctions.refreshAwsAccountDataCallback}
-              refreshAwsBillingAccountCallback={callbackFunctions.refreshAwsBillingAccountCallback}
+              awsAccountDataCallback={callbackFunctions?.onAWSAccountChange}
+              refreshAwsAccountDataCallback={callbackFunctions?.refreshAwsAccountDataCallback}
+              refreshAwsBillingAccountCallback={callbackFunctions?.refreshAwsBillingAccountCallback}
             />
           </Step>,
           <Step

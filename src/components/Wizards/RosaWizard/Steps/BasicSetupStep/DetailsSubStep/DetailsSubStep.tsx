@@ -13,9 +13,9 @@ type DetailsSubStepProps = {
   awsInfrastructureAccounts: SelectDropdownType[];
   awsBillingAccounts: SelectDropdownType[];
   regions: SelectDropdownType[];
-  awsAccountDataCallback: any;
-  refreshAwsAccountDataCallback: () => void;
-  refreshAwsBillingAccountCallback: () => void;
+  awsAccountDataCallback?: (value: unknown) => void;
+  refreshAwsAccountDataCallback?: () => void;
+  refreshAwsBillingAccountCallback?: () => void;
 };
 
 export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({

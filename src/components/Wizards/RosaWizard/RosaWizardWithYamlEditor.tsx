@@ -14,25 +14,10 @@ import {
 import React from 'react';
 import { ClusterWideProxySubstep } from './Steps/AdditionalSetupStep/ClusterWideProxySubstep/ClusterWideProxySubstep';
 import { ReviewStepData } from './Steps/ReviewStepData';
-import { MachineTypesDropdownType, OIDCConfig, Roles, SelectDropdownType, VPC } from '../types';
+import { WizardNavigationContext } from '../types';
 import { WizardStepType } from '@patternfly/react-core';
 import { YamlEditorStep } from './Steps/YamlEditorStep';
-
-export type BasicSetupStepProps = {
-  openShiftVersions: SelectDropdownType[];
-  awsInfrastructureAccounts: SelectDropdownType[];
-  awsBillingAccounts: SelectDropdownType[];
-  vpcList: VPC[];
-  regions: SelectDropdownType[];
-  roles: Roles;
-  oicdConfig: OIDCConfig[];
-  machineTypes: MachineTypesDropdownType[];
-};
-
-type WizardStepsData = {
-  basicSetupStep: BasicSetupStepProps;
-  callbackFunctions?: any;
-};
+import { WizardStepsData } from './RosaWizard';
 
 type RosaWizardWithYamlEditorProps = {
   onSubmit: WizardSubmit;
@@ -48,7 +33,9 @@ export const RosaWizardWithYamlEditor = (props: RosaWizardWithYamlEditorProps) =
   const [, setCurrentStep] = React.useState<WizardStepType>();
   const onStepChange = (_event: React.MouseEvent<HTMLButtonElement>, currentStep: WizardStepType) =>
     setCurrentStep(currentStep);
-  const [getUseWizardContext, setUseWizardContext] = React.useState();
+  const [getUseWizardContext, setUseWizardContext] = React.useState<
+    WizardNavigationContext | undefined
+  >();
 
   const callbackFunction = wizardsStepsData.callbackFunctions;
 

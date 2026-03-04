@@ -1,21 +1,21 @@
 import {
   Radio,
   Section,
+  useItem,
   WizCheckbox,
   WizRadioGroup,
   WizTextInput,
 } from '@patternfly-labs/react-form-wizard';
-import { useInput } from '@patternfly-labs/react-form-wizard/inputs/Input';
 import { Alert, Flex, FlexItem, Grid, GridItem } from '@patternfly/react-core';
 import { useTranslation } from '../../../../../../context/TranslationContext';
 import { validateAWSKMSKeyARN } from '../../../validators';
+import { RosaWizardFormData } from '../../../../types';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 
-export const EncryptionSubstep = (props: any) => {
+export const EncryptionSubstep = () => {
   const { t } = useTranslation();
-  const { value } = useInput(props);
-  const { cluster } = value;
+  const { cluster } = useItem<RosaWizardFormData>();
 
   return (
     <Section

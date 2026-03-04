@@ -1,4 +1,4 @@
-import { CIDRSubnet, Subnet, VPC } from '../types';
+import { CIDRSubnet, ClusterFormData, MachinePoolSubnetEntry, Subnet, VPC } from '../types';
 import { MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH } from './constants';
 
 const OPERATOR_ROLES_HASH_LENGTH = 4;
@@ -50,46 +50,38 @@ const parseCIDRSubnetLength = (value?: string): number | undefined => {
   return parseInt(value.split('/').pop() ?? '', 10);
 };
 
-const constructSelectedSubnets = (formValues?: Record<string, any>) => {
-  type MachinePoolSubnet = {
-    availability_zone: string;
-    machine_pool_subnet: string;
-    publicSubnetId: string;
-  };
-  const usePrivateLink = formValues?.use_privatelink;
-
-  let privateSubnets: CIDRSubnet[] = [];
-  let publicSubnets: CIDRSubnet[] = [];
-  let selectedSubnets: CIDRSubnet[] = [];
-
-  if (formValues?.selected_vpc) {
-    const privateSubnetIds = formValues?.machine_pools_subnets
-      .map((obj: MachinePoolSubnet) => obj.machine_pool_subnet)
-      .filter((id: string) => id !== undefined && id !== '');
-
-    const publicSubnetIds = formValues?.cluster_privacy_public_subnet_id;
-
-    if (formValues?.selected_vpc?.aws_subnets) {
-      privateSubnets = formValues?.selected_vpc?.aws_subnets.filter((obj: Subnet) =>
-        privateSubnetIds.includes(obj.subnet_id)
-      );
-
-      publicSubnets = formValues?.selected_vpc?.aws_subnets.filter((obj: Subnet) =>
-        publicSubnetIds.includes(obj.subnet_id)
-      );
-    }
-
-    if (usePrivateLink) {
-      selectedSubnets = privateSubnets;
-    } else {
-      selectedSubnets = privateSubnets.concat(publicSubnets);
-    }
+const constructSelectedSubnets = (formValues?: ClusterFormData): CIDRSubnet[] => {
+  if (!formValues?.selected_vpc) {
+    return [];
   }
 
-  return selectedSubnets;
+  const privateSubnetIds = (formValues?.machine_pools_subnets ?? [])
+    .map((obj: MachinePoolSubnetEntry) => obj.machine_pool_subnet)
+    .filter((id: string) => id !== undefined && id !== '');
+
+  const publicSubnetIds = formValues?.cluster_privacy_public_subnet_id;
+
+  // at runtime selected_vpc can hold the full VPC object (set-value merges nested structures),
+  // so we cast defensively to access aws_subnets
+  const vpcData = formValues.selected_vpc as unknown as
+    | (VPC & { aws_subnets?: CIDRSubnet[] })
+    | undefined;
+  if (!vpcData?.aws_subnets) {
+    return [];
+  }
+
+  const privateSubnets = vpcData.aws_subnets.filter((obj: CIDRSubnet) =>
+    privateSubnetIds.includes(obj.subnet_id)
+  );
+
+  const publicSubnets = vpcData.aws_subnets.filter((obj: CIDRSubnet) =>
+    publicSubnetIds ? obj.subnet_id === publicSubnetIds : false
+  );
+
+  return privateSubnets.concat(publicSubnets);
 };
 
-const subnetsFilter = (selectedVPC: VPC) => {
+const subnetsFilter = (selectedVPC: VPC | undefined) => {
   const privateSubnets = selectedVPC?.aws_subnets.filter((privateSubnet: Subnet) =>
     privateSubnet.name.includes('private')
   );

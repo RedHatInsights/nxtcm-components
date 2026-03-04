@@ -5,18 +5,21 @@ import {
   Switch,
   Content,
   Title,
+  useWizardContext,
   WizardStepType,
-} from "@patternfly/react-core";
-import { ReactNode, useCallback, useState } from "react";
-import { WizardYamlEditor } from "./components/YamlEditor";
-import { Wizard, WizardProps } from "./Wizard";
+} from '@patternfly/react-core';
+import { ReactNode, useCallback, useState } from 'react';
+import { WizardYamlEditor } from './components/YamlEditor';
+import { Wizard, WizardProps } from './Wizard';
+
+type WizardContextType = ReturnType<typeof useWizardContext>;
 
 export type WizardPageProps = {
   breadcrumb?: { label: string; to?: string }[];
   yaml?: boolean;
   yamlEditor?: () => ReactNode;
   onStepChange?: (event: React.MouseEvent<HTMLButtonElement>, currentStep: WizardStepType) => void;
-  setUseWizardContext?: any;
+  setUseWizardContext?: (context: WizardContextType) => void;
 } & WizardProps;
 
 function getWizardYamlEditor() {
@@ -27,21 +30,21 @@ export function WizardPage(props: WizardPageProps) {
   let { yamlEditor } = props;
   if (!yamlEditor) yamlEditor = getWizardYamlEditor;
   const [drawerExpanded, setDrawerExpanded] = useState(
-    props.yaml !== false && localStorage.getItem("yaml") === "true"
+    props.yaml !== false && localStorage.getItem('yaml') === 'true'
   );
   const toggleDrawerExpanded = useCallback(() => {
     setDrawerExpanded((drawerExpanded) => {
-      localStorage.setItem("yaml", (!drawerExpanded).toString());
+      localStorage.setItem('yaml', (!drawerExpanded).toString());
       return !drawerExpanded;
     });
   }, []);
   return (
-    <div style={{ height: "100vh" }}>
+    <div style={{ height: '100vh' }}>
       <PageSection variant="default">
         <Flex
-          alignItems={{ default: "alignItemsCenter" }}
+          alignItems={{ default: 'alignItemsCenter' }}
           wrap="noWrap"
-          style={{ flexWrap: "nowrap", gap: 16 }}
+          style={{ flexWrap: 'nowrap', gap: 16 }}
         >
           <Title headingLevel="h1">{props.title}</Title>
           {props.yaml !== false && (
@@ -53,9 +56,7 @@ export function WizardPage(props: WizardPageProps) {
             />
           )}
         </Flex>
-        {props.description && (
-          <Content component="small">{props.description}</Content>
-        )}
+        {props.description && <Content component="small">{props.description}</Content>}
       </PageSection>
       <Wizard
         {...props}

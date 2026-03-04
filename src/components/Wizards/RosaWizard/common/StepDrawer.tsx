@@ -19,7 +19,14 @@ import { OCMRole } from './OCMRole';
 import { UserRole } from './UserRole';
 import { AccountRoles } from './AccountRoles';
 
-export const StepDrawer = (props: any) => {
+type StepDrawerProps = {
+  isDrawerExpanded: boolean;
+  setIsDrawerExpanded: (expanded: boolean) => void;
+  onWizardExpand: () => void;
+  children: React.ReactNode;
+};
+
+export const StepDrawer = (props: StepDrawerProps) => {
   const { isDrawerExpanded, onWizardExpand, setIsDrawerExpanded } = props;
   return (
     <Drawer isInline isExpanded={isDrawerExpanded} onExpand={onWizardExpand}>

@@ -85,16 +85,18 @@ export interface WizardProps {
   submitButtonText?: string;
   submittingButtonText?: string;
   onStepChange?: (event: React.MouseEvent<HTMLButtonElement>, currentStep: WizardStepType) => void;
-  setUseWizardContext?: any;
+  setUseWizardContext?: (context: WizardContextType) => void;
 }
 
 export type WizardSubmit = (data: unknown) => Promise<void>;
 export type WizardCancel = () => void;
 
+type WizardContextType = ReturnType<typeof useWizardContext>;
+
 export function Wizard(props: WizardProps & { showHeader?: boolean; showYaml?: boolean }) {
   const [data, setData] = useState(props.defaultData ? klona(props.defaultData) : {});
   const update = useCallback(
-    (newData: any) => setData((data: unknown) => klona(newData ?? data)),
+    (newData?: object) => setData((data: unknown) => klona(newData ?? data)),
     []
   );
   const [drawerExpanded, setDrawerExpanded] = useState<boolean>(false);
@@ -155,12 +157,18 @@ export function Wizard(props: WizardProps & { showHeader?: boolean; showYaml?: b
   );
 }
 
+type SubStepComponent = {
+  id: string;
+  name: ReactNode;
+  component: ReactNode;
+};
+
 type StepComponent = {
   id: string;
   name: ReactNode;
   component?: ReactNode;
   isExpandable?: boolean;
-  subSteps?: any;
+  subSteps?: SubStepComponent[];
   expandableStepComponent?: React.ReactElement<WizardStepProps>[];
 };
 
@@ -169,7 +177,7 @@ type WizardFooterProps = {
   submitButtonText?: string;
   submittingButtonText?: string;
   steps: ReactElement[];
-  setUseWizardContext?: any;
+  setUseWizardContext?: (context: WizardContextType) => void;
 };
 
 type WizardInternalProps = Omit<WizardFooterProps, 'steps'> & {
@@ -178,7 +186,7 @@ type WizardInternalProps = Omit<WizardFooterProps, 'steps'> & {
   onCancel: WizardCancel;
   hasButtons?: boolean;
   onStepChange?: (event: React.MouseEvent<HTMLButtonElement>, currentStep: WizardStepType) => void;
-  setUseWizardContext?: any;
+  setUseWizardContext?: (context: WizardContextType) => void;
 };
 
 function WizardInternal({
@@ -224,26 +232,27 @@ function WizardInternal({
   const steps = useMemo(() => {
     const steps: StepComponent[] = stepComponents.map((component) => {
       if (component.props.steps) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        const subSteps = component.props?.steps.map((step: any) => {
-          return {
-            id: step.props.id,
-            name: (
-              <Split hasGutter>
-                <SplitItem isFilled>{step.props?.label}</SplitItem>
-                {(showValidation || stepShowValidation[step.props?.id]) &&
-                  stepHasValidationError[step.props?.id] && (
-                    <SplitItem>
-                      <Icon status="danger">
-                        <ExclamationCircleIcon />
-                      </Icon>
-                    </SplitItem>
-                  )}
-              </Split>
-            ),
-            component: <Fragment key={step.props?.id}>{step}</Fragment>,
-          };
-        });
+        const subSteps: SubStepComponent[] = (component.props?.steps as ReactElement[]).map(
+          (step: ReactElement) => {
+            return {
+              id: step.props.id,
+              name: (
+                <Split hasGutter>
+                  <SplitItem isFilled>{step.props?.label}</SplitItem>
+                  {(showValidation || stepShowValidation[step.props?.id]) &&
+                    stepHasValidationError[step.props?.id] && (
+                      <SplitItem>
+                        <Icon status="danger">
+                          <ExclamationCircleIcon />
+                        </Icon>
+                      </SplitItem>
+                    )}
+                </Split>
+              ),
+              component: <Fragment key={step.props?.id}>{step}</Fragment>,
+            };
+          }
+        );
         return {
           id: component.props?.id,
           name: (
@@ -316,14 +325,11 @@ function WizardInternal({
                 key={id}
                 name={name}
                 isExpandable
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                steps={subSteps.map((subStep: any) => {
-                  return (
-                    <WizardStep id={subStep.id} key={subStep.id} name={subStep.name}>
-                      {subStep.component}
-                    </WizardStep>
-                  );
-                })}
+                steps={subSteps.map((subStep: SubStepComponent) => (
+                  <WizardStep id={subStep.id} key={subStep.id} name={subStep.name}>
+                    {subStep.component}
+                  </WizardStep>
+                ))}
               />
             );
           }
@@ -349,8 +355,7 @@ function MyFooter(props: WizardFooterProps) {
   const wizContext = useWizardContext();
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    props.setUseWizardContext(wizContext);
+    props.setUseWizardContext?.(wizContext);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.setUseWizardContext]);
 
