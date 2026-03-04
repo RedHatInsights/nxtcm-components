@@ -60,12 +60,8 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
               isFill
               path="cluster.installer_role_arn"
               label={t('Installer role')}
-              onValueChange={() => {
-                if (
-                  cluster?.installer_role_arn &&
-                  supportRoles.length > 0 &&
-                  workerRoles.length > 0
-                ) {
+              onValueChange={(installerRoleArn) => {
+                if (installerRoleArn && supportRoles.length > 0 && workerRoles.length > 0) {
                   cluster.support_role_arn = supportRoles[0].value;
                   cluster.worker_role_arn = workerRoles[0].value;
                   update();
