@@ -1,4 +1,10 @@
-import { Section, useItem, WizSelect, WizTextInput } from '@patternfly-labs/react-form-wizard';
+import {
+  Section,
+  useData,
+  useItem,
+  WizSelect,
+  WizTextInput,
+} from '@patternfly-labs/react-form-wizard';
 import {
   ClipboardCopy,
   ExpandableSection,
@@ -34,12 +40,14 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
   const { cluster } = useItem();
+  const { update } = useData();
 
   React.useEffect(() => {
     if (cluster?.name && !cluster.custom_operator_roles_prefix) {
       cluster.custom_operator_roles_prefix = createOperatorRolesPrefix(cluster.name);
+      update();
     }
-  }, [cluster]);
+  }, [cluster, update]);
 
   const rosaCommand = `rosa create operator-roles --prefix "${cluster?.custom_operator_roles_prefix}" --oidc-config-id "${cluster?.byo_oidc_config_id}" --hosted-cp --installer-role-arn ${cluster?.installer_role_arn}`;
 
@@ -52,6 +60,17 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
               isFill
               path="cluster.installer_role_arn"
               label={t('Installer role')}
+              onValueChange={() => {
+                if (
+                  cluster?.installer_role_arn &&
+                  supportRoles.length > 0 &&
+                  workerRoles.length > 0
+                ) {
+                  cluster.support_role_arn = supportRoles[0].value;
+                  cluster.worker_role_arn = workerRoles[0].value;
+                  update();
+                }
+              }}
               placeholder={t('Select an Installer role')}
               labelHelp={
                 <>
