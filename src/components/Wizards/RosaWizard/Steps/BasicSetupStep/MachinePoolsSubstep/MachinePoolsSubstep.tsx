@@ -122,8 +122,8 @@ export const MachinePoolsSubstep = (props: any) => {
 
         <AutoscalingField
           autoscaling={cluster?.autoscaling}
-          machinePoolsNumber={cluster.machine_pools_subnets}
-          openshiftVersion={cluster.cluster_version}
+          machinePoolsNumber={cluster?.machine_pools_subnets?.length}
+          openshiftVersion={cluster?.cluster_version}
         />
       </Section>
 

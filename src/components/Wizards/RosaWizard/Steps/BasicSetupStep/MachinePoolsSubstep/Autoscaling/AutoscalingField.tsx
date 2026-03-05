@@ -51,7 +51,7 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
   const { t } = useTranslation();
   const { update } = useData();
 
-  const { autoscaling, openshiftVersion } = props;
+  const { autoscaling, openshiftVersion, machinePoolsNumber } = props;
 
   return (
     <>
@@ -73,9 +73,7 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
         onValueChange={(checked, item) => {
           if (checked) {
             delete item.cluster.nodes_compute;
-            item.cluster.min_replicas = scaleMinNodesOnMachinePoolNumber(
-              item.cluster.machine_pools_subnets.length
-            );
+            item.cluster.min_replicas = scaleMinNodesOnMachinePoolNumber(machinePoolsNumber);
             item.cluster.max_replicas = 4;
             update();
           } else {
@@ -101,8 +99,8 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
                   </ExternalLink>
                 </>
               }
-              min={1}
-              max={500}
+              min={scaleMinNodesOnMachinePoolNumber(machinePoolsNumber)}
+              max={getAutoscalingMaxNodes(openshiftVersion)}
               validation={validateMinReplicas}
             />
           </FlexItem>
