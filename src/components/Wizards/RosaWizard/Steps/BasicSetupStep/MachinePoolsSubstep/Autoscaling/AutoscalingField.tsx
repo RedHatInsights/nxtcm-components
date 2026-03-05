@@ -53,6 +53,8 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
 
   const { autoscaling, openshiftVersion, machinePoolsNumber } = props;
 
+  const maxNodeBasedOnOpenshiftVersion = getAutoscalingMaxNodes(openshiftVersion);
+
   return (
     <>
       <WizCheckbox
@@ -100,7 +102,7 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
                 </>
               }
               min={scaleMinNodesOnMachinePoolNumber(machinePoolsNumber)}
-              max={getAutoscalingMaxNodes(openshiftVersion)}
+              max={maxNodeBasedOnOpenshiftVersion}
               validation={validateMinReplicas}
             />
           </FlexItem>
@@ -118,8 +120,10 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
                 </>
               }
               min={1}
-              max={getAutoscalingMaxNodes(openshiftVersion)}
-              validation={validateMaxReplicas}
+              max={maxNodeBasedOnOpenshiftVersion}
+              validation={(value, item) =>
+                validateMaxReplicas(value as number, item, maxNodeBasedOnOpenshiftVersion)
+              }
             />
           </FlexItem>
         </Flex>

@@ -506,13 +506,18 @@ export const validateMinReplicas = (
 
 export const validateMaxReplicas = (
   value: number | undefined,
-  item?: unknown
+  item?: unknown,
+  maxNodeBasedOnOpenshiftVersion?: number
 ): string | undefined => {
   const positiveError = validatePositiveInteger(value);
   if (positiveError) return positiveError;
   const typedItem = item as { cluster?: { min_replicas?: number } } | undefined;
-  if (value !== undefined && value > 500) {
-    return 'Input cannot be more than 500.';
+  if (
+    value !== undefined &&
+    maxNodeBasedOnOpenshiftVersion !== undefined &&
+    value > maxNodeBasedOnOpenshiftVersion
+  ) {
+    return `Input cannot be more than ${maxNodeBasedOnOpenshiftVersion}.`;
   }
   if (value !== undefined && typedItem?.cluster?.min_replicas !== undefined) {
     if (value < typedItem?.cluster?.min_replicas) {
