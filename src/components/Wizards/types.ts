@@ -84,8 +84,8 @@ export type ClusterFormData = {
   byo_oidc_config_id?: string;
   custom_operator_roles_prefix?: string;
 
-  // machine pools
-  selected_vpc?: string;
+  // machine pools — WizSelect stores the full VPC object at runtime via keyPath
+  selected_vpc?: string | VPC;
   machine_pools_subnets?: MachinePoolSubnetEntry[];
   machine_type?: string;
   autoscaling?: boolean;

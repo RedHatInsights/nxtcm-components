@@ -33,7 +33,9 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
   const { t } = useTranslation();
   const { cluster } = useItem<RosaWizardFormData>();
 
-  const selectedVPC = props.vpcList.find((vpc: VPC) => vpc.id === cluster?.selected_vpc);
+  const vpcRef = cluster?.selected_vpc;
+  const selectedVPC =
+    typeof vpcRef === 'string' ? props.vpcList.find((vpc: VPC) => vpc.id === vpcRef) : vpcRef;
 
   const { privateSubnets } = subnetsFilter(selectedVPC);
 

@@ -59,23 +59,23 @@ const constructSelectedSubnets = (formValues?: ClusterFormData): CIDRSubnet[] =>
     .map((obj: MachinePoolSubnetEntry) => obj.machine_pool_subnet)
     .filter((id: string) => id !== undefined && id !== '');
 
-  const publicSubnetIds = formValues?.cluster_privacy_public_subnet_id;
+  // single subnet id from WizSelect — always a string, not an array
+  const publicSubnetId = formValues?.cluster_privacy_public_subnet_id;
 
-  // at runtime selected_vpc can hold the full VPC object (set-value merges nested structures),
-  // so we cast defensively to access aws_subnets
-  const vpcData = formValues.selected_vpc as unknown as
-    | (VPC & { aws_subnets?: CIDRSubnet[] })
-    | undefined;
-  if (!vpcData?.aws_subnets) {
+  const selectedVpc = formValues.selected_vpc;
+  if (typeof selectedVpc === 'string' || !selectedVpc?.aws_subnets) {
     return [];
   }
 
-  const privateSubnets = vpcData.aws_subnets.filter((obj: CIDRSubnet) =>
+  // aws_subnets contains CIDRSubnet data at runtime even though VPC types it as Subnet[]
+  const subnets = selectedVpc.aws_subnets as unknown as CIDRSubnet[];
+
+  const privateSubnets = subnets.filter((obj: CIDRSubnet) =>
     privateSubnetIds.includes(obj.subnet_id)
   );
 
-  const publicSubnets = vpcData.aws_subnets.filter((obj: CIDRSubnet) =>
-    publicSubnetIds ? obj.subnet_id === publicSubnetIds : false
+  const publicSubnets = subnets.filter((obj: CIDRSubnet) =>
+    publicSubnetId ? obj.subnet_id === publicSubnetId : false
   );
 
   return privateSubnets.concat(publicSubnets);

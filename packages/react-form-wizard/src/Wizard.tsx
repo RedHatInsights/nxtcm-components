@@ -232,7 +232,7 @@ function WizardInternal({
   const steps = useMemo(() => {
     const steps: StepComponent[] = stepComponents.map((component) => {
       if (component.props.steps) {
-        const subSteps: SubStepComponent[] = (component.props?.steps as ReactElement[]).map(
+        const subSteps: SubStepComponent[] = (component.props.steps as ReactElement[]).map(
           (step: ReactElement) => {
             return {
               id: step.props.id,
