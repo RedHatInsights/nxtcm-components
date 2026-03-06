@@ -16,7 +16,7 @@ type AutoscalingFieldProps = {
 };
 
 export const MAX_NODES_HCP_DEFAULT = 500;
-export const MAX_NODES_HCP_INSUFFICIEN_VERSION = 90;
+export const MAX_NODES_HCP_INSUFFICIENT_VERSION = 90;
 
 const scaleMinNodesOnMachinePoolNumber = (machinePoolsNumber: number) =>
   machinePoolsNumber > 1 ? 1 : 2;
@@ -42,7 +42,7 @@ const scaleMaxNodesBasedOnOpenshiftVersion = (openshiftVersion: number) => {
 //Minimal versions to allow more then 90 nodes - 4.15.15, 4.14.28
 export const getAutoscalingMaxNodes = (openshiftVersion?: number) => {
   if (openshiftVersion && !scaleMaxNodesBasedOnOpenshiftVersion(openshiftVersion)) {
-    return MAX_NODES_HCP_INSUFFICIEN_VERSION;
+    return MAX_NODES_HCP_INSUFFICIENT_VERSION;
   }
   return MAX_NODES_HCP_DEFAULT;
 };
