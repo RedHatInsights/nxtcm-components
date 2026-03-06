@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { Alert, AlertActionLink } from '@patternfly/react-core';
 import ExternalLink from '../../../../common/ExternalLink';
 import links from '../../../../externalLinks';

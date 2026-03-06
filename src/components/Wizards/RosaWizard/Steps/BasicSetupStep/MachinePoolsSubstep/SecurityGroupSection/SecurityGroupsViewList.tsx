@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Label, LabelGroup } from '@patternfly/react-core';
-import { SecurityGroup } from './types';
+import { SecurityGroup } from '../../../../../types';
 
 // We increase Patternfly's maximum length of 16ch, due to https://github.com/patternfly/patternfly-react/issues/9690.
 // The tooltip won't show when mounted but not being visible (e.g. in an ExpandableSection)

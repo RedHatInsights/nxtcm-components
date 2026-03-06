@@ -21,11 +21,11 @@ import RedoIcon from '@patternfly/react-icons/dist/esm/icons/redo-icon';
 import SecurityGroupsViewList from './SecurityGroupsViewList';
 
 import './EditSecurityGroups.scss';
-import { CloudVpc } from './types';
 import { securityGroupsSort } from './helpers';
 import { validateSecurityGroups } from '../../../../validators';
 import { truncateTextWithEllipsis } from '../../../../helpers';
 import { FormGroupHelperText } from '../../../../common/FormGroupHelperText';
+import { CloudVpc } from '../../../../../types';
 
 export interface EditSecurityGroupsProps {
   label?: string;

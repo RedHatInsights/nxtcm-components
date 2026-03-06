@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { ExpandableSection } from '@patternfly/react-core';
 import { useValue } from '@patternfly-labs/react-form-wizard/inputs/Input';
 
-import { CloudVpc } from './types';
 import EditSecurityGroups from './EditSecurityGroups';
 import SecurityGroupsEmptyAlert from './SecurityGroupsEmptyAlert';
 import SecurityGroupsNoEditAlert from './SecurityGroupsNoEditAlert';
+import { CloudVpc } from '../../../../../types';
 
 export const SecurityGroupsSection = ({
   selectedVPC,
