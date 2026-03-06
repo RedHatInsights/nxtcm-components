@@ -1,4 +1,4 @@
-import { SecurityGroup } from './types';
+import { SecurityGroup } from '../../../../../types';
 
 export const securityGroupsSort = (a: SecurityGroup, b: SecurityGroup) => {
   // Sorts first VPCs that have a name over those that don't
