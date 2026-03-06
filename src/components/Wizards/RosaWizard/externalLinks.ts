@@ -23,5 +23,7 @@ const links = {
   ROSA_SHARED_VPC: `${redHatRosaDocsBaseUrl}/install_clusters/rosa-hcp-shared-vpc-config`,
   ROSA_ROLES_LEARN_MORE: `${redHatRosaDocsBaseUrl}/introduction_to_rosa/rosa-hcp-about-iam-resources`,
   ROSA_OIDC_LEARN_MORE: `${redHatRosaDocsBaseUrl}/introduction_to_rosa/rosa-hcp-about-iam-resources#rosa-sts-oidc-provider-requirements-for-operators_rosa-sts-about-iam-resources`,
+  AWS_CONSOLE_SECURITY_GROUPS: 'https://console.aws.amazon.com/ec2/home#SecurityGroups',
+  ROSA_SECURITY_GROUPS: `${redHatRosaDocsBaseUrl}/prepare_your_environment/rosa-hcp-prereqs#rosa-security-groups_rosa-hcp-prereqs`,
 };
 export default links;
