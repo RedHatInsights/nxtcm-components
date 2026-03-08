@@ -1,4 +1,4 @@
-import { CIDRSubnet, Subnet, VPC } from '../types';
+import { CIDRSubnet, ClusterFormData, MachinePoolSubnetEntry, Subnet, VPC } from '../types';
 import { MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH } from './constants';
 
 const OPERATOR_ROLES_HASH_LENGTH = 4;
@@ -50,46 +50,38 @@ const parseCIDRSubnetLength = (value?: string): number | undefined => {
   return parseInt(value.split('/').pop() ?? '', 10);
 };
 
-const constructSelectedSubnets = (formValues?: Record<string, any>) => {
-  type MachinePoolSubnet = {
-    availability_zone: string;
-    machine_pool_subnet: string;
-    publicSubnetId: string;
-  };
-  const usePrivateLink = formValues?.use_privatelink;
-
-  let privateSubnets: CIDRSubnet[] = [];
-  let publicSubnets: CIDRSubnet[] = [];
-  let selectedSubnets: CIDRSubnet[] = [];
-
-  if (formValues?.selected_vpc) {
-    const privateSubnetIds = formValues?.machine_pools_subnets
-      .map((obj: MachinePoolSubnet) => obj.machine_pool_subnet)
-      .filter((id: string) => id !== undefined && id !== '');
-
-    const publicSubnetIds = formValues?.cluster_privacy_public_subnet_id;
-
-    if (formValues?.selected_vpc?.aws_subnets) {
-      privateSubnets = formValues?.selected_vpc?.aws_subnets.filter((obj: Subnet) =>
-        privateSubnetIds.includes(obj.subnet_id)
-      );
-
-      publicSubnets = formValues?.selected_vpc?.aws_subnets.filter((obj: Subnet) =>
-        publicSubnetIds.includes(obj.subnet_id)
-      );
-    }
-
-    if (usePrivateLink) {
-      selectedSubnets = privateSubnets;
-    } else {
-      selectedSubnets = privateSubnets.concat(publicSubnets);
-    }
+const constructSelectedSubnets = (formValues?: ClusterFormData): CIDRSubnet[] => {
+  if (!formValues?.selected_vpc) {
+    return [];
   }
 
-  return selectedSubnets;
+  const privateSubnetIds = (formValues?.machine_pools_subnets ?? [])
+    .map((obj: MachinePoolSubnetEntry) => obj.machine_pool_subnet)
+    .filter((id: string) => id !== undefined && id !== '');
+
+  // single subnet id from WizSelect — always a string, not an array
+  const publicSubnetId = formValues?.cluster_privacy_public_subnet_id;
+
+  const selectedVpc = formValues.selected_vpc;
+  if (typeof selectedVpc === 'string' || !selectedVpc?.aws_subnets) {
+    return [];
+  }
+
+  // aws_subnets contains CIDRSubnet data at runtime even though VPC types it as Subnet[]
+  const subnets = selectedVpc.aws_subnets as unknown as CIDRSubnet[];
+
+  const privateSubnets = subnets.filter((obj: CIDRSubnet) =>
+    privateSubnetIds.includes(obj.subnet_id)
+  );
+
+  const publicSubnets = subnets.filter((obj: CIDRSubnet) =>
+    publicSubnetId ? obj.subnet_id === publicSubnetId : false
+  );
+
+  return privateSubnets.concat(publicSubnets);
 };
 
-const subnetsFilter = (selectedVPC: VPC) => {
+const subnetsFilter = (selectedVPC: VPC | undefined) => {
   const privateSubnets = selectedVPC?.aws_subnets.filter((privateSubnet: Subnet) =>
     privateSubnet.name.includes('private')
   );

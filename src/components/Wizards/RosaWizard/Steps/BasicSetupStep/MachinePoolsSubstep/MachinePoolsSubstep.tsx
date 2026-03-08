@@ -2,12 +2,12 @@ import React from 'react';
 import {
   Radio,
   Section,
+  useItem,
   WizMachinePoolSelect,
   WizNumberInput,
   WizRadioGroup,
   WizSelect,
 } from '@patternfly-labs/react-form-wizard';
-import { useInput } from '@patternfly-labs/react-form-wizard/inputs/Input';
 import {
   Content,
   ContentVariants,
@@ -17,7 +17,7 @@ import {
 } from '@patternfly/react-core';
 import { useTranslation } from '../../../../../../context/TranslationContext';
 import { subnetsFilter } from '../../../helpers';
-import { Subnet, VPC } from '../../../../types';
+import { MachineTypesDropdownType, RosaWizardFormData, Subnet, VPC } from '../../../../types';
 import { AutoscalingField } from './Autoscaling/AutoscalingField';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
@@ -25,12 +25,18 @@ import { Indented } from '@patternfly-labs/react-form-wizard/components/Indented
 import { validateRootDiskSize } from '../../../validators';
 import { SecurityGroupsSection } from './SecurityGroupSection/SecurityGroupSection';
 
-export const MachinePoolsSubstep = (props: any) => {
-  const { t } = useTranslation();
-  const { value } = useInput(props);
-  const { cluster } = value;
+type MachinePoolsSubstepProps = {
+  vpcList: VPC[];
+  machineTypes: MachineTypesDropdownType[];
+};
 
-  const selectedVPC = props.vpcList.find((vpc: VPC) => vpc.id === cluster?.selected_vpc);
+export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
+  const { t } = useTranslation();
+  const { cluster } = useItem<RosaWizardFormData>();
+
+  const vpcRef = cluster?.selected_vpc;
+  const selectedVPC =
+    typeof vpcRef === 'string' ? props.vpcList.find((vpc: VPC) => vpc.id === vpcRef) : vpcRef;
 
   const { privateSubnets } = subnetsFilter(selectedVPC);
 
@@ -72,12 +78,10 @@ export const MachinePoolsSubstep = (props: any) => {
                   <ExternalLink href={links.ROSA_SHARED_VPC}>Learn more about VPCs.</ExternalLink>
                 </>
               }
-              options={props.vpcList.map((vpc: any) => {
-                return {
-                  label: vpc.name,
-                  value: vpc.id,
-                };
-              })}
+              options={props.vpcList.map((vpc: VPC) => ({
+                label: vpc.name,
+                value: vpc.id,
+              }))}
             />
           </GridItem>
         </Grid>

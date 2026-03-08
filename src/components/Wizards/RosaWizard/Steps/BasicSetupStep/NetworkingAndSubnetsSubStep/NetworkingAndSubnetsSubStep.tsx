@@ -1,14 +1,14 @@
 import {
   Radio,
   Section,
+  useItem,
   WizCheckbox,
   WizRadioGroup,
   WizSelect,
   WizTextInput,
 } from '@patternfly-labs/react-form-wizard';
 import { LabelHelp } from '@patternfly-labs/react-form-wizard/components/LabelHelp';
-import { useInput } from '@patternfly-labs/react-form-wizard/inputs/Input';
-import { Subnet, VPC } from '../../../../types';
+import { RosaWizardFormData, Subnet, VPC } from '../../../../types';
 import { useTranslation } from '../../../../../../context/TranslationContext';
 import { constructSelectedSubnets, subnetsFilter } from '../../../helpers';
 import {
@@ -36,12 +36,19 @@ import {
 } from '../../../validators';
 import { Indented } from '@patternfly-labs/react-form-wizard/components/Indented';
 
-export const NetworkingAndSubnetsSubStep = (props: any) => {
+type NetworkingAndSubnetsSubStepProps = {
+  vpcList: VPC[];
+  machineTypes?: unknown[];
+  setIsClusterWideProxySelected: (value: boolean) => void;
+};
+
+export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepProps) => {
   const { t } = useTranslation();
-  const { value } = useInput(props);
-  const { cluster } = value;
+  const { cluster } = useItem<RosaWizardFormData>();
   const { setIsClusterWideProxySelected } = props;
-  const selectedVPC = props.vpcList.find((vpc: VPC) => vpc.id === cluster?.selected_vpc);
+  const vpcRef = cluster?.selected_vpc;
+  const selectedVPC =
+    typeof vpcRef === 'string' ? props.vpcList.find((vpc: VPC) => vpc.id === vpcRef) : vpcRef;
 
   const { publicSubnets } = subnetsFilter(selectedVPC);
 

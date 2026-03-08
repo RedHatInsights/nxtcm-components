@@ -15,10 +15,15 @@ import { LockIcon } from '@patternfly/react-icons';
 import { ReviewAndCreateStepItem } from './ReviewAndCreateStep/ReviewAndCreateStepItem';
 import { MachinePoolsReviewAndCreateStepItem } from './ReviewAndCreateStep/MachinePoolsReviewAndCreateStepItem';
 import { useTranslation } from '../../../../context/TranslationContext';
+import { RosaWizardFormData, WizardNavigationContext } from '../../types';
 
-export const ReviewStepData = (props: any) => {
+type ReviewStepDataProps = {
+  goToStepId?: WizardNavigationContext;
+};
+
+export const ReviewStepData = (props: ReviewStepDataProps) => {
   const { t } = useTranslation();
-  const { cluster } = useItem();
+  const { cluster } = useItem<RosaWizardFormData>();
 
   const [isDetailsSectionExpanded, setIsDetailsSectionExpanded] = React.useState<boolean>(true);
   const [isRolesAndPoliciesExpanded, setIsRolesAndPoliciesExpanded] = React.useState<boolean>(true);
@@ -106,7 +111,7 @@ export const ReviewStepData = (props: any) => {
         </SplitItem>
         <SplitItem>
           <Button
-            onClick={() => props.goToStepId.goToStepById('basic-setup-step-details')}
+            onClick={() => props.goToStepId?.goToStepById('basic-setup-step-details')}
             variant="link"
             isInline
           >
@@ -148,7 +153,7 @@ export const ReviewStepData = (props: any) => {
 
         <SplitItem>
           <Button
-            onClick={() => props.goToStepId.goToStepById('roles-and-policies-sub-step')}
+            onClick={() => props.goToStepId?.goToStepById('roles-and-policies-sub-step')}
             variant="link"
             isInline
           >
@@ -225,7 +230,7 @@ export const ReviewStepData = (props: any) => {
 
         <SplitItem>
           <Button
-            onClick={() => props.goToStepId.goToStepById('networking-sub-step')}
+            onClick={() => props.goToStepId?.goToStepById('networking-sub-step')}
             variant="link"
             isInline
           >
@@ -260,7 +265,7 @@ export const ReviewStepData = (props: any) => {
         </SplitItem>
         <SplitItem>
           <Button
-            onClick={() => props.goToStepId.goToStepById('additional-setup-encryption')}
+            onClick={() => props.goToStepId?.goToStepById('additional-setup-encryption')}
             variant="link"
             isInline
           >
@@ -307,7 +312,7 @@ export const ReviewStepData = (props: any) => {
         </SplitItem>
         <SplitItem>
           <Button
-            onClick={() => props.goToStepId.goToStepById('additional-setup-networking')}
+            onClick={() => props.goToStepId?.goToStepById('additional-setup-networking')}
             variant="link"
             isInline
           >
@@ -343,7 +348,7 @@ export const ReviewStepData = (props: any) => {
         </SplitItem>
         <SplitItem>
           <Button
-            onClick={() => props.goToStepId.goToStepById('additional-setup-cluster-updates')}
+            onClick={() => props.goToStepId?.goToStepById('additional-setup-cluster-updates')}
             variant="link"
             isInline
           >

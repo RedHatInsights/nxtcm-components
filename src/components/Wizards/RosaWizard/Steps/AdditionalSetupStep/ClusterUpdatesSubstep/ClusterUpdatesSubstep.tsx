@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Section, WizRadioGroup, Radio } from '@patternfly-labs/react-form-wizard';
-import { useInput } from '@patternfly-labs/react-form-wizard/inputs/Input';
+import { Section, WizRadioGroup, Radio, useItem } from '@patternfly-labs/react-form-wizard';
 import { useData } from '@patternfly-labs/react-form-wizard';
 import {
   Button,
@@ -17,17 +16,21 @@ import {
 } from '@patternfly/react-core';
 import { useTranslation } from '../../../../../../context/TranslationContext';
 import parseUpdateSchedule from './parseUpdateSchedule';
+import { RosaWizardFormData, WizardNavigationContext } from '../../../../types';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 
 const daysOptions = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const hoursOptions = Array.from(Array(24).keys());
 
-export const ClusterUpdatesSubstep = (props: any) => {
+type ClusterUpdatesSubstepProps = {
+  goToStepId?: WizardNavigationContext;
+};
+
+export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
   const { t } = useTranslation();
-  const { value } = useInput(props);
+  const { cluster } = useItem<RosaWizardFormData>();
   const { update } = useData();
-  const { cluster } = value;
 
   const [daySelectOpen, setDaySelectOpen] = useState(false);
   const [timeSelectOpen, setTimeSelectOpen] = useState(false);
@@ -91,7 +94,7 @@ export const ClusterUpdatesSubstep = (props: any) => {
         {t(`The OpenShift version ${cluster.cluster_version} that you selected in the`)}{' '}
         {
           <Button
-            onClick={() => props.goToStepId.goToStepById('basic-setup-step-details')}
+            onClick={() => props.goToStepId?.goToStepById('basic-setup-step-details')}
             variant="link"
             isInline
           >
@@ -101,7 +104,7 @@ export const ClusterUpdatesSubstep = (props: any) => {
         {t('will apply to the managed control plane and the machine pools configured in the')}{' '}
         {
           <Button
-            onClick={() => props.goToStepId.goToStepById('networking-sub-step')}
+            onClick={() => props.goToStepId?.goToStepById('networking-sub-step')}
             variant="link"
             isInline
           >

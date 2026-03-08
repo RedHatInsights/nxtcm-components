@@ -1,24 +1,14 @@
 /* Copyright Contributors to the Open Cluster Management project */
-import { Form } from "@patternfly/react-core";
-import {
-  Fragment,
-  ReactNode,
-  useLayoutEffect,
-} from "react";
-import { DisplayMode, useDisplayMode } from "./contexts/DisplayModeContext";
-import { HasInputsProvider, useHasInputs } from "./contexts/HasInputsProvider";
-import {
-  ShowValidationProvider,
-  useSetShowValidation,
-} from "./contexts/ShowValidationProvider";
-import { useSetStepHasInputs } from "./contexts/StepHasInputsProvider";
-import { useStepShowValidation } from "./contexts/StepShowValidationProvider";
-import { useSetStepHasValidationError } from "./contexts/StepValidationProvider";
-import {
-  useHasValidationError,
-  ValidationProvider,
-} from "./contexts/ValidationProvider";
-import { HiddenFn, useInputHidden } from "./inputs/Input";
+import { Form } from '@patternfly/react-core';
+import { Fragment, ReactElement, ReactNode, useLayoutEffect } from 'react';
+import { DisplayMode, useDisplayMode } from './contexts/DisplayModeContext';
+import { HasInputsProvider, useHasInputs } from './contexts/HasInputsProvider';
+import { ShowValidationProvider, useSetShowValidation } from './contexts/ShowValidationProvider';
+import { useSetStepHasInputs } from './contexts/StepHasInputsProvider';
+import { useStepShowValidation } from './contexts/StepShowValidationProvider';
+import { useSetStepHasValidationError } from './contexts/StepValidationProvider';
+import { useHasValidationError, ValidationProvider } from './contexts/ValidationProvider';
+import { HiddenFn, useInputHidden } from './inputs/Input';
 
 export interface StepProps {
   label: string;
@@ -26,7 +16,7 @@ export interface StepProps {
   id: string;
   hidden?: HiddenFn;
   autohide?: boolean;
-  steps?: any
+  steps?: ReactElement[];
 }
 
 export function Step(props: StepProps) {
