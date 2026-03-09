@@ -54,6 +54,23 @@ export function prettifyYaml(yamlString: string, indent: number = 2): string {
   }
 }
 
+export function removeEmptyValues(obj: Record<string, any>): Record<string, any> | undefined {
+  const cleaned: Record<string, any> = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (value === null || value === undefined || value === '') continue;
+
+    if (typeof value === 'object' && !Array.isArray(value)) {
+      const nested = removeEmptyValues(value);
+      if (nested !== undefined) {
+        cleaned[key] = nested;
+      }
+    } else {
+      cleaned[key] = value;
+    }
+  }
+  return Object.keys(cleaned).length > 0 ? cleaned : undefined;
+}
+
 /**
  * Convert a JavaScript object to YAML string
  * @param obj The object to convert
@@ -61,7 +78,8 @@ export function prettifyYaml(yamlString: string, indent: number = 2): string {
  * @returns YAML string representation
  */
 export function objectToYaml(obj: any, indent: number = 2): string {
-  return yaml.dump(obj, {
+  const cleanedObj = removeEmptyValues(obj);
+  return yaml.dump(cleanedObj ?? {}, {
     indent,
     lineWidth: -1,
     noRefs: true,
