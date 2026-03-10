@@ -59,7 +59,12 @@ export function removeEmptyValues(obj: Record<string, any>): Record<string, any>
   for (const [key, value] of Object.entries(obj)) {
     if (value === null || value === undefined || value === '') continue;
 
-    if (typeof value === 'object' && !Array.isArray(value)) {
+    if (Array.isArray(value)) {
+      const filteredArray = value.filter((item) => item !== null && item !== undefined);
+      if (filteredArray.length > 0) {
+        cleaned[key] = filteredArray;
+      }
+    } else if (typeof value === 'object') {
       const nested = removeEmptyValues(value);
       if (nested !== undefined) {
         cleaned[key] = nested;

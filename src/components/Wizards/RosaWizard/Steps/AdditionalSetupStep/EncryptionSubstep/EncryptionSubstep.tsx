@@ -1,12 +1,14 @@
 import {
   Radio,
   Section,
+  useData,
   useItem,
   WizCheckbox,
   WizRadioGroup,
   WizTextInput,
 } from '@patternfly-labs/react-form-wizard';
 import { Alert, Flex, FlexItem, Grid, GridItem } from '@patternfly/react-core';
+import React from 'react';
 import { useTranslation } from '../../../../../../context/TranslationContext';
 import { validateAWSKMSKeyARN } from '../../../validators';
 import { RosaWizardFormData } from '../../../../types';
@@ -16,6 +18,23 @@ import links from '../../../externalLinks';
 export const EncryptionSubstep = () => {
   const { t } = useTranslation();
   const { cluster } = useItem<RosaWizardFormData>();
+  const { update } = useData();
+
+  React.useEffect(() => {
+    if (cluster?.encryption_keys !== 'custom' && cluster?.kms_key_arn) {
+      const { kms_key_arn, ...rest } = cluster;
+      update({ cluster: rest });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cluster?.encryption_keys]);
+
+  React.useEffect(() => {
+    if (!cluster?.etcd_encryption && cluster?.etcd_key_arn) {
+      const { etcd_key_arn, ...rest } = cluster;
+      update({ cluster: rest });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cluster?.etcd_encryption]);
 
   return (
     <Section
