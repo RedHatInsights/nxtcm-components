@@ -488,7 +488,8 @@ export const validatePositiveInteger = (value: number | undefined): string | und
 
 export const validateMinReplicas = (
   value: number | undefined,
-  item?: unknown
+  item?: unknown,
+  machinePoolsNumber?: number
 ): string | undefined => {
   const positiveError = validatePositiveInteger(value);
   if (positiveError) return positiveError;
@@ -500,6 +501,9 @@ export const validateMinReplicas = (
     if (value > typedItem?.cluster?.max_replicas) {
       return 'Min nodes cannot be greater than max nodes.';
     }
+  }
+  if (machinePoolsNumber && machinePoolsNumber < 2 && value !== undefined && value < 2) {
+    return 'Input cannot be less than 2 nodes.';
   }
   return undefined;
 };

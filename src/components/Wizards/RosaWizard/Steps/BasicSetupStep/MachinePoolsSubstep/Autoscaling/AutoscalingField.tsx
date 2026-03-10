@@ -103,7 +103,9 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
               }
               min={scaleMinNodesOnMachinePoolNumber(machinePoolsNumber)}
               max={maxNodeBasedOnOpenshiftVersion}
-              validation={validateMinReplicas}
+              validation={(value: number, item) =>
+                validateMinReplicas(value, item, machinePoolsNumber)
+              }
             />
           </FlexItem>
           <FlexItem>
