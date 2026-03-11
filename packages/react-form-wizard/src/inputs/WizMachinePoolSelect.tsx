@@ -14,7 +14,7 @@ import {
 } from '@patternfly/react-core';
 import { MinusCircleIcon } from '@patternfly/react-icons';
 import get from 'get-value';
-import { Fragment, useCallback, useContext, useMemo, useState } from 'react';
+import { Fragment, useCallback, useContext, useLayoutEffect, useMemo, useState } from 'react';
 import { useData } from '../contexts/DataContext';
 import { ItemContext } from '../contexts/ItemContext';
 import { DisplayMode } from '../contexts/DisplayModeContext';
@@ -86,11 +86,13 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
     [setValue, update, values]
   );
 
+useLayoutEffect(() => {
   if (values.length < minItems && values.length === 0) {
     for (let i = 0; i < minItems; i++) {
       addItem(props.newValue ?? { machine_pool_subnet: '' });
     }
   }
+}, [values.length, minItems, addItem, props.newValue]);
 
   const removeItem = useCallback(
     (index: number) => {
@@ -226,19 +228,24 @@ function MachinePoolRow(props: MachinePoolRowProps) {
 
   const [previousHasError, setPreviousHasError] = useState(hasError);
 
+useLayoutEffect(() => {
   if (hasError !== previousHasError) {
     setPreviousHasError(hasError);
     validate();
   }
+}, [hasError, previousHasError, validate]);
 
+useLayoutEffect(() => {
   if (hasError) {
     setHasValidationError();
   }
+}, [hasError, setHasValidationError]);
 
   const validated = showValidation && hasError ? 'error' : undefined;
   const errorMessage = hasError ? requiredErrorMessage : undefined;
 
   const selectOptionsTyped: OptionType<string>[] | undefined = useMemo(() => {
+    if (!subnetOptions) return [];
     return subnetOptions
       ?.filter((option) => {
         return option.value === value || !selectedSubnets?.includes(option.value);
@@ -281,7 +288,7 @@ function MachinePoolRow(props: MachinePoolRowProps) {
                   disabled={false}
                   validated={validated}
                   placeholder={selectPlaceholder}
-                  options={selectOptionsTyped ?? []}
+                  options={selectOptionsTyped}
                   setOptions={setFilteredOptions}
                   toggleRef={toggleRef}
                   value={value}

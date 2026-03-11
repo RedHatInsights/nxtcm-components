@@ -90,6 +90,7 @@ export const EncryptionSubstep = () => {
       )}
 
       <WizCheckbox
+        id="etcd-encryption"
         path="cluster.etcd_encryption"
         title={t('etcd encryption')}
         label={t('Enable additional etcd encryption')}

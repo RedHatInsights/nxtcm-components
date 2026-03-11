@@ -342,7 +342,7 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
               />
             </Stack>
             <span style={{ display: 'none' }}>
-              <WizCheckbox path={''} />
+              <WizCheckbox path={''} id="non-displayed-checkbox" />
             </span>
           </ExpandableSection>
         </SplitItem>

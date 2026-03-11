@@ -488,7 +488,8 @@ export const validatePositiveInteger = (value: number | undefined): string | und
 
 export const validateMinReplicas = (
   value: number | undefined,
-  item?: unknown
+  item?: unknown,
+  machinePoolsNumber?: number
 ): string | undefined => {
   const positiveError = validatePositiveInteger(value);
   if (positiveError) return positiveError;
@@ -501,18 +502,26 @@ export const validateMinReplicas = (
       return 'Min nodes cannot be greater than max nodes.';
     }
   }
+  if (machinePoolsNumber && machinePoolsNumber < 2 && value !== undefined && value < 2) {
+    return 'Input cannot be less than 2 nodes.';
+  }
   return undefined;
 };
 
 export const validateMaxReplicas = (
   value: number | undefined,
-  item?: unknown
+  item?: unknown,
+  maxNodeBasedOnOpenshiftVersion?: number
 ): string | undefined => {
   const positiveError = validatePositiveInteger(value);
   if (positiveError) return positiveError;
   const typedItem = item as { cluster?: { min_replicas?: number } } | undefined;
-  if (value !== undefined && value > 500) {
-    return 'Input cannot be more than 500.';
+  if (
+    value !== undefined &&
+    maxNodeBasedOnOpenshiftVersion !== undefined &&
+    value > maxNodeBasedOnOpenshiftVersion
+  ) {
+    return `Input cannot be more than ${maxNodeBasedOnOpenshiftVersion}.`;
   }
   if (value !== undefined && typedItem?.cluster?.min_replicas !== undefined) {
     if (value < typedItem?.cluster?.min_replicas) {

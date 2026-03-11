@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Button, Content, ContentVariants, Popover, PopoverProps } from '@patternfly/react-core';
+import { Button, Popover, PopoverProps } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons/dist/esm/icons/outlined-question-circle-icon';
 
@@ -23,7 +23,7 @@ const PopoverHintWithTitle = ({
   ...popoverProps
 }: PopoverHintProps) => (
   <div className="popover-with-title-div">
-    <Content component={ContentVariants.p}>
+    <span>
       <Popover
         bodyContent={bodyContent}
         footerContent={footer}
@@ -57,7 +57,7 @@ const PopoverHintWithTitle = ({
           hasNoPadding
         />
       </Popover>
-    </Content>
+    </span>
   </div>
 );
 

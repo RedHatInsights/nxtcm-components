@@ -130,7 +130,11 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
           </GridItem>
         </Grid>
 
-        <AutoscalingField autoscaling={cluster?.autoscaling} />
+        <AutoscalingField
+          autoscaling={cluster?.autoscaling}
+          machinePoolsNumber={cluster?.machine_pools_subnets?.length}
+          openshiftVersion={cluster?.cluster_version}
+        />
       </Section>
 
       <ExpandableSection toggleText="Advanced machine pool configuration (optional)">

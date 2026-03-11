@@ -31,9 +31,11 @@ export function HasInputsProvider(props: { children: ReactNode }) {
     setHasInputsState(true);
   }, [setHasInputsState]);
 
+useLayoutEffect(() => {
   if (hasInputs && !parentHasInputs) {
     parentSetHasInputs();
   }
+}, [hasInputs, parentHasInputs, parentSetHasInputs]);
 
   const updateHasInputs = useCallback(() => {
     setHasInputsState(false);
