@@ -1,6 +1,7 @@
 import {
   Radio,
   Section,
+  useData,
   useItem,
   WizCheckbox,
   WizRadioGroup,
@@ -46,6 +47,7 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
   const { t } = useTranslation();
   const { cluster } = useItem<RosaWizardFormData>();
   const { setIsClusterWideProxySelected } = props;
+  const { update } = useData();
   const vpcRef = cluster?.selected_vpc;
   const selectedVPC =
     typeof vpcRef === 'string' ? props.vpcList.find((vpc: VPC) => vpc.id === vpcRef) : vpcRef;
@@ -56,6 +58,16 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
   const clusterWideProxy = cluster?.['configure_proxy'];
   React.useEffect(() => {
     setIsClusterWideProxySelected(!!clusterWideProxy);
+    if (!clusterWideProxy) {
+      const {
+        http_proxy_url,
+        https_proxy_url,
+        no_proxy_domains,
+        additional_trust_bundle,
+        ...rest
+      } = cluster ?? {};
+      update({ cluster: rest });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clusterWideProxy]);
 
