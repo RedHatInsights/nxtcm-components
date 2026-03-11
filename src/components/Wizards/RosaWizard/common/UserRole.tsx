@@ -38,7 +38,7 @@ export const UserRole = () => {
         bodyContent={
           <>
             The link creates a trust policy between the role and the link cluster installer.{' '}
-            <ExternalLink href={links.ROSA_AWS_ACCOUNT_ASSOCIATION} noIcon>
+            <ExternalLink href={links.ROSA_AWS_ACCOUNT_ASSOCIATION}>
               Review the AWS policy permissions for the basic and admin OCM roles.
             </ExternalLink>
           </>

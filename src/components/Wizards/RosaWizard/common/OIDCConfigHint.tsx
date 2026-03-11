@@ -13,6 +13,7 @@ export const OIDCConfigHint = () => {
       </Content>
       <CopyInstruction variant={ClipboardCopyVariant.expansion}>
         rosa login --use-auth-code --url https://api.stage.openshift.com
+        {/* TODO: This should be at least production */}
       </CopyInstruction>
       <CopyInstruction>rosa create oidc-config</CopyInstruction>
     </>
