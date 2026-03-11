@@ -65,9 +65,7 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
         variant="info"
         title={
           <>
-            {t(
-              `Double check your settings. <strong>Locked settings can not be changed later.</strong>`
-            )}
+            {t(`Double check your settings. Locked settings can not be changed later.`)}
             <LockIcon />
           </>
         }
@@ -143,7 +141,7 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
               />
 
               <ReviewAndCreateStepItem
-                label={t('Operator rols prefix')}
+                label={t('Operator roles prefix')}
                 value={cluster?.custom_operator_roles_prefix}
                 hasIcon
               />
@@ -334,7 +332,7 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
           >
             <Stack hasGutter>
               <ReviewAndCreateStepItem
-                label={t('Cluster update stratedy')}
+                label={t('Cluster update strategy')}
                 value={
                   cluster?.upgrade_policy === 'manual' ? 'Individual updates' : 'Automatic updates'
                 }
