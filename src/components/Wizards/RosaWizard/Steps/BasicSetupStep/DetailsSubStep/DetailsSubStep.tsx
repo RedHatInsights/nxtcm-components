@@ -128,7 +128,6 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
               variant="secondary"
               className="pf-v6-u-mt-md"
               href={links.AWS_CONSOLE_ROSA_HOME}
-              noIcon
             >
               Connect ROSA to a new AWS billing account
             </ExternalLink>
