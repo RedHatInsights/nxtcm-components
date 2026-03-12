@@ -20,6 +20,10 @@ export type WizardPageProps = {
   yamlEditor?: () => ReactNode;
   onStepChange?: (event: React.MouseEvent<HTMLButtonElement>, currentStep: WizardStepType) => void;
   setUseWizardContext?: (context: WizardContextType) => void;
+  /** When set, the wizard will navigate to this step id once (then parent should clear via onResumedToStep). */
+  resumeAtStepId?: string | null;
+  /** Called after the wizard has navigated to resumeAtStepId so parent can clear it. */
+  onResumedToStep?: () => void;
 } & WizardProps;
 
 function getWizardYamlEditor() {
@@ -65,6 +69,8 @@ export function WizardPage(props: WizardPageProps) {
         yamlEditor={yamlEditor}
         setUseWizardContext={props.setUseWizardContext}
         onStepChange={props.onStepChange}
+        resumeAtStepId={props.resumeAtStepId}
+        onResumedToStep={props.onResumedToStep}
       >
         {props.children}
       </Wizard>

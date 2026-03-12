@@ -93,7 +93,14 @@ export type WizardCancel = () => void;
 
 type WizardContextType = ReturnType<typeof useWizardContext>;
 
-export function Wizard(props: WizardProps & { showHeader?: boolean; showYaml?: boolean }) {
+export function Wizard(
+  props: WizardProps & {
+    showHeader?: boolean;
+    showYaml?: boolean;
+    resumeAtStepId?: string | null;
+    onResumedToStep?: () => void;
+  }
+) {
   const [data, setData] = useState(props.defaultData ? klona(props.defaultData) : {});
   const update = useCallback(
     (newData?: object) => setData((data: unknown) => klona(newData ?? data)),
@@ -136,6 +143,8 @@ export function Wizard(props: WizardProps & { showHeader?: boolean; showYaml?: b
                                     hasButtons={props.hasButtons}
                                     submitButtonText={props.submitButtonText}
                                     submittingButtonText={props.submittingButtonText}
+                                    resumeAtStepId={props.resumeAtStepId}
+                                    onResumedToStep={props.onResumedToStep}
                                   >
                                     {props.children}
                                   </WizardInternal>
@@ -178,6 +187,8 @@ type WizardFooterProps = {
   submittingButtonText?: string;
   steps: ReactElement[];
   setUseWizardContext?: (context: WizardContextType) => void;
+  resumeAtStepId?: string | null;
+  onResumedToStep?: () => void;
 };
 
 type WizardInternalProps = Omit<WizardFooterProps, 'steps'> & {
@@ -197,6 +208,8 @@ function WizardInternal({
   submittingButtonText,
   onStepChange,
   setUseWizardContext,
+  resumeAtStepId,
+  onResumedToStep,
 }: WizardInternalProps) {
   const { reviewLabel, stepsAriaLabel, contentAriaLabel } = useStringContext();
   const stepComponents = useMemo(
@@ -313,6 +326,8 @@ function WizardInternal({
             steps={stepComponents}
             submitButtonText={submitButtonText}
             submittingButtonText={submittingButtonText}
+            resumeAtStepId={resumeAtStepId}
+            onResumedToStep={onResumedToStep}
           />
         }
         onClose={onCancel}
@@ -346,6 +361,15 @@ function WizardInternal({
 
 function MyFooter(props: WizardFooterProps) {
   const {
+    resumeAtStepId,
+    onResumedToStep,
+    onSubmit,
+    submitButtonText,
+    submittingButtonText,
+    steps,
+  } = props;
+
+  const {
     activeStep,
     goToNextStep: onNext,
     goToPrevStep: onBack,
@@ -359,10 +383,15 @@ function MyFooter(props: WizardFooterProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.setUseWizardContext]);
 
+  useEffect(() => {
+    if (resumeAtStepId) {
+      wizContext.goToStepById(resumeAtStepId);
+      onResumedToStep?.();
+    }
+  }, [onResumedToStep, resumeAtStepId, wizContext]);
+
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
-
-  const { onSubmit, submitButtonText, submittingButtonText } = props;
 
   const { unknownError } = useStringContext();
 
@@ -496,7 +525,7 @@ function MyFooter(props: WizardFooterProps) {
             </ActionListGroup>
           </ActionList>
         </WizardFooterWrapper>
-        <RenderHiddenSteps stepComponents={props.steps} />
+        <RenderHiddenSteps stepComponents={steps} />
       </div>
     );
   }
@@ -560,7 +589,7 @@ function MyFooter(props: WizardFooterProps) {
           </ActionListGroup>
         </ActionList>
       </WizardFooterWrapper>
-      <RenderHiddenSteps stepComponents={props.steps} />
+      <RenderHiddenSteps stepComponents={steps} />
     </div>
   );
 }
