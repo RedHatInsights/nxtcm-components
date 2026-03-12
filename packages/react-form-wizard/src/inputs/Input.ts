@@ -16,6 +16,7 @@ import {
   useSetHasValidationError,
   useValidate,
 } from '../contexts/ValidationProvider';
+import { useStepErrorRegistration } from '../contexts/StepErrorRegistrationContext';
 
 export type HiddenFn = (item: any) => boolean;
 
@@ -112,20 +113,28 @@ export function useInput(props: InputCommonProps) {
   const updateHasInputs = useUpdateHasInputs();
 
   useLayoutEffect(() => {
-  if (!hidden && !hasInputs) {
-    setHasInputs();
-  }
-}, [hidden, hasInputs, setHasInputs]);
+    if (!hidden && !hasInputs) {
+      setHasInputs();
+    }
+  }, [hidden, hasInputs, setHasInputs]);
 
   const { validated, error } = useInputValidation(props);
 
   const hasValidationError = useHasValidationError();
   const setHasValidationError = useSetHasValidationError();
-useLayoutEffect(() => {
-  if (!hidden && error && !hasValidationError) {
-    setHasValidationError();
-  }
-}, [hidden, error, hasValidationError, setHasValidationError]);
+  useLayoutEffect(() => {
+    if (!hidden && error && !hasValidationError) {
+      setHasValidationError();
+    }
+  }, [hidden, error, hasValidationError, setHasValidationError]);
+
+  const stepErrorReg = useStepErrorRegistration();
+  useLayoutEffect(() => {
+    if (!stepErrorReg || hidden) return;
+    const key = props.path ?? props.id ?? 'input';
+    stepErrorReg.registerError(key, !!error);
+    return () => stepErrorReg.registerError(key, false);
+  }, [stepErrorReg, hidden, error, props.path, props.id]);
 
   // if value changes we need to validate in the case of a checkbox which hides child inputs
   // if hidden changes we need to validate in the case of a inputs which hides child inputs
@@ -135,26 +144,35 @@ useLayoutEffect(() => {
   const [previousError, setPreviousError] = useState(error);
   const validate = useValidate();
 
- useLayoutEffect(() => {
-  if (hidden && !previousHidden) {
-    updateHasInputs();
-  }
-  validate();
-  setPreviousValue(value);
-  setPreviousHidden(hidden);
-  setPreviousError(error);
-}, [value, hidden, error, previousValue, previousHidden, previousError, updateHasInputs, validate]);
+  useLayoutEffect(() => {
+    if (hidden && !previousHidden) {
+      updateHasInputs();
+    }
+    validate();
+    setPreviousValue(value);
+    setPreviousHidden(hidden);
+    setPreviousError(error);
+  }, [
+    value,
+    hidden,
+    error,
+    previousValue,
+    previousHidden,
+    previousError,
+    updateHasInputs,
+    validate,
+  ]);
 
   const id = convertId(props);
 
   const hasValue = useHasValue();
   const setHasValue = useSetHasValue();
   // anything other than empty array counts as having a value
-useLayoutEffect(() => {
-  if (!hasValue && value && (!Array.isArray(value) || value.length > 0)) {
-    setHasValue();
-  }
-}, [hasValue, value, setHasValue]);
+  useLayoutEffect(() => {
+    if (!hasValue && value && (!Array.isArray(value) || value.length > 0)) {
+      setHasValue();
+    }
+  }, [hasValue, value, setHasValue]);
 
   let disabled = props.disabled;
   if (editMode === EditMode.Edit) {

@@ -7,6 +7,7 @@ import { ShowValidationProvider, useSetShowValidation } from './contexts/ShowVal
 import { useSetStepHasInputs } from './contexts/StepHasInputsProvider';
 import { useStepShowValidation } from './contexts/StepShowValidationProvider';
 import { useSetStepHasValidationError } from './contexts/StepValidationProvider';
+import { StepErrorRegistrationProvider } from './contexts/StepErrorRegistrationContext';
 import { useHasValidationError, ValidationProvider } from './contexts/ValidationProvider';
 import { HiddenFn, useInputHidden } from './inputs/Input';
 
@@ -25,7 +26,9 @@ export function Step(props: StepProps) {
       <HasInputsProvider key={props.id}>
         <ShowValidationProvider>
           <ValidationProvider>
-            <StepInternal {...props}>{props.children}</StepInternal>
+            <StepErrorRegistrationProvider stepId={props.id}>
+              <StepInternal {...props}>{props.children}</StepInternal>
+            </StepErrorRegistrationProvider>
           </ValidationProvider>
         </ShowValidationProvider>
       </HasInputsProvider>
