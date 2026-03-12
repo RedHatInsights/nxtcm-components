@@ -12,7 +12,8 @@
         "resolveJsonModule": true,
         "paths": {
             "@patternfly-labs/react-form-wizard": ["./packages/react-form-wizard/src"],
-            "@patternfly-labs/react-form-wizard/*": ["./packages/react-form-wizard/src/*"]
+            "@patternfly-labs/react-form-wizard/*": ["./packages/react-form-wizard/src/*"],
+            "@/*": ["./src/*"]
         },
         "lib": [
             "dom",
