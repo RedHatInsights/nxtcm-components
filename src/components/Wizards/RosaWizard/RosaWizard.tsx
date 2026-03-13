@@ -26,6 +26,7 @@ import {
 import { WizardStepType } from '@patternfly/react-core';
 import { useTranslation } from '../../../context/TranslationContext';
 import { MachinePoolsSubstep } from './Steps/BasicSetupStep/MachinePoolsSubstep/MachinePoolsSubstep';
+import { YamlEditorStep } from './Steps/YamlEditorStep';
 
 export type BasicSetupStepProps = {
   openShiftVersions: SelectDropdownType[];
@@ -90,6 +91,7 @@ export const RosaWizard = (props: RosaWizardProps) => {
       defaultData={defaultClusterData}
       setUseWizardContext={setUseWizardContext}
       onStepChange={onStepChange}
+      yaml={false}
     >
       <ExpandableStep
         id="basic-setup-step-id-expandable-section"
@@ -172,7 +174,9 @@ export const RosaWizard = (props: RosaWizardProps) => {
           </Step>,
         ]}
       />
-
+      <Step label={'YAML Editor'} id={'yaml-editor-step'}>
+        <YamlEditorStep />
+      </Step>
       <Step label={t('Review')} id={'review-step'}>
         <ReviewStepData goToStepId={getUseWizardContext} />
       </Step>
