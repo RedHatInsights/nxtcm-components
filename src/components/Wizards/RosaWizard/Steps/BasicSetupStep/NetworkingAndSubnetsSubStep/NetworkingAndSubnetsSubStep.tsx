@@ -36,6 +36,8 @@ import {
   podCidr,
 } from '../../../validators';
 import { Indented } from '@patternfly-labs/react-form-wizard/components/Indented';
+import links from '../../../externalLinks';
+import ExternalLink from '../../../common/ExternalLink';
 
 type NetworkingAndSubnetsSubStepProps = {
   vpcList: VPC[];
@@ -199,8 +201,9 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                 </Content>
 
                 <Content component={ContentVariants.p}>
-                  {t(`HERE GOES LINK: Learn more about configureing network settings (needs external link
-                        icon)`)}
+                  <ExternalLink href={links.CIDR_RANGE_DEFINITIONS_ROSA}>
+                    {t(`Learn more about configuring network settings`)}
+                  </ExternalLink>
                 </Content>
               </Alert>
             </GridItem>

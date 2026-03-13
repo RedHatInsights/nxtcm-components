@@ -27,7 +27,7 @@ export const AccountRoles = () => {
           <>
             If you would prefer to manually create the required roles and policies within your AWS
             account, then follow{' '}
-            <ExternalLink href={links.AWS_CLI_GETTING_STARTED_MANUAL} noIcon>
+            <ExternalLink href={links.AWS_CLI_GETTING_STARTED_MANUAL}>
               these instructions
             </ExternalLink>
             .

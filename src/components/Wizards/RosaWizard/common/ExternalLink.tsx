@@ -47,9 +47,12 @@ const ExternalLink = ({
       {children}
       {noTarget ? null : <span className="pf-v6-u-screen-reader"> (new window or tab)</span>}
       {!noIcon && (
-        <Icon size="md" isInline className="external-link-alt-icon">
-          <ExternalLinkAltIcon data-testid="openInNewWindowIcon" />
-        </Icon>
+        <>
+          {' '}
+          <Icon size="sm" isInline className="external-link-alt-icon">
+            <ExternalLinkAltIcon data-testid="openInNewWindowIcon" />
+          </Icon>
+        </>
       )}
     </>
   );
