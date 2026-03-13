@@ -32,12 +32,20 @@ export default defineConfig({
     ctViteConfig: {
       resolve: {
         alias: {
-          '@patternfly-labs/react-form-wizard': path.resolve(__dirname, './packages/react-form-wizard/src'),
+          '@patternfly-labs/react-form-wizard': path.resolve(
+            __dirname,
+            './packages/react-form-wizard/src'
+          ),
+          '@': path.resolve(__dirname, './src'),
+          // Playwright CT resolves component path from playwright/index.tsx; alias old .story to .ct
+          './RosaWizard.story': path.resolve(
+            __dirname,
+            './src/components/Wizards/RosaWizard/RosaWizard.ct.tsx'
+          ),
         },
       },
     },
   },
-  
 
   /* Configure projects for major browsers */
   projects: [
