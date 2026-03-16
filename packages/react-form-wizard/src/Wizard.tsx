@@ -446,6 +446,11 @@ function MyFooter(props: WizardFooterProps) {
 
   const setStepShowValidation = useSetStepShowValidation();
 
+  const lastStepId =
+    props.steps.length > 0
+      ? (props.steps[props.steps.length - 1] as ReactElement<{ id?: string }>).props?.id
+      : undefined;
+
   const onNextClick = useCallback(async () => {
     const stepID = activeStep.id?.toString() ?? '';
     setStepShowValidation(stepID, true);
@@ -457,12 +462,12 @@ function MyFooter(props: WizardFooterProps) {
   const onSkipToReviewClick = useCallback(() => {
     const stepID = activeStep.id?.toString() ?? '';
     setStepShowValidation(stepID, true);
-    if (!activeStepHasValidationError) {
-      wizContext.goToStepById('review-step');
+    if (!activeStepHasValidationError && lastStepId) {
+      wizContext.goToStepById(lastStepId);
     }
-  }, [activeStep.id, activeStepHasValidationError, setStepShowValidation, wizContext]);
+  }, [activeStep.id, activeStepHasValidationError, lastStepId, setStepShowValidation, wizContext]);
 
-  const isLastStep = activeStep.id === 'review-step';
+  const isLastStep = lastStepId !== undefined && activeStep.id === lastStepId;
   useEffect(() => {
     if (isLastStep) {
       // We are on the review step - show validation for all steps
