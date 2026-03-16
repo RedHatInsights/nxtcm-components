@@ -20,7 +20,8 @@ import type {
   MachineTypesDropdownType,
   VPC,
   Subnet,
-  Roles,
+  Role,
+  OpenShiftVersionsData,
   OIDCConfig,
 } from 'nxtcm-components';
 ```
@@ -58,14 +59,35 @@ All the dropdown and selection data the wizard needs to render its steps.
 
 ```ts
 type BasicSetupStepProps = {
-  openShiftVersions: SelectDropdownType[];
+  /** Optional. OpenShift version select uses grouped sections (latest / default / previous). */
+  versions?: {
+    data: OpenShiftVersionsData;
+    isFetching: boolean;
+    error: null | string;
+    fetch?: () => Promise<void>;
+  };
   awsInfrastructureAccounts: SelectDropdownType[];
   awsBillingAccounts: SelectDropdownType[];
   regions: SelectDropdownType[];
   vpcList: VPC[];
-  roles: Roles;
+  roles: {
+    data: Role[];
+    isFetching: boolean;
+    error: null | string;
+    fetch?: (awsAccount: string) => Promise<void>;
+  };
   oicdConfig: OIDCConfig[];
   machineTypes: MachineTypesDropdownType[];
+};
+```
+
+`OpenShiftVersionsData` is a structured object (not a flat list):
+
+```ts
+type OpenShiftVersionsData = {
+  default?: SelectDropdownType;   // when omitted, no "Default" section is shown
+  latest?: SelectDropdownType;     // when omitted, no "Latest" section is shown
+  releases: SelectDropdownType[]; // when both default/latest omitted, this group is labeled "Releases"; otherwise "Previous releases"
 };
 ```
 
@@ -112,13 +134,17 @@ The wizard filters subnets by name to separate private and public subnets. Subne
 
 ### Roles
 
+Account roles are passed as an array of `Role` entries (installer + related support/worker options per installer ARN):
+
 ```ts
-type Roles = {
-  installerRoles: SelectDropdownType[];
-  supportRoles: SelectDropdownType[];
-  workerRoles: SelectDropdownType[];
+type Role = {
+  installerRole: SelectDropdownType & { roleVersion?: string; disabled?: boolean };
+  supportRole: SelectDropdownType[];
+  workerRole: SelectDropdownType[];
 };
 ```
+
+The wizard expects `basicSetupStep.roles` with `data`, `isFetching`, `error`, and optional `fetch(awsAccount)`.
 
 ### OIDC Config
 
@@ -225,10 +251,15 @@ import type {
 function CreateClusterPage() {
   const stepsData: WizardStepsData = {
     basicSetupStep: {
-      openShiftVersions: [
-        { label: '4.15.2', value: '4.15.2' },
-        { label: '4.14.8', value: '4.14.8' },
-      ],
+      versions: {
+        data: {
+          latest: { label: 'OpenShift 4.15.2', value: '4.15.2' },
+          default: { label: 'OpenShift 4.14.8', value: '4.14.8' },
+          releases: [{ label: 'OpenShift 4.14.0', value: '4.14.0' }],
+        },
+        isFetching: false,
+        error: null,
+      },
       awsInfrastructureAccounts: [
         { label: 'prod-account (123456789)', value: '123456789' },
       ],
@@ -250,9 +281,18 @@ function CreateClusterPage() {
         },
       ],
       roles: {
-        installerRoles: [{ label: 'ManagedOpenShift-Installer-Role', value: 'arn:aws:iam::role/installer' }],
-        supportRoles: [{ label: 'ManagedOpenShift-Support-Role', value: 'arn:aws:iam::role/support' }],
-        workerRoles: [{ label: 'ManagedOpenShift-Worker-Role', value: 'arn:aws:iam::role/worker' }],
+        data: [
+          {
+            installerRole: {
+              label: 'ManagedOpenShift-Installer-Role',
+              value: 'arn:aws:iam::role/installer',
+            },
+            supportRole: [{ label: 'ManagedOpenShift-Support-Role', value: 'arn:aws:iam::role/support' }],
+            workerRole: [{ label: 'ManagedOpenShift-Worker-Role', value: 'arn:aws:iam::role/worker' }],
+          },
+        ],
+        isFetching: false,
+        error: null,
       },
       oicdConfig: [
         { label: 'oidc-abc123', value: 'abc123', issuer_url: 'https://oidc.example.com' },

@@ -43,7 +43,7 @@ const oidcConfigs: OIDCConfig[] = [
 const versionsData: OpenShiftVersionsData = {
   latest: { label: 'OpenShift 4.16.2', value: '4.16.2' },
   default: { label: 'OpenShift 4.16.0', value: '4.16.0' },
-  others: [{ label: 'OpenShift 4.15.8', value: '4.15.8' }],
+  releases: [{ label: 'OpenShift 4.15.8', value: '4.15.8' }],
 };
 
 const roles: Role[] = [

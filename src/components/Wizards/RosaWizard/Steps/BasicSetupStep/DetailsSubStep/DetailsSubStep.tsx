@@ -1,8 +1,22 @@
-import { Section, WizSelect, WizTextInput } from '@patternfly-labs/react-form-wizard';
+import {
+  Section,
+  useData,
+  useItem,
+  WizSelect,
+  WizTextInput,
+} from '@patternfly-labs/react-form-wizard';
 import { Button, Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
 import React from 'react';
+import semver from 'semver';
 import { StepDrawer } from '../../../common/StepDrawer';
-import { Resource, Role, SelectDropdownType, ValidationResource } from '../../../../types';
+import {
+  OpenShiftVersionsData,
+  Resource,
+  Role,
+  SelectDropdownType,
+  ValidationResource,
+} from '../../../../types';
+import { buildOpenShiftVersionGroups } from '../../../buildOpenShiftVersionGroups';
 import { useTranslation } from '../../../../../../context/TranslationContext';
 import { validateClusterName } from '../../../validators';
 import ExternalLink from '../../../common/ExternalLink';
@@ -10,9 +24,7 @@ import links from '../../../externalLinks';
 
 type DetailsSubStepProps = {
   clusterNameValidation: ValidationResource;
-  openShiftVersions: SelectDropdownType[];
-  versionsIsPending: boolean;
-  refreshVersionsCallback?: () => void;
+  versions: Resource<OpenShiftVersionsData, []> & { fetch: () => Promise<void> };
   roles: Resource<Role[], [awsAccount: string]> & {
     fetch: (awsAccount: string) => Promise<void>;
   };
@@ -23,18 +35,67 @@ type DetailsSubStepProps = {
 
 export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   clusterNameValidation,
-  openShiftVersions,
-  versionsIsPending,
-  refreshVersionsCallback,
+  versions,
   roles,
   awsInfrastructureAccounts,
   awsBillingAccounts,
   regions,
 }) => {
   const { t } = useTranslation();
+  const { cluster } = useItem();
+  const { update } = useData();
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const drawerRef = React.useRef<HTMLSpanElement>(null);
   const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
+
+  const selectedInstallerRoleVersion = React.useMemo(() => {
+    const role = roles.data.find((r) => r.installerRole.value === cluster?.installer_role_arn);
+    return role?.installerRole.roleVersion;
+  }, [roles.data, cluster?.installer_role_arn]);
+
+  const openShiftVersionGroups = React.useMemo(
+    () => (versions.data ? buildOpenShiftVersionGroups(versions.data) : undefined),
+    [versions.data]
+  );
+
+  const versionGroupsWithDisabled = React.useMemo(() => {
+    if (!openShiftVersionGroups) return undefined;
+    const roleVer =
+      selectedInstallerRoleVersion && semver.valid(semver.coerce(selectedInstallerRoleVersion));
+    if (!roleVer) return openShiftVersionGroups;
+    return openShiftVersionGroups.map((group) => ({
+      ...group,
+      options: group.options.map((opt) => {
+        const coerced = typeof opt.value === 'string' ? semver.coerce(opt.value) : null;
+        const versionVal = coerced ? semver.valid(coerced) : null;
+        const disabled = versionVal != null && roleVer != null && semver.gt(versionVal, roleVer);
+        return disabled
+          ? {
+              ...opt,
+              disabled: true,
+              description: t('Your current account roles do not support the version of OpenShift.'),
+            }
+          : opt;
+      }),
+    }));
+  }, [openShiftVersionGroups, selectedInstallerRoleVersion, t]);
+
+  const selectedVersionIsDisabled = React.useMemo(() => {
+    if (!cluster?.cluster_version || !versionGroupsWithDisabled) return false;
+    const versionStr = String(cluster.cluster_version);
+    for (const group of versionGroupsWithDisabled) {
+      const opt = group.options.find((o) => String(o.value) === versionStr);
+      if (opt && (opt as SelectDropdownType & { disabled?: boolean }).disabled) return true;
+    }
+    return false;
+  }, [cluster?.cluster_version, versionGroupsWithDisabled]);
+
+  React.useEffect(() => {
+    if (selectedVersionIsDisabled && cluster) {
+      cluster.cluster_version = undefined;
+      update();
+    }
+  }, [selectedVersionIsDisabled, cluster, update]);
 
   return (
     <Section label={t('Details')}>
@@ -72,9 +133,13 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   path="cluster.cluster_version"
                   label={t('OpenShift version')}
                   placeholder={t('Select an OpenShift version')}
-                  options={openShiftVersions}
-                  disabled={versionsIsPending}
-                  refreshCallback={refreshVersionsCallback}
+                  options={openShiftVersionGroups ? undefined : []}
+                  optionGroups={
+                    openShiftVersionGroups
+                      ? (versionGroupsWithDisabled ?? openShiftVersionGroups)
+                      : undefined
+                  }
+                  isPending={versions.isFetching}
                   required
                 />
               </GridItem>
@@ -95,7 +160,6 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   options={awsInfrastructureAccounts.data}
                   disabled={awsInfrastructureAccounts.isFetching}
                   onValueChange={(_newAccountId, item) => {
-                    // reset downstream role arns when account changes
                     item.cluster.installer_role_arn = undefined;
                     item.cluster.worker_role_arn = undefined;
                     item.cluster.support_role_arn = undefined;
