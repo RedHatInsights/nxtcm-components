@@ -223,4 +223,32 @@ test.describe('RosaWizard', () => {
       await expect(nextButton).toBeDisabled();
     });
   });
+
+  // This test will fail once the left navigation forces a user to go step by step
+  test('Skip to review step is disabled when there are validation errors', async ({ mount }) => {
+    const component = await mount(<RosaWizardMount />);
+
+    // Click on "Additional setup" in the left navigation to expand it
+    await component.getByText('Additional setup').click();
+    // Wait for Encryption (optional) step to be visible (it fades in after expand)
+    const encryptionStepNav = component.getByRole('button', { name: 'Encryption (optional)' });
+
+    await expect(encryptionStepNav).toBeVisible();
+    await encryptionStepNav.click();
+
+    const skipToReviewButtonText = 'Skip to review';
+
+    // Checking this box will cause a required Key ARN field to appear and be empty
+    await component.getByRole('checkbox', { name: /Enable additional etcd encryption/i }).check();
+    await expect(component.getByRole('button', { name: skipToReviewButtonText })).toBeEnabled();
+
+    await component.getByRole('button', { name: skipToReviewButtonText }).click();
+
+    // Ensure "Please fix validation errors" is shown
+    await expect(component.getByText('Please fix validation errors')).toBeVisible();
+
+    // Ensure both Next and Skip to review buttons are disabled
+    await expect(component.getByRole('button', { name: 'Next' })).toBeDisabled();
+    await expect(component.getByRole('button', { name: skipToReviewButtonText })).toBeDisabled();
+  });
 });
