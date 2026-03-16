@@ -710,6 +710,7 @@ function SubmitErrorWrapper(props: React.ComponentProps<typeof RosaWizard>) {
       {...props}
       onSubmitError={submitError}
       onSubmit={async (data: any) => {
+        console.log('Wizard submitted with data:', data);
         await new Promise((resolve) => setTimeout(resolve, 2000));
         setSubmitError(
           'The data provided is not valid .... this is the error message returned from the API.'

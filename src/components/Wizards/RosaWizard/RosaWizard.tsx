@@ -74,12 +74,12 @@ export const RosaWizard = (props: RosaWizardProps) => {
 
   const onBackToReviewClick = React.useCallback(async () => {
     setIsNavigatingToReview(true);
-    try {
-      await onBackToReviewStep?.();
+    if (onBackToReviewStep) {
+      await onBackToReviewStep();
       setResumeAtStepId('review-step');
-    } finally {
-      setIsNavigatingToReview(false);
     }
+
+    setIsNavigatingToReview(false);
   }, [onBackToReviewStep]);
 
   const defaultClusterData = {

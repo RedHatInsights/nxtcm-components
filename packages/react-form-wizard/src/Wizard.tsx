@@ -369,14 +369,9 @@ function MyFooter(props: WizardFooterProps) {
     steps,
   } = props;
 
-  const {
-    activeStep,
-    goToNextStep: onNext,
-    goToPrevStep: onBack,
-    close: onClose,
-  } = useWizardContext();
-
   const wizContext = useWizardContext();
+
+  const { activeStep, goToNextStep: onNext, goToPrevStep: onBack, close: onClose } = wizContext;
 
   useEffect(() => {
     props.setUseWizardContext?.(wizContext);
