@@ -165,7 +165,7 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
               <WizCheckbox
                 id="cluster-wide-proxy"
                 path="cluster.configure_proxy"
-                label={t('Configure a cluter-wide proxy')}
+                label={t('Configure a cluster-wide proxy')}
                 helperText={t(
                   'Enable an HTTP or HTTPS proxy to deny direct access to the internet from your cluster.'
                 )}
