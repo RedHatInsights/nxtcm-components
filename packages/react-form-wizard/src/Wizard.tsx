@@ -31,6 +31,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { EditMode } from '.';
@@ -373,17 +374,27 @@ function MyFooter(props: WizardFooterProps) {
 
   const { activeStep, goToNextStep: onNext, goToPrevStep: onBack, close: onClose } = wizContext;
 
+  const hasResumedRef = useRef(false);
+  const prevResumeAtStepIdRef = useRef(resumeAtStepId);
+
   useEffect(() => {
     props.setUseWizardContext?.(wizContext);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.setUseWizardContext]);
 
   useEffect(() => {
-    if (resumeAtStepId) {
+    if (prevResumeAtStepIdRef.current !== resumeAtStepId) {
+      hasResumedRef.current = false;
+      prevResumeAtStepIdRef.current = resumeAtStepId;
+    }
+    if (resumeAtStepId && !hasResumedRef.current) {
       wizContext.goToStepById(resumeAtStepId);
       onResumedToStep?.();
+      hasResumedRef.current = true;
     }
-  }, [onResumedToStep, resumeAtStepId, wizContext]);
+    // Intentionally omit wizContext so this effect runs only when resumeAtStepId or onResumedToStep changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onResumedToStep, resumeAtStepId]);
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
