@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useItem, useData } from '@patternfly-labs/react-form-wizard';
 import { Alert, AlertVariant, Stack, StackItem, Title } from '@patternfly/react-core';
 import Editor from '@monaco-editor/react';
-import { parseYaml, objectToYaml } from '../../../YamlCodeEditor/yamlUtils';
+import { parseYaml, objectToYaml } from './YamlCodeEditor/yamlUtils';
 
 export const YamlEditorStep = () => {
   const data = useItem();

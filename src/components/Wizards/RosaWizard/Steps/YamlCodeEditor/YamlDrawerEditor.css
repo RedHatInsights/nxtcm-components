@@ -1,0 +1,43 @@
+.yaml-drawer-editor {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.yaml-drawer-editor__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--pf-t--global--border--color--default);
+  background-color: var(--pf-t--global--background--color--secondary--default);
+}
+
+.yaml-drawer-editor__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.yaml-drawer-editor__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.yaml-drawer-editor__body {
+  flex: 1;
+  overflow: hidden;
+}
+
+.yaml-drawer-editor__error {
+  padding: 8px 12px;
+}
+
+.no-drawer-transition .pf-v6-c-drawer__panel {
+  transition: none;
+}
