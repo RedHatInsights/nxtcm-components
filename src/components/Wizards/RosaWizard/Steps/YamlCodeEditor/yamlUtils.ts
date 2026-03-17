@@ -105,3 +105,63 @@ export function isValidYaml(yamlString: string): boolean {
     return false;
   }
 }
+
+export function parseMultiDocYaml(yamlStr: string): Record<string, unknown> | null {
+  try {
+    const docs = yamlStr.split(/^---$/m).filter((doc) => doc.trim());
+    if (docs.length === 0) return null;
+
+    const rosaCP = docs.find((doc) => doc.includes('kind: ROSAControlPlane'));
+    if (!rosaCP) return null;
+
+    const parsed = yaml.load(rosaCP) as Record<string, unknown>;
+    if (!parsed || typeof parsed !== 'object') return null;
+
+    const spec = parsed.spec as Record<string, unknown> | undefined;
+    const metadata = parsed.metadata as Record<string, unknown> | undefined;
+    const network = spec?.network as Record<string, unknown> | undefined;
+    const machinePoolSpec = spec?.defaultMachinePoolSpec as Record<string, unknown> | undefined;
+    const autoscaling = machinePoolSpec?.autoscaling as Record<string, unknown> | undefined;
+
+    const cluster: Record<string, unknown> = {};
+
+    if (metadata?.name) cluster.name = metadata.name;
+    if (spec?.version) cluster.cluster_version = spec.version;
+    if (spec?.region) cluster.region = spec.region;
+    if (spec?.billingAccount) cluster.billing_account_id = spec.billingAccount;
+
+    const endpointAccess = spec?.endpointAccess as string | undefined;
+    cluster.cluster_privacy = endpointAccess === 'Private' ? 'internal' : 'external';
+
+    if (spec?.installerRoleARN) cluster.installer_role_arn = spec.installerRoleARN;
+    if (spec?.supportRoleARN) cluster.support_role_arn = spec.supportRoleARN;
+    if (spec?.workerRoleARN) cluster.worker_role_arn = spec.workerRoleARN;
+    if (spec?.oidcID) cluster.byo_oidc_config_id = spec.oidcID;
+
+    if (network) {
+      if (network.machineCIDR) cluster.network_machine_cidr = network.machineCIDR;
+      if (network.serviceCIDR) cluster.network_service_cidr = network.serviceCIDR;
+      if (network.podCIDR) cluster.network_pod_cidr = network.podCIDR;
+      if (network.hostPrefix) cluster.network_host_prefix = `/${String(network.hostPrefix)}`;
+    }
+
+    if (machinePoolSpec) {
+      if (machinePoolSpec.instanceType) cluster.machine_type = machinePoolSpec.instanceType;
+      if (machinePoolSpec.volumeSize) cluster.compute_root_volume = machinePoolSpec.volumeSize;
+      if (autoscaling) {
+        cluster.autoscaling = true;
+        cluster.nodes_compute_min = autoscaling.minReplicas;
+        cluster.nodes_compute_max = autoscaling.maxReplicas;
+      }
+    }
+
+    if (spec?.etcdEncryptionKMSARN) {
+      cluster.etcd_encryption = true;
+      cluster.etcd_key_arn = spec.etcdEncryptionKMSARN;
+    }
+
+    return { cluster };
+  } catch {
+    return null;
+  }
+}
