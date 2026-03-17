@@ -44,7 +44,7 @@ test.describe('NetworkingAndSubnetsSubStep', () => {
     await toggle.click();
 
     await expect(
-      component.getByRole('checkbox', { name: /Configure a cluter-wide proxy/ })
+      component.getByRole('checkbox', { name: /Configure a cluster-wide proxy/ })
     ).toBeVisible();
     await expect(component.getByRole('checkbox', { name: /Use default values/ })).toBeVisible();
   });
@@ -58,7 +58,7 @@ test.describe('NetworkingAndSubnetsSubStep', () => {
     await toggle.click();
 
     const proxyCheckbox = component.getByRole('checkbox', {
-      name: /Configure a cluter-wide proxy/,
+      name: /Configure a cluster-wide proxy/,
     });
     await expect(proxyCheckbox).toBeVisible();
     await expect(proxyCheckbox).toBeEnabled();
