@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import React from 'react';
 import { RosaWizard } from './RosaWizard';
 
 // Mock data for the wizard
@@ -694,6 +695,60 @@ export const ProductionSetup: Story = {
         onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
         refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
         refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
+      },
+    },
+  },
+};
+
+/**
+ * Default story that shows an error on submit.
+ */
+function SubmitErrorWrapper(props: React.ComponentProps<typeof RosaWizard>) {
+  const [submitError, setSubmitError] = React.useState<string | boolean>(false);
+  return (
+    <RosaWizard
+      {...props}
+      onSubmitError={submitError}
+      onSubmit={async (data: any) => {
+        console.log('Wizard submitted with data:', data);
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        setSubmitError(
+          'The data provided is not valid .... this is the error message returned from the API.'
+        );
+        if (props.onSubmit) {
+          return props.onSubmit(data);
+        }
+      }}
+      onCancel={() => {
+        setSubmitError(false);
+        props.onCancel();
+      }}
+      onBackToReviewStep={() => setSubmitError(false)}
+    />
+  );
+}
+
+export const SubmitError: Story = {
+  render: (args) => <SubmitErrorWrapper {...args} />,
+  args: {
+    title: 'Create ROSA Cluster',
+    onCancel: () => {
+      console.log('Wizard cancelled');
+      alert('Wizard cancelled');
+    },
+    wizardsStepsData: {
+      basicSetupStep: {
+        openShiftVersions: mockOpenShiftVersions,
+        awsInfrastructureAccounts: mockAwsInfrastructureAccounts,
+        awsBillingAccounts: mockAwsBillingAccounts,
+        regions: mockRegions,
+        roles: mockRoles,
+        oicdConfig: mockOicdConfig,
+        machineTypes: mockMachineTypes,
+        vpcList: mockVPCs,
+      },
+      callbackFunctions: {
+        onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
       },
     },
   },
