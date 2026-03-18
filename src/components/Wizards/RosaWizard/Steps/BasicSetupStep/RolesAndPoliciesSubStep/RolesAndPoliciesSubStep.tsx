@@ -16,31 +16,37 @@ import {
 import React from 'react';
 import PopoverHintWithTitle from '../../../common/PopoverHitWithTitle';
 import { OIDCConfigHint } from '../../../common/OIDCConfigHint';
-import { OIDCConfig, SelectDropdownType } from '../../../../types';
+import { OIDCConfig, Resource, Role } from '../../../../types';
 import { useTranslation } from '../../../../../../context/TranslationContext';
 import { validateCustomOperatorRolesPrefix } from '../../../validators';
 import { createOperatorRolesPrefix } from '../../../helpers';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 
-type RolesAndPoliciesSubStep = {
-  installerRoles: SelectDropdownType[];
-  supportRoles: SelectDropdownType[];
-  workerRoles: SelectDropdownType[];
-  oicdConfig: OIDCConfig[];
+type RolesAndPoliciesSubStepProps = {
+  roles: Resource<Role[], [awsAccount: string]> & {
+    fetch: (awsAccount: string) => Promise<void>;
+  };
+  oidcConfig: Resource<OIDCConfig[]>;
 };
 
-export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSubStep> = ({
-  installerRoles,
-  supportRoles,
-  workerRoles,
-  oicdConfig,
+export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSubStepProps> = ({
+  roles,
+  oidcConfig,
 }) => {
+  const installerRoles = roles.data.map((roleSet) => roleSet.installerRole);
   const { t } = useTranslation();
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
   const { cluster } = useItem();
   const { update } = useData();
+  const selectedRole = React.useMemo(
+    () => roles.data.find((roleSet) => roleSet.installerRole.value === cluster?.installer_role_arn),
+    [roles.data, cluster?.installer_role_arn]
+  );
+
+  const supportRoles = selectedRole?.supportRole ?? [];
+  const workerRoles = selectedRole?.workerRole ?? [];
 
   React.useEffect(() => {
     if (cluster?.name && !cluster.custom_operator_roles_prefix) {
@@ -60,12 +66,19 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
               isFill
               path="cluster.installer_role_arn"
               label={t('Installer role')}
-              onValueChange={(installerRoleArn) => {
-                if (installerRoleArn && supportRoles.length > 0 && workerRoles.length > 0) {
-                  cluster.support_role_arn = supportRoles[0].value;
-                  cluster.worker_role_arn = workerRoles[0].value;
-                  update();
+              disabled={roles.isFetching}
+              onValueChange={(installerRoleArn, _item) => {
+                if (installerRoleArn) {
+                  const selected = roles.data.find(
+                    (roleSet) => roleSet.installerRole.value === installerRoleArn
+                  );
+                  cluster.support_role_arn = selected?.supportRole?.[0]?.value;
+                  cluster.worker_role_arn = selected?.workerRole?.[0]?.value;
+                } else {
+                  cluster.support_role_arn = undefined;
+                  cluster.worker_role_arn = undefined;
                 }
+                update();
               }}
               placeholder={t('Select an Installer role')}
               labelHelp={
@@ -92,11 +105,12 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                 isFill
                 path="cluster.support_role_arn"
                 label={t('Support role')}
-                placeholder={t('Select an AWS infrastructure account')}
+                placeholder={t('Select a support role')}
                 labelHelp={t(
                   'An IAM role used by the Red Hat Site Reliability Engineering (SRE) support team. The role is used with the corresponding policy resource to provide the Red Hat SRE support team with the permissions required to support ROSA clusters.'
                 )}
                 options={supportRoles}
+                disabled={roles.isFetching}
                 required
               />
             </GridItem>
@@ -105,11 +119,12 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                 isFill
                 path="cluster.worker_role_arn"
                 label={t('Worker role')}
-                placeholder={t('Select an AWS infrastructure account')}
+                placeholder={t('Select a worker role')}
                 labelHelp={t(
                   'An IAM role used by the ROSA compute instances. The role is used with the corresponding policy resource to provide the compute instances with the permissions required to manage their components.'
                 )}
                 options={workerRoles}
+                disabled={roles.isFetching}
                 required
               />
             </GridItem>
@@ -130,13 +145,12 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                   labelHelp={t(
                     'The OIDC configuration ID created by running the command: rosa create oidc-config'
                   )}
-                  options={oicdConfig.map((config) => {
-                    return {
-                      label: config.label,
-                      value: config.value,
-                      description: config.issuer_url,
-                    };
-                  })}
+                  options={oidcConfig.data.map((config) => ({
+                    label: config.label,
+                    value: config.value,
+                    description: config.issuer_url,
+                  }))}
+                  disabled={oidcConfig.isFetching}
                 />
               </StackItem>
               <StackItem>

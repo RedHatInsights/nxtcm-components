@@ -9,7 +9,7 @@ import {
   WizTextInput,
 } from '@patternfly-labs/react-form-wizard';
 import { LabelHelp } from '@patternfly-labs/react-form-wizard/components/LabelHelp';
-import { RosaWizardFormData, Subnet, VPC } from '../../../../types';
+import { Resource, RosaWizardFormData, Subnet, VPC } from '../../../../types';
 import { useTranslation } from '../../../../../../context/TranslationContext';
 import { constructSelectedSubnets, subnetsFilter } from '../../../helpers';
 import {
@@ -40,8 +40,7 @@ import links from '../../../externalLinks';
 import ExternalLink from '../../../common/ExternalLink';
 
 type NetworkingAndSubnetsSubStepProps = {
-  vpcList: VPC[];
-  machineTypes?: unknown[];
+  vpcList: Resource<VPC[]>;
   setIsClusterWideProxySelected: (value: boolean) => void;
 };
 
@@ -52,7 +51,7 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
   const { update } = useData();
   const vpcRef = cluster?.selected_vpc;
   const selectedVPC =
-    typeof vpcRef === 'string' ? props.vpcList.find((vpc: VPC) => vpc.id === vpcRef) : vpcRef;
+    typeof vpcRef === 'string' ? props.vpcList.data.find((vpc: VPC) => vpc.id === vpcRef) : vpcRef;
 
   const { publicSubnets } = subnetsFilter(selectedVPC);
 

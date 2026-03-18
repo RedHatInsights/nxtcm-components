@@ -2,30 +2,34 @@ import { Section, WizSelect, WizTextInput } from '@patternfly-labs/react-form-wi
 import { Button, Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
 import React from 'react';
 import { StepDrawer } from '../../../common/StepDrawer';
-import { SelectDropdownType } from '../../../../types';
+import { Resource, Role, SelectDropdownType, ValidationResource } from '../../../../types';
 import { useTranslation } from '../../../../../../context/TranslationContext';
 import { validateClusterName } from '../../../validators';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 
 type DetailsSubStepProps = {
+  clusterNameValidation: ValidationResource;
   openShiftVersions: SelectDropdownType[];
-  awsInfrastructureAccounts: SelectDropdownType[];
-  awsBillingAccounts: SelectDropdownType[];
-  regions: SelectDropdownType[];
-  awsAccountDataCallback?: (value: unknown) => void;
-  refreshAwsAccountDataCallback?: () => void;
-  refreshAwsBillingAccountCallback?: () => void;
+  versionsIsPending: boolean;
+  refreshVersionsCallback?: () => void;
+  roles: Resource<Role[], [awsAccount: string]> & {
+    fetch: (awsAccount: string) => Promise<void>;
+  };
+  awsInfrastructureAccounts: Resource<SelectDropdownType[]>;
+  awsBillingAccounts: Resource<SelectDropdownType[]>;
+  regions: Resource<SelectDropdownType[]>;
 };
 
 export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
+  clusterNameValidation,
   openShiftVersions,
+  versionsIsPending,
+  refreshVersionsCallback,
+  roles,
   awsInfrastructureAccounts,
   awsBillingAccounts,
   regions,
-  awsAccountDataCallback,
-  refreshAwsAccountDataCallback,
-  refreshAwsBillingAccountCallback,
 }) => {
   const { t } = useTranslation();
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
@@ -44,7 +48,9 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
             <Grid>
               <GridItem span={4}>
                 <WizTextInput
-                  validation={validateClusterName}
+                  validation={(name: string, item: unknown) =>
+                    validateClusterName(name, item) || clusterNameValidation.error || undefined
+                  }
                   path="cluster.name"
                   label={t('Cluster name')}
                   validateOnBlur
@@ -67,6 +73,8 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   label={t('OpenShift version')}
                   placeholder={t('Select an OpenShift version')}
                   options={openShiftVersions}
+                  disabled={versionsIsPending}
+                  refreshCallback={refreshVersionsCallback}
                   required
                 />
               </GridItem>
@@ -84,15 +92,24 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   labelHelp={t(
                     "Your cluster's cloud resources will be created in the associated AWS infrastructure account. To continue, you must associate at least 1 account."
                   )}
-                  options={awsInfrastructureAccounts}
-                  callbackFunction={awsAccountDataCallback}
-                  onValueChange={(_value, item) => {
+                  options={awsInfrastructureAccounts.data}
+                  disabled={awsInfrastructureAccounts.isFetching}
+                  onValueChange={(_newAccountId, item) => {
+                    // reset downstream role arns when account changes
                     item.cluster.installer_role_arn = undefined;
                     item.cluster.worker_role_arn = undefined;
                     item.cluster.support_role_arn = undefined;
+
+                    if (_newAccountId) {
+                      void roles.fetch(_newAccountId as string);
+                    }
                   }}
                   required
-                  refreshCallback={refreshAwsAccountDataCallback}
+                  refreshCallback={
+                    awsInfrastructureAccounts.fetch
+                      ? () => void awsInfrastructureAccounts.fetch?.()
+                      : undefined
+                  }
                 />
               </GridItem>
             </Grid>
@@ -118,9 +135,12 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   labelHelp={t(
                     'The AWS billing account is often the same as your Associated AWS infrastructure account, but does not have to be.'
                   )}
-                  options={awsBillingAccounts}
+                  options={awsBillingAccounts.data}
+                  disabled={awsBillingAccounts.isFetching}
                   required
-                  refreshCallback={refreshAwsBillingAccountCallback}
+                  refreshCallback={
+                    awsBillingAccounts.fetch ? () => void awsBillingAccounts.fetch?.() : undefined
+                  }
                 />
               </GridItem>
             </Grid>
@@ -143,7 +163,8 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   labelHelp={t(
                     'The AWS Region where your compute nodes and control plane will be located. (should be link: Learn more abut AWS Regions.)'
                   )}
-                  options={regions}
+                  options={regions.data}
+                  disabled={regions.isFetching}
                   required
                 />
               </GridItem>

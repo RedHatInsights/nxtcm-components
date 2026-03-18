@@ -9,7 +9,7 @@ import {
 } from '@patternfly-labs/react-form-wizard/contexts/DisplayModeContext';
 import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
 import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
-import { SelectDropdownType, OIDCConfig } from '../../../../types';
+import { OIDCConfig, Resource, Role, SelectDropdownType } from '../../../../types';
 
 export const mockInstallerRoles: SelectDropdownType[] = [
   {
@@ -56,19 +56,39 @@ export const createMockClusterData = (overrides: Record<string, unknown> = {}) =
   },
 });
 
+const mockResource = <TData,>(data: TData): Resource<TData> => ({
+  data,
+  error: null,
+  isFetching: false,
+  fetch: async () => {},
+});
+
+const mockFetchResource = <TData, TArgs extends unknown[] = []>(
+  data: TData
+): Resource<TData, TArgs> & { fetch: (...args: TArgs) => Promise<void> } => ({
+  data,
+  error: null,
+  isFetching: false,
+  fetch: async (..._args: TArgs) => {},
+});
+
 export interface RolesAndPoliciesSubStepStoryProps {
-  installerRoles?: SelectDropdownType[];
-  supportRoles?: SelectDropdownType[];
-  workerRoles?: SelectDropdownType[];
-  oicdConfig?: OIDCConfig[];
+  roles?: Resource<Role[], [awsAccount: string]> & {
+    fetch: (awsAccount: string) => Promise<void>;
+  };
+  oidcConfig?: Resource<OIDCConfig[]>;
   clusterOverrides?: Record<string, unknown>;
 }
 
 export const RolesAndPoliciesSubStepStory: React.FC<RolesAndPoliciesSubStepStoryProps> = ({
-  installerRoles = mockInstallerRoles,
-  supportRoles = mockSupportRoles,
-  workerRoles = mockWorkerRoles,
-  oicdConfig = mockOIDCConfig,
+  roles = mockFetchResource<Role[], [awsAccount: string]>([
+    {
+      installerRole: mockInstallerRoles[0],
+      supportRole: mockSupportRoles,
+      workerRole: mockWorkerRoles,
+    },
+  ]),
+  oidcConfig = mockResource(mockOIDCConfig),
   clusterOverrides = {},
 }) => {
   const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
@@ -84,12 +104,7 @@ export const RolesAndPoliciesSubStepStory: React.FC<RolesAndPoliciesSubStepStory
           <ItemContext.Provider value={data}>
             <ShowValidationProvider>
               <ValidationProvider>
-                <RolesAndPoliciesSubStep
-                  installerRoles={installerRoles}
-                  supportRoles={supportRoles}
-                  workerRoles={workerRoles}
-                  oicdConfig={oicdConfig}
-                />
+                <RolesAndPoliciesSubStep roles={roles} oidcConfig={oidcConfig} />
               </ValidationProvider>
             </ShowValidationProvider>
           </ItemContext.Provider>

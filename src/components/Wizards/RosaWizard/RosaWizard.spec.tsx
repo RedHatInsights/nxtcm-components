@@ -5,56 +5,90 @@ import { RosaWizardErrorThenBackToReviewMount } from './RosaWizard.spec-helpers'
 import { TranslationProvider } from '../../../context/TranslationContext';
 import { checkAccessibility } from '../../../test-helpers';
 import { RosaWizardMount } from './RosaWizard.ct';
+import type { BasicSetupStepProps } from './RosaWizard';
+import { OpenShiftVersionsData, Resource, Role, ValidationResource } from '../types';
 
-const minimalWizardsStepsData = {
+const mockResource = <TData,>(data: TData): Resource<TData> => ({
+  data,
+  error: null,
+  isFetching: false,
+  fetch: async () => {},
+});
+
+const mockFetchResource = <TData, TArgs extends unknown[] = []>(
+  data: TData
+): Resource<TData, TArgs> & { fetch: (...args: TArgs) => Promise<void> } => ({
+  data,
+  error: null,
+  isFetching: false,
+  fetch: async (..._args: TArgs) => {},
+});
+
+const mockValidationResource = (): ValidationResource => ({
+  error: null,
+  isFetching: false,
+});
+
+const versionsData: OpenShiftVersionsData = {
+  latest: { label: 'OpenShift 4.12.1', value: '4.12.1' },
+  default: { label: 'OpenShift 4.12.0', value: '4.12.0' },
+  others: [{ label: 'OpenShift 4.11.5', value: '4.11.5' }],
+};
+
+const roles: Role[] = [
+  {
+    installerRole: {
+      label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
+      value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
+      roleVersion: '4.12.0',
+    },
+    supportRole: [
+      {
+        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
+        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
+      },
+    ],
+    workerRole: [
+      {
+        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
+        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
+      },
+    ],
+  },
+];
+
+const minimalWizardsStepsData: { basicSetupStep: BasicSetupStepProps } = {
   basicSetupStep: {
-    openShiftVersions: [{ label: 'OpenShift 4.12.0', value: '4.12.0' }],
-    awsInfrastructureAccounts: [
+    clusterNameValidation: mockValidationResource(),
+    userRole: mockValidationResource(),
+    versions: mockFetchResource(versionsData),
+    awsInfrastructureAccounts: mockResource([
       { label: 'AWS Account - Production (123456789012)', value: 'aws-prod-123456789012' },
-    ],
-    awsBillingAccounts: [
+    ]),
+    awsBillingAccounts: mockResource([
       { label: 'Billing Account - Main (123456789012)', value: 'billing-main-123456789012' },
-    ],
-    regions: [
+    ]),
+    regions: mockResource([
       { label: 'US East 1, US, Virginia', value: 'us-east-1' },
       { label: 'US West 1, US, Oregon', value: 'us-west-1' },
-    ],
-    roles: {
-      installerRoles: [
-        {
-          label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
-          value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
-        },
-      ],
-      supportRoles: [
-        {
-          label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
-          value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
-        },
-      ],
-      workerRoles: [
-        {
-          label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
-          value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
-        },
-      ],
-    },
-    oicdConfig: [
+    ]),
+    roles: mockFetchResource<Role[], [awsAccount: string]>(roles),
+    oidcConfig: mockResource([
       {
         label: '2kl4t2st8eg2u5jppv8kjeemkvimfm99',
         value: '2kl4t2st8eg2u5jppv8kjeemkvimfm99',
         issuer_url: 'https://oidc.os1.devshift.org/2kl4t2st8eg2u5jppv8kjeemkvimfm99',
       },
-    ],
-    machineTypes: [
+    ]),
+    machineTypes: mockResource([
       {
         id: 'm5a.xlarge',
         label: 'm5a.xlarge',
         description: '4 vCPU 16 GiB RAM',
         value: 'm5a.xlarge',
       },
-    ],
-    vpcList: [
+    ]),
+    vpcList: mockResource([
       {
         name: 'test-vpc',
         id: 'vpc-123',
@@ -67,10 +101,9 @@ const minimalWizardsStepsData = {
           },
         ],
       },
-    ],
-  },
-  callbackFunctions: {
-    onAWSAccountChange: () => {},
+    ]),
+    subnets: mockResource([]),
+    securityGroups: mockResource([]),
   },
 };
 

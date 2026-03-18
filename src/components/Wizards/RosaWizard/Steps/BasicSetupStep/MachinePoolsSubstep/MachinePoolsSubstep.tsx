@@ -17,7 +17,13 @@ import {
 } from '@patternfly/react-core';
 import { useTranslation } from '../../../../../../context/TranslationContext';
 import { subnetsFilter } from '../../../helpers';
-import { MachineTypesDropdownType, RosaWizardFormData, Subnet, VPC } from '../../../../types';
+import {
+  MachineTypesDropdownType,
+  Resource,
+  RosaWizardFormData,
+  Subnet,
+  VPC,
+} from '../../../../types';
 import { AutoscalingField } from './Autoscaling/AutoscalingField';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
@@ -26,8 +32,8 @@ import { validateRootDiskSize } from '../../../validators';
 import { SecurityGroupsSection } from './SecurityGroupSection/SecurityGroupSection';
 
 type MachinePoolsSubstepProps = {
-  vpcList: VPC[];
-  machineTypes: MachineTypesDropdownType[];
+  vpcList: Resource<VPC[]>;
+  machineTypes: Resource<MachineTypesDropdownType[]>;
 };
 
 export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
@@ -36,7 +42,7 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
 
   const vpcRef = cluster?.selected_vpc;
   const selectedVPC =
-    typeof vpcRef === 'string' ? props.vpcList.find((vpc: VPC) => vpc.id === vpcRef) : vpcRef;
+    typeof vpcRef === 'string' ? props.vpcList.data.find((vpc: VPC) => vpc.id === vpcRef) : vpcRef;
 
   const { privateSubnets } = subnetsFilter(selectedVPC);
 
@@ -78,10 +84,11 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
                   <ExternalLink href={links.ROSA_SHARED_VPC}>Learn more about VPCs.</ExternalLink>
                 </>
               }
-              options={props.vpcList.map((vpc: VPC) => ({
+              options={props.vpcList.data.map((vpc: VPC) => ({
                 label: vpc.name,
                 value: vpc.id,
               }))}
+              disabled={props.vpcList.isFetching}
             />
           </GridItem>
         </Grid>
@@ -125,7 +132,8 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
                   <ExternalLink href={links.ROSA_INSTANCE_TYPES}>Learn more.</ExternalLink>
                 </>
               }
-              options={props.machineTypes}
+              options={props.machineTypes.data}
+              disabled={props.machineTypes.isFetching}
             />
           </GridItem>
         </Grid>
@@ -183,7 +191,10 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
           />
         </Indented>
       </ExpandableSection>
-      <SecurityGroupsSection selectedVPC={selectedVPC} refreshVPCs={() => {}} />
+      <SecurityGroupsSection
+        selectedVPC={selectedVPC}
+        refreshVPCs={props.vpcList.fetch ? () => void props.vpcList.fetch?.() : undefined}
+      />
     </>
   );
 };

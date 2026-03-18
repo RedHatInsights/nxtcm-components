@@ -9,7 +9,14 @@ import {
 } from '@patternfly-labs/react-form-wizard/contexts/DisplayModeContext';
 import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
 import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
-import { VPC, Subnet, SecurityGroup, MachineTypesDropdownType } from '../../../../types';
+import { VPC, Subnet, SecurityGroup, MachineTypesDropdownType, Resource } from '../../../../types';
+
+const mockResource = <TData,>(data: TData): Resource<TData> => ({
+  data,
+  error: null,
+  isFetching: false,
+  fetch: async () => {},
+});
 
 // Mock security groups
 export const mockSecurityGroups: SecurityGroup[] = [
@@ -101,15 +108,15 @@ export const createMockClusterData = (overrides: Record<string, unknown> = {}) =
 
 // Props interface for the wrapped component
 export interface MachinePoolsSubstepStoryProps {
-  vpcList?: VPC[];
-  machineTypes?: MachineTypesDropdownType[];
+  vpcList?: Resource<VPC[]>;
+  machineTypes?: Resource<MachineTypesDropdownType[]>;
   clusterOverrides?: Record<string, unknown>;
 }
 
 // Wrapped component that can be mounted in tests
 export const MachinePoolsSubstepStory: React.FC<MachinePoolsSubstepStoryProps> = ({
-  vpcList = mockVpcList,
-  machineTypes = mockMachineTypes,
+  vpcList = mockResource(mockVpcList),
+  machineTypes = mockResource(mockMachineTypes),
   clusterOverrides = {},
 }) => {
   const [data, setData] = useState(() => createMockClusterData(clusterOverrides));

@@ -1,6 +1,14 @@
 import { test, expect } from '@playwright/experimental-ct-react';
 import { checkAccessibility } from '../../../../../../test-helpers';
 import { MachinePoolsSubstepStory } from './MachinePoolsSubstep.story';
+import type { Resource, MachineTypesDropdownType, VPC } from '../../../../types';
+
+const mockResource = <TData,>(data: TData): Resource<TData> => ({
+  data,
+  error: null,
+  isFetching: false,
+  fetch: async () => {},
+});
 
 test.describe('MachinePoolsSubstep', () => {
   test('should pass accessibility tests', async ({ mount }) => {
@@ -52,13 +60,15 @@ test.describe('MachinePoolsSubstep', () => {
   });
 
   test('should render with empty VPC list', async ({ mount }) => {
-    const component = await mount(<MachinePoolsSubstepStory vpcList={[]} />);
+    const component = await mount(<MachinePoolsSubstepStory vpcList={mockResource<VPC[]>([])} />);
 
     await expect(component.getByText('Machine pools', { exact: true })).toBeVisible();
   });
 
   test('should render with empty machine types list', async ({ mount }) => {
-    const component = await mount(<MachinePoolsSubstepStory machineTypes={[]} />);
+    const component = await mount(
+      <MachinePoolsSubstepStory machineTypes={mockResource<MachineTypesDropdownType[]>([])} />
+    );
 
     await expect(component.getByText('Compute node instance type', { exact: true })).toBeVisible();
   });
