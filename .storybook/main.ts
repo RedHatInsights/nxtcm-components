@@ -18,6 +18,7 @@ const config: StorybookConfig = {
       base: process.env.STORYBOOK_BASE_PATH || '/',
       resolve: {
         alias: {
+          '@': path.resolve(__dirname, '../src'),
           '@patternfly-labs/react-form-wizard': path.resolve(
             __dirname,
             '../packages/react-form-wizard/src'

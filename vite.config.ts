@@ -8,7 +8,11 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@patternfly-labs/react-form-wizard': path.resolve(__dirname, './packages/react-form-wizard/src'),
+      '@': path.resolve(__dirname, './src'),
+      '@patternfly-labs/react-form-wizard': path.resolve(
+        __dirname,
+        './packages/react-form-wizard/src'
+      ),
     },
   },
   css: {
@@ -31,13 +35,7 @@ export default defineConfig({
     },
     rollupOptions: {
       // Externalize deps that shouldn't be bundled into the library
-      external: [
-        'react',
-        'react-dom',
-        /^@patternfly\/.*/,
-        'js-yaml',
-        'yaml',
-      ],
+      external: ['react', 'react-dom', /^@patternfly\/.*/, 'js-yaml', 'yaml'],
       output: {
         // Provide global variables to use in the UMD build for externalized deps
         globals: {
@@ -55,4 +53,3 @@ export default defineConfig({
     emptyOutDir: false,
   },
 });
-
