@@ -51,7 +51,7 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
   const { update } = useData();
   const vpcRef = cluster?.selected_vpc;
   const selectedVPC =
-    typeof vpcRef === 'string' ? props.vpcList.data.find((vpc: VPC) => vpc.id === vpcRef) : vpcRef;
+    typeof vpcRef === 'string' ? props.vpcList.data?.find((vpc: VPC) => vpc.id === vpcRef) : vpcRef;
 
   const { publicSubnets } = subnetsFilter(selectedVPC);
 
