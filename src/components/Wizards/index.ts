@@ -22,4 +22,6 @@ export type {
   OpenShiftVersions,
   AWSInfrastructureAccounts,
 } from './types';
+/** @deprecated use `Role` instead. */
+export type { Role as Roles } from './types';
 export type { BasicSetupStepProps, WizardStepsData } from './RosaWizard/RosaWizard';

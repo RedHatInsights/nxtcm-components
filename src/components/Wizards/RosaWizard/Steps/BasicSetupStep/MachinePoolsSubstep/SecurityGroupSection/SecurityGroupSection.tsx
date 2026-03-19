@@ -11,7 +11,7 @@ export const SecurityGroupsSection = ({
   selectedVPC,
   refreshVPCs,
 }: {
-  selectedVPC: CloudVpc;
+  selectedVPC: CloudVpc | undefined;
   refreshVPCs?: () => void;
 }) => {
   const [selectedGroupIds, setSelectedGroupIds] = useValue(

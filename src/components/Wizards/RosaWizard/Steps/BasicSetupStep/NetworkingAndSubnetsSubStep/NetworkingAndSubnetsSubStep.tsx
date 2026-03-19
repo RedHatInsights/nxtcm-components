@@ -131,13 +131,20 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
             <WizSelect
               label={t('Public subnet name')}
               path="cluster.cluster_privacy_public_subnet_id"
-              options={publicSubnets?.map((subnet: Subnet) => {
-                return {
-                  label: subnet.name,
-                  value: subnet.subnet_id,
-                };
-              })}
-              placeholder={t('Select public subnet name')}
+              options={
+                props.vpcList.isFetching
+                  ? undefined
+                  : publicSubnets?.map((subnet: Subnet) => ({
+                      label: subnet.name,
+                      value: subnet.subnet_id,
+                    }))
+              }
+              placeholder={
+                props.vpcList.isFetching
+                  ? t('Loading VPC subnets...')
+                  : t('Select public subnet name')
+              }
+              disabled={props.vpcList.isFetching}
             />
           </Radio>
 

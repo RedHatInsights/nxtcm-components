@@ -49,6 +49,17 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
   const workerRoles = selectedRole?.workerRole ?? [];
 
   React.useEffect(() => {
+    if (roles.isFetching || !cluster?.installer_role_arn || selectedRole) {
+      return;
+    }
+
+    cluster.installer_role_arn = undefined;
+    cluster.support_role_arn = undefined;
+    cluster.worker_role_arn = undefined;
+    update();
+  }, [cluster, roles.isFetching, selectedRole, update]);
+
+  React.useEffect(() => {
     if (cluster?.name && !cluster.custom_operator_roles_prefix) {
       cluster.custom_operator_roles_prefix = createOperatorRolesPrefix(cluster.name);
       update();
