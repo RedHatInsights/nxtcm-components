@@ -446,6 +446,11 @@ function MyFooter(props: WizardFooterProps) {
 
   const setStepShowValidation = useSetStepShowValidation();
 
+  const lastStepId =
+    props.steps.length > 0
+      ? (props.steps[props.steps.length - 1] as ReactElement<{ id?: string }>).props?.id
+      : undefined;
+
   const onNextClick = useCallback(async () => {
     const stepID = activeStep.id?.toString() ?? '';
     setStepShowValidation(stepID, true);
@@ -454,7 +459,15 @@ function MyFooter(props: WizardFooterProps) {
     }
   }, [activeStep.id, activeStepHasValidationError, onNext, setStepShowValidation]);
 
-  const isLastStep = activeStep.id === 'review-step';
+  const onSkipToReviewClick = useCallback(() => {
+    const stepID = activeStep.id?.toString() ?? '';
+    setStepShowValidation(stepID, true);
+    if (!activeStepHasValidationError && lastStepId) {
+      wizContext.goToStepById(lastStepId);
+    }
+  }, [activeStep.id, activeStepHasValidationError, lastStepId, setStepShowValidation, wizContext]);
+
+  const isLastStep = lastStepId !== undefined && activeStep.id === lastStepId;
   useEffect(() => {
     if (isLastStep) {
       // We are on the review step - show validation for all steps
@@ -536,6 +549,10 @@ function MyFooter(props: WizardFooterProps) {
     );
   }
 
+  const isNextButtonDisabled =
+    (activeStepHasValidationError && (activeStepShowValidation || activeStepHasTouchedError)) ||
+    submitting;
+
   return (
     <div className="pf-v6-u-box-shadow-sm-top">
       {activeStepHasValidationError && activeStepShowValidation && (
@@ -552,11 +569,7 @@ function MyFooter(props: WizardFooterProps) {
                     await onNextClick();
                   })();
                 }}
-                isDisabled={
-                  (activeStepHasValidationError &&
-                    (activeStepShowValidation || activeStepHasTouchedError)) ||
-                  submitting
-                }
+                isDisabled={isNextButtonDisabled}
               >
                 {nextButtonText}
               </Button>
@@ -566,7 +579,11 @@ function MyFooter(props: WizardFooterProps) {
               wizContext.activeStep.index == 7 ||
               wizContext.activeStep.index == 8) && (
               <ActionListItem>
-                <Button variant="secondary" onClick={() => wizContext.goToStepById('review-step')}>
+                <Button
+                  variant="secondary"
+                  onClick={onSkipToReviewClick}
+                  isDisabled={isNextButtonDisabled}
+                >
                   Skip to review
                 </Button>
               </ActionListItem>

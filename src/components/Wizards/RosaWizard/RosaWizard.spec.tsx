@@ -4,6 +4,7 @@ import { RosaWizard } from './RosaWizard';
 import { RosaWizardErrorThenBackToReviewMount } from './RosaWizard.spec-helpers';
 import { TranslationProvider } from '../../../context/TranslationContext';
 import { checkAccessibility } from '../../../test-helpers';
+import { RosaWizardMount } from './RosaWizard.ct';
 
 const minimalWizardsStepsData = {
   basicSetupStep: {
@@ -177,5 +178,77 @@ test.describe('RosaWizard', () => {
       const component = await mount(mountRosaWizard({ onSubmitError: errorMessage }));
       await checkAccessibility({ component });
     });
+
+    test('required field empty: user cannot advance to next step and Next button is disabled', async ({
+      mount,
+    }) => {
+      const component = await mount(<RosaWizardMount />);
+
+      // Ensure we're on the Details step (Basic setup first substep) — Cluster name is visible
+      const clusterNameInput = component.getByPlaceholder('Enter the cluster name');
+      await expect(clusterNameInput).toBeVisible();
+
+      const nextButton = component.getByRole('button', { name: 'Next' });
+      await expect(nextButton).toBeVisible();
+
+      // Try to go next without filling required Cluster name
+      await nextButton.click();
+
+      // User should still see Details content (Cluster name still visible) — did not advance
+      await expect(clusterNameInput).toBeVisible();
+
+      // Next button should be disabled when there are validation errors and we've tried to advance
+      await expect(nextButton).toBeDisabled();
+    });
+
+    test('invalid data: field-level validation is shown and Next button is disabled', async ({
+      mount,
+    }) => {
+      const component = await mount(<RosaWizardMount />);
+
+      const clusterNameInput = component.getByPlaceholder('Enter the cluster name');
+      await expect(clusterNameInput).toBeVisible();
+
+      // Enter invalid cluster name (uppercase not allowed)
+      await clusterNameInput.fill('Uppercase');
+      await clusterNameInput.blur();
+
+      // Field-level validation message should be visible (validateOnBlur triggers it)
+      await expect(
+        component.getByText(/This value can only contain lowercase alphanumeric/, { exact: false })
+      ).toBeVisible();
+
+      // Next button should be disabled when step has validation errors
+      const nextButton = component.getByRole('button', { name: 'Next' });
+      await expect(nextButton).toBeDisabled();
+    });
+  });
+
+  // This test will fail once the left navigation forces a user to go step by step
+  test('Skip to review step is disabled when there are validation errors', async ({ mount }) => {
+    const component = await mount(<RosaWizardMount />);
+
+    // Click on "Additional setup" in the left navigation to expand it
+    await component.getByText('Additional setup').click();
+    // Wait for Encryption (optional) step to be visible (it fades in after expand)
+    const encryptionStepNav = component.getByRole('button', { name: 'Encryption (optional)' });
+
+    await expect(encryptionStepNav).toBeVisible();
+    await encryptionStepNav.click();
+
+    const skipToReviewButtonText = 'Skip to review';
+
+    // Checking this box will cause a required Key ARN field to appear and be empty
+    await component.getByRole('checkbox', { name: /Enable additional etcd encryption/i }).check();
+    await expect(component.getByRole('button', { name: skipToReviewButtonText })).toBeEnabled();
+
+    await component.getByRole('button', { name: skipToReviewButtonText }).click();
+
+    // Ensure "Please fix validation errors" is shown
+    await expect(component.getByText('Please fix validation errors')).toBeVisible();
+
+    // Ensure both Next and Skip to review buttons are disabled
+    await expect(component.getByRole('button', { name: 'Next' })).toBeDisabled();
+    await expect(component.getByRole('button', { name: skipToReviewButtonText })).toBeDisabled();
   });
 });
