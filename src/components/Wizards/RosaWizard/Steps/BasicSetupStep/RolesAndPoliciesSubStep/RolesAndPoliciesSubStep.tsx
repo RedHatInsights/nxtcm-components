@@ -49,14 +49,51 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
   const workerRoles = selectedRole?.workerRole ?? [];
 
   React.useEffect(() => {
-    if (roles.isFetching || !cluster?.installer_role_arn || selectedRole) {
+    if (roles.isFetching || !cluster) {
       return;
     }
 
-    cluster.installer_role_arn = undefined;
-    cluster.support_role_arn = undefined;
-    cluster.worker_role_arn = undefined;
-    update();
+    let hasChanges = false;
+
+    // installer role is no longer available in the refreshed role set
+    if (cluster.installer_role_arn && !selectedRole) {
+      if (cluster.installer_role_arn) {
+        cluster.installer_role_arn = undefined;
+        hasChanges = true;
+      }
+      if (cluster.support_role_arn) {
+        cluster.support_role_arn = undefined;
+        hasChanges = true;
+      }
+      if (cluster.worker_role_arn) {
+        cluster.worker_role_arn = undefined;
+        hasChanges = true;
+      }
+    }
+
+    // installer is still valid, but child role values may be stale after refresh
+    if (selectedRole) {
+      if (
+        cluster.support_role_arn &&
+        !selectedRole.supportRole.some(
+          (roleOption) => roleOption.value === cluster.support_role_arn
+        )
+      ) {
+        cluster.support_role_arn = selectedRole.supportRole[0]?.value;
+        hasChanges = true;
+      }
+      if (
+        cluster.worker_role_arn &&
+        !selectedRole.workerRole.some((roleOption) => roleOption.value === cluster.worker_role_arn)
+      ) {
+        cluster.worker_role_arn = selectedRole.workerRole[0]?.value;
+        hasChanges = true;
+      }
+    }
+
+    if (hasChanges) {
+      update();
+    }
   }, [cluster, roles.isFetching, selectedRole, update]);
 
   React.useEffect(() => {
