@@ -32,6 +32,7 @@ export type {
   RosaWizardValidatorStrings,
 } from './RosaWizard/rosaWizardStrings';
 export {
+  buildWizardStringsForRosa,
   defaultRosaWizardStrings,
   mergeRosaWizardStrings,
   buildRosaWizardStringBundles,

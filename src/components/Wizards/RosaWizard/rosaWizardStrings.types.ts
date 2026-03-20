@@ -3,6 +3,8 @@
  * Default English values live in {@link ./rosaWizardStrings.defaults}.
  */
 
+import type { WizardStrings } from '@patternfly-labs/react-form-wizard';
+
 export type DeepPartial<T> = {
   [K in keyof T]?: T[K] extends (...args: never[]) => unknown
     ? T[K]
@@ -374,4 +376,10 @@ export type RosaWizardStrings = {
 /** Partial overrides for {@link RosaWizard}; omitted keys use defaults from {@link ./rosaWizardStrings.defaults}. */
 export type RosaWizardStringsInput = DeepPartial<RosaWizardStrings> & {
   validators?: DeepPartial<RosaWizardValidatorStrings>;
+  /**
+   * Overrides for `@patternfly-labs/react-form-wizard` chrome (footer buttons, aria labels, required
+   * message, typeahead strings, etc.). Omitted keys use that package’s English defaults.
+   * `reviewLabel` is always aligned with {@link RosaWizardStrings.wizard.stepLabels.review} after merges.
+   */
+  formWizard?: DeepPartial<WizardStrings>;
 };

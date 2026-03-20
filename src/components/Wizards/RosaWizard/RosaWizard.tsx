@@ -31,7 +31,7 @@ import {
 import { MachinePoolsSubstep } from './Steps/BasicSetupStep/MachinePoolsSubstep/MachinePoolsSubstep';
 import { YamlDrawerEditor } from './Steps/YamlCodeEditor';
 import { RosaWizardStringsProvider, useRosaWizardStrings } from './RosaWizardStringsContext';
-import type { RosaWizardStringsInput } from './rosaWizardStrings';
+import { buildWizardStringsForRosa, type RosaWizardStringsInput } from './rosaWizardStrings';
 
 export type BasicSetupStepProps = {
   // validation-only fields (no data, just state)
@@ -91,12 +91,26 @@ export const RosaWizard = (props: RosaWizardProps) => (
   </RosaWizardStringsProvider>
 );
 
-export const RosaWizardBody = (props: RosaWizardProps) => {
-  const { onSubmit, onCancel, title, wizardsStepsData, onSubmitError, onBackToReviewStep, yaml } =
-    props;
-  const { wizard } = useRosaWizardStrings();
+const RosaWizardBody = (props: RosaWizardProps) => {
+  const {
+    onSubmit,
+    onCancel,
+    title,
+    wizardsStepsData,
+    onSubmitError,
+    onBackToReviewStep,
+    yaml,
+    strings,
+  } = props;
+  const rosaStrings = useRosaWizardStrings();
+  const { wizard } = rosaStrings;
   const sl = wizard.stepLabels;
   const yamlEditor = yaml ? (props.yamlEditor ?? getDefaultYamlEditor) : undefined;
+  const wizardStrings = React.useMemo(
+    () => buildWizardStringsForRosa(rosaStrings, strings?.formWizard),
+    [rosaStrings, strings?.formWizard]
+  );
+
   const [isClusterWideProxySelected, setIsClusterWideProxySelected] =
     React.useState<boolean>(false);
 
@@ -161,6 +175,7 @@ export const RosaWizardBody = (props: RosaWizardProps) => {
           onResumedToStep={() => setResumeAtStepId(null)}
           yaml={yaml}
           yamlEditor={yamlEditor}
+          wizardStrings={wizardStrings}
         >
           <ExpandableStep
             id="basic-setup-step-id-expandable-section"
