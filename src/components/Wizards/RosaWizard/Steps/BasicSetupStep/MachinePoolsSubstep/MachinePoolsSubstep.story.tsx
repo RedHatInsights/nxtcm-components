@@ -72,6 +72,7 @@ export const mockVpcList: Resource<VPC[]> = {
   ],
   error: null,
   isFetching: false,
+  fetch: async () => {},
 };
 
 export const mockMachineTypesData: Resource<MachineTypesDropdownType[]> = {
@@ -100,6 +101,7 @@ export const createMockClusterData = (overrides: Record<string, unknown> = {}) =
     selected_vpc: '',
     cluster_privacy: 'external',
     cluster_privacy_public_subnet_id: '',
+    cluster_version: '4.16.0',
     machine_type: '',
     autoscaling: false,
     min_replicas: 2,
