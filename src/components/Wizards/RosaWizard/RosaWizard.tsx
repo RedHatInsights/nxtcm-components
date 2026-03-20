@@ -12,7 +12,7 @@ import {
   NetworkingAndSubnetsSubStep,
   RolesAndPoliciesSubStep,
 } from './Steps/BasicSetupStep';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { ClusterWideProxySubstep } from './Steps/AdditionalSetupStep/ClusterWideProxySubstep/ClusterWideProxySubstep';
 import { ReviewStepData } from './Steps/ReviewStepData';
 import {
@@ -30,7 +30,7 @@ import {
 } from '../types';
 import { useTranslation } from '../../../context/TranslationContext';
 import { MachinePoolsSubstep } from './Steps/BasicSetupStep/MachinePoolsSubstep/MachinePoolsSubstep';
-import { YamlEditorStep } from './Steps/YamlEditorStep';
+import { YamlDrawerEditor } from './Steps/YamlCodeEditor';
 
 export type BasicSetupStepProps = {
   // validation-only fields (no data, just state)
@@ -75,11 +75,19 @@ type RosaWizardProps = {
   wizardsStepsData: WizardStepsData;
   /** Called when "Back to review step" is clicked so the parent can clear its error state. When this promise resolves, the wizard navigates to the review step. */
   onBackToReviewStep?: () => void | Promise<void>;
+  yamlEditor?: () => ReactNode;
+  yaml?: boolean;
 };
+
+function getDefaultYamlEditor() {
+  return <YamlDrawerEditor />;
+}
 
 export const RosaWizard = (props: RosaWizardProps) => {
   const { t } = useTranslation();
-  const { onSubmit, onCancel, title, wizardsStepsData, onSubmitError, onBackToReviewStep } = props;
+  const { onSubmit, onCancel, title, wizardsStepsData, onSubmitError, onBackToReviewStep, yaml } =
+    props;
+  const yamlEditor = yaml ? (props.yamlEditor ?? getDefaultYamlEditor) : undefined;
   const [isClusterWideProxySelected, setIsClusterWideProxySelected] =
     React.useState<boolean>(false);
 
@@ -142,7 +150,8 @@ export const RosaWizard = (props: RosaWizardProps) => {
           setUseWizardContext={setUseWizardContext}
           resumeAtStepId={resumeAtStepId}
           onResumedToStep={() => setResumeAtStepId(null)}
-          yaml={false}
+          yaml={yaml}
+          yamlEditor={yamlEditor}
         >
           <ExpandableStep
             id="basic-setup-step-id-expandable-section"
@@ -224,9 +233,6 @@ export const RosaWizard = (props: RosaWizardProps) => {
               </Step>,
             ]}
           />
-          <Step label={'YAML Editor'} id={'yaml-editor-step'}>
-            <YamlEditorStep />
-          </Step>
           <Step label={t('Review')} id={'review-step'}>
             <ReviewStepData goToStepId={getUseWizardContext} />
           </Step>
