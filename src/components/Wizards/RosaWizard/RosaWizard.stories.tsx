@@ -259,6 +259,7 @@ type Story = StoryObj<typeof RosaWizard>;
 export const Default: Story = {
   args: {
     title: 'Create ROSA Cluster',
+    yaml: true,
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -280,6 +281,7 @@ export const Default: Story = {
 export const MinimalOptions: Story = {
   args: {
     title: 'Create ROSA Cluster - Limited Options',
+    yaml: true,
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -322,6 +324,7 @@ export const MinimalOptions: Story = {
 export const EmptyOptions: Story = {
   args: {
     title: 'Create ROSA Cluster - No Options Available',
+    yaml: true,
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -351,6 +354,7 @@ export const EmptyOptions: Story = {
 export const ExtensiveOptions: Story = {
   args: {
     title: 'Create ROSA Cluster - Many Options',
+    yaml: true,
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -430,6 +434,7 @@ export const ExtensiveOptions: Story = {
 export const CustomTitle: Story = {
   args: {
     title: 'Deploy Red Hat OpenShift Service on AWS',
+    yaml: true,
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -449,6 +454,7 @@ export const CustomTitle: Story = {
 export const WithErrorHandling: Story = {
   args: {
     title: 'Create ROSA Cluster - Error Demo',
+    yaml: true,
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -471,6 +477,7 @@ export const WithErrorHandling: Story = {
 export const WithMachinePoolsOptions: Story = {
   args: {
     title: 'Create ROSA Cluster - Machine Pools',
+    yaml: true,
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -561,6 +568,7 @@ export const WithMachinePoolsOptions: Story = {
 export const NoSecurityGroups: Story = {
   args: {
     title: 'Create ROSA Cluster - No Security Groups',
+    yaml: true,
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -588,6 +596,7 @@ export const NoSecurityGroups: Story = {
 export const ProductionSetup: Story = {
   args: {
     title: 'Create Production ROSA Cluster',
+    yaml: true,
     onSubmit: async (data: unknown) => {
       console.log('Production cluster submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -660,6 +669,7 @@ export const SubmitError: Story = {
   render: (args) => <SubmitErrorWrapper {...args} />,
   args: {
     title: 'Create ROSA Cluster',
+    yaml: true,
     onCancel: () => {
       console.log('Wizard cancelled');
       alert('Wizard cancelled');
