@@ -64,13 +64,21 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
 
       const parsed = parseMultiDocYaml(newYaml);
       if (parsed) {
-        update(parsed);
+        const current = data as Record<string, unknown>;
+        const merged = {
+          ...current,
+          cluster: {
+            ...(current.cluster as Record<string, unknown>),
+            ...(parsed.cluster as Record<string, unknown>),
+          },
+        };
+        update(merged);
         setParseError('');
       } else {
         setParseError('Invalid YAML syntax');
       }
     },
-    [update]
+    [update, data]
   );
 
   const handleEditorMount: OnMount = useCallback((editor) => {
@@ -100,6 +108,8 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
       if (model && selection) {
         const selectedText = model.getValueInRange(selection);
         void navigator.clipboard.writeText(selectedText || yamlContent);
+      } else {
+        void navigator.clipboard.writeText(yamlContent);
       }
     } else {
       void navigator.clipboard.writeText(yamlContent);

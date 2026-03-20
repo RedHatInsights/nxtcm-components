@@ -45,8 +45,8 @@ spec:
     volumeSize: {{{cluster.compute_root_volume}}}
   {{#if cluster.autoscaling}}
     autoscaling:
-      minReplicas: {{{cluster.nodes_compute_min}}}
-      maxReplicas: {{{cluster.nodes_compute_max}}}
+      minReplicas: {{{cluster.min_replicas}}}
+      maxReplicas: {{{cluster.max_replicas}}}
   {{/if}}
 {{/if}}
 {{#if cluster.etcd_encryption}}

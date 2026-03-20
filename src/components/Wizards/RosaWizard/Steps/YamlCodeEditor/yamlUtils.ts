@@ -111,11 +111,23 @@ export function parseMultiDocYaml(yamlStr: string): Record<string, unknown> | nu
     const docs = yamlStr.split(/^---$/m).filter((doc) => doc.trim());
     if (docs.length === 0) return null;
 
-    const rosaCP = docs.find((doc) => doc.includes('kind: ROSAControlPlane'));
-    if (!rosaCP) return null;
-
-    const parsed = yaml.load(rosaCP) as Record<string, unknown>;
-    if (!parsed || typeof parsed !== 'object') return null;
+    let parsed: Record<string, unknown> | null = null;
+    for (const doc of docs) {
+      try {
+        const obj = yaml.load(doc);
+        if (
+          obj &&
+          typeof obj === 'object' &&
+          (obj as Record<string, unknown>).kind === 'ROSAControlPlane'
+        ) {
+          parsed = obj as Record<string, unknown>;
+          break;
+        }
+      } catch {
+        // skip unparseable docs
+      }
+    }
+    if (!parsed) return null;
 
     const spec = parsed.spec as Record<string, unknown> | undefined;
     const metadata = parsed.metadata as Record<string, unknown> | undefined;
@@ -131,7 +143,11 @@ export function parseMultiDocYaml(yamlStr: string): Record<string, unknown> | nu
     if (spec?.billingAccount) cluster.billing_account_id = spec.billingAccount;
 
     const endpointAccess = spec?.endpointAccess as string | undefined;
-    cluster.cluster_privacy = endpointAccess === 'Private' ? 'internal' : 'external';
+    if (endpointAccess === 'Private') {
+      cluster.cluster_privacy = 'internal';
+    } else if (endpointAccess === 'Public') {
+      cluster.cluster_privacy = 'external';
+    }
 
     if (spec?.installerRoleARN) cluster.installer_role_arn = spec.installerRoleARN;
     if (spec?.supportRoleARN) cluster.support_role_arn = spec.supportRoleARN;
@@ -150,8 +166,8 @@ export function parseMultiDocYaml(yamlStr: string): Record<string, unknown> | nu
       if (machinePoolSpec.volumeSize) cluster.compute_root_volume = machinePoolSpec.volumeSize;
       if (autoscaling) {
         cluster.autoscaling = true;
-        cluster.nodes_compute_min = autoscaling.minReplicas;
-        cluster.nodes_compute_max = autoscaling.maxReplicas;
+        cluster.min_replicas = autoscaling.minReplicas;
+        cluster.max_replicas = autoscaling.maxReplicas;
       }
     }
 

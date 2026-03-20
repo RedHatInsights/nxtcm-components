@@ -87,7 +87,7 @@ export const RosaWizard = (props: RosaWizardProps) => {
   const { t } = useTranslation();
   const { onSubmit, onCancel, title, wizardsStepsData, onSubmitError, onBackToReviewStep, yaml } =
     props;
-  const yamlEditor = props.yamlEditor ?? getDefaultYamlEditor;
+  const yamlEditor = yaml ? (props.yamlEditor ?? getDefaultYamlEditor) : undefined;
   const [isClusterWideProxySelected, setIsClusterWideProxySelected] =
     React.useState<boolean>(false);
 
