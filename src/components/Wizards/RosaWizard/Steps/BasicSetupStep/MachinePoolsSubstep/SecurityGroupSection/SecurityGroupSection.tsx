@@ -6,6 +6,7 @@ import EditSecurityGroups from './EditSecurityGroups';
 import SecurityGroupsEmptyAlert from './SecurityGroupsEmptyAlert';
 import SecurityGroupsNoEditAlert from './SecurityGroupsNoEditAlert';
 import { CloudVpc } from '../../../../../types';
+import { useRosaWizardStrings } from '../../../../RosaWizardStringsContext';
 
 export const SecurityGroupsSection = ({
   selectedVPC,
@@ -14,6 +15,7 @@ export const SecurityGroupsSection = ({
   selectedVPC: CloudVpc | undefined;
   refreshVPCs?: () => void;
 }) => {
+  const { machinePools } = useRosaWizardStrings();
   const [selectedGroupIds, setSelectedGroupIds] = useValue(
     { path: 'cluster.security_groups_worker' },
     []
@@ -37,7 +39,7 @@ export const SecurityGroupsSection = ({
 
   return (
     <ExpandableSection
-      toggleText="Additional security groups (optional)"
+      toggleText={machinePools.securityGroupsToggle}
       isExpanded={isExpanded}
       isIndented
       onToggle={() => setIsExpanded(!isExpanded)}

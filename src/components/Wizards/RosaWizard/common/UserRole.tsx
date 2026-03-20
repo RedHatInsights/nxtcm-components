@@ -5,17 +5,20 @@ import PopoverHint from './PopoverHint';
 import ExternalLink from './ExternalLink';
 import links from '../externalLinks';
 import PopoverHintWithTitle from './PopoverHitWithTitle';
+import { useRosaWizardStrings } from '../RosaWizardStringsContext';
 
 export const UserRole = () => {
+  const u = useRosaWizardStrings().userRole;
+
   return (
     <>
       <Title headingLevel="h3" className="pf-v6-u-mb-md" size="md">
-        First, check if a role exists and is linked with:
+        {u.checkLinkedTitle}
       </Title>
 
       <CopyInstruction
         data-testId="copy-rosa-list-user-role"
-        textAriaLabel={`Copyable ROSA rosa list user-role command`}
+        textAriaLabel={u.copyAriaListUserRole}
         className="pf-v6-u-mb-lg"
       >
         rosa list user-role
@@ -25,21 +28,19 @@ export const UserRole = () => {
         variant={AlertVariant.info}
         isInline
         isPlain
-        title={`If there is an existing role and it's already linked to your Red Hat account, you can continue to step 3`}
+        title={u.existingLinkedInfo}
         className="pf-v6-u-mb-lg"
       />
 
-      <Content component={ContentVariants.h3}>
-        Next, is there an existing role that isn&apos;t linked?
-      </Content>
+      <Content component={ContentVariants.h3}>{u.unlinkedTitle}</Content>
 
       <PopoverHintWithTitle
-        title="Why do I need to link my account?"
+        title={u.whyLinkTitle}
         bodyContent={
           <>
-            The link creates a trust policy between the role and the link cluster installer.{' '}
+            {u.whyLinkBodyPrefix}{' '}
             <ExternalLink href={links.ROSA_AWS_ACCOUNT_ASSOCIATION}>
-              Review the AWS policy permissions for the basic and admin OCM roles.
+              {u.reviewPermissionsLink}
             </ExternalLink>
           </>
         }
@@ -50,11 +51,11 @@ export const UserRole = () => {
           {
             'data-testid': 'copy-user-role-tab-no',
             id: 'copy-user-role-tab-no-id',
-            title: 'No, create new role',
+            title: u.tabCreateNew,
             body: (
               <>
-                <strong>User role </strong>
-                <PopoverHint bodyContent="The user role is necessary to validate that your Red Hat user account has permissions to install a cluster in the AWS account." />
+                <strong>{u.userRoleLabel}</strong>
+                <PopoverHint bodyContent={u.userRolePopover} />
                 <CopyInstruction
                   data-testid="copy-rosa-create-user-role"
                   textAriaLabel="Copyable ROSA create user-role"
@@ -67,11 +68,11 @@ export const UserRole = () => {
           {
             'data-testid': 'copy-user-role-tab-yes',
             id: 'copy-user-role-tab-yes-id',
-            title: 'Yes, link existing role',
+            title: u.tabLinkExisting,
             body: (
               <CopyInstruction
                 data-testid="copy-rosa-link-user-role"
-                textAriaLabel="Copyable ROSA link user-role --arn"
+                textAriaLabel={u.copyAriaLinkUserRole}
               >
                 {`rosa link user-role <arn>`}
               </CopyInstruction>

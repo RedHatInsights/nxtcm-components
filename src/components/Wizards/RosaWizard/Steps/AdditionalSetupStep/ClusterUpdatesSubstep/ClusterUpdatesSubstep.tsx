@@ -14,13 +14,12 @@ import {
   SelectList,
   SelectOption,
 } from '@patternfly/react-core';
-import { useTranslation } from '../../../../../../context/TranslationContext';
 import parseUpdateSchedule from './parseUpdateSchedule';
 import { RosaWizardFormData, WizardNavigationContext } from '../../../../types';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
+import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
 
-const daysOptions = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const hoursOptions = Array.from(Array(24).keys());
 
 type ClusterUpdatesSubstepProps = {
@@ -28,7 +27,7 @@ type ClusterUpdatesSubstepProps = {
 };
 
 export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
-  const { t } = useTranslation();
+  const cu = useRosaWizardStrings().clusterUpdates;
   const { cluster } = useItem<RosaWizardFormData>();
   const { update } = useData();
 
@@ -61,6 +60,11 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
   const formatHourLabel = (hour: number) => `${hour.toString().padStart(2, '0')}:00 UTC`;
 
   const [selectedHour, selectedDay] = parseCurrentValue();
+  const selectedDayIndex = Number(selectedDay);
+  const dayToggleLabel =
+    selectedDay === '' || Number.isNaN(selectedDayIndex)
+      ? cu.selectDayPlaceholder
+      : (cu.daysOfWeek[selectedDayIndex] ?? cu.selectDayPlaceholder);
 
   const dayToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
     <MenuToggle
@@ -69,7 +73,7 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
       isExpanded={daySelectOpen}
       isFullWidth
     >
-      {daysOptions[Number(selectedDay)] ?? t('Select day')}
+      {dayToggleLabel}
     </MenuToggle>
   );
 
@@ -88,77 +92,68 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
     <Section
       id="cluster-updates-substep-section"
       key="cluster-updates-substep-section-key"
-      label={t('Cluster update strategy')}
+      label={cu.sectionLabel}
     >
       <Content component={ContentVariants.p}>
-        {t(`The OpenShift version ${cluster.cluster_version} that you selected in the`)}{' '}
+        {cu.versionIntroPrefix} {cluster.cluster_version} {cu.versionIntroSuffix}{' '}
         {
           <Button
             onClick={() => props.goToStepId?.goToStepById('basic-setup-step-details')}
             variant="link"
             isInline
           >
-            {t(`Details step`)}
+            {cu.detailsStepLink}
           </Button>
         }{' '}
-        {t('will apply to the managed control plane and the machine pools configured in the')}{' '}
+        {cu.midSentence}{' '}
         {
           <Button
             onClick={() => props.goToStepId?.goToStepById('networking-sub-step')}
             variant="link"
             isInline
           >
-            {t(`Networking and subnets step.`)}
+            {cu.networkingStepLink}
           </Button>
         }{' '}
-        {t(`After cluster creation, you can
-        update the managed control plane and machine pools independently.`)}
+        {cu.afterCreation}
       </Content>
 
       <Content component={ContentVariants.p}>
-        {t('In the event of')}{' '}
+        {cu.cveLead}{' '}
         <ExternalLink href={links.SECURITY_CLASSIFICATION_CRITICAL}>
-          Critical security concerns
+          {cu.criticalConcernsLink}
         </ExternalLink>{' '}
-        {t(`(CVEs) that significantly impact the security or stability of the cluster, updates may be
-        automatically scheduled by Red Hat SRE to the latest z-stream version not impacted by the
-        CVE within 2 business days after customer notifications.`)}
+        {cu.cveTail}
       </Content>
 
       <WizRadioGroup path="cluster.upgrade_policy">
         <Radio
           id="cluster-upgrade-strategy-individual-radio-btn"
-          label={t('Individual updates')}
+          label={cu.individualLabel}
           value="automatic"
           description={
             <>
-              {t(
-                'Schedule each update individually. When planning updates, make sure to consider the end of life dates from the'
-              )}{' '}
-              <ExternalLink href={links.ROSA_LIFE_CYCLE}>lifecycle policy</ExternalLink>
+              {cu.individualDescriptionLead}{' '}
+              <ExternalLink href={links.ROSA_LIFE_CYCLE}>{cu.lifecycleLink}</ExternalLink>
             </>
           }
         />
         <Radio
           id="cluster-upgrade-strategy-recurring-radio-btn"
-          label={t('Recurring updates')}
+          label={cu.recurringLabel}
           value="manual"
           description={
             <>
-              {t(
-                `The cluster control plan will be automatically updated based on your preferred day and start time when new patch updates`
-              )}{' '}
-              <ExternalLink href={links.ROSA_Z_STREAM}>z-stream</ExternalLink>{' '}
-              {t(
-                `are available. When a new minor version is available, you'll be notified and must manually allow the cluster to update the next minor version. The compute nodes will need to be manually updated.`
-              )}
+              {cu.recurringDescriptionBeforeZStream}
+              <ExternalLink href={links.ROSA_Z_STREAM}>{cu.zStreamLinkText}</ExternalLink>
+              {cu.recurringDescriptionAfterZStream}
             </>
           }
         />
       </WizRadioGroup>
 
       {cluster?.upgrade_policy === 'automatic' && (
-        <FormGroup label={t('Select a day and start time')} style={{ marginLeft: '1.5rem' }}>
+        <FormGroup label={cu.dayTimeLabel} style={{ marginLeft: '1.5rem' }}>
           <Grid hasGutter>
             <GridItem sm={6} md={6}>
               <Select
@@ -170,7 +165,7 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
                 toggle={dayToggle}
               >
                 <SelectList>
-                  {daysOptions.map((day, idx) => (
+                  {cu.daysOfWeek.map((day, idx) => (
                     <SelectOption key={day} value={idx.toString()}>
                       {day}
                     </SelectOption>

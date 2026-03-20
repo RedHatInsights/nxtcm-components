@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/experimental-ct-react';
 import React from 'react';
 import { RosaWizard } from './RosaWizard';
 import { RosaWizardErrorThenBackToReviewMount } from './RosaWizard.spec-helpers';
-import { TranslationProvider } from '../../../context/TranslationContext';
 import { checkAccessibility } from '../../../test-helpers';
 import { RosaWizardMount } from './RosaWizard.ct';
 import type { BasicSetupStepProps } from './RosaWizard';
@@ -115,17 +114,37 @@ const defaultProps = {
 };
 
 function mountRosaWizard(overrides: Record<string, unknown> = {}) {
-  return (
-    <TranslationProvider>
-      <RosaWizard {...defaultProps} {...overrides} />
-    </TranslationProvider>
-  );
+  return <RosaWizard {...defaultProps} {...overrides} />;
 }
 
 test.describe('RosaWizard', () => {
   test('should render the wizard title', async ({ mount }) => {
     const component = await mount(mountRosaWizard());
     await expect(component.getByRole('heading', { name: 'Create ROSA Cluster' })).toBeVisible();
+  });
+
+  test('should show custom Rosa strings in the nav and react-form-wizard chrome (e.g. Next)', async ({
+    mount,
+  }) => {
+    const customReviewLabel = 'Custom review step from strings prop';
+    const customNextLabel = 'CT_CUSTOM_NEXT_FROM_FORM_WIZARD_STRINGS';
+    const component = await mount(
+      mountRosaWizard({
+        strings: {
+          wizard: {
+            stepLabels: {
+              review: customReviewLabel,
+            },
+          },
+          formWizard: {
+            nextButtonText: customNextLabel,
+          },
+        },
+      })
+    );
+
+    await expect(component.getByText(customReviewLabel)).toBeVisible();
+    await expect(component.getByRole('button', { name: customNextLabel })).toBeVisible();
   });
 
   test('should pass accessibility tests when showing the wizard', async ({ mount }) => {

@@ -18,6 +18,7 @@ import { AssociateAWSAccountInfo } from './AssociateAWSAccountInfo';
 import { OCMRole } from './OCMRole';
 import { UserRole } from './UserRole';
 import { AccountRoles } from './AccountRoles';
+import { useRosaWizardStrings } from '../RosaWizardStringsContext';
 
 type StepDrawerProps = {
   isDrawerExpanded: boolean;
@@ -28,13 +29,14 @@ type StepDrawerProps = {
 
 export const StepDrawer = (props: StepDrawerProps) => {
   const { isDrawerExpanded, onWizardExpand, setIsDrawerExpanded } = props;
+  const d = useRosaWizardStrings().associateAwsDrawer;
   return (
     <Drawer isInline isExpanded={isDrawerExpanded} onExpand={onWizardExpand}>
       <DrawerContent
         panelContent={
           <DrawerPanelContent isResizable={true} defaultSize="40%">
             <DrawerHead>
-              <Content component={ContentVariants.h2}>How to associate a new AWS account</Content>
+              <Content component={ContentVariants.h2}>{d.panelTitle}</Content>
               <DrawerActions>
                 <DrawerCloseButton onClick={() => setIsDrawerExpanded(false)} />
               </DrawerActions>
@@ -43,35 +45,28 @@ export const StepDrawer = (props: StepDrawerProps) => {
               <PageSection hasBodyWrapper={false}>
                 <Stack hasGutter>
                   <StackItem>
-                    <Content component={ContentVariants.p}>
-                      ROSA cluster deployments use the AWS Security Token Service for added
-                      security. Run the following required steps from a CLI authenticated with both
-                      AWS and ROSA.
-                    </Content>
-                    <Content component={ContentVariants.p}>
-                      You must use ROSA CLI version 1.2.31 or above.
-                    </Content>
+                    <Content component={ContentVariants.p}>{d.introSts}</Content>
+                    <Content component={ContentVariants.p}>{d.cliVersion}</Content>
                   </StackItem>
                   <StackItem>
-                    <AssociateAWSAccountInfo title="Step 1: OCM Role" initiallyExpanded>
+                    <AssociateAWSAccountInfo title={d.step1Title} initiallyExpanded>
                       <OCMRole />
                     </AssociateAWSAccountInfo>
                   </StackItem>
                   <StackItem>
-                    <AssociateAWSAccountInfo title="Step 2: User Role">
+                    <AssociateAWSAccountInfo title={d.step2Title}>
                       <UserRole />
                     </AssociateAWSAccountInfo>
                   </StackItem>
                   <StackItem>
-                    <AssociateAWSAccountInfo title="Step 3: User Role">
+                    <AssociateAWSAccountInfo title={d.step3Title}>
                       <AccountRoles />
                     </AssociateAWSAccountInfo>
                   </StackItem>
 
                   <StackItem>
                     <Content component={ContentVariants.p} className="pf-v6-u-mr-md">
-                      After you&apos;ve completed all the steps, close this guide and choose your
-                      account.
+                      {d.closingPrompt}
                     </Content>
                   </StackItem>
                   <StackItem>
@@ -79,7 +74,7 @@ export const StepDrawer = (props: StepDrawerProps) => {
                       variant={ButtonVariant.secondary}
                       onClick={() => setIsDrawerExpanded(false)}
                     >
-                      Close
+                      {d.closeButton}
                     </Button>
                   </StackItem>
                 </Stack>

@@ -6,6 +6,7 @@ import {
   EmptyStateFooter,
   EmptyStateStatus,
 } from '@patternfly/react-core';
+import { useRosaWizardStrings } from './RosaWizardStringsContext';
 
 export type RosaWizardSubmitErrorProps = {
   /** Error message or flag from parent (e.g. submit failure). */
@@ -19,13 +20,10 @@ export type RosaWizardSubmitErrorProps = {
 
 export function RosaWizardSubmitError(props: RosaWizardSubmitErrorProps) {
   const { onSubmitError, onBackToReviewStep, isNavigatingToReview, onCancel } = props;
+  const { submitError } = useRosaWizardStrings();
 
   return (
-    <EmptyState
-      status={EmptyStateStatus.danger}
-      titleText={'Error creating cluster'}
-      headingLevel="h2"
-    >
+    <EmptyState status={EmptyStateStatus.danger} titleText={submitError.title} headingLevel="h2">
       {typeof onSubmitError === 'string' && onSubmitError.length > 0 && (
         <EmptyStateBody>{onSubmitError}</EmptyStateBody>
       )}
@@ -38,13 +36,13 @@ export function RosaWizardSubmitError(props: RosaWizardSubmitErrorProps) {
               isLoading={isNavigatingToReview}
               isDisabled={isNavigatingToReview}
             >
-              Back to review step
+              {submitError.backToReviewStep}
             </Button>
           )}
         </EmptyStateActions>
         <EmptyStateActions>
           <Button variant="link" onClick={onCancel}>
-            Exit wizard
+            {submitError.exitWizard}
           </Button>
         </EmptyStateActions>
       </EmptyStateFooter>

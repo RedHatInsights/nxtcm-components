@@ -11,7 +11,7 @@ import { DisplayMode } from '../contexts/DisplayModeContext';
 import { getEnterPlaceholder, InputCommonProps, useInput } from './Input';
 import { WizFormGroup } from './WizFormGroup';
 
-export type WizNumberInputProps<T> = InputCommonProps<T> & {
+export type WizNumberInputProps<T = number | undefined> = InputCommonProps<T> & {
   label: string;
   placeholder?: string;
   secret?: boolean;
@@ -20,7 +20,7 @@ export type WizNumberInputProps<T> = InputCommonProps<T> & {
   zeroIsUndefined?: boolean;
 };
 
-export function WizNumberInput<T>(props: WizNumberInputProps<T>) {
+export function WizNumberInput<T = number | undefined>(props: WizNumberInputProps<T>) {
   const {
     displayMode: mode,
     value,

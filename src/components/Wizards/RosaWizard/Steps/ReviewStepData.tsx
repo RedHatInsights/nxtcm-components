@@ -14,15 +14,15 @@ import {
 import { LockIcon } from '@patternfly/react-icons';
 import { ReviewAndCreateStepItem } from './ReviewAndCreateStep/ReviewAndCreateStepItem';
 import { MachinePoolsReviewAndCreateStepItem } from './ReviewAndCreateStep/MachinePoolsReviewAndCreateStepItem';
-import { useTranslation } from '../../../../context/TranslationContext';
 import { RosaWizardFormData, WizardNavigationContext } from '../../types';
+import { useRosaWizardStrings } from '../RosaWizardStringsContext';
 
 type ReviewStepDataProps = {
   goToStepId?: WizardNavigationContext;
 };
 
 export const ReviewStepData = (props: ReviewStepDataProps) => {
-  const { t } = useTranslation();
+  const r = useRosaWizardStrings().review;
   const { cluster } = useItem<RosaWizardFormData>();
 
   const [isDetailsSectionExpanded, setIsDetailsSectionExpanded] = React.useState<boolean>(true);
@@ -60,12 +60,12 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
   ]);
 
   return (
-    <Section label={t('Review your ROSA cluster')}>
+    <Section label={r.sectionLabel}>
       <Alert
         variant="info"
         title={
           <>
-            {t(`Double check your settings. Locked settings can not be changed later.`)}
+            {r.alertTitle}
             <LockIcon />
           </>
         }
@@ -79,32 +79,28 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
             isWidthLimited
             isExpanded={isDetailsSectionExpanded}
             onToggle={() => setIsDetailsSectionExpanded(!isDetailsSectionExpanded)}
-            toggleText={t('Details')}
+            toggleText={r.detailsToggle}
           >
-            {/* START DETAILS DISPLAY */}
-
             <Stack hasGutter>
-              <ReviewAndCreateStepItem label={t('Cluster name')} value={cluster?.name} />
+              <ReviewAndCreateStepItem label={r.clusterName} value={cluster?.name} />
               <ReviewAndCreateStepItem
-                label={t('OpenShift version')}
+                label={r.openShiftVersion}
                 value={cluster?.cluster_version}
               />
               <ReviewAndCreateStepItem
-                label={t('Associated AWS infrastructure account')}
+                label={r.awsInfra}
                 value={cluster?.associated_aws_id}
                 hasIcon
               />
 
               <ReviewAndCreateStepItem
-                label={t('AWS billing account')}
+                label={r.awsBilling}
                 value={cluster?.billing_account_id}
                 hasIcon
               />
 
-              <ReviewAndCreateStepItem label={t('Region')} value={cluster?.region} hasIcon />
+              <ReviewAndCreateStepItem label={r.region} value={cluster?.region} hasIcon />
             </Stack>
-
-            {/* END DETAILS DISPLAY */}
           </ExpandableSection>
         </SplitItem>
         <SplitItem>
@@ -113,7 +109,7 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
             variant="link"
             isInline
           >
-            {t(`Edit Step`)}
+            {r.editStep}
           </Button>
         </SplitItem>
       </Split>
@@ -125,23 +121,23 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
             isWidthLimited
             isExpanded={isRolesAndPoliciesExpanded}
             onToggle={() => setIsRolesAndPoliciesExpanded(!isRolesAndPoliciesExpanded)}
-            toggleText="Roles and policies"
+            toggleText={r.rolesToggle}
           >
             <Stack hasGutter>
               <ReviewAndCreateStepItem
-                label={t('Installer role')}
+                label={r.installerRole}
                 value={cluster?.installer_role_arn}
                 hasIcon
               />
 
               <ReviewAndCreateStepItem
-                label={t('OIDC Config ID')}
+                label={r.oidcConfigId}
                 value={cluster?.byo_oidc_config_id}
                 hasIcon
               />
 
               <ReviewAndCreateStepItem
-                label={t('Operator roles prefix')}
+                label={r.operatorPrefix}
                 value={cluster?.custom_operator_roles_prefix}
                 hasIcon
               />
@@ -155,7 +151,7 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
             variant="link"
             isInline
           >
-            {t(`Edit Step`)}
+            {r.editStep}
           </Button>
         </SplitItem>
       </Split>
@@ -167,33 +163,30 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
             isWidthLimited
             isExpanded={isNetworkingAndSubnetsExpanded}
             onToggle={() => setIsNetworkingAndSubnetsExpanded(!isNetworkingAndSubnetsExpanded)}
-            toggleText={t('Networking and subnets')}
+            toggleText={r.networkingToggle}
           >
             <Stack hasGutter>
               {cluster?.cluster_privacy === 'external' && (
                 <ReviewAndCreateStepItem
-                  label={t('Public subnet name')}
+                  label={r.publicSubnet}
                   value={cluster?.cluster_privacy_public_subnet_id}
                   hasIcon
                 />
               )}
 
               <ReviewAndCreateStepItem
-                label={t('Install to selected VPC')}
+                label={r.installVpc}
                 value={cluster?.selected_vpc?.name}
                 hasIcon
               />
 
-              <ReviewAndCreateStepItem
-                label={t('Compute node instance type')}
-                value={cluster?.machine_type}
-              />
+              <ReviewAndCreateStepItem label={r.instanceType} value={cluster?.machine_type} />
 
               <ReviewAndCreateStepItem
-                label={t('Compute node count')}
+                label={r.computeCount}
                 value={
                   cluster?.autoscaling
-                    ? `Min: ${cluster?.min_replicas} Max: ${cluster?.max_replicas}`
+                    ? `${r.autoscalingMinPrefix} ${cluster?.min_replicas} ${r.autoscalingMaxPrefix} ${cluster?.max_replicas}`
                     : cluster?.nodes_compute
                 }
               />
@@ -201,7 +194,7 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
               <Stack hasGutter>
                 <StackItem>
                   <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
-                    <FlexItem>{t(`Machine pools`)}</FlexItem>
+                    <FlexItem>{r.machinePoolsHeading}</FlexItem>
                     <FlexItem>
                       <LockIcon />
                     </FlexItem>
@@ -232,7 +225,7 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
             variant="link"
             isInline
           >
-            {t(`Edit Step`)}
+            {r.editStep}
           </Button>
         </SplitItem>
       </Split>
@@ -244,17 +237,17 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
             isIndented
             isExpanded={isEncryptionExpanded}
             onToggle={() => setIsEncryptionExpanded(!isEncryptionExpanded)}
-            toggleText={t('Encryption (optional)')}
+            toggleText={r.encryptionToggle}
           >
             <Stack hasGutter>
               <ReviewAndCreateStepItem
-                label={t('Additional etcd encryption')}
+                label={r.additionalEtcd}
                 value={cluster?.etcd_encryption}
                 hasIcon
               />
 
               <ReviewAndCreateStepItem
-                label={t('Encryption keys')}
+                label={r.encryptionKeys}
                 value={cluster?.encryption_keys}
                 hasIcon
               />
@@ -267,7 +260,7 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
             variant="link"
             isInline
           >
-            {t(`Edit Step`)}
+            {r.editStep}
           </Button>
         </SplitItem>
       </Split>
@@ -279,29 +272,29 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
             isIndented
             isExpanded={isOptionalNetworkingExpanded}
             onToggle={() => setIsOptionalNetworkingExpanded(!isOptionalNetworkingExpanded)}
-            toggleText={t('Networking (optional)')}
+            toggleText={r.optionalNetworkingToggle}
           >
             <Stack hasGutter>
               <ReviewAndCreateStepItem
-                label={t('Machine CIDR')}
+                label={r.machineCidr}
                 value={cluster?.network_machine_cidr}
                 hasIcon
               />
 
               <ReviewAndCreateStepItem
-                label={t('Service CIDR')}
+                label={r.serviceCidr}
                 value={cluster?.network_service_cidr}
                 hasIcon
               />
 
               <ReviewAndCreateStepItem
-                label={t('Pod CIDR')}
+                label={r.podCidr}
                 value={cluster?.network_pod_cidr}
                 hasIcon
               />
 
               <ReviewAndCreateStepItem
-                label={t('Host prefix')}
+                label={r.hostPrefix}
                 value={cluster?.network_host_prefix}
                 hasIcon
               />
@@ -314,7 +307,7 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
             variant="link"
             isInline
           >
-            {t(`Edit Step`)}
+            {r.editStep}
           </Button>
         </SplitItem>
       </Split>
@@ -328,13 +321,13 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
             onToggle={() =>
               setIsOptionalClusterUpgradesExpanded(!isOptionalClusterUpgradesExpanded)
             }
-            toggleText={t('Cluster updates (optional)')}
+            toggleText={r.clusterUpdatesToggle}
           >
             <Stack hasGutter>
               <ReviewAndCreateStepItem
-                label={t('Cluster update strategy')}
+                label={r.updateStrategy}
                 value={
-                  cluster?.upgrade_policy === 'manual' ? 'Individual updates' : 'Automatic updates'
+                  cluster?.upgrade_policy === 'manual' ? r.strategyIndividual : r.strategyAutomatic
                 }
                 hasIcon
               />
@@ -350,7 +343,7 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
             variant="link"
             isInline
           >
-            {t(`Edit Step`)}
+            {r.editStep}
           </Button>
         </SplitItem>
       </Split>
