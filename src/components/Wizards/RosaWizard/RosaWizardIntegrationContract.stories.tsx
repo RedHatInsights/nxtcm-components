@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import type { WizardSubmit } from '@patternfly-labs/react-form-wizard';
 import { RosaWizard } from './RosaWizard';
 import type {
   OIDCConfig,
@@ -15,7 +16,6 @@ const mockResource = <TData,>(data: TData): Resource<TData> => ({
   data,
   error: null,
   isFetching: false,
-  fetch: async () => {},
 });
 
 const mockFetchResource = <TData, TArgs extends unknown[] = []>(
@@ -97,6 +97,11 @@ const wizardStepsData: WizardStepsData = {
   },
 };
 
+// cast only on the prop: react-form-wizard still types submit as unknown
+const integrationContractOnSubmit = async (data: RosaWizardFormData): Promise<void> => {
+  void data.cluster;
+};
+
 const meta: Meta<typeof RosaWizard> = {
   title: 'Wizards/RosaWizard/Integration Contract',
   component: RosaWizard,
@@ -111,7 +116,7 @@ Type-safe integration contract for consumers.
 - Output contract on submit: \`RosaWizardFormData\`
 - Source of truth for exported types: \`src/components/Wizards/index.ts\`
 
-This story intentionally keeps args strongly typed so TypeScript catches drift when wizard props or exports change.
+This story keeps \`wizardsStepsData\` and the submit handler body typed like consumer code (\`WizardWrapper\` uses the same \`RosaWizardFormData\` shape). The handler is cast to \`WizardSubmit\` only at the prop boundary because react-form-wizard types submit as \`unknown\`.
 `,
       },
     },
@@ -125,10 +130,7 @@ export const TypedConsumerExample: Story = {
   args: {
     title: 'Typed ROSA Wizard Integration',
     wizardsStepsData: wizardStepsData,
-    onSubmit: async (data: unknown) => {
-      const typedData = data as RosaWizardFormData;
-      void typedData.cluster;
-    },
+    onSubmit: integrationContractOnSubmit as WizardSubmit,
     onCancel: () => {
       void 0;
     },
