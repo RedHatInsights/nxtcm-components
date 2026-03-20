@@ -15,7 +15,8 @@ import {
   Grid,
   GridItem,
 } from '@patternfly/react-core';
-import { subnetsFilter } from '../../../helpers';
+import { useTranslation } from '../../../../../../context/TranslationContext';
+import { subnetsFilter, canSelectImds, getWorkerNodeVolumeSizeMaxGiB } from '../../../helpers';
 import {
   MachineTypesDropdownType,
   Resource,
@@ -33,7 +34,9 @@ import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWiza
 
 type MachinePoolsSubstepProps = {
   vpcList: Resource<VPC[]>;
-  machineTypes: Resource<MachineTypesDropdownType[]>;
+  machineTypes: Resource<MachineTypesDropdownType[], [region: string]> & {
+    fetch?: (region: string) => Promise<void>;
+  };
 };
 
 export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
@@ -41,25 +44,22 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
   const v = useRosaWizardValidators();
   const { cluster } = useItem<RosaWizardFormData>();
   const currentRegion = cluster?.region;
+  const maxRootDiskSize = getWorkerNodeVolumeSizeMaxGiB(cluster.cluster_version);
 
+  // Resets cluster_privacy_public_subnet_id when user selects private and refetch regions with the selected region
   React.useEffect(() => {
-    if (props.machineTypes.fetch) {
-      void props.machineTypes.fetch();
+    if (cluster?.cluster_privacy === 'internal') {
+      cluster.cluster_privacy_public_subnet_id = '';
     }
-  }, [currentRegion, props.machineTypes]);
+    if (props.machineTypes.fetch) void props.machineTypes.fetch(currentRegion);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const vpcRef = cluster?.selected_vpc;
   const selectedVPC =
     typeof vpcRef === 'string' ? props.vpcList.data.find((vpc: VPC) => vpc.id === vpcRef) : vpcRef;
 
   const { privateSubnets } = subnetsFilter(selectedVPC);
-
-  React.useEffect(() => {
-    if (cluster?.cluster_privacy === 'internal') {
-      cluster.cluster_privacy_public_subnet_id = '';
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <>
@@ -146,6 +146,7 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
       <ExpandableSection toggleText={mp.advancedToggle}>
         <Indented>
           <WizRadioGroup
+            disabled={!canSelectImds(cluster.cluster_version)}
             labelHelpTitle={mp.imdsHelpTitle}
             labelHelp={
               <>
@@ -178,12 +179,13 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
             label={mp.rootDiskLabel}
             labelHelp={mp.rootDiskHelp}
             min={75}
-            max={16384}
-            validation={(value) => validateRootDiskSize(value, v.rootDisk)}
+            max={maxRootDiskSize}
+            validation={(_value: number) => validateRootDiskSize(_value, v.rootDisk, maxRootDiskSize)}
           />
         </Indented>
       </ExpandableSection>
       <SecurityGroupsSection
+        clusterVersion={cluster.cluster_version}
         selectedVPC={selectedVPC}
         refreshVPCs={props.vpcList.fetch ? () => void props.vpcList.fetch?.() : undefined}
       />

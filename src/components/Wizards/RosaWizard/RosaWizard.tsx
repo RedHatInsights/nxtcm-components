@@ -27,6 +27,7 @@ import {
   VPC,
   WizardNavigationContext,
   MachineTypesDropdownType,
+  Region,
 } from '../types';
 import { MachinePoolsSubstep } from './Steps/BasicSetupStep/MachinePoolsSubstep/MachinePoolsSubstep';
 import { YamlDrawerEditor } from './Steps/YamlCodeEditor';
@@ -42,7 +43,9 @@ export type BasicSetupStepProps = {
   versions: Resource<OpenShiftVersionsData, []> & { fetch: () => Promise<void> };
   awsInfrastructureAccounts: Resource<SelectDropdownType[]>;
   awsBillingAccounts: Resource<SelectDropdownType[]>;
-  regions: Resource<SelectDropdownType[]>;
+  regions: Resource<Region[], [awsAccount: string]> & {
+    fetch: (awsAccount: string) => Promise<void>;
+  };
   roles: Resource<Role[], [awsAccount: string]> & {
     fetch: (awsAccount: string) => Promise<void>;
   };
@@ -157,8 +160,8 @@ const RosaWizardBody = (props: RosaWizardProps) => {
     data: buildVersionOptions(basicSetupStep.versions.data),
     fetch: () => basicSetupStep.versions.fetch(),
     error: null,
-    isFetching: basicSetupStep.versions.isFetching
-  }
+    isFetching: basicSetupStep.versions.isFetching,
+  };
 
   return (
     <>

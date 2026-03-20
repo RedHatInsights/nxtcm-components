@@ -1,7 +1,7 @@
 export const updateOnAWSAccountChange = async (
   value: any,
   item: any,
-  refetch?: (param?: string) => Promise<void>
+  refetch?: (param: string) => Promise<void>
 ) => {
   item.cluster.installer_role_arn = undefined;
   item.cluster.worker_role_arn = undefined;
@@ -10,5 +10,5 @@ export const updateOnAWSAccountChange = async (
   item.cluster.cluster_privacy_public_subnet_id = undefined;
   item.cluster.selected_vpc = undefined;
   item.cluster.machine_pools_subnets = undefined;
-  if(refetch) await refetch(value as string);
+  if (refetch) await refetch(value as string);
 };

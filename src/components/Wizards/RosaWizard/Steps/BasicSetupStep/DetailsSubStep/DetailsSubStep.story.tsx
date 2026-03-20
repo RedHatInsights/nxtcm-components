@@ -10,7 +10,15 @@ import {
 import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
 import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
 import { StepShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/StepShowValidationProvider';
-import { SelectDropdownType, Resource, Role } from '../../../../types';
+import {
+  SelectDropdownType,
+  Resource,
+  Role,
+  MachineTypesDropdownType,
+  Region,
+  AWSInfrastructureAccounts,
+  OpenShiftVersions,
+} from '../../../../types';
 
 export const mockOpenShiftVersions: SelectDropdownType[] = [
   { label: 'OpenShift 4.12.0', value: '4.12.0' },
@@ -37,9 +45,9 @@ export const mockRegions: SelectDropdownType[] = [
   { label: 'US West (Oregon)', value: 'us-west-2' },
 ];
 
-export const mockMachineTypes: SelectDropdownType[] = [
-  { label: 'm5.xlarge', value: 'm5.xlarge' },
-  { label: 'm5.2xlarge', value: 'm5.2xlarge' },
+export const mockMachineTypes: MachineTypesDropdownType[] = [
+  { id: '1', label: 'm5.xlarge', value: 'm5.xlarge', description: 'm5.xlarge' },
+  { id: '2', label: 'm5.2xlarge', value: 'm5.2xlarge', description: 'm5.2xlarge' },
 ];
 
 export const mockRoles: Role[] = [
@@ -62,19 +70,14 @@ export const createMockClusterData = (overrides: Record<string, unknown> = {}) =
   },
 });
 
-const mockResource = <TData,>(data: TData): Resource<TData> => ({
-  data,
-  error: null,
-  isFetching: false,
-  fetch: async () => {},
-});
-
 export interface DetailsSubStepStoryProps {
-  openShiftVersions?: Resource<SelectDropdownType[]>;
-  awsInfrastructureAccounts?: Resource<SelectDropdownType[]>;
+  openShiftVersions?: Resource<OpenShiftVersions[]>;
+  awsInfrastructureAccounts?: Resource<AWSInfrastructureAccounts[]>;
   awsBillingAccounts?: Resource<SelectDropdownType[]>;
-  regions?: Resource<SelectDropdownType[]>;
-  machineTypes?: Resource<SelectDropdownType[]>;
+  regions?: Resource<Region[], [awsAccount: string]> & {
+    fetch: (awsAccount?: string) => Promise<void>;
+  };
+  machineTypes?: Resource<MachineTypesDropdownType[]>;
   roles?: Resource<Role[], [awsAccount: string]> & {
     fetch: (awsAccount: string) => Promise<void>;
   };
@@ -100,42 +103,42 @@ export const DetailsSubStepStory: React.FC<DetailsSubStepStoryProps> = ({
     data: awsInfrastructureAccounts?.data ?? mockAwsInfrastructureAccounts,
     isFetching: awsInfrastructureAccounts?.isFetching ?? false,
     fetch: awsInfrastructureAccounts?.fetch ?? (async () => {}),
-    error: null
+    error: null,
   };
 
   const awsBillingProps = {
     data: awsBillingAccounts?.data ?? mockAwsBillingAccounts,
     isFetching: awsBillingAccounts?.isFetching ?? false,
     fetch: awsBillingAccounts?.fetch ?? (async () => {}),
-    error: null
+    error: null,
   };
 
   const regionsProps = {
     data: regions?.data ?? mockRegions,
     isFetching: regions?.isFetching ?? false,
     fetch: regions?.fetch ?? (async () => {}),
-    error: null
+    error: null,
   };
 
   const machineTypesProps = {
     data: machineTypes?.data ?? mockMachineTypes,
     isFetching: machineTypes?.isFetching ?? false,
     fetch: machineTypes?.fetch ?? (async () => {}),
-    error: null
+    error: null,
   };
 
   const openShiftVersionsProps = {
     data: openShiftVersions?.data ?? mockOpenShiftVersions,
     isFetching: openShiftVersions?.isFetching ?? false,
     fetch: openShiftVersions?.fetch ?? (async () => {}),
-    error: null
+    error: null,
   };
 
   const rolesProps = {
     data: roles?.data ?? mockRoles,
     isFetching: roles?.isFetching ?? false,
     fetch: roles?.fetch ?? (async (_awsAccount: string) => {}),
-    error: null
+    error: null,
   };
 
   return (
@@ -147,7 +150,7 @@ export const DetailsSubStepStory: React.FC<DetailsSubStepStoryProps> = ({
               <ShowValidationProvider>
                 <ValidationProvider>
                   <DetailsSubStep
-                    clusterNameValidation={{error: null, isFetching: false}}
+                    clusterNameValidation={{ error: null, isFetching: false }}
                     roles={rolesProps}
                     openShiftVersions={openShiftVersionsProps}
                     awsInfrastructureAccounts={awsInfraProps}

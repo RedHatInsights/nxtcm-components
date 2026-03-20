@@ -95,7 +95,9 @@ test.describe('DetailsSubStep', () => {
     mount,
   }) => {
     const component = await mount(
-      <DetailsSubStepStory awsInfrastructureAccounts={{ data: [], isFetching: true, error: null }} />
+      <DetailsSubStepStory
+        awsInfrastructureAccounts={{ data: [], isFetching: true, error: null }}
+      />
     );
 
     const awsSelect = component.locator('#cluster-associated_aws_id');
@@ -114,7 +116,11 @@ test.describe('DetailsSubStep', () => {
   });
 
   test('should show disabled state for Region select when loading', async ({ mount }) => {
-    const component = await mount(<DetailsSubStepStory regions={{ data: [], isFetching: true, error: null }} />);
+    const component = await mount(
+      <DetailsSubStepStory
+        regions={{ data: [], isFetching: true, error: null, fetch: async () => {} }}
+      />
+    );
 
     const regionSelect = component.locator('#cluster-region');
     await expect(regionSelect).toBeVisible();
@@ -140,13 +146,19 @@ test.describe('DetailsSubStep', () => {
   });
 
   test('should render with empty OpenShift versions', async ({ mount }) => {
-    const component = await mount(<DetailsSubStepStory openShiftVersions={{ data: [], isFetching: false, error: null }} />);
+    const component = await mount(
+      <DetailsSubStepStory openShiftVersions={{ data: [], isFetching: false, error: null }} />
+    );
 
     await expect(component.getByText('OpenShift version', { exact: true })).toBeVisible();
   });
 
   test('should render with empty regions', async ({ mount }) => {
-    const component = await mount(<DetailsSubStepStory regions={{ data: [], isFetching: false, error: null }} />);
+    const component = await mount(
+      <DetailsSubStepStory
+        regions={{ data: [], isFetching: false, error: null, fetch: async () => {} }}
+      />
+    );
 
     await expect(component.getByText('Region', { exact: true })).toBeVisible();
   });

@@ -67,7 +67,7 @@ const minimalWizardsStepsData: { basicSetupStep: BasicSetupStepProps } = {
     awsBillingAccounts: mockResource([
       { label: 'Billing Account - Main (123456789012)', value: 'billing-main-123456789012' },
     ]),
-    regions: mockResource([
+    regions: mockFetchResource([
       { label: 'US East 1, US, Virginia', value: 'us-east-1' },
       { label: 'US West 1, US, Oregon', value: 'us-west-1' },
     ]),

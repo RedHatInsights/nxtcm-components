@@ -103,6 +103,43 @@ const truncateTextWithEllipsis = (text: string, maxLength?: number) => {
   return text;
 };
 
+/**
+ * Split version string to an array.
+ *
+ * @param version cluster version raw ID (i.e. "4.13.5")
+ * @returns An array with destructuralized version [major, minor, patch, ...]
+ */
+const splitVersion = (version: string): number[] => {
+  let versionArray = [];
+  try {
+    versionArray = version.split('.').map((num) => parseInt(num, 10));
+    versionArray[1] = versionArray[1] ?? 0;
+    versionArray[2] = versionArray[2] ?? 0;
+  } catch (error) {
+    return [];
+  }
+  return versionArray;
+};
+
+const canSelectImds = (clusterVersionRawId: string): boolean => {
+  const [major, minor] = splitVersion(clusterVersionRawId);
+  return major > 4 || (major === 4 && minor >= 11);
+};
+
+/**
+ * Returns ROSA/AWS max worker node volume size, varies per cluster version.
+ * In GiB.
+ */
+const getWorkerNodeVolumeSizeMaxGiB = (clusterVersionRawId: string): number => {
+  const [major, minor] = splitVersion(clusterVersionRawId);
+  return (major > 4 || (major === 4 && minor >= 14) ? 16 : 1) * 1024;
+};
+
+const showSecurityGroupsSection = (clusterVersionRawId: string): boolean => {
+  const [major, minor] = splitVersion(clusterVersionRawId);
+  return major > 4 || (major === 4 && minor >= 14);
+};
+
 export {
   createOperatorRolesPrefix,
   stringToArray,
@@ -111,4 +148,8 @@ export {
   constructSelectedSubnets,
   subnetsFilter,
   truncateTextWithEllipsis,
+  splitVersion,
+  canSelectImds,
+  getWorkerNodeVolumeSizeMaxGiB,
+  showSecurityGroupsSection,
 };

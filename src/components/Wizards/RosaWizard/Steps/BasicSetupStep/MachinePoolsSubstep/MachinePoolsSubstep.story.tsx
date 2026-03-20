@@ -11,12 +11,6 @@ import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/conte
 import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
 import { VPC, Subnet, SecurityGroup, MachineTypesDropdownType, Resource } from '../../../../types';
 
-const mockResource = <TData,>(data: TData): Resource<TData> => ({
-  data,
-  error: null,
-  isFetching: false,
-  fetch: async () => {},
-});
 import { StepShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/StepShowValidationProvider';
 
 export const mockSecurityGroups: SecurityGroup[] = [
@@ -52,46 +46,53 @@ export const mockSubnets: Subnet[] = [
 
 export const mockVpcList: Resource<VPC[]> = {
   data: [
-  {
-    id: 'vpc-123',
-    name: 'my-production-vpc',
-    aws_subnets: mockSubnets,
-    aws_security_groups: mockSecurityGroups,
-  },
-  {
-    id: 'vpc-456',
-    name: 'my-staging-vpc',
-    aws_subnets: [
-      {
-        subnet_id: 'subnet-staging-private',
-        name: 'staging-private-subnet',
-        availability_zone: 'us-west-2a',
-      },
-      {
-        subnet_id: 'subnet-staging-public',
-        name: 'staging-public-subnet',
-        availability_zone: 'us-west-2a',
-      },
-    ],
-    aws_security_groups: [],
-  },
-],
-error: null,
-isFetching: false};
+    {
+      id: 'vpc-123',
+      name: 'my-production-vpc',
+      aws_subnets: mockSubnets,
+      aws_security_groups: mockSecurityGroups,
+    },
+    {
+      id: 'vpc-456',
+      name: 'my-staging-vpc',
+      aws_subnets: [
+        {
+          subnet_id: 'subnet-staging-private',
+          name: 'staging-private-subnet',
+          availability_zone: 'us-west-2a',
+        },
+        {
+          subnet_id: 'subnet-staging-public',
+          name: 'staging-public-subnet',
+          availability_zone: 'us-west-2a',
+        },
+      ],
+      aws_security_groups: [],
+    },
+  ],
+  error: null,
+  isFetching: false,
+};
 
 export const mockMachineTypesData: Resource<MachineTypesDropdownType[]> = {
   data: [
-  { id: 'm5.xlarge', label: 'm5.xlarge', description: '4 vCPU, 16 GiB Memory', value: 'm5.xlarge' },
-  {
-    id: 'm5.2xlarge',
-    label: 'm5.2xlarge',
-    description: '8 vCPU, 32 GiB Memory',
-    value: 'm5.2xlarge',
-  },
-  { id: 'r5.large', label: 'r5.large', description: '2 vCPU, 16 GiB Memory', value: 'r5.large' },
-],
-error: null,
-isFetching: false};
+    {
+      id: 'm5.xlarge',
+      label: 'm5.xlarge',
+      description: '4 vCPU, 16 GiB Memory',
+      value: 'm5.xlarge',
+    },
+    {
+      id: 'm5.2xlarge',
+      label: 'm5.2xlarge',
+      description: '8 vCPU, 32 GiB Memory',
+      value: 'm5.2xlarge',
+    },
+    { id: 'r5.large', label: 'r5.large', description: '2 vCPU, 16 GiB Memory', value: 'r5.large' },
+  ],
+  error: null,
+  isFetching: false,
+};
 
 export const createMockClusterData = (overrides: Record<string, unknown> = {}) => ({
   cluster: {
@@ -127,7 +128,6 @@ export const MachinePoolsSubstepStory: React.FC<MachinePoolsSubstepStoryProps> =
     setData((currentData) => ({ ...currentData }));
   }, []);
 
-
   return (
     <RosaWizardStringsProvider>
       <DataContext.Provider value={{ update }}>
@@ -136,7 +136,7 @@ export const MachinePoolsSubstepStory: React.FC<MachinePoolsSubstepStoryProps> =
             <StepShowValidationProvider>
               <ShowValidationProvider>
                 <ValidationProvider>
-                  <MachinePoolsSubstep vpcList={vpcList} machineTypes={mockMachineTypesData} />
+                  <MachinePoolsSubstep vpcList={vpcList} machineTypes={machineTypes} />
                 </ValidationProvider>
               </ShowValidationProvider>
             </StepShowValidationProvider>

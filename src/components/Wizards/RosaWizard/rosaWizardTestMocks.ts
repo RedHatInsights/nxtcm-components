@@ -99,7 +99,7 @@ export const rosaWizardMockStepsData: WizardStepsData = {
     awsBillingAccounts: mockResource([
       { label: 'Billing Account - Main (123456789012)', value: 'billing-main-123456789012' },
     ]),
-    regions: mockResource([
+    regions: mockFetchResource([
       { label: 'US East (N. Virginia)', value: 'us-east-1' },
       { label: 'US West (Oregon)', value: 'us-west-2' },
     ]),
