@@ -144,11 +144,11 @@ export const defaultRosaWizardStrings: RosaWizardStrings = {
     installerLearnMoreLink: 'Learn more about roles.',
     arnsToggle: 'Amazon Resource Names (ARNs)',
     supportRoleLabel: 'Support role',
-    supportPlaceholder: 'Select an AWS infrastructure account',
+    supportPlaceholder: 'Select a support role',
     supportHelp:
       'An IAM role used by the Red Hat Site Reliability Engineering (SRE) support team. The role is used with the corresponding policy resource to provide the Red Hat SRE support team with the permissions required to support ROSA clusters.',
     workerRoleLabel: 'Worker role',
-    workerPlaceholder: 'Select an AWS infrastructure account',
+    workerPlaceholder: 'Select a worker role',
     workerHelp:
       'An IAM role used by the ROSA compute instances. The role is used with the corresponding policy resource to provide the compute instances with the permissions required to manage their components.',
     operatorRolesSection: 'Operator roles',
