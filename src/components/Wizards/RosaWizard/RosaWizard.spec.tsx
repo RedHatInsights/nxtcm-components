@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/experimental-ct-react';
 import React from 'react';
 import { RosaWizard } from './RosaWizard';
 import { RosaWizardErrorThenBackToReviewMount } from './RosaWizard.spec-helpers';
-import { TranslationProvider } from '../../../context/TranslationContext';
 import { checkAccessibility } from '../../../test-helpers';
 import { RosaWizardMount } from './RosaWizard.ct';
 import type { BasicSetupStepProps } from './RosaWizard';
@@ -115,11 +114,7 @@ const defaultProps = {
 };
 
 function mountRosaWizard(overrides: Record<string, unknown> = {}) {
-  return (
-    <TranslationProvider>
-      <RosaWizard {...defaultProps} {...overrides} />
-    </TranslationProvider>
-  );
+  return <RosaWizard {...defaultProps} {...overrides} />;
 }
 
 test.describe('RosaWizard', () => {

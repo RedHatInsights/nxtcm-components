@@ -1,6 +1,5 @@
 import { Section, WizTextInput, WizFileUpload, useItem } from '@patternfly-labs/react-form-wizard';
 import { Alert, Content, ContentVariants, Grid, GridItem } from '@patternfly/react-core';
-import { useTranslation } from '../../../../../../context/TranslationContext';
 import {
   checkNoProxyDomains,
   composeValidators,
@@ -9,47 +8,38 @@ import {
 } from '../../../validators';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
+import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
 
 export const ClusterWideProxySubstep = () => {
-  const { t } = useTranslation();
+  const cw = useRosaWizardStrings().clusterWideProxy;
+  const v = useRosaWizardValidators();
   const { cluster } = useItem();
 
   const validateAtLeastOne = () => {
     if (!cluster.http_proxy_url && !cluster.https_proxy_url && !cluster.additional_trust_bundle) {
-      return 'Configure at least one of the cluster-wide proxy fields.';
+      return v.proxyConfigureAtLeastOne;
     }
     return undefined;
   };
-  const validateUrlHttp = (value: string) => validateUrl(value, 'http');
-  const validateUrlHttps = (value: string) => validateUrl(value, ['http', 'https']);
+  const validateUrlHttp = (value: string) => validateUrl(value, 'http', v.url);
+  const validateUrlHttps = (value: string) => validateUrl(value, ['http', 'https'], v.url);
 
   return (
     <Section
       id="cluster-wide-proxy-section-id"
       key="cluster-wide-proxy-section-key"
-      label={t('Cluster-wide proxy')}
+      label={cw.sectionLabel}
     >
-      <Content component={ContentVariants.p}>
-        {t(
-          'Enable an HTTP or HTTPS proxy to deny direct access to the internet from your cluster.'
-        )}
-      </Content>
-      <ExternalLink href={links.CONFIGURE_PROXY_URL}>
-        Learn more about configuring a cluster-wide proxy
-      </ExternalLink>
-      <Alert
-        variant="info"
-        isInline
-        isPlain
-        title={t('Configure at least 1 of the following fields:')}
-      />
+      <Content component={ContentVariants.p}>{cw.intro}</Content>
+      <ExternalLink href={links.CONFIGURE_PROXY_URL}>{cw.learnMoreLink}</ExternalLink>
+      <Alert variant="info" isInline isPlain title={cw.alertConfigureFields} />
       <Grid>
         <GridItem span={7}>
           <WizTextInput
             validation={composeValidators(validateUrlHttp, validateAtLeastOne)}
             validateOnBlur
-            label={t('HTTP proxy URL')}
-            helperText={t('Specify a proxy URL to use for HTTP connections outside the cluster.')}
+            label={cw.httpLabel}
+            helperText={cw.httpHelp}
             path="cluster.http_proxy_url"
           />
         </GridItem>
@@ -57,8 +47,8 @@ export const ClusterWideProxySubstep = () => {
           <WizTextInput
             validation={composeValidators(validateUrlHttps, validateAtLeastOne)}
             validateOnBlur
-            label={t('HTTPS proxy URL')}
-            helperText={t('Specify a proxy URL to use for HTTPS connections outside the cluster.')}
+            label={cw.httpsLabel}
+            helperText={cw.httpsHelp}
             path="cluster.https_proxy_url"
           />
         </GridItem>
@@ -66,19 +56,20 @@ export const ClusterWideProxySubstep = () => {
           <WizTextInput
             disabled={!cluster.http_proxy_url && !cluster.https_proxy_url}
             validateOnBlur
-            validation={(value) => checkNoProxyDomains(value)}
-            label={t('No Proxy domains')}
-            helperText={t(
-              'Preface a domain with . to match subdomains only. For example, .y.com matches x.y.com, but not y.com. Use * to bypass proxy for all destinations.'
-            )}
+            validation={(value) => checkNoProxyDomains(value, v.noProxyDomains)}
+            label={cw.noProxyLabel}
+            helperText={cw.noProxyHelp}
             path="cluster.no_proxy_domains"
           />
         </GridItem>
         <GridItem span={7}>
           <WizFileUpload
-            label={t('Additional trust bundle')}
+            label={cw.trustBundleLabel}
             path="cluster.additional_trust_bundle"
-            validation={composeValidators(validateCA, validateAtLeastOne)}
+            validation={composeValidators(
+              (value: string) => validateCA(value, v.ca),
+              () => validateAtLeastOne()
+            )}
           />
         </GridItem>
       </Grid>

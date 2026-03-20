@@ -3,10 +3,10 @@ import { Button, Grid, GridItem, Stack, StackItem } from '@patternfly/react-core
 import React from 'react';
 import { StepDrawer } from '../../../common/StepDrawer';
 import { Resource, Role, SelectDropdownType, ValidationResource } from '../../../../types';
-import { useTranslation } from '../../../../../../context/TranslationContext';
 import { validateClusterName } from '../../../validators';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
+import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
 
 type DetailsSubStepProps = {
   clusterNameValidation: ValidationResource;
@@ -31,13 +31,15 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   awsBillingAccounts,
   regions,
 }) => {
-  const { t } = useTranslation();
+  const d = useRosaWizardStrings().details;
+  const v = useRosaWizardValidators();
+
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const drawerRef = React.useRef<HTMLSpanElement>(null);
   const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
 
   return (
-    <Section label={t('Details')}>
+    <Section label={d.sectionLabel}>
       <StepDrawer
         isDrawerExpanded={isDrawerExpanded}
         setIsDrawerExpanded={setIsDrawerExpanded}
@@ -52,13 +54,11 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                     validateClusterName(name, item) || clusterNameValidation.error || undefined
                   }
                   path="cluster.name"
-                  label={t('Cluster name')}
+                  label={d.clusterNameLabel}
                   validateOnBlur
-                  placeholder={t('Enter the cluster name')}
+                  placeholder={d.clusterNamePlaceholder}
                   required
-                  labelHelp={t(
-                    'This will be how we refer to your cluster in the OpenShift cluster list and will form part of the cluster console subdomain.'
-                  )}
+                  labelHelp={d.clusterNameHelp}
                 />
               </GridItem>
             </Grid>
@@ -70,8 +70,8 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                 <WizSelect
                   isFill
                   path="cluster.cluster_version"
-                  label={t('OpenShift version')}
-                  placeholder={t('Select an OpenShift version')}
+                  label={d.openShiftVersionLabel}
+                  placeholder={d.openShiftVersionPlaceholder}
                   options={openShiftVersions}
                   disabled={versionsIsPending}
                   refreshCallback={refreshVersionsCallback}
@@ -87,15 +87,12 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                 <WizSelect
                   isFill
                   path="cluster.associated_aws_id"
-                  label={t('Associated AWS infrastructure account')}
-                  placeholder={t('Select an AWS infrastructure account')}
-                  labelHelp={t(
-                    "Your cluster's cloud resources will be created in the associated AWS infrastructure account. To continue, you must associate at least 1 account."
-                  )}
+                  label={d.awsInfraLabel}
+                  placeholder={d.awsInfraPlaceholder}
+                  labelHelp={d.awsInfraHelp}
                   options={awsInfrastructureAccounts.data}
                   disabled={awsInfrastructureAccounts.isFetching}
                   onValueChange={(_newAccountId, item) => {
-                    // reset downstream role arns when account changes
                     item.cluster.installer_role_arn = undefined;
                     item.cluster.worker_role_arn = undefined;
                     item.cluster.support_role_arn = undefined;
@@ -119,7 +116,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                 variant="link"
                 onClick={() => setIsDrawerExpanded((prevExpanded) => !prevExpanded)}
               >
-                {t('Associate a new AWS account')}
+                {d.associateNewAccount}
               </Button>
             )}
           </StackItem>
@@ -130,11 +127,9 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                 <WizSelect
                   isFill
                   path="cluster.billing_account_id"
-                  label={t('Associated AWS billing account')}
-                  placeholder={t('Select an AWS billing account')}
-                  labelHelp={t(
-                    'The AWS billing account is often the same as your Associated AWS infrastructure account, but does not have to be.'
-                  )}
+                  label={d.billingLabel}
+                  placeholder={d.billingPlaceholder}
+                  labelHelp={d.billingHelp}
                   options={awsBillingAccounts.data}
                   disabled={awsBillingAccounts.isFetching}
                   required
@@ -149,7 +144,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
               className="pf-v6-u-mt-md"
               href={links.AWS_CONSOLE_ROSA_HOME}
             >
-              Connect ROSA to a new AWS billing account
+              {d.connectBillingLink}
             </ExternalLink>
           </StackItem>
           <StackItem>
@@ -158,11 +153,9 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                 <WizSelect
                   isFill
                   path="cluster.region"
-                  label={t('Region')}
-                  placeholder={t('Select a region')}
-                  labelHelp={t(
-                    'The AWS Region where your compute nodes and control plane will be located. (should be link: Learn more abut AWS Regions.)'
-                  )}
+                  label={d.regionLabel}
+                  placeholder={d.regionPlaceholder}
+                  labelHelp={d.regionHelp}
                   options={regions.data}
                   disabled={regions.isFetching}
                   required

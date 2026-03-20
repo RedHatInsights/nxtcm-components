@@ -15,7 +15,6 @@ import {
   Grid,
   GridItem,
 } from '@patternfly/react-core';
-import { useTranslation } from '../../../../../../context/TranslationContext';
 import { subnetsFilter } from '../../../helpers';
 import {
   MachineTypesDropdownType,
@@ -30,6 +29,7 @@ import links from '../../../externalLinks';
 import { Indented } from '@patternfly-labs/react-form-wizard/components/Indented';
 import { validateRootDiskSize } from '../../../validators';
 import { SecurityGroupsSection } from './SecurityGroupSection/SecurityGroupSection';
+import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
 
 type MachinePoolsSubstepProps = {
   vpcList: Resource<VPC[]>;
@@ -37,7 +37,8 @@ type MachinePoolsSubstepProps = {
 };
 
 export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
-  const { t } = useTranslation();
+  const mp = useRosaWizardStrings().machinePools;
+  const v = useRosaWizardValidators();
   const { cluster } = useItem<RosaWizardFormData>();
 
   const vpcRef = cluster?.selected_vpc;
@@ -46,7 +47,6 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
 
   const { privateSubnets } = subnetsFilter(selectedVPC);
 
-  // Resets cluster_privacy_public_subnet_id when user selects private
   React.useEffect(() => {
     if (cluster?.cluster_privacy === 'internal') {
       cluster.cluster_privacy_public_subnet_id = '';
@@ -56,12 +56,8 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
 
   return (
     <>
-      <Section label={t('Machine pools')} id="machine-pools-section" key="machine-pools-key">
-        <Content component={ContentVariants.p}>
-          {t(
-            'Create machine pools and specify the private subnet for each machine pool. To allow high availability for your workloads, add machine pools on different availablity zones.'
-          )}
-        </Content>
+      <Section label={mp.sectionLabel} id="machine-pools-section" key="machine-pools-key">
+        <Content component={ContentVariants.p}>{mp.intro}</Content>
 
         <Grid>
           <GridItem span={5}>
@@ -71,17 +67,15 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
                   item.cluster.security_groups_worker = [];
                 }
               }}
-              label={`${t('Select a VPC to install your machine pools into your selected regions:')} ${cluster?.region}`}
+              label={`${mp.vpcLabelPrefix} ${cluster?.region}`}
               path="cluster.selected_vpc"
               keyPath="id"
-              placeholder={t('Select a VPC to install your machine pools into')}
+              placeholder={mp.vpcPlaceholder}
               required
               labelHelp={
                 <>
-                  {t(
-                    'To create a cluster hosted by Red Hat, you must have a Virtual Private Cloud (VPC) available to create clusters on.'
-                  )}{' '}
-                  <ExternalLink href={links.ROSA_SHARED_VPC}>Learn more about VPCs.</ExternalLink>
+                  {mp.vpcHelpLead}{' '}
+                  <ExternalLink href={links.ROSA_SHARED_VPC}>{mp.vpcLearnMoreLink}</ExternalLink>
                 </>
               }
               options={props.vpcList.data.map((vpc: VPC) => ({
@@ -96,10 +90,10 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
         <WizMachinePoolSelect
           required
           path="cluster.machine_pools_subnets"
-          machinePoolLabel={t('Machine pool')}
-          subnetLabel={t('Private subnet name')}
-          addMachinePoolBtnLabel={t('Add machine pool')}
-          selectPlaceholder={t('Select private subnet')}
+          machinePoolLabel={mp.machinePoolLabel}
+          subnetLabel={mp.subnetLabel}
+          addMachinePoolBtnLabel={mp.addPoolButton}
+          selectPlaceholder={mp.subnetPlaceholder}
           subnetOptions={privateSubnets?.map((subnet: Subnet) => ({
             label: subnet.name,
             value: subnet.subnet_id,
@@ -109,27 +103,23 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
         />
       </Section>
       <Section
-        label={t('Machine pools settings')}
+        label={mp.settingsSectionLabel}
         id="machine-pools-settings-section"
         key="machine-pools-settings-key"
       >
-        <Content component={ContentVariants.p}>
-          {t(
-            'The following settings apply to all machine pools created during cluster install. Additional machine pools can be created after cluster creation.'
-          )}
-        </Content>
+        <Content component={ContentVariants.p}>{mp.settingsIntro}</Content>
         <Grid>
           <GridItem span={5}>
             <WizSelect
-              label={t('Compute node instance type')}
+              label={mp.instanceTypeLabel}
               path="cluster.machine_type"
               required
               labelHelp={
                 <>
-                  {t(
-                    'Instance types are made from varying combinations of CPU, memory, storage, and networking capacity. Instance type availability depends on regional availability and your AWS account configuration.'
-                  )}{' '}
-                  <ExternalLink href={links.ROSA_INSTANCE_TYPES}>Learn more.</ExternalLink>
+                  {mp.instanceTypeHelpLead}{' '}
+                  <ExternalLink href={links.ROSA_INSTANCE_TYPES}>
+                    {mp.instanceTypeLearnMore}
+                  </ExternalLink>
                 </>
               }
               options={props.machineTypes.data}
@@ -145,49 +135,43 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
         />
       </Section>
 
-      <ExpandableSection toggleText="Advanced machine pool configuration (optional)">
+      <ExpandableSection toggleText={mp.advancedToggle}>
         <Indented>
           <WizRadioGroup
-            labelHelpTitle="Amazon EC2 Instance Metadata Service (IMDS)"
+            labelHelpTitle={mp.imdsHelpTitle}
             labelHelp={
               <>
-                <Content component={ContentVariants.p}>
-                  Instance metadata is data that is related to an Amazon Elastic Compute Cloud
-                  (Amazon EC2) instance that applications can use to configure or manage the running
-                  instance.
-                </Content>
+                <Content component={ContentVariants.p}>{mp.imdsHelpP1}</Content>
                 <Content component={ContentVariants.p}>
                   {/* TODO: External link component is in another PR */}
                   {/* <ExternalLink href={links.AWS_IMDS}>Learn more about IMDS</ExternalLink> */}
                 </Content>
               </>
             }
-            label="Instance Metadata Service"
+            label={mp.imdsLabel}
             path="cluster.imds"
           >
             <Radio
               id="cluster-metadata-service-imdsv1-imdsv2-btn"
-              label={t('Use both IMDSv1 and IMDSv2')}
+              label={mp.imdsBothLabel}
               value="imdsv1andimdsv2"
-              description={t('Allows use of both IMDS versions for backward compatibility')}
+              description={mp.imdsBothDescription}
             />
             <Radio
               id="cluster-metadata-service-imdsv2-only-btn"
-              label={t('Use IMDSv2 only')}
+              label={mp.imdsV2Label}
               value="imdsv2only"
-              description={t('A session-oriented method with enhanced security')}
+              description={mp.imdsV2Description}
             />
           </WizRadioGroup>
 
           <WizNumberInput
             path="cluster.compute_root_volume"
-            label={t('Root disk size')}
-            labelHelp={t(
-              'Root disks are AWS EBS volumes attached as the primary disk for AWS EC2 instances. The root disk size for this machine pool group of nodes must be between 75GiB and 16384GiB.'
-            )}
+            label={mp.rootDiskLabel}
+            labelHelp={mp.rootDiskHelp}
             min={75}
             max={16384}
-            validation={validateRootDiskSize}
+            validation={(value) => validateRootDiskSize(value, v.rootDisk)}
           />
         </Indented>
       </ExpandableSection>

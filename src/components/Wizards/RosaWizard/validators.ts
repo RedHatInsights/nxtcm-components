@@ -20,6 +20,17 @@ import {
 import { parseCIDRSubnetLength, stringToArray } from './helpers';
 import IPCIDR from 'ip-cidr';
 import { CIDRSubnet } from '../types';
+import {
+  defaultRosaWizardValidatorStrings,
+  type RosaWizardCaValidatorStrings,
+  type RosaWizardClusterNameValidatorStrings,
+  type RosaWizardKmsKeyValidatorStrings,
+  type RosaWizardNoProxyValidatorStrings,
+  type RosaWizardOperatorRolesPrefixValidatorStrings,
+  type RosaWizardReplicaValidatorStrings,
+  type RosaWizardSecurityGroupsValidatorStrings,
+  type RosaWizardUrlValidatorStrings,
+} from './rosaWizardStrings';
 
 const lowercaseAlphaNumericCharacters = 'abcdefghijklmnopqrstuvwxyz1234567890';
 
@@ -40,40 +51,38 @@ export const composeValidators =
     return undefined;
   };
 
-// TODO: remove any when i18next is implemented
-export function validateClusterName(value: string, _item: unknown, t?: any) {
-  t = t ? t : (value: any) => value;
+export function validateClusterName(
+  value: string,
+  _item?: unknown,
+  msgs: RosaWizardClusterNameValidatorStrings = defaultRosaWizardValidatorStrings.clusterName
+) {
   if (!value) return undefined;
-  if (value.length > 54) return `${t('This value can contain at most 54 characters')}`;
+  if (value.length > 54) return msgs.maxLength;
   for (const char of value) {
     if (!lowercaseAlphaNumericCharacters.includes(char) && char !== '-' && char !== '.')
-      return `${t("This value can only contain lowercase alphanumeric characters or '-' or '.'")}`;
+      return msgs.invalidChars;
   }
-  if (!lowercaseAlphaNumericCharacters.includes(value[0]))
-    return `${t('This value must start with an alphanumeric character')}`;
-  if (/^[0-9]/.test(value[0])) return `${t('This value must not start with a number')}`;
+  if (!lowercaseAlphaNumericCharacters.includes(value[0])) return msgs.mustStartAlphanumeric;
+  if (/^[0-9]/.test(value[0])) return msgs.mustNotStartNumber;
   if (!lowercaseAlphaNumericCharacters.includes(value[value.length - 1]))
-    return `${t('This value must end with an alphanumeric character')}`;
+    return msgs.mustEndAlphanumeric;
   return undefined;
 }
 
 export const validateCustomOperatorRolesPrefix = (
   value: string,
-  _item: unknown,
-  t?: any
+  _item?: unknown,
+  msgs: RosaWizardOperatorRolesPrefixValidatorStrings = defaultRosaWizardValidatorStrings.operatorRolesPrefix
 ): string | undefined => {
-  t = t ? t : (value: any) => value;
-  const label = 'Custom operator roles prefix';
+  const label = msgs.fieldLabel;
   if (!value) {
     return undefined;
   }
   if (!DNS_LABEL_REGEXP.test(value)) {
-    const validationErrorString = `${label} '${value}' isn't valid, must consist of lower-case alphanumeric characters or '-', start with an alphabetic character, and end with an alphanumeric character. For example, 'my-name', or 'abc-123'.`;
-    return t(validationErrorString);
+    return msgs.invalidFormat(label, value);
   }
   if (value.length > MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH) {
-    const validationErrorString = `${label} may not exceed ${MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH} characters.`;
-    return t(validationErrorString);
+    return msgs.tooLong(label, MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH);
   }
   return undefined;
 };
@@ -81,15 +90,14 @@ export const validateCustomOperatorRolesPrefix = (
 export const validateAWSKMSKeyARN = (
   value: string,
   region: string,
-  t?: any
+  msgs: RosaWizardKmsKeyValidatorStrings = defaultRosaWizardValidatorStrings.kmsKeyArn
 ): string | undefined => {
-  t = t ? t : (value: any) => value;
   if (!value) {
-    return `${t('Field is required.')}`;
+    return msgs.required;
   }
 
   if (/\s/.test(value)) {
-    return `${t('Value must not contain whitespaces.')}`;
+    return msgs.noWhitespace;
   }
 
   if (
@@ -97,18 +105,21 @@ export const validateAWSKMSKeyARN = (
       ? !AWS_KMS_MULTI_REGION_SERVICE_ACCOUNT_REGEX.test(value)
       : !AWS_KMS_SERVICE_ACCOUNT_REGEX.test(value)
   ) {
-    return `${t('Key provided is not a valid ARN. It should be in the format "arn:aws:kms:<region>:<accountid>:key/<keyid>".')}`;
+    return msgs.invalidArn;
   }
 
   const kmsRegion = value.split('kms:')?.pop()?.split(':')[0];
   if (kmsRegion !== region) {
-    return `${t('Your KMS key must contain your selected region.')}`;
+    return msgs.wrongRegion;
   }
 
   return undefined;
 };
 
-export const checkNoProxyDomains = (value?: string) => {
+export const checkNoProxyDomains = (
+  value?: string,
+  msgs: RosaWizardNoProxyValidatorStrings = defaultRosaWizardValidatorStrings.noProxyDomains
+) => {
   const stringArray = stringToArray(value);
   if (stringArray && stringArray.length > 0) {
     const invalidDomains = stringArray.filter(
@@ -116,16 +127,16 @@ export const checkNoProxyDomains = (value?: string) => {
     );
     const plural = invalidDomains.length > 1;
     if (invalidDomains.length > 0) {
-      return `The domain${plural ? 's' : ''} '${invalidDomains.join(', ')}' ${
-        plural ? "aren't" : "isn't"
-      } valid, 
-      must contain at least two valid lower-case DNS labels separated by dots, for example 'domain.com' or 'sub.domain.com'.`;
+      return msgs.invalidDomains(invalidDomains.join(', '), plural);
     }
   }
   return undefined;
 };
 
-export const validateCA = (value: string): string | undefined => {
+export const validateCA = (
+  value: string,
+  msgs: RosaWizardCaValidatorStrings = defaultRosaWizardValidatorStrings.ca
+): string | undefined => {
   if (!value) {
     return undefined;
   }
@@ -133,17 +144,18 @@ export const validateCA = (value: string): string | undefined => {
     /-----BEGIN\s+(CERTIFICATE|TRUSTED CERTIFICATE|X509 CRL)-----[\s\S]+?-----END\s+(CERTIFICATE|TRUSTED CERTIFICATE|X509 CRL)-----/;
 
   if (value.length > MAX_CA_SIZE_BYTES) {
-    return 'File must be no larger than 4 MB';
+    return msgs.fileTooLarge;
   }
   if (!pemRegex.test(value)) {
-    return 'Must be a PEM encoded X.509 file (.pem, .crt, .ca, .cert) and no larger than 4 MB';
+    return msgs.invalidPem;
   }
   return undefined;
 };
 
 export const validateUrl = (
   value: string,
-  protocol: string | string[] = 'http'
+  protocol: string | string[] = 'http',
+  msgs: RosaWizardUrlValidatorStrings = defaultRosaWizardValidatorStrings.url
 ): string | undefined => {
   if (!value) {
     return undefined;
@@ -158,13 +170,13 @@ export const validateUrl = (
     // eslint-disable-next-line no-new
     new URL(value);
   } catch (error) {
-    return 'Invalid URL';
+    return msgs.invalid;
   } finally {
     const valueStart = value.substring(0, value.indexOf('://'));
     if (!protocolArr.includes(valueStart)) {
       const protocolStr = protocolArr.map((p) => `${p}://`).join(', ');
       // eslint-disable-next-line no-unsafe-finally
-      return `The URL should include the scheme prefix (${protocolStr})`;
+      return msgs.schemePrefix(protocolStr);
     }
   }
   return undefined;
@@ -473,15 +485,18 @@ export const validateNumericInput = (
   return undefined;
 };
 
-export const validatePositiveInteger = (value: number | undefined): string | undefined => {
+export const validatePositiveInteger = (
+  value: number | undefined,
+  msgs: RosaWizardReplicaValidatorStrings = defaultRosaWizardValidatorStrings.replicas
+): string | undefined => {
   if (value === undefined || value === null) {
     return undefined;
   }
   if (!Number.isInteger(value)) {
-    return 'Input must be an integer.';
+    return msgs.notInteger;
   }
   if (value <= 0) {
-    return 'Input must be a positive number.';
+    return msgs.notPositive;
   }
   return undefined;
 };
@@ -489,21 +504,22 @@ export const validatePositiveInteger = (value: number | undefined): string | und
 export const validateMinReplicas = (
   value: number | undefined,
   item?: unknown,
-  machinePoolsNumber?: number
+  machinePoolsNumber?: number,
+  msgs: RosaWizardReplicaValidatorStrings = defaultRosaWizardValidatorStrings.replicas
 ): string | undefined => {
-  const positiveError = validatePositiveInteger(value);
+  const positiveError = validatePositiveInteger(value, msgs);
   if (positiveError) return positiveError;
   const typedItem = item as { cluster?: { max_replicas?: number } } | undefined;
   if (value !== undefined && value > 500) {
-    return 'Input cannot be more than 500.';
+    return msgs.maxNodes(500);
   }
   if (value !== undefined && typedItem?.cluster?.max_replicas !== undefined) {
     if (value > typedItem?.cluster?.max_replicas) {
-      return 'Min nodes cannot be greater than max nodes.';
+      return msgs.minGreaterThanMax;
     }
   }
   if (machinePoolsNumber && machinePoolsNumber < 2 && value !== undefined && value < 2) {
-    return 'Input cannot be less than 2 nodes.';
+    return msgs.computeMinTwo;
   }
   return undefined;
 };
@@ -511,9 +527,10 @@ export const validateMinReplicas = (
 export const validateMaxReplicas = (
   value: number | undefined,
   item?: unknown,
-  maxNodeBasedOnOpenshiftVersion?: number
+  maxNodeBasedOnOpenshiftVersion?: number,
+  msgs: RosaWizardReplicaValidatorStrings = defaultRosaWizardValidatorStrings.replicas
 ): string | undefined => {
-  const positiveError = validatePositiveInteger(value);
+  const positiveError = validatePositiveInteger(value, msgs);
   if (positiveError) return positiveError;
   const typedItem = item as { cluster?: { min_replicas?: number } } | undefined;
   if (
@@ -521,39 +538,48 @@ export const validateMaxReplicas = (
     maxNodeBasedOnOpenshiftVersion !== undefined &&
     value > maxNodeBasedOnOpenshiftVersion
   ) {
-    return `Input cannot be more than ${maxNodeBasedOnOpenshiftVersion}.`;
+    return msgs.maxNodes(maxNodeBasedOnOpenshiftVersion);
   }
   if (value !== undefined && typedItem?.cluster?.min_replicas !== undefined) {
     if (value < typedItem?.cluster?.min_replicas) {
-      return 'Max nodes must be greater than or equal to min nodes.';
+      return msgs.maxLessThanMin;
     }
   }
   return undefined;
 };
 
-export const validateComputeNodes = (value: number | undefined): string | undefined => {
-  return validatePositiveInteger(value);
+export const validateComputeNodes = (
+  value: number | undefined,
+  msgs: RosaWizardReplicaValidatorStrings = defaultRosaWizardValidatorStrings.replicas
+): string | undefined => {
+  return validatePositiveInteger(value, msgs);
 };
 
-export const validateRootDiskSize = (value: number | undefined): string | undefined => {
+export const validateRootDiskSize = (
+  value: number | undefined,
+  msgs = defaultRosaWizardValidatorStrings.rootDisk
+): string | undefined => {
   if (value === undefined || value === null) {
     return undefined;
   }
   if (!Number.isInteger(value)) {
-    return 'Root disk size must be an integer.';
+    return msgs.notInteger;
   }
   if (value < 75) {
-    return 'Root disk size must be at least 75 GiB.';
+    return msgs.tooSmall;
   }
   if (value > 16384) {
-    return 'Root disk size must not exceed 16384 GiB.';
+    return msgs.tooLarge;
   }
   return undefined;
 };
 
-export const validateSecurityGroups = (securityGroups: string[]) => {
+export const validateSecurityGroups = (
+  securityGroups: string[],
+  msgs: RosaWizardSecurityGroupsValidatorStrings = defaultRosaWizardValidatorStrings.securityGroups
+) => {
   const maxSecurityGroups = 10;
   return securityGroups?.length && securityGroups.length > maxSecurityGroups
-    ? `A maximum of ${maxSecurityGroups} security groups can be selected.`
+    ? msgs.maxExceeded(maxSecurityGroups)
     : undefined;
 };

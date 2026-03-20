@@ -1,16 +1,13 @@
 import { ClipboardCopyVariant, Content, ContentVariants } from '@patternfly/react-core';
 import { CopyInstruction } from './CopyInstruction';
-import { useTranslation } from '../../../../context/TranslationContext';
+import { useRosaWizardStrings } from '../RosaWizardStringsContext';
 
 export const OIDCConfigHint = () => {
-  const { t } = useTranslation();
+  const { oidcHint } = useRosaWizardStrings();
+
   return (
     <>
-      <Content component={ContentVariants.p}>
-        {t(
-          'Create a new OIDC config ID by running the following commands in your CLI. Then, refresh and select the new config ID from the dropdown.'
-        )}
-      </Content>
+      <Content component={ContentVariants.p}>{oidcHint.instructions}</Content>
       <CopyInstruction variant={ClipboardCopyVariant.expansion}>
         rosa login --use-auth-code --url https://api.stage.openshift.com
         {/* TODO: This should be at least production */}

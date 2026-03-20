@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { RolesAndPoliciesSubStep } from './RolesAndPoliciesSubStep';
-import { TranslationProvider } from '../../../../../../context/TranslationContext';
+import { RosaWizardStringsProvider } from '../../../RosaWizardStringsContext';
 import { ItemContext } from '@patternfly-labs/react-form-wizard/contexts/ItemContext';
 import { DataContext } from '@patternfly-labs/react-form-wizard/contexts/DataContext';
 import {
@@ -98,7 +98,7 @@ export const RolesAndPoliciesSubStepStory: React.FC<RolesAndPoliciesSubStepStory
   }, []);
 
   return (
-    <TranslationProvider>
+    <RosaWizardStringsProvider>
       <DataContext.Provider value={{ update }}>
         <DisplayModeContext.Provider value={DisplayMode.Step}>
           <ItemContext.Provider value={data}>
@@ -110,6 +110,6 @@ export const RolesAndPoliciesSubStepStory: React.FC<RolesAndPoliciesSubStepStory
           </ItemContext.Provider>
         </DisplayModeContext.Provider>
       </DataContext.Provider>
-    </TranslationProvider>
+    </RosaWizardStringsProvider>
   );
 };

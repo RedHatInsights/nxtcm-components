@@ -9,14 +9,15 @@ import {
 } from '@patternfly-labs/react-form-wizard';
 import { Alert, Flex, FlexItem, Grid, GridItem } from '@patternfly/react-core';
 import React from 'react';
-import { useTranslation } from '../../../../../../context/TranslationContext';
 import { validateAWSKMSKeyARN } from '../../../validators';
 import { RosaWizardFormData } from '../../../../types';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
+import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
 
 export const EncryptionSubstep = () => {
-  const { t } = useTranslation();
+  const e = useRosaWizardStrings().encryption;
+  const v = useRosaWizardValidators();
   const { cluster } = useItem<RosaWizardFormData>();
   const { update } = useData();
 
@@ -38,37 +39,27 @@ export const EncryptionSubstep = () => {
 
   return (
     <Section
-      label={t('Advanced encryption')}
+      label={e.sectionLabel}
       id="encryption-substep-section"
       key="encryption-substep-section-key"
     >
       <WizRadioGroup
         id="encryption-keys-radio-group"
         path="cluster.encryption_keys"
-        label={t('Encryption Keys')}
+        label={e.keysGroupLabel}
         helperText={
           <>
-            {t(
-              'You can use your default or a custom AWS KMS key to encrypt the root disks for your OpenShift nodes.'
-            )}{' '}
-            <ExternalLink href={links.AWS_DATA_PROTECTION}>Learn more</ExternalLink>
+            {e.keysHelperLead}{' '}
+            <ExternalLink href={links.AWS_DATA_PROTECTION}>{e.keysLearnMore}</ExternalLink>
           </>
         }
       >
         <Flex direction={{ default: 'column' }}>
           <FlexItem>
-            <Radio
-              id="default-aws-kms-key-radio-btn"
-              label={t('Use default AWS KMS key')}
-              value="default"
-            />
+            <Radio id="default-aws-kms-key-radio-btn" label={e.defaultKms} value="default" />
           </FlexItem>
           <FlexItem>
-            <Radio
-              id="custom-aws-kms-key-radio-btn"
-              label={t('Use custom AWS KMS key')}
-              value="custom"
-            />
+            <Radio id="custom-aws-kms-key-radio-btn" label={e.customKms} value="custom" />
           </FlexItem>
         </Flex>
       </WizRadioGroup>
@@ -77,13 +68,11 @@ export const EncryptionSubstep = () => {
           <GridItem span={8}>
             <WizTextInput
               path="cluster.kms_key_arn"
-              label={t('Key ARN')}
+              label={e.keyArnLabel}
               validateOnBlur
-              validation={(value) => validateAWSKMSKeyARN(value, cluster.region, t)}
+              validation={(value) => validateAWSKMSKeyARN(value, cluster.region, v.kmsKeyArn)}
               required
-              labelHelp={t(
-                'The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID.'
-              )}
+              labelHelp={e.keyArnHelp}
             />
           </GridItem>
         </Grid>
@@ -92,12 +81,12 @@ export const EncryptionSubstep = () => {
       <WizCheckbox
         id="etcd-encryption"
         path="cluster.etcd_encryption"
-        title={t('etcd encryption')}
-        label={t('Enable additional etcd encryption')}
+        title={e.etcdTitle}
+        label={e.etcdLabel}
         helperText={
           <>
-            {t('Optionally, add a unique customer-managed AWS KMS key to encrypt etcd.')}{' '}
-            <ExternalLink href={links.ROSA_SERVICE_ETCD_ENCRYPTION}>Learn more</ExternalLink>
+            {e.etcdHelperLead}{' '}
+            <ExternalLink href={links.ROSA_SERVICE_ETCD_ENCRYPTION}>{e.etcdLearnMore}</ExternalLink>
           </>
         }
       />
@@ -107,26 +96,18 @@ export const EncryptionSubstep = () => {
           <GridItem span={8}>
             <WizTextInput
               path="cluster.etcd_key_arn"
-              validation={(value) => validateAWSKMSKeyARN(value, cluster.region, t)}
-              label={t('Key ARN')}
+              validation={(value) => validateAWSKMSKeyARN(value, cluster.region, v.kmsKeyArn)}
+              label={e.keyArnLabel}
               validateOnBlur
               required
-              labelHelp={t(
-                'The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID.'
-              )}
+              labelHelp={e.keyArnHelp}
             />
           </GridItem>
         </Grid>
       )}
       <Grid>
         <GridItem span={9}>
-          <Alert
-            variant="info"
-            title={t(
-              'Take a note of the keys associated with your cluster. If you delete your keys, the cluster will not be available'
-            )}
-            ouiaId="encryptionKeysAlert"
-          />
+          <Alert variant="info" title={e.keysNoteAlert} ouiaId="encryptionKeysAlert" />
         </GridItem>
       </Grid>
     </Section>

@@ -26,6 +26,10 @@ import { validateSecurityGroups } from '../../../../validators';
 import { truncateTextWithEllipsis } from '../../../../helpers';
 import { FormGroupHelperText } from '../../../../common/FormGroupHelperText';
 import { CloudVpc } from '../../../../../types';
+import {
+  useRosaWizardStrings,
+  useRosaWizardValidators,
+} from '../../../../RosaWizardStringsContext';
 
 export interface EditSecurityGroupsProps {
   label?: string;
@@ -47,7 +51,7 @@ const getDisplayName = (securityGroupName: string) => {
 };
 
 const EditSecurityGroups = ({
-  label = 'Security groups',
+  label: labelProp,
   selectedVPC,
   selectedGroupIds = [],
   onChange,
@@ -55,6 +59,9 @@ const EditSecurityGroups = ({
   refreshVPCCallback,
   isVPCLoading,
 }: EditSecurityGroupsProps) => {
+  const sg = useRosaWizardStrings().securityGroups;
+  const v = useRosaWizardValidators();
+  const label = labelProp ?? sg.formLabel;
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
 
   const vpcSecurityGroups = React.useMemo(
@@ -78,10 +85,7 @@ const EditSecurityGroups = ({
   if (isReadOnly) {
     // Shows read-only label, or an empty message if no SGs are selected
     return (
-      <SecurityGroupsViewList
-        securityGroups={selectedOptions}
-        emptyMessage="This machine pool does not have additional security groups."
-      />
+      <SecurityGroupsViewList securityGroups={selectedOptions} emptyMessage={sg.readOnlyEmpty} />
     );
   }
 
@@ -102,13 +106,13 @@ const EditSecurityGroups = ({
       isFullWidth
       badge={
         selectedGroupIds.length > 0 && (
-          <Badge screenReaderText="some items">{selectedGroupIds.length}</Badge>
+          <Badge screenReaderText={sg.badgeSrText}>{selectedGroupIds.length}</Badge>
         )
       }
-      aria-label="Options menu"
+      aria-label={sg.optionsMenuAria}
       className="security-groups-menu-toggle"
     >
-      Select security groups
+      {sg.selectToggle}
     </MenuToggle>
   );
 
@@ -128,7 +132,7 @@ const EditSecurityGroups = ({
     }
   };
 
-  const validationError = validateSecurityGroups(selectedGroupIds);
+  const validationError = validateSecurityGroups(selectedGroupIds, v.securityGroups);
 
   return (
     <GridItem>
@@ -145,7 +149,7 @@ const EditSecurityGroups = ({
                   onSelect={onSelect}
                   onOpenChange={(isOpen) => setIsOpen(isOpen)}
                   data-testid="securitygroups-id"
-                  aria-labelledby="Select AWS security groups"
+                  aria-labelledby={sg.selectAriaLabelledBy}
                   maxMenuHeight="300px"
                 >
                   <SelectList>
@@ -177,7 +181,7 @@ const EditSecurityGroups = ({
           </GridItem>
           {refreshVPCCallback && (
             <GridItem span={2} style={{ textAlign: 'left' }}>
-              <Tooltip content="Refetch Security Groups list">
+              <Tooltip content={sg.refreshTooltip}>
                 <Button
                   id="refreshSecurityGroupsButton"
                   isDisabled={isVPCLoading}

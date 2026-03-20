@@ -10,7 +10,6 @@ import {
 } from '@patternfly-labs/react-form-wizard';
 import { LabelHelp } from '@patternfly-labs/react-form-wizard/components/LabelHelp';
 import { Resource, RosaWizardFormData, Subnet, VPC } from '../../../../types';
-import { useTranslation } from '../../../../../../context/TranslationContext';
 import { constructSelectedSubnets, subnetsFilter } from '../../../helpers';
 import {
   Alert,
@@ -38,6 +37,7 @@ import {
 import { Indented } from '@patternfly-labs/react-form-wizard/components/Indented';
 import links from '../../../externalLinks';
 import ExternalLink from '../../../common/ExternalLink';
+import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
 
 type NetworkingAndSubnetsSubStepProps = {
   vpcList: Resource<VPC[]>;
@@ -45,7 +45,7 @@ type NetworkingAndSubnetsSubStepProps = {
 };
 
 export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepProps) => {
-  const { t } = useTranslation();
+  const n = useRosaWizardStrings().networking;
   const { cluster } = useItem<RosaWizardFormData>();
   const { setIsClusterWideProxySelected } = props;
   const { update } = useData();
@@ -107,29 +107,20 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
 
   return (
     <>
-      <Section label={t('Networking')} id="networking-section" key="networking-section-key">
+      <Section label={n.sectionLabel} id="networking-section" key="networking-section-key">
         <WizRadioGroup
           id="public-private-subnet-radio-group"
           path="cluster.cluster_privacy"
-          helperText={t(
-            'Install your cluster with all public or private API endpoints and application routes.'
-          )}
+          helperText={n.privacyHelper}
         >
           <Radio
             id="public"
-            label={t('Public')}
+            label={n.publicLabel}
             value="external"
-            popover={
-              <LabelHelp
-                id="subnet-label-help"
-                labelHelp={t(
-                  'Access Kubernetes API endpoint and application routes from the internet.'
-                )}
-              />
-            }
+            popover={<LabelHelp id="subnet-label-help" labelHelp={n.publicPopover} />}
           >
             <WizSelect
-              label={t('Public subnet name')}
+              label={n.publicSubnetLabel}
               path="cluster.cluster_privacy_public_subnet_id"
               options={
                 props.vpcList.isFetching
@@ -139,53 +130,34 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                       value: subnet.subnet_id,
                     }))
               }
-              placeholder={
-                props.vpcList.isFetching
-                  ? t('Loading VPC subnets...')
-                  : t('Select public subnet name')
-              }
-              disabled={props.vpcList.isFetching}
+              placeholder={n.publicSubnetPlaceholder}
             />
           </Radio>
 
           <Radio
             id="private"
-            label={t('Private')}
+            label={n.privateLabel}
             value="internal"
-            popover={
-              <LabelHelp
-                id="subnet-label-help"
-                labelHelp={t(
-                  'Access Kubernetes API endpoint and application routes from direct private connections only.'
-                )}
-              />
-            }
+            popover={<LabelHelp id="subnet-label-help" labelHelp={n.privatePopover} />}
           ></Radio>
         </WizRadioGroup>
       </Section>
 
-      <ExpandableSection toggleText="Advanced networking configuration (optional)">
+      <ExpandableSection toggleText={n.advancedToggle}>
         <Indented>
           <Stack>
             <StackItem>
               <WizCheckbox
                 id="cluster-wide-proxy"
                 path="cluster.configure_proxy"
-                label={t('Configure a cluster-wide proxy')}
-                helperText={t(
-                  'Enable an HTTP or HTTPS proxy to deny direct access to the internet from your cluster.'
-                )}
+                label={n.proxyCheckboxLabel}
+                helperText={n.proxyCheckboxHelp}
               />
             </StackItem>
             {clusterWideProxy ? (
               <Indented>
                 <StackItem>
-                  <Alert
-                    variant="info"
-                    isInline
-                    isPlain
-                    title="You will be able to configure cluster-wide proxy details in the next step"
-                  />
+                  <Alert variant="info" isInline isPlain title={n.proxyNextStepInfo} />
                 </StackItem>
               </Indented>
             ) : null}
@@ -197,18 +169,14 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                 isExpandable
                 actionClose={<AlertActionCloseButton onClose={() => {}} />}
                 variant="warning"
-                title={t('CIDR ranges cannot be changed after you create your cluster')}
+                title={n.cidrAlertTitle}
                 ouiaId="encryptionKeysAlert"
               >
-                <Content component={ContentVariants.p}>
-                  {t(`Specify non-overlapping ranges for machine, service, and pod ranges. Make sure that
-                        your internal organization&apos;s networking ranges do not overlap with ours, which are
-                        Kubernetes. Each range should correspond to the first IP address in their subnet.`)}
-                </Content>
+                <Content component={ContentVariants.p}>{n.cidrAlertBody}</Content>
 
                 <Content component={ContentVariants.p}>
                   <ExternalLink href={links.CIDR_RANGE_DEFINITIONS_ROSA}>
-                    {t(`Learn more about configuring network settings`)}
+                    {n.cidrLearnMoreLink}
                   </ExternalLink>
                 </Content>
               </Alert>
@@ -218,10 +186,8 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
           <WizCheckbox
             id="use-cidr-default-values"
             path="cluster.cidr_default"
-            label={t('Use default values')}
-            helperText={t(
-              'The values are safe defaults. However, you must ensure that the Machine CIDR matches the selected VPC subnets.'
-            )}
+            label={n.useDefaultsLabel}
+            helperText={n.useDefaultsHelp}
           />
 
           <Grid hasGutter>
@@ -231,8 +197,8 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                 validateOnBlur
                 id="network_machine_cidr"
                 path="cluster.network_machine_cidr"
-                label={t('Machine CIDR')}
-                helperText={t('Subnet mask must be between /16 and /25')}
+                label={n.machineCidrLabel}
+                helperText={n.machineCidrHelp}
                 disabled={defaultCidrValue}
               />
             </GridItem>
@@ -242,8 +208,8 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                 validateOnBlur
                 id="network_service_cidr"
                 path="cluster.network_service_cidr"
-                label={t('Service CIDR')}
-                helperText={t('Subnet mask must be at most /24')}
+                label={n.serviceCidrLabel}
+                helperText={n.serviceCidrHelp}
                 disabled={defaultCidrValue}
               />
             </GridItem>
@@ -253,8 +219,8 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                 validateOnBlur
                 id="network_pod_cidr"
                 path="cluster.network_pod_cidr"
-                label={t('Pod CIDR')}
-                helperText={t('Subnet mask must allow for at least 32 nodes')}
+                label={n.podCidrLabel}
+                helperText={n.podCidrHelp}
                 disabled={defaultCidrValue}
               />
             </GridItem>
@@ -263,8 +229,8 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                 validation={hostPrefixValidators}
                 validateOnBlur
                 path="cluster.network_host_prefix"
-                label={t('Host prefix')}
-                helperText={t('Must be between /23 and /26')}
+                label={n.hostPrefixLabel}
+                helperText={n.hostPrefixHelp}
                 disabled={defaultCidrValue}
               />
             </GridItem>

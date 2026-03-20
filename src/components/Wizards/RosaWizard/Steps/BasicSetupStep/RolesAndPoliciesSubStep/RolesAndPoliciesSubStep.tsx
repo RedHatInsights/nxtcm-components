@@ -17,11 +17,11 @@ import React from 'react';
 import PopoverHintWithTitle from '../../../common/PopoverHitWithTitle';
 import { OIDCConfigHint } from '../../../common/OIDCConfigHint';
 import { OIDCConfig, Resource, Role } from '../../../../types';
-import { useTranslation } from '../../../../../../context/TranslationContext';
 import { validateCustomOperatorRolesPrefix } from '../../../validators';
 import { createOperatorRolesPrefix } from '../../../helpers';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
+import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
 
 type RolesAndPoliciesSubStepProps = {
   roles: Resource<Role[], [awsAccount: string]> & {
@@ -34,8 +34,10 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
   roles,
   oidcConfig,
 }) => {
-  const installerRoles = roles.data.map((roleSet) => roleSet.installerRole);
-  const { t } = useTranslation();
+const installerRoles = roles.data.map((roleSet) => roleSet.installerRole); 
+const rp = useRosaWizardStrings().rolesAndPolicies;
+  const v = useRosaWizardValidators();
+
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
   const { cluster } = useItem();
@@ -107,13 +109,13 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
 
   return (
     <>
-      <Section label={t('Account roles')}>
+      <Section label={rp.accountRolesSection}>
         <Grid>
           <GridItem span={7}>
             <WizSelect
               isFill
               path="cluster.installer_role_arn"
-              label={t('Installer role')}
+              label={rp.installerRoleLabel}
               disabled={roles.isFetching}
               onValueChange={(installerRoleArn, _item) => {
                 if (installerRoleArn) {
@@ -128,12 +130,12 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                 }
                 update();
               }}
-              placeholder={t('Select an Installer role')}
+              placeholder={rp.installerPlaceholder}
               labelHelp={
                 <>
-                  {t('An AWS IAM role used by the ROSA installer')}{' '}
+                  {rp.installerHelpLead}{' '}
                   <ExternalLink href={links.ROSA_ROLES_LEARN_MORE}>
-                    Learn more about roles.
+                    {rp.installerLearnMoreLink}
                   </ExternalLink>
                 </>
               }
@@ -145,18 +147,16 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
         <ExpandableSection
           isExpanded={isArnsOpen}
           onToggle={() => setIsArnsOpen(!isArnsOpen)}
-          toggleText={t('Amazon Resource Names (ARNs)')}
+          toggleText={rp.arnsToggle}
         >
           <Grid hasGutter>
             <GridItem span={7}>
               <WizSelect
                 isFill
                 path="cluster.support_role_arn"
-                label={t('Support role')}
-                placeholder={t('Select a support role')}
-                labelHelp={t(
-                  'An IAM role used by the Red Hat Site Reliability Engineering (SRE) support team. The role is used with the corresponding policy resource to provide the Red Hat SRE support team with the permissions required to support ROSA clusters.'
-                )}
+                label={rp.supportRoleLabel}
+                placeholder={rp.supportPlaceholder}
+                labelHelp={rp.supportHelp}
                 options={supportRoles}
                 disabled={roles.isFetching}
                 required
@@ -166,11 +166,9 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
               <WizSelect
                 isFill
                 path="cluster.worker_role_arn"
-                label={t('Worker role')}
-                placeholder={t('Select a worker role')}
-                labelHelp={t(
-                  'An IAM role used by the ROSA compute instances. The role is used with the corresponding policy resource to provide the compute instances with the permissions required to manage their components.'
-                )}
+                label={rp.workerRoleLabel}
+                placeholder={rp.workerPlaceholder}
+                labelHelp={rp.workerHelp}
                 options={workerRoles}
                 disabled={roles.isFetching}
                 required
@@ -179,7 +177,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
           </Grid>
         </ExpandableSection>
       </Section>
-      <Section label="Operator roles">
+      <Section label={rp.operatorRolesSection}>
         <Grid>
           <GridItem span={7}>
             <Stack>
@@ -187,12 +185,10 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                 <WizSelect
                   isFill
                   path="cluster.byo_oidc_config_id"
-                  label={t('OIDC config ID')}
+                  label={rp.oidcLabel}
                   required
-                  placeholder={t('Select an OIDC config ID')}
-                  labelHelp={t(
-                    'The OIDC configuration ID created by running the command: rosa create oidc-config'
-                  )}
+                  placeholder={rp.oidcPlaceholder}
+                  labelHelp={rp.oidcHelp}
                   options={oidcConfig.data.map((config) => ({
                     label: config.label,
                     value: config.value,
@@ -204,7 +200,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
               <StackItem>
                 <PopoverHintWithTitle
                   displayHintIcon
-                  title={t('Create a new OIDC config id')}
+                  title={rp.oidcPopoverTitle}
                   bodyContent={<OIDCConfigHint />}
                 />
               </StackItem>
@@ -215,36 +211,36 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
         <ExpandableSection
           isExpanded={isOperatorRolesOpen}
           onToggle={() => setIsOperatorRolesOpen(!isOperatorRolesOpen)}
-          toggleText={t('Operator role prefix')}
+          toggleText={rp.operatorPrefixToggle}
         >
           <Grid>
             <GridItem span={4}>
               <WizTextInput
-                validation={validateCustomOperatorRolesPrefix}
+                validation={(value, item) =>
+                  validateCustomOperatorRolesPrefix(value, item, v.operatorRolesPrefix)
+                }
                 path="cluster.custom_operator_roles_prefix"
                 validateOnBlur
-                label={t('Operator roles prefix')}
+                label={rp.operatorPrefixLabel}
                 labelHelp={
                   <>
-                    {t('You can specify a custom prefix for the Operator AWS IAM roles.')}{' '}
+                    {rp.operatorPrefixHelpLead}{' '}
                     <ExternalLink href={links.ROSA_OIDC_LEARN_MORE}>
-                      Learn more and see examples.
+                      {rp.operatorPrefixLearnMoreLink}
                     </ExternalLink>
                   </>
                 }
-                helperText={t(
-                  '32 characters maximum. This is autogenerated by the cluster name, but you can cahnge it.'
-                )}
+                helperText={rp.operatorPrefixHelper}
                 required
               />
             </GridItem>
           </Grid>
           <ClipboardCopy
             variant="expansion"
-            copyAriaLabel="Copy read-only example"
+            copyAriaLabel={rp.clipboardCopyAria}
             isReadOnly
-            hoverTip={t('Copy')}
-            clickTip={t('Copied')}
+            hoverTip={rp.copyHover}
+            clickTip={rp.copyClicked}
             style={{ marginTop: '1rem' }}
           >
             {rosaCommand}
