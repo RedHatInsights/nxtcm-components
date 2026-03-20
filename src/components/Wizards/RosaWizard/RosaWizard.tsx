@@ -161,17 +161,14 @@ export const RosaWizard = (props: RosaWizardProps) => {
             steps={[
               <Step label={t('Details')} id="basic-setup-step-details" key="basic-setup-details">
                 <DetailsSubStep
-                  openShiftVersions={wizardsStepsData.basicSetupStep.openShiftVersions}
-                  awsInfrastructureAccounts={
-                    wizardsStepsData.basicSetupStep.awsInfrastructureAccounts
-                  }
-                  awsBillingAccounts={wizardsStepsData.basicSetupStep.awsBillingAccounts}
-                  regions={wizardsStepsData.basicSetupStep.regions}
-                  awsAccountDataCallback={callbackFunctions?.onAWSAccountChange}
-                  refreshAwsAccountDataCallback={callbackFunctions?.refreshAwsAccountDataCallback}
-                  refreshAwsBillingAccountCallback={
-                    callbackFunctions?.refreshAwsBillingAccountCallback
-                  }
+                  clusterNameValidation={basicSetupStep.clusterNameValidation}
+                  openShiftVersions={buildVersionOptions(basicSetupStep.versions.data)}
+                  versionsIsPending={basicSetupStep.versions.isFetching}
+                  refreshVersionsCallback={() => void basicSetupStep.versions.fetch()}
+                  roles={basicSetupStep.roles}
+                  awsInfrastructureAccounts={basicSetupStep.awsInfrastructureAccounts}
+                  awsBillingAccounts={basicSetupStep.awsBillingAccounts}
+                  regions={basicSetupStep.regions}
                 />
               </Step>,
               <Step
@@ -180,10 +177,8 @@ export const RosaWizard = (props: RosaWizardProps) => {
                 key="roles-and-policies-sub-step-key"
               >
                 <RolesAndPoliciesSubStep
-                  installerRoles={wizardsStepsData.basicSetupStep.roles.installerRoles}
-                  supportRoles={wizardsStepsData.basicSetupStep.roles.supportRoles}
-                  workerRoles={wizardsStepsData.basicSetupStep.roles.workerRoles}
-                  oicdConfig={wizardsStepsData.basicSetupStep.oicdConfig}
+                  roles={basicSetupStep.roles}
+                  oidcConfig={basicSetupStep.oidcConfig}
                 />
               </Step>,
               <Step
@@ -192,13 +187,13 @@ export const RosaWizard = (props: RosaWizardProps) => {
                 key="machinepools-sub-step-key"
               >
                 <MachinePoolsSubstep
-                  vpcList={wizardsStepsData.basicSetupStep.vpcList}
-                  machineTypes={wizardsStepsData.basicSetupStep.machineTypes}
+                  vpcList={basicSetupStep.vpcList}
+                  machineTypes={basicSetupStep.machineTypes}
                 />
               </Step>,
               <Step id="networking-sub-step" label={t('Networking')} key="networking-sub-step-key">
                 <NetworkingAndSubnetsSubStep
-                  vpcList={wizardsStepsData.basicSetupStep.vpcList}
+                  vpcList={basicSetupStep.vpcList}
                   setIsClusterWideProxySelected={setIsClusterWideProxySelected}
                 />
               </Step>,
