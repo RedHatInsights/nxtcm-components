@@ -16,7 +16,6 @@ import React, { ReactNode } from 'react';
 import { ClusterWideProxySubstep } from './Steps/AdditionalSetupStep/ClusterWideProxySubstep/ClusterWideProxySubstep';
 import { ReviewStepData } from './Steps/ReviewStepData';
 import {
-  MachineTypesDropdownType,
   OIDCConfig,
   OpenShiftVersionsData,
   Role,
@@ -27,6 +26,7 @@ import {
   ValidationResource,
   VPC,
   WizardNavigationContext,
+  MachineTypesDropdownType,
 } from '../types';
 import { MachinePoolsSubstep } from './Steps/BasicSetupStep/MachinePoolsSubstep/MachinePoolsSubstep';
 import { YamlDrawerEditor } from './Steps/YamlCodeEditor';
@@ -153,6 +153,12 @@ const RosaWizardBody = (props: RosaWizardProps) => {
       compute_root_volume: 300,
     },
   };
+  const opVersions = {
+    data: buildVersionOptions(basicSetupStep.versions.data),
+    fetch: () => basicSetupStep.versions.fetch(),
+    error: null,
+    isFetching: basicSetupStep.versions.isFetching
+  }
 
   return (
     <>
@@ -186,9 +192,8 @@ const RosaWizardBody = (props: RosaWizardProps) => {
               <Step label={sl.details} id="basic-setup-step-details" key="basic-setup-details">
                 <DetailsSubStep
                   clusterNameValidation={basicSetupStep.clusterNameValidation}
-                  openShiftVersions={buildVersionOptions(basicSetupStep.versions.data)}
-                  versionsIsPending={basicSetupStep.versions.isFetching}
-                  refreshVersionsCallback={() => void basicSetupStep.versions.fetch()}
+                  openShiftVersions={opVersions}
+                  machineTypes={basicSetupStep.machineTypes}
                   roles={basicSetupStep.roles}
                   awsInfrastructureAccounts={basicSetupStep.awsInfrastructureAccounts}
                   awsBillingAccounts={basicSetupStep.awsBillingAccounts}

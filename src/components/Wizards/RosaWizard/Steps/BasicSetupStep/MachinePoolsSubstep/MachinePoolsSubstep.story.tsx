@@ -17,8 +17,8 @@ const mockResource = <TData,>(data: TData): Resource<TData> => ({
   isFetching: false,
   fetch: async () => {},
 });
+import { StepShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/StepShowValidationProvider';
 
-// Mock security groups
 export const mockSecurityGroups: SecurityGroup[] = [
   { id: 'sg-0a1b2c3d4e5f00001', name: 'default' },
   { id: 'sg-0a1b2c3d4e5f00002', name: 'k8s-traffic-rules' },
@@ -27,7 +27,6 @@ export const mockSecurityGroups: SecurityGroup[] = [
   { id: 'sg-0a1b2c3d4e5f00005', name: '' },
 ];
 
-// Mock VPC data with subnets
 export const mockSubnets: Subnet[] = [
   {
     subnet_id: 'subnet-private-1',
@@ -51,7 +50,8 @@ export const mockSubnets: Subnet[] = [
   },
 ];
 
-export const mockVpcList: VPC[] = [
+export const mockVpcList: Resource<VPC[]> = {
+  data: [
   {
     id: 'vpc-123',
     name: 'my-production-vpc',
@@ -75,9 +75,12 @@ export const mockVpcList: VPC[] = [
     ],
     aws_security_groups: [],
   },
-];
+],
+error: null,
+isFetching: false};
 
-export const mockMachineTypes: MachineTypesDropdownType[] = [
+export const mockMachineTypesData: Resource<MachineTypesDropdownType[]> = {
+  data: [
   { id: 'm5.xlarge', label: 'm5.xlarge', description: '4 vCPU, 16 GiB Memory', value: 'm5.xlarge' },
   {
     id: 'm5.2xlarge',
@@ -86,9 +89,10 @@ export const mockMachineTypes: MachineTypesDropdownType[] = [
     value: 'm5.2xlarge',
   },
   { id: 'r5.large', label: 'r5.large', description: '2 vCPU, 16 GiB Memory', value: 'r5.large' },
-];
+],
+error: null,
+isFetching: false};
 
-// Default cluster data factory
 export const createMockClusterData = (overrides: Record<string, unknown> = {}) => ({
   cluster: {
     region: 'us-east-1',
@@ -106,36 +110,36 @@ export const createMockClusterData = (overrides: Record<string, unknown> = {}) =
   },
 });
 
-// Props interface for the wrapped component
 export interface MachinePoolsSubstepStoryProps {
   vpcList?: Resource<VPC[]>;
   machineTypes?: Resource<MachineTypesDropdownType[]>;
   clusterOverrides?: Record<string, unknown>;
 }
 
-// Wrapped component that can be mounted in tests
 export const MachinePoolsSubstepStory: React.FC<MachinePoolsSubstepStoryProps> = ({
-  vpcList = mockResource(mockVpcList),
-  machineTypes = mockResource(mockMachineTypes),
+  vpcList = mockVpcList,
+  machineTypes = mockMachineTypesData,
   clusterOverrides = {},
 }) => {
   const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
 
   const update = useCallback(() => {
-    // Force re-render by creating a new object reference
     setData((currentData) => ({ ...currentData }));
   }, []);
+
 
   return (
     <RosaWizardStringsProvider>
       <DataContext.Provider value={{ update }}>
         <DisplayModeContext.Provider value={DisplayMode.Step}>
           <ItemContext.Provider value={data}>
-            <ShowValidationProvider>
-              <ValidationProvider>
-                <MachinePoolsSubstep vpcList={vpcList} machineTypes={machineTypes} />
-              </ValidationProvider>
-            </ShowValidationProvider>
+            <StepShowValidationProvider>
+              <ShowValidationProvider>
+                <ValidationProvider>
+                  <MachinePoolsSubstep vpcList={vpcList} machineTypes={mockMachineTypesData} />
+                </ValidationProvider>
+              </ShowValidationProvider>
+            </StepShowValidationProvider>
           </ItemContext.Provider>
         </DisplayModeContext.Provider>
       </DataContext.Provider>

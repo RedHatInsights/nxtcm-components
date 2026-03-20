@@ -98,6 +98,30 @@ test.describe('MachinePoolsSubstep', () => {
       component.getByText(/The following settings apply to all machine pools/)
     ).toBeVisible();
   });
+
+  test('should show disabled state for Compute node instance type when machine types are loading', async ({
+    mount,
+  }) => {
+    const component = await mount(
+      <MachinePoolsSubstepStory machineTypes={{ data: [], isFetching: true, error: null }} />
+    );
+
+    const machineTypeSelect = component.locator('#cluster-machine_type');
+    await expect(machineTypeSelect).toBeVisible();
+    await expect(machineTypeSelect.locator('.pf-m-disabled')).toBeVisible();
+  });
+
+  test('should not show disabled state for Compute node instance type when not loading', async ({
+    mount,
+  }) => {
+    const component = await mount(
+      <MachinePoolsSubstepStory machineTypes={{ data: [], isFetching: false, error: null }} />
+    );
+
+    const machineTypeSelect = component.locator('#cluster-machine_type');
+    await expect(machineTypeSelect).toBeVisible();
+    await expect(machineTypeSelect.locator('.pf-m-disabled')).not.toBeVisible();
+  });
 });
 
 test.describe('SecurityGroupsSection', () => {

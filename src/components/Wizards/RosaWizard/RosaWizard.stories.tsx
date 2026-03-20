@@ -72,7 +72,7 @@ const mockRegions = [
   { label: 'Asia Pacific (Tokyo)', value: 'ap-northeast-1' },
 ];
 
-const mockRoles: Role[] = [
+const mockRoles = [
   {
     installerRole: {
       label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
@@ -119,6 +119,15 @@ const mockMachineTypes = [
     label: 'm6a.xlarge',
     description: '4 vCPU 16 GiB RAM',
     value: 'm6a.xlarge',
+  },
+];
+
+const mockMachineTypesLimited = [
+  {
+    id: 'm5a.xlarge',
+    label: 'm5a.xlarge',
+    description: '4 vCPU 16 GiB RAM',
+    value: 'm5a.xlarge',
   },
 ];
 
