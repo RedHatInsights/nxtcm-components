@@ -3,18 +3,25 @@ export type {
   ClusterFormData,
   RosaWizardFormData,
   MachinePoolSubnetEntry,
-  WizardCallbackFunctions,
+  Resource,
+  ValidationResource,
   WizardNavigationContext,
   WizardType,
   SelectDropdownType,
   MachineTypesDropdownType,
-  Roles,
+  Role,
+  InstallerRole,
+  OpenShiftVersionsData,
+  OpenShiftVersionGroup,
   OIDCConfig,
   VPC,
   Subnet,
   CIDRSubnet,
+  SecurityGroup,
   Region,
   OpenShiftVersions,
   AWSInfrastructureAccounts,
 } from './types';
+/** @deprecated use `Role` instead. */
+export type { Role as Roles } from './types';
 export type { BasicSetupStepProps, WizardStepsData } from './RosaWizard/RosaWizard';

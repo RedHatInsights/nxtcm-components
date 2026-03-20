@@ -1,14 +1,40 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 import { RosaWizard } from './RosaWizard';
+import type { OpenShiftVersionsData, Resource, Role, ValidationResource } from '../types';
+import type { BasicSetupStepProps } from './RosaWizard';
+
+// wraps static mock data in the Resource shape for stories
+const mockResource = <TData,>(data: TData): Resource<TData> => ({
+  data,
+  error: null,
+  isFetching: false,
+  fetch: async () => {},
+});
+
+const mockFetchResource = <TData, TArgs extends unknown[] = []>(
+  data: TData
+): Resource<TData, TArgs> & { fetch: (...args: TArgs) => Promise<void> } => ({
+  data,
+  error: null,
+  isFetching: false,
+  fetch: async (..._args: TArgs) => {},
+});
+
+const mockValidationResource = (): ValidationResource => ({
+  error: null,
+  isFetching: false,
+});
 
 // Mock data for the wizard
-const mockOpenShiftVersions = [
-  { label: 'OpenShift 4.12.0', value: '4.12.0' },
-  { label: 'OpenShift 4.11.5', value: '4.11.5' },
-  { label: 'OpenShift 4.10.8', value: '4.10.8' },
-  { label: 'OpenShift 4.21.8', value: '4.21.8' },
-];
+const mockVersionsData: OpenShiftVersionsData = {
+  latest: { label: 'OpenShift 4.21.8', value: '4.21.8' },
+  default: { label: 'OpenShift 4.12.0', value: '4.12.0' },
+  others: [
+    { label: 'OpenShift 4.11.5', value: '4.11.5' },
+    { label: 'OpenShift 4.10.8', value: '4.10.8' },
+  ],
+};
 
 const mockAwsInfrastructureAccounts = [
   {
@@ -46,26 +72,27 @@ const mockRegions = [
   { label: 'Asia Pacific (Tokyo)', value: 'ap-northeast-1' },
 ];
 
-const mockRoles = {
-  installerRoles: [
-    {
+const mockRoles: Role[] = [
+  {
+    installerRole: {
       label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
       value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
+      roleVersion: '4.12.0',
     },
-  ],
-  supportRoles: [
-    {
-      label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
-      value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
-    },
-  ],
-  workerRoles: [
-    {
-      label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
-      value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
-    },
-  ],
-};
+    supportRole: [
+      {
+        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
+        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
+      },
+    ],
+    workerRole: [
+      {
+        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
+        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
+      },
+    ],
+  },
+];
 
 const mockOicdConfig = [
   {
@@ -175,6 +202,22 @@ const mockVPCs = [
   },
 ];
 
+// shared baseline for basicSetupStep across stories — wraps all mock data in Resource shape
+const mockBasicSetupStep: BasicSetupStepProps = {
+  clusterNameValidation: mockValidationResource(),
+  userRole: mockValidationResource(),
+  versions: mockFetchResource(mockVersionsData),
+  awsInfrastructureAccounts: mockResource(mockAwsInfrastructureAccounts),
+  awsBillingAccounts: mockResource(mockAwsBillingAccounts),
+  regions: mockResource(mockRegions),
+  roles: mockFetchResource<Role[], [awsAccount: string]>(mockRoles),
+  oidcConfig: mockResource(mockOicdConfig),
+  machineTypes: mockResource(mockMachineTypes),
+  vpcList: mockResource(mockVPCs),
+  subnets: mockResource([]),
+  securityGroups: mockResource([]),
+};
+
 const meta: Meta<typeof RosaWizard> = {
   title: 'Wizards/RosaWizard',
   component: RosaWizard,
@@ -216,9 +259,8 @@ type Story = StoryObj<typeof RosaWizard>;
 export const Default: Story = {
   args: {
     title: 'Create ROSA Cluster',
-    onSubmit: async (data: any) => {
+    onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
       alert('Cluster creation initiated successfully!');
     },
@@ -227,21 +269,7 @@ export const Default: Story = {
       alert('Wizard cancelled');
     },
     wizardsStepsData: {
-      basicSetupStep: {
-        openShiftVersions: mockOpenShiftVersions,
-        awsInfrastructureAccounts: mockAwsInfrastructureAccounts,
-        awsBillingAccounts: mockAwsBillingAccounts,
-        regions: mockRegions,
-        roles: mockRoles,
-        oicdConfig: mockOicdConfig,
-        machineTypes: mockMachineTypes,
-        vpcList: mockVPCs,
-      },
-      callbackFunctions: {
-        onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
-        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
-        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
-      },
+      basicSetupStep: mockBasicSetupStep,
     },
   },
 };
@@ -252,7 +280,7 @@ export const Default: Story = {
 export const MinimalOptions: Story = {
   args: {
     title: 'Create ROSA Cluster - Limited Options',
-    onSubmit: async (data: any) => {
+    onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
     },
@@ -261,51 +289,28 @@ export const MinimalOptions: Story = {
     },
     wizardsStepsData: {
       basicSetupStep: {
-        openShiftVersions: [{ label: 'OpenShift 4.12.0', value: '4.12.0' }],
-        awsInfrastructureAccounts: [
+        ...mockBasicSetupStep,
+        versions: mockFetchResource({
+          latest: { label: 'OpenShift 4.12.0', value: '4.12.0' },
+          default: { label: 'OpenShift 4.12.0', value: '4.12.0' },
+          others: [],
+        }),
+        awsInfrastructureAccounts: mockResource([
           {
             label: 'AWS Account - Production (123456789012)',
             value: 'aws-prod-123456789012',
           },
-        ],
-        awsBillingAccounts: [
+        ]),
+        awsBillingAccounts: mockResource([
           {
             label: 'Billing Account - Main (123456789012)',
             value: 'billing-main-123456789012',
           },
-        ],
-        regions: [
+        ]),
+        regions: mockResource([
           { label: 'US East 1, US, Virginia', value: 'us-east-1' },
           { label: 'US West 1, US, Oregon', value: 'us-west-1' },
-        ],
-        roles: {
-          installerRoles: [
-            {
-              label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
-              value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
-            },
-          ],
-          supportRoles: [
-            {
-              label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
-              value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
-            },
-          ],
-          workerRoles: [
-            {
-              label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
-              value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
-            },
-          ],
-        },
-        oicdConfig: mockOicdConfig,
-        vpcList: mockVPCs,
-        machineTypes: mockMachineTypes,
-      },
-      callbackFunctions: {
-        onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
-        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
-        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
+        ]),
       },
     },
   },
@@ -317,7 +322,7 @@ export const MinimalOptions: Story = {
 export const EmptyOptions: Story = {
   args: {
     title: 'Create ROSA Cluster - No Options Available',
-    onSubmit: async (data: any) => {
+    onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
     },
@@ -326,19 +331,15 @@ export const EmptyOptions: Story = {
     },
     wizardsStepsData: {
       basicSetupStep: {
-        openShiftVersions: [],
-        awsInfrastructureAccounts: [],
-        awsBillingAccounts: [],
-        regions: [],
-        roles: mockRoles,
-        oicdConfig: mockOicdConfig,
-        machineTypes: mockMachineTypes,
-        vpcList: mockVPCs,
-      },
-      callbackFunctions: {
-        onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
-        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
-        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
+        ...mockBasicSetupStep,
+        versions: mockFetchResource({
+          latest: { label: '', value: '' },
+          default: { label: '', value: '' },
+          others: [],
+        }),
+        awsInfrastructureAccounts: mockResource([]),
+        awsBillingAccounts: mockResource([]),
+        regions: mockResource([]),
       },
     },
   },
@@ -350,7 +351,7 @@ export const EmptyOptions: Story = {
 export const ExtensiveOptions: Story = {
   args: {
     title: 'Create ROSA Cluster - Many Options',
-    onSubmit: async (data: any) => {
+    onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
     },
@@ -359,19 +360,28 @@ export const ExtensiveOptions: Story = {
     },
     wizardsStepsData: {
       basicSetupStep: {
-        openShiftVersions: Array.from({ length: 20 }, (_, i) => ({
-          label: `OpenShift 4.${12 - Math.floor(i / 5)}.${i % 5}`,
-          value: `4.${12 - Math.floor(i / 5)}.${i % 5}`,
-        })),
-        awsInfrastructureAccounts: Array.from({ length: 15 }, (_, i) => ({
-          label: `AWS Account - Environment ${i + 1} (${100000000000 + i})`,
-          value: `aws-env-${i + 1}-${100000000000 + i}`,
-        })),
-        awsBillingAccounts: Array.from({ length: 10 }, (_, i) => ({
-          label: `Billing Account ${i + 1} (${100000000000 + i})`,
-          value: `billing-${i + 1}-${100000000000 + i}`,
-        })),
-        vpcList: [
+        ...mockBasicSetupStep,
+        versions: mockFetchResource({
+          latest: { label: 'OpenShift 4.12.0', value: '4.12.0' },
+          default: { label: 'OpenShift 4.11.4', value: '4.11.4' },
+          others: Array.from({ length: 18 }, (_, i) => ({
+            label: `OpenShift 4.${11 - Math.floor(i / 5)}.${i % 5}`,
+            value: `4.${11 - Math.floor(i / 5)}.${i % 5}`,
+          })),
+        }),
+        awsInfrastructureAccounts: mockResource(
+          Array.from({ length: 15 }, (_, i) => ({
+            label: `AWS Account - Environment ${i + 1} (${100000000000 + i})`,
+            value: `aws-env-${i + 1}-${100000000000 + i}`,
+          }))
+        ),
+        awsBillingAccounts: mockResource(
+          Array.from({ length: 10 }, (_, i) => ({
+            label: `Billing Account ${i + 1} (${100000000000 + i})`,
+            value: `billing-${i + 1}-${100000000000 + i}`,
+          }))
+        ),
+        vpcList: mockResource([
           ...mockVPCs,
           ...Array.from({ length: 5 }, (_, i) => ({
             name: `extensive-vpc-${i + 3}`,
@@ -399,9 +409,8 @@ export const ExtensiveOptions: Story = {
               },
             ],
           })),
-        ],
-        oicdConfig: mockOicdConfig,
-        machineTypes: [
+        ]),
+        machineTypes: mockResource([
           ...mockMachineTypes,
           ...Array.from({ length: 10 }, (_, i) => ({
             id: `ext-instance-${i + 1}`,
@@ -409,14 +418,7 @@ export const ExtensiveOptions: Story = {
             description: `${(i + 2) * 2} vCPU ${(i + 2) * 8} GiB RAM`,
             value: `ext-instance-${i + 1}.xlarge`,
           })),
-        ],
-        regions: mockRegions,
-        roles: mockRoles,
-      },
-      callbackFunctions: {
-        onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
-        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
-        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
+        ]),
       },
     },
   },
@@ -428,7 +430,7 @@ export const ExtensiveOptions: Story = {
 export const CustomTitle: Story = {
   args: {
     title: 'Deploy Red Hat OpenShift Service on AWS',
-    onSubmit: async (data: any) => {
+    onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
     },
@@ -436,21 +438,7 @@ export const CustomTitle: Story = {
       console.log('Wizard cancelled');
     },
     wizardsStepsData: {
-      basicSetupStep: {
-        openShiftVersions: mockOpenShiftVersions,
-        awsInfrastructureAccounts: mockAwsInfrastructureAccounts,
-        awsBillingAccounts: mockAwsBillingAccounts,
-        regions: mockRegions,
-        roles: mockRoles,
-        vpcList: mockVPCs,
-        machineTypes: mockMachineTypes,
-        oicdConfig: mockOicdConfig,
-      },
-      callbackFunctions: {
-        onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
-        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
-        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
-      },
+      basicSetupStep: mockBasicSetupStep,
     },
   },
 };
@@ -461,9 +449,8 @@ export const CustomTitle: Story = {
 export const WithErrorHandling: Story = {
   args: {
     title: 'Create ROSA Cluster - Error Demo',
-    onSubmit: async (data: any) => {
+    onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
-      // Simulate API call that fails
       await new Promise((resolve) => setTimeout(resolve, 1500));
       throw new Error('Failed to create cluster: AWS credentials are invalid');
     },
@@ -471,21 +458,7 @@ export const WithErrorHandling: Story = {
       console.log('Wizard cancelled');
     },
     wizardsStepsData: {
-      basicSetupStep: {
-        openShiftVersions: mockOpenShiftVersions,
-        awsInfrastructureAccounts: mockAwsInfrastructureAccounts,
-        awsBillingAccounts: mockAwsBillingAccounts,
-        regions: mockRegions,
-        roles: mockRoles,
-        vpcList: mockVPCs,
-        oicdConfig: mockOicdConfig,
-        machineTypes: mockMachineTypes,
-      },
-      callbackFunctions: {
-        onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
-        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
-        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
-      },
+      basicSetupStep: mockBasicSetupStep,
     },
   },
 };
@@ -498,7 +471,7 @@ export const WithErrorHandling: Story = {
 export const WithMachinePoolsOptions: Story = {
   args: {
     title: 'Create ROSA Cluster - Machine Pools',
-    onSubmit: async (data: any) => {
+    onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
     },
@@ -507,13 +480,8 @@ export const WithMachinePoolsOptions: Story = {
     },
     wizardsStepsData: {
       basicSetupStep: {
-        openShiftVersions: mockOpenShiftVersions,
-        awsInfrastructureAccounts: mockAwsInfrastructureAccounts,
-        awsBillingAccounts: mockAwsBillingAccounts,
-        regions: mockRegions,
-        roles: mockRoles,
-        oicdConfig: mockOicdConfig,
-        machineTypes: [
+        ...mockBasicSetupStep,
+        machineTypes: mockResource([
           ...mockMachineTypes,
           {
             id: 'c5.2xlarge',
@@ -539,8 +507,8 @@ export const WithMachinePoolsOptions: Story = {
             description: '32 vCPU 64 GiB RAM',
             value: 'c6i.8xlarge',
           },
-        ],
-        vpcList: [
+        ]),
+        vpcList: mockResource([
           {
             name: 'prod-vpc-multi-az',
             id: 'vpc-prod-multi-az-001',
@@ -579,12 +547,7 @@ export const WithMachinePoolsOptions: Story = {
             aws_security_groups: mockSecurityGroups,
           },
           ...mockVPCs,
-        ],
-      },
-      callbackFunctions: {
-        onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
-        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
-        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
+        ]),
       },
     },
   },
@@ -598,7 +561,7 @@ export const WithMachinePoolsOptions: Story = {
 export const NoSecurityGroups: Story = {
   args: {
     title: 'Create ROSA Cluster - No Security Groups',
-    onSubmit: async (data: any) => {
+    onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
     },
@@ -607,22 +570,13 @@ export const NoSecurityGroups: Story = {
     },
     wizardsStepsData: {
       basicSetupStep: {
-        openShiftVersions: mockOpenShiftVersions,
-        awsInfrastructureAccounts: mockAwsInfrastructureAccounts,
-        awsBillingAccounts: mockAwsBillingAccounts,
-        regions: mockRegions,
-        roles: mockRoles,
-        oicdConfig: mockOicdConfig,
-        machineTypes: mockMachineTypes,
-        vpcList: mockVPCs.map((vpc) => ({
-          ...vpc,
-          aws_security_groups: [],
-        })),
-      },
-      callbackFunctions: {
-        onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
-        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
-        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
+        ...mockBasicSetupStep,
+        vpcList: mockResource(
+          mockVPCs.map((vpc) => ({
+            ...vpc,
+            aws_security_groups: [],
+          }))
+        ),
       },
     },
   },
@@ -634,7 +588,7 @@ export const NoSecurityGroups: Story = {
 export const ProductionSetup: Story = {
   args: {
     title: 'Create Production ROSA Cluster',
-    onSubmit: async (data: any) => {
+    onSubmit: async (data: unknown) => {
       console.log('Production cluster submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 3000));
       alert('Production cluster creation initiated. This may take up to 30 minutes.');
@@ -647,54 +601,28 @@ export const ProductionSetup: Story = {
     },
     wizardsStepsData: {
       basicSetupStep: {
-        openShiftVersions: [
-          { label: 'OpenShift 4.12.0 (LTS)', value: '4.12.0' },
-          { label: 'OpenShift 4.11.5 (Stable)', value: '4.11.5' },
-        ],
-        awsInfrastructureAccounts: [
+        ...mockBasicSetupStep,
+        versions: mockFetchResource({
+          latest: { label: 'OpenShift 4.12.0 (LTS)', value: '4.12.0' },
+          default: { label: 'OpenShift 4.11.5 (Stable)', value: '4.11.5' },
+          others: [],
+        }),
+        awsInfrastructureAccounts: mockResource([
           {
             label: 'AWS Production Account (987654321098)',
             value: 'aws-prod-987654321098',
           },
-        ],
-        awsBillingAccounts: [
+        ]),
+        awsBillingAccounts: mockResource([
           {
             label: 'Corporate Billing Account (987654321098)',
             value: 'billing-corp-987654321098',
           },
-        ],
-        regions: [
+        ]),
+        regions: mockResource([
           { label: 'US East 1, US, Virginia', value: 'us-east-1' },
           { label: 'US West 1, US, Oregon', value: 'us-west-1' },
-        ],
-        roles: {
-          installerRoles: [
-            {
-              label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
-              value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
-            },
-          ],
-          supportRoles: [
-            {
-              label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
-              value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
-            },
-          ],
-          workerRoles: [
-            {
-              label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
-              value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
-            },
-          ],
-        },
-        oicdConfig: mockOicdConfig,
-        machineTypes: mockMachineTypes,
-        vpcList: mockVPCs,
-      },
-      callbackFunctions: {
-        onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
-        refreshAwsBillingAccountCallback: () => console.log('AWS ACCOUNT REFRESH CALLBACK'),
-        refreshAwsAccountDataCallback: () => console.log('AWS BILLING ACCOUNT REFRESH CALLBACK'),
+        ]),
       },
     },
   },
@@ -737,19 +665,7 @@ export const SubmitError: Story = {
       alert('Wizard cancelled');
     },
     wizardsStepsData: {
-      basicSetupStep: {
-        openShiftVersions: mockOpenShiftVersions,
-        awsInfrastructureAccounts: mockAwsInfrastructureAccounts,
-        awsBillingAccounts: mockAwsBillingAccounts,
-        regions: mockRegions,
-        roles: mockRoles,
-        oicdConfig: mockOicdConfig,
-        machineTypes: mockMachineTypes,
-        vpcList: mockVPCs,
-      },
-      callbackFunctions: {
-        onAWSAccountChange: () => console.log('AWS ACCOUNT CHANGE CALLBACK'),
-      },
+      basicSetupStep: mockBasicSetupStep,
     },
   },
 };

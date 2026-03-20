@@ -18,10 +18,14 @@ import { ReviewStepData } from './Steps/ReviewStepData';
 import {
   MachineTypesDropdownType,
   OIDCConfig,
-  Roles,
+  OpenShiftVersionsData,
+  Role,
+  Resource,
+  SecurityGroup,
   SelectDropdownType,
+  Subnet,
+  ValidationResource,
   VPC,
-  WizardCallbackFunctions,
   WizardNavigationContext,
 } from '../types';
 import { useTranslation } from '../../../context/TranslationContext';
@@ -29,20 +33,39 @@ import { MachinePoolsSubstep } from './Steps/BasicSetupStep/MachinePoolsSubstep/
 import { YamlEditorStep } from './Steps/YamlEditorStep';
 
 export type BasicSetupStepProps = {
-  openShiftVersions: SelectDropdownType[];
-  awsInfrastructureAccounts: SelectDropdownType[];
-  awsBillingAccounts: SelectDropdownType[];
-  vpcList: VPC[];
-  regions: SelectDropdownType[];
-  roles: Roles;
-  oicdConfig: OIDCConfig[];
-  machineTypes: MachineTypesDropdownType[];
+  // validation-only fields (no data, just state)
+  clusterNameValidation: ValidationResource;
+  userRole: ValidationResource;
+
+  // data resources — each carries data/error/loading and optional fetch
+  versions: Resource<OpenShiftVersionsData, []> & { fetch: () => Promise<void> };
+  awsInfrastructureAccounts: Resource<SelectDropdownType[]>;
+  awsBillingAccounts: Resource<SelectDropdownType[]>;
+  regions: Resource<SelectDropdownType[]>;
+  roles: Resource<Role[], [awsAccount: string]> & {
+    fetch: (awsAccount: string) => Promise<void>;
+  };
+  oidcConfig: Resource<OIDCConfig[]>;
+  vpcList: Resource<VPC[]>;
+  // subnets are currently embedded in vpc.aws_subnets; resource shape is ready for future separation
+  subnets: Resource<Subnet[]>;
+  securityGroups: Resource<SecurityGroup[]>;
+  machineTypes: Resource<MachineTypesDropdownType[]>;
 };
 
 export type WizardStepsData = {
   basicSetupStep: BasicSetupStepProps;
-  callbackFunctions?: WizardCallbackFunctions;
 };
+
+function buildVersionOptions(data: OpenShiftVersionsData): SelectDropdownType[] {
+  const defaultEqualsLatest = data.latest.value === data.default.value;
+
+  if (defaultEqualsLatest) {
+    return [data.default, ...data.others];
+  }
+
+  return [data.latest, data.default, ...data.others];
+}
 
 type RosaWizardProps = {
   onSubmit: WizardSubmit;
@@ -68,7 +91,7 @@ export const RosaWizard = (props: RosaWizardProps) => {
     WizardNavigationContext | undefined
   >();
 
-  const callbackFunctions = wizardsStepsData.callbackFunctions;
+  const { basicSetupStep } = wizardsStepsData;
 
   const hasSubmitError = !!onSubmitError;
 
@@ -129,17 +152,14 @@ export const RosaWizard = (props: RosaWizardProps) => {
             steps={[
               <Step label={t('Details')} id="basic-setup-step-details" key="basic-setup-details">
                 <DetailsSubStep
-                  openShiftVersions={wizardsStepsData.basicSetupStep.openShiftVersions}
-                  awsInfrastructureAccounts={
-                    wizardsStepsData.basicSetupStep.awsInfrastructureAccounts
-                  }
-                  awsBillingAccounts={wizardsStepsData.basicSetupStep.awsBillingAccounts}
-                  regions={wizardsStepsData.basicSetupStep.regions}
-                  awsAccountDataCallback={callbackFunctions?.onAWSAccountChange}
-                  refreshAwsAccountDataCallback={callbackFunctions?.refreshAwsAccountDataCallback}
-                  refreshAwsBillingAccountCallback={
-                    callbackFunctions?.refreshAwsBillingAccountCallback
-                  }
+                  clusterNameValidation={basicSetupStep.clusterNameValidation}
+                  openShiftVersions={buildVersionOptions(basicSetupStep.versions.data)}
+                  versionsIsPending={basicSetupStep.versions.isFetching}
+                  refreshVersionsCallback={() => void basicSetupStep.versions.fetch()}
+                  roles={basicSetupStep.roles}
+                  awsInfrastructureAccounts={basicSetupStep.awsInfrastructureAccounts}
+                  awsBillingAccounts={basicSetupStep.awsBillingAccounts}
+                  regions={basicSetupStep.regions}
                 />
               </Step>,
               <Step
@@ -148,10 +168,8 @@ export const RosaWizard = (props: RosaWizardProps) => {
                 key="roles-and-policies-sub-step-key"
               >
                 <RolesAndPoliciesSubStep
-                  installerRoles={wizardsStepsData.basicSetupStep.roles.installerRoles}
-                  supportRoles={wizardsStepsData.basicSetupStep.roles.supportRoles}
-                  workerRoles={wizardsStepsData.basicSetupStep.roles.workerRoles}
-                  oicdConfig={wizardsStepsData.basicSetupStep.oicdConfig}
+                  roles={basicSetupStep.roles}
+                  oidcConfig={basicSetupStep.oidcConfig}
                 />
               </Step>,
               <Step
@@ -160,13 +178,13 @@ export const RosaWizard = (props: RosaWizardProps) => {
                 key="machinepools-sub-step-key"
               >
                 <MachinePoolsSubstep
-                  vpcList={wizardsStepsData.basicSetupStep.vpcList}
-                  machineTypes={wizardsStepsData.basicSetupStep.machineTypes}
+                  vpcList={basicSetupStep.vpcList}
+                  machineTypes={basicSetupStep.machineTypes}
                 />
               </Step>,
               <Step id="networking-sub-step" label={t('Networking')} key="networking-sub-step-key">
                 <NetworkingAndSubnetsSubStep
-                  vpcList={wizardsStepsData.basicSetupStep.vpcList}
+                  vpcList={basicSetupStep.vpcList}
                   setIsClusterWideProxySelected={setIsClusterWideProxySelected}
                 />
               </Step>,

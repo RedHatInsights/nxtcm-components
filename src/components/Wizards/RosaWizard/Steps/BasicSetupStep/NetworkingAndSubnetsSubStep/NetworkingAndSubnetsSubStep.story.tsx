@@ -9,7 +9,14 @@ import {
 } from '@patternfly-labs/react-form-wizard/contexts/DisplayModeContext';
 import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
 import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
-import { VPC, Subnet, MachineTypesDropdownType } from '../../../../types';
+import { VPC, Subnet, Resource, MachineTypesDropdownType } from '../../../../types';
+
+const mockResource = <TData,>(data: TData): Resource<TData> => ({
+  data,
+  error: null,
+  isFetching: false,
+  fetch: async () => {},
+});
 
 // Mock VPC data with subnets
 export const mockSubnets: Subnet[] = [
@@ -95,16 +102,14 @@ export const createMockClusterData = (overrides: Record<string, unknown> = {}) =
 
 // Props interface for the wrapped component
 export interface NetworkingSubStepStoryProps {
-  vpcList?: VPC[];
-  machineTypes?: MachineTypesDropdownType[];
+  vpcList?: Resource<VPC[]>;
   clusterOverrides?: Record<string, unknown>;
   onClusterWideProxySelected?: (selected: boolean) => void;
 }
 
 // Wrapped component that can be mounted in tests
 export const NetworkingSubStepStory: React.FC<NetworkingSubStepStoryProps> = ({
-  vpcList = mockVpcList,
-  machineTypes = mockMachineTypes,
+  vpcList = mockResource(mockVpcList),
   clusterOverrides = {},
   onClusterWideProxySelected,
 }) => {
@@ -130,7 +135,6 @@ export const NetworkingSubStepStory: React.FC<NetworkingSubStepStoryProps> = ({
               <ValidationProvider>
                 <NetworkingAndSubnetsSubStep
                   vpcList={vpcList}
-                  machineTypes={machineTypes}
                   setIsClusterWideProxySelected={setIsClusterWideProxySelected}
                 />
               </ValidationProvider>

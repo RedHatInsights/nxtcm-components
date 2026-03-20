@@ -29,6 +29,22 @@ export type SelectDropdownType = {
   description?: string;
 };
 
+export type InstallerRole = SelectDropdownType & {
+  roleVersion?: string;
+  disabled?: boolean;
+};
+
+export type OpenShiftVersionsData = {
+  default: SelectDropdownType;
+  latest: SelectDropdownType;
+  others: SelectDropdownType[];
+};
+
+export type OpenShiftVersionGroup = {
+  label: string;
+  options: SelectDropdownType[];
+};
+
 export type MachineTypesDropdownType = {
   id: string;
   label: string;
@@ -36,10 +52,10 @@ export type MachineTypesDropdownType = {
   value: string;
 };
 
-export type Roles = {
-  installerRoles: SelectDropdownType[];
-  supportRoles: SelectDropdownType[];
-  workerRoles: SelectDropdownType[];
+export type Role = {
+  installerRole: InstallerRole;
+  supportRole: SelectDropdownType[];
+  workerRole: SelectDropdownType[];
 };
 
 // -- networking / VPC types --
@@ -171,12 +187,21 @@ export type RosaWizardFormData = {
 
 export type WizardType = 'rosa-hcp' | 'rosa-yaml-editor';
 
-// -- callback functions passed into the wizard by consumers --
+// -- resource types for async data with loading/error state --
 
-export type WizardCallbackFunctions = {
-  onAWSAccountChange?: (value: unknown) => void;
-  refreshAwsAccountDataCallback?: () => void;
-  refreshAwsBillingAccountCallback?: () => void;
+// co-locates data, loading, and error for a given field
+// optional fetch is used when a field supports refresh/reload
+export type Resource<TData, TArgs extends unknown[] = []> = {
+  data: TData;
+  error: string | null;
+  isFetching: boolean;
+  fetch?: (...args: TArgs) => Promise<void>;
+};
+
+// validate-only state for fields that don't carry a data property
+export type ValidationResource = {
+  error: string | null;
+  isFetching: boolean;
 };
 
 // -- wizard context: the PatternFly useWizardContext() return type --
