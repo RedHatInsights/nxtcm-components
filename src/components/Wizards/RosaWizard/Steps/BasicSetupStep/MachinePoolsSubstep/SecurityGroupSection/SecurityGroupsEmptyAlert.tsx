@@ -11,8 +11,8 @@ const SecurityGroupsEmptyAlert = ({ refreshVPCCallback }: SecurityGroupsEmptyAle
   return (
     <Alert variant="info" isInline title={sg.emptyTitle}>
       {sg.emptyBodyPrefix}{' '}
-      <ExternalLink href={links.AWS_CONSOLE_SECURITY_GROUPS}>{sg.emptyConsoleLink}</ExternalLink> of
-      your AWS console. <br />
+      <ExternalLink href={links.AWS_CONSOLE_SECURITY_GROUPS}>{sg.emptyConsoleLink}</ExternalLink>{' '}
+      {sg.emptyBodySuffix} <br />
       {refreshVPCCallback && (
         <AlertActionLink onClick={refreshVPCCallback}>{sg.refreshLink}</AlertActionLink>
       )}

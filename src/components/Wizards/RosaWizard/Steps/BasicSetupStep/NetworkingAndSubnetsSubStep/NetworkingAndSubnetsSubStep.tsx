@@ -37,7 +37,7 @@ import {
 import { Indented } from '@patternfly-labs/react-form-wizard/components/Indented';
 import links from '../../../externalLinks';
 import ExternalLink from '../../../common/ExternalLink';
-import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
+import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
 
 type NetworkingAndSubnetsSubStepProps = {
   vpcList: Resource<VPC[]>;
@@ -46,6 +46,7 @@ type NetworkingAndSubnetsSubStepProps = {
 
 export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepProps) => {
   const n = useRosaWizardStrings().networking;
+  const v = useRosaWizardValidators();
   const { cluster } = useItem<RosaWizardFormData>();
   const { setIsClusterWideProxySelected } = props;
   const { update } = useData();
@@ -74,35 +75,36 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
 
   const selectedSubnets = constructSelectedSubnets(cluster);
 
-  const machineDisjointSubnets = disjointSubnets('network_machine_cidr');
-  const serviceDisjointSubnets = disjointSubnets('network_service_cidr');
-  const podDisjointSubnets = disjointSubnets('network_pod_cidr');
-  const awsServiceSubnetMask = awsSubnetMask('network_service_cidr');
+  const machineDisjointSubnets = disjointSubnets('network_machine_cidr', v.disjointSubnets);
+  const serviceDisjointSubnets = disjointSubnets('network_service_cidr', v.disjointSubnets);
+  const podDisjointSubnets = disjointSubnets('network_pod_cidr', v.disjointSubnets);
+  const awsServiceSubnetMask = awsSubnetMask('network_service_cidr', v.serviceCidr);
 
-  const hostPrefixValidators = (value: string) => hostPrefix(value);
-  const cidrValidators = (value: string) => cidr(value) || validateRange(value) || undefined;
+  const hostPrefixValidators = (value: string) => hostPrefix(value, v.hostPrefix);
+  const cidrValidators = (value: string) =>
+    cidr(value, v.cidr) || validateRange(value, v.validateRange, v.cidr) || undefined;
 
   const machineCidrValidators = (value: string) =>
     cidrValidators(value) ||
-    awsMachineCidr(value, cluster) ||
-    validateRange(value) ||
-    subnetCidrs(value, cluster, 'network_machine_cidr', selectedSubnets) ||
+    awsMachineCidr(value, cluster, v.awsMachineCidr) ||
+    validateRange(value, v.validateRange, v.cidr) ||
+    subnetCidrs(value, cluster, 'network_machine_cidr', selectedSubnets, v.subnetCidrs) ||
     machineDisjointSubnets(value, cluster) ||
     undefined;
 
   const serviceCidrValidators = (value: string) =>
     cidrValidators(value) ||
-    serviceCidr(value) ||
+    serviceCidr(value, v.serviceCidr) ||
     serviceDisjointSubnets(value, cluster) ||
     awsServiceSubnetMask(value) ||
-    subnetCidrs(value, cluster, 'network_service_cidr', selectedSubnets) ||
+    subnetCidrs(value, cluster, 'network_service_cidr', selectedSubnets, v.subnetCidrs) ||
     undefined;
 
   const podCidrValidators = (value: string) =>
     cidrValidators(value) ||
-    podCidr(value, cluster?.network_host_prefix) ||
+    podCidr(value, cluster?.network_host_prefix, v.podCidr) ||
     podDisjointSubnets(value, cluster) ||
-    subnetCidrs(value, cluster, 'network_pod_cidr', selectedSubnets) ||
+    subnetCidrs(value, cluster, 'network_pod_cidr', selectedSubnets, v.subnetCidrs) ||
     undefined;
 
   return (
@@ -117,7 +119,7 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
             id="public"
             label={n.publicLabel}
             value="external"
-            popover={<LabelHelp id="subnet-label-help" labelHelp={n.publicPopover} />}
+            popover={<LabelHelp id="subnet-label-help-public" labelHelp={n.publicPopover} />}
           >
             <WizSelect
               label={n.publicSubnetLabel}
@@ -138,7 +140,7 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
             id="private"
             label={n.privateLabel}
             value="internal"
-            popover={<LabelHelp id="subnet-label-help" labelHelp={n.privatePopover} />}
+            popover={<LabelHelp id="subnet-label-help-private" labelHelp={n.privatePopover} />}
           ></Radio>
         </WizRadioGroup>
       </Section>

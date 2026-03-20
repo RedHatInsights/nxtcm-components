@@ -34,8 +34,8 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
   roles,
   oidcConfig,
 }) => {
-const installerRoles = roles.data.map((roleSet) => roleSet.installerRole); 
-const rp = useRosaWizardStrings().rolesAndPolicies;
+  const installerRoles = roles.data.map((roleSet) => roleSet.installerRole);
+  const rp = useRosaWizardStrings().rolesAndPolicies;
   const v = useRosaWizardValidators();
 
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);

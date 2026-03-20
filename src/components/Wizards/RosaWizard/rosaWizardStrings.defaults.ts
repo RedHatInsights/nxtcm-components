@@ -62,9 +62,9 @@ export const defaultRosaWizardStrings: RosaWizardStrings = {
     introSts:
       'ROSA cluster deployments use the AWS Security Token Service for added security. Run the following required steps from a CLI authenticated with both AWS and ROSA.',
     cliVersion: 'You must use ROSA CLI version 1.2.31 or above.',
-    step1Title: 'Step 1: OCM Role',
-    step2Title: 'Step 2: User Role',
-    step3Title: 'Step 3: User Role',
+    step1Title: 'Step 1: OCM role',
+    step2Title: 'Step 2: User role',
+    step3Title: 'Step 3: Account roles',
     closingPrompt:
       "After you've completed all the steps, close this guide and choose your account.",
     closeButton: 'Close',
@@ -134,7 +134,7 @@ export const defaultRosaWizardStrings: RosaWizardStrings = {
     regionLabel: 'Region',
     regionPlaceholder: 'Select a region',
     regionHelp:
-      'The AWS Region where your compute nodes and control plane will be located. (should be link: Learn more abut AWS Regions.)',
+      'The AWS Region where your compute nodes and control plane will be located. (should be link: Learn more about AWS Regions.)',
   },
   rolesAndPolicies: {
     accountRolesSection: 'Account roles',
@@ -253,6 +253,7 @@ export const defaultRosaWizardStrings: RosaWizardStrings = {
   securityGroups: {
     emptyTitle: 'There are no security groups for this Virtual Private Cloud',
     emptyBodyPrefix: 'To add security groups, go to the',
+    emptyBodySuffix: 'of your AWS console.',
     emptyConsoleLink: 'Security groups section',
     refreshLink: 'Refresh Security Groups',
     noEditTitle:
@@ -413,4 +414,60 @@ export const defaultRosaWizardValidatorStrings: RosaWizardValidatorStrings = {
     computeMinTwo: 'Input cannot be less than 2 nodes.',
   },
   proxyConfigureAtLeastOne: 'Configure at least one of the cluster-wide proxy fields.',
+  cidr: {
+    invalidNotation: (value: string) =>
+      `IP address range '${value}' isn't valid CIDR notation. It must follow the RFC-4632 format: '192.168.0.0/16'.`,
+  },
+  validateRange: {
+    notSubnetAddress:
+      'This is not a subnet address. The subnet prefix is inconsistent with the subnet mask.',
+  },
+  awsMachineCidr: {
+    maskTooLarge: (minMask: number) => `The subnet mask can't be larger than '/${minMask}'.`,
+    maskTooSmallMultiAz: (maxMask: number) =>
+      `The subnet mask can't be smaller than '/${maxMask}'.`,
+    maskTooSmallSingleAz: (maxMask: number) =>
+      `The subnet mask can't be smaller than '/${maxMask}'.`,
+  },
+  serviceCidr: {
+    maskTooSmall: (maxMask: number, maxServices: number) =>
+      `The subnet mask can't be smaller than '/${maxMask}', which provides up to ${maxServices} services.`,
+    subnetMaskBetween: (min: number, max: number) =>
+      `Subnet mask must be between /${min} and /${max}.`,
+    subnetMaskBetweenOneAnd: (max: number) => `Subnet mask must be between /1 and /${max}.`,
+  },
+  podCidr: {
+    maskTooSmall: (maxMask: number) => `The subnet mask can't be smaller than /${maxMask}.`,
+    notEnoughNodes: (prefixLength: number) =>
+      `The subnet mask of /${prefixLength} does not allow for enough nodes. Try changing the host prefix or the pod subnet range.`,
+  },
+  subnetCidrs: {
+    machineDoesNotIncludeStartIp: (startIp: string, subnetName: string) =>
+      `The Machine CIDR does not include the starting IP (${startIp}) of ${subnetName}`,
+    serviceOverlaps: (subnetName: string, cidrBlock: string) =>
+      `The Service CIDR overlaps with ${subnetName} CIDR '${cidrBlock}'`,
+    serviceIncludesStartIp: (startIp: string, subnetName: string) =>
+      `The Service CIDR includes the starting IP (${startIp}) of ${subnetName}`,
+    podOverlaps: (subnetName: string, cidrBlock: string) =>
+      `The Pod CIDR overlaps with ${subnetName} CIDR '${cidrBlock}'`,
+    podIncludesStartIp: (startIp: string, subnetName: string) =>
+      `The Pod CIDR includes the starting IP (${startIp}) of ${subnetName}`,
+  },
+  disjointSubnets: {
+    fieldLabelMachine: 'Machine CIDR',
+    fieldLabelService: 'Service CIDR',
+    fieldLabelPod: 'Pod CIDR',
+    overlap: (otherFieldLabelsCsv: string, plural: boolean) =>
+      `This subnet overlaps with the subnet${plural ? 's' : ''} in the ${otherFieldLabelsCsv} field${
+        plural ? 's' : ''
+      }.`,
+  },
+  hostPrefix: {
+    invalidMaskFormat: (value: string) =>
+      `The value '${value}' isn't a valid subnet mask. It must follow the RFC-4632 format: '/16'.`,
+    maskTooLarge: (maxPrefix: number, maxPodIPs: number) =>
+      `The subnet mask can't be larger than '/${maxPrefix}', which provides up to ${maxPodIPs} Pod IP addresses.`,
+    maskTooSmall: (minPrefix: number, maxPodIPs: number) =>
+      `The subnet mask can't be smaller than '/${minPrefix}', which provides up to ${maxPodIPs} Pod IP addresses.`,
+  },
 };

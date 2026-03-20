@@ -19,22 +19,28 @@ import {
 } from './constants';
 import { parseCIDRSubnetLength, stringToArray } from './helpers';
 import IPCIDR from 'ip-cidr';
-import { CIDRSubnet } from '../types';
+import type { ClusterFormData, CIDRSubnet } from '../types';
 import {
   defaultRosaWizardValidatorStrings,
+  type RosaWizardAwsMachineCidrValidatorStrings,
   type RosaWizardCaValidatorStrings,
+  type RosaWizardCidrValidatorStrings,
   type RosaWizardClusterNameValidatorStrings,
+  type RosaWizardDisjointSubnetsValidatorStrings,
+  type RosaWizardHostPrefixValidatorStrings,
   type RosaWizardKmsKeyValidatorStrings,
   type RosaWizardNoProxyValidatorStrings,
   type RosaWizardOperatorRolesPrefixValidatorStrings,
+  type RosaWizardPodCidrValidatorStrings,
   type RosaWizardReplicaValidatorStrings,
   type RosaWizardSecurityGroupsValidatorStrings,
+  type RosaWizardServiceCidrValidatorStrings,
+  type RosaWizardSubnetCidrsValidatorStrings,
   type RosaWizardUrlValidatorStrings,
+  type RosaWizardValidateRangeValidatorStrings,
 } from './rosaWizardStrings';
 
 const lowercaseAlphaNumericCharacters = 'abcdefghijklmnopqrstuvwxyz1234567890';
-
-type Networks = Parameters<typeof overlapCidr>[0];
 
 export const composeValidators =
   (...args: Array<(value: any, item?: unknown) => string | undefined>) =>
@@ -166,40 +172,41 @@ export const validateUrl = (
   } else {
     protocolArr = protocol;
   }
+  let parsed: URL;
   try {
-    // eslint-disable-next-line no-new
-    new URL(value);
-  } catch (error) {
+    parsed = new URL(value);
+  } catch {
     return msgs.invalid;
-  } finally {
-    const valueStart = value.substring(0, value.indexOf('://'));
-    if (!protocolArr.includes(valueStart)) {
-      const protocolStr = protocolArr.map((p) => `${p}://`).join(', ');
-      // eslint-disable-next-line no-unsafe-finally
-      return msgs.schemePrefix(protocolStr);
-    }
+  }
+  const scheme = parsed.protocol.slice(0, -1);
+  if (!protocolArr.includes(scheme)) {
+    const protocolStr = protocolArr.map((p) => `${p}://`).join(', ');
+    return msgs.schemePrefix(protocolStr);
   }
   return undefined;
 };
 
 export const disjointSubnets =
-  (fieldName: string) =>
-  (value: string | undefined, formData: { [name: string]: Networks }): string | undefined => {
+  (
+    fieldName: string,
+    msgs: RosaWizardDisjointSubnetsValidatorStrings = defaultRosaWizardValidatorStrings.disjointSubnets
+  ) =>
+  (value: string | undefined, formData: ClusterFormData | undefined): string | undefined => {
     if (!value) {
       return undefined;
     }
 
     const networkingFields: { [key: string]: string } = {
-      network_machine_cidr: 'Machine CIDR',
-      network_service_cidr: 'Service CIDR',
-      network_pod_cidr: 'Pod CIDR',
+      network_machine_cidr: msgs.fieldLabelMachine,
+      network_service_cidr: msgs.fieldLabelService,
+      network_pod_cidr: msgs.fieldLabelPod,
     };
     delete networkingFields[fieldName];
     const overlappingFields: string[] = [];
 
     if (CIDR_REGEXP.test(value)) {
       Object.keys(networkingFields).forEach((name) => {
-        const fieldValue = formData.name ? formData.name : null;
+        const fieldValue = (formData as Record<string, string | undefined> | undefined)?.[name];
         try {
           if (fieldValue && overlapCidr(value, fieldValue)) {
             overlappingFields.push(networkingFields[name]);
@@ -212,21 +219,22 @@ export const disjointSubnets =
 
     const plural = overlappingFields.length > 1;
     if (overlappingFields.length > 0) {
-      return `This subnet overlaps with the subnet${
-        plural ? 's' : ''
-      } in the ${overlappingFields.join(', ')} field${plural ? 's' : ''}.`;
+      return msgs.overlap(overlappingFields.join(', '), plural);
     }
     return undefined;
   };
 
 // Function to validate IP address masks
-export const hostPrefix = (value?: string): string | undefined => {
+export const hostPrefix = (
+  value?: string,
+  msgs: RosaWizardHostPrefixValidatorStrings = defaultRosaWizardValidatorStrings.hostPrefix
+): string | undefined => {
   if (!value) {
     return undefined;
   }
 
   if (!HOST_PREFIX_REGEXP.test(value)) {
-    return `The value '${value}' isn't a valid subnet mask. It must follow the RFC-4632 format: '/16'.`;
+    return msgs.invalidMaskFormat(value);
   }
 
   const prefixLength = parseCIDRSubnetLength(value);
@@ -234,11 +242,11 @@ export const hostPrefix = (value?: string): string | undefined => {
   if (prefixLength != null) {
     if (prefixLength < HOST_PREFIX_MIN) {
       const maxPodIPs = 2 ** (32 - HOST_PREFIX_MIN) - 2;
-      return `The subnet mask can't be larger than '/${HOST_PREFIX_MIN}', which provides up to ${maxPodIPs} Pod IP addresses.`;
+      return msgs.maskTooLarge(HOST_PREFIX_MIN, maxPodIPs);
     }
     if (prefixLength > HOST_PREFIX_MAX) {
       const maxPodIPs = 2 ** (32 - HOST_PREFIX_MAX) - 2;
-      return `The subnet mask can't be smaller than '/${HOST_PREFIX_MAX}', which provides up to ${maxPodIPs} Pod IP addresses.`;
+      return msgs.maskTooSmall(HOST_PREFIX_MAX, maxPodIPs);
     }
   }
 
@@ -246,15 +254,22 @@ export const hostPrefix = (value?: string): string | undefined => {
 };
 
 // Function to validate IP address blocks
-export const cidr = (value?: string): string | undefined => {
+export const cidr = (
+  value?: string,
+  msgs: RosaWizardCidrValidatorStrings = defaultRosaWizardValidatorStrings.cidr
+): string | undefined => {
   if (value && !CIDR_REGEXP.test(value)) {
-    return `IP address range '${value}' isn't valid CIDR notation. It must follow the RFC-4632 format: '192.168.0.0/16'.`;
+    return msgs.invalidNotation(value);
   }
   return undefined;
 };
 
-export const validateRange = (value?: string): string | undefined => {
-  if (cidr(value) !== undefined || !value) {
+export const validateRange = (
+  value?: string,
+  msgs: RosaWizardValidateRangeValidatorStrings = defaultRosaWizardValidatorStrings.validateRange,
+  cidrMsgs: RosaWizardCidrValidatorStrings = defaultRosaWizardValidatorStrings.cidr
+): string | undefined => {
+  if (cidr(value, cidrMsgs) !== undefined || !value) {
     return undefined;
   }
   const parts = value.split('/');
@@ -266,14 +281,15 @@ export const validateRange = (value?: string): string | undefined => {
   const maskedBinaryString = cidrBinaryString.slice(0, maskBits).padEnd(32, '0');
 
   if (maskedBinaryString !== cidrBinaryString) {
-    return 'This is not a subnet address. The subnet prefix is inconsistent with the subnet mask.';
+    return msgs.notSubnetAddress;
   }
   return undefined;
 };
 
 export const awsMachineCidr = (
   value?: string,
-  formData?: Record<string, string>
+  formData?: Record<string, string>,
+  msgs: RosaWizardAwsMachineCidrValidatorStrings = defaultRosaWizardValidatorStrings.awsMachineCidr
 ): string | undefined => {
   if (!value) {
     return undefined;
@@ -284,25 +300,28 @@ export const awsMachineCidr = (
 
   if (prefixLength != null) {
     if (prefixLength < AWS_MACHINE_CIDR_MIN) {
-      return `The subnet mask can't be larger than '/${AWS_MACHINE_CIDR_MIN}'.`;
+      return msgs.maskTooLarge(AWS_MACHINE_CIDR_MIN);
     }
 
     if (
       (isMultiAz || formData?.hypershift === 'true') &&
       prefixLength > AWS_MACHINE_CIDR_MAX_MULTI_AZ
     ) {
-      return `The subnet mask can't be smaller than '/${AWS_MACHINE_CIDR_MAX_MULTI_AZ}'.`;
+      return msgs.maskTooSmallMultiAz(AWS_MACHINE_CIDR_MAX_MULTI_AZ);
     }
 
     if (!isMultiAz && prefixLength > AWS_MACHINE_CIDR_MAX_SINGLE_AZ) {
-      return `The subnet mask can't be smaller than '/${AWS_MACHINE_CIDR_MAX_SINGLE_AZ}'.`;
+      return msgs.maskTooSmallSingleAz(AWS_MACHINE_CIDR_MAX_SINGLE_AZ);
     }
   }
 
   return undefined;
 };
 
-export const serviceCidr = (value?: string): string | undefined => {
+export const serviceCidr = (
+  value?: string,
+  msgs: RosaWizardServiceCidrValidatorStrings = defaultRosaWizardValidatorStrings.serviceCidr
+): string | undefined => {
   if (!value) {
     return undefined;
   }
@@ -312,14 +331,18 @@ export const serviceCidr = (value?: string): string | undefined => {
   if (prefixLength != null) {
     if (prefixLength > SERVICE_CIDR_MAX) {
       const maxServices = 2 ** (32 - SERVICE_CIDR_MAX) - 2;
-      return `The subnet mask can't be smaller than '/${SERVICE_CIDR_MAX}', which provides up to ${maxServices} services.`;
+      return msgs.maskTooSmall(SERVICE_CIDR_MAX, maxServices);
     }
   }
 
   return undefined;
 };
 
-export const podCidr = (value?: string, network_host_prefix?: string): string | undefined => {
+export const podCidr = (
+  value?: string,
+  network_host_prefix?: string,
+  msgs: RosaWizardPodCidrValidatorStrings = defaultRosaWizardValidatorStrings.podCidr
+): string | undefined => {
   if (!value) {
     return undefined;
   }
@@ -327,14 +350,14 @@ export const podCidr = (value?: string, network_host_prefix?: string): string | 
   const prefixLength = parseCIDRSubnetLength(value);
   if (prefixLength != null) {
     if (prefixLength > POD_CIDR_MAX) {
-      return `The subnet mask can't be smaller than /${POD_CIDR_MAX}.`;
+      return msgs.maskTooSmall(POD_CIDR_MAX);
     }
 
-    const hostPrefix = parseCIDRSubnetLength(network_host_prefix) || 23;
-    const maxPodIPs = 2 ** (32 - hostPrefix);
+    const hostPrefixLen = parseCIDRSubnetLength(network_host_prefix) || 23;
+    const maxPodIPs = 2 ** (32 - hostPrefixLen);
     const maxPodNodes = Math.floor(2 ** (32 - prefixLength) / maxPodIPs);
     if (maxPodNodes < POD_NODES_MIN) {
-      return `The subnet mask of /${prefixLength} does not allow for enough nodes. Try changing the host prefix or the pod subnet range.`;
+      return msgs.notEnoughNodes(prefixLength);
     }
   }
 
@@ -345,7 +368,8 @@ export const subnetCidrs = (
   value?: string,
   formData?: Record<string, string>,
   fieldName?: string,
-  selectedSubnets?: CIDRSubnet[]
+  selectedSubnets?: CIDRSubnet[],
+  msgs: RosaWizardSubnetCidrsValidatorStrings = defaultRosaWizardValidatorStrings.subnetCidrs
 ): string | undefined => {
   type ErroredSubnet = {
     cidr_block: string;
@@ -394,33 +418,31 @@ export const subnetCidrs = (
   if (fieldName === 'network_machine_cidr') {
     compareCidrs(true);
     if (erroredSubnets.length > 0) {
-      return `The Machine CIDR does not include the starting IP (${startingIP(
-        erroredSubnets[0].cidr_block
-      )}) of ${subnetName()}`;
+      return msgs.machineDoesNotIncludeStartIp(
+        startingIP(erroredSubnets[0].cidr_block),
+        subnetName() ?? ''
+      );
     }
   }
   if (fieldName === 'network_service_cidr') {
     compareCidrs(false);
     if (erroredSubnets.length > 0) {
       if (erroredSubnets[0]?.overlaps) {
-        return `The Service CIDR overlaps with ${subnetName()} CIDR 
-        '${erroredSubnets[0].cidr_block}'`;
+        return msgs.serviceOverlaps(subnetName() ?? '', erroredSubnets[0].cidr_block);
       }
-      return `The Service CIDR includes the starting IP (${startingIP(
-        erroredSubnets[0].cidr_block
-      )}) of ${subnetName()}`;
+      return msgs.serviceIncludesStartIp(
+        startingIP(erroredSubnets[0].cidr_block),
+        subnetName() ?? ''
+      );
     }
   }
   if (fieldName === 'network_pod_cidr') {
     compareCidrs(false);
     if (erroredSubnets.length > 0) {
       if (erroredSubnets[0]?.overlaps) {
-        return `The Pod CIDR overlaps with ${subnetName()} CIDR 
-        '${erroredSubnets[0].cidr_block}'`;
+        return msgs.podOverlaps(subnetName() ?? '', erroredSubnets[0].cidr_block);
       }
-      return `The Pod CIDR includes the starting IP (${startingIP(
-        erroredSubnets[0].cidr_block
-      )}) of ${subnetName()}`;
+      return msgs.podIncludesStartIp(startingIP(erroredSubnets[0].cidr_block), subnetName() ?? '');
     }
   }
 
@@ -428,7 +450,13 @@ export const subnetCidrs = (
 };
 
 export const awsSubnetMask =
-  (fieldName: string | undefined) =>
+  (
+    fieldName: string | undefined,
+    msgs: Pick<
+      RosaWizardServiceCidrValidatorStrings,
+      'subnetMaskBetween' | 'subnetMaskBetweenOneAnd'
+    > = defaultRosaWizardValidatorStrings.serviceCidr
+  ) =>
   (value?: string): string | undefined => {
     if (!fieldName || cidr(value) !== undefined || !value) {
       return undefined;
@@ -443,12 +471,12 @@ export const awsSubnetMask =
     const maskBits = parseInt(parts[1], 10);
     if (!maskRange[0]) {
       if (maskBits > maskRange[1] || maskBits < 1) {
-        return `Subnet mask must be between /1 and /${maskRange[1]}.`;
+        return msgs.subnetMaskBetweenOneAnd(maskRange[1]);
       }
       return undefined;
     }
     if (!(maskRange[0] <= maskBits && maskBits <= maskRange[1])) {
-      return `Subnet mask must be between /${maskRange[0]} and /${maskRange[1]}.`;
+      return msgs.subnetMaskBetween(maskRange[0], maskRange[1]);
     }
     return undefined;
   };

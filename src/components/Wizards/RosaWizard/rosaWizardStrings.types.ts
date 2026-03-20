@@ -6,7 +6,7 @@
 import type { WizardStrings } from '@patternfly-labs/react-form-wizard';
 
 export type DeepPartial<T> = {
-  [K in keyof T]?: T[K] extends (...args: never[]) => unknown
+  [K in keyof T]?: T[K] extends (...args: any[]) => unknown
     ? T[K]
     : T[K] extends object
       ? DeepPartial<T[K]>
@@ -67,6 +67,60 @@ export type RosaWizardReplicaValidatorStrings = {
   computeMinTwo: string;
 };
 
+/** CIDR notation validation (networking step). */
+export type RosaWizardCidrValidatorStrings = {
+  invalidNotation: (value: string) => string;
+};
+
+/** Subnet address vs mask consistency (networking step). */
+export type RosaWizardValidateRangeValidatorStrings = {
+  notSubnetAddress: string;
+};
+
+/** Machine CIDR prefix bounds (networking step). */
+export type RosaWizardAwsMachineCidrValidatorStrings = {
+  maskTooLarge: (minMask: number) => string;
+  maskTooSmallMultiAz: (maxMask: number) => string;
+  maskTooSmallSingleAz: (maxMask: number) => string;
+};
+
+/** Service CIDR and related subnet mask bounds (networking step). */
+export type RosaWizardServiceCidrValidatorStrings = {
+  maskTooSmall: (maxMask: number, maxServices: number) => string;
+  subnetMaskBetween: (min: number, max: number) => string;
+  subnetMaskBetweenOneAnd: (max: number) => string;
+};
+
+/** Pod CIDR (networking step). */
+export type RosaWizardPodCidrValidatorStrings = {
+  maskTooSmall: (maxMask: number) => string;
+  notEnoughNodes: (prefixLength: number) => string;
+};
+
+/** Machine / service / pod CIDR vs selected VPC subnets (networking step). */
+export type RosaWizardSubnetCidrsValidatorStrings = {
+  machineDoesNotIncludeStartIp: (startIp: string, subnetName: string) => string;
+  serviceOverlaps: (subnetName: string, cidrBlock: string) => string;
+  serviceIncludesStartIp: (startIp: string, subnetName: string) => string;
+  podOverlaps: (subnetName: string, cidrBlock: string) => string;
+  podIncludesStartIp: (startIp: string, subnetName: string) => string;
+};
+
+/** Non-overlapping machine, service, and pod ranges (networking step). */
+export type RosaWizardDisjointSubnetsValidatorStrings = {
+  fieldLabelMachine: string;
+  fieldLabelService: string;
+  fieldLabelPod: string;
+  overlap: (otherFieldLabelsCsv: string, plural: boolean) => string;
+};
+
+/** Host prefix / node sizing (networking step). */
+export type RosaWizardHostPrefixValidatorStrings = {
+  invalidMaskFormat: (value: string) => string;
+  maskTooLarge: (maxPrefix: number, maxPodIPs: number) => string;
+  maskTooSmall: (minPrefix: number, maxPodIPs: number) => string;
+};
+
 export type RosaWizardValidatorStrings = {
   clusterName: RosaWizardClusterNameValidatorStrings;
   operatorRolesPrefix: RosaWizardOperatorRolesPrefixValidatorStrings;
@@ -78,6 +132,14 @@ export type RosaWizardValidatorStrings = {
   rootDisk: RosaWizardRootDiskValidatorStrings;
   replicas: RosaWizardReplicaValidatorStrings;
   proxyConfigureAtLeastOne: string;
+  cidr: RosaWizardCidrValidatorStrings;
+  validateRange: RosaWizardValidateRangeValidatorStrings;
+  awsMachineCidr: RosaWizardAwsMachineCidrValidatorStrings;
+  serviceCidr: RosaWizardServiceCidrValidatorStrings;
+  podCidr: RosaWizardPodCidrValidatorStrings;
+  subnetCidrs: RosaWizardSubnetCidrsValidatorStrings;
+  disjointSubnets: RosaWizardDisjointSubnetsValidatorStrings;
+  hostPrefix: RosaWizardHostPrefixValidatorStrings;
 };
 
 export type RosaWizardStrings = {
@@ -273,6 +335,7 @@ export type RosaWizardStrings = {
   securityGroups: {
     emptyTitle: string;
     emptyBodyPrefix: string;
+    emptyBodySuffix: string;
     emptyConsoleLink: string;
     refreshLink: string;
     noEditTitle: string;

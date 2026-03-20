@@ -60,6 +60,11 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
   const formatHourLabel = (hour: number) => `${hour.toString().padStart(2, '0')}:00 UTC`;
 
   const [selectedHour, selectedDay] = parseCurrentValue();
+  const selectedDayIndex = Number(selectedDay);
+  const dayToggleLabel =
+    selectedDay === '' || Number.isNaN(selectedDayIndex)
+      ? cu.selectDayPlaceholder
+      : (cu.daysOfWeek[selectedDayIndex] ?? cu.selectDayPlaceholder);
 
   const dayToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
     <MenuToggle
@@ -68,7 +73,7 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
       isExpanded={daySelectOpen}
       isFullWidth
     >
-      {cu.daysOfWeek[Number(selectedDay)] ?? cu.selectDayPlaceholder}
+      {dayToggleLabel}
     </MenuToggle>
   );
 

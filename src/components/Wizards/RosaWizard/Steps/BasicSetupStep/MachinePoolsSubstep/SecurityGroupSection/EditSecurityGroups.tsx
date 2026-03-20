@@ -149,7 +149,7 @@ const EditSecurityGroups = ({
                   onSelect={onSelect}
                   onOpenChange={(isOpen) => setIsOpen(isOpen)}
                   data-testid="securitygroups-id"
-                  aria-labelledby={sg.selectAriaLabelledBy}
+                  aria-label={sg.selectAriaLabelledBy}
                   maxMenuHeight="300px"
                 >
                   <SelectList>

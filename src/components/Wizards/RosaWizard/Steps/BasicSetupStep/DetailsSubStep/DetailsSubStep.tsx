@@ -6,7 +6,7 @@ import { Resource, Role, SelectDropdownType, ValidationResource } from '../../..
 import { validateClusterName } from '../../../validators';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
-import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
+import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
 
 type DetailsSubStepProps = {
   clusterNameValidation: ValidationResource;
@@ -32,7 +32,6 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   regions,
 }) => {
   const d = useRosaWizardStrings().details;
-  const v = useRosaWizardValidators();
 
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const drawerRef = React.useRef<HTMLSpanElement>(null);
