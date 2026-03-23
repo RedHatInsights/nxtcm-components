@@ -1,295 +1,73 @@
-# ROSA HCP Wizard — Integration Guide for ACM/OCM Consumers
+# ROSA HCP Wizard Integration Quick-Start
 
-This guide covers the typed interfaces that ACM and OCM applications use when integrating the ROSA HCP cluster creation wizard from `nxtcm-components`.
+Use this page as a quick integration checklist. Detailed typed contract examples live in Storybook and compile-checked example files so they stay aligned with code.
 
-## Overview
+## Use These as Source of Truth
 
-The wizard accepts structured data describing AWS accounts, OpenShift versions, VPCs, roles, and other configuration options. On submit, it returns the full cluster configuration the user built. Both the input and output shapes are fully typed so consumers get compile-time validation and autocomplete.
+- Typed Storybook contract example:
+  - `src/components/Wizards/RosaWizard/RosaWizardIntegrationContract.stories.tsx`
+- Compile-only typed integration example:
+  - `src/examples/rosaWizardIntegration.example.tsx`
+- Exported types and public API surface:
+  - `src/components/Wizards/index.ts`
+  - `src/components/Wizards/types.ts`
 
-All types referenced below are exported from the library:
+## Minimal Integration Shape
 
-```ts
-import type {
-  WizardStepsData,
-  BasicSetupStepProps,
-  ClusterFormData,
-  RosaWizardFormData,
-  WizardCallbackFunctions,
-  WizardType,
-  SelectDropdownType,
-  MachineTypesDropdownType,
-  VPC,
-  Subnet,
-  Roles,
-  OIDCConfig,
-} from 'nxtcm-components';
-```
-
-## Rendering the Wizard
+`WizardWrapper` types `onSubmit` as `(data: RosaWizardFormData) => Promise<void>` (not `unknown`). The prop name is `wizardsStepsData` (matches `RosaWizard`).
 
 ```tsx
 import { WizardWrapper } from 'nxtcm-components';
+import type { RosaWizardFormData, WizardStepsData } from 'nxtcm-components';
 
-<WizardWrapper
-  type="rosa-hcp"
-  title="Create ROSA HCP cluster"
-  wizardsStepsData={stepsData}
-  onSubmit={handleSubmit}
-  onCancel={handleCancel}
-/>
-```
-
-`type` is a union of `'rosa-hcp' | 'rosa-yaml-editor'`. The first renders the standard step-by-step wizard, the second adds a YAML editor step before review.
-
-## Input: `WizardStepsData`
-
-This is the top-level shape passed via the `wizardsStepsData` prop.
-
-```ts
-type WizardStepsData = {
-  basicSetupStep: BasicSetupStepProps;
-  callbackFunctions?: WizardCallbackFunctions;
-};
-```
-
-### `BasicSetupStepProps`
-
-All the dropdown and selection data the wizard needs to render its steps.
-
-```ts
-type BasicSetupStepProps = {
-  openShiftVersions: SelectDropdownType[];
-  awsInfrastructureAccounts: SelectDropdownType[];
-  awsBillingAccounts: SelectDropdownType[];
-  regions: SelectDropdownType[];
-  vpcList: VPC[];
-  roles: Roles;
-  oicdConfig: OIDCConfig[];
-  machineTypes: MachineTypesDropdownType[];
-};
-```
-
-### Option types
-
-Most dropdowns use `SelectDropdownType`:
-
-```ts
-type SelectDropdownType = {
-  label: string;       // display text
-  value: string;       // stored value
-  description?: string; // optional secondary text
-};
-```
-
-Machine types have an extra `id` field:
-
-```ts
-type MachineTypesDropdownType = {
-  id: string;
-  label: string;
-  description: string;
-  value: string;
-};
-```
-
-### VPC and Subnet data
-
-```ts
-type VPC = {
-  id: string;
-  name: string;
-  aws_subnets: Subnet[];
-};
-
-type Subnet = {
-  subnet_id: string;
-  name: string;            // should contain 'private' or 'public' for filtering
-  availability_zone: string;
-};
-```
-
-The wizard filters subnets by name to separate private and public subnets. Subnet names containing `'private'` are used for machine pool selection, and those containing `'public'` are used for the public subnet dropdown when the cluster is set to external access.
-
-### Roles
-
-```ts
-type Roles = {
-  installerRoles: SelectDropdownType[];
-  supportRoles: SelectDropdownType[];
-  workerRoles: SelectDropdownType[];
-};
-```
-
-### OIDC Config
-
-```ts
-type OIDCConfig = {
-  label: string;
-  value: string;
-  issuer_url: string; // shown as description in the dropdown
-};
-```
-
-### Callback Functions (optional)
-
-```ts
-type WizardCallbackFunctions = {
-  onAWSAccountChange?: (value: unknown) => void;
-  refreshAwsAccountDataCallback?: () => void;
-  refreshAwsBillingAccountCallback?: () => void;
-};
-```
-
-- `onAWSAccountChange` fires when the user selects a different AWS infrastructure account. Use this to reload roles, VPCs, or other account-dependent data.
-- `refreshAwsAccountDataCallback` is wired to the refresh button on the AWS infrastructure account dropdown.
-- `refreshAwsBillingAccountCallback` is wired to the refresh button on the AWS billing account dropdown.
-
-## Output: `ClusterFormData`
-
-The `onSubmit` callback receives the full form state wrapped as `RosaWizardFormData`:
-
-```ts
-type RosaWizardFormData = {
-  cluster: ClusterFormData;
-};
-```
-
-`ClusterFormData` contains every field the wizard collects:
-
-```ts
-type ClusterFormData = {
-  // details
-  name?: string;
-  cluster_version?: string;
-  associated_aws_id?: string;
-  billing_account_id?: string;
-  region?: string;
-
-  // roles and policies
-  installer_role_arn?: string;
-  support_role_arn?: string;
-  worker_role_arn?: string;
-  byo_oidc_config_id?: string;
-  custom_operator_roles_prefix?: string;
-
-  // machine pools
-  selected_vpc?: string;
-  machine_pools_subnets?: MachinePoolSubnetEntry[];
-  machine_type?: string;
-  autoscaling?: boolean;
-  nodes_compute?: number;
-  min_replicas?: number;
-  max_replicas?: number;
-  compute_root_volume?: number;
-  imds?: string;
-
-  // networking
-  cluster_privacy?: 'external' | 'internal';
-  cluster_privacy_public_subnet_id?: string;
-  cidr_default?: boolean;
-  network_machine_cidr?: string;
-  network_service_cidr?: string;
-  network_pod_cidr?: string;
-  network_host_prefix?: string;
-  configure_proxy?: boolean;
-
-  // proxy (only present if configure_proxy is true)
-  http_proxy_url?: string;
-  https_proxy_url?: string;
-  no_proxy_domains?: string;
-  additional_trust_bundle?: string;
-
-  // encryption
-  encryption_keys?: 'default' | 'custom';
-  kms_key_arn?: string;
-  etcd_encryption?: boolean;
-  etcd_key_arn?: string;
-
-  // cluster updates
-  upgrade_policy?: 'automatic' | 'manual';
-  upgrade_schedule?: string; // cron format, e.g. "00 14 * * 3"
-};
-```
-
-All fields are optional because the user fills them in progressively. By the time `onSubmit` fires, required fields will have been validated by the wizard's built-in validation.
-
-## Full Example
-
-```tsx
-import { WizardWrapper } from 'nxtcm-components';
-import type {
-  WizardStepsData,
-  ClusterFormData,
-} from 'nxtcm-components';
-
-function CreateClusterPage() {
-  const stepsData: WizardStepsData = {
+function CreateRosaHcpCluster() {
+  const wizardsStepsData: WizardStepsData = {
     basicSetupStep: {
-      openShiftVersions: [
-        { label: '4.15.2', value: '4.15.2' },
-        { label: '4.14.8', value: '4.14.8' },
-      ],
-      awsInfrastructureAccounts: [
-        { label: 'prod-account (123456789)', value: '123456789' },
-      ],
-      awsBillingAccounts: [
-        { label: 'billing-main (987654321)', value: '987654321' },
-      ],
-      regions: [
-        { label: 'US East (N. Virginia)', value: 'us-east-1' },
-        { label: 'US West (Oregon)', value: 'us-west-2' },
-      ],
-      vpcList: [
-        {
-          id: 'vpc-abc123',
-          name: 'production-vpc',
-          aws_subnets: [
-            { subnet_id: 'subnet-priv1', name: 'private-us-east-1a', availability_zone: 'us-east-1a' },
-            { subnet_id: 'subnet-pub1', name: 'public-us-east-1a', availability_zone: 'us-east-1a' },
-          ],
+      clusterNameValidation: { error: null, isFetching: false },
+      userRole: { error: null, isFetching: false },
+      versions: {
+        data: {
+          latest: { label: 'OpenShift 4.16.2', value: '4.16.2' },
+          default: { label: 'OpenShift 4.16.0', value: '4.16.0' },
+          others: [{ label: 'OpenShift 4.15.8', value: '4.15.8' }],
         },
-      ],
-      roles: {
-        installerRoles: [{ label: 'ManagedOpenShift-Installer-Role', value: 'arn:aws:iam::role/installer' }],
-        supportRoles: [{ label: 'ManagedOpenShift-Support-Role', value: 'arn:aws:iam::role/support' }],
-        workerRoles: [{ label: 'ManagedOpenShift-Worker-Role', value: 'arn:aws:iam::role/worker' }],
+        error: null,
+        isFetching: false,
+        fetch: async () => {},
       },
-      oicdConfig: [
-        { label: 'oidc-abc123', value: 'abc123', issuer_url: 'https://oidc.example.com' },
-      ],
-      machineTypes: [
-        { id: 'm5.xlarge', label: 'm5.xlarge', description: '4 vCPU, 16 GiB', value: 'm5.xlarge' },
-        { id: 'm5.2xlarge', label: 'm5.2xlarge', description: '8 vCPU, 32 GiB', value: 'm5.2xlarge' },
-      ],
-    },
-    callbackFunctions: {
-      onAWSAccountChange: (accountId) => {
-        // reload roles, VPCs, etc. for the selected account
-      },
-      refreshAwsAccountDataCallback: () => {
-        // re-fetch AWS infrastructure accounts
-      },
-      refreshAwsBillingAccountCallback: () => {
-        // re-fetch AWS billing accounts
-      },
+      awsInfrastructureAccounts: { data: [], error: null, isFetching: false },
+      awsBillingAccounts: { data: [], error: null, isFetching: false },
+      regions: { data: [], error: null, isFetching: false },
+      roles: { data: [], error: null, isFetching: false, fetch: async (_awsAccount: string) => {} },
+      oidcConfig: { data: [], error: null, isFetching: false },
+      machineTypes: { data: [], error: null, isFetching: false },
+      vpcList: { data: [], error: null, isFetching: false },
+      subnets: { data: [], error: null, isFetching: false },
+      securityGroups: { data: [], error: null, isFetching: false },
     },
   };
 
-  const handleSubmit = async (data: unknown) => {
-    const { cluster } = data as { cluster: ClusterFormData };
-    // cluster.name, cluster.region, cluster.machine_type, etc.
-    // are all typed and available here
-    await createCluster(cluster);
+  const onSubmit = async (data: RosaWizardFormData): Promise<void> => {
+    void data.cluster;
   };
 
   return (
     <WizardWrapper
       type="rosa-hcp"
       title="Create ROSA HCP cluster"
-      wizardsStepsData={stepsData}
-      onSubmit={handleSubmit}
-      onCancel={() => navigate('/clusters')}
+      wizardsStepsData={wizardsStepsData}
+      onSubmit={onSubmit}
+      onCancel={() => undefined}
     />
   );
 }
 ```
+
+## Notes
+
+- `BasicSetupStepProps` requires `versions.fetch()` and `roles.fetch(awsAccount)`; other resources use optional `fetch` on `Resource` when refresh is supported.
+- Machine UI still reads subnets from `vpcList.data[].aws_subnets` today; `subnets` and `securityGroups` are separate `Resource` shapes for future separation without another top-level API reshape.
+- Subnet names are filtered by substring: names containing `private` drive machine pool subnets; names containing `public` drive the public subnet dropdown when cluster privacy is external.
+- `WizardType` includes `rosa-yaml-editor`, but `WizardWrapper` currently only renders `rosa-hcp`; other values return `null` until that path is wired.
+- Keep validation wiring and per-field async behavior (for example cluster name uniqueness) in the host app as those flows are implemented field-by-field.
+- Prefer updating the Storybook contract story and compile-only example when the integration shape evolves; keep this file concise.
