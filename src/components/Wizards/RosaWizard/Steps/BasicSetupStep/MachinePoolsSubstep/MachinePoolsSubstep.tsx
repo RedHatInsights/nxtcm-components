@@ -15,7 +15,6 @@ import {
   Grid,
   GridItem,
 } from '@patternfly/react-core';
-import { useTranslation } from '../../../../../../context/TranslationContext';
 import { subnetsFilter, canSelectImds, getWorkerNodeVolumeSizeMaxGiB } from '../../../helpers';
 import {
   MachineTypesDropdownType,
@@ -180,7 +179,9 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
             labelHelp={mp.rootDiskHelp}
             min={75}
             max={maxRootDiskSize}
-            validation={(_value: number) => validateRootDiskSize(_value, v.rootDisk, maxRootDiskSize)}
+            validation={(_value: number) =>
+              validateRootDiskSize(_value, v.rootDisk, maxRootDiskSize)
+            }
           />
         </Indented>
       </ExpandableSection>

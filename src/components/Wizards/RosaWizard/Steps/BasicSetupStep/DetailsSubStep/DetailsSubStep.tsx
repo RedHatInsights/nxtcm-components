@@ -2,14 +2,14 @@ import { Section, WizSelect, WizTextInput, useItem } from '@patternfly-labs/reac
 import { Button, Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
 import React from 'react';
 import { StepDrawer } from '../../../common/StepDrawer';
-import {   
+import {
   Resource,
   Role,
   SelectDropdownType,
   ValidationResource,
   Region,
   MachineTypesDropdownType,
-  OpenShiftVersions
+  OpenShiftVersions,
 } from '../../../../types';
 import { validateClusterName } from '../../../validators';
 import ExternalLink from '../../../common/ExternalLink';
