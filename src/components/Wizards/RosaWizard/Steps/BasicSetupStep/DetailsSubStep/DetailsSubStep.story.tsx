@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { DetailsSubStep } from './DetailsSubStep';
-import { TranslationProvider } from '../../../../../../context/TranslationContext';
+import { RosaWizardStringsProvider } from '../../../RosaWizardStringsContext';
 import { ItemContext } from '@patternfly-labs/react-form-wizard/contexts/ItemContext';
 import { DataContext } from '@patternfly-labs/react-form-wizard/contexts/DataContext';
 import {
@@ -142,7 +142,7 @@ export const DetailsSubStepStory: React.FC<DetailsSubStepStoryProps> = ({
   };
 
   return (
-    <TranslationProvider>
+    <RosaWizardStringsProvider>
       <DataContext.Provider value={{ update }}>
         <DisplayModeContext.Provider value={DisplayMode.Step}>
           <ItemContext.Provider value={data}>
@@ -164,6 +164,6 @@ export const DetailsSubStepStory: React.FC<DetailsSubStepStoryProps> = ({
           </ItemContext.Provider>
         </DisplayModeContext.Provider>
       </DataContext.Provider>
-    </TranslationProvider>
+    </RosaWizardStringsProvider>
   );
 };
