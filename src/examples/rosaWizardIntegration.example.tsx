@@ -15,7 +15,6 @@ const mockResource = <TData,>(data: TData): Resource<TData> => ({
   data,
   error: null,
   isFetching: false,
-  fetch: async () => {},
 });
 
 const mockFetchResource = <TData, TArgs extends unknown[] = []>(
@@ -92,9 +91,10 @@ const wizardStepsData: WizardStepsData = {
   },
 };
 
-const onSubmit = (data: unknown): Promise<void> => {
-  const typedData = data as RosaWizardFormData;
-  void typedData.cluster.name;
+const onSubmit: ComponentProps<typeof WizardWrapper>['onSubmit'] = (
+  data: RosaWizardFormData
+): Promise<void> => {
+  void data.cluster.name;
   return Promise.resolve();
 };
 
