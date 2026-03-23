@@ -2,11 +2,12 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useItem, useData } from '@patternfly-labs/react-form-wizard';
 import { Alert, Button, ClipboardCopyButton, Tooltip } from '@patternfly/react-core';
 import { SearchIcon, UndoIcon, RedoIcon, TimesIcon } from '@patternfly/react-icons';
-import Editor, { OnMount } from '@monaco-editor/react';
+import Editor, { OnMount, Monaco } from '@monaco-editor/react';
 import Handlebars from 'handlebars';
 import rosaHcpTemplateRaw from './templates/rosa-hcp-template.hbs?raw';
 import './YamlDrawerEditor.css';
 import { parseMultiDocYaml } from './yamlUtils';
+import { validateYaml } from './yamlValidation';
 
 Handlebars.registerHelper(
   'eq',
@@ -33,7 +34,7 @@ function renderTemplate(data: Record<string, unknown>): string {
       .join('\n');
     return cleaned;
   } catch {
-    return '# Error rendering template';
+    return 'Error rendering template';
   }
 }
 
@@ -47,7 +48,37 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
   const [yamlContent, setYamlContent] = useState('');
   const [parseError, setParseError] = useState('');
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
+  const monacoRef = useRef<Monaco | null>(null);
   const hasFocusRef = useRef(false);
+  const validationTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const setEditorMarkers = useCallback((yamlStr: string) => {
+    const editor = editorRef.current;
+    const monaco = monacoRef.current;
+    const model = editor?.getModel();
+    if (!model || !monaco) return;
+
+    const validationErrors = validateYaml(yamlStr);
+
+    const markers = validationErrors.map((err) => ({
+      severity:
+        err.severity === 'error' ? monaco.MarkerSeverity.Error : monaco.MarkerSeverity.Warning,
+      message: err.message,
+      startLineNumber: err.line,
+      startColumn: err.column,
+      endLineNumber: err.line,
+      endColumn: model.getLineMaxColumn(err.line),
+    }));
+
+    monaco.editor.setModelMarkers(model, 'yaml-validation', markers);
+
+    if (validationErrors.length > 0) {
+      const errorCount = validationErrors.filter((e) => e.severity === 'error').length;
+      setParseError(`${errorCount} validation error${errorCount !== 1 ? 's' : ''} found`);
+    } else {
+      setParseError('');
+    }
+  }, []);
 
   useEffect(() => {
     if (!hasFocusRef.current) {
@@ -73,33 +104,41 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
           },
         };
         update(merged);
-        setParseError('');
-      } else {
-        setParseError('Invalid YAML syntax');
       }
+
+      clearTimeout(validationTimerRef.current);
+      validationTimerRef.current = setTimeout(() => {
+        setEditorMarkers(newYaml);
+      }, 300);
     },
-    [update, data]
+    [update, data, setEditorMarkers]
   );
 
-  const handleEditorMount: OnMount = useCallback((editor) => {
-    editorRef.current = editor;
+  const handleEditorMount: OnMount = useCallback(
+    (editor, monaco) => {
+      editorRef.current = editor;
+      monacoRef.current = monaco;
 
-    editor.onDidFocusEditorWidget(() => {
-      hasFocusRef.current = true;
-    });
-    editor.onDidBlurEditorWidget(() => {
-      hasFocusRef.current = false;
-    });
-
-    editor.changeViewZones((changeAccessor) => {
-      const domNode = document.createElement('div');
-      changeAccessor.addZone({
-        afterLineNumber: 0,
-        heightInPx: 10,
-        domNode,
+      editor.onDidFocusEditorWidget(() => {
+        hasFocusRef.current = true;
       });
-    });
-  }, []);
+      editor.onDidBlurEditorWidget(() => {
+        hasFocusRef.current = false;
+      });
+
+      editor.changeViewZones((changeAccessor) => {
+        const domNode = document.createElement('div');
+        changeAccessor.addZone({
+          afterLineNumber: 0,
+          heightInPx: 10,
+          domNode,
+        });
+      });
+
+      setEditorMarkers(yamlContent);
+    },
+    [setEditorMarkers, yamlContent]
+  );
 
   const handleCopy = useCallback(() => {
     if (editorRef.current) {
