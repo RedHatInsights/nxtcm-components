@@ -727,7 +727,6 @@ function AsyncLoadingWrapper(props: React.ComponentProps<typeof RosaWizard>) {
 
   const machineTypesFetch = React.useCallback(async (region?: string) => {
     setMachineTypes((prev) => ({ ...prev, isFetching: true }));
-    console.log('REGION STORY', region);
     await new Promise((resolve) => setTimeout(resolve, 1000));
     if (region === 'us-east-1') {
       // fetching m6a and m5a

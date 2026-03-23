@@ -55,10 +55,18 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   useResetFieldOnOptionsChange('cluster.machine_type', machineTypes.data, 'machinepools-sub-step');
 
   React.useEffect(() => {
-    if (awsBillingAccounts.data.length === 1 && !cluster.billing_account_id) {
-      cluster.billing_account_id = awsBillingAccounts.data[0].value;
+    if (awsBillingAccounts.isFetching) {
+      return;
     }
-  }, [awsBillingAccounts, cluster]);
+    const optionValues = awsBillingAccounts.data.map(({ value }) => value);
+    if (optionValues.length === 1) {
+      cluster.billing_account_id = optionValues[0];
+      return;
+    }
+    if (cluster.billing_account_id && !optionValues.includes(cluster.billing_account_id)) {
+      cluster.billing_account_id = undefined;
+    }
+  }, [awsBillingAccounts.data, awsBillingAccounts.isFetching, cluster]);
 
   return (
     <Section label={d.sectionLabel}>
