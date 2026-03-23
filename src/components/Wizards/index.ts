@@ -25,3 +25,21 @@ export type {
 /** @deprecated use `Role` instead. */
 export type { Role as Roles } from './types';
 export type { BasicSetupStepProps, WizardStepsData } from './RosaWizard/RosaWizard';
+export type {
+  RosaWizardStrings,
+  RosaWizardStringsInput,
+  DeepPartial,
+  RosaWizardValidatorStrings,
+} from './RosaWizard/rosaWizardStrings';
+export {
+  buildWizardStringsForRosa,
+  defaultRosaWizardStrings,
+  mergeRosaWizardStrings,
+  buildRosaWizardStringBundles,
+  defaultRosaWizardValidatorStrings,
+} from './RosaWizard/rosaWizardStrings';
+export {
+  RosaWizardStringsProvider,
+  useRosaWizardStrings,
+  useRosaWizardValidators,
+} from './RosaWizard/RosaWizardStringsContext';

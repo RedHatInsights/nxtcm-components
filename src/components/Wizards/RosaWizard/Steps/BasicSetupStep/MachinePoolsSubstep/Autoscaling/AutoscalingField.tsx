@@ -1,6 +1,5 @@
 import { useData, WizCheckbox, WizNumberInput } from '@patternfly-labs/react-form-wizard';
 import { Flex, FlexItem } from '@patternfly/react-core';
-import { useTranslation } from '../../../../../../../context/TranslationContext';
 import {
   validateMinReplicas,
   validateMaxReplicas,
@@ -8,6 +7,10 @@ import {
 } from '../../../../validators';
 import ExternalLink from '../../../../common/ExternalLink';
 import links from '../../../../externalLinks';
+import {
+  useRosaWizardStrings,
+  useRosaWizardValidators,
+} from '../../../../RosaWizardStringsContext';
 
 type AutoscalingFieldProps = {
   autoscaling: boolean;
@@ -39,7 +42,6 @@ const scaleMaxNodesBasedOnOpenshiftVersion = (openshiftVersion: number) => {
   return true;
 };
 
-//Minimal versions to allow more then 90 nodes - 4.15.15, 4.14.28
 export const getAutoscalingMaxNodes = (openshiftVersion?: number) => {
   if (openshiftVersion && !scaleMaxNodesBasedOnOpenshiftVersion(openshiftVersion)) {
     return MAX_NODES_HCP_INSUFFICIENT_VERSION;
@@ -48,7 +50,8 @@ export const getAutoscalingMaxNodes = (openshiftVersion?: number) => {
 };
 
 export const AutoscalingField = (props: AutoscalingFieldProps) => {
-  const { t } = useTranslation();
+  const a = useRosaWizardStrings().autoscaling;
+  const v = useRosaWizardValidators();
   const { update } = useData();
 
   const { autoscaling, openshiftVersion, machinePoolsNumber } = props;
@@ -59,19 +62,17 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
     <>
       <WizCheckbox
         id="autoscaling-checkbox"
-        title={t('Autoscaling')}
+        title={a.title}
         helperText={
           <>
-            {t(
-              'Autoscaling automatically adds and removes nodes from the machine pool based on resource requirements.'
-            )}{' '}
+            {a.helperLead}{' '}
             <ExternalLink href={links.ROSA_CLUSTER_AUTOSCALING}>
-              Learn more about autscaling with ROSA.
+              {a.learnMoreAutoscaling}
             </ExternalLink>
           </>
         }
         path="cluster.autoscaling"
-        label={t('Enable autoscaling')}
+        label={a.enableLabel}
         onValueChange={(checked, item) => {
           if (checked) {
             delete item.cluster.nodes_compute;
@@ -92,19 +93,19 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
             <WizNumberInput
               required
               path="cluster.min_replicas"
-              label={t('Min compute node count')}
+              label={a.minLabel}
               labelHelp={
                 <>
-                  {t('The number of compute nodes to provision for your initial machine pool.')}
+                  {a.minHelp}
                   <ExternalLink href={links.ROSA_WORKER_NODE_COUNT}>
-                    Learn more about compute node count
+                    {a.learnMoreNodeCount}
                   </ExternalLink>
                 </>
               }
               min={scaleMinNodesOnMachinePoolNumber(machinePoolsNumber)}
               max={maxNodeBasedOnOpenshiftVersion}
               validation={(value: number, item) =>
-                validateMinReplicas(value, item, machinePoolsNumber)
+                validateMinReplicas(value, item, machinePoolsNumber, v.replicas)
               }
             />
           </FlexItem>
@@ -112,19 +113,24 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
             <WizNumberInput
               required
               path="cluster.max_replicas"
-              label={t('Max compute node count')}
+              label={a.maxLabel}
               labelHelp={
                 <>
-                  {t('The number of compute nodes to provision for your initial machine pool.')}
+                  {a.maxHelp}
                   <ExternalLink href={links.ROSA_WORKER_NODE_COUNT}>
-                    Learn more about compute node count
+                    {a.learnMoreNodeCount}
                   </ExternalLink>
                 </>
               }
               min={1}
               max={maxNodeBasedOnOpenshiftVersion}
               validation={(value, item) =>
-                validateMaxReplicas(value as number, item, maxNodeBasedOnOpenshiftVersion)
+                validateMaxReplicas(
+                  value as number,
+                  item,
+                  maxNodeBasedOnOpenshiftVersion,
+                  v.replicas
+                )
               }
             />
           </FlexItem>
@@ -133,17 +139,17 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
         <WizNumberInput
           required
           path="cluster.nodes_compute"
-          label={t('Compute node count')}
+          label={a.computeCountLabel}
           labelHelp={
             <>
-              {t('The number of compute nodes to provision for your initial machine pool.')}
+              {a.computeCountHelp}
               <ExternalLink href={links.ROSA_WORKER_NODE_COUNT}>
-                Learn more about compute node count
+                {a.learnMoreNodeCount}
               </ExternalLink>
             </>
           }
           min={1}
-          validation={validateComputeNodes}
+          validation={(value) => validateComputeNodes(value, v.replicas)}
         />
       )}
     </>

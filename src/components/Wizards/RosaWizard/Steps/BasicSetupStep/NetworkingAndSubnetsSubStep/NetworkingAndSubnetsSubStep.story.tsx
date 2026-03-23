@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { NetworkingAndSubnetsSubStep } from './NetworkingAndSubnetsSubStep';
-import { TranslationProvider } from '../../../../../../context/TranslationContext';
+import { RosaWizardStringsProvider } from '../../../RosaWizardStringsContext';
 import { ItemContext } from '@patternfly-labs/react-form-wizard/contexts/ItemContext';
 import { DataContext } from '@patternfly-labs/react-form-wizard/contexts/DataContext';
 import {
@@ -127,7 +127,7 @@ export const NetworkingSubStepStory: React.FC<NetworkingSubStepStoryProps> = ({
   );
 
   return (
-    <TranslationProvider>
+    <RosaWizardStringsProvider>
       <DataContext.Provider value={{ update }}>
         <DisplayModeContext.Provider value={DisplayMode.Step}>
           <ItemContext.Provider value={data}>
@@ -142,6 +142,6 @@ export const NetworkingSubStepStory: React.FC<NetworkingSubStepStoryProps> = ({
           </ItemContext.Provider>
         </DisplayModeContext.Provider>
       </DataContext.Provider>
-    </TranslationProvider>
+    </RosaWizardStringsProvider>
   );
 };

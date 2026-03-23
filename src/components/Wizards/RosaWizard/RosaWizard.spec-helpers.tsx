@@ -1,6 +1,5 @@
 import React from 'react';
 import { RosaWizard } from './RosaWizard';
-import { TranslationProvider } from '../../../context/TranslationContext';
 
 type RosaWizardProps = React.ComponentProps<typeof RosaWizard>;
 
@@ -14,12 +13,10 @@ export function RosaWizardErrorThenBackToReviewMount(props: RosaWizardProps) {
     'There has been an error creating the cluster'
   );
   return (
-    <TranslationProvider>
-      <RosaWizard
-        {...props}
-        onSubmitError={submitError}
-        onBackToReviewStep={() => setSubmitError(false)}
-      />
-    </TranslationProvider>
+    <RosaWizard
+      {...props}
+      onSubmitError={submitError}
+      onBackToReviewStep={() => setSubmitError(false)}
+    />
   );
 }

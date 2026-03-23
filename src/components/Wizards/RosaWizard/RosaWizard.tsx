@@ -28,9 +28,10 @@ import {
   VPC,
   WizardNavigationContext,
 } from '../types';
-import { useTranslation } from '../../../context/TranslationContext';
 import { MachinePoolsSubstep } from './Steps/BasicSetupStep/MachinePoolsSubstep/MachinePoolsSubstep';
 import { YamlDrawerEditor } from './Steps/YamlCodeEditor';
+import { RosaWizardStringsProvider, useRosaWizardStrings } from './RosaWizardStringsContext';
+import { buildWizardStringsForRosa, type RosaWizardStringsInput } from './rosaWizardStrings';
 
 export type BasicSetupStepProps = {
   // validation-only fields (no data, just state)
@@ -77,17 +78,39 @@ type RosaWizardProps = {
   onBackToReviewStep?: () => void | Promise<void>;
   yamlEditor?: () => ReactNode;
   yaml?: boolean;
+  strings?: RosaWizardStringsInput;
 };
 
 function getDefaultYamlEditor() {
   return <YamlDrawerEditor />;
 }
 
-export const RosaWizard = (props: RosaWizardProps) => {
-  const { t } = useTranslation();
-  const { onSubmit, onCancel, title, wizardsStepsData, onSubmitError, onBackToReviewStep, yaml } =
-    props;
+export const RosaWizard = (props: RosaWizardProps) => (
+  <RosaWizardStringsProvider strings={props.strings}>
+    <RosaWizardBody {...props} />
+  </RosaWizardStringsProvider>
+);
+
+const RosaWizardBody = (props: RosaWizardProps) => {
+  const {
+    onSubmit,
+    onCancel,
+    title,
+    wizardsStepsData,
+    onSubmitError,
+    onBackToReviewStep,
+    yaml,
+    strings,
+  } = props;
+  const rosaStrings = useRosaWizardStrings();
+  const { wizard } = rosaStrings;
+  const sl = wizard.stepLabels;
   const yamlEditor = yaml ? (props.yamlEditor ?? getDefaultYamlEditor) : undefined;
+  const wizardStrings = React.useMemo(
+    () => buildWizardStringsForRosa(rosaStrings, strings?.formWizard),
+    [rosaStrings, strings?.formWizard]
+  );
+
   const [isClusterWideProxySelected, setIsClusterWideProxySelected] =
     React.useState<boolean>(false);
 
@@ -152,14 +175,15 @@ export const RosaWizard = (props: RosaWizardProps) => {
           onResumedToStep={() => setResumeAtStepId(null)}
           yaml={yaml}
           yamlEditor={yamlEditor}
+          wizardStrings={wizardStrings}
         >
           <ExpandableStep
             id="basic-setup-step-id-expandable-section"
-            label={t('Basic setup')}
+            label={sl.basicSetup}
             key="basic-setup-step-expandable-section-key"
             isExpandable
             steps={[
-              <Step label={t('Details')} id="basic-setup-step-details" key="basic-setup-details">
+              <Step label={sl.details} id="basic-setup-step-details" key="basic-setup-details">
                 <DetailsSubStep
                   clusterNameValidation={basicSetupStep.clusterNameValidation}
                   openShiftVersions={buildVersionOptions(basicSetupStep.versions.data)}
@@ -173,7 +197,7 @@ export const RosaWizard = (props: RosaWizardProps) => {
               </Step>,
               <Step
                 id="roles-and-policies-sub-step"
-                label={t('Roles and policies')}
+                label={sl.rolesAndPolicies}
                 key="roles-and-policies-sub-step-key"
               >
                 <RolesAndPoliciesSubStep
@@ -183,7 +207,7 @@ export const RosaWizard = (props: RosaWizardProps) => {
               </Step>,
               <Step
                 id="machinepools-sub-step"
-                label={t('Machine pools')}
+                label={sl.machinePools}
                 key="machinepools-sub-step-key"
               >
                 <MachinePoolsSubstep
@@ -191,7 +215,7 @@ export const RosaWizard = (props: RosaWizardProps) => {
                   machineTypes={basicSetupStep.machineTypes}
                 />
               </Step>,
-              <Step id="networking-sub-step" label={t('Networking')} key="networking-sub-step-key">
+              <Step id="networking-sub-step" label={sl.networking} key="networking-sub-step-key">
                 <NetworkingAndSubnetsSubStep
                   vpcList={basicSetupStep.vpcList}
                   setIsClusterWideProxySelected={setIsClusterWideProxySelected}
@@ -202,7 +226,7 @@ export const RosaWizard = (props: RosaWizardProps) => {
                     <Step
                       id="additional-setup-cluster-wide-proxy"
                       key="additional-setup-cluster-wide-proxy-key"
-                      label={t('Cluster-wide proxy')}
+                      label={sl.clusterWideProxy}
                     >
                       <ClusterWideProxySubstep />
                     </Step>,
@@ -213,27 +237,27 @@ export const RosaWizard = (props: RosaWizardProps) => {
 
           <ExpandableStep
             id="additional-setup-step-id-expandable-section"
-            label={t('Additional setup')}
+            label={sl.additionalSetup}
             key="additional-setup-step-expandable-section-key"
             isExpandable
             steps={[
               <Step
                 id="additional-setup-encryption"
                 key="additional-setup-encryption-key"
-                label={t('Encryption (optional)')}
+                label={sl.encryptionOptional}
               >
                 <EncryptionSubstep />
               </Step>,
               <Step
                 id="additional-setup-cluster-updates"
                 key="additional-setup-cluster-updates-key"
-                label={t('Cluster updates (optional)')}
+                label={sl.clusterUpdatesOptional}
               >
                 <ClusterUpdatesSubstep goToStepId={getUseWizardContext} />
               </Step>,
             ]}
           />
-          <Step label={t('Review')} id={'review-step'}>
+          <Step label={sl.review} id={'review-step'}>
             <ReviewStepData goToStepId={getUseWizardContext} />
           </Step>
         </WizardPage>

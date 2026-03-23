@@ -7,7 +7,7 @@ import {
 import { ItemContext } from '@patternfly-labs/react-form-wizard/contexts/ItemContext';
 import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
 import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
-import { TranslationProvider } from '../../../../../../context/TranslationContext';
+import { RosaWizardStringsProvider } from '../../../RosaWizardStringsContext';
 import { OIDCConfig, Resource, Role } from '../../../../types';
 import { RolesAndPoliciesSubStep } from './RolesAndPoliciesSubStep';
 import {
@@ -60,7 +60,7 @@ export const RolesAndPoliciesSubStepMount = ({
   }, []);
 
   return (
-    <TranslationProvider>
+    <RosaWizardStringsProvider>
       <DataContext.Provider value={{ update }}>
         <DisplayModeContext.Provider value={DisplayMode.Step}>
           <ItemContext.Provider value={data}>
@@ -72,6 +72,6 @@ export const RolesAndPoliciesSubStepMount = ({
           </ItemContext.Provider>
         </DisplayModeContext.Provider>
       </DataContext.Provider>
-    </TranslationProvider>
+    </RosaWizardStringsProvider>
   );
 };
