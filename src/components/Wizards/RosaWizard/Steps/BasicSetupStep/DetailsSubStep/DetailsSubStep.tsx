@@ -66,7 +66,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
       return;
     }
     const optionValues = awsBillingAccounts.data.map(({ value }) => value);
-    if (optionValues.length === 1) {
+    if (optionValues.length === 1 && cluster.billing_account_id !== optionValues[0]) {
       cluster.billing_account_id = optionValues[0];
       update();
       return;
