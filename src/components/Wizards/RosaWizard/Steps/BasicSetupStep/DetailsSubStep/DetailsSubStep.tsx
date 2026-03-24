@@ -1,4 +1,10 @@
-import { Section, WizSelect, WizTextInput, useItem } from '@patternfly-labs/react-form-wizard';
+import {
+  Section,
+  WizSelect,
+  WizTextInput,
+  useData,
+  useItem,
+} from '@patternfly-labs/react-form-wizard';
 import { Button, Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
 import React from 'react';
 import { StepDrawer } from '../../../common/StepDrawer';
@@ -46,6 +52,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
 }) => {
   const d = useRosaWizardStrings().details;
   const { cluster } = useItem();
+  const { update } = useData();
 
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const drawerRef = React.useRef<HTMLSpanElement>(null);
@@ -61,12 +68,14 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
     const optionValues = awsBillingAccounts.data.map(({ value }) => value);
     if (optionValues.length === 1) {
       cluster.billing_account_id = optionValues[0];
+      update();
       return;
     }
     if (cluster.billing_account_id && !optionValues.includes(cluster.billing_account_id)) {
       cluster.billing_account_id = undefined;
+      update();
     }
-  }, [awsBillingAccounts.data, awsBillingAccounts.isFetching, cluster]);
+  }, [awsBillingAccounts.data, awsBillingAccounts.isFetching, cluster, update]);
 
   return (
     <Section label={d.sectionLabel}>
@@ -170,7 +179,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   refreshCallback={openShiftVersions.fetch}
                   required
                   onValueChange={(_value, item) => {
-                    if (!showSecurityGroupsSection(_value as string)) {
+                    if (_value && !showSecurityGroupsSection(_value as string)) {
                       item.cluster.security_groups_worker = undefined;
                     }
                   }}

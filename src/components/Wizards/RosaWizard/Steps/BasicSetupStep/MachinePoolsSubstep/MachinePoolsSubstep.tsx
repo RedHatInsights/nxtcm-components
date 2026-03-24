@@ -43,7 +43,8 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
   const v = useRosaWizardValidators();
   const { cluster } = useItem<RosaWizardFormData>();
   const currentRegion = cluster?.region;
-  const maxRootDiskSize = getWorkerNodeVolumeSizeMaxGiB(cluster.cluster_version);
+  const clusterVersion = cluster.cluster_version ?? '';
+  const maxRootDiskSize = getWorkerNodeVolumeSizeMaxGiB(clusterVersion);
 
   // Resets cluster_privacy_public_subnet_id when user selects private and refetch regions with the selected region
   React.useEffect(() => {
@@ -145,7 +146,7 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
       <ExpandableSection toggleText={mp.advancedToggle}>
         <Indented>
           <WizRadioGroup
-            disabled={!canSelectImds(cluster.cluster_version)}
+            disabled={!canSelectImds(clusterVersion)}
             labelHelpTitle={mp.imdsHelpTitle}
             labelHelp={
               <>
@@ -186,7 +187,7 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
         </Indented>
       </ExpandableSection>
       <SecurityGroupsSection
-        clusterVersion={cluster.cluster_version}
+        clusterVersion={clusterVersion}
         selectedVPC={selectedVPC}
         refreshVPCs={props.vpcList.fetch ? () => void props.vpcList.fetch?.() : undefined}
       />

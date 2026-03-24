@@ -55,7 +55,8 @@ export type RosaWizardCaValidatorStrings = {
 export type RosaWizardRootDiskValidatorStrings = {
   notInteger: string;
   tooSmall: string;
-  tooLarge: string;
+  tooLargeNewOpenshift: string;
+  tooLargeOldOpenshift: string;
 };
 
 export type RosaWizardReplicaValidatorStrings = {
