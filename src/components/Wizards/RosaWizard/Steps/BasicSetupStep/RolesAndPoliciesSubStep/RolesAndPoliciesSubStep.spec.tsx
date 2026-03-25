@@ -60,6 +60,16 @@ test.describe('RolesAndPoliciesSubStep', () => {
     await expect(component.getByText('Worker role', { exact: true })).toBeVisible();
   });
 
+  test('should display refresh button on Installer role', async ({ mount }) => {
+    const component = await mount(<RolesAndPoliciesSubStepMount />);
+
+    await expect(
+      component
+        .locator('#cluster-installer_role_arn-form-group')
+        .getByLabel('Refresh', { exact: true })
+    ).toBeVisible();
+  });
+
   test('should auto-select support and worker roles when installer role is selected', async ({
     mount,
     page,

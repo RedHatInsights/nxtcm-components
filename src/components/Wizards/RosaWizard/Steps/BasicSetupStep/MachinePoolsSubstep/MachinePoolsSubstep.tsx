@@ -68,6 +68,7 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
                 }
               }}
               label={`${mp.vpcLabelPrefix} ${cluster?.region}`}
+              refreshCallback={props.vpcList.fetch}
               path="cluster.selected_vpc"
               keyPath="id"
               placeholder={mp.vpcPlaceholder}

@@ -65,6 +65,14 @@ test.describe('MachinePoolsSubstep', () => {
     await expect(component.getByText('Machine pools', { exact: true })).toBeVisible();
   });
 
+  test('should display refresh button on VPC list', async ({ mount }) => {
+    const component = await mount(<MachinePoolsSubstepStory vpcList={mockResource<VPC[]>([])} />);
+
+    await expect(
+      component.locator('#machine-pools-section').getByLabel('Refresh', { exact: true })
+    ).toBeVisible();
+  });
+
   test('should render with empty machine types list', async ({ mount }) => {
     const component = await mount(
       <MachinePoolsSubstepStory machineTypes={mockResource<MachineTypesDropdownType[]>([])} />

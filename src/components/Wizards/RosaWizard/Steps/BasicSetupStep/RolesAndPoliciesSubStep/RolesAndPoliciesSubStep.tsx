@@ -115,6 +115,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
             <WizSelect
               isFill
               path="cluster.installer_role_arn"
+              refreshCallback={() => void roles.fetch(cluster.associated_aws_id)}
               label={rp.installerRoleLabel}
               disabled={roles.isFetching}
               onValueChange={(installerRoleArn, _item) => {
@@ -185,6 +186,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                 <WizSelect
                   isFill
                   path="cluster.byo_oidc_config_id"
+                  refreshCallback={oidcConfig.fetch}
                   label={rp.oidcLabel}
                   required
                   placeholder={rp.oidcPlaceholder}
