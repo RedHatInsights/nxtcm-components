@@ -18,7 +18,7 @@ export const SecurityGroupsSection = ({
   clusterVersion: string;
   refreshVPCs?: () => void;
 }) => {
-  const { machinePools } = useRosaWizardStrings();
+  const { machinePools, securityGroups } = useRosaWizardStrings();
   const [selectedGroupIds, setSelectedGroupIds] = useValue(
     { path: 'cluster.security_groups_worker' },
     []
@@ -40,7 +40,7 @@ export const SecurityGroupsSection = ({
   }
 
   const showEmptyAlert = (selectedVPC?.aws_security_groups || []).length === 0;
-  const incompatibleClusterVersionMessage = `To use securityGroups, your cluster must be version 4.14.x or newer.`;
+  const incompatibleClusterVersionMessage = securityGroups.incompatibleVersion;
 
   return (
     <ExpandableSection

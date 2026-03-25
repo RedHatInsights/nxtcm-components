@@ -349,6 +349,7 @@ export type RosaWizardStrings = {
     selectAriaLabelledBy: string;
     noEditViewMoreInfo: string;
     noEditAwsConsoleLink: string;
+    incompatibleVersion: string;
   };
   clusterWideProxy: {
     sectionLabel: string;

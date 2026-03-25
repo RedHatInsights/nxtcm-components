@@ -65,7 +65,6 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
     <>
       <Section label={mp.sectionLabel} id="machine-pools-section" key="machine-pools-key">
         <Content component={ContentVariants.p}>{mp.intro}</Content>
-
         <Grid>
           <GridItem span={5}>
             <WizSelect

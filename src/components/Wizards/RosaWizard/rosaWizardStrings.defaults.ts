@@ -267,6 +267,7 @@ export const defaultRosaWizardStrings: RosaWizardStrings = {
     selectAriaLabelledBy: 'Select AWS security groups',
     noEditViewMoreInfo: 'View more information',
     noEditAwsConsoleLink: 'AWS security groups console',
+    incompatibleVersion: 'To use securityGroups, your cluster must be version 4.14.x or newer.',
   },
   clusterWideProxy: {
     sectionLabel: 'Cluster-wide proxy',
