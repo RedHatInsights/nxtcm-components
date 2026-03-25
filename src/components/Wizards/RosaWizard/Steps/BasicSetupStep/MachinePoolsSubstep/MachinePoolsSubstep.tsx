@@ -46,11 +46,8 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
   const clusterVersion = cluster.cluster_version ?? '';
   const maxRootDiskSize = getWorkerNodeVolumeSizeMaxGiB(clusterVersion);
 
-  // Resets cluster_privacy_public_subnet_id when user selects private and refetch regions with the selected region
+  // Refetch machine types with the selected region
   React.useEffect(() => {
-    if (cluster?.cluster_privacy === 'internal') {
-      cluster.cluster_privacy_public_subnet_id = '';
-    }
     if (props.machineTypes.fetch && currentRegion) void props.machineTypes.fetch(currentRegion);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
