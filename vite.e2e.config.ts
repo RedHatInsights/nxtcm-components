@@ -4,7 +4,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  root: './playwright',
+  root: './e2e-app',
   resolve: {
     alias: {
       '@patternfly-labs/react-form-wizard': path.resolve(
