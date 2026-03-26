@@ -679,3 +679,79 @@ export const SubmitError: Story = {
     },
   },
 };
+
+/**
+ * Demonstrates async cluster name uniqueness validation with debouncing.
+ * Type "taken" or "existing" as a cluster name to see the duplicate error
+ * after a simulated API delay. Any other valid name will pass.
+ */
+function AsyncClusterNameValidationWrapper(props: React.ComponentProps<typeof RosaWizard>) {
+  const [validationState, setValidationState] = React.useState<ValidationResource>({
+    error: null,
+    isFetching: false,
+  });
+
+  const checkClusterNameUniqueness = React.useCallback((name: string, region: string) => {
+    setValidationState({ error: null, isFetching: true });
+
+    // simulate API call with 800ms latency
+    const timer = setTimeout(() => {
+      const takenNames = ['taken', 'existing', 'my-cluster', 'production'];
+      const takenRegion = ['us-west-1'];
+      const isTaken = takenNames.includes(name);
+      const takenRegionData = takenRegion.includes(region);
+      setValidationState({
+        error:
+          isTaken && takenRegionData
+            ? `Cluster name "${name}" already exists. Choose a different name.`
+            : null,
+        isFetching: false,
+      });
+      console.log(
+        `[Mock API] Checked "${name}" → ${isTaken && takenRegionData ? 'TAKEN' : 'available'}`
+      );
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <RosaWizard
+      {...props}
+      wizardsStepsData={{
+        ...props.wizardsStepsData,
+        basicSetupStep: {
+          ...props.wizardsStepsData.basicSetupStep,
+          clusterNameValidation: validationState,
+          checkClusterNameUniqueness,
+        },
+      }}
+    />
+  );
+}
+
+export const AsyncClusterNameValidation: Story = {
+  render: (args) => <AsyncClusterNameValidationWrapper {...args} />,
+  args: {
+    title: 'Create ROSA Cluster - Async Name Validation',
+    yaml: true,
+    onSubmit: async (data: unknown) => {
+      console.log('Wizard submitted with data:', data);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    },
+    onCancel: () => {
+      console.log('Wizard cancelled');
+    },
+    wizardsStepsData: {
+      basicSetupStep: mockBasicSetupStep,
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Tests async cluster name uniqueness validation. Names "taken", "existing", "my-cluster", and "production" are simulated as already in use. The debouncing (1s) happens inside the wizard component; the simulated API adds 800ms on top.',
+      },
+    },
+  },
+};
