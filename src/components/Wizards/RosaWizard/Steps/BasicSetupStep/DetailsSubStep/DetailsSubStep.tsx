@@ -16,6 +16,7 @@ import {
   Region,
   MachineTypesDropdownType,
   OpenShiftVersions,
+  RosaWizardFormData,
 } from '../../../../types';
 import { validateClusterName } from '../../../validators';
 import ExternalLink from '../../../common/ExternalLink';
@@ -24,10 +25,13 @@ import links from '../../../externalLinks';
 import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
 import { useResetFieldOnOptionsChange } from '../../../hooks/useResetFieldOnOptionsChange';
 import { showSecurityGroupsSection } from '../../../helpers';
+import { useUniqueClusterNameCheck } from '../../../hooks/useUniqueClusterNameCheck';
 
 type DetailsSubStepProps = {
   clusterNameValidation: ValidationResource;
   openShiftVersions: Resource<OpenShiftVersions[]>;
+  checkClusterNameUniqueness?: (name: string, region: string) => void;
+  refreshVersionsCallback?: () => void;
   roles: Resource<Role[], [awsAccount: string]> & {
     fetch: (awsAccount: string) => Promise<void>;
   };
@@ -49,14 +53,23 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   regions,
   machineTypes,
   roles,
+  checkClusterNameUniqueness,
 }) => {
   const d = useRosaWizardStrings().details;
-  const { cluster } = useItem();
   const { update } = useData();
 
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const drawerRef = React.useRef<HTMLSpanElement>(null);
   const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
+  const { checkName } = useUniqueClusterNameCheck(checkClusterNameUniqueness, 500);
+  const { cluster } = useItem<RosaWizardFormData>();
+
+  const uniqueClusterNameCheck = (value: string, region: string) => {
+    const syncError = validateClusterName(value);
+    if (!syncError && value) {
+      checkName(value, region);
+    }
+  };
 
   useResetFieldOnOptionsChange('cluster.region', regions.data);
   useResetFieldOnOptionsChange('cluster.machine_type', machineTypes.data, 'machinepools-sub-step');
@@ -155,6 +168,9 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   validation={(name: string, item: unknown) =>
                     validateClusterName(name, item) || clusterNameValidation.error || undefined
                   }
+                  onValueChange={(value) => {
+                    uniqueClusterNameCheck(value as string, cluster.region as string);
+                  }}
                   path="cluster.name"
                   label={d.clusterNameLabel}
                   validateOnBlur
@@ -199,6 +215,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   options={regions.data}
                   disabled={regions.isFetching}
                   onValueChange={(_value, item) => {
+                    uniqueClusterNameCheck(cluster.name, _value as string);
                     item.cluster.selected_vpc = undefined;
                     item.cluster.cluster_privacy_public_subnet_id = undefined;
                     if (

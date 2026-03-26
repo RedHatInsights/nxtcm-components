@@ -1,7 +1,14 @@
 import { test, expect } from '@playwright/experimental-ct-react';
 import { checkAccessibility } from '../../../../../../test-helpers';
-import { DetailsSubStepStory } from './DetailsSubStep.story';
-import { mockRegions, mockSingleBillingAccount } from './DetailsSubStep.story';
+import { DetailsSubStepStory, mockSingleBillingAccount, mockRegions} from './DetailsSubStep.story';
+import type { Resource, SelectDropdownType, OpenShiftVersions } from '../../../../types';
+
+const mockResource = <TData,>(data: TData): Resource<TData> => ({
+  data,
+  error: null,
+  isFetching: false,
+  fetch: async () => {},
+});
 
 test.describe('DetailsSubStep', () => {
   test('should pass accessibility tests', async ({ mount }) => {
@@ -9,10 +16,31 @@ test.describe('DetailsSubStep', () => {
     await checkAccessibility({ component });
   });
 
-  test('should render the Details section title', async ({ mount }) => {
+  test('should render OpenShift version select', async ({ mount }) => {
     const component = await mount(<DetailsSubStepStory />);
 
+    await expect(component.getByText('OpenShift version', { exact: true })).toBeVisible();
+  });
+
+    test('should disable OpenShift version select when versions are pending', async ({ mount }) => {
+    const component = await mount(<DetailsSubStepStory openShiftVersions={{ data: [], error: null, isFetching: true, fetch: async () => {} }}/>);
+
+    const versionToggle = component.locator('#cluster-cluster_version .pf-v6-c-menu-toggle');
+    await expect(versionToggle).toHaveClass(/pf-m-disabled/);
+  });
+
+  test('should render with empty options', async ({ mount }) => {
+    const component = await mount(
+      <DetailsSubStepStory
+        openShiftVersions={mockResource<OpenShiftVersions[]>([])}
+        regions={{ data: [], error: null, isFetching: false, fetch: async () => {} }}
+        awsInfrastructureAccounts={mockResource<SelectDropdownType[]>([])}
+        awsBillingAccounts={mockResource<SelectDropdownType[]>([])}
+      />
+    );
+
     await expect(component.getByText('Details', { exact: true })).toBeVisible();
+    await expect(component.getByText('Cluster name', { exact: true })).toBeVisible();
   });
 
   test('should render the Cluster name input', async ({ mount }) => {
@@ -22,13 +50,7 @@ test.describe('DetailsSubStep', () => {
     await expect(component.getByRole('textbox', { name: 'Cluster name' })).toBeVisible();
   });
 
-  test('should render the OpenShift version select', async ({ mount }) => {
-    const component = await mount(<DetailsSubStepStory />);
-
-    await expect(component.getByText('OpenShift version', { exact: true })).toBeVisible();
-  });
-
-  test('should render the Associated AWS infrastructure account select', async ({ mount }) => {
+  test('should render AWS infrastructure account select', async ({ mount }) => {
     const component = await mount(<DetailsSubStepStory />);
 
     await expect(
@@ -64,6 +86,31 @@ test.describe('DetailsSubStep', () => {
 
     await expect(page.getByText('OpenShift 4.12.0', { exact: true })).toBeVisible();
     await expect(page.getByText('OpenShift 4.11.5', { exact: true })).toBeVisible();
+  });
+
+  test.describe('DetailsSubStep - cluster name validation', () => {
+  test('should display validation error for cluster name with uppercase characters', async ({
+    mount,
+  }) => {
+    const component = await mount(<DetailsSubStepStory />);
+
+    const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
+    await nameInput.fill('MyCluster');
+    await nameInput.blur();
+
+    await expect(component.getByText(/can only contain lowercase/)).toBeVisible();
+  });
+
+  test('should display validation error for cluster name starting with a number', async ({
+    mount,
+  }) => {
+    const component = await mount(<DetailsSubStepStory />);
+
+    const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
+    await nameInput.fill('1cluster');
+    await nameInput.blur();
+
+    await expect(component.getByText(/must not start with a number/)).toBeVisible();
   });
 
   test('should show AWS infrastructure account options in dropdown', async ({ mount, page }) => {
@@ -138,6 +185,25 @@ test.describe('DetailsSubStep', () => {
     await expect(billingCombobox).toHaveValue(mockSingleBillingAccount[0].label);
   });
 
+  test('should not display async error when sync validation fails', async ({ mount }) => {
+    const component = await mount(
+      <DetailsSubStepStory
+        clusterNameValidation={{
+          error: 'Cluster name already exists.',
+          isFetching: false,
+        }}
+        clusterOverrides={{ name: 'INVALID' }}
+      />
+    );
+
+    const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
+    await nameInput.click();
+    await nameInput.blur();
+
+    await expect(component.getByText(/can only contain lowercase/)).toBeVisible();
+    await expect(component.getByText('Cluster name already exists.')).not.toBeVisible();
+  });
+
   test('should not auto-select billing account when multiple are available', async ({ mount }) => {
     const component = await mount(<DetailsSubStepStory />);
 
@@ -208,7 +274,143 @@ test.describe('DetailsSubStep', () => {
       />
     );
 
-    const nameInput = component.getByRole('textbox', { name: 'Cluster name' });
-    await expect(nameInput).toHaveValue('existing-cluster');
+    const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
+    await nameInput.fill('valid-name');
+
+    await expect(component.getByText('Name is taken.')).not.toBeVisible();
   });
+  });
+
+test.describe('DetailsSubStep - async cluster name uniqueness check', () => {
+  test('should call checkClusterNameUniqueness when a valid name is typed', async ({ mount }) => {
+    const calls: Array<{ name: string; region: string }> = [];
+
+    const component = await mount(
+      <DetailsSubStepStory
+        checkClusterNameUniqueness={(name, region) => {
+          calls.push({ name, region });
+        }}
+        clusterOverrides={{ region: 'us-east-1' }}
+      />
+    );
+
+    const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
+    await nameInput.fill('valid-cluster');
+
+    // wait for debounce (500ms) + buffer
+    await component.page().waitForTimeout(700);
+
+    expect(calls.length).toBeGreaterThanOrEqual(1);
+    expect(calls[calls.length - 1].name).toBe('valid-cluster');
+  });
+
+  test('should NOT call checkClusterNameUniqueness for an invalid name', async ({ mount }) => {
+    const calls: Array<{ name: string; region: string }> = [];
+
+    const component = await mount(
+      <DetailsSubStepStory
+        checkClusterNameUniqueness={(name, region) => {
+          calls.push({ name, region });
+        }}
+        clusterOverrides={{ region: 'us-east-1' }}
+      />
+    );
+
+    const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
+    await nameInput.fill('INVALID_NAME');
+
+    await component.page().waitForTimeout(700);
+
+    expect(calls.length).toBe(0);
+  });
+
+  test('should debounce rapid typing so only the final value triggers the check', async ({
+    mount,
+  }) => {
+    const calls: Array<{ name: string; region: string }> = [];
+
+    const component = await mount(
+      <DetailsSubStepStory
+        checkClusterNameUniqueness={(name, region) => {
+          calls.push({ name, region });
+        }}
+        clusterOverrides={{ region: 'us-east-1' }}
+      />
+    );
+
+    const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
+
+    await nameInput.pressSequentially('abc', { delay: 50 });
+
+    await component.page().waitForTimeout(700);
+
+    const validCalls = calls.filter((c) => c.name.length > 0);
+    expect(validCalls.length).toBe(1);
+    expect(validCalls[0].name).toBe('abc');
+  });
+
+  test('should call checkClusterNameUniqueness when region is selected and name exists', async ({
+    mount,
+    page,
+  }) => {
+    const calls: Array<{ name: string; region: string }> = [];
+
+    const component = await mount(
+      <DetailsSubStepStory
+        checkClusterNameUniqueness={(name, region) => {
+          calls.push({ name, region });
+        }}
+        clusterOverrides={{ name: 'my-cluster' }}
+      />
+    );
+
+    const regionCombobox = component.getByRole('combobox', { name: /Select a region/ });
+    await regionCombobox.click();
+    await page.getByText('US East (N. Virginia)', { exact: true }).click();
+
+    await component.page().waitForTimeout(700);
+
+    const regionCalls = calls.filter((c) => c.region === 'us-east-1');
+    expect(regionCalls.length).toBeGreaterThanOrEqual(1);
+    expect(regionCalls[0].name).toBe('my-cluster');
+  });
+
+  test('should NOT call checkClusterNameUniqueness when region is selected but no name exists', async ({
+    mount,
+    page,
+  }) => {
+    const calls: Array<{ name: string; region: string }> = [];
+
+    const component = await mount(
+      <DetailsSubStepStory
+        checkClusterNameUniqueness={(name, region) => {
+          calls.push({ name, region });
+        }}
+      />
+    );
+
+    const regionCombobox = component.getByRole('combobox', { name: /Select a region/ });
+    await regionCombobox.click();
+    await page.getByText('US East (N. Virginia)', { exact: true }).click();
+
+    await component.page().waitForTimeout(700);
+
+    expect(calls.length).toBe(0);
+  });
+
+  test('should NOT call checkClusterNameUniqueness when callback is not provided', async ({
+    mount,
+  }) => {
+    const component = await mount(
+      <DetailsSubStepStory clusterOverrides={{ region: 'us-east-1' }} />
+    );
+
+    const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
+    await nameInput.fill('valid-cluster');
+
+    await component.page().waitForTimeout(700);
+
+    await expect(component.getByText('Details', { exact: true })).toBeVisible();
+  });
+});
 });

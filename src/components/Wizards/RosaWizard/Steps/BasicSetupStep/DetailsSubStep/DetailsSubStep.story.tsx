@@ -18,31 +18,56 @@ import {
   Region,
   AWSInfrastructureAccounts,
   OpenShiftVersions,
+  ValidationResource
 } from '../../../../types';
 
-export const mockOpenShiftVersions: SelectDropdownType[] = [
-  { label: 'OpenShift 4.12.0', value: '4.12.0' },
-  { label: 'OpenShift 4.11.5', value: '4.11.5' },
+const mockResource = <TData,>(data: TData): Resource<TData> => ({
+  data,
+  error: null,
+  isFetching: false,
+  fetch: async () => {},
+});
+
+const mockFetchResource = <TData, TArgs extends unknown[] = []>(
+  data: TData
+): Resource<TData, TArgs> & { fetch: (...args: TArgs) => Promise<void> } => ({
+  data,
+  error: null,
+  isFetching: false,
+  fetch: async (..._args: TArgs) => {},
+});
+
+const mockValidationResource = (): ValidationResource => ({
+  error: null,
+  isFetching: false,
+});
+
+export const mockOpenShiftVersions: OpenShiftVersions[] = [
+  { label: 'OpenShift 4.16.2', value: '4.16.2' },
+  { label: 'OpenShift 4.16.0', value: '4.16.0' },
+  { label: 'OpenShift 4.15.8', value: '4.15.8' },
 ];
 
-export const mockAwsInfrastructureAccounts: SelectDropdownType[] = [
+export const mockAwsInfrastructureAccounts: AWSInfrastructureAccounts[] = [
   { label: 'AWS Account - Production (123456789012)', value: 'aws-prod-123456789012' },
   { label: 'AWS Account - Staging (234567890123)', value: 'aws-staging-234567890123' },
 ];
 
-export const mockAwsBillingAccounts: SelectDropdownType[] = [
+export const mockAwsBillingAccounts: AWSInfrastructureAccounts[] = [
   { label: 'Billing Account - Main (123456789012)', value: 'billing-main-123456789012' },
   { label: 'Billing Account - Secondary (234567890123)', value: 'billing-secondary-234567890123' },
 ];
 
-export const mockSingleBillingAccount: SelectDropdownType[] = [
+export const mockSingleBillingAccount: AWSInfrastructureAccounts[] = [
   { label: 'Billing Account - Main (123456789012)', value: 'billing-main-123456789012' },
 ];
 
-export const mockRegions: SelectDropdownType[] = [
+export const mockRegions: Region[] = [
   { label: 'US East (N. Virginia)', value: 'us-east-1' },
   { label: 'US East (Ohio)', value: 'us-east-2' },
   { label: 'US West (Oregon)', value: 'us-west-2' },
+  { label: 'US West (N. California)', value: 'us-west-1' },
+  { label: 'EU (Ireland)', value: 'eu-west-1' },
 ];
 
 export const mockMachineTypes: MachineTypesDropdownType[] = [
@@ -52,9 +77,23 @@ export const mockMachineTypes: MachineTypesDropdownType[] = [
 
 export const mockRoles: Role[] = [
   {
-    installerRole: { label: 'Installer Role', value: 'arn:aws:iam::role/installer' },
-    supportRole: [{ label: 'Support Role', value: 'arn:aws:iam::role/support' }],
-    workerRole: [{ label: 'Worker Role', value: 'arn:aws:iam::role/worker' }],
+    installerRole: {
+      label: 'arn:aws:iam::123456789012:role/ManagedOpenShift-Installer-Role',
+      value: 'arn:aws:iam::123456789012:role/ManagedOpenShift-Installer-Role',
+      roleVersion: '4.16.0',
+    },
+    supportRole: [
+      {
+        label: 'arn:aws:iam::123456789012:role/ManagedOpenShift-Support-Role',
+        value: 'arn:aws:iam::123456789012:role/ManagedOpenShift-Support-Role',
+      },
+    ],
+    workerRole: [
+      {
+        label: 'arn:aws:iam::123456789012:role/ManagedOpenShift-Worker-Role',
+        value: 'arn:aws:iam::123456789012:role/ManagedOpenShift-Worker-Role',
+      },
+    ],
   },
 ];
 
@@ -66,12 +105,17 @@ export const createMockClusterData = (overrides: Record<string, unknown> = {}) =
     billing_account_id: '',
     region: '',
     machine_type: '',
+    installer_role_arn: '',
+    worker_role_arn: '',
+    support_role_arn: '',
     ...overrides,
   },
 });
 
 export interface DetailsSubStepStoryProps {
   openShiftVersions?: Resource<OpenShiftVersions[]>;
+  checkClusterNameUniqueness?: (name: string, region: string) => void;
+  clusterNameValidation?: ValidationResource;
   awsInfrastructureAccounts?: Resource<AWSInfrastructureAccounts[]>;
   awsBillingAccounts?: Resource<SelectDropdownType[]>;
   regions?: Resource<Region[], [awsAccount: string]> & {
@@ -85,13 +129,15 @@ export interface DetailsSubStepStoryProps {
 }
 
 export const DetailsSubStepStory: React.FC<DetailsSubStepStoryProps> = ({
-  openShiftVersions,
-  awsInfrastructureAccounts,
-  awsBillingAccounts,
-  regions,
-  machineTypes,
-  roles,
+  clusterNameValidation = mockValidationResource(),
+  checkClusterNameUniqueness,
+  openShiftVersions = mockResource(mockOpenShiftVersions),
+  machineTypes = mockResource(mockMachineTypes),
+  regions = mockResource(mockRegions),
+  awsInfrastructureAccounts = mockResource(mockAwsInfrastructureAccounts),
+  awsBillingAccounts = mockResource(mockAwsBillingAccounts),
   clusterOverrides = {},
+  roles = mockResource(mockRoles)
 }) => {
   const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
 
@@ -150,7 +196,8 @@ export const DetailsSubStepStory: React.FC<DetailsSubStepStoryProps> = ({
               <ShowValidationProvider>
                 <ValidationProvider>
                   <DetailsSubStep
-                    clusterNameValidation={{ error: null, isFetching: false }}
+                    clusterNameValidation={clusterNameValidation}
+                    checkClusterNameUniqueness={checkClusterNameUniqueness}
                     roles={rolesProps}
                     openShiftVersions={openShiftVersionsProps}
                     awsInfrastructureAccounts={awsInfraProps}
