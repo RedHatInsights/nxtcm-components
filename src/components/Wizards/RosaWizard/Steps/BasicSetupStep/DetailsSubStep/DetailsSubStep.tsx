@@ -1,15 +1,23 @@
-import { Section, WizSelect, WizTextInput } from '@patternfly-labs/react-form-wizard';
+import { Section, WizSelect, WizTextInput, useItem } from '@patternfly-labs/react-form-wizard';
 import { Button, Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
 import React from 'react';
 import { StepDrawer } from '../../../common/StepDrawer';
-import { Resource, Role, SelectDropdownType, ValidationResource } from '../../../../types';
+import {
+  Resource,
+  Role,
+  SelectDropdownType,
+  ValidationResource,
+  RosaWizardFormData,
+} from '../../../../types';
 import { validateClusterName } from '../../../validators';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
+import { useUniqueClusterNameCheck } from '../../../hooks/useUniqueClusterNameCheck';
 
 type DetailsSubStepProps = {
   clusterNameValidation: ValidationResource;
+  checkClusterNameUniqueness?: (name: string, region: string) => void;
   openShiftVersions: SelectDropdownType[];
   versionsIsPending: boolean;
   refreshVersionsCallback?: () => void;
@@ -30,12 +38,22 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   awsInfrastructureAccounts,
   awsBillingAccounts,
   regions,
+  checkClusterNameUniqueness,
 }) => {
   const d = useRosaWizardStrings().details;
 
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const drawerRef = React.useRef<HTMLSpanElement>(null);
   const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
+  const { checkName } = useUniqueClusterNameCheck(checkClusterNameUniqueness, 500);
+  const { cluster } = useItem<RosaWizardFormData>();
+
+  const uniqueClusterNameCheck = (value: string, region: string) => {
+    const syncError = validateClusterName(value);
+    if (!syncError && value) {
+      checkName(value, region);
+    }
+  };
 
   return (
     <Section label={d.sectionLabel}>
@@ -52,6 +70,9 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   validation={(name: string, item: unknown) =>
                     validateClusterName(name, item) || clusterNameValidation.error || undefined
                   }
+                  onValueChange={(value) => {
+                    uniqueClusterNameCheck(value as string, cluster.region as string);
+                  }}
                   path="cluster.name"
                   label={d.clusterNameLabel}
                   validateOnBlur
@@ -152,6 +173,9 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                 <WizSelect
                   isFill
                   path="cluster.region"
+                  onValueChange={(region) => {
+                    uniqueClusterNameCheck(cluster.name, region as string);
+                  }}
                   label={d.regionLabel}
                   placeholder={d.regionPlaceholder}
                   labelHelp={d.regionHelp}
