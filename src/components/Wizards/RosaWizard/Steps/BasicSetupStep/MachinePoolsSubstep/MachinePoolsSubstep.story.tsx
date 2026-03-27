@@ -11,14 +11,8 @@ import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/conte
 import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
 import { VPC, Subnet, SecurityGroup, MachineTypesDropdownType, Resource } from '../../../../types';
 
-const mockResource = <TData,>(data: TData): Resource<TData> => ({
-  data,
-  error: null,
-  isFetching: false,
-  fetch: async () => {},
-});
+import { StepShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/StepShowValidationProvider';
 
-// Mock security groups
 export const mockSecurityGroups: SecurityGroup[] = [
   { id: 'sg-0a1b2c3d4e5f00001', name: 'default' },
   { id: 'sg-0a1b2c3d4e5f00002', name: 'k8s-traffic-rules' },
@@ -27,7 +21,6 @@ export const mockSecurityGroups: SecurityGroup[] = [
   { id: 'sg-0a1b2c3d4e5f00005', name: '' },
 ];
 
-// Mock VPC data with subnets
 export const mockSubnets: Subnet[] = [
   {
     subnet_id: 'subnet-private-1',
@@ -51,50 +44,64 @@ export const mockSubnets: Subnet[] = [
   },
 ];
 
-export const mockVpcList: VPC[] = [
-  {
-    id: 'vpc-123',
-    name: 'my-production-vpc',
-    aws_subnets: mockSubnets,
-    aws_security_groups: mockSecurityGroups,
-  },
-  {
-    id: 'vpc-456',
-    name: 'my-staging-vpc',
-    aws_subnets: [
-      {
-        subnet_id: 'subnet-staging-private',
-        name: 'staging-private-subnet',
-        availability_zone: 'us-west-2a',
-      },
-      {
-        subnet_id: 'subnet-staging-public',
-        name: 'staging-public-subnet',
-        availability_zone: 'us-west-2a',
-      },
-    ],
-    aws_security_groups: [],
-  },
-];
+export const mockVpcList: Resource<VPC[]> = {
+  data: [
+    {
+      id: 'vpc-123',
+      name: 'my-production-vpc',
+      aws_subnets: mockSubnets,
+      aws_security_groups: mockSecurityGroups,
+    },
+    {
+      id: 'vpc-456',
+      name: 'my-staging-vpc',
+      aws_subnets: [
+        {
+          subnet_id: 'subnet-staging-private',
+          name: 'staging-private-subnet',
+          availability_zone: 'us-west-2a',
+        },
+        {
+          subnet_id: 'subnet-staging-public',
+          name: 'staging-public-subnet',
+          availability_zone: 'us-west-2a',
+        },
+      ],
+      aws_security_groups: [],
+    },
+  ],
+  error: null,
+  isFetching: false,
+  fetch: async () => {},
+};
 
-export const mockMachineTypes: MachineTypesDropdownType[] = [
-  { id: 'm5.xlarge', label: 'm5.xlarge', description: '4 vCPU, 16 GiB Memory', value: 'm5.xlarge' },
-  {
-    id: 'm5.2xlarge',
-    label: 'm5.2xlarge',
-    description: '8 vCPU, 32 GiB Memory',
-    value: 'm5.2xlarge',
-  },
-  { id: 'r5.large', label: 'r5.large', description: '2 vCPU, 16 GiB Memory', value: 'r5.large' },
-];
+export const mockMachineTypesData: Resource<MachineTypesDropdownType[]> = {
+  data: [
+    {
+      id: 'm5.xlarge',
+      label: 'm5.xlarge',
+      description: '4 vCPU, 16 GiB Memory',
+      value: 'm5.xlarge',
+    },
+    {
+      id: 'm5.2xlarge',
+      label: 'm5.2xlarge',
+      description: '8 vCPU, 32 GiB Memory',
+      value: 'm5.2xlarge',
+    },
+    { id: 'r5.large', label: 'r5.large', description: '2 vCPU, 16 GiB Memory', value: 'r5.large' },
+  ],
+  error: null,
+  isFetching: false,
+};
 
-// Default cluster data factory
 export const createMockClusterData = (overrides: Record<string, unknown> = {}) => ({
   cluster: {
     region: 'us-east-1',
     selected_vpc: '',
     cluster_privacy: 'external',
     cluster_privacy_public_subnet_id: '',
+    cluster_version: '4.16.0',
     machine_type: '',
     autoscaling: false,
     min_replicas: 2,
@@ -106,23 +113,20 @@ export const createMockClusterData = (overrides: Record<string, unknown> = {}) =
   },
 });
 
-// Props interface for the wrapped component
 export interface MachinePoolsSubstepStoryProps {
   vpcList?: Resource<VPC[]>;
   machineTypes?: Resource<MachineTypesDropdownType[]>;
   clusterOverrides?: Record<string, unknown>;
 }
 
-// Wrapped component that can be mounted in tests
 export const MachinePoolsSubstepStory: React.FC<MachinePoolsSubstepStoryProps> = ({
-  vpcList = mockResource(mockVpcList),
-  machineTypes = mockResource(mockMachineTypes),
+  vpcList = mockVpcList,
+  machineTypes = mockMachineTypesData,
   clusterOverrides = {},
 }) => {
   const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
 
   const update = useCallback(() => {
-    // Force re-render by creating a new object reference
     setData((currentData) => ({ ...currentData }));
   }, []);
 
@@ -131,11 +135,13 @@ export const MachinePoolsSubstepStory: React.FC<MachinePoolsSubstepStoryProps> =
       <DataContext.Provider value={{ update }}>
         <DisplayModeContext.Provider value={DisplayMode.Step}>
           <ItemContext.Provider value={data}>
-            <ShowValidationProvider>
-              <ValidationProvider>
-                <MachinePoolsSubstep vpcList={vpcList} machineTypes={machineTypes} />
-              </ValidationProvider>
-            </ShowValidationProvider>
+            <StepShowValidationProvider>
+              <ShowValidationProvider>
+                <ValidationProvider>
+                  <MachinePoolsSubstep vpcList={vpcList} machineTypes={machineTypes} />
+                </ValidationProvider>
+              </ShowValidationProvider>
+            </StepShowValidationProvider>
           </ItemContext.Provider>
         </DisplayModeContext.Provider>
       </DataContext.Provider>

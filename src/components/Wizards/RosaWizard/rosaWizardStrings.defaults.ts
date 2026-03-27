@@ -267,6 +267,7 @@ export const defaultRosaWizardStrings: RosaWizardStrings = {
     selectAriaLabelledBy: 'Select AWS security groups',
     noEditViewMoreInfo: 'View more information',
     noEditAwsConsoleLink: 'AWS security groups console',
+    incompatibleVersion: 'To use securityGroups, your cluster must be version 4.14.x or newer.',
   },
   clusterWideProxy: {
     sectionLabel: 'Cluster-wide proxy',
@@ -403,7 +404,8 @@ export const defaultRosaWizardValidatorStrings: RosaWizardValidatorStrings = {
   rootDisk: {
     notInteger: 'Root disk size must be an integer.',
     tooSmall: 'Root disk size must be at least 75 GiB.',
-    tooLarge: 'Root disk size must not exceed 16384 GiB.',
+    tooLargeOldOpenshift: 'Root disk size must not exceed 1024 GiB',
+    tooLargeNewOpenshift: 'Root disk size must not exceed 16384 GiB.',
   },
   replicas: {
     notInteger: 'Input must be an integer.',

@@ -80,7 +80,7 @@ const wizardStepsData: WizardStepsData = {
     versions: mockFetchResource(versionsData),
     awsInfrastructureAccounts: mockResource([{ label: 'aws-account-1', value: 'aws-account-1' }]),
     awsBillingAccounts: mockResource([{ label: 'billing-account-1', value: 'billing-account-1' }]),
-    regions: mockResource([{ label: 'US East 1', value: 'us-east-1' }]),
+    regions: mockFetchResource([{ label: 'US East 1', value: 'us-east-1' }]),
     roles: mockFetchResource<Role[], [awsAccount: string]>(roles),
     oidcConfig: mockResource(oidcConfigs),
     machineTypes: mockResource([

@@ -1,7 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 import { RosaWizard } from './RosaWizard';
-import type { OpenShiftVersionsData, Resource, Role, ValidationResource } from '../types';
+import type {
+  MachineTypesDropdownType,
+  Region,
+  AWSInfrastructureAccounts,
+  OpenShiftVersionsData,
+  Resource,
+  Role,
+  ValidationResource,
+} from '../types';
 import type { BasicSetupStepProps } from './RosaWizard';
 
 // wraps static mock data in the Resource shape for stories
@@ -72,7 +80,7 @@ const mockRegions = [
   { label: 'Asia Pacific (Tokyo)', value: 'ap-northeast-1' },
 ];
 
-const mockRoles: Role[] = [
+const mockRoles = [
   {
     installerRole: {
       label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
@@ -114,6 +122,15 @@ const mockMachineTypes = [
     description: '4 vCPU 16 GiB RAM',
     value: 'm5a.xlarge',
   },
+  {
+    id: 'm6a.xlarge',
+    label: 'm6a.xlarge',
+    description: '4 vCPU 16 GiB RAM',
+    value: 'm6a.xlarge',
+  },
+];
+
+const mockMachineTypesLimited = [
   {
     id: 'm6a.xlarge',
     label: 'm6a.xlarge',
@@ -209,7 +226,7 @@ const mockBasicSetupStep: BasicSetupStepProps = {
   versions: mockFetchResource(mockVersionsData),
   awsInfrastructureAccounts: mockResource(mockAwsInfrastructureAccounts),
   awsBillingAccounts: mockResource(mockAwsBillingAccounts),
-  regions: mockResource(mockRegions),
+  regions: mockFetchResource<Region[], [awsAccount: string]>(mockRegions),
   roles: mockFetchResource<Role[], [awsAccount: string]>(mockRoles),
   oidcConfig: mockResource(mockOicdConfig),
   machineTypes: mockResource(mockMachineTypes),
@@ -309,10 +326,6 @@ export const MinimalOptions: Story = {
             value: 'billing-main-123456789012',
           },
         ]),
-        regions: mockResource([
-          { label: 'US East 1, US, Virginia', value: 'us-east-1' },
-          { label: 'US West 1, US, Oregon', value: 'us-west-1' },
-        ]),
       },
     },
   },
@@ -342,7 +355,7 @@ export const EmptyOptions: Story = {
         }),
         awsInfrastructureAccounts: mockResource([]),
         awsBillingAccounts: mockResource([]),
-        regions: mockResource([]),
+        regions: mockFetchResource([]),
       },
     },
   },
@@ -628,10 +641,6 @@ export const ProductionSetup: Story = {
             value: 'billing-corp-987654321098',
           },
         ]),
-        regions: mockResource([
-          { label: 'US East 1, US, Virginia', value: 'us-east-1' },
-          { label: 'US West 1, US, Oregon', value: 'us-west-1' },
-        ]),
       },
     },
   },
@@ -673,6 +682,107 @@ export const SubmitError: Story = {
     onCancel: () => {
       console.log('Wizard cancelled');
       alert('Wizard cancelled');
+    },
+    wizardsStepsData: {
+      basicSetupStep: mockBasicSetupStep,
+    },
+  },
+};
+
+/**
+ * Demonstrates async loading behaviour:
+ * - AWS infrastructure accounts start loading, then populate after 2 s.
+ * - When the user picks an account, the regions dropdown enters a loading
+ *   state for 1.5 s before populating with mock regions.
+ */
+function AsyncLoadingWrapper(props: React.ComponentProps<typeof RosaWizard>) {
+  const [awsAccounts, setAwsAccounts] = React.useState<Resource<AWSInfrastructureAccounts[]>>({
+    data: [],
+    error: null,
+    isFetching: true,
+  });
+
+  const [regions, setRegions] = React.useState<Resource<Region[]>>({
+    data: [],
+    error: null,
+    isFetching: false,
+  });
+
+  const [machineTypes, setMachineTypes] = React.useState<Resource<MachineTypesDropdownType[]>>({
+    data: mockMachineTypes,
+    error: null,
+    isFetching: false,
+  });
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setAwsAccounts({
+        data: mockAwsInfrastructureAccounts,
+        error: null,
+        isFetching: false,
+      });
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const machineTypesFetch = React.useCallback(async (region?: string) => {
+    setMachineTypes((prev) => ({ ...prev, isFetching: true }));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    if (region === 'us-east-1') {
+      // fetching m6a and m5a
+      setMachineTypes({ data: mockMachineTypes, error: null, isFetching: false });
+    } else {
+      // fetching only m6a
+      setMachineTypes({ data: mockMachineTypesLimited, error: null, isFetching: false });
+    }
+  }, []);
+
+  const regionsFetch = React.useCallback(async (awsAccount?: string) => {
+    const mockedRegions = [
+      { label: 'US East (N. Virginia)', value: 'us-east-1' },
+      { label: 'US West (Oregon)', value: 'us-west-2' },
+      { label: 'EU (London)', value: 'eu-west-2' },
+      { label: 'EU (Paris)', value: 'eu-west-3' },
+      { label: 'Asia Pacific (Singapore)', value: 'ap-southeast-1' },
+      { label: 'Asia Pacific (Sydney)', value: 'ap-southeast-2' },
+      { label: 'Canada (Central)', value: 'ca-central-1' },
+    ];
+    const mockedRegionsLimited = [
+      { label: 'US East (N. Virginia) - Limited', value: 'us-east-1' },
+      { label: 'US West (Oregon) - Limited', value: 'us-west-2' },
+      { label: 'EU (Frankfurt)', value: 'eu-west-4' },
+      { label: 'EU (Rome)', value: 'eu-west-5' },
+    ];
+    setRegions((prev) => ({ ...prev, isFetching: true }));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    if (awsAccount === 'aws-dev-345678901234') {
+      setRegions({ data: mockedRegionsLimited, error: null, isFetching: false });
+    } else {
+      setRegions({ data: mockedRegions, error: null, isFetching: false });
+    }
+  }, []);
+
+  const basicSetupStep: BasicSetupStepProps = {
+    ...props.wizardsStepsData.basicSetupStep,
+    awsInfrastructureAccounts: awsAccounts,
+    regions: { ...regions, fetch: regionsFetch },
+    machineTypes: { ...machineTypes, fetch: machineTypesFetch },
+  };
+
+  return <RosaWizard {...props} wizardsStepsData={{ ...props.wizardsStepsData, basicSetupStep }} />;
+}
+
+export const AsyncLoading: Story = {
+  render: (args) => <AsyncLoadingWrapper {...args} />,
+  args: {
+    title: 'Create ROSA Cluster - Async Loading',
+    onSubmit: async (data: unknown) => {
+      console.log('Wizard submitted with data:', data);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      alert('Cluster creation initiated successfully!');
+    },
+    onCancel: () => {
+      console.log('Wizard cancelled');
     },
     wizardsStepsData: {
       basicSetupStep: mockBasicSetupStep,

@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/experimental-ct-react';
 import { checkAccessibility } from '../../../../../../test-helpers';
 import { MachinePoolsSubstepStory } from './MachinePoolsSubstep.story';
+import { ShowValidationContext } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
 import type { Resource, MachineTypesDropdownType, VPC } from '../../../../types';
 
 const mockResource = <TData,>(data: TData): Resource<TData> => ({
@@ -97,6 +98,30 @@ test.describe('MachinePoolsSubstep', () => {
     await expect(
       component.getByText(/The following settings apply to all machine pools/)
     ).toBeVisible();
+  });
+
+  test('should show disabled state for Compute node instance type when machine types are loading', async ({
+    mount,
+  }) => {
+    const component = await mount(
+      <MachinePoolsSubstepStory machineTypes={{ data: [], isFetching: true, error: null }} />
+    );
+
+    const machineTypeSelect = component.locator('#cluster-machine_type');
+    await expect(machineTypeSelect).toBeVisible();
+    await expect(machineTypeSelect.locator('.pf-m-disabled')).toBeVisible();
+  });
+
+  test('should not show disabled state for Compute node instance type when not loading', async ({
+    mount,
+  }) => {
+    const component = await mount(
+      <MachinePoolsSubstepStory machineTypes={{ data: [], isFetching: false, error: null }} />
+    );
+
+    const machineTypeSelect = component.locator('#cluster-machine_type');
+    await expect(machineTypeSelect).toBeVisible();
+    await expect(machineTypeSelect.locator('.pf-m-disabled')).not.toBeVisible();
   });
 });
 
@@ -245,5 +270,124 @@ test.describe('SecurityGroupsSection', () => {
     await page.getByText('my-production-vpc', { exact: true }).click();
 
     await expect(component.locator('.pf-v6-c-label').getByText('default')).not.toBeVisible();
+  });
+});
+
+const ADVANCED_TOGGLE_TEXT = 'Advanced machine pool configuration (optional)';
+
+const mountWithValidation = (
+  mount: Parameters<Parameters<typeof test>[2]>[0]['mount'],
+  clusterOverrides: Record<string, unknown> = {}
+) =>
+  mount(
+    <ShowValidationContext.Provider value={true}>
+      <MachinePoolsSubstepStory clusterOverrides={clusterOverrides} />
+    </ShowValidationContext.Provider>
+  );
+
+test.describe('Root disk size validation', () => {
+  test('should render root disk size input inside advanced section', async ({ mount }) => {
+    const component = await mountWithValidation(mount);
+
+    const advancedToggle = component.getByText(ADVANCED_TOGGLE_TEXT);
+    await advancedToggle.click();
+
+    await expect(component.getByText('Root disk size', { exact: true })).toBeVisible();
+  });
+
+  test('should not show validation error for a valid value', async ({ mount }) => {
+    const component = await mountWithValidation(mount, { compute_root_volume: 100 });
+
+    const advancedToggle = component.getByText(ADVANCED_TOGGLE_TEXT);
+    await advancedToggle.click();
+
+    await expect(component.getByText(/Root disk size must be/)).not.toBeVisible();
+    await expect(component.getByText(/must not exceed/)).not.toBeVisible();
+  });
+
+  test('should not show validation error for minimum boundary value (75)', async ({ mount }) => {
+    const component = await mountWithValidation(mount, { compute_root_volume: 75 });
+
+    const advancedToggle = component.getByText(ADVANCED_TOGGLE_TEXT);
+    await advancedToggle.click();
+
+    await expect(component.getByText(/Root disk size must be/)).not.toBeVisible();
+    await expect(component.getByText(/must not exceed/)).not.toBeVisible();
+  });
+
+  test('should not show validation error for maximum boundary value (16384) on OpenShift >= 4.14', async ({
+    mount,
+  }) => {
+    const component = await mountWithValidation(mount, {
+      compute_root_volume: 16384,
+      cluster_version: '4.16.0',
+    });
+
+    const advancedToggle = component.getByText(ADVANCED_TOGGLE_TEXT);
+    await advancedToggle.click();
+
+    await expect(component.getByText(/Root disk size must be/)).not.toBeVisible();
+    await expect(component.getByText(/must not exceed/)).not.toBeVisible();
+  });
+
+  test('should show error when root disk size is below minimum', async ({ mount }) => {
+    const component = await mountWithValidation(mount, { compute_root_volume: 50 });
+
+    const advancedToggle = component.getByText(ADVANCED_TOGGLE_TEXT);
+    await advancedToggle.click();
+
+    await expect(component.getByText('Root disk size must be at least 75 GiB.')).toBeVisible();
+  });
+
+  test('should show error when root disk size is not an integer', async ({ mount }) => {
+    const component = await mountWithValidation(mount, { compute_root_volume: 75.5 });
+
+    const advancedToggle = component.getByText(ADVANCED_TOGGLE_TEXT);
+    await advancedToggle.click();
+
+    await expect(component.getByText('Root disk size must be an integer.')).toBeVisible();
+  });
+
+  test('should show error when root disk size exceeds maximum for OpenShift >= 4.14', async ({
+    mount,
+  }) => {
+    const component = await mountWithValidation(mount, {
+      compute_root_volume: 20000,
+      cluster_version: '4.16.0',
+    });
+
+    const advancedToggle = component.getByText(ADVANCED_TOGGLE_TEXT);
+    await advancedToggle.click();
+
+    await expect(component.getByText('Root disk size must not exceed 16384 GiB.')).toBeVisible();
+  });
+
+  test('should show error when root disk size exceeds maximum for OpenShift < 4.14', async ({
+    mount,
+  }) => {
+    const component = await mountWithValidation(mount, {
+      compute_root_volume: 2000,
+      cluster_version: '4.12.0',
+    });
+
+    const advancedToggle = component.getByText(ADVANCED_TOGGLE_TEXT);
+    await advancedToggle.click();
+
+    await expect(component.getByText('Root disk size must not exceed 1024 GiB')).toBeVisible();
+  });
+
+  test('should not show validation error for maximum boundary value (1024) on OpenShift < 4.14', async ({
+    mount,
+  }) => {
+    const component = await mountWithValidation(mount, {
+      compute_root_volume: 1024,
+      cluster_version: '4.12.0',
+    });
+
+    const advancedToggle = component.getByText(ADVANCED_TOGGLE_TEXT);
+    await advancedToggle.click();
+
+    await expect(component.getByText(/Root disk size must be/)).not.toBeVisible();
+    await expect(component.getByText(/must not exceed/)).not.toBeVisible();
   });
 });

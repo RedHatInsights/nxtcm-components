@@ -158,7 +158,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                 placeholder={rp.supportPlaceholder}
                 labelHelp={rp.supportHelp}
                 options={supportRoles}
-                disabled={roles.isFetching}
+                disabled={true}
                 required
               />
             </GridItem>
@@ -170,7 +170,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                 placeholder={rp.workerPlaceholder}
                 labelHelp={rp.workerHelp}
                 options={workerRoles}
-                disabled={roles.isFetching}
+                disabled={true}
                 required
               />
             </GridItem>

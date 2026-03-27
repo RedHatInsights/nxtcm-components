@@ -585,7 +585,8 @@ export const validateComputeNodes = (
 
 export const validateRootDiskSize = (
   value: number | undefined,
-  msgs = defaultRosaWizardValidatorStrings.rootDisk
+  msgs = defaultRosaWizardValidatorStrings.rootDisk,
+  maxRootDiskSize: number
 ): string | undefined => {
   if (value === undefined || value === null) {
     return undefined;
@@ -596,8 +597,11 @@ export const validateRootDiskSize = (
   if (value < 75) {
     return msgs.tooSmall;
   }
-  if (value > 16384) {
-    return msgs.tooLarge;
+  if (value > maxRootDiskSize && maxRootDiskSize === 1024) {
+    return msgs.tooLargeOldOpenshift;
+  }
+  if (value > maxRootDiskSize && maxRootDiskSize === 16384) {
+    return msgs.tooLargeNewOpenshift;
   }
   return undefined;
 };

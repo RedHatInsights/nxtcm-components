@@ -15,7 +15,7 @@ import {
   Grid,
   GridItem,
 } from '@patternfly/react-core';
-import { subnetsFilter } from '../../../helpers';
+import { subnetsFilter, canSelectImds, getWorkerNodeVolumeSizeMaxGiB } from '../../../helpers';
 import {
   MachineTypesDropdownType,
   Resource,
@@ -33,13 +33,24 @@ import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWiza
 
 type MachinePoolsSubstepProps = {
   vpcList: Resource<VPC[]>;
-  machineTypes: Resource<MachineTypesDropdownType[]>;
+  machineTypes: Resource<MachineTypesDropdownType[], [region: string]> & {
+    fetch?: (region: string) => Promise<void>;
+  };
 };
 
 export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
   const mp = useRosaWizardStrings().machinePools;
   const v = useRosaWizardValidators();
   const { cluster } = useItem<RosaWizardFormData>();
+  const currentRegion = cluster?.region;
+  const clusterVersion = cluster.cluster_version ?? '';
+  const maxRootDiskSize = getWorkerNodeVolumeSizeMaxGiB(clusterVersion);
+
+  // Refetch machine types with the selected region
+  React.useEffect(() => {
+    if (props.machineTypes.fetch && currentRegion) void props.machineTypes.fetch(currentRegion);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const vpcRef = cluster?.selected_vpc;
   const selectedVPC =
@@ -47,18 +58,10 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
 
   const { privateSubnets } = subnetsFilter(selectedVPC);
 
-  React.useEffect(() => {
-    if (cluster?.cluster_privacy === 'internal') {
-      cluster.cluster_privacy_public_subnet_id = '';
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <>
       <Section label={mp.sectionLabel} id="machine-pools-section" key="machine-pools-key">
         <Content component={ContentVariants.p}>{mp.intro}</Content>
-
         <Grid>
           <GridItem span={5}>
             <WizSelect
@@ -112,6 +115,8 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
           <GridItem span={5}>
             <WizSelect
               label={mp.instanceTypeLabel}
+              validateOnBlur={true}
+              disabled={props.machineTypes.isFetching}
               path="cluster.machine_type"
               required
               labelHelp={
@@ -123,7 +128,6 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
                 </>
               }
               options={props.machineTypes.data}
-              disabled={props.machineTypes.isFetching}
             />
           </GridItem>
         </Grid>
@@ -138,6 +142,7 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
       <ExpandableSection toggleText={mp.advancedToggle}>
         <Indented>
           <WizRadioGroup
+            disabled={!canSelectImds(clusterVersion)}
             labelHelpTitle={mp.imdsHelpTitle}
             labelHelp={
               <>
@@ -170,12 +175,15 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
             label={mp.rootDiskLabel}
             labelHelp={mp.rootDiskHelp}
             min={75}
-            max={16384}
-            validation={(value) => validateRootDiskSize(value, v.rootDisk)}
+            max={maxRootDiskSize}
+            validation={(_value: number) =>
+              validateRootDiskSize(_value, v.rootDisk, maxRootDiskSize)
+            }
           />
         </Indented>
       </ExpandableSection>
       <SecurityGroupsSection
+        clusterVersion={clusterVersion}
         selectedVPC={selectedVPC}
         refreshVPCs={props.vpcList.fetch ? () => void props.vpcList.fetch?.() : undefined}
       />

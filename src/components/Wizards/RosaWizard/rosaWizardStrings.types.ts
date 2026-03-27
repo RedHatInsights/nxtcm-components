@@ -55,7 +55,8 @@ export type RosaWizardCaValidatorStrings = {
 export type RosaWizardRootDiskValidatorStrings = {
   notInteger: string;
   tooSmall: string;
-  tooLarge: string;
+  tooLargeNewOpenshift: string;
+  tooLargeOldOpenshift: string;
 };
 
 export type RosaWizardReplicaValidatorStrings = {
@@ -348,6 +349,7 @@ export type RosaWizardStrings = {
     selectAriaLabelledBy: string;
     noEditViewMoreInfo: string;
     noEditAwsConsoleLink: string;
+    incompatibleVersion: string;
   };
   clusterWideProxy: {
     sectionLabel: string;

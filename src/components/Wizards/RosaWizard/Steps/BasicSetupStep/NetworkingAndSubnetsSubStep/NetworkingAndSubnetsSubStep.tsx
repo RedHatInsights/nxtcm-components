@@ -114,6 +114,11 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
           id="public-private-subnet-radio-group"
           path="cluster.cluster_privacy"
           helperText={n.privacyHelper}
+          onValueChange={() => {
+            if (cluster.cluster_privacy && cluster.cluster_privacy_public_subnet_id) {
+              cluster.cluster_privacy_public_subnet_id = undefined;
+            }
+          }}
         >
           <Radio
             id="public"
