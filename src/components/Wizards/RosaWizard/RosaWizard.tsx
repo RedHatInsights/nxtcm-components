@@ -159,7 +159,7 @@ const RosaWizardBody = (props: RosaWizardProps) => {
   const opVersions = {
     data: buildVersionOptions(basicSetupStep.versions.data),
     fetch: () => basicSetupStep.versions.fetch(),
-    error: null,
+    error: basicSetupStep.versions.error,
     isFetching: basicSetupStep.versions.isFetching,
   };
 

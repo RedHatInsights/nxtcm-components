@@ -206,6 +206,7 @@ export const defaultRosaWizardStrings: RosaWizardStrings = {
     sectionLabel: 'Machine pools',
     intro:
       'Create machine pools and specify the private subnet for each machine pool. To allow high availability for your workloads, add machine pools on different availablity zones.',
+    vpcLabel: 'VPC',
     vpcLabelPrefix: 'Select a VPC to install your machine pools into your selected regions:',
     vpcPlaceholder: 'Select a VPC to install your machine pools into',
     vpcHelpLead:
@@ -362,6 +363,11 @@ export const defaultRosaWizardStrings: RosaWizardStrings = {
     strategyAutomatic: 'Automatic updates',
     autoscalingMinPrefix: 'Min:',
     autoscalingMaxPrefix: 'Max:',
+  },
+  common: {
+    errorValidatingPrefix: 'Error validating',
+    errorLoadingPrefix: 'Error loading',
+    listSuffix: 'list',
   },
 };
 
