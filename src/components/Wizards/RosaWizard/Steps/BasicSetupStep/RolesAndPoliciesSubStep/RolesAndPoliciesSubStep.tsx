@@ -22,6 +22,7 @@ import { createOperatorRolesPrefix } from '../../../helpers';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
+import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
 
 type RolesAndPoliciesSubStepProps = {
   roles: Resource<Role[], [awsAccount: string]> & {
@@ -112,36 +113,47 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
       <Section label={rp.accountRolesSection}>
         <Grid>
           <GridItem span={7}>
-            <WizSelect
-              isFill
-              path="cluster.installer_role_arn"
-              label={rp.installerRoleLabel}
-              disabled={roles.isFetching}
-              onValueChange={(installerRoleArn, _item) => {
-                if (installerRoleArn) {
-                  const selected = roles.data.find(
-                    (roleSet) => roleSet.installerRole.value === installerRoleArn
-                  );
-                  cluster.support_role_arn = selected?.supportRole?.[0]?.value;
-                  cluster.worker_role_arn = selected?.workerRole?.[0]?.value;
-                } else {
-                  cluster.support_role_arn = undefined;
-                  cluster.worker_role_arn = undefined;
-                }
-                update();
-              }}
-              placeholder={rp.installerPlaceholder}
-              labelHelp={
-                <>
-                  {rp.installerHelpLead}{' '}
-                  <ExternalLink href={links.ROSA_ROLES_LEARN_MORE}>
-                    {rp.installerLearnMoreLink}
-                  </ExternalLink>
-                </>
+            <FieldWithAPIErrorAlert
+              error={roles.error}
+              isFetching={roles.isFetching}
+              fieldName={rp.installerRoleLabel}
+              retry={
+                cluster?.associated_aws_id
+                  ? () => void roles.fetch(cluster.associated_aws_id as string)
+                  : undefined
               }
-              options={installerRoles}
-              required
-            />
+            >
+              <WizSelect
+                isFill
+                path="cluster.installer_role_arn"
+                label={rp.installerRoleLabel}
+                disabled={roles.isFetching}
+                onValueChange={(installerRoleArn, _item) => {
+                  if (installerRoleArn) {
+                    const selected = roles.data.find(
+                      (roleSet) => roleSet.installerRole.value === installerRoleArn
+                    );
+                    cluster.support_role_arn = selected?.supportRole?.[0]?.value;
+                    cluster.worker_role_arn = selected?.workerRole?.[0]?.value;
+                  } else {
+                    cluster.support_role_arn = undefined;
+                    cluster.worker_role_arn = undefined;
+                  }
+                  update();
+                }}
+                placeholder={rp.installerPlaceholder}
+                labelHelp={
+                  <>
+                    {rp.installerHelpLead}{' '}
+                    <ExternalLink href={links.ROSA_ROLES_LEARN_MORE}>
+                      {rp.installerLearnMoreLink}
+                    </ExternalLink>
+                  </>
+                }
+                options={installerRoles}
+                required
+              />
+            </FieldWithAPIErrorAlert>
           </GridItem>
         </Grid>
         <ExpandableSection
@@ -182,20 +194,27 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
           <GridItem span={7}>
             <Stack>
               <StackItem>
-                <WizSelect
-                  isFill
-                  path="cluster.byo_oidc_config_id"
-                  label={rp.oidcLabel}
-                  required
-                  placeholder={rp.oidcPlaceholder}
-                  labelHelp={rp.oidcHelp}
-                  options={oidcConfig.data.map((config) => ({
-                    label: config.label,
-                    value: config.value,
-                    description: config.issuer_url,
-                  }))}
-                  disabled={oidcConfig.isFetching}
-                />
+                <FieldWithAPIErrorAlert
+                  error={oidcConfig.error}
+                  isFetching={oidcConfig.isFetching}
+                  fieldName={rp.oidcLabel}
+                  retry={oidcConfig.fetch ? () => void oidcConfig.fetch?.() : undefined}
+                >
+                  <WizSelect
+                    isFill
+                    path="cluster.byo_oidc_config_id"
+                    label={rp.oidcLabel}
+                    required
+                    placeholder={rp.oidcPlaceholder}
+                    labelHelp={rp.oidcHelp}
+                    options={oidcConfig.data.map((config) => ({
+                      label: config.label,
+                      value: config.value,
+                      description: config.issuer_url,
+                    }))}
+                    disabled={oidcConfig.isFetching}
+                  />
+                </FieldWithAPIErrorAlert>
               </StackItem>
               <StackItem>
                 <PopoverHintWithTitle

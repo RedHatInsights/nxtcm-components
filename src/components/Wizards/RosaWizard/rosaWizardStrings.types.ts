@@ -295,6 +295,7 @@ export type RosaWizardStrings = {
   machinePools: {
     sectionLabel: string;
     intro: string;
+    vpcLabel: string;
     vpcLabelPrefix: string;
     vpcPlaceholder: string;
     vpcHelpLead: string;
@@ -435,6 +436,11 @@ export type RosaWizardStrings = {
     strategyAutomatic: string;
     autoscalingMinPrefix: string;
     autoscalingMaxPrefix: string;
+  };
+  common: {
+    errorValidatingPrefix: string;
+    errorLoadingPrefix: string;
+    listSuffix: string;
   };
 };
 
