@@ -31,15 +31,19 @@ export type SelectDropdownType = {
 
 export type InstallerRole = SelectDropdownType & {
   roleVersion?: string;
+  /** When true, option is disabled in the dropdown (e.g. role version below selected cluster version). */
   disabled?: boolean;
 };
 
+/** Flat version data from the host app; the wizard builds option groups internally. */
 export type OpenShiftVersionsData = {
-  default: SelectDropdownType;
-  latest: SelectDropdownType;
-  others: SelectDropdownType[];
+  default?: SelectDropdownType;
+  latest?: SelectDropdownType;
+  /** Additional releases. Shown as "Releases" when default/latest are absent, else "Previous releases". */
+  releases: SelectDropdownType[];
 };
 
+/** Grouped options for version select (built internally from OpenShiftVersionsData). */
 export type OpenShiftVersionGroup = {
   label: string;
   options: SelectDropdownType[];

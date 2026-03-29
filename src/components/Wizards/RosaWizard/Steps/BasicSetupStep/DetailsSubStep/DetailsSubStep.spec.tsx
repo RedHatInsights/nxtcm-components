@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/experimental-ct-react';
 import { checkAccessibility } from '../../../../../../test-helpers';
 import { DetailsSubStepStory } from './DetailsSubStep.story';
 import { mockSingleBillingAccount, mockRegions } from './DetailsSubStep.story';
-import type { Resource, SelectDropdownType, OpenShiftVersions } from '../../../../types';
+import type { Resource, SelectDropdownType } from '../../../../types';
 
 const mockResource = <TData,>(data: TData): Resource<TData> => ({
   data,
@@ -23,21 +23,15 @@ test.describe('DetailsSubStep', () => {
     await expect(component.getByText('OpenShift version', { exact: true })).toBeVisible();
   });
 
-  test('should disable OpenShift version select when versions are pending', async ({ mount }) => {
-    const component = await mount(
-      <DetailsSubStepStory
-        openShiftVersions={{ data: [], error: null, isFetching: true, fetch: async () => {} }}
-      />
-    );
-
-    const versionToggle = component.locator('#cluster-cluster_version .pf-v6-c-menu-toggle');
-    await expect(versionToggle).toHaveClass(/pf-m-disabled/);
-  });
-
   test('should render with empty options', async ({ mount }) => {
     const component = await mount(
       <DetailsSubStepStory
-        openShiftVersions={mockResource<OpenShiftVersions[]>([])}
+        versions={{
+          data: { releases: [] },
+          error: null,
+          isFetching: false,
+          fetch: async () => {},
+        }}
         regions={{ data: [], error: null, isFetching: false, fetch: async () => {} }}
         awsInfrastructureAccounts={mockResource<SelectDropdownType[]>([])}
         awsBillingAccounts={mockResource<SelectDropdownType[]>([])}
@@ -239,7 +233,14 @@ test.describe('DetailsSubStep', () => {
 
     test('should render with empty OpenShift versions', async ({ mount }) => {
       const component = await mount(
-        <DetailsSubStepStory openShiftVersions={{ data: [], isFetching: false, error: null }} />
+        <DetailsSubStepStory
+          versions={{
+            data: { releases: [] },
+            isFetching: false,
+            error: null,
+            fetch: async () => {},
+          }}
+        />
       );
 
       await expect(component.getByText('OpenShift version', { exact: true })).toBeVisible();

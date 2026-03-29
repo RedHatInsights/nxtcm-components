@@ -288,19 +288,32 @@ test.describe('SecurityGroupsSection', () => {
     await securityGroupsToggle.click();
 
     await component.getByText('Select security groups').click();
-    await page.getByText('default', { exact: true }).click();
+    const defaultOption = page.getByText('default', { exact: true });
+    await defaultOption.waitFor({ state: 'visible', timeout: 5000 });
+    await defaultOption.click();
 
     await expect(component.locator('.pf-v6-c-label').getByText('default')).toBeVisible();
 
     await page.keyboard.press('Escape');
 
-    const vpcInput = component.locator('#cluster-selected_vpc [role="combobox"]');
+    const vpcSelect = component.locator('#cluster-selected_vpc');
+    const vpcInput = vpcSelect.locator('[role="combobox"]');
+    await vpcInput.click();
+
+    const clearVpcButton = vpcSelect.getByRole('button', { name: 'Clear input value' });
+    await clearVpcButton.click();
 
     await vpcInput.click();
-    await page.getByText('my-staging-vpc', { exact: true }).click();
+    const stagingOption = page.getByText('my-staging-vpc', { exact: true });
+    await stagingOption.waitFor({ state: 'visible', timeout: 5000 });
+    await stagingOption.click();
 
     await vpcInput.click();
-    await page.getByText('my-production-vpc', { exact: true }).click();
+    await vpcSelect.getByRole('button', { name: 'Clear input value' }).click();
+    await vpcInput.click();
+    const productionOption = page.getByText('my-production-vpc', { exact: true });
+    await productionOption.waitFor({ state: 'visible', timeout: 5000 });
+    await productionOption.click();
 
     await expect(component.locator('.pf-v6-c-label').getByText('default')).not.toBeVisible();
   });

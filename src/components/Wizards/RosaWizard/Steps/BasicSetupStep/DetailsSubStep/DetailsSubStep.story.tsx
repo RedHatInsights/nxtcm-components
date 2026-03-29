@@ -17,7 +17,7 @@ import {
   MachineTypesDropdownType,
   Region,
   AWSInfrastructureAccounts,
-  OpenShiftVersions,
+  OpenShiftVersionsData,
   ValidationResource,
 } from '../../../../types';
 
@@ -42,11 +42,13 @@ const mockValidationResource = (): ValidationResource => ({
   isFetching: false,
 });
 
-export const mockOpenShiftVersions: OpenShiftVersions[] = [
-  { label: 'OpenShift 4.16.2', value: '4.16.2' },
-  { label: 'OpenShift 4.16.0', value: '4.16.0' },
-  { label: 'OpenShift 4.15.8', value: '4.15.8' },
-];
+export const mockOpenShiftVersionsData: OpenShiftVersionsData = {
+  releases: [
+    { label: 'OpenShift 4.16.2', value: '4.16.2' },
+    { label: 'OpenShift 4.16.0', value: '4.16.0' },
+    { label: 'OpenShift 4.15.8', value: '4.15.8' },
+  ],
+};
 
 export const mockAwsInfrastructureAccounts: AWSInfrastructureAccounts[] = [
   { label: 'AWS Account - Production (123456789012)', value: 'aws-prod-123456789012' },
@@ -113,9 +115,9 @@ export const createMockClusterData = (overrides: Record<string, unknown> = {}) =
 });
 
 export interface DetailsSubStepStoryProps {
-  openShiftVersions?: Resource<OpenShiftVersions[]>;
-  checkClusterNameUniqueness?: (name: string, region?: string) => void;
   clusterNameValidation?: ValidationResource;
+  checkClusterNameUniqueness?: (name: string, region?: string) => void;
+  versions?: Resource<OpenShiftVersionsData, []> & { fetch: () => Promise<void> };
   awsInfrastructureAccounts?: Resource<AWSInfrastructureAccounts[]>;
   awsBillingAccounts?: Resource<SelectDropdownType[]>;
   regions?: Resource<Region[], [awsAccount: string]> & {
@@ -131,13 +133,13 @@ export interface DetailsSubStepStoryProps {
 export const DetailsSubStepStory: React.FC<DetailsSubStepStoryProps> = ({
   clusterNameValidation = mockValidationResource(),
   checkClusterNameUniqueness,
-  openShiftVersions = mockFetchResource(mockOpenShiftVersions),
-  machineTypes = mockFetchResource(mockMachineTypes),
-  regions = mockFetchResource(mockRegions),
+  versions,
   awsInfrastructureAccounts = mockResource(mockAwsInfrastructureAccounts),
   awsBillingAccounts = mockResource(mockAwsBillingAccounts),
-  clusterOverrides = {},
+  regions = mockFetchResource(mockRegions),
+  machineTypes = mockFetchResource(mockMachineTypes),
   roles = mockResource(mockRoles),
+  clusterOverrides = {},
 }) => {
   const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
 
@@ -173,11 +175,11 @@ export const DetailsSubStepStory: React.FC<DetailsSubStepStoryProps> = ({
     error: null,
   };
 
-  const openShiftVersionsProps = {
-    data: openShiftVersions?.data ?? mockOpenShiftVersions,
-    isFetching: openShiftVersions?.isFetching ?? false,
-    fetch: openShiftVersions?.fetch ?? (async () => {}),
-    error: null,
+  const versionsProps = {
+    data: versions?.data ?? mockOpenShiftVersionsData,
+    isFetching: versions?.isFetching ?? false,
+    fetch: versions?.fetch ?? (async () => {}),
+    error: versions?.error ?? null,
   };
 
   const rolesProps = {
@@ -199,7 +201,7 @@ export const DetailsSubStepStory: React.FC<DetailsSubStepStoryProps> = ({
                     clusterNameValidation={clusterNameValidation}
                     checkClusterNameUniqueness={checkClusterNameUniqueness}
                     roles={rolesProps}
-                    openShiftVersions={openShiftVersionsProps}
+                    versions={versionsProps}
                     awsInfrastructureAccounts={awsInfraProps}
                     awsBillingAccounts={awsBillingProps}
                     regions={regionsProps}

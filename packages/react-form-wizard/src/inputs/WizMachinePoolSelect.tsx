@@ -25,7 +25,7 @@ import {
   useSetHasValidationError,
   useValidate,
 } from '../contexts/ValidationProvider';
-import { Option, OptionType } from './WizSelect';
+import { extractOptionValue, Option, OptionType } from './WizSelect';
 import { useShowValidation } from '../contexts/ShowValidationProvider';
 import { useStringContext } from '../contexts/StringContext';
 
@@ -91,7 +91,7 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
   );
 
   useLayoutEffect(() => {
-    if (values.length === 0) {
+    if (values.length < minItems && values.length === 0) {
       for (let i = 0; i < minItems; i++) {
         addItem(props.newValue ?? { machine_pool_subnet: '' });
       }
@@ -265,9 +265,7 @@ function MachinePoolRow(props: MachinePoolRowProps) {
 
   const onSelect = useCallback(
     (selectOptionObject: string | undefined) => {
-      if (selectOptionObject) {
-        onChange(selectOptionObject);
-      }
+      onChange(selectOptionObject ?? '');
       setOpen(false);
     },
     [onChange]
@@ -302,7 +300,7 @@ function MachinePoolRow(props: MachinePoolRowProps) {
                 />
               )}
               selected={value}
-              onSelect={(_event, val) => onSelect(val?.toString() ?? '')}
+              onSelect={(_event, val) => onSelect(extractOptionValue(val) ?? '')}
             >
               <SelectListOptions
                 value={value}

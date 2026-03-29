@@ -1,0 +1,3 @@
+# RosaWizard – tests to add (create RosaWizard.spec.tsx when implementing)
+
+- when versions data has default and latest with same value, version dropdown should show only Default (Recommended) and Previous releases groups
