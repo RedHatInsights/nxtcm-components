@@ -10,6 +10,7 @@ import {
 } from '@patternfly-labs/react-form-wizard';
 import { LabelHelp } from '@patternfly-labs/react-form-wizard/components/LabelHelp';
 import { ClusterNetwork, Resource, RosaWizardFormData, Subnet, VPC } from '../../../../types';
+import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
 import { constructSelectedSubnets, subnetsFilter } from '../../../helpers';
 import {
   Alert,
@@ -44,7 +45,7 @@ type NetworkingAndSubnetsSubStepProps = {
 };
 
 export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepProps) => {
-  const n = useRosaWizardStrings().networking;
+  const { networking: n } = useRosaWizardStrings();
   const v = useRosaWizardValidators();
   const { cluster } = useItem<RosaWizardFormData>();
   const { setIsClusterWideProxySelected } = props;
@@ -127,19 +128,26 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                 value={ClusterNetwork.external}
                 popover={<LabelHelp id="subnet-label-help-public" labelHelp={n.publicPopover} />}
               >
-                <WizSelect
-                  label={n.publicSubnetLabel}
-                  path="cluster.cluster_privacy_public_subnet_id"
-                  options={
-                    props.vpcList.isFetching
-                      ? undefined
-                      : publicSubnets?.map((subnet: Subnet) => ({
-                          label: subnet.name,
-                          value: subnet.subnet_id,
-                        }))
-                  }
-                  placeholder={n.publicSubnetPlaceholder}
-                />
+                <FieldWithAPIErrorAlert
+                  error={props.vpcList.error}
+                  isFetching={props.vpcList.isFetching}
+                  fieldName={n.publicSubnetLabel}
+                  retry={props.vpcList.fetch ? () => void props.vpcList.fetch?.() : undefined}
+                >
+                  <WizSelect
+                    label={n.publicSubnetLabel}
+                    path="cluster.cluster_privacy_public_subnet_id"
+                    options={
+                      props.vpcList.isFetching
+                        ? undefined
+                        : publicSubnets?.map((subnet: Subnet) => ({
+                            label: subnet.name,
+                            value: subnet.subnet_id,
+                          }))
+                    }
+                    placeholder={n.publicSubnetPlaceholder}
+                  />
+                </FieldWithAPIErrorAlert>
               </Radio>
 
               <Radio

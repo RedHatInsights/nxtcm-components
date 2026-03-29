@@ -28,6 +28,7 @@ import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
 import { useResetFieldOnOptionsChange } from '../../../hooks/useResetFieldOnOptionsChange';
 import { showSecurityGroupsSection } from '../../../helpers';
 import { useUniqueClusterNameCheck } from '../../../hooks/useUniqueClusterNameCheck';
+import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
 
 type DetailsSubStepProps = {
   clusterNameValidation: ValidationResource;
@@ -174,27 +175,38 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
           <StackItem>
             <Grid>
               <GridItem span={4}>
-                <WizSelect
-                  isFill
-                  path="cluster.associated_aws_id"
-                  label={d.awsInfraLabel}
-                  placeholder={d.awsInfraPlaceholder}
-                  labelHelp={d.awsInfraHelp}
-                  options={awsInfrastructureAccounts.data}
-                  disabled={awsInfrastructureAccounts.isFetching}
-                  required
-                  refreshCallback={
+                <FieldWithAPIErrorAlert
+                  error={awsInfrastructureAccounts.error}
+                  isFetching={awsInfrastructureAccounts.isFetching}
+                  fieldName={d.awsInfraLabel}
+                  retry={
                     awsInfrastructureAccounts.fetch
                       ? () => void awsInfrastructureAccounts.fetch?.()
                       : undefined
                   }
-                  onValueChange={(_value, item) => {
-                    void updateOnAWSAccountChange(_value as string, item, regions.fetch);
-                    if (_value) {
-                      void roles.fetch(_value as string);
+                >
+                  <WizSelect
+                    isFill
+                    path="cluster.associated_aws_id"
+                    label={d.awsInfraLabel}
+                    placeholder={d.awsInfraPlaceholder}
+                    labelHelp={d.awsInfraHelp}
+                    options={awsInfrastructureAccounts.data}
+                    disabled={awsInfrastructureAccounts.isFetching}
+                    required
+                    refreshCallback={
+                      awsInfrastructureAccounts.fetch
+                        ? () => void awsInfrastructureAccounts.fetch?.()
+                        : undefined
                     }
-                  }}
-                />
+                    onValueChange={(_value, item) => {
+                      void updateOnAWSAccountChange(_value as string, item, regions.fetch);
+                      if (_value) {
+                        void roles.fetch(_value as string);
+                      }
+                    }}
+                  />
+                </FieldWithAPIErrorAlert>
               </GridItem>
             </Grid>
             {!isDrawerExpanded && (
@@ -211,19 +223,28 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
           <StackItem>
             <Grid>
               <GridItem span={4}>
-                <WizSelect
-                  isFill
-                  disabled={awsBillingAccounts.isFetching}
-                  path="cluster.billing_account_id"
-                  label={d.billingLabel}
-                  placeholder={d.billingPlaceholder}
-                  labelHelp={d.billingHelp}
-                  options={awsBillingAccounts.data}
-                  required
-                  refreshCallback={
+                <FieldWithAPIErrorAlert
+                  error={awsBillingAccounts.error}
+                  isFetching={awsBillingAccounts.isFetching}
+                  fieldName={d.billingLabel}
+                  retry={
                     awsBillingAccounts.fetch ? () => void awsBillingAccounts.fetch?.() : undefined
                   }
-                />
+                >
+                  <WizSelect
+                    isFill
+                    disabled={awsBillingAccounts.isFetching}
+                    path="cluster.billing_account_id"
+                    label={d.billingLabel}
+                    placeholder={d.billingPlaceholder}
+                    labelHelp={d.billingHelp}
+                    options={awsBillingAccounts.data}
+                    required
+                    refreshCallback={
+                      awsBillingAccounts.fetch ? () => void awsBillingAccounts.fetch?.() : undefined
+                    }
+                  />
+                </FieldWithAPIErrorAlert>
               </GridItem>
             </Grid>
             <ExternalLink
@@ -237,20 +258,27 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
           <StackItem>
             <Grid>
               <GridItem span={4} className="pf-v6-u-pr-2xl">
-                <WizTextInput
-                  validation={(name: string, item: unknown) =>
-                    validateClusterName(name, item) || clusterNameValidation.error || undefined
-                  }
-                  onValueChange={(value) => {
-                    uniqueClusterNameCheck(value as string, cluster.region as string);
-                  }}
-                  path="cluster.name"
-                  label={d.clusterNameLabel}
-                  validateOnBlur
-                  placeholder={d.clusterNamePlaceholder}
-                  required
-                  labelHelp={d.clusterNameHelp}
-                />
+                <FieldWithAPIErrorAlert
+                  error={clusterNameValidation.error}
+                  isFetching={clusterNameValidation.isFetching}
+                  fieldName={d.clusterNameLabel}
+                  isValidation
+                >
+                  <WizTextInput
+                    validation={(name: string, item: unknown) =>
+                      validateClusterName(name, item) || clusterNameValidation.error || undefined
+                    }
+                    onValueChange={(value) => {
+                      uniqueClusterNameCheck(value as string, cluster.region as string);
+                    }}
+                    path="cluster.name"
+                    label={d.clusterNameLabel}
+                    validateOnBlur
+                    placeholder={d.clusterNamePlaceholder}
+                    required
+                    labelHelp={d.clusterNameHelp}
+                  />
+                </FieldWithAPIErrorAlert>
               </GridItem>
             </Grid>
           </StackItem>
@@ -258,49 +286,67 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
           <StackItem>
             <Grid>
               <GridItem span={4}>
-                <WizSelect
-                  isFill
-                  path="cluster.cluster_version"
-                  label={d.openShiftVersionLabel}
-                  placeholder={d.openShiftVersionPlaceholder}
-                  optionGroups={versionGroupsWithDisabled}
-                  isPending={versions.isFetching}
-                  refreshCallback={() => void versions.fetch()}
-                  required
-                  onValueChange={(_value, item) => {
-                    if (_value && !showSecurityGroupsSection(_value as string)) {
-                      item.cluster.security_groups_worker = undefined;
-                    }
-                  }}
-                />
+                <FieldWithAPIErrorAlert
+                  error={versions.error}
+                  isFetching={versions.isFetching}
+                  fieldName={d.openShiftVersionLabel}
+                  retry={() => void versions.fetch()}
+                >
+                  <WizSelect
+                    isFill
+                    path="cluster.cluster_version"
+                    label={d.openShiftVersionLabel}
+                    placeholder={d.openShiftVersionPlaceholder}
+                    optionGroups={versionGroupsWithDisabled}
+                    isPending={versions.isFetching}
+                    refreshCallback={() => void versions.fetch()}
+                    required
+                    onValueChange={(_value, item) => {
+                      if (_value && !showSecurityGroupsSection(_value as string)) {
+                        item.cluster.security_groups_worker = undefined;
+                      }
+                    }}
+                  />
+                </FieldWithAPIErrorAlert>
               </GridItem>
             </Grid>
           </StackItem>
           <StackItem>
             <Grid>
               <GridItem span={4} className="pf-v6-u-pr-2xl">
-                <WizSelect
-                  isFill
-                  path="cluster.region"
-                  label={d.regionLabel}
-                  placeholder={d.regionPlaceholder}
-                  labelHelp={d.regionHelp}
-                  options={regions.data}
-                  disabled={regions.isFetching}
-                  onValueChange={(_value, item) => {
-                    if (cluster.name) uniqueClusterNameCheck(cluster.name, _value as string);
-                    delete item.cluster.selected_vpc;
-                    delete item.cluster.cluster_privacy_public_subnet_id;
-                    if (
-                      item.cluster.machine_pools_subnets &&
-                      item.cluster.machine_pools_subnets.length > 0
-                    ) {
-                      item.cluster.machine_pools_subnets = [];
-                    }
-                    if (_value && machineTypes.fetch) void machineTypes.fetch(_value as string);
-                  }}
-                  required
-                />
+                <FieldWithAPIErrorAlert
+                  error={regions.error}
+                  isFetching={regions.isFetching}
+                  fieldName={d.regionLabel}
+                  retry={
+                    cluster?.associated_aws_id
+                      ? () => void regions.fetch(cluster.associated_aws_id)
+                      : undefined
+                  }
+                >
+                  <WizSelect
+                    isFill
+                    path="cluster.region"
+                    label={d.regionLabel}
+                    placeholder={d.regionPlaceholder}
+                    labelHelp={d.regionHelp}
+                    options={regions.data}
+                    disabled={regions.isFetching}
+                    onValueChange={(_value, item) => {
+                      if (cluster.name) uniqueClusterNameCheck(cluster.name, _value as string);
+                      delete item.cluster.selected_vpc;
+                      delete item.cluster.cluster_privacy_public_subnet_id;
+                      if (
+                        item.cluster.machine_pools_subnets &&
+                        item.cluster.machine_pools_subnets.length > 0
+                      ) {
+                        item.cluster.machine_pools_subnets = [];
+                      }
+                      if (_value && machineTypes.fetch) void machineTypes.fetch(_value as string);
+                    }}
+                    required
+                  />
+                </FieldWithAPIErrorAlert>
               </GridItem>
             </Grid>
           </StackItem>

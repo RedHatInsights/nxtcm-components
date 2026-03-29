@@ -30,6 +30,7 @@ import { Indented } from '@patternfly-labs/react-form-wizard/components/Indented
 import { validateRootDiskSize } from '../../../validators';
 import { SecurityGroupsSection } from './SecurityGroupSection/SecurityGroupSection';
 import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
+import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
 
 type MachinePoolsSubstepProps = {
   vpcList: Resource<VPC[]>;
@@ -64,49 +65,63 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
         <Content component={ContentVariants.p}>{mp.intro}</Content>
         <Grid>
           <GridItem span={5}>
-            <WizSelect
-              onValueChange={(_newVpc, item) => {
-                if (item?.cluster) {
-                  item.cluster.security_groups_worker = [];
+            <FieldWithAPIErrorAlert
+              error={props.vpcList.error}
+              isFetching={props.vpcList.isFetching}
+              fieldName={mp.vpcLabel}
+              retry={props.vpcList.fetch ? () => void props.vpcList.fetch?.() : undefined}
+            >
+              <WizSelect
+                onValueChange={(_newVpc, item) => {
+                  if (item?.cluster) {
+                    item.cluster.security_groups_worker = [];
+                  }
+                }}
+                label={`${mp.vpcLabelPrefix} ${cluster?.region}`}
+                path="cluster.selected_vpc"
+                keyPath="id"
+                placeholder={mp.vpcPlaceholder}
+                required
+                labelHelp={
+                  <>
+                    {mp.vpcHelpLead}{' '}
+                    <ExternalLink href={links.ROSA_SHARED_VPC}>{mp.vpcLearnMoreLink}</ExternalLink>
+                  </>
                 }
-              }}
-              label={`${mp.vpcLabelPrefix} ${cluster?.region}`}
-              refreshCallback={props.vpcList.fetch}
-              path="cluster.selected_vpc"
-              keyPath="id"
-              placeholder={mp.vpcPlaceholder}
-              required
-              labelHelp={
-                <>
-                  {mp.vpcHelpLead}{' '}
-                  <ExternalLink href={links.ROSA_SHARED_VPC}>{mp.vpcLearnMoreLink}</ExternalLink>
-                </>
-              }
-              options={props.vpcList.data.map((vpc: VPC) => ({
-                label: vpc.name,
-                value: vpc.id,
-              }))}
-              disabled={props.vpcList.isFetching}
-            />
+                refreshCallback={props.vpcList.fetch}
+                options={props.vpcList.data.map((vpc: VPC) => ({
+                  label: vpc.name,
+                  value: vpc.id,
+                }))}
+                disabled={props.vpcList.isFetching}
+              />
+            </FieldWithAPIErrorAlert>
           </GridItem>
         </Grid>
 
         <Grid hasGutter>
           <GridItem span={8}>
-            <WizMachinePoolSelect
-              required
-              path="cluster.machine_pools_subnets"
-              machinePoolLabel={mp.machinePoolLabel}
-              subnetLabel={mp.subnetLabel}
-              addMachinePoolBtnLabel={mp.addPoolButton}
-              selectPlaceholder={mp.subnetPlaceholder}
-              subnetOptions={privateSubnets?.map((subnet: Subnet) => ({
-                label: subnet.name,
-                value: subnet.subnet_id,
-              }))}
-              newValue={{ machine_pool_subnet: '' }}
-              minItems={1}
-            />
+            <FieldWithAPIErrorAlert
+              error={props.vpcList.error}
+              isFetching={props.vpcList.isFetching}
+              fieldName={mp.subnetLabel}
+              retry={props.vpcList.fetch ? () => void props.vpcList.fetch?.() : undefined}
+            >
+              <WizMachinePoolSelect
+                required
+                path="cluster.machine_pools_subnets"
+                machinePoolLabel={mp.machinePoolLabel}
+                subnetLabel={mp.subnetLabel}
+                addMachinePoolBtnLabel={mp.addPoolButton}
+                selectPlaceholder={mp.subnetPlaceholder}
+                subnetOptions={privateSubnets?.map((subnet: Subnet) => ({
+                  label: subnet.name,
+                  value: subnet.subnet_id,
+                }))}
+                newValue={{ machine_pool_subnet: '' }}
+                minItems={1}
+              />
+            </FieldWithAPIErrorAlert>
           </GridItem>
         </Grid>
       </Section>
@@ -118,22 +133,33 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
         <Content component={ContentVariants.p}>{mp.settingsIntro}</Content>
         <Grid>
           <GridItem span={5}>
-            <WizSelect
-              label={mp.instanceTypeLabel}
-              validateOnBlur={true}
-              disabled={props.machineTypes.isFetching}
-              path="cluster.machine_type"
-              required
-              labelHelp={
-                <>
-                  {mp.instanceTypeHelpLead}{' '}
-                  <ExternalLink href={links.ROSA_INSTANCE_TYPES}>
-                    {mp.instanceTypeLearnMore}
-                  </ExternalLink>
-                </>
+            <FieldWithAPIErrorAlert
+              error={props.machineTypes.error}
+              isFetching={props.machineTypes.isFetching}
+              fieldName={mp.instanceTypeLabel}
+              retry={
+                props.machineTypes.fetch && currentRegion
+                  ? () => void props.machineTypes.fetch?.(currentRegion)
+                  : undefined
               }
-              options={props.machineTypes.data}
-            />
+            >
+              <WizSelect
+                label={mp.instanceTypeLabel}
+                validateOnBlur={true}
+                disabled={props.machineTypes.isFetching}
+                path="cluster.machine_type"
+                required
+                labelHelp={
+                  <>
+                    {mp.instanceTypeHelpLead}{' '}
+                    <ExternalLink href={links.ROSA_INSTANCE_TYPES}>
+                      {mp.instanceTypeLearnMore}
+                    </ExternalLink>
+                  </>
+                }
+                options={props.machineTypes.data}
+              />
+            </FieldWithAPIErrorAlert>
           </GridItem>
         </Grid>
 
@@ -190,6 +216,7 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
       <SecurityGroupsSection
         clusterVersion={clusterVersion}
         selectedVPC={selectedVPC}
+        vpcList={props.vpcList}
         refreshVPCs={props.vpcList.fetch ? () => void props.vpcList.fetch?.() : undefined}
       />
     </>
