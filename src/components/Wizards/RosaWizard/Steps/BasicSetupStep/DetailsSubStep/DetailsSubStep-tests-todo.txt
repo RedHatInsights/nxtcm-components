@@ -1,0 +1,6 @@
+# DetailsSubStep – tests to add (create DetailsSubStep.spec.tsx + story when implementing)
+
+- version dropdown displays latest, default, and other versions correctly
+- should disable version option when version is greater than selected installer role version
+- should show description on disabled version option (account roles do not support version of OpenShift)
+- should clear cluster version when selected version becomes disabled after installer role selection

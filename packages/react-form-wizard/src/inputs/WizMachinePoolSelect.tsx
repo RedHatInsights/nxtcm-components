@@ -20,8 +20,12 @@ import { ItemContext } from '../contexts/ItemContext';
 import { DisplayMode } from '../contexts/DisplayModeContext';
 import { InputCommonProps, useInput } from './Input';
 import { InputSelect, SelectListOptions } from './InputSelect';
-import { ValidationProvider, useSetHasValidationError, useValidate } from '../contexts/ValidationProvider';
-import { Option, OptionType } from './WizSelect';
+import {
+  ValidationProvider,
+  useSetHasValidationError,
+  useValidate,
+} from '../contexts/ValidationProvider';
+import { extractOptionValue, Option, OptionType } from './WizSelect';
 import { useShowValidation } from '../contexts/ShowValidationProvider';
 import { useStringContext } from '../contexts/StringContext';
 
@@ -86,13 +90,13 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
     [setValue, update, values]
   );
 
-useLayoutEffect(() => {
-  if (values.length < minItems && values.length === 0) {
-    for (let i = 0; i < minItems; i++) {
-      addItem(props.newValue ?? { machine_pool_subnet: '' });
+  useLayoutEffect(() => {
+    if (values.length < minItems && values.length === 0) {
+      for (let i = 0; i < minItems; i++) {
+        addItem(props.newValue ?? { machine_pool_subnet: '' });
+      }
     }
-  }
-}, [values.length, minItems, addItem, props.newValue]);
+  }, [values.length, minItems, addItem, props.newValue]);
 
   const removeItem = useCallback(
     (index: number) => {
@@ -228,18 +232,18 @@ function MachinePoolRow(props: MachinePoolRowProps) {
 
   const [previousHasError, setPreviousHasError] = useState(hasError);
 
-useLayoutEffect(() => {
-  if (hasError !== previousHasError) {
-    setPreviousHasError(hasError);
-    validate();
-  }
-}, [hasError, previousHasError, validate]);
+  useLayoutEffect(() => {
+    if (hasError !== previousHasError) {
+      setPreviousHasError(hasError);
+      validate();
+    }
+  }, [hasError, previousHasError, validate]);
 
-useLayoutEffect(() => {
-  if (hasError) {
-    setHasValidationError();
-  }
-}, [hasError, setHasValidationError]);
+  useLayoutEffect(() => {
+    if (hasError) {
+      setHasValidationError();
+    }
+  }, [hasError, setHasValidationError]);
 
   const validated = showValidation && hasError ? 'error' : undefined;
   const errorMessage = hasError ? requiredErrorMessage : undefined;
@@ -261,9 +265,7 @@ useLayoutEffect(() => {
 
   const onSelect = useCallback(
     (selectOptionObject: string | undefined) => {
-      if (selectOptionObject) {
-        onChange(selectOptionObject);
-      }
+      onChange(selectOptionObject ?? '');
       setOpen(false);
     },
     [onChange]
@@ -298,7 +300,7 @@ useLayoutEffect(() => {
                 />
               )}
               selected={value}
-              onSelect={(_event, val) => onSelect(val?.toString() ?? '')}
+              onSelect={(_event, val) => onSelect(extractOptionValue(val) ?? '')}
             >
               <SelectListOptions
                 value={value}
@@ -329,4 +331,4 @@ useLayoutEffect(() => {
       </GridItem>
     </Grid>
   );
-};
+}

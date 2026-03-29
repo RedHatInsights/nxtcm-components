@@ -31,7 +31,7 @@ const mockValidationResource = (): ValidationResource => ({
 const versionsData: OpenShiftVersionsData = {
   latest: { label: 'OpenShift 4.12.1', value: '4.12.1' },
   default: { label: 'OpenShift 4.12.0', value: '4.12.0' },
-  others: [{ label: 'OpenShift 4.11.5', value: '4.11.5' }],
+  releases: [{ label: 'OpenShift 4.11.5', value: '4.11.5' }],
 };
 
 const roles: Role[] = [

@@ -17,13 +17,15 @@ import {
   MachineTypesDropdownType,
   Region,
   AWSInfrastructureAccounts,
-  OpenShiftVersions,
+  OpenShiftVersionsData,
 } from '../../../../types';
 
-export const mockOpenShiftVersions: SelectDropdownType[] = [
-  { label: 'OpenShift 4.12.0', value: '4.12.0' },
-  { label: 'OpenShift 4.11.5', value: '4.11.5' },
-];
+export const mockOpenShiftVersionsData: OpenShiftVersionsData = {
+  releases: [
+    { label: 'OpenShift 4.12.0', value: '4.12.0' },
+    { label: 'OpenShift 4.11.5', value: '4.11.5' },
+  ],
+};
 
 export const mockAwsInfrastructureAccounts: SelectDropdownType[] = [
   { label: 'AWS Account - Production (123456789012)', value: 'aws-prod-123456789012' },
@@ -71,7 +73,7 @@ export const createMockClusterData = (overrides: Record<string, unknown> = {}) =
 });
 
 export interface DetailsSubStepStoryProps {
-  openShiftVersions?: Resource<OpenShiftVersions[]>;
+  versions?: Resource<OpenShiftVersionsData, []> & { fetch: () => Promise<void> };
   awsInfrastructureAccounts?: Resource<AWSInfrastructureAccounts[]>;
   awsBillingAccounts?: Resource<SelectDropdownType[]>;
   regions?: Resource<Region[], [awsAccount: string]> & {
@@ -85,7 +87,7 @@ export interface DetailsSubStepStoryProps {
 }
 
 export const DetailsSubStepStory: React.FC<DetailsSubStepStoryProps> = ({
-  openShiftVersions,
+  versions,
   awsInfrastructureAccounts,
   awsBillingAccounts,
   regions,
@@ -127,11 +129,11 @@ export const DetailsSubStepStory: React.FC<DetailsSubStepStoryProps> = ({
     error: null,
   };
 
-  const openShiftVersionsProps = {
-    data: openShiftVersions?.data ?? mockOpenShiftVersions,
-    isFetching: openShiftVersions?.isFetching ?? false,
-    fetch: openShiftVersions?.fetch ?? (async () => {}),
-    error: null,
+  const versionsProps = {
+    data: versions?.data ?? mockOpenShiftVersionsData,
+    isFetching: versions?.isFetching ?? false,
+    fetch: versions?.fetch ?? (async () => {}),
+    error: versions?.error ?? null,
   };
 
   const rolesProps = {
@@ -152,7 +154,7 @@ export const DetailsSubStepStory: React.FC<DetailsSubStepStoryProps> = ({
                   <DetailsSubStep
                     clusterNameValidation={{ error: null, isFetching: false }}
                     roles={rolesProps}
-                    openShiftVersions={openShiftVersionsProps}
+                    versions={versionsProps}
                     awsInfrastructureAccounts={awsInfraProps}
                     awsBillingAccounts={awsBillingProps}
                     regions={regionsProps}

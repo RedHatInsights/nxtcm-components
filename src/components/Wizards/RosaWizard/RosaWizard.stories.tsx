@@ -34,13 +34,53 @@ const mockValidationResource = (): ValidationResource => ({
   isFetching: false,
 });
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** Default story: versions start loading, then resolve after 3 seconds. */
+function DefaultWithInitialVersionLoading(props: React.ComponentProps<typeof RosaWizard>) {
+  const [versionsFetching, setVersionsFetching] = React.useState(true);
+  React.useEffect(() => {
+    const t = setTimeout(() => setVersionsFetching(false), 3000);
+    return () => clearTimeout(t);
+  }, []);
+
+  const wizardsStepsData = React.useMemo(
+    () => ({
+      ...props.wizardsStepsData,
+      basicSetupStep: {
+        ...props.wizardsStepsData.basicSetupStep,
+        versions: {
+          ...props.wizardsStepsData.basicSetupStep.versions,
+          isFetching: versionsFetching,
+        },
+      },
+    }),
+    [props.wizardsStepsData, versionsFetching]
+  );
+
+  return <RosaWizard {...props} wizardsStepsData={wizardsStepsData} />;
+}
+
 // Mock data for the wizard
 const mockVersionsData: OpenShiftVersionsData = {
   latest: { label: 'OpenShift 4.21.8', value: '4.21.8' },
   default: { label: 'OpenShift 4.12.0', value: '4.12.0' },
-  others: [
+  releases: [
     { label: 'OpenShift 4.11.5', value: '4.11.5' },
     { label: 'OpenShift 4.10.8', value: '4.10.8' },
+  ],
+};
+
+/** When default and latest share the same value, wizard shows a single "Default (Recommended)" group. */
+const mockOpenShiftVersionsDataDefaultEqualsLatest = {
+  latest: { label: 'OpenShift 4.21.8', value: '4.21.8' },
+  default: { label: 'OpenShift 4.21.8', value: '4.21.8' },
+  releases: [
+    { label: 'OpenShift 4.21.6', value: '4.21.6' },
+    { label: 'OpenShift 4.21.5', value: '4.21.5' },
+    { label: 'OpenShift 4.20.8', value: '4.20.8' },
   ],
 };
 
@@ -85,7 +125,7 @@ const mockRoles = [
     installerRole: {
       label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
       value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
-      roleVersion: '4.12.0',
+      roleVersion: '4.21.6',
     },
     supportRole: [
       {
@@ -97,6 +137,44 @@ const mockRoles = [
       {
         label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
         value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
+      },
+    ],
+  },
+  {
+    installerRole: {
+      label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Installer-Role',
+      value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Installer-Role',
+      roleVersion: '4.21.8',
+    },
+    supportRole: [
+      {
+        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Support-Role',
+        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Support-Role',
+      },
+    ],
+    workerRole: [
+      {
+        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Worker-Role',
+        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Worker-Role',
+      },
+    ],
+  },
+  {
+    // No roleVersion: this role is always shown regardless of selected cluster version
+    installerRole: {
+      label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Installer-Role',
+      value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Installer-Role',
+    },
+    supportRole: [
+      {
+        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Support-Role',
+        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Support-Role',
+      },
+    ],
+    workerRole: [
+      {
+        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Worker-Role',
+        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Worker-Role',
       },
     ],
   },
@@ -271,15 +349,17 @@ export default meta;
 type Story = StoryObj<typeof RosaWizard>;
 
 /**
- * Default story with all required data populated
+ * Default story with all required data populated.
+ * Versions start in a loading state (isFetching true), then resolve after 3 seconds.
  */
 export const Default: Story = {
+  render: (args) => <DefaultWithInitialVersionLoading {...args} />,
   args: {
     title: 'Create ROSA Cluster',
     yaml: true,
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await sleep(2000);
       alert('Cluster creation initiated successfully!');
     },
     onCancel: () => {
@@ -288,6 +368,32 @@ export const Default: Story = {
     },
     wizardsStepsData: {
       basicSetupStep: mockBasicSetupStep,
+    },
+  },
+};
+
+/**
+ * When default and latest versions have the same value (e.g. 4.21.8), only one group is shown:
+ * "Default (Recommended)" — avoiding "Latest" to reduce anxiety for conservative enterprise customers.
+ */
+export const VersionsDefaultEqualsLatest: Story = {
+  args: {
+    title: 'Create ROSA Cluster',
+    yaml: true,
+    onSubmit: async (data: unknown) => {
+      console.log('Wizard submitted with data:', data);
+      await sleep(2000);
+      alert('Cluster creation initiated successfully!');
+    },
+    onCancel: () => {
+      console.log('Wizard cancelled');
+      alert('Wizard cancelled');
+    },
+    wizardsStepsData: {
+      basicSetupStep: {
+        ...mockBasicSetupStep,
+        versions: mockFetchResource(mockOpenShiftVersionsDataDefaultEqualsLatest),
+      },
     },
   },
 };
@@ -312,7 +418,7 @@ export const MinimalOptions: Story = {
         versions: mockFetchResource({
           latest: { label: 'OpenShift 4.12.0', value: '4.12.0' },
           default: { label: 'OpenShift 4.12.0', value: '4.12.0' },
-          others: [],
+          releases: [],
         }),
         awsInfrastructureAccounts: mockResource([
           {
@@ -351,7 +457,7 @@ export const EmptyOptions: Story = {
         versions: mockFetchResource({
           latest: { label: '', value: '' },
           default: { label: '', value: '' },
-          others: [],
+          releases: [],
         }),
         awsInfrastructureAccounts: mockResource([]),
         awsBillingAccounts: mockResource([]),
@@ -381,7 +487,7 @@ export const ExtensiveOptions: Story = {
         versions: mockFetchResource({
           latest: { label: 'OpenShift 4.12.0', value: '4.12.0' },
           default: { label: 'OpenShift 4.11.4', value: '4.11.4' },
-          others: Array.from({ length: 18 }, (_, i) => ({
+          releases: Array.from({ length: 18 }, (_, i) => ({
             label: `OpenShift 4.${11 - Math.floor(i / 5)}.${i % 5}`,
             value: `4.${11 - Math.floor(i / 5)}.${i % 5}`,
           })),
@@ -627,7 +733,7 @@ export const ProductionSetup: Story = {
         versions: mockFetchResource({
           latest: { label: 'OpenShift 4.12.0 (LTS)', value: '4.12.0' },
           default: { label: 'OpenShift 4.11.5 (Stable)', value: '4.11.5' },
-          others: [],
+          releases: [],
         }),
         awsInfrastructureAccounts: mockResource([
           {

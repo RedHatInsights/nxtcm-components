@@ -147,7 +147,14 @@ test.describe('DetailsSubStep', () => {
 
   test('should render with empty OpenShift versions', async ({ mount }) => {
     const component = await mount(
-      <DetailsSubStepStory openShiftVersions={{ data: [], isFetching: false, error: null }} />
+      <DetailsSubStepStory
+        versions={{
+          data: { releases: [] },
+          isFetching: false,
+          error: null,
+          fetch: async () => {},
+        }}
+      />
     );
 
     await expect(component.getByText('OpenShift version', { exact: true })).toBeVisible();
