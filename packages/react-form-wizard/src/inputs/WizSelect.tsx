@@ -28,9 +28,11 @@ export function extractOptionValue(v: unknown): string | undefined {
   if (typeof v === 'number') return String(v);
   if (typeof v === 'object') {
     const o = v as Record<string, unknown>;
-    const x = o.value ?? o.id ?? o.keyedValue;
-    if (typeof x === 'string') return x;
-    if (typeof x === 'number') return String(x);
+    for (const key of ['value', 'id', 'keyedValue'] as const) {
+      const candidate = o[key];
+      if (typeof candidate === 'string') return candidate;
+      if (typeof candidate === 'number') return String(candidate);
+    }
   }
   return undefined;
 }

@@ -114,22 +114,39 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
     selectedInstallerRoleVersion,
   ]);
 
+  /** Whether `cluster.cluster_version` appears in `versionGroupsWithDisabled` and, if so, whether that option is disabled. */
   const selectedVersionIsDisabled = React.useMemo(() => {
-    if (!cluster?.cluster_version || versionGroupsWithDisabled.length === 0) return false;
+    if (!cluster?.cluster_version) {
+      return { exists: true, isDisabled: false };
+    }
+    if (versionGroupsWithDisabled.length === 0) {
+      return { exists: false, isDisabled: false };
+    }
     const versionStr = String(cluster.cluster_version);
+    let matching: SelectDropdownType | undefined;
     for (const group of versionGroupsWithDisabled) {
       const opt = group.options.find((o) => String(o.value) === versionStr);
-      if (opt && (Boolean(opt.disabled) || Boolean(opt.ariaDisabled))) return true;
+      if (opt) {
+        matching = opt;
+        break;
+      }
     }
-    return false;
+    if (!matching) {
+      return { exists: false, isDisabled: false };
+    }
+    return {
+      exists: true,
+      isDisabled: Boolean(matching.ariaDisabled || matching.disabled),
+    };
   }, [cluster?.cluster_version, versionGroupsWithDisabled]);
 
   React.useEffect(() => {
-    if (selectedVersionIsDisabled && cluster) {
+    if (versions.isFetching || !cluster?.cluster_version) return;
+    if (!selectedVersionIsDisabled.exists || selectedVersionIsDisabled.isDisabled) {
       cluster.cluster_version = undefined;
       update();
     }
-  }, [selectedVersionIsDisabled, cluster, update]);
+  }, [versions.isFetching, selectedVersionIsDisabled, cluster, update]);
 
   return (
     <Section label={d.sectionLabel}>
