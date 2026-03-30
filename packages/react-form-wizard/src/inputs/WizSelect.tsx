@@ -166,7 +166,9 @@ function WizSelectBase<T = any>(props: SelectProps<T>) {
   const hasOptionGroups = normalizedOptionGroups != null && normalizedOptionGroups.length > 0;
 
   const displayValue = (() => {
-    const val = value != null && value !== '' ? value : localSelection;
+    // When the form path is explicitly empty (cleared), show empty — do not fall back to
+    // localSelection until the sync effect runs (avoids stale label after parent clears value).
+    const val = value === '' ? '' : value != null && value !== '' ? value : localSelection;
     if (val == null || val === '') return '';
     if (typeof val === 'string' || typeof val === 'number') {
       const option = selectOptions?.find(

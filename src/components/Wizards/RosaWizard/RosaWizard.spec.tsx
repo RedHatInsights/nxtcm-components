@@ -34,6 +34,13 @@ const versionsData: OpenShiftVersionsData = {
   releases: [{ label: 'OpenShift 4.11.5', value: '4.11.5' }],
 };
 
+/** Same semver value for latest and default → UI merges into "Default (Recommended)" + previous only. */
+const versionsDefaultEqualsLatest: OpenShiftVersionsData = {
+  latest: { label: 'OpenShift 4.12.0', value: '4.12.0' },
+  default: { label: 'OpenShift 4.12.0', value: '4.12.0' },
+  releases: [{ label: 'OpenShift 4.11.5', value: '4.11.5' }],
+};
+
 const roles: Role[] = [
   {
     installerRole: {
@@ -150,6 +157,52 @@ test.describe('RosaWizard', () => {
   test('should pass accessibility tests when showing the wizard', async ({ mount }) => {
     const component = await mount(mountRosaWizard());
     await checkAccessibility({ component });
+  });
+
+  test('when default and latest OpenShift versions share the same value, version dropdown shows Default (Recommended) and Previous releases only', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount(
+      mountRosaWizard({
+        wizardsStepsData: {
+          ...minimalWizardsStepsData,
+          basicSetupStep: {
+            ...minimalWizardsStepsData.basicSetupStep,
+            versions: mockFetchResource(versionsDefaultEqualsLatest),
+          },
+        },
+      })
+    );
+
+    const versionCombobox = component.getByRole('combobox', {
+      name: 'Select an OpenShift version',
+    });
+    await versionCombobox.click();
+
+    await expect(
+      page.getByRole('heading', { name: 'Default (Recommended)', exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Previous releases', exact: true })
+    ).toBeVisible();
+
+    await expect(
+      page.getByRole('heading', { name: 'Latest release', exact: true })
+    ).not.toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Default release', exact: true })
+    ).not.toBeVisible();
+
+    const recommendedGroup = page.locator('section').filter({
+      has: page.getByRole('heading', { name: 'Default (Recommended)', exact: true }),
+    });
+    await expect(recommendedGroup.getByText('OpenShift 4.12.0', { exact: true })).toBeVisible();
+
+    const previousGroup = page.locator('section').filter({
+      has: page.getByRole('heading', { name: 'Previous releases', exact: true }),
+    });
+    await expect(previousGroup.getByText('OpenShift 4.11.5', { exact: true })).toBeVisible();
   });
 
   test.describe('submit error state', () => {
