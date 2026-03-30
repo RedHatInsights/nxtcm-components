@@ -790,7 +790,6 @@ export const AsyncLoading: Story = {
   },
 };
 
-
 /**
  * Demonstrates async cluster name uniqueness validation with debouncing.
  * Type "taken" or "existing" as a cluster name to see the duplicate error
@@ -866,4 +865,3 @@ export const AsyncClusterNameValidation: Story = {
     },
   },
 };
-

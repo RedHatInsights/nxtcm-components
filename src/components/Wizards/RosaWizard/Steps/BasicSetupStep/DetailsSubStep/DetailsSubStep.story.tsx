@@ -18,7 +18,7 @@ import {
   Region,
   AWSInfrastructureAccounts,
   OpenShiftVersions,
-  ValidationResource
+  ValidationResource,
 } from '../../../../types';
 
 const mockResource = <TData,>(data: TData): Resource<TData> => ({
@@ -131,13 +131,13 @@ export interface DetailsSubStepStoryProps {
 export const DetailsSubStepStory: React.FC<DetailsSubStepStoryProps> = ({
   clusterNameValidation = mockValidationResource(),
   checkClusterNameUniqueness,
-  openShiftVersions = mockResource(mockOpenShiftVersions),
-  machineTypes = mockResource(mockMachineTypes),
-  regions = mockResource(mockRegions),
+  openShiftVersions = mockFetchResource(mockOpenShiftVersions),
+  machineTypes = mockFetchResource(mockMachineTypes),
+  regions = mockFetchResource(mockRegions),
   awsInfrastructureAccounts = mockResource(mockAwsInfrastructureAccounts),
   awsBillingAccounts = mockResource(mockAwsBillingAccounts),
   clusterOverrides = {},
-  roles = mockResource(mockRoles)
+  roles = mockResource(mockRoles),
 }) => {
   const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
 
