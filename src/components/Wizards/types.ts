@@ -1,4 +1,4 @@
-import { useWizardContext } from '@patternfly/react-core';
+import { TooltipProps, useWizardContext } from '@patternfly/react-core';
 
 // -- dropdown / select option types --
 
@@ -27,19 +27,26 @@ export type SelectDropdownType = {
   label: string;
   value: string;
   description?: string;
+  /** When true, option is not selectable; PatternFly `isDisabled`. */
+  disabled?: boolean;
+  /** When true, option stays focusable with a tooltip (use with `tooltipProps` instead of `description`). */
+  ariaDisabled?: boolean;
+  tooltipProps?: TooltipProps;
 };
 
 export type InstallerRole = SelectDropdownType & {
   roleVersion?: string;
-  disabled?: boolean;
 };
 
+/** Flat version data from the host app; the wizard builds option groups internally. */
 export type OpenShiftVersionsData = {
-  default: SelectDropdownType;
-  latest: SelectDropdownType;
-  others: SelectDropdownType[];
+  default?: SelectDropdownType;
+  latest?: SelectDropdownType;
+  /** Additional releases. Shown as "Releases" when default/latest are absent, else "Previous releases". */
+  releases: SelectDropdownType[];
 };
 
+/** Grouped options for version select (built internally from OpenShiftVersionsData). */
 export type OpenShiftVersionGroup = {
   label: string;
   options: SelectDropdownType[];

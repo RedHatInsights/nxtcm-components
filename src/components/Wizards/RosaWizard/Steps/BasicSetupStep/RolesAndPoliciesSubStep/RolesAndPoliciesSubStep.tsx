@@ -14,6 +14,7 @@ import {
   StackItem,
 } from '@patternfly/react-core';
 import React from 'react';
+import semver from 'semver';
 import PopoverHintWithTitle from '../../../common/PopoverHitWithTitle';
 import { OIDCConfigHint } from '../../../common/OIDCConfigHint';
 import { OIDCConfig, Resource, Role } from '../../../../types';
@@ -34,7 +35,6 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
   roles,
   oidcConfig,
 }) => {
-  const installerRoles = roles.data.map((roleSet) => roleSet.installerRole);
   const rp = useRosaWizardStrings().rolesAndPolicies;
   const v = useRosaWizardValidators();
 
@@ -98,12 +98,77 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
     }
   }, [cluster, roles.isFetching, selectedRole, update]);
 
+  const selectedClusterVersion = cluster?.cluster_version;
+
+  const installerRoleOptions = React.useMemo(() => {
+    const clusterVer =
+      selectedClusterVersion && semver.valid(semver.coerce(selectedClusterVersion));
+    return roles.data.map((r) => {
+      const role = r.installerRole;
+      if (!role.roleVersion || !clusterVer) {
+        return role;
+      }
+      const roleVer = semver.valid(semver.coerce(role.roleVersion));
+      const disabled = roleVer != null && semver.lt(roleVer, clusterVer);
+      return disabled
+        ? {
+            ...role,
+            ariaDisabled: true,
+            tooltipProps: { content: rp.installerRoleOptionDisabledDescription },
+          }
+        : { ...role };
+    });
+  }, [roles.data, selectedClusterVersion, rp.installerRoleOptionDisabledDescription]);
+
+  const selectedRoleIsDisabled = React.useMemo(() => {
+    if (!selectedClusterVersion || !cluster?.installer_role_arn) return false;
+    const selected = installerRoleOptions.find((opt) => opt.value === cluster.installer_role_arn);
+    return Boolean(selected?.disabled || selected?.ariaDisabled);
+  }, [selectedClusterVersion, cluster?.installer_role_arn, installerRoleOptions]);
+
   React.useEffect(() => {
     if (cluster?.name && !cluster.custom_operator_roles_prefix) {
       cluster.custom_operator_roles_prefix = createOperatorRolesPrefix(cluster.name);
       update();
     }
   }, [cluster, update]);
+
+  React.useEffect(() => {
+    if (selectedRoleIsDisabled && cluster) {
+      cluster.installer_role_arn = undefined;
+      cluster.support_role_arn = undefined;
+      cluster.worker_role_arn = undefined;
+      update();
+    }
+  }, [selectedRoleIsDisabled, cluster, update]);
+
+  const onInstallerRoleChange = React.useCallback(
+    (
+      installerRoleValue: string | null | undefined,
+      itemFromForm?: { cluster?: Record<string, unknown> }
+    ) => {
+      const rootItem = itemFromForm ?? (cluster ? { cluster } : null);
+      const targetCluster = rootItem?.cluster;
+      if (!targetCluster) return;
+      if (
+        installerRoleValue == null ||
+        installerRoleValue === '' ||
+        installerRoleValue === undefined
+      ) {
+        targetCluster.support_role_arn = undefined;
+        targetCluster.worker_role_arn = undefined;
+      } else {
+        const role = roles.data.find((r) => r.installerRole.value === installerRoleValue);
+        if (role) {
+          targetCluster.support_role_arn = role.supportRole[0]?.value ?? undefined;
+          targetCluster.worker_role_arn = role.workerRole[0]?.value ?? undefined;
+        }
+      }
+      // Always call update() so the wizard re-renders with cleared/set support and worker values
+      update();
+    },
+    [roles.data, cluster, update]
+  );
 
   const rosaCommand = `rosa create operator-roles --prefix "${cluster?.custom_operator_roles_prefix}" --oidc-config-id "${cluster?.byo_oidc_config_id}" --hosted-cp --installer-role-arn ${cluster?.installer_role_arn}`;
 
@@ -117,18 +182,12 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
               path="cluster.installer_role_arn"
               label={rp.installerRoleLabel}
               disabled={roles.isFetching}
-              onValueChange={(installerRoleArn, _item) => {
-                if (installerRoleArn) {
-                  const selected = roles.data.find(
-                    (roleSet) => roleSet.installerRole.value === installerRoleArn
-                  );
-                  cluster.support_role_arn = selected?.supportRole?.[0]?.value;
-                  cluster.worker_role_arn = selected?.workerRole?.[0]?.value;
-                } else {
-                  cluster.support_role_arn = undefined;
-                  cluster.worker_role_arn = undefined;
-                }
-                update();
+              onValueChange={(installerRoleValue, itemFromForm) => {
+                const value =
+                  installerRoleValue != null && installerRoleValue !== ''
+                    ? String(installerRoleValue)
+                    : null;
+                onInstallerRoleChange(value, itemFromForm);
               }}
               placeholder={rp.installerPlaceholder}
               labelHelp={
@@ -139,7 +198,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                   </ExternalLink>
                 </>
               }
-              options={installerRoles}
+              options={installerRoleOptions}
               required
             />
           </GridItem>
@@ -152,6 +211,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
           <Grid hasGutter>
             <GridItem span={7}>
               <WizSelect
+                key={`support-${cluster?.installer_role_arn ?? 'none'}`}
                 isFill
                 path="cluster.support_role_arn"
                 label={rp.supportRoleLabel}
@@ -164,6 +224,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
             </GridItem>
             <GridItem span={7}>
               <WizSelect
+                key={`worker-${cluster?.installer_role_arn ?? 'none'}`}
                 isFill
                 path="cluster.worker_role_arn"
                 label={rp.workerRoleLabel}

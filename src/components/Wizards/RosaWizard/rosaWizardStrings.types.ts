@@ -223,6 +223,7 @@ export type RosaWizardStrings = {
     clusterNameHelp: string;
     openShiftVersionLabel: string;
     openShiftVersionPlaceholder: string;
+    openShiftVersionOptionDisabledDescription: string;
     awsInfraLabel: string;
     awsInfraPlaceholder: string;
     awsInfraHelp: string;
@@ -239,6 +240,7 @@ export type RosaWizardStrings = {
     accountRolesSection: string;
     installerRoleLabel: string;
     installerPlaceholder: string;
+    installerRoleOptionDisabledDescription: string;
     installerHelpLead: string;
     installerLearnMoreLink: string;
     arnsToggle: string;

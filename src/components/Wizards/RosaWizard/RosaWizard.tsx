@@ -61,16 +61,6 @@ export type WizardStepsData = {
   basicSetupStep: BasicSetupStepProps;
 };
 
-function buildVersionOptions(data: OpenShiftVersionsData): SelectDropdownType[] {
-  const defaultEqualsLatest = data.latest.value === data.default.value;
-
-  if (defaultEqualsLatest) {
-    return [data.default, ...data.others];
-  }
-
-  return [data.latest, data.default, ...data.others];
-}
-
 type RosaWizardProps = {
   onSubmit: WizardSubmit;
   onSubmitError?: string | boolean;
@@ -156,12 +146,6 @@ const RosaWizardBody = (props: RosaWizardProps) => {
       compute_root_volume: 300,
     },
   };
-  const opVersions = {
-    data: buildVersionOptions(basicSetupStep.versions.data),
-    fetch: () => basicSetupStep.versions.fetch(),
-    error: null,
-    isFetching: basicSetupStep.versions.isFetching,
-  };
 
   return (
     <>
@@ -195,7 +179,7 @@ const RosaWizardBody = (props: RosaWizardProps) => {
               <Step label={sl.details} id="basic-setup-step-details" key="basic-setup-details">
                 <DetailsSubStep
                   clusterNameValidation={basicSetupStep.clusterNameValidation}
-                  openShiftVersions={opVersions}
+                  versions={basicSetupStep.versions}
                   machineTypes={basicSetupStep.machineTypes}
                   roles={basicSetupStep.roles}
                   awsInfrastructureAccounts={basicSetupStep.awsInfrastructureAccounts}

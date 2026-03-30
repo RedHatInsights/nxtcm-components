@@ -8,6 +8,7 @@ import {
 } from './RolesAndPoliciesSubStep.story';
 import { RolesAndPoliciesSubStepMount } from './RolesAndPoliciesSubStep.spec-helpers';
 import type { Resource, Role } from '../../../../types';
+import { defaultRosaWizardStrings } from '../../../rosaWizardStrings.defaults';
 
 const mockResource = <TData,>(data: TData): Resource<TData> => ({
   data,
@@ -59,6 +60,16 @@ test.describe('RolesAndPoliciesSubStep', () => {
     await expect(component.getByText('Support role', { exact: true })).toBeVisible();
     await expect(component.getByText('Worker role', { exact: true })).toBeVisible();
   });
+
+  test.skip('when an installer role is selected, the associated control plane and worker role fields are populated', async ({
+    mount: _mount,
+    page: _page,
+  }) => {});
+
+  test.skip('when an installer role is changed or removed, the associated control plane and worker role fields are emptied', async ({
+    mount: _mount,
+    page: _page,
+  }) => {});
 
   test('should auto-select support and worker roles when installer role is selected', async ({
     mount,
@@ -157,7 +168,9 @@ test.describe('RolesAndPoliciesSubStep', () => {
     });
     await arnsToggle.click();
 
-    const supportCombobox = component.getByRole('combobox', { name: 'Select a support role' });
+    const supportCombobox = component.getByRole('combobox', {
+      name: 'Select a support role',
+    });
     await expect(supportCombobox).toHaveValue('');
   });
 
@@ -191,7 +204,74 @@ test.describe('RolesAndPoliciesSubStep', () => {
     });
     await arnsToggle.click();
 
-    const workerCombobox = component.getByRole('combobox', { name: 'Select a worker role' });
+    const workerCombobox = component.getByRole('combobox', {
+      name: 'Select a worker role',
+    });
     await expect(workerCombobox).toHaveValue('');
   });
+
+  test('should mark installer role option aria-disabled when role version is below selected cluster version', async ({
+    mount,
+    page,
+  }) => {
+    const roles = mockFetchResource<Role[], [awsAccount: string]>([
+      {
+        installerRole: {
+          ...mockInstallerRoles[0],
+          roleVersion: '4.11.0',
+        },
+        supportRole: mockSupportRoles,
+        workerRole: mockWorkerRoles,
+      },
+    ]);
+    const component = await mount(
+      <RolesAndPoliciesSubStepMount
+        roles={roles}
+        clusterOverrides={{ cluster_version: '4.12.0' }}
+      />
+    );
+
+    await component.getByRole('combobox', { name: 'Select an Installer role' }).click();
+    await expect(
+      page.getByRole('option', { name: /ManagedOpenShift-Installer-Role/ })
+    ).toBeDisabled();
+  });
+
+  test('should show tooltip on disabled installer role option when account role does not support selected OpenShift version', async ({
+    mount,
+    page,
+  }) => {
+    const installerRoleDisabledDescription =
+      defaultRosaWizardStrings.rolesAndPolicies.installerRoleOptionDisabledDescription;
+    const roles = mockFetchResource<Role[], [awsAccount: string]>([
+      {
+        installerRole: {
+          ...mockInstallerRoles[0],
+          roleVersion: '4.11.0',
+        },
+        supportRole: mockSupportRoles,
+        workerRole: mockWorkerRoles,
+      },
+    ]);
+    await mount(
+      <RolesAndPoliciesSubStepMount
+        roles={roles}
+        clusterOverrides={{ cluster_version: '4.12.0' }}
+      />
+    );
+
+    await page.getByRole('combobox', { name: 'Select an Installer role' }).click();
+    await page.getByRole('option', { name: /ManagedOpenShift-Installer-Role/ }).hover();
+    await expect(
+      page.getByRole('tooltip', { name: installerRoleDisabledDescription, exact: true })
+    ).toBeVisible();
+  });
+
+  test.skip('should clear installer role selection when selected role becomes disabled after cluster version change', async ({
+    mount: _mount,
+  }) => {});
+
+  test.skip('should keep installer role option enabled when role has no roleVersion', async ({
+    mount: _mount,
+  }) => {});
 });
