@@ -295,7 +295,7 @@ function renderSelectOption<T>(
   const isAriaDisabled = !isSimpleOption && Boolean(opt.ariaDisabled);
   const isDisabled =
     displayText === noResults || (!isSimpleOption && Boolean(opt.disabled) && !isAriaDisabled);
-  const optionValue = !isSimpleOption ? option : opt.id;
+  const optionValue = isSimpleOption ? option : opt.id;
 
   return (
     <SelectOption
