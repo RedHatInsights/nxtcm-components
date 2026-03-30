@@ -113,8 +113,8 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
       return disabled
         ? {
             ...role,
-            disabled: true,
-            description: rp.installerRoleOptionDisabledDescription,
+            ariaDisabled: true,
+            tooltipProps: { content: rp.installerRoleOptionDisabledDescription },
           }
         : { ...role };
     });
@@ -123,7 +123,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
   const selectedRoleIsDisabled = React.useMemo(() => {
     if (!selectedClusterVersion || !cluster?.installer_role_arn) return false;
     const selected = installerRoleOptions.find((opt) => opt.value === cluster.installer_role_arn);
-    return Boolean(selected?.disabled);
+    return Boolean(selected?.disabled || selected?.ariaDisabled);
   }, [selectedClusterVersion, cluster?.installer_role_arn, installerRoleOptions]);
 
   React.useEffect(() => {

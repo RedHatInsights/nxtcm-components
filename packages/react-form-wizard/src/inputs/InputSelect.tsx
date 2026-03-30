@@ -292,7 +292,9 @@ function renderSelectOption<T>(
   }
 
   const opt = option as OptionType<T>;
-  const isDisabled = displayText === noResults || (!isSimpleOption && opt.disabled);
+  const isAriaDisabled = !isSimpleOption && Boolean(opt.ariaDisabled);
+  const isDisabled =
+    displayText === noResults || (!isSimpleOption && Boolean(opt.disabled) && !isAriaDisabled);
   const optionValue = !isSimpleOption ? option : opt.id;
 
   return (
@@ -300,17 +302,20 @@ function renderSelectOption<T>(
       id={isSimpleOption ? option : opt.id || `option-${index}`}
       key={isSimpleOption ? option : opt.id || `option-${index}`}
       value={optionValue}
-      description={!isSimpleOption ? opt.description : undefined}
+      description={!isSimpleOption && !isAriaDisabled ? opt.description : undefined}
       isDisabled={isDisabled}
+      isAriaDisabled={isAriaDisabled}
+      tooltipProps={isAriaDisabled ? opt.tooltipProps : undefined}
       onClick={
         isCreateOption
           ? () => onCreate?.(toDisplayString(isSimpleOption ? option : opt.value))
           : undefined
       }
       isSelected={
-        !isDisabled && !isCreateOption && Array.isArray(value)
-          ? value.includes(optionValue)
-          : optionValue === value
+        !isDisabled &&
+        !isAriaDisabled &&
+        !isCreateOption &&
+        (Array.isArray(value) ? value.includes(optionValue) : optionValue === value)
       }
     >
       {displayText}
@@ -355,16 +360,21 @@ export const SelectListOptions = ({
             <SelectGroup label={group.label}>
               {group.options.map((option, optIndex) => {
                 const optionValue = option.id;
+                const isAriaDisabled = Boolean(option.ariaDisabled);
                 return (
                   <SelectOption
                     id={option.id || `option-${optIndex}`}
                     key={option.id || `option-${optIndex}`}
                     value={optionValue}
                     description={
-                      typeof option.description === 'string' ? option.description : undefined
+                      !isAriaDisabled && typeof option.description === 'string'
+                        ? option.description
+                        : undefined
                     }
-                    isDisabled={option.disabled}
-                    isSelected={optionValue === value}
+                    isDisabled={Boolean(option.disabled) && !isAriaDisabled}
+                    isAriaDisabled={isAriaDisabled}
+                    tooltipProps={isAriaDisabled ? option.tooltipProps : undefined}
+                    isSelected={optionValue === value && !isAriaDisabled}
                   >
                     {toDisplayString(option.label) || toDisplayString(option.value)}
                   </SelectOption>

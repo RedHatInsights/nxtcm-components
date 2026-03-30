@@ -1,4 +1,4 @@
-import { useWizardContext } from '@patternfly/react-core';
+import { TooltipProps, useWizardContext } from '@patternfly/react-core';
 
 // -- dropdown / select option types --
 
@@ -27,12 +27,15 @@ export type SelectDropdownType = {
   label: string;
   value: string;
   description?: string;
+  /** When true, option is not selectable; PatternFly `isDisabled`. */
+  disabled?: boolean;
+  /** When true, option stays focusable with a tooltip (use with `tooltipProps` instead of `description`). */
+  ariaDisabled?: boolean;
+  tooltipProps?: TooltipProps;
 };
 
 export type InstallerRole = SelectDropdownType & {
   roleVersion?: string;
-  /** When true, option is disabled in the dropdown (e.g. role version below selected cluster version). */
-  disabled?: boolean;
 };
 
 /** Flat version data from the host app; the wizard builds option groups internally. */

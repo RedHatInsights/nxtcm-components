@@ -358,18 +358,18 @@ test.describe('DetailsSubStep', () => {
 
     await component.getByRole('combobox', { name: 'Select an OpenShift version' }).click();
 
-    // Accessible name includes the description span on disabled options (PatternFly MenuItem).
-    await expect(page.getByRole('option', { name: /OpenShift 4\.14\.0/ })).toBeDisabled();
-    await expect(page.getByRole('option', { name: /OpenShift 4\.13\.1/ })).toBeDisabled();
+    // Incompatible versions use `isAriaDisabled` + tooltip (not inline description).
+    await expect(page.getByRole('option', { name: /^OpenShift 4\.14\.0$/ })).toBeDisabled();
+    await expect(page.getByRole('option', { name: /^OpenShift 4\.13\.1$/ })).toBeDisabled();
     await expect(page.getByRole('option', { name: /^OpenShift 4\.12\.0$/ })).toBeEnabled();
     await expect(page.getByRole('option', { name: /^OpenShift 4\.11\.5$/ })).toBeEnabled();
   });
 
-  test('should show description on disabled OpenShift version options when installer role is older', async ({
+  test('should show tooltip on disabled OpenShift version options when installer role is older', async ({
     mount,
     page,
   }) => {
-    const component = await mount(
+    await mount(
       <DetailsSubStepMount
         roles={rolesWithInstallerVersion412}
         clusterOverrides={{ installer_role_arn: INSTALLER_ARN }}
@@ -382,9 +382,11 @@ test.describe('DetailsSubStep', () => {
       />
     );
 
-    await component.getByRole('combobox', { name: 'Select an OpenShift version' }).click();
+    await page.getByRole('combobox', { name: 'Select an OpenShift version' }).click();
 
-    await expect(page.getByText(versionDisabledDescription, { exact: true }).first()).toBeVisible();
-    await expect(page.getByText(versionDisabledDescription, { exact: true })).toHaveCount(2);
+    await page.getByRole('option', { name: /^OpenShift 4\.14\.0$/ }).hover();
+    await expect(
+      page.getByRole('tooltip', { name: versionDisabledDescription, exact: true })
+    ).toBeVisible();
   });
 });
