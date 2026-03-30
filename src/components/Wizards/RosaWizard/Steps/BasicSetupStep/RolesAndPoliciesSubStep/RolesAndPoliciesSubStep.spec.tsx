@@ -70,6 +70,39 @@ test.describe('RolesAndPoliciesSubStep', () => {
     ).toBeVisible();
   });
 
+  test('should call roles fetch callback when clicking refresh button on Installer role', async ({
+    mount,
+  }) => {
+    let fetchCallCount = 0;
+
+    const component = await mount(
+      <RolesAndPoliciesSubStepMount
+        roles={{
+          data: [
+            {
+              installerRole: mockInstallerRoles[0],
+              supportRole: mockSupportRoles,
+              workerRole: mockWorkerRoles,
+            },
+          ],
+          error: null,
+          isFetching: false,
+          // eslint-disable-next-line @typescript-eslint/require-await
+          fetch: async () => {
+            fetchCallCount++;
+          },
+        }}
+      />
+    );
+
+    await component
+      .locator('#cluster-installer_role_arn-form-group')
+      .getByLabel('Refresh', { exact: true })
+      .click();
+
+    expect(fetchCallCount).toBe(1);
+  });
+
   test('should auto-select support and worker roles when installer role is selected', async ({
     mount,
     page,
