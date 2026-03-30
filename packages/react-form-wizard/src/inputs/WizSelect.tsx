@@ -8,6 +8,7 @@ import {
   InputGroupItem,
   MenuToggleElement,
   Select as PfSelect,
+  TooltipProps,
 } from '@patternfly/react-core';
 import get from 'get-value';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
@@ -40,6 +41,8 @@ export interface Option<T> {
   description?: string;
   value: T;
   disabled?: boolean;
+  ariaDisabled?: boolean;
+  tooltipProps?: TooltipProps;
 }
 
 export type OptionType<T> = Omit<Option<T>, 'value'> & {
@@ -119,6 +122,8 @@ function WizSelectBase<T = any>(props: SelectProps<T>) {
     let keyedValue: string | number;
     let description: string | undefined;
     let disabled: boolean | undefined;
+    let ariaDisabled: boolean | undefined;
+    let tooltipProps: TooltipProps | undefined;
     if (typeof option === 'string' || typeof option === 'number') {
       id = option.toString();
       label = option.toString();
@@ -131,6 +136,8 @@ function WizSelectBase<T = any>(props: SelectProps<T>) {
       value = option.value;
       description = option.description;
       disabled = option.disabled;
+      ariaDisabled = option.ariaDisabled;
+      tooltipProps = option.tooltipProps;
       keyedValue = get(value as any, keyPath);
       switch (typeof keyedValue) {
         case 'string':
@@ -140,7 +147,7 @@ function WizSelectBase<T = any>(props: SelectProps<T>) {
           throw new Error('keyedValue is not a string or number');
       }
     }
-    return { id, label, value, keyedValue, description, disabled };
+    return { id, label, value, keyedValue, description, disabled, ariaDisabled, tooltipProps };
   }
 
   // The drop down items with descriptions - from flat options or flattened from optionGroups

@@ -8,6 +8,7 @@ import {
 } from './RolesAndPoliciesSubStep.story';
 import { RolesAndPoliciesSubStepMount } from './RolesAndPoliciesSubStep.spec-helpers';
 import type { Resource, Role } from '../../../../types';
+import { defaultRosaWizardStrings } from '../../../rosaWizardStrings.defaults';
 
 const mockResource = <TData,>(data: TData): Resource<TData> => ({
   data,
@@ -283,13 +284,62 @@ test.describe('RolesAndPoliciesSubStep', () => {
     await expect(workerCombobox).toHaveValue('');
   });
 
-  test.skip('should disable installer role option when role version is below selected cluster version', async ({
-    mount: _mount,
-  }) => {});
+  test('should mark installer role option aria-disabled when role version is below selected cluster version', async ({
+    mount,
+    page,
+  }) => {
+    const roles = mockFetchResource<Role[], [awsAccount: string]>([
+      {
+        installerRole: {
+          ...mockInstallerRoles[0],
+          roleVersion: '4.11.0',
+        },
+        supportRole: mockSupportRoles,
+        workerRole: mockWorkerRoles,
+      },
+    ]);
+    const component = await mount(
+      <RolesAndPoliciesSubStepMount
+        roles={roles}
+        clusterOverrides={{ cluster_version: '4.12.0' }}
+      />
+    );
 
-  test.skip('should show description on disabled installer role option (account role does not support selected OpenShift version)', async ({
-    mount: _mount,
-  }) => {});
+    await component.getByRole('combobox', { name: 'Select an Installer role' }).click();
+    await expect(
+      page.getByRole('option', { name: /ManagedOpenShift-Installer-Role/ })
+    ).toBeDisabled();
+  });
+
+  test('should show tooltip on disabled installer role option when account role does not support selected OpenShift version', async ({
+    mount,
+    page,
+  }) => {
+    const installerRoleDisabledDescription =
+      defaultRosaWizardStrings.rolesAndPolicies.installerRoleOptionDisabledDescription;
+    const roles = mockFetchResource<Role[], [awsAccount: string]>([
+      {
+        installerRole: {
+          ...mockInstallerRoles[0],
+          roleVersion: '4.11.0',
+        },
+        supportRole: mockSupportRoles,
+        workerRole: mockWorkerRoles,
+      },
+    ]);
+    await mount(
+      <RolesAndPoliciesSubStepMount
+        roles={roles}
+        clusterOverrides={{ cluster_version: '4.12.0' }}
+      />
+    );
+
+    await page.getByRole('combobox', { name: 'Select an Installer role' }).click();
+    await page.getByRole('option', { name: /ManagedOpenShift-Installer-Role/ }).hover();
+    await expect(
+      page.getByRole('tooltip', { name: installerRoleDisabledDescription, exact: true })
+    ).toBeVisible();
+  });
 
   test.skip('should clear installer role selection when selected role becomes disabled after cluster version change', async ({
     mount: _mount,

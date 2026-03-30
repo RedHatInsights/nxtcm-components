@@ -116,8 +116,8 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
         return disabled
           ? {
               ...opt,
-              disabled: true,
-              description: d.openShiftVersionOptionDisabledDescription,
+              ariaDisabled: true,
+              tooltipProps: { content: d.openShiftVersionOptionDisabledDescription },
             }
           : opt;
       }),
@@ -133,7 +133,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
     const versionStr = String(cluster.cluster_version);
     for (const group of versionGroupsWithDisabled) {
       const opt = group.options.find((o) => String(o.value) === versionStr);
-      if (opt && (opt as SelectDropdownType & { disabled?: boolean }).disabled) return true;
+      if (opt && (Boolean(opt.disabled) || Boolean(opt.ariaDisabled))) return true;
     }
     return false;
   }, [cluster?.cluster_version, versionGroupsWithDisabled]);
