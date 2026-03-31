@@ -118,6 +118,25 @@ test.describe('DetailsSubStep', () => {
       await expect(component.getByText(/must not start with a number/)).toBeVisible();
     });
 
+    test('should cancel pending async check when name becomes sync-invalid', async ({ mount }) => {
+      const calls: Array<{ name: string; region: string }> = [];
+      const component = await mount(
+        <DetailsSubStepStory
+          checkClusterNameUniqueness={(name, region) => {
+            calls.push({ name, region });
+          }}
+          clusterOverrides={{ region: 'us-east-1' }}
+        />
+      );
+      const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
+      await nameInput.fill('taken');
+      // Immediately change to invalid before debounce fires
+      await nameInput.fill('TAKEN');
+      await component.page().waitForTimeout(700);
+      // The old "taken" check should never have fired
+      expect(calls.length).toBe(0);
+    });
+
     test('should show AWS infrastructure account options in dropdown', async ({ mount, page }) => {
       const component = await mount(<DetailsSubStepStory />);
 

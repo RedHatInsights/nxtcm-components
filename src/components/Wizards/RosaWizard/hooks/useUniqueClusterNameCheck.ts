@@ -6,6 +6,13 @@ export function useUniqueClusterNameCheck(
 ) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
+  const cancelCheck = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = undefined;
+    }
+  }, []);
+
   const checkName = useCallback(
     (name: string, region: string) => {
       if (timeoutRef.current) {
@@ -20,10 +27,8 @@ export function useUniqueClusterNameCheck(
   );
 
   useEffect(() => {
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, []);
+    return () => cancelCheck();
+  }, [cancelCheck]);
 
-  return { checkName };
+  return { checkName, cancelCheck };
 }

@@ -61,13 +61,15 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const drawerRef = React.useRef<HTMLSpanElement>(null);
   const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
-  const { checkName } = useUniqueClusterNameCheck(checkClusterNameUniqueness, 500);
+  const { checkName, cancelCheck } = useUniqueClusterNameCheck(checkClusterNameUniqueness, 500);
   const { cluster } = useItem<RosaWizardFormData>();
 
   const uniqueClusterNameCheck = (value: string, region: string) => {
     const syncError = validateClusterName(value);
     if (!syncError && value) {
       checkName(value, region);
+    } else {
+      cancelCheck();
     }
   };
 
