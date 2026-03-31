@@ -2,10 +2,10 @@
 
 ## General coding standards rules
 
-- Use pascal-case for naming files and react components
+- Use pascal case for naming files and react components
 - Use camel case for naming functions
 - Use snake case for truly constant variables
-- Use ternary operators where possible instead of if-esle statements, but never nest ternary operator
+- Use ternary operators where possible instead of if-else statements, but never nest ternary operator
 - Use descriptive names that indicate component purpose
 - Use injected callbacks for data fetching — components must never make HTTP calls directly
 - Export component props types alongside the component
