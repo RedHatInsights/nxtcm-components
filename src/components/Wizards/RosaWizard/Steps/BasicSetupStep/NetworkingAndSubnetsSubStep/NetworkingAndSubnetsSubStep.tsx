@@ -9,7 +9,7 @@ import {
   WizTextInput,
 } from '@patternfly-labs/react-form-wizard';
 import { LabelHelp } from '@patternfly-labs/react-form-wizard/components/LabelHelp';
-import { Resource, RosaWizardFormData, Subnet, VPC } from '../../../../types';
+import { ClusterNetwork, Resource, RosaWizardFormData, Subnet, VPC } from '../../../../types';
 import { constructSelectedSubnets, subnetsFilter } from '../../../helpers';
 import {
   Alert,
@@ -123,7 +123,7 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
           <Radio
             id="public"
             label={n.publicLabel}
-            value="external"
+            value={ClusterNetwork.external}
             popover={<LabelHelp id="subnet-label-help-public" labelHelp={n.publicPopover} />}
           >
             <WizSelect
@@ -144,7 +144,7 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
           <Radio
             id="private"
             label={n.privateLabel}
-            value="internal"
+            value={ClusterNetwork.internal}
             popover={<LabelHelp id="subnet-label-help-private" labelHelp={n.privatePopover} />}
           ></Radio>
         </WizRadioGroup>

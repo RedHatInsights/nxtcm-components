@@ -123,8 +123,8 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                   const selected = roles.data.find(
                     (roleSet) => roleSet.installerRole.value === installerRoleArn
                   );
-                  cluster.support_role_arn = selected?.supportRole?.[0].value;
-                  cluster.worker_role_arn = selected?.workerRole?.[0].value;
+                  cluster.support_role_arn = selected?.supportRole?.[0]?.value;
+                  cluster.worker_role_arn = selected?.workerRole?.[0]?.value;
                 } else {
                   delete cluster.support_role_arn;
                   delete cluster.worker_role_arn;

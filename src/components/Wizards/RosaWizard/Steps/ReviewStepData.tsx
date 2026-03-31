@@ -14,7 +14,13 @@ import {
 import { LockIcon } from '@patternfly/react-icons';
 import { ReviewAndCreateStepItem } from './ReviewAndCreateStep/ReviewAndCreateStepItem';
 import { MachinePoolsReviewAndCreateStepItem } from './ReviewAndCreateStep/MachinePoolsReviewAndCreateStepItem';
-import { RosaWizardFormData, WizardNavigationContext } from '../../types';
+import {
+  ClusterEncyptionKeys,
+  ClusterNetwork,
+  ClusterUpgrade,
+  RosaWizardFormData,
+  WizardNavigationContext,
+} from '../../types';
 import { useRosaWizardStrings } from '../RosaWizardStringsContext';
 
 type ReviewStepDataProps = {
@@ -37,7 +43,7 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
 
   React.useEffect(() => {
     if (
-      (cluster?.encryption_keys && cluster?.encryption_keys !== 'default') ||
+      (cluster?.encryption_keys && cluster?.encryption_keys === ClusterEncyptionKeys.custom) ||
       cluster?.etcd_encryption ||
       cluster?.etcd_key_arn ||
       cluster?.kms_key_arn
@@ -47,7 +53,7 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
     if (!cluster?.cidr_default) {
       setIsOptionalNetworkingExpanded(true);
     }
-    if (cluster?.upgrade_policy === 'manual') {
+    if (cluster?.upgrade_policy === ClusterUpgrade.manual) {
       setIsOptionalClusterUpgradesExpanded(true);
     }
   }, [
@@ -166,7 +172,7 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
             toggleText={r.networkingToggle}
           >
             <Stack hasGutter>
-              {cluster?.cluster_privacy === 'external' && (
+              {cluster?.cluster_privacy === ClusterNetwork.external && (
                 <ReviewAndCreateStepItem
                   label={r.publicSubnet}
                   value={cluster?.cluster_privacy_public_subnet_id}
@@ -327,7 +333,9 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
               <ReviewAndCreateStepItem
                 label={r.updateStrategy}
                 value={
-                  cluster?.upgrade_policy === 'manual' ? r.strategyIndividual : r.strategyAutomatic
+                  cluster?.upgrade_policy === ClusterUpgrade.manual
+                    ? r.strategyIndividual
+                    : r.strategyAutomatic
                 }
                 hasIcon
               />

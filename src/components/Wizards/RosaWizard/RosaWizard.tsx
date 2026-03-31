@@ -28,6 +28,9 @@ import {
   WizardNavigationContext,
   MachineTypesDropdownType,
   Region,
+  ClusterNetwork,
+  ClusterUpgrade,
+  ClusterEncyptionKeys,
 } from '../types';
 import { MachinePoolsSubstep } from './Steps/BasicSetupStep/MachinePoolsSubstep/MachinePoolsSubstep';
 import { YamlDrawerEditor } from './Steps/YamlCodeEditor';
@@ -142,7 +145,7 @@ const RosaWizardBody = (props: RosaWizardProps) => {
 
   const defaultClusterData = {
     cluster: {
-      encryption_keys: 'default',
+      encryption_keys: ClusterEncyptionKeys.default,
       etcd_encryption: false,
       configure_proxy: false,
       cidr_default: true,
@@ -152,8 +155,8 @@ const RosaWizardBody = (props: RosaWizardProps) => {
       network_host_prefix: '/23',
       autoscaling: false,
       nodes_compute: 2,
-      upgrade_policy: 'automatic',
-      cluster_privacy: 'external',
+      upgrade_policy: ClusterUpgrade.automatic,
+      cluster_privacy: ClusterNetwork.external,
       compute_root_volume: 300,
     },
   };

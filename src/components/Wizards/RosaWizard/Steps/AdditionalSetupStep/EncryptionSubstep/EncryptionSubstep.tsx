@@ -8,7 +8,7 @@ import {
 } from '@patternfly-labs/react-form-wizard';
 import { Alert, Flex, FlexItem, Grid, GridItem } from '@patternfly/react-core';
 import { validateAWSKMSKeyARN } from '../../../validators';
-import { RosaWizardFormData } from '../../../../types';
+import { ClusterEncyptionKeys, RosaWizardFormData } from '../../../../types';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
@@ -35,21 +35,29 @@ export const EncryptionSubstep = () => {
           </>
         }
         onValueChange={() => {
-          if (cluster?.encryption_keys !== 'custom' && cluster?.kms_key_arn) {
-            cluster.kms_key_arn = undefined;
+          if (cluster?.encryption_keys !== ClusterEncyptionKeys.custom && cluster?.kms_key_arn) {
+            delete cluster.kms_key_arn;
           }
         }}
       >
         <Flex direction={{ default: 'column' }}>
           <FlexItem>
-            <Radio id="default-aws-kms-key-radio-btn" label={e.defaultKms} value="default" />
+            <Radio
+              id="default-aws-kms-key-radio-btn"
+              label={e.defaultKms}
+              value={ClusterEncyptionKeys.default}
+            />
           </FlexItem>
           <FlexItem>
-            <Radio id="custom-aws-kms-key-radio-btn" label={e.customKms} value="custom" />
+            <Radio
+              id="custom-aws-kms-key-radio-btn"
+              label={e.customKms}
+              value={ClusterEncyptionKeys.custom}
+            />
           </FlexItem>
         </Flex>
       </WizRadioGroup>
-      {cluster?.['encryption_keys'] === 'custom' && (
+      {cluster?.['encryption_keys'] === ClusterEncyptionKeys.custom && (
         <Grid>
           <GridItem span={8}>
             <WizTextInput
@@ -71,7 +79,7 @@ export const EncryptionSubstep = () => {
         label={e.etcdLabel}
         onValueChange={() => {
           if (!cluster?.etcd_encryption && cluster?.etcd_key_arn) {
-            cluster.etcd_key_arn = undefined;
+            delete cluster.etcd_key_arn;
           }
         }}
         helperText={

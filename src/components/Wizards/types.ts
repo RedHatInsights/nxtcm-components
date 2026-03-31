@@ -123,6 +123,21 @@ export type MachinePoolSubnetEntry = {
   machine_pool_subnet: string;
 };
 
+export enum ClusterNetwork {
+  'external',
+  'internal',
+}
+
+export enum ClusterEncyptionKeys {
+  'default',
+  'custom',
+}
+
+export enum ClusterUpgrade {
+  'manual',
+  'automatic',
+}
+
 // -- cluster form data: the full shape of the wizard's form state --
 
 export type ClusterFormData = {
@@ -151,7 +166,7 @@ export type ClusterFormData = {
   imds?: string;
 
   // networking
-  cluster_privacy?: 'external' | 'internal';
+  cluster_privacy?: ClusterNetwork.external | ClusterNetwork.internal;
   cluster_privacy_public_subnet_id?: string;
   cidr_default?: boolean;
   network_machine_cidr?: string;
@@ -169,13 +184,13 @@ export type ClusterFormData = {
   additional_trust_bundle?: string;
 
   // encryption
-  encryption_keys?: 'default' | 'custom';
+  encryption_keys?: ClusterEncyptionKeys.default | ClusterEncyptionKeys.custom;
   kms_key_arn?: string;
   etcd_encryption?: boolean;
   etcd_key_arn?: string;
 
   // cluster updates
-  upgrade_policy?: 'automatic' | 'manual';
+  upgrade_policy?: ClusterUpgrade.automatic | ClusterUpgrade.manual;
   upgrade_schedule?: string;
 };
 

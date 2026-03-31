@@ -21,8 +21,8 @@ type AutoscalingFieldProps = {
 export const MAX_NODES_HCP_DEFAULT = 500;
 export const MAX_NODES_HCP_INSUFFICIENT_VERSION = 90;
 
-const scaleMinNodesOnMachinePoolNumber = (machinePoolsNumber: number) =>
-  machinePoolsNumber > 1 ? 1 : 2;
+const scaleMinNodesOnMachinePoolNumber = (machinePoolsNumber?: number) =>
+  machinePoolsNumber && machinePoolsNumber > 1 ? 1 : 2;
 
 const scaleMaxNodesBasedOnOpenshiftVersion = (openshiftVersion: string) => {
   const majorMinor = parseFloat(openshiftVersion.toString());
@@ -74,10 +74,12 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
         path="cluster.autoscaling"
         label={a.enableLabel}
         onValueChange={(checked, item) => {
-          if (checked && machinePoolsNumber) {
+          if (checked) {
             delete item.cluster.nodes_compute;
+
             item.cluster.min_replicas = scaleMinNodesOnMachinePoolNumber(machinePoolsNumber);
             item.cluster.max_replicas = 4;
+
             update();
           } else {
             delete item.cluster.min_replicas;
