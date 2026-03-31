@@ -126,21 +126,21 @@ export type MachinePoolSubnetEntry = {
 // -- cluster form data: the full shape of the wizard's form state --
 
 export type ClusterFormData = {
-  name?: string;
-  cluster_version?: string;
-  associated_aws_id?: string;
-  billing_account_id?: string;
-  region?: string;
+  name: string | undefined;
+  cluster_version: string | undefined;
+  associated_aws_id: string | undefined;
+  billing_account_id: string | undefined;
+  region: string | undefined;
 
   // roles & policies
-  installer_role_arn?: string;
-  support_role_arn?: string;
-  worker_role_arn?: string;
-  byo_oidc_config_id?: string;
-  custom_operator_roles_prefix?: string;
+  installer_role_arn: string | undefined;
+  support_role_arn: string | undefined;
+  worker_role_arn: string | undefined;
+  byo_oidc_config_id: string;
+  custom_operator_roles_prefix: string;
 
   // machine pools — WizSelect stores the full VPC object at runtime via keyPath
-  selected_vpc?: string | VPC;
+  selected_vpc?: VPC;
   machine_pools_subnets?: MachinePoolSubnetEntry[];
   machine_type?: string;
   autoscaling?: boolean;

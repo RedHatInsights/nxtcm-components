@@ -44,7 +44,7 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
     ) {
       setIsEncryptionExpanded(true);
     }
-    if (cluster?.cidr_default && cluster?.cidr_default === false) {
+    if (!cluster?.cidr_default) {
       setIsOptionalNetworkingExpanded(true);
     }
     if (cluster?.upgrade_policy === 'manual') {

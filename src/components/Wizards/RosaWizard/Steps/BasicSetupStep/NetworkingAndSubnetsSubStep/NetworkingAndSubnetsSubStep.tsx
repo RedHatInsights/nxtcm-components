@@ -116,7 +116,7 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
           helperText={n.privacyHelper}
           onValueChange={() => {
             if (cluster.cluster_privacy && cluster.cluster_privacy_public_subnet_id) {
-              cluster.cluster_privacy_public_subnet_id = undefined;
+              delete cluster.cluster_privacy_public_subnet_id;
             }
           }}
         >

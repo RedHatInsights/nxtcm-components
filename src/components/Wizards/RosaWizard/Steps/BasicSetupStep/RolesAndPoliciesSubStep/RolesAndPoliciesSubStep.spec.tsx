@@ -225,12 +225,14 @@ test.describe('RolesAndPoliciesSubStep', () => {
       name: 'Select an Installer role',
     });
     await installerCombobox.click();
+
     await page
       .getByRole('option', {
         name: /ManagedOpenShift-Installer-Role/,
       })
       .first()
       .click();
+    await page.keyboard.press('Escape');
 
     const arnsToggle = component.getByRole('button', {
       name: /Amazon Resource Names \(ARNs\)/,
@@ -259,12 +261,14 @@ test.describe('RolesAndPoliciesSubStep', () => {
       name: 'Select an Installer role',
     });
     await installerCombobox.click();
+
     await page
       .getByRole('option', {
         name: /ManagedOpenShift-Installer-Role/,
       })
       .first()
       .click();
+    await page.keyboard.press('Escape');
 
     const arnsToggle = component.getByRole('button', {
       name: /Amazon Resource Names \(ARNs\)/,

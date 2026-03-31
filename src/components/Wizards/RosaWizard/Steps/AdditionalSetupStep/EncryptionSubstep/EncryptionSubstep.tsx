@@ -1,14 +1,12 @@
 import {
   Radio,
   Section,
-  useData,
   useItem,
   WizCheckbox,
   WizRadioGroup,
   WizTextInput,
 } from '@patternfly-labs/react-form-wizard';
 import { Alert, Flex, FlexItem, Grid, GridItem } from '@patternfly/react-core';
-import React from 'react';
 import { validateAWSKMSKeyARN } from '../../../validators';
 import { RosaWizardFormData } from '../../../../types';
 import ExternalLink from '../../../common/ExternalLink';
@@ -19,23 +17,6 @@ export const EncryptionSubstep = () => {
   const e = useRosaWizardStrings().encryption;
   const v = useRosaWizardValidators();
   const { cluster } = useItem<RosaWizardFormData>();
-  const { update } = useData();
-
-  React.useEffect(() => {
-    if (cluster?.encryption_keys !== 'custom' && cluster?.kms_key_arn) {
-      const { kms_key_arn, ...rest } = cluster;
-      update({ cluster: rest });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cluster?.encryption_keys]);
-
-  React.useEffect(() => {
-    if (!cluster?.etcd_encryption && cluster?.etcd_key_arn) {
-      const { etcd_key_arn, ...rest } = cluster;
-      update({ cluster: rest });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cluster?.etcd_encryption]);
 
   return (
     <Section
@@ -53,6 +34,11 @@ export const EncryptionSubstep = () => {
             <ExternalLink href={links.AWS_DATA_PROTECTION}>{e.keysLearnMore}</ExternalLink>
           </>
         }
+        onValueChange={() => {
+          if (cluster?.encryption_keys !== 'custom' && cluster?.kms_key_arn) {
+            cluster.kms_key_arn = undefined;
+          }
+        }}
       >
         <Flex direction={{ default: 'column' }}>
           <FlexItem>
@@ -83,6 +69,11 @@ export const EncryptionSubstep = () => {
         path="cluster.etcd_encryption"
         title={e.etcdTitle}
         label={e.etcdLabel}
+        onValueChange={() => {
+          if (!cluster?.etcd_encryption && cluster?.etcd_key_arn) {
+            cluster.etcd_key_arn = undefined;
+          }
+        }}
         helperText={
           <>
             {e.etcdHelperLead}{' '}
