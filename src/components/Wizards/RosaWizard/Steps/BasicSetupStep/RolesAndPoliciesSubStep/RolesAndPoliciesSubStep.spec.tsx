@@ -60,6 +60,86 @@ test.describe('RolesAndPoliciesSubStep', () => {
     await expect(component.getByText('Worker role', { exact: true })).toBeVisible();
   });
 
+  test('should display refresh button on Installer role', async ({ mount }) => {
+    const component = await mount(<RolesAndPoliciesSubStepMount />);
+
+    await expect(
+      component
+        .locator('#cluster-installer_role_arn-form-group')
+        .getByLabel('Refresh', { exact: true })
+    ).toBeVisible();
+  });
+
+  test('should call roles fetch callback when clicking refresh button on Installer role', async ({
+    mount,
+  }) => {
+    let fetchCallCount = 0;
+
+    const component = await mount(
+      <RolesAndPoliciesSubStepMount
+        roles={{
+          data: [
+            {
+              installerRole: mockInstallerRoles[0],
+              supportRole: mockSupportRoles,
+              workerRole: mockWorkerRoles,
+            },
+          ],
+          error: null,
+          isFetching: false,
+          // eslint-disable-next-line @typescript-eslint/require-await
+          fetch: async () => {
+            fetchCallCount++;
+          },
+        }}
+      />
+    );
+
+    await component
+      .locator('#cluster-installer_role_arn-form-group')
+      .getByLabel('Refresh', { exact: true })
+      .click();
+
+    expect(fetchCallCount).toBe(1);
+  });
+
+  test('should display refresh button on OIDC config ID', async ({ mount }) => {
+    const component = await mount(<RolesAndPoliciesSubStepMount />);
+
+    await expect(
+      component
+        .locator('#cluster-byo_oidc_config_id-form-group')
+        .getByLabel('Refresh', { exact: true })
+    ).toBeVisible();
+  });
+
+  test('should call oidcConfig fetch callback when clicking refresh button on OIDC config ID', async ({
+    mount,
+  }) => {
+    let fetchCallCount = 0;
+
+    const component = await mount(
+      <RolesAndPoliciesSubStepMount
+        oidcConfig={{
+          data: mockOIDCConfig,
+          error: null,
+          isFetching: false,
+          // eslint-disable-next-line @typescript-eslint/require-await
+          fetch: async () => {
+            fetchCallCount++;
+          },
+        }}
+      />
+    );
+
+    await component
+      .locator('#cluster-byo_oidc_config_id-form-group')
+      .getByLabel('Refresh', { exact: true })
+      .click();
+
+    expect(fetchCallCount).toBe(1);
+  });
+
   test('should auto-select support and worker roles when installer role is selected', async ({
     mount,
     page,
