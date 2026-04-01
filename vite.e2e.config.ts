@@ -12,6 +12,7 @@ export default defineConfig({
         './packages/react-form-wizard/src'
       ),
     },
+    dedupe: ['react', 'react-dom'],
   },
   css: {
     preprocessorOptions: {
