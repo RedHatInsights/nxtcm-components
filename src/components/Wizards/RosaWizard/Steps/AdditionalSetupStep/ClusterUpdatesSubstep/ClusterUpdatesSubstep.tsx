@@ -6,13 +6,13 @@ import {
   Content,
   ContentVariants,
   FormGroup,
-  Grid,
-  GridItem,
   MenuToggle,
   MenuToggleElement,
   Select,
   SelectList,
   SelectOption,
+  Split,
+  SplitItem,
 } from '@patternfly/react-core';
 import parseUpdateSchedule from './parseUpdateSchedule';
 import { RosaWizardFormData, WizardNavigationContext } from '../../../../types';
@@ -154,8 +154,8 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
 
       {cluster?.upgrade_policy === 'automatic' && (
         <FormGroup label={cu.dayTimeLabel} style={{ marginLeft: '1.5rem' }}>
-          <Grid hasGutter>
-            <GridItem sm={6} md={6}>
+          <Split hasGutter>
+            <SplitItem isFilled>
               <Select
                 isOpen={daySelectOpen}
                 selected={selectedDay}
@@ -172,8 +172,8 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
                   ))}
                 </SelectList>
               </Select>
-            </GridItem>
-            <GridItem sm={6} md={6}>
+            </SplitItem>
+            <SplitItem isFilled>
               <Select
                 isOpen={timeSelectOpen}
                 selected={selectedHour}
@@ -192,8 +192,8 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
                   ))}
                 </SelectList>
               </Select>
-            </GridItem>
-          </Grid>
+            </SplitItem>
+          </Split>
         </FormGroup>
       )}
     </Section>

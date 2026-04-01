@@ -17,8 +17,6 @@ import {
   Content,
   ContentVariants,
   ExpandableSection,
-  Grid,
-  GridItem,
   Stack,
   StackItem,
 } from '@patternfly/react-core';
@@ -170,25 +168,21 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
             ) : null}
           </Stack>
 
-          <Grid>
-            <GridItem span={7}>
-              <Alert
-                isExpandable
-                actionClose={<AlertActionCloseButton onClose={() => {}} />}
-                variant="warning"
-                title={n.cidrAlertTitle}
-                ouiaId="encryptionKeysAlert"
-              >
-                <Content component={ContentVariants.p}>{n.cidrAlertBody}</Content>
+          <Alert
+            isExpandable
+            actionClose={<AlertActionCloseButton onClose={() => {}} />}
+            variant="warning"
+            title={n.cidrAlertTitle}
+            ouiaId="encryptionKeysAlert"
+          >
+            <Content component={ContentVariants.p}>{n.cidrAlertBody}</Content>
 
-                <Content component={ContentVariants.p}>
-                  <ExternalLink href={links.CIDR_RANGE_DEFINITIONS_ROSA}>
-                    {n.cidrLearnMoreLink}
-                  </ExternalLink>
-                </Content>
-              </Alert>
-            </GridItem>
-          </Grid>
+            <Content component={ContentVariants.p}>
+              <ExternalLink href={links.CIDR_RANGE_DEFINITIONS_ROSA}>
+                {n.cidrLearnMoreLink}
+              </ExternalLink>
+            </Content>
+          </Alert>
 
           <WizCheckbox
             id="use-cidr-default-values"
@@ -197,8 +191,8 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
             helperText={n.useDefaultsHelp}
           />
 
-          <Grid hasGutter>
-            <GridItem span={7}>
+          <Stack hasGutter>
+            <StackItem>
               <WizTextInput
                 validation={machineCidrValidators}
                 validateOnBlur
@@ -208,8 +202,8 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                 helperText={n.machineCidrHelp}
                 disabled={defaultCidrValue}
               />
-            </GridItem>
-            <GridItem span={7}>
+            </StackItem>
+            <StackItem>
               <WizTextInput
                 validation={serviceCidrValidators}
                 validateOnBlur
@@ -219,8 +213,8 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                 helperText={n.serviceCidrHelp}
                 disabled={defaultCidrValue}
               />
-            </GridItem>
-            <GridItem span={7}>
+            </StackItem>
+            <StackItem>
               <WizTextInput
                 validation={podCidrValidators}
                 validateOnBlur
@@ -230,8 +224,8 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                 helperText={n.podCidrHelp}
                 disabled={defaultCidrValue}
               />
-            </GridItem>
-            <GridItem span={7}>
+            </StackItem>
+            <StackItem>
               <WizTextInput
                 validation={hostPrefixValidators}
                 validateOnBlur
@@ -240,8 +234,8 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                 helperText={n.hostPrefixHelp}
                 disabled={defaultCidrValue}
               />
-            </GridItem>
-          </Grid>
+            </StackItem>
+          </Stack>
         </Indented>
       </ExpandableSection>
     </>

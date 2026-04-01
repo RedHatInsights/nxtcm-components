@@ -8,13 +8,7 @@ import {
   WizRadioGroup,
   WizSelect,
 } from '@patternfly-labs/react-form-wizard';
-import {
-  Content,
-  ContentVariants,
-  ExpandableSection,
-  Grid,
-  GridItem,
-} from '@patternfly/react-core';
+import { Content, ContentVariants, ExpandableSection } from '@patternfly/react-core';
 import { subnetsFilter, canSelectImds, getWorkerNodeVolumeSizeMaxGiB } from '../../../helpers';
 import {
   MachineTypesDropdownType,
@@ -62,34 +56,30 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
     <>
       <Section label={mp.sectionLabel} id="machine-pools-section" key="machine-pools-key">
         <Content component={ContentVariants.p}>{mp.intro}</Content>
-        <Grid>
-          <GridItem span={5}>
-            <WizSelect
-              onValueChange={(_newVpc, item) => {
-                if (item?.cluster) {
-                  item.cluster.security_groups_worker = [];
-                }
-              }}
-              label={`${mp.vpcLabelPrefix} ${cluster?.region}`}
-              refreshCallback={props.vpcList.fetch}
-              path="cluster.selected_vpc"
-              keyPath="id"
-              placeholder={mp.vpcPlaceholder}
-              required
-              labelHelp={
-                <>
-                  {mp.vpcHelpLead}{' '}
-                  <ExternalLink href={links.ROSA_SHARED_VPC}>{mp.vpcLearnMoreLink}</ExternalLink>
-                </>
-              }
-              options={props.vpcList.data.map((vpc: VPC) => ({
-                label: vpc.name,
-                value: vpc.id,
-              }))}
-              disabled={props.vpcList.isFetching}
-            />
-          </GridItem>
-        </Grid>
+        <WizSelect
+          onValueChange={(_newVpc, item) => {
+            if (item?.cluster) {
+              item.cluster.security_groups_worker = [];
+            }
+          }}
+          label={`${mp.vpcLabelPrefix} ${cluster?.region}`}
+          refreshCallback={props.vpcList.fetch}
+          path="cluster.selected_vpc"
+          keyPath="id"
+          placeholder={mp.vpcPlaceholder}
+          required
+          labelHelp={
+            <>
+              {mp.vpcHelpLead}{' '}
+              <ExternalLink href={links.ROSA_SHARED_VPC}>{mp.vpcLearnMoreLink}</ExternalLink>
+            </>
+          }
+          options={props.vpcList.data.map((vpc: VPC) => ({
+            label: vpc.name,
+            value: vpc.id,
+          }))}
+          disabled={props.vpcList.isFetching}
+        />
 
         <WizMachinePoolSelect
           required
@@ -112,26 +102,22 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
         key="machine-pools-settings-key"
       >
         <Content component={ContentVariants.p}>{mp.settingsIntro}</Content>
-        <Grid>
-          <GridItem span={5}>
-            <WizSelect
-              label={mp.instanceTypeLabel}
-              validateOnBlur={true}
-              disabled={props.machineTypes.isFetching}
-              path="cluster.machine_type"
-              required
-              labelHelp={
-                <>
-                  {mp.instanceTypeHelpLead}{' '}
-                  <ExternalLink href={links.ROSA_INSTANCE_TYPES}>
-                    {mp.instanceTypeLearnMore}
-                  </ExternalLink>
-                </>
-              }
-              options={props.machineTypes.data}
-            />
-          </GridItem>
-        </Grid>
+        <WizSelect
+          label={mp.instanceTypeLabel}
+          validateOnBlur={true}
+          disabled={props.machineTypes.isFetching}
+          path="cluster.machine_type"
+          required
+          labelHelp={
+            <>
+              {mp.instanceTypeHelpLead}{' '}
+              <ExternalLink href={links.ROSA_INSTANCE_TYPES}>
+                {mp.instanceTypeLearnMore}
+              </ExternalLink>
+            </>
+          }
+          options={props.machineTypes.data}
+        />
 
         <AutoscalingField
           autoscaling={cluster?.autoscaling}

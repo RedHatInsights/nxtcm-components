@@ -4,14 +4,14 @@ import {
   Badge,
   Button,
   FormGroup,
-  Grid,
-  GridItem,
   MenuToggle,
   MenuToggleElement,
   Select,
   SelectList,
   SelectOption,
   SelectProps,
+  Split,
+  SplitItem,
   Stack,
   StackItem,
   Tooltip,
@@ -135,10 +135,10 @@ const EditSecurityGroups = ({
   const validationError = validateSecurityGroups(selectedGroupIds, v.securityGroups);
 
   return (
-    <GridItem>
+    <>
       <FormGroup fieldId="securityGroupIds" label={label} className="pf-v6-u-mt-md">
-        <Grid>
-          <GridItem span={10}>
+        <Split hasGutter>
+          <SplitItem isFilled>
             <Stack hasGutter>
               <StackItem>
                 <Select
@@ -178,9 +178,9 @@ const EditSecurityGroups = ({
                 />
               </StackItem>
             </Stack>
-          </GridItem>
+          </SplitItem>
           {refreshVPCCallback && (
-            <GridItem span={2} style={{ textAlign: 'left' }}>
+            <SplitItem style={{ textAlign: 'left' }}>
               <Tooltip content={sg.refreshTooltip}>
                 <Button
                   id="refreshSecurityGroupsButton"
@@ -190,12 +190,12 @@ const EditSecurityGroups = ({
                   icon={<RedoIcon />}
                 />
               </Tooltip>
-            </GridItem>
+            </SplitItem>
           )}
-        </Grid>
+        </Split>
       </FormGroup>
       <FormGroupHelperText touched error={validationError} />
-    </GridItem>
+    </>
   );
 };
 

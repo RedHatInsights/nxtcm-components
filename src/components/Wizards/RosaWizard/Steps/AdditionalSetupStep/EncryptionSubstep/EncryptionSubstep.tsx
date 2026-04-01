@@ -7,7 +7,7 @@ import {
   WizRadioGroup,
   WizTextInput,
 } from '@patternfly-labs/react-form-wizard';
-import { Alert, Flex, FlexItem, Grid, GridItem } from '@patternfly/react-core';
+import { Alert, Flex, FlexItem } from '@patternfly/react-core';
 import React from 'react';
 import { validateAWSKMSKeyARN } from '../../../validators';
 import { RosaWizardFormData } from '../../../../types';
@@ -64,18 +64,14 @@ export const EncryptionSubstep = () => {
         </Flex>
       </WizRadioGroup>
       {cluster?.['encryption_keys'] === 'custom' && (
-        <Grid>
-          <GridItem span={8}>
-            <WizTextInput
-              path="cluster.kms_key_arn"
-              label={e.keyArnLabel}
-              validateOnBlur
-              validation={(value) => validateAWSKMSKeyARN(value, cluster.region, v.kmsKeyArn)}
-              required
-              labelHelp={e.keyArnHelp}
-            />
-          </GridItem>
-        </Grid>
+        <WizTextInput
+          path="cluster.kms_key_arn"
+          label={e.keyArnLabel}
+          validateOnBlur
+          validation={(value) => validateAWSKMSKeyARN(value, cluster.region, v.kmsKeyArn)}
+          required
+          labelHelp={e.keyArnHelp}
+        />
       )}
 
       <WizCheckbox
@@ -92,24 +88,16 @@ export const EncryptionSubstep = () => {
       />
 
       {cluster?.['etcd_encryption'] && (
-        <Grid>
-          <GridItem span={8}>
-            <WizTextInput
-              path="cluster.etcd_key_arn"
-              validation={(value) => validateAWSKMSKeyARN(value, cluster.region, v.kmsKeyArn)}
-              label={e.keyArnLabel}
-              validateOnBlur
-              required
-              labelHelp={e.keyArnHelp}
-            />
-          </GridItem>
-        </Grid>
+        <WizTextInput
+          path="cluster.etcd_key_arn"
+          validation={(value) => validateAWSKMSKeyARN(value, cluster.region, v.kmsKeyArn)}
+          label={e.keyArnLabel}
+          validateOnBlur
+          required
+          labelHelp={e.keyArnHelp}
+        />
       )}
-      <Grid>
-        <GridItem span={9}>
-          <Alert variant="info" title={e.keysNoteAlert} ouiaId="encryptionKeysAlert" />
-        </GridItem>
-      </Grid>
+      <Alert variant="info" title={e.keysNoteAlert} ouiaId="encryptionKeysAlert" />
     </Section>
   );
 };
