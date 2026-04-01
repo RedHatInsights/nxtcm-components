@@ -1,13 +1,8 @@
 {
-    "extends": "./tsconfig.json",
-    "compilerOptions": {
-        "types": ["node", "@playwright/test"]
-    },
-    "include": [
-        "playwright/**/*"
-    ],
-    "exclude": [
-        "node_modules"
-    ]
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node", "@playwright/test"]
+  },
+  "include": ["playwright/**/*", "e2e-app/**/*"],
+  "exclude": ["node_modules"]
 }
-
