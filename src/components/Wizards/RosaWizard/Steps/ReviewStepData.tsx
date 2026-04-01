@@ -15,7 +15,7 @@ import { LockIcon } from '@patternfly/react-icons';
 import { ReviewAndCreateStepItem } from './ReviewAndCreateStep/ReviewAndCreateStepItem';
 import { MachinePoolsReviewAndCreateStepItem } from './ReviewAndCreateStep/MachinePoolsReviewAndCreateStepItem';
 import {
-  ClusterEncyptionKeys,
+  ClusterEncryptionKeys,
   ClusterNetwork,
   ClusterUpgrade,
   RosaWizardFormData,
@@ -43,7 +43,7 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
 
   React.useEffect(() => {
     if (
-      (cluster?.encryption_keys && cluster?.encryption_keys === ClusterEncyptionKeys.custom) ||
+      (cluster?.encryption_keys && cluster?.encryption_keys === ClusterEncryptionKeys.custom) ||
       cluster?.etcd_encryption ||
       cluster?.etcd_key_arn ||
       cluster?.kms_key_arn

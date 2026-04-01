@@ -8,7 +8,7 @@ import {
 } from '@patternfly-labs/react-form-wizard';
 import { Alert, Flex, FlexItem, Grid, GridItem } from '@patternfly/react-core';
 import { validateAWSKMSKeyARN } from '../../../validators';
-import { ClusterEncyptionKeys, RosaWizardFormData } from '../../../../types';
+import { ClusterEncryptionKeys, RosaWizardFormData } from '../../../../types';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
@@ -35,7 +35,7 @@ export const EncryptionSubstep = () => {
           </>
         }
         onValueChange={() => {
-          if (cluster?.encryption_keys !== ClusterEncyptionKeys.custom && cluster?.kms_key_arn) {
+          if (cluster?.encryption_keys !== ClusterEncryptionKeys.custom && cluster?.kms_key_arn) {
             delete cluster.kms_key_arn;
           }
         }}
@@ -45,19 +45,19 @@ export const EncryptionSubstep = () => {
             <Radio
               id="default-aws-kms-key-radio-btn"
               label={e.defaultKms}
-              value={ClusterEncyptionKeys.default}
+              value={ClusterEncryptionKeys.default}
             />
           </FlexItem>
           <FlexItem>
             <Radio
               id="custom-aws-kms-key-radio-btn"
               label={e.customKms}
-              value={ClusterEncyptionKeys.custom}
+              value={ClusterEncryptionKeys.custom}
             />
           </FlexItem>
         </Flex>
       </WizRadioGroup>
-      {cluster?.['encryption_keys'] === ClusterEncyptionKeys.custom && (
+      {cluster?.['encryption_keys'] === ClusterEncryptionKeys.custom && (
         <Grid>
           <GridItem span={8}>
             <WizTextInput

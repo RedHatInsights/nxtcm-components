@@ -30,7 +30,7 @@ import {
   Region,
   ClusterNetwork,
   ClusterUpgrade,
-  ClusterEncyptionKeys,
+  ClusterEncryptionKeys,
 } from '../types';
 import { MachinePoolsSubstep } from './Steps/BasicSetupStep/MachinePoolsSubstep/MachinePoolsSubstep';
 import { YamlDrawerEditor } from './Steps/YamlCodeEditor';
@@ -145,7 +145,7 @@ const RosaWizardBody = (props: RosaWizardProps) => {
 
   const defaultClusterData = {
     cluster: {
-      encryption_keys: ClusterEncyptionKeys.default,
+      encryption_keys: ClusterEncryptionKeys.default,
       etcd_encryption: false,
       configure_proxy: false,
       cidr_default: true,

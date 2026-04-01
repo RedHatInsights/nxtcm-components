@@ -124,18 +124,18 @@ export type MachinePoolSubnetEntry = {
 };
 
 export enum ClusterNetwork {
-  'external',
-  'internal',
+  external = 'external',
+  internal = 'internal',
 }
 
-export enum ClusterEncyptionKeys {
-  'default',
-  'custom',
+export enum ClusterEncryptionKeys {
+  default = 'default',
+  custom = 'custom',
 }
 
 export enum ClusterUpgrade {
-  'manual',
-  'automatic',
+  manual = 'manual',
+  automatic = 'automatic',
 }
 
 // -- cluster form data: the full shape of the wizard's form state --
@@ -184,7 +184,7 @@ export type ClusterFormData = {
   additional_trust_bundle?: string;
 
   // encryption
-  encryption_keys?: ClusterEncyptionKeys.default | ClusterEncyptionKeys.custom;
+  encryption_keys?: ClusterEncryptionKeys.default | ClusterEncryptionKeys.custom;
   kms_key_arn?: string;
   etcd_encryption?: boolean;
   etcd_key_arn?: string;
