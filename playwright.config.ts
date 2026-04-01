@@ -12,8 +12,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command:
-      'rm -rf packages/react-form-wizard/node_modules/react packages/react-form-wizard/node_modules/react-dom && npx vite --config vite.e2e.config.ts',
+    command: 'npx vite --config vite.e2e.config.ts',
     url: 'http://localhost:3200',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
