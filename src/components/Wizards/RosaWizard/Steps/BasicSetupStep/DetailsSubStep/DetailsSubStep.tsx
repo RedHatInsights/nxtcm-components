@@ -30,7 +30,7 @@ import { useUniqueClusterNameCheck } from '../../../hooks/useUniqueClusterNameCh
 type DetailsSubStepProps = {
   clusterNameValidation: ValidationResource;
   openShiftVersions: Resource<OpenShiftVersions[]>;
-  checkClusterNameUniqueness?: (name: string, region: string) => void;
+  checkClusterNameUniqueness?: (name: string, region?: string) => void;
   refreshVersionsCallback?: () => void;
   roles: Resource<Role[], [awsAccount: string]> & {
     fetch: (awsAccount: string) => Promise<void>;

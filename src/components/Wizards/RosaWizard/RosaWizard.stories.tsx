@@ -801,7 +801,7 @@ function AsyncClusterNameValidationWrapper(props: React.ComponentProps<typeof Ro
     isFetching: false,
   });
 
-  const checkClusterNameUniqueness = React.useCallback((name: string, region: string) => {
+  const checkClusterNameUniqueness = React.useCallback((name: string, region?: string) => {
     setValidationState({ error: null, isFetching: true });
 
     // simulate API call with 800ms latency
@@ -809,7 +809,7 @@ function AsyncClusterNameValidationWrapper(props: React.ComponentProps<typeof Ro
       const takenNames = ['taken', 'existing', 'my-cluster', 'production'];
       const takenRegion = ['us-west-1'];
       const isTaken = takenNames.includes(name);
-      const takenRegionData = takenRegion.includes(region);
+      const takenRegionData = takenRegion.includes(region ? region : '');
       setValidationState({
         error:
           isTaken && takenRegionData

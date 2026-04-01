@@ -1,7 +1,7 @@
 import { useRef, useCallback, useEffect } from 'react';
 
 export function useUniqueClusterNameCheck(
-  checkFn: ((name: string, region: string) => void) | undefined,
+  checkFn: ((name: string, region?: string) => void) | undefined,
   delay: number
 ) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
@@ -14,7 +14,7 @@ export function useUniqueClusterNameCheck(
   }, []);
 
   const checkName = useCallback(
-    (name: string, region: string) => {
+    (name: string, region?: string) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }

@@ -114,7 +114,7 @@ export const createMockClusterData = (overrides: Record<string, unknown> = {}) =
 
 export interface DetailsSubStepStoryProps {
   openShiftVersions?: Resource<OpenShiftVersions[]>;
-  checkClusterNameUniqueness?: (name: string, region: string) => void;
+  checkClusterNameUniqueness?: (name: string, region?: string) => void;
   clusterNameValidation?: ValidationResource;
   awsInfrastructureAccounts?: Resource<AWSInfrastructureAccounts[]>;
   awsBillingAccounts?: Resource<SelectDropdownType[]>;

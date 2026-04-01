@@ -37,7 +37,7 @@ import { buildWizardStringsForRosa, type RosaWizardStringsInput } from './rosaWi
 export type BasicSetupStepProps = {
   // validation-only fields (no data, just state)
   clusterNameValidation: ValidationResource;
-  checkClusterNameUniqueness?: (name: string, region: string) => void;
+  checkClusterNameUniqueness?: (name: string, region?: string) => void;
   userRole: ValidationResource;
 
   // data resources — each carries data/error/loading and optional fetch

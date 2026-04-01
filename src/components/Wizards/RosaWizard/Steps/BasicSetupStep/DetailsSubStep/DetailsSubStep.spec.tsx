@@ -123,7 +123,7 @@ test.describe('DetailsSubStep', () => {
       const component = await mount(
         <DetailsSubStepStory
           checkClusterNameUniqueness={(name, region) => {
-            calls.push({ name, region });
+            if (region) calls.push({ name, region });
           }}
           clusterOverrides={{ region: 'us-east-1' }}
         />
@@ -314,7 +314,7 @@ test.describe('DetailsSubStep', () => {
       const component = await mount(
         <DetailsSubStepStory
           checkClusterNameUniqueness={(name, region) => {
-            calls.push({ name, region });
+            if (region) calls.push({ name, region });
           }}
           clusterOverrides={{ region: 'us-east-1' }}
         />
@@ -336,7 +336,7 @@ test.describe('DetailsSubStep', () => {
       const component = await mount(
         <DetailsSubStepStory
           checkClusterNameUniqueness={(name, region) => {
-            calls.push({ name, region });
+            if (region) calls.push({ name, region });
           }}
           clusterOverrides={{ region: 'us-east-1' }}
         />
@@ -358,7 +358,7 @@ test.describe('DetailsSubStep', () => {
       const component = await mount(
         <DetailsSubStepStory
           checkClusterNameUniqueness={(name, region) => {
-            calls.push({ name, region });
+            if (region) calls.push({ name, region });
           }}
           clusterOverrides={{ region: 'us-east-1' }}
         />
@@ -384,7 +384,7 @@ test.describe('DetailsSubStep', () => {
       const component = await mount(
         <DetailsSubStepStory
           checkClusterNameUniqueness={(name, region) => {
-            calls.push({ name, region });
+            if (region) calls.push({ name, region });
           }}
           clusterOverrides={{ name: 'my-cluster' }}
         />
@@ -405,7 +405,7 @@ test.describe('DetailsSubStep', () => {
       mount,
       page,
     }) => {
-      const calls: Array<{ name: string; region: string }> = [];
+      const calls: Array<{ name: string; region?: string }> = [];
 
       const component = await mount(
         <DetailsSubStepStory
