@@ -182,7 +182,11 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
 
               <ReviewAndCreateStepItem
                 label={r.installVpc}
-                value={cluster?.selected_vpc?.name}
+                value={
+                  typeof cluster?.selected_vpc === 'object'
+                    ? cluster.selected_vpc.name
+                    : cluster?.selected_vpc
+                }
                 hasIcon
               />
 

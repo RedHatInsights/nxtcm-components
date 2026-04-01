@@ -68,7 +68,7 @@ const constructSelectedSubnets = (formValues?: ClusterFormData): CIDRSubnet[] =>
   }
 
   // aws_subnets contains CIDRSubnet data at runtime even though VPC types it as Subnet[]
-  const subnets = selectedVpc.aws_subnets as unknown as CIDRSubnet[];
+  const subnets = selectedVpc.aws_subnets as CIDRSubnet[];
 
   const privateSubnets = subnets.filter((obj: CIDRSubnet) =>
     privateSubnetIds.includes(obj.subnet_id)

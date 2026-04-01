@@ -118,7 +118,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                       : undefined
                   }
                   onValueChange={(_value, item) => {
-                    void updateOnAWSAccountChange(_value, item, regions.fetch);
+                    void updateOnAWSAccountChange(_value as string, item, regions.fetch);
                     if (_value) {
                       void roles.fetch(_value as string);
                     }

@@ -1,8 +1,8 @@
-import { ClusterNetwork } from '../../types';
+import { ClusterNetwork, RosaWizardFormData } from '../../types';
 
 export const updateOnAWSAccountChange = async (
-  value: any,
-  item: any,
+  value: string,
+  item: RosaWizardFormData,
   refetch?: (param: string) => Promise<void>
 ) => {
   delete item.cluster.installer_role_arn;
@@ -14,5 +14,5 @@ export const updateOnAWSAccountChange = async (
 
   item.cluster.cluster_privacy = ClusterNetwork.external;
 
-  if (refetch) await refetch(value as string);
+  if (refetch) await refetch(value);
 };

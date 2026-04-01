@@ -70,6 +70,7 @@ export type CIDRSubnet = {
   cidr_block: string;
   name: string;
   subnet_id: string;
+  availability_zone: string;
 };
 
 export type VPC = {
@@ -155,7 +156,7 @@ export type ClusterFormData = {
   custom_operator_roles_prefix: string;
 
   // machine pools — WizSelect stores the full VPC object at runtime via keyPath
-  selected_vpc?: VPC;
+  selected_vpc?: string | VPC;
   machine_pools_subnets?: MachinePoolSubnetEntry[];
   machine_type?: string;
   autoscaling?: boolean;
