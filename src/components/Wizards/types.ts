@@ -143,7 +143,7 @@ export enum ClusterUpgrade {
 export type ClusterFormData = {
   name: string | undefined;
   cluster_version: string | undefined;
-  associated_aws_id: string | undefined;
+  associated_aws_id: string;
   billing_account_id: string | undefined;
   region: string | undefined;
 
