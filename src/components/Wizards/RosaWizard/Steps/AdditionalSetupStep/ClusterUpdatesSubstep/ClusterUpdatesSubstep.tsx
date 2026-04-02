@@ -155,7 +155,7 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
       {cluster?.upgrade_policy === 'automatic' && (
         <FormGroup label={cu.dayTimeLabel} style={{ marginLeft: '1.5rem' }}>
           <Split hasGutter>
-            <SplitItem isFilled>
+            <SplitItem>
               <Select
                 isOpen={daySelectOpen}
                 selected={selectedDay}
@@ -173,7 +173,7 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
                 </SelectList>
               </Select>
             </SplitItem>
-            <SplitItem isFilled>
+            <SplitItem>
               <Select
                 isOpen={timeSelectOpen}
                 selected={selectedHour}
