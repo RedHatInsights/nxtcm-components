@@ -11,7 +11,10 @@ type CopyInstructionProps = {
 
 export const CopyInstruction: React.FunctionComponent<CopyInstructionProps> = (props) => {
   return (
-    <Content component={ContentVariants.pre} className="copy-instruction">
+    <Content
+      component={ContentVariants.pre}
+      className={`copy-instruction${props.className ? ` ${props.className}` : ''}`}
+    >
       <ClipboardCopy
         variant={props.variant}
         isReadOnly
