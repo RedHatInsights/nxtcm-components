@@ -70,6 +70,7 @@ export type CIDRSubnet = {
   cidr_block: string;
   name: string;
   subnet_id: string;
+  availability_zone: string;
 };
 
 export type VPC = {
@@ -123,21 +124,36 @@ export type MachinePoolSubnetEntry = {
   machine_pool_subnet: string;
 };
 
+export enum ClusterNetwork {
+  external = 'external',
+  internal = 'internal',
+}
+
+export enum ClusterEncryptionKeys {
+  default = 'default',
+  custom = 'custom',
+}
+
+export enum ClusterUpgrade {
+  manual = 'manual',
+  automatic = 'automatic',
+}
+
 // -- cluster form data: the full shape of the wizard's form state --
 
 export type ClusterFormData = {
-  name?: string;
-  cluster_version?: string;
-  associated_aws_id?: string;
-  billing_account_id?: string;
-  region?: string;
+  name: string | undefined;
+  cluster_version: string | undefined;
+  associated_aws_id: string;
+  billing_account_id: string | undefined;
+  region: string | undefined;
 
   // roles & policies
-  installer_role_arn?: string;
-  support_role_arn?: string;
-  worker_role_arn?: string;
-  byo_oidc_config_id?: string;
-  custom_operator_roles_prefix?: string;
+  installer_role_arn: string | undefined;
+  support_role_arn: string | undefined;
+  worker_role_arn: string | undefined;
+  byo_oidc_config_id: string;
+  custom_operator_roles_prefix: string;
 
   // machine pools — WizSelect stores the full VPC object at runtime via keyPath
   selected_vpc?: string | VPC;
@@ -151,7 +167,7 @@ export type ClusterFormData = {
   imds?: string;
 
   // networking
-  cluster_privacy?: 'external' | 'internal';
+  cluster_privacy?: ClusterNetwork.external | ClusterNetwork.internal;
   cluster_privacy_public_subnet_id?: string;
   cidr_default?: boolean;
   network_machine_cidr?: string;
@@ -169,13 +185,13 @@ export type ClusterFormData = {
   additional_trust_bundle?: string;
 
   // encryption
-  encryption_keys?: 'default' | 'custom';
+  encryption_keys?: ClusterEncryptionKeys.default | ClusterEncryptionKeys.custom;
   kms_key_arn?: string;
   etcd_encryption?: boolean;
   etcd_key_arn?: string;
 
   // cluster updates
-  upgrade_policy?: 'automatic' | 'manual';
+  upgrade_policy?: ClusterUpgrade.automatic | ClusterUpgrade.manual;
   upgrade_schedule?: string;
 };
 

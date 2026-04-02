@@ -1,16 +1,14 @@
 import {
   Radio,
   Section,
-  useData,
   useItem,
   WizCheckbox,
   WizRadioGroup,
   WizTextInput,
 } from '@patternfly-labs/react-form-wizard';
 import { Alert, Flex, FlexItem, Grid, GridItem } from '@patternfly/react-core';
-import React from 'react';
 import { validateAWSKMSKeyARN } from '../../../validators';
-import { RosaWizardFormData } from '../../../../types';
+import { ClusterEncryptionKeys, RosaWizardFormData } from '../../../../types';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
@@ -19,23 +17,6 @@ export const EncryptionSubstep = () => {
   const e = useRosaWizardStrings().encryption;
   const v = useRosaWizardValidators();
   const { cluster } = useItem<RosaWizardFormData>();
-  const { update } = useData();
-
-  React.useEffect(() => {
-    if (cluster?.encryption_keys !== 'custom' && cluster?.kms_key_arn) {
-      const { kms_key_arn, ...rest } = cluster;
-      update({ cluster: rest });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cluster?.encryption_keys]);
-
-  React.useEffect(() => {
-    if (!cluster?.etcd_encryption && cluster?.etcd_key_arn) {
-      const { etcd_key_arn, ...rest } = cluster;
-      update({ cluster: rest });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cluster?.etcd_encryption]);
 
   return (
     <Section
@@ -53,17 +34,30 @@ export const EncryptionSubstep = () => {
             <ExternalLink href={links.AWS_DATA_PROTECTION}>{e.keysLearnMore}</ExternalLink>
           </>
         }
+        onValueChange={() => {
+          if (cluster?.encryption_keys !== ClusterEncryptionKeys.custom && cluster?.kms_key_arn) {
+            delete cluster.kms_key_arn;
+          }
+        }}
       >
         <Flex direction={{ default: 'column' }}>
           <FlexItem>
-            <Radio id="default-aws-kms-key-radio-btn" label={e.defaultKms} value="default" />
+            <Radio
+              id="default-aws-kms-key-radio-btn"
+              label={e.defaultKms}
+              value={ClusterEncryptionKeys.default}
+            />
           </FlexItem>
           <FlexItem>
-            <Radio id="custom-aws-kms-key-radio-btn" label={e.customKms} value="custom" />
+            <Radio
+              id="custom-aws-kms-key-radio-btn"
+              label={e.customKms}
+              value={ClusterEncryptionKeys.custom}
+            />
           </FlexItem>
         </Flex>
       </WizRadioGroup>
-      {cluster?.['encryption_keys'] === 'custom' && (
+      {cluster?.['encryption_keys'] === ClusterEncryptionKeys.custom && (
         <Grid>
           <GridItem span={8}>
             <WizTextInput
@@ -83,6 +77,11 @@ export const EncryptionSubstep = () => {
         path="cluster.etcd_encryption"
         title={e.etcdTitle}
         label={e.etcdLabel}
+        onValueChange={() => {
+          if (!cluster?.etcd_encryption && cluster?.etcd_key_arn) {
+            delete cluster.etcd_key_arn;
+          }
+        }}
         helperText={
           <>
             {e.etcdHelperLead}{' '}

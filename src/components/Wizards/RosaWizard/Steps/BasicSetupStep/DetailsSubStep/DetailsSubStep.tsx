@@ -118,7 +118,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                       : undefined
                   }
                   onValueChange={(_value, item) => {
-                    void updateOnAWSAccountChange(_value, item, regions.fetch);
+                    void updateOnAWSAccountChange(_value as string, item, regions.fetch);
                     if (_value) {
                       void roles.fetch(_value as string);
                     }
@@ -217,9 +217,9 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   options={regions.data}
                   disabled={regions.isFetching}
                   onValueChange={(_value, item) => {
-                    uniqueClusterNameCheck(cluster.name, _value as string);
-                    item.cluster.selected_vpc = undefined;
-                    item.cluster.cluster_privacy_public_subnet_id = undefined;
+                    if (cluster.name) uniqueClusterNameCheck(cluster.name, _value as string);
+                    delete item.cluster.selected_vpc;
+                    delete item.cluster.cluster_privacy_public_subnet_id;
                     if (
                       item.cluster.machine_pools_subnets &&
                       item.cluster.machine_pools_subnets.length > 0

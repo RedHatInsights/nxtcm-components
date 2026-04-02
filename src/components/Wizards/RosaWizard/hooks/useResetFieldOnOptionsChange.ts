@@ -4,6 +4,7 @@ import React from 'react';
 import { useItem } from '../../../../../packages/react-form-wizard/src/contexts/ItemContext';
 import { useData } from '../../../../../packages/react-form-wizard/src/contexts/DataContext';
 import { useSetStepShowValidation } from '../../../../../packages/react-form-wizard/src/contexts/StepShowValidationProvider';
+import { RosaWizardFormData } from '../../types';
 
 type OptionWithValue = { value: string };
 
@@ -12,7 +13,7 @@ export function useResetFieldOnOptionsChange(
   options: OptionWithValue[],
   stepId?: string
 ) {
-  const item = useItem();
+  const item = useItem<RosaWizardFormData>();
   const { update } = useData();
   const setStepShowValidation = useSetStepShowValidation();
 

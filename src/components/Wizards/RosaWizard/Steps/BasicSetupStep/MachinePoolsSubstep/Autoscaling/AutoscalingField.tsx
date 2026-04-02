@@ -13,18 +13,18 @@ import {
 } from '../../../../RosaWizardStringsContext';
 
 type AutoscalingFieldProps = {
-  autoscaling: boolean;
-  machinePoolsNumber: number;
-  openshiftVersion: number;
+  autoscaling?: boolean;
+  machinePoolsNumber?: number;
+  openshiftVersion?: string;
 };
 
 export const MAX_NODES_HCP_DEFAULT = 500;
 export const MAX_NODES_HCP_INSUFFICIENT_VERSION = 90;
 
-const scaleMinNodesOnMachinePoolNumber = (machinePoolsNumber: number) =>
-  machinePoolsNumber > 1 ? 1 : 2;
+const scaleMinNodesOnMachinePoolNumber = (machinePoolsNumber?: number) =>
+  machinePoolsNumber && machinePoolsNumber > 1 ? 1 : 2;
 
-const scaleMaxNodesBasedOnOpenshiftVersion = (openshiftVersion: number) => {
+const scaleMaxNodesBasedOnOpenshiftVersion = (openshiftVersion: string) => {
   const majorMinor = parseFloat(openshiftVersion.toString());
   const versionPatch = Number(openshiftVersion.toString().split('.')[2]);
   if (majorMinor >= 4.16) {
@@ -42,7 +42,7 @@ const scaleMaxNodesBasedOnOpenshiftVersion = (openshiftVersion: number) => {
   return true;
 };
 
-export const getAutoscalingMaxNodes = (openshiftVersion?: number) => {
+export const getAutoscalingMaxNodes = (openshiftVersion?: string) => {
   if (openshiftVersion && !scaleMaxNodesBasedOnOpenshiftVersion(openshiftVersion)) {
     return MAX_NODES_HCP_INSUFFICIENT_VERSION;
   }
@@ -76,8 +76,10 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
         onValueChange={(checked, item) => {
           if (checked) {
             delete item.cluster.nodes_compute;
+
             item.cluster.min_replicas = scaleMinNodesOnMachinePoolNumber(machinePoolsNumber);
             item.cluster.max_replicas = 4;
+
             update();
           } else {
             delete item.cluster.min_replicas;
@@ -102,7 +104,7 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
                   </ExternalLink>
                 </>
               }
-              min={scaleMinNodesOnMachinePoolNumber(machinePoolsNumber)}
+              min={machinePoolsNumber && scaleMinNodesOnMachinePoolNumber(machinePoolsNumber)}
               max={maxNodeBasedOnOpenshiftVersion}
               validation={(value: number, item) =>
                 validateMinReplicas(value, item, machinePoolsNumber, v.replicas)
