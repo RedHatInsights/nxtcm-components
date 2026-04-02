@@ -217,7 +217,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   options={regions.data}
                   disabled={regions.isFetching}
                   onValueChange={(_value, item) => {
-                    if(cluster.name) uniqueClusterNameCheck(cluster.name, _value as string);
+                    if (cluster.name) uniqueClusterNameCheck(cluster.name, _value as string);
                     delete item.cluster.selected_vpc;
                     delete item.cluster.cluster_privacy_public_subnet_id;
                     if (
