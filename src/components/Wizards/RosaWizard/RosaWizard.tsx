@@ -37,6 +37,7 @@ import { buildWizardStringsForRosa, type RosaWizardStringsInput } from './rosaWi
 export type BasicSetupStepProps = {
   // validation-only fields (no data, just state)
   clusterNameValidation: ValidationResource;
+  checkClusterNameUniqueness?: (name: string, region?: string) => void;
   userRole: ValidationResource;
 
   // data resources — each carries data/error/loading and optional fetch
@@ -197,6 +198,7 @@ const RosaWizardBody = (props: RosaWizardProps) => {
                   clusterNameValidation={basicSetupStep.clusterNameValidation}
                   openShiftVersions={opVersions}
                   machineTypes={basicSetupStep.machineTypes}
+                  checkClusterNameUniqueness={basicSetupStep.checkClusterNameUniqueness}
                   roles={basicSetupStep.roles}
                   awsInfrastructureAccounts={basicSetupStep.awsInfrastructureAccounts}
                   awsBillingAccounts={basicSetupStep.awsBillingAccounts}
