@@ -8,7 +8,7 @@ import rosaHcpTemplateRaw from './templates/rosa-hcp-template.hbs?raw';
 import './YamlDrawerEditor.css';
 import { parseMultiDocYaml } from './yamlUtils';
 import { validateYaml } from './yamlValidation';
-import { RosaWizardFormData } from '@/components/Wizards/types';
+import { RosaWizardFormData } from '../../../types';
 
 Handlebars.registerHelper(
   'eq',

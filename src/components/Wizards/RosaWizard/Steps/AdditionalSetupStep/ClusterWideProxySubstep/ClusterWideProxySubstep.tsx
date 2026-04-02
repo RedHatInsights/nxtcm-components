@@ -9,7 +9,7 @@ import {
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
-import { RosaWizardFormData } from '@/components/Wizards/types';
+import { RosaWizardFormData } from '../../../../types';
 
 export const ClusterWideProxySubstep = () => {
   const cw = useRosaWizardStrings().clusterWideProxy;

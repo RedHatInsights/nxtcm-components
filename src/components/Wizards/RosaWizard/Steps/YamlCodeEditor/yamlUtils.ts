@@ -1,4 +1,4 @@
-import { ClusterNetwork } from '@/components/Wizards/types';
+import { ClusterNetwork } from '../../../types';
 import * as yaml from 'js-yaml';
 
 export interface YamlParseResult {
