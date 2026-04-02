@@ -1,5 +1,7 @@
 import { Content, ContentVariants, ClipboardCopy, clipboardCopyFunc } from '@patternfly/react-core';
 
+import './CopyInstruction.css';
+
 type CopyInstructionProps = {
   children: string;
   className?: string;
@@ -9,7 +11,7 @@ type CopyInstructionProps = {
 
 export const CopyInstruction: React.FunctionComponent<CopyInstructionProps> = (props) => {
   return (
-    <Content component={ContentVariants.pre}>
+    <Content component={ContentVariants.pre} className="copy-instruction">
       <ClipboardCopy
         variant={props.variant}
         isReadOnly
