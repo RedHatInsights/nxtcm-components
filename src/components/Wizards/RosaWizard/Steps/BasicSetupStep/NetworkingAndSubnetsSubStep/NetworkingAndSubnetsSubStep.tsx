@@ -173,7 +173,7 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
             actionClose={<AlertActionCloseButton onClose={() => {}} />}
             variant="warning"
             title={n.cidrAlertTitle}
-            ouiaId="encryptionKeysAlert"
+            ouiaId="networkingCidrAlert"
           >
             <Content component={ContentVariants.p}>{n.cidrAlertBody}</Content>
 
