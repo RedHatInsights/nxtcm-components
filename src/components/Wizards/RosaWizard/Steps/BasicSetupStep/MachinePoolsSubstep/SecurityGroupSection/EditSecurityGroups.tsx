@@ -180,7 +180,7 @@ const EditSecurityGroups = ({
             </Stack>
           </SplitItem>
           {refreshVPCCallback && (
-            <SplitItem style={{ textAlign: 'left' }}>
+            <SplitItem>
               <Tooltip content={sg.refreshTooltip}>
                 <Button
                   id="refreshSecurityGroupsButton"
