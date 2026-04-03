@@ -120,6 +120,14 @@ const RosaWizardBody = (props: RosaWizardProps) => {
 
   const [isClusterWideProxySelected, setIsClusterWideProxySelected] =
     React.useState<boolean>(false);
+  const skipToReviewStepIds = React.useMemo(
+    () => [
+      ...(isClusterWideProxySelected ? ['additional-setup-cluster-wide-proxy'] : []),
+      'additional-setup-encryption',
+      'additional-setup-cluster-updates',
+    ],
+    [isClusterWideProxySelected]
+  );
 
   const [resumeAtStepId, setResumeAtStepId] = React.useState<string | null>(null);
   const [isNavigatingToReview, setIsNavigatingToReview] = React.useState(false);
@@ -182,6 +190,7 @@ const RosaWizardBody = (props: RosaWizardProps) => {
           onSubmit={onSubmit}
           onCancel={() => onCancel()}
           title={title}
+          skipToReviewStepIds={skipToReviewStepIds}
           defaultData={defaultClusterData}
           setUseWizardContext={setUseWizardContext}
           resumeAtStepId={resumeAtStepId}

@@ -85,6 +85,7 @@ export interface WizardProps {
   yamlEditor?: () => ReactNode;
   submitButtonText?: string;
   submittingButtonText?: string;
+  skipToReviewStepIds?: string[];
   onStepChange?: (event: React.MouseEvent<HTMLButtonElement>, currentStep: WizardStepType) => void;
   setUseWizardContext?: (context: WizardContextType) => void;
 }
@@ -144,6 +145,7 @@ export function Wizard(
                                     hasButtons={props.hasButtons}
                                     submitButtonText={props.submitButtonText}
                                     submittingButtonText={props.submittingButtonText}
+                                    skipToReviewStepIds={props.skipToReviewStepIds}
                                     resumeAtStepId={props.resumeAtStepId}
                                     onResumedToStep={props.onResumedToStep}
                                   >
@@ -186,6 +188,7 @@ type WizardFooterProps = {
   onSubmit: WizardSubmit;
   submitButtonText?: string;
   submittingButtonText?: string;
+  skipToReviewStepIds?: string[];
   steps: ReactElement[];
   setUseWizardContext?: (context: WizardContextType) => void;
   resumeAtStepId?: string | null;
@@ -201,12 +204,34 @@ type WizardInternalProps = Omit<WizardFooterProps, 'steps'> & {
   setUseWizardContext?: (context: WizardContextType) => void;
 };
 
+type WizardStepLikeProps = {
+  id?: string;
+  steps?: ReactElement[];
+};
+
+function getFirstNavigableStepId(stepElements: ReactElement[]): string | undefined {
+  for (const stepElement of stepElements) {
+    const props = stepElement.props as WizardStepLikeProps;
+    if (props.steps && props.steps.length > 0) {
+      const nestedFirstStepId = getFirstNavigableStepId(props.steps);
+      if (nestedFirstStepId) {
+        return nestedFirstStepId;
+      }
+    }
+    if (props.id) {
+      return props.id;
+    }
+  }
+  return undefined;
+}
+
 function WizardInternal({
   children,
   onSubmit,
   onCancel,
   submitButtonText,
   submittingButtonText,
+  skipToReviewStepIds,
   onStepChange,
   setUseWizardContext,
   resumeAtStepId,
@@ -327,6 +352,7 @@ function WizardInternal({
             steps={stepComponents}
             submitButtonText={submitButtonText}
             submittingButtonText={submittingButtonText}
+            skipToReviewStepIds={skipToReviewStepIds}
             resumeAtStepId={resumeAtStepId}
             onResumedToStep={onResumedToStep}
           />
@@ -367,6 +393,7 @@ function MyFooter(props: WizardFooterProps) {
     onSubmit,
     submitButtonText,
     submittingButtonText,
+    skipToReviewStepIds,
     steps,
   } = props;
 
@@ -443,12 +470,7 @@ function MyFooter(props: WizardFooterProps) {
   const activeStepHasValidationError = stepHasValidationError[activeStepId];
   const stepShowValidation = useStepShowValidation();
   const activeStepShowValidation = stepShowValidation[activeStepId];
-  const skipToReviewStepIds = new Set([
-    'additional-setup-cluster-wide-proxy',
-    'additional-setup-encryption',
-    'additional-setup-cluster-updates',
-  ]);
-  const canSkipToReview = skipToReviewStepIds.has(activeStepId);
+  const canSkipToReview = skipToReviewStepIds?.includes(activeStepId) ?? false;
 
   const setStepShowValidation = useSetStepShowValidation();
 
@@ -456,10 +478,7 @@ function MyFooter(props: WizardFooterProps) {
     props.steps.length > 0
       ? (props.steps[props.steps.length - 1] as ReactElement<{ id?: string }>).props?.id
       : undefined;
-  const firstStepId =
-    props.steps.length > 0
-      ? (props.steps[0] as ReactElement<{ id?: string }>).props?.id
-      : undefined;
+  const firstStepId = props.steps.length > 0 ? getFirstNavigableStepId(props.steps) : undefined;
 
   const onNextClick = useCallback(async () => {
     const stepID = activeStep.id?.toString() ?? '';
@@ -498,6 +517,7 @@ function MyFooter(props: WizardFooterProps) {
     cancelButtonText,
     backButtonText,
     nextButtonText,
+    skipToReviewButtonText,
   } = useStringContext();
 
   if (isLastStep) {
@@ -595,7 +615,7 @@ function MyFooter(props: WizardFooterProps) {
                     onClick={onSkipToReviewClick}
                     isDisabled={isNextButtonDisabled}
                   >
-                    Skip to review
+                    {skipToReviewButtonText}
                   </Button>
                 </ActionListItem>
               )}
