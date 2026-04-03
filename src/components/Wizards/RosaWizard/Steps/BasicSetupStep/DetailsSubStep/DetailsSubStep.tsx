@@ -102,7 +102,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
         <Stack hasGutter>
           <StackItem>
             <Grid>
-              <GridItem span={4}>
+              <GridItem span={5} style={{ paddingRight: '1.5rem' }}>
                 <WizSelect
                   isFill
                   path="cluster.associated_aws_id"
@@ -139,7 +139,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
 
           <StackItem>
             <Grid>
-              <GridItem span={4}>
+              <GridItem span={5} style={{ paddingRight: '1.5rem' }}>
                 <WizSelect
                   isFill
                   disabled={awsBillingAccounts.isFetching}
@@ -165,7 +165,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
           </StackItem>
           <StackItem>
             <Grid>
-              <GridItem span={4}>
+              <GridItem span={5} style={{ paddingRight: '4.125rem' }}>
                 <WizTextInput
                   validation={(name: string, item: unknown) =>
                     validateClusterName(name, item) || clusterNameValidation.error || undefined
@@ -186,7 +186,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
 
           <StackItem>
             <Grid>
-              <GridItem span={4}>
+              <GridItem span={5} style={{ paddingRight: '1.5rem' }}>
                 <WizSelect
                   isFill
                   path="cluster.cluster_version"
@@ -207,7 +207,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
           </StackItem>
           <StackItem>
             <Grid>
-              <GridItem span={4}>
+              <GridItem span={5} style={{ paddingRight: '4.125rem' }}>
                 <WizSelect
                   isFill
                   path="cluster.region"
