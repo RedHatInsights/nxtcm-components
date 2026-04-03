@@ -6,7 +6,7 @@ import {
   Flex,
   FlexItem,
   Radio as PfRadio,
-} from "@patternfly/react-core";
+} from '@patternfly/react-core';
 import {
   Children,
   createContext,
@@ -15,13 +15,13 @@ import {
   ReactElement,
   ReactNode,
   useContext,
-} from "react";
-import { WizHelperText } from "../components/WizHelperText";
-import { Indented } from "../components/Indented";
-import { DisplayMode } from "../contexts/DisplayModeContext";
-import { useRandomID } from "../contexts/useRandomID";
-import { InputCommonProps, useInput } from "./Input";
-import { WizFormGroup } from "./WizFormGroup";
+} from 'react';
+import { WizHelperText } from '../components/WizHelperText';
+import { Indented } from '../components/Indented';
+import { DisplayMode } from '../contexts/DisplayModeContext';
+import { useRandomID } from '../contexts/useRandomID';
+import { InputCommonProps, useInput } from './Input';
+import { WizFormGroup } from './WizFormGroup';
 
 export interface IRadioGroupContextState {
   value?: any;
@@ -32,7 +32,7 @@ export interface IRadioGroupContextState {
 }
 
 export const RadioGroupContext = createContext<IRadioGroupContextState>({});
-RadioGroupContext.displayName = "RadioGroupContext";
+RadioGroupContext.displayName = 'RadioGroupContext';
 
 export type WizRadioGroupProps = InputCommonProps & { children?: ReactNode };
 
@@ -82,17 +82,13 @@ export function WizRadioGroup(props: WizRadioGroupProps) {
       <div id={id}>
         <WizFormGroup {...props} id={id} noHelperText>
           <WizHelperText {...props} />
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              rowGap: 12,
-              paddingTop: 8,
-              paddingBottom: 4,
-            }}
+          <Flex
+            direction={{ default: 'column' }}
+            spaceItems={{ default: 'spaceItemsSm' }}
+            className="pf-v6-u-pt-xs"
           >
             {props.children}
-          </div>
+          </Flex>
         </WizFormGroup>
       </div>
     </RadioGroupContext.Provider>
@@ -110,12 +106,16 @@ export function Radio(props: {
   const radioGroupContext = useContext(RadioGroupContext);
   return (
     <Fragment>
-      <Flex>
+      <Flex
+        alignItems={{ default: 'alignItemsCenter' }}
+        spaceItems={{ default: 'spaceItemsXs' }}
+        flexWrap={{ default: 'nowrap' }}
+      >
         <FlexItem>
           <PfRadio
             id={
               radioGroupContext.radioGroup
-                ? props.id + "-" + radioGroupContext.radioGroup
+                ? props.id + '-' + radioGroupContext.radioGroup
                 : props.id
             }
             label={props.label}
@@ -126,16 +126,14 @@ export function Radio(props: {
             onChange={() => radioGroupContext.setValue?.(props.value)}
             isDisabled={radioGroupContext.disabled}
             readOnly={radioGroupContext.readonly}
-            name={radioGroupContext.radioGroup ?? ""}
+            name={radioGroupContext.radioGroup ?? ''}
             description={props.description}
           />
         </FlexItem>
-        <FlexItem>
-          {props.popover}
-        </FlexItem>
+        {props.popover && <FlexItem className="pf-v6-u-pt-xs">{props.popover}</FlexItem>}
       </Flex>
       {radioGroupContext.value === props.value && (
-        <Indented paddingBottom={16}>{props.children}</Indented>
+        <Indented paddingBottom={8}>{props.children}</Indented>
       )}
     </Fragment>
   );

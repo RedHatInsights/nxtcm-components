@@ -1,8 +1,8 @@
 /* Copyright Contributors to the Open Cluster Management project */
-import { Button, Popover } from "@patternfly/react-core";
-import { HelpIcon } from "@patternfly/react-icons";
-import { Fragment, ReactNode } from "react";
-import { useStringContext } from "../contexts/StringContext";
+import { Button, Popover } from '@patternfly/react-core';
+import { HelpIcon } from '@patternfly/react-icons';
+import { Fragment, ReactNode } from 'react';
+import { useStringContext } from '../contexts/StringContext';
 
 export function LabelHelp(props: {
   id: string;
@@ -22,7 +22,6 @@ export function LabelHelp(props: {
         id={`${props.id}-label-help-button`}
         aria-label={moreInfo}
         className="pf-v6-c-form__group-label-help"
-        style={{ ["--pf-v6-c-form__group-label-help--TranslateY" as any]: 0 }}
         icon={<HelpIcon />}
       />
     </Popover>

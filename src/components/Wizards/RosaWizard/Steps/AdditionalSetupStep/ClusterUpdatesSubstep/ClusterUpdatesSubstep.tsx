@@ -155,7 +155,7 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
       </WizRadioGroup>
 
       {cluster?.upgrade_policy === ClusterUpgrade.automatic && (
-        <FormGroup label={cu.dayTimeLabel} style={{ marginLeft: '1.5rem' }}>
+        <FormGroup label={cu.dayTimeLabel} className="pf-v6-u-ml-xl">
           <Grid>
             <GridItem span={7}>
               <Split hasGutter isWrappable>

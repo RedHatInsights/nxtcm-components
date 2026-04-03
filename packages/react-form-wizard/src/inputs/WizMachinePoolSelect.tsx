@@ -20,7 +20,11 @@ import { ItemContext } from '../contexts/ItemContext';
 import { DisplayMode } from '../contexts/DisplayModeContext';
 import { InputCommonProps, useInput } from './Input';
 import { InputSelect, SelectListOptions } from './InputSelect';
-import { ValidationProvider, useSetHasValidationError, useValidate } from '../contexts/ValidationProvider';
+import {
+  ValidationProvider,
+  useSetHasValidationError,
+  useValidate,
+} from '../contexts/ValidationProvider';
 import { Option, OptionType } from './WizSelect';
 import { useShowValidation } from '../contexts/ShowValidationProvider';
 import { useStringContext } from '../contexts/StringContext';
@@ -86,13 +90,13 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
     [setValue, update, values]
   );
 
-useLayoutEffect(() => {
-  if (values.length < minItems && values.length === 0) {
-    for (let i = 0; i < minItems; i++) {
-      addItem(props.newValue ?? { machine_pool_subnet: '' });
+  useLayoutEffect(() => {
+    if (values.length < minItems && values.length === 0) {
+      for (let i = 0; i < minItems; i++) {
+        addItem(props.newValue ?? { machine_pool_subnet: '' });
+      }
     }
-  }
-}, [values.length, minItems, addItem, props.newValue]);
+  }, [values.length, minItems, addItem, props.newValue]);
 
   const removeItem = useCallback(
     (index: number) => {
@@ -149,7 +153,7 @@ useLayoutEffect(() => {
           {props.machinePoolLabel}
         </Content>
       </GridItem>
-      <GridItem span={2}>
+      <GridItem span={4}>
         <Content component={ContentVariants.p} className="pf-v6-u-font-weight-bold">
           {props.subnetLabel}
         </Content>
@@ -228,18 +232,18 @@ function MachinePoolRow(props: MachinePoolRowProps) {
 
   const [previousHasError, setPreviousHasError] = useState(hasError);
 
-useLayoutEffect(() => {
-  if (hasError !== previousHasError) {
-    setPreviousHasError(hasError);
-    validate();
-  }
-}, [hasError, previousHasError, validate]);
+  useLayoutEffect(() => {
+    if (hasError !== previousHasError) {
+      setPreviousHasError(hasError);
+      validate();
+    }
+  }, [hasError, previousHasError, validate]);
 
-useLayoutEffect(() => {
-  if (hasError) {
-    setHasValidationError();
-  }
-}, [hasError, setHasValidationError]);
+  useLayoutEffect(() => {
+    if (hasError) {
+      setHasValidationError();
+    }
+  }, [hasError, setHasValidationError]);
 
   const validated = showValidation && hasError ? 'error' : undefined;
   const errorMessage = hasError ? requiredErrorMessage : undefined;
@@ -272,7 +276,7 @@ useLayoutEffect(() => {
   return (
     <Grid hasGutter>
       <GridItem span={3}>
-        <Content component={ContentVariants.p} style={{ paddingTop: '6px' }}>
+        <Content component={ContentVariants.p} className="pf-v6-u-pt-sm">
           {machinePoolLabel} {index + 1}
         </Content>
       </GridItem>
@@ -322,11 +326,11 @@ useLayoutEffect(() => {
           variant="plain"
           aria-label={`Remove machine pool ${index + 1}`}
           onClick={onRemove}
-          style={{ paddingTop: '6px' }}
+          className="pf-v6-u-pt-sm"
         >
           <MinusCircleIcon />
         </Button>
       </GridItem>
     </Grid>
   );
-};
+}
