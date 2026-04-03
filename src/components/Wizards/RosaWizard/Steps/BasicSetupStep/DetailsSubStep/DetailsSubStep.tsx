@@ -87,7 +87,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
         <Stack hasGutter>
           <StackItem>
             <Grid hasGutter>
-              <GridItem span={4}>
+              <GridItem span={5}>
                 <WizSelect
                   isFill
                   path="cluster.associated_aws_id"

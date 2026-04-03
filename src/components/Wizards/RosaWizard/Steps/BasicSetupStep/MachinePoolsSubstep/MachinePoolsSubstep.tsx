@@ -91,20 +91,24 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
           </GridItem>
         </Grid>
 
-        <WizMachinePoolSelect
-          required
-          path="cluster.machine_pools_subnets"
-          machinePoolLabel={mp.machinePoolLabel}
-          subnetLabel={mp.subnetLabel}
-          addMachinePoolBtnLabel={mp.addPoolButton}
-          selectPlaceholder={mp.subnetPlaceholder}
-          subnetOptions={privateSubnets?.map((subnet: Subnet) => ({
-            label: subnet.name,
-            value: subnet.subnet_id,
-          }))}
-          newValue={{ machine_pool_subnet: '' }}
-          minItems={1}
-        />
+        <Grid hasGutter>
+          <GridItem span={7}>
+            <WizMachinePoolSelect
+              required
+              path="cluster.machine_pools_subnets"
+              machinePoolLabel={mp.machinePoolLabel}
+              subnetLabel={mp.subnetLabel}
+              addMachinePoolBtnLabel={mp.addPoolButton}
+              selectPlaceholder={mp.subnetPlaceholder}
+              subnetOptions={privateSubnets?.map((subnet: Subnet) => ({
+                label: subnet.name,
+                value: subnet.subnet_id,
+              }))}
+              newValue={{ machine_pool_subnet: '' }}
+              minItems={1}
+            />
+          </GridItem>
+        </Grid>
       </Section>
       <Section
         label={mp.settingsSectionLabel}

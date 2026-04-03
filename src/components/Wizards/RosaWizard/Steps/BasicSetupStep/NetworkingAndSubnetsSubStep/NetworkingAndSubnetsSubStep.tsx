@@ -17,6 +17,8 @@ import {
   Content,
   ContentVariants,
   ExpandableSection,
+  Grid,
+  GridItem,
   Stack,
   StackItem,
 } from '@patternfly/react-core';
@@ -108,44 +110,48 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
   return (
     <>
       <Section label={n.sectionLabel} id="networking-section" key="networking-section-key">
-        <WizRadioGroup
-          id="public-private-subnet-radio-group"
-          path="cluster.cluster_privacy"
-          helperText={n.privacyHelper}
-          onValueChange={() => {
-            if (cluster.cluster_privacy && cluster.cluster_privacy_public_subnet_id) {
-              cluster.cluster_privacy_public_subnet_id = undefined;
-            }
-          }}
-        >
-          <Radio
-            id="public"
-            label={n.publicLabel}
-            value="external"
-            popover={<LabelHelp id="subnet-label-help-public" labelHelp={n.publicPopover} />}
-          >
-            <WizSelect
-              label={n.publicSubnetLabel}
-              path="cluster.cluster_privacy_public_subnet_id"
-              options={
-                props.vpcList.isFetching
-                  ? undefined
-                  : publicSubnets?.map((subnet: Subnet) => ({
-                      label: subnet.name,
-                      value: subnet.subnet_id,
-                    }))
-              }
-              placeholder={n.publicSubnetPlaceholder}
-            />
-          </Radio>
+        <Grid>
+          <GridItem span={7}>
+            <WizRadioGroup
+              id="public-private-subnet-radio-group"
+              path="cluster.cluster_privacy"
+              helperText={n.privacyHelper}
+              onValueChange={() => {
+                if (cluster.cluster_privacy && cluster.cluster_privacy_public_subnet_id) {
+                  cluster.cluster_privacy_public_subnet_id = undefined;
+                }
+              }}
+            >
+              <Radio
+                id="public"
+                label={n.publicLabel}
+                value="external"
+                popover={<LabelHelp id="subnet-label-help-public" labelHelp={n.publicPopover} />}
+              >
+                <WizSelect
+                  label={n.publicSubnetLabel}
+                  path="cluster.cluster_privacy_public_subnet_id"
+                  options={
+                    props.vpcList.isFetching
+                      ? undefined
+                      : publicSubnets?.map((subnet: Subnet) => ({
+                          label: subnet.name,
+                          value: subnet.subnet_id,
+                        }))
+                  }
+                  placeholder={n.publicSubnetPlaceholder}
+                />
+              </Radio>
 
-          <Radio
-            id="private"
-            label={n.privateLabel}
-            value="internal"
-            popover={<LabelHelp id="subnet-label-help-private" labelHelp={n.privatePopover} />}
-          ></Radio>
-        </WizRadioGroup>
+              <Radio
+                id="private"
+                label={n.privateLabel}
+                value="internal"
+                popover={<LabelHelp id="subnet-label-help-private" labelHelp={n.privatePopover} />}
+              ></Radio>
+            </WizRadioGroup>
+          </GridItem>
+        </Grid>
       </Section>
 
       <ExpandableSection toggleText={n.advancedToggle}>
