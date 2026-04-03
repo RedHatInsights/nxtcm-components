@@ -1,3 +1,4 @@
+import { ClusterNetwork } from '../../../types';
 import * as yaml from 'js-yaml';
 
 export interface YamlParseResult {
@@ -144,9 +145,9 @@ export function parseMultiDocYaml(yamlStr: string): Record<string, unknown> | nu
 
     const endpointAccess = spec?.endpointAccess as string | undefined;
     if (endpointAccess === 'Private') {
-      cluster.cluster_privacy = 'internal';
+      cluster.cluster_privacy = ClusterNetwork.internal;
     } else if (endpointAccess === 'Public') {
-      cluster.cluster_privacy = 'external';
+      cluster.cluster_privacy = ClusterNetwork.external;
     }
 
     if (spec?.installerRoleARN) cluster.installer_role_arn = spec.installerRoleARN;

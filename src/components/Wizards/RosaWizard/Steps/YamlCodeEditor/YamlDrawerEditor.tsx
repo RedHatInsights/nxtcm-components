@@ -8,6 +8,7 @@ import rosaHcpTemplateRaw from './templates/rosa-hcp-template.hbs?raw';
 import './YamlDrawerEditor.css';
 import { parseMultiDocYaml } from './yamlUtils';
 import { validateYaml } from './yamlValidation';
+import { RosaWizardFormData } from '../../../types';
 
 Handlebars.registerHelper(
   'eq',
@@ -43,7 +44,7 @@ interface YamlDrawerEditorProps {
 }
 
 export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
-  const data = useItem();
+  const data = useItem<RosaWizardFormData>();
   const { update } = useData();
   const [yamlContent, setYamlContent] = useState('');
   const [parseError, setParseError] = useState('');

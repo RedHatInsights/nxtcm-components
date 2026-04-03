@@ -16,7 +16,7 @@ import {
 import React from 'react';
 import PopoverHintWithTitle from '../../../common/PopoverHitWithTitle';
 import { OIDCConfigHint } from '../../../common/OIDCConfigHint';
-import { OIDCConfig, Resource, Role } from '../../../../types';
+import { OIDCConfig, Resource, Role, RosaWizardFormData } from '../../../../types';
 import { validateCustomOperatorRolesPrefix } from '../../../validators';
 import { createOperatorRolesPrefix } from '../../../helpers';
 import ExternalLink from '../../../common/ExternalLink';
@@ -40,7 +40,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
 
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
-  const { cluster } = useItem();
+  const { cluster } = useItem<RosaWizardFormData>();
   const { update } = useData();
   const selectedRole = React.useMemo(
     () => roles.data.find((roleSet) => roleSet.installerRole.value === cluster?.installer_role_arn),
@@ -126,10 +126,9 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                   cluster.support_role_arn = selected?.supportRole?.[0]?.value;
                   cluster.worker_role_arn = selected?.workerRole?.[0]?.value;
                 } else {
-                  cluster.support_role_arn = undefined;
-                  cluster.worker_role_arn = undefined;
+                  delete cluster.support_role_arn;
+                  delete cluster.worker_role_arn;
                 }
-                update();
               }}
               placeholder={rp.installerPlaceholder}
               labelHelp={

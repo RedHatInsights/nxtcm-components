@@ -16,6 +16,7 @@ import {
   Region,
   MachineTypesDropdownType,
   OpenShiftVersions,
+  RosaWizardFormData,
 } from '../../../../types';
 import { validateClusterName } from '../../../validators';
 import ExternalLink from '../../../common/ExternalLink';
@@ -24,10 +25,13 @@ import links from '../../../externalLinks';
 import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
 import { useResetFieldOnOptionsChange } from '../../../hooks/useResetFieldOnOptionsChange';
 import { showSecurityGroupsSection } from '../../../helpers';
+import { useUniqueClusterNameCheck } from '../../../hooks/useUniqueClusterNameCheck';
 
 type DetailsSubStepProps = {
   clusterNameValidation: ValidationResource;
   openShiftVersions: Resource<OpenShiftVersions[]>;
+  checkClusterNameUniqueness?: (name: string, region?: string) => void;
+  refreshVersionsCallback?: () => void;
   roles: Resource<Role[], [awsAccount: string]> & {
     fetch: (awsAccount: string) => Promise<void>;
   };
@@ -49,14 +53,25 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   regions,
   machineTypes,
   roles,
+  checkClusterNameUniqueness,
 }) => {
   const d = useRosaWizardStrings().details;
-  const { cluster } = useItem();
   const { update } = useData();
 
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const drawerRef = React.useRef<HTMLSpanElement>(null);
   const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
+  const { checkName, cancelCheck } = useUniqueClusterNameCheck(checkClusterNameUniqueness, 500);
+  const { cluster } = useItem<RosaWizardFormData>();
+
+  const uniqueClusterNameCheck = (value: string, region: string) => {
+    const syncError = validateClusterName(value);
+    if (!syncError && value) {
+      checkName(value, region);
+    } else {
+      cancelCheck();
+    }
+  };
 
   useResetFieldOnOptionsChange('cluster.region', regions.data);
   useResetFieldOnOptionsChange('cluster.machine_type', machineTypes.data, 'machinepools-sub-step');
@@ -103,7 +118,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                       : undefined
                   }
                   onValueChange={(_value, item) => {
-                    void updateOnAWSAccountChange(_value, item, regions.fetch);
+                    void updateOnAWSAccountChange(_value as string, item, regions.fetch);
                     if (_value) {
                       void roles.fetch(_value as string);
                     }
@@ -155,6 +170,9 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   validation={(name: string, item: unknown) =>
                     validateClusterName(name, item) || clusterNameValidation.error || undefined
                   }
+                  onValueChange={(value) => {
+                    uniqueClusterNameCheck(value as string, cluster.region as string);
+                  }}
                   path="cluster.name"
                   label={d.clusterNameLabel}
                   validateOnBlur
@@ -199,8 +217,9 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   options={regions.data}
                   disabled={regions.isFetching}
                   onValueChange={(_value, item) => {
-                    item.cluster.selected_vpc = undefined;
-                    item.cluster.cluster_privacy_public_subnet_id = undefined;
+                    if (cluster.name) uniqueClusterNameCheck(cluster.name, _value as string);
+                    delete item.cluster.selected_vpc;
+                    delete item.cluster.cluster_privacy_public_subnet_id;
                     if (
                       item.cluster.machine_pools_subnets &&
                       item.cluster.machine_pools_subnets.length > 0

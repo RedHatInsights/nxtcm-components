@@ -28,6 +28,9 @@ import {
   WizardNavigationContext,
   MachineTypesDropdownType,
   Region,
+  ClusterNetwork,
+  ClusterUpgrade,
+  ClusterEncryptionKeys,
 } from '../types';
 import { MachinePoolsSubstep } from './Steps/BasicSetupStep/MachinePoolsSubstep/MachinePoolsSubstep';
 import { YamlDrawerEditor } from './Steps/YamlCodeEditor';
@@ -37,6 +40,7 @@ import { buildWizardStringsForRosa, type RosaWizardStringsInput } from './rosaWi
 export type BasicSetupStepProps = {
   // validation-only fields (no data, just state)
   clusterNameValidation: ValidationResource;
+  checkClusterNameUniqueness?: (name: string, region?: string) => void;
   userRole: ValidationResource;
 
   // data resources — each carries data/error/loading and optional fetch
@@ -141,7 +145,7 @@ const RosaWizardBody = (props: RosaWizardProps) => {
 
   const defaultClusterData = {
     cluster: {
-      encryption_keys: 'default',
+      encryption_keys: ClusterEncryptionKeys.default,
       etcd_encryption: false,
       configure_proxy: false,
       cidr_default: true,
@@ -151,8 +155,8 @@ const RosaWizardBody = (props: RosaWizardProps) => {
       network_host_prefix: '/23',
       autoscaling: false,
       nodes_compute: 2,
-      upgrade_policy: 'automatic',
-      cluster_privacy: 'external',
+      upgrade_policy: ClusterUpgrade.automatic,
+      cluster_privacy: ClusterNetwork.external,
       compute_root_volume: 300,
     },
   };
@@ -197,6 +201,7 @@ const RosaWizardBody = (props: RosaWizardProps) => {
                   clusterNameValidation={basicSetupStep.clusterNameValidation}
                   openShiftVersions={opVersions}
                   machineTypes={basicSetupStep.machineTypes}
+                  checkClusterNameUniqueness={basicSetupStep.checkClusterNameUniqueness}
                   roles={basicSetupStep.roles}
                   awsInfrastructureAccounts={basicSetupStep.awsInfrastructureAccounts}
                   awsBillingAccounts={basicSetupStep.awsBillingAccounts}

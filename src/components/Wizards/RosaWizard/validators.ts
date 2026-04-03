@@ -95,7 +95,7 @@ export const validateCustomOperatorRolesPrefix = (
 
 export const validateAWSKMSKeyARN = (
   value: string,
-  region: string,
+  region: string | undefined,
   msgs: RosaWizardKmsKeyValidatorStrings = defaultRosaWizardValidatorStrings.kmsKeyArn
 ): string | undefined => {
   if (!value) {
@@ -288,7 +288,7 @@ export const validateRange = (
 
 export const awsMachineCidr = (
   value?: string,
-  formData?: Record<string, string>,
+  formData?: ClusterFormData,
   msgs: RosaWizardAwsMachineCidrValidatorStrings = defaultRosaWizardValidatorStrings.awsMachineCidr
 ): string | undefined => {
   if (!value) {
@@ -366,7 +366,7 @@ export const podCidr = (
 
 export const subnetCidrs = (
   value?: string,
-  formData?: Record<string, string>,
+  formData?: ClusterFormData,
   fieldName?: string,
   selectedSubnets?: CIDRSubnet[],
   msgs: RosaWizardSubnetCidrsValidatorStrings = defaultRosaWizardValidatorStrings.subnetCidrs

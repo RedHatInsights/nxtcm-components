@@ -17,7 +17,7 @@ import {
   SplitItem,
 } from '@patternfly/react-core';
 import parseUpdateSchedule from './parseUpdateSchedule';
-import { RosaWizardFormData, WizardNavigationContext } from '../../../../types';
+import { ClusterUpgrade, RosaWizardFormData, WizardNavigationContext } from '../../../../types';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
@@ -154,7 +154,7 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
         />
       </WizRadioGroup>
 
-      {cluster?.upgrade_policy === 'automatic' && (
+      {cluster?.upgrade_policy === ClusterUpgrade.automatic && (
         <FormGroup label={cu.dayTimeLabel} style={{ marginLeft: '1.5rem' }}>
           <Grid>
             <GridItem span={7}>
