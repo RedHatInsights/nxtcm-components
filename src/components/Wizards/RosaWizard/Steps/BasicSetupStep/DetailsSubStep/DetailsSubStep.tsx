@@ -101,7 +101,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
       >
         <Stack hasGutter>
           <StackItem>
-            <Grid hasGutter>
+            <Grid>
               <GridItem span={4}>
                 <WizSelect
                   isFill
@@ -138,7 +138,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
           </StackItem>
 
           <StackItem>
-            <Grid hasGutter>
+            <Grid>
               <GridItem span={4}>
                 <WizSelect
                   isFill
