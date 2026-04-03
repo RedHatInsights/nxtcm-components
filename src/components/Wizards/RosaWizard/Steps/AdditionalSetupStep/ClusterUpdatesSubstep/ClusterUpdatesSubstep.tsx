@@ -6,6 +6,8 @@ import {
   Content,
   ContentVariants,
   FormGroup,
+  Grid,
+  GridItem,
   MenuToggle,
   MenuToggleElement,
   Select,
@@ -154,46 +156,50 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
 
       {cluster?.upgrade_policy === 'automatic' && (
         <FormGroup label={cu.dayTimeLabel} style={{ marginLeft: '1.5rem' }}>
-          <Split hasGutter isWrappable>
-            <SplitItem>
-              <Select
-                isOpen={daySelectOpen}
-                selected={selectedDay}
-                onOpenChange={(isOpen) => setDaySelectOpen(isOpen)}
-                onSelect={(_, value) => onDaySelect(value)}
-                shouldFocusToggleOnSelect
-                toggle={dayToggle}
-              >
-                <SelectList>
-                  {cu.daysOfWeek.map((day, idx) => (
-                    <SelectOption key={day} value={idx.toString()}>
-                      {day}
-                    </SelectOption>
-                  ))}
-                </SelectList>
-              </Select>
-            </SplitItem>
-            <SplitItem>
-              <Select
-                isOpen={timeSelectOpen}
-                selected={selectedHour}
-                onOpenChange={(isOpen) => setTimeSelectOpen(isOpen)}
-                onSelect={(_, value) => onHourSelect(value)}
-                shouldFocusToggleOnSelect
-                toggle={hourToggle}
-                maxMenuHeight="20em"
-                isScrollable
-              >
-                <SelectList>
-                  {hoursOptions.map((hour) => (
-                    <SelectOption key={hour} value={hour.toString()}>
-                      {formatHourLabel(hour)}
-                    </SelectOption>
-                  ))}
-                </SelectList>
-              </Select>
-            </SplitItem>
-          </Split>
+          <Grid>
+            <GridItem span={7}>
+              <Split hasGutter isWrappable>
+                <SplitItem>
+                  <Select
+                    isOpen={daySelectOpen}
+                    selected={selectedDay}
+                    onOpenChange={(isOpen) => setDaySelectOpen(isOpen)}
+                    onSelect={(_, value) => onDaySelect(value)}
+                    shouldFocusToggleOnSelect
+                    toggle={dayToggle}
+                  >
+                    <SelectList>
+                      {cu.daysOfWeek.map((day, idx) => (
+                        <SelectOption key={day} value={idx.toString()}>
+                          {day}
+                        </SelectOption>
+                      ))}
+                    </SelectList>
+                  </Select>
+                </SplitItem>
+                <SplitItem>
+                  <Select
+                    isOpen={timeSelectOpen}
+                    selected={selectedHour}
+                    onOpenChange={(isOpen) => setTimeSelectOpen(isOpen)}
+                    onSelect={(_, value) => onHourSelect(value)}
+                    shouldFocusToggleOnSelect
+                    toggle={hourToggle}
+                    maxMenuHeight="20em"
+                    isScrollable
+                  >
+                    <SelectList>
+                      {hoursOptions.map((hour) => (
+                        <SelectOption key={hour} value={hour.toString()}>
+                          {formatHourLabel(hour)}
+                        </SelectOption>
+                      ))}
+                    </SelectList>
+                  </Select>
+                </SplitItem>
+              </Split>
+            </GridItem>
+          </Grid>
         </FormGroup>
       )}
     </Section>

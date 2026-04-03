@@ -105,7 +105,11 @@ export const EncryptionSubstep = () => {
           </GridItem>
         </Grid>
       )}
-      <Alert variant="info" title={e.keysNoteAlert} ouiaId="encryptionKeysAlert" />
+      <Grid>
+        <GridItem span={4}>
+          <Alert variant="info" title={e.keysNoteAlert} ouiaId="encryptionKeysAlert" />
+        </GridItem>
+      </Grid>
     </Section>
   );
 };
