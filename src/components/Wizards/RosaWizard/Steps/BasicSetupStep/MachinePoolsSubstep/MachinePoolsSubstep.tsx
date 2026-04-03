@@ -92,7 +92,7 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
         </Grid>
 
         <Grid hasGutter>
-          <GridItem span={7}>
+          <GridItem span={8}>
             <WizMachinePoolSelect
               required
               path="cluster.machine_pools_subnets"

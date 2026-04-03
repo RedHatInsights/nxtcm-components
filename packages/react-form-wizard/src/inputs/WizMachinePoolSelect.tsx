@@ -153,7 +153,7 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
           {props.machinePoolLabel}
         </Content>
       </GridItem>
-      <GridItem span={4}>
+      <GridItem span={5}>
         <Content component={ContentVariants.p} className="pf-v6-u-font-weight-bold">
           {props.subnetLabel}
         </Content>
@@ -280,7 +280,7 @@ function MachinePoolRow(props: MachinePoolRowProps) {
           {machinePoolLabel} {index + 1}
         </Content>
       </GridItem>
-      <GridItem span={4} rowSpan={2}>
+      <GridItem span={5} rowSpan={2}>
         <InputGroup>
           <InputGroupItem isFill>
             <PfSelect
