@@ -43,7 +43,7 @@ export function WizardPage(props: WizardPageProps) {
     });
   }, []);
   return (
-    <div style={{ height: '100vh' }}>
+    <div style={{ height: '100vh', display: 'grid', gridTemplateRows: 'auto minmax(0, 1fr)' }}>
       <PageSection variant="default">
         <Flex
           alignItems={{ default: 'alignItemsCenter' }}
@@ -62,18 +62,20 @@ export function WizardPage(props: WizardPageProps) {
         </Flex>
         {props.description && <Content component="small">{props.description}</Content>}
       </PageSection>
-      <Wizard
-        {...props}
-        showHeader={false}
-        showYaml={drawerExpanded}
-        yamlEditor={yamlEditor}
-        setUseWizardContext={props.setUseWizardContext}
-        onStepChange={props.onStepChange}
-        resumeAtStepId={props.resumeAtStepId}
-        onResumedToStep={props.onResumedToStep}
-      >
-        {props.children}
-      </Wizard>
+      <div style={{ minHeight: 0 }}>
+        <Wizard
+          {...props}
+          showHeader={false}
+          showYaml={drawerExpanded}
+          yamlEditor={yamlEditor}
+          setUseWizardContext={props.setUseWizardContext}
+          onStepChange={props.onStepChange}
+          resumeAtStepId={props.resumeAtStepId}
+          onResumedToStep={props.onResumedToStep}
+        >
+          {props.children}
+        </Wizard>
+      </div>
     </div>
   );
 }

@@ -180,13 +180,17 @@ function WizSelectBase<T = any>(props: SelectProps<T>) {
                 isMultiSelect={false}
               />
             </PfSelect>
-
           </InputGroupItem>
-          {
-            props.refreshCallback ? (
-              <InputGroupItem><Button variant="control" aria-label="Refresh" onClick={props.refreshCallback} icon={<RedoIcon />} /></InputGroupItem>
-            ) : null
-          }
+          {props.refreshCallback && (
+            <InputGroupItem>
+              <Button
+                variant="control"
+                aria-label="Refresh"
+                onClick={props.refreshCallback}
+                icon={<RedoIcon />}
+              />
+            </InputGroupItem>
+          )}
         </InputGroup>
       </WizFormGroup>
     </div>

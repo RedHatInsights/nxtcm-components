@@ -13,7 +13,6 @@ import { ClusterNetwork, Resource, RosaWizardFormData, Subnet, VPC } from '../..
 import { constructSelectedSubnets, subnetsFilter } from '../../../helpers';
 import {
   Alert,
-  AlertActionCloseButton,
   Content,
   ContentVariants,
   ExpandableSection,
@@ -110,44 +109,48 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
   return (
     <>
       <Section label={n.sectionLabel} id="networking-section" key="networking-section-key">
-        <WizRadioGroup
-          id="public-private-subnet-radio-group"
-          path="cluster.cluster_privacy"
-          helperText={n.privacyHelper}
-          onValueChange={() => {
-            if (cluster.cluster_privacy && cluster.cluster_privacy_public_subnet_id) {
-              delete cluster.cluster_privacy_public_subnet_id;
-            }
-          }}
-        >
-          <Radio
-            id="public"
-            label={n.publicLabel}
-            value={ClusterNetwork.external}
-            popover={<LabelHelp id="subnet-label-help-public" labelHelp={n.publicPopover} />}
-          >
-            <WizSelect
-              label={n.publicSubnetLabel}
-              path="cluster.cluster_privacy_public_subnet_id"
-              options={
-                props.vpcList.isFetching
-                  ? undefined
-                  : publicSubnets?.map((subnet: Subnet) => ({
-                      label: subnet.name,
-                      value: subnet.subnet_id,
-                    }))
-              }
-              placeholder={n.publicSubnetPlaceholder}
-            />
-          </Radio>
+        <Grid>
+          <GridItem span={7}>
+            <WizRadioGroup
+              id="public-private-subnet-radio-group"
+              path="cluster.cluster_privacy"
+              helperText={n.privacyHelper}
+              onValueChange={() => {
+                if (cluster.cluster_privacy && cluster.cluster_privacy_public_subnet_id) {
+                  delete cluster.cluster_privacy_public_subnet_id;
+                }
+              }}
+            >
+              <Radio
+                id="public"
+                label={n.publicLabel}
+                value={ClusterNetwork.external}
+                popover={<LabelHelp id="subnet-label-help-public" labelHelp={n.publicPopover} />}
+              >
+                <WizSelect
+                  label={n.publicSubnetLabel}
+                  path="cluster.cluster_privacy_public_subnet_id"
+                  options={
+                    props.vpcList.isFetching
+                      ? undefined
+                      : publicSubnets?.map((subnet: Subnet) => ({
+                          label: subnet.name,
+                          value: subnet.subnet_id,
+                        }))
+                  }
+                  placeholder={n.publicSubnetPlaceholder}
+                />
+              </Radio>
 
-          <Radio
-            id="private"
-            label={n.privateLabel}
-            value={ClusterNetwork.internal}
-            popover={<LabelHelp id="subnet-label-help-private" labelHelp={n.privatePopover} />}
-          ></Radio>
-        </WizRadioGroup>
+              <Radio
+                id="private"
+                label={n.privateLabel}
+                value={ClusterNetwork.internal}
+                popover={<LabelHelp id="subnet-label-help-private" labelHelp={n.privatePopover} />}
+              ></Radio>
+            </WizRadioGroup>
+          </GridItem>
+        </Grid>
       </Section>
 
       <ExpandableSection toggleText={n.advancedToggle}>
@@ -170,25 +173,20 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
             ) : null}
           </Stack>
 
-          <Grid>
-            <GridItem span={7}>
-              <Alert
-                isExpandable
-                actionClose={<AlertActionCloseButton onClose={() => {}} />}
-                variant="warning"
-                title={n.cidrAlertTitle}
-                ouiaId="encryptionKeysAlert"
-              >
-                <Content component={ContentVariants.p}>{n.cidrAlertBody}</Content>
+          <Alert
+            isExpandable
+            variant="warning"
+            title={n.cidrAlertTitle}
+            ouiaId="networkingCidrAlert"
+          >
+            <Content component={ContentVariants.p}>{n.cidrAlertBody}</Content>
 
-                <Content component={ContentVariants.p}>
-                  <ExternalLink href={links.CIDR_RANGE_DEFINITIONS_ROSA}>
-                    {n.cidrLearnMoreLink}
-                  </ExternalLink>
-                </Content>
-              </Alert>
-            </GridItem>
-          </Grid>
+            <Content component={ContentVariants.p}>
+              <ExternalLink href={links.CIDR_RANGE_DEFINITIONS_ROSA}>
+                {n.cidrLearnMoreLink}
+              </ExternalLink>
+            </Content>
+          </Alert>
 
           <WizCheckbox
             id="use-cidr-default-values"
@@ -197,8 +195,8 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
             helperText={n.useDefaultsHelp}
           />
 
-          <Grid hasGutter>
-            <GridItem span={7}>
+          <Stack hasGutter>
+            <StackItem>
               <WizTextInput
                 validation={machineCidrValidators}
                 validateOnBlur
@@ -208,8 +206,8 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                 helperText={n.machineCidrHelp}
                 disabled={defaultCidrValue}
               />
-            </GridItem>
-            <GridItem span={7}>
+            </StackItem>
+            <StackItem>
               <WizTextInput
                 validation={serviceCidrValidators}
                 validateOnBlur
@@ -219,8 +217,8 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                 helperText={n.serviceCidrHelp}
                 disabled={defaultCidrValue}
               />
-            </GridItem>
-            <GridItem span={7}>
+            </StackItem>
+            <StackItem>
               <WizTextInput
                 validation={podCidrValidators}
                 validateOnBlur
@@ -230,8 +228,8 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                 helperText={n.podCidrHelp}
                 disabled={defaultCidrValue}
               />
-            </GridItem>
-            <GridItem span={7}>
+            </StackItem>
+            <StackItem>
               <WizTextInput
                 validation={hostPrefixValidators}
                 validateOnBlur
@@ -240,8 +238,8 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                 helperText={n.hostPrefixHelp}
                 disabled={defaultCidrValue}
               />
-            </GridItem>
-          </Grid>
+            </StackItem>
+          </Stack>
         </Indented>
       </ExpandableSection>
     </>

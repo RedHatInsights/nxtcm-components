@@ -85,6 +85,7 @@ export interface WizardProps {
   yamlEditor?: () => ReactNode;
   submitButtonText?: string;
   submittingButtonText?: string;
+  skipToReviewStepIds?: string[];
   onStepChange?: (event: React.MouseEvent<HTMLButtonElement>, currentStep: WizardStepType) => void;
   setUseWizardContext?: (context: WizardContextType) => void;
 }
@@ -144,6 +145,7 @@ export function Wizard(
                                     hasButtons={props.hasButtons}
                                     submitButtonText={props.submitButtonText}
                                     submittingButtonText={props.submittingButtonText}
+                                    skipToReviewStepIds={props.skipToReviewStepIds}
                                     resumeAtStepId={props.resumeAtStepId}
                                     onResumedToStep={props.onResumedToStep}
                                   >
@@ -186,6 +188,7 @@ type WizardFooterProps = {
   onSubmit: WizardSubmit;
   submitButtonText?: string;
   submittingButtonText?: string;
+  skipToReviewStepIds?: string[];
   steps: ReactElement[];
   setUseWizardContext?: (context: WizardContextType) => void;
   resumeAtStepId?: string | null;
@@ -201,12 +204,34 @@ type WizardInternalProps = Omit<WizardFooterProps, 'steps'> & {
   setUseWizardContext?: (context: WizardContextType) => void;
 };
 
+type WizardStepLikeProps = {
+  id?: string;
+  steps?: ReactElement[];
+};
+
+function getFirstNavigableStepId(stepElements: ReactElement[]): string | undefined {
+  for (const stepElement of stepElements) {
+    const props = stepElement.props as WizardStepLikeProps;
+    if (props.steps && props.steps.length > 0) {
+      const nestedFirstStepId = getFirstNavigableStepId(props.steps);
+      if (nestedFirstStepId) {
+        return nestedFirstStepId;
+      }
+    }
+    if (props.id) {
+      return props.id;
+    }
+  }
+  return undefined;
+}
+
 function WizardInternal({
   children,
   onSubmit,
   onCancel,
   submitButtonText,
   submittingButtonText,
+  skipToReviewStepIds,
   onStepChange,
   setUseWizardContext,
   resumeAtStepId,
@@ -327,6 +352,7 @@ function WizardInternal({
             steps={stepComponents}
             submitButtonText={submitButtonText}
             submittingButtonText={submittingButtonText}
+            skipToReviewStepIds={skipToReviewStepIds}
             resumeAtStepId={resumeAtStepId}
             onResumedToStep={onResumedToStep}
           />
@@ -367,6 +393,7 @@ function MyFooter(props: WizardFooterProps) {
     onSubmit,
     submitButtonText,
     submittingButtonText,
+    skipToReviewStepIds,
     steps,
   } = props;
 
@@ -443,6 +470,7 @@ function MyFooter(props: WizardFooterProps) {
   const activeStepHasValidationError = stepHasValidationError[activeStepId];
   const stepShowValidation = useStepShowValidation();
   const activeStepShowValidation = stepShowValidation[activeStepId];
+  const canSkipToReview = skipToReviewStepIds?.includes(activeStepId) ?? false;
 
   const setStepShowValidation = useSetStepShowValidation();
 
@@ -450,6 +478,7 @@ function MyFooter(props: WizardFooterProps) {
     props.steps.length > 0
       ? (props.steps[props.steps.length - 1] as ReactElement<{ id?: string }>).props?.id
       : undefined;
+  const firstStepId = props.steps.length > 0 ? getFirstNavigableStepId(props.steps) : undefined;
 
   const onNextClick = useCallback(async () => {
     const stepID = activeStep.id?.toString() ?? '';
@@ -488,6 +517,7 @@ function MyFooter(props: WizardFooterProps) {
     cancelButtonText,
     backButtonText,
     nextButtonText,
+    skipToReviewButtonText,
   } = useStringContext();
 
   if (isLastStep) {
@@ -504,45 +534,48 @@ function MyFooter(props: WizardFooterProps) {
         )}
         {submitError && <Alert title={submitError} isInline variant="danger" />}
         <WizardFooterWrapper>
-          <ActionList>
-            <ActionListGroup>
-              <ActionListItem>
-                <Button
-                  onClick={onSubmitClick}
-                  isDisabled={
-                    ((wizardHasValidationError ||
-                      editorValidationStatus !== EditorValidationStatus.success) &&
-                      showWizardValidation) ||
-                    submitting
-                  }
-                  isLoading={submitting}
-                  type="submit"
-                >
-                  {!submitButtonText && (submitting ? submittingText : submitText)}
-                  {submitting ? submittingButtonText : submitButtonText}
-                </Button>
-              </ActionListItem>
-              <ActionListItem>
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    void (async () => {
-                      await onBack();
-                    })();
-                  }}
-                >
-                  {backButtonText}
-                </Button>
-              </ActionListItem>
-            </ActionListGroup>
-            <ActionListGroup>
-              <ActionListItem>
-                <Button variant="link" onClick={onClose}>
-                  {cancelButtonText}
-                </Button>
-              </ActionListItem>
-            </ActionListGroup>
-          </ActionList>
+          <div className="pf-v6-u-pb-sm">
+            <ActionList>
+              <ActionListGroup>
+                <ActionListItem>
+                  <Button
+                    onClick={onSubmitClick}
+                    isDisabled={
+                      ((wizardHasValidationError ||
+                        editorValidationStatus !== EditorValidationStatus.success) &&
+                        showWizardValidation) ||
+                      submitting
+                    }
+                    isLoading={submitting}
+                    type="submit"
+                  >
+                    {submitting
+                      ? submittingButtonText || submitButtonText || submittingText
+                      : submitButtonText || submitText}
+                  </Button>
+                </ActionListItem>
+                <ActionListItem>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      void (async () => {
+                        await onBack();
+                      })();
+                    }}
+                  >
+                    {backButtonText}
+                  </Button>
+                </ActionListItem>
+              </ActionListGroup>
+              <ActionListGroup>
+                <ActionListItem>
+                  <Button variant="link" onClick={onClose}>
+                    {cancelButtonText}
+                  </Button>
+                </ActionListItem>
+              </ActionListGroup>
+            </ActionList>
+          </div>
         </WizardFooterWrapper>
         <RenderHiddenSteps stepComponents={steps} />
       </div>
@@ -559,58 +592,58 @@ function MyFooter(props: WizardFooterProps) {
         <Alert title={fixValidationErrorsMsg} isInline variant="danger" />
       )}
       <WizardFooterWrapper>
-        <ActionList>
-          <ActionListGroup>
-            <ActionListItem>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  void (async () => {
-                    await onNextClick();
-                  })();
-                }}
-                isDisabled={isNextButtonDisabled}
-              >
-                {nextButtonText}
-              </Button>
-            </ActionListItem>
+        <div className="pf-v6-u-pb-sm">
+          <ActionList>
+            <ActionListGroup>
+              <ActionListItem>
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    void (async () => {
+                      await onNextClick();
+                    })();
+                  }}
+                  isDisabled={isNextButtonDisabled}
+                >
+                  {nextButtonText}
+                </Button>
+              </ActionListItem>
 
-            {(wizContext.activeStep.index == 6 ||
-              wizContext.activeStep.index == 7 ||
-              wizContext.activeStep.index == 8) && (
+              {canSkipToReview && (
+                <ActionListItem>
+                  <Button
+                    variant="secondary"
+                    onClick={onSkipToReviewClick}
+                    isDisabled={isNextButtonDisabled}
+                  >
+                    {skipToReviewButtonText}
+                  </Button>
+                </ActionListItem>
+              )}
+
               <ActionListItem>
                 <Button
                   variant="secondary"
-                  onClick={onSkipToReviewClick}
-                  isDisabled={isNextButtonDisabled}
+                  onClick={() => {
+                    void (async () => {
+                      await onBack();
+                    })();
+                  }}
+                  isDisabled={activeStepId === firstStepId}
                 >
-                  Skip to review
+                  {backButtonText}
                 </Button>
               </ActionListItem>
-            )}
-
-            <ActionListItem>
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  void (async () => {
-                    await onBack();
-                  })();
-                }}
-                isDisabled={activeStep.index === 1}
-              >
-                {backButtonText}
-              </Button>
-            </ActionListItem>
-          </ActionListGroup>
-          <ActionListGroup>
-            <ActionListItem>
-              <Button variant="link" onClick={onClose}>
-                {cancelButtonText}
-              </Button>
-            </ActionListItem>
-          </ActionListGroup>
-        </ActionList>
+            </ActionListGroup>
+            <ActionListGroup>
+              <ActionListItem>
+                <Button variant="link" onClick={onClose}>
+                  {cancelButtonText}
+                </Button>
+              </ActionListItem>
+            </ActionListGroup>
+          </ActionList>
+        </div>
       </WizardFooterWrapper>
       <RenderHiddenSteps stepComponents={steps} />
     </div>

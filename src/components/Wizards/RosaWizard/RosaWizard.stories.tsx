@@ -238,6 +238,13 @@ const mockBasicSetupStep: BasicSetupStepProps = {
 const meta: Meta<typeof RosaWizard> = {
   title: 'Wizards/RosaWizard',
   component: RosaWizard,
+  decorators: [
+    (Story) => (
+      <div style={{ minHeight: '100vh', paddingBottom: '4rem', overflow: 'auto' }}>
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'fullscreen',
     docs: {

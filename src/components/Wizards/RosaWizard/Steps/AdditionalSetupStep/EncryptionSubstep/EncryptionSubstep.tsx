@@ -59,7 +59,7 @@ export const EncryptionSubstep = () => {
       </WizRadioGroup>
       {cluster?.['encryption_keys'] === ClusterEncryptionKeys.custom && (
         <Grid>
-          <GridItem span={8}>
+          <GridItem span={4}>
             <WizTextInput
               path="cluster.kms_key_arn"
               label={e.keyArnLabel}
@@ -92,7 +92,7 @@ export const EncryptionSubstep = () => {
 
       {cluster?.['etcd_encryption'] && (
         <Grid>
-          <GridItem span={8}>
+          <GridItem span={4}>
             <WizTextInput
               path="cluster.etcd_key_arn"
               validation={(value) => validateAWSKMSKeyARN(value, cluster.region, v.kmsKeyArn)}
@@ -105,7 +105,7 @@ export const EncryptionSubstep = () => {
         </Grid>
       )}
       <Grid>
-        <GridItem span={9}>
+        <GridItem span={6}>
           <Alert variant="info" title={e.keysNoteAlert} ouiaId="encryptionKeysAlert" />
         </GridItem>
       </Grid>

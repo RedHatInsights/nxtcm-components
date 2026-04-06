@@ -101,7 +101,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
       >
         <Stack hasGutter>
           <StackItem>
-            <Grid hasGutter>
+            <Grid>
               <GridItem span={4}>
                 <WizSelect
                   isFill
@@ -138,7 +138,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
           </StackItem>
 
           <StackItem>
-            <Grid hasGutter>
+            <Grid>
               <GridItem span={4}>
                 <WizSelect
                   isFill
@@ -165,7 +165,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
           </StackItem>
           <StackItem>
             <Grid>
-              <GridItem span={4}>
+              <GridItem span={4} className="pf-v6-u-pr-2xl">
                 <WizTextInput
                   validation={(name: string, item: unknown) =>
                     validateClusterName(name, item) || clusterNameValidation.error || undefined
@@ -207,7 +207,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
           </StackItem>
           <StackItem>
             <Grid>
-              <GridItem span={4}>
+              <GridItem span={4} className="pf-v6-u-pr-2xl">
                 <WizSelect
                   isFill
                   path="cluster.region"

@@ -13,6 +13,8 @@ import {
   Select,
   SelectList,
   SelectOption,
+  Split,
+  SplitItem,
 } from '@patternfly/react-core';
 import parseUpdateSchedule from './parseUpdateSchedule';
 import { ClusterUpgrade, RosaWizardFormData, WizardNavigationContext } from '../../../../types';
@@ -153,45 +155,49 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
       </WizRadioGroup>
 
       {cluster?.upgrade_policy === ClusterUpgrade.automatic && (
-        <FormGroup label={cu.dayTimeLabel} style={{ marginLeft: '1.5rem' }}>
-          <Grid hasGutter>
-            <GridItem sm={6} md={6}>
-              <Select
-                isOpen={daySelectOpen}
-                selected={selectedDay}
-                onOpenChange={(isOpen) => setDaySelectOpen(isOpen)}
-                onSelect={(_, value) => onDaySelect(value)}
-                shouldFocusToggleOnSelect
-                toggle={dayToggle}
-              >
-                <SelectList>
-                  {cu.daysOfWeek.map((day, idx) => (
-                    <SelectOption key={day} value={idx.toString()}>
-                      {day}
-                    </SelectOption>
-                  ))}
-                </SelectList>
-              </Select>
-            </GridItem>
-            <GridItem sm={6} md={6}>
-              <Select
-                isOpen={timeSelectOpen}
-                selected={selectedHour}
-                onOpenChange={(isOpen) => setTimeSelectOpen(isOpen)}
-                onSelect={(_, value) => onHourSelect(value)}
-                shouldFocusToggleOnSelect
-                toggle={hourToggle}
-                maxMenuHeight="20em"
-                isScrollable
-              >
-                <SelectList>
-                  {hoursOptions.map((hour) => (
-                    <SelectOption key={hour} value={hour.toString()}>
-                      {formatHourLabel(hour)}
-                    </SelectOption>
-                  ))}
-                </SelectList>
-              </Select>
+        <FormGroup label={cu.dayTimeLabel} className="pf-v6-u-ml-xl">
+          <Grid>
+            <GridItem span={7}>
+              <Split hasGutter isWrappable>
+                <SplitItem>
+                  <Select
+                    isOpen={daySelectOpen}
+                    selected={selectedDay}
+                    onOpenChange={(isOpen) => setDaySelectOpen(isOpen)}
+                    onSelect={(_, value) => onDaySelect(value)}
+                    shouldFocusToggleOnSelect
+                    toggle={dayToggle}
+                  >
+                    <SelectList>
+                      {cu.daysOfWeek.map((day, idx) => (
+                        <SelectOption key={day} value={idx.toString()}>
+                          {day}
+                        </SelectOption>
+                      ))}
+                    </SelectList>
+                  </Select>
+                </SplitItem>
+                <SplitItem>
+                  <Select
+                    isOpen={timeSelectOpen}
+                    selected={selectedHour}
+                    onOpenChange={(isOpen) => setTimeSelectOpen(isOpen)}
+                    onSelect={(_, value) => onHourSelect(value)}
+                    shouldFocusToggleOnSelect
+                    toggle={hourToggle}
+                    maxMenuHeight="20em"
+                    isScrollable
+                  >
+                    <SelectList>
+                      {hoursOptions.map((hour) => (
+                        <SelectOption key={hour} value={hour.toString()}>
+                          {formatHourLabel(hour)}
+                        </SelectOption>
+                      ))}
+                    </SelectList>
+                  </Select>
+                </SplitItem>
+              </Split>
             </GridItem>
           </Grid>
         </FormGroup>
