@@ -184,6 +184,7 @@ const EditSecurityGroups = ({
               <Tooltip content={sg.refreshTooltip}>
                 <Button
                   id="refreshSecurityGroupsButton"
+                  aria-label={sg.refreshTooltip}
                   isDisabled={isVPCLoading}
                   variant="plain"
                   onClick={refreshVPCCallback}

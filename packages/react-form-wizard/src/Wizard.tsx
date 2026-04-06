@@ -549,8 +549,9 @@ function MyFooter(props: WizardFooterProps) {
                     isLoading={submitting}
                     type="submit"
                   >
-                    {!submitButtonText && (submitting ? submittingText : submitText)}
-                    {submitting ? submittingButtonText : submitButtonText}
+                    {submitting
+                      ? submittingButtonText || submitButtonText || submittingText
+                      : submitButtonText || submitText}
                   </Button>
                 </ActionListItem>
                 <ActionListItem>

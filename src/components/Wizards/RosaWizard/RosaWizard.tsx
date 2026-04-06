@@ -92,6 +92,18 @@ function getDefaultYamlEditor() {
   return <YamlDrawerEditor />;
 }
 
+const STEP_IDS = {
+  BASIC_SETUP: 'basic-setup-step-id-expandable-section',
+  DETAILS: 'basic-setup-step-details',
+  MACHINE_POOLS: 'machinepools-sub-step',
+  NETWORKING: 'networking-sub-step',
+  ADDITIONAL_SETUP: 'additional-setup-step-id-expandable-section',
+  CLUSTER_WIDE_PROXY: 'additional-setup-cluster-wide-proxy',
+  ENCRYPTION: 'additional-setup-encryption',
+  CLUSTER_UPDATES: 'additional-setup-cluster-updates',
+  REVIEW: 'review-step',
+} as const;
+
 export const RosaWizard = (props: RosaWizardProps) => (
   <RosaWizardStringsProvider strings={props.strings}>
     <RosaWizardBody {...props} />
@@ -122,9 +134,9 @@ const RosaWizardBody = (props: RosaWizardProps) => {
     React.useState<boolean>(false);
   const skipToReviewStepIds = React.useMemo(
     () => [
-      ...(isClusterWideProxySelected ? ['additional-setup-cluster-wide-proxy'] : []),
-      'additional-setup-encryption',
-      'additional-setup-cluster-updates',
+      ...(isClusterWideProxySelected ? [STEP_IDS.CLUSTER_WIDE_PROXY] : []),
+      STEP_IDS.ENCRYPTION,
+      STEP_IDS.CLUSTER_UPDATES,
     ],
     [isClusterWideProxySelected]
   );
@@ -145,7 +157,7 @@ const RosaWizardBody = (props: RosaWizardProps) => {
     setIsNavigatingToReview(true);
     if (onBackToReviewStep) {
       await onBackToReviewStep();
-      setResumeAtStepId('review-step');
+      setResumeAtStepId(STEP_IDS.REVIEW);
     }
 
     setIsNavigatingToReview(false);
@@ -200,12 +212,12 @@ const RosaWizardBody = (props: RosaWizardProps) => {
           wizardStrings={wizardStrings}
         >
           <ExpandableStep
-            id="basic-setup-step-id-expandable-section"
+            id={STEP_IDS.BASIC_SETUP}
             label={sl.basicSetup}
             key="basic-setup-step-expandable-section-key"
             isExpandable
             steps={[
-              <Step label={sl.details} id="basic-setup-step-details" key="basic-setup-details">
+              <Step label={sl.details} id={STEP_IDS.DETAILS} key="basic-setup-details">
                 <DetailsSubStep
                   clusterNameValidation={basicSetupStep.clusterNameValidation}
                   openShiftVersions={opVersions}
@@ -228,7 +240,7 @@ const RosaWizardBody = (props: RosaWizardProps) => {
                 />
               </Step>,
               <Step
-                id="machinepools-sub-step"
+                id={STEP_IDS.MACHINE_POOLS}
                 label={sl.machinePools}
                 key="machinepools-sub-step-key"
               >
@@ -237,7 +249,7 @@ const RosaWizardBody = (props: RosaWizardProps) => {
                   machineTypes={basicSetupStep.machineTypes}
                 />
               </Step>,
-              <Step id="networking-sub-step" label={sl.networking} key="networking-sub-step-key">
+              <Step id={STEP_IDS.NETWORKING} label={sl.networking} key="networking-sub-step-key">
                 <NetworkingAndSubnetsSubStep
                   vpcList={basicSetupStep.vpcList}
                   setIsClusterWideProxySelected={setIsClusterWideProxySelected}
@@ -246,7 +258,7 @@ const RosaWizardBody = (props: RosaWizardProps) => {
               ...(isClusterWideProxySelected
                 ? [
                     <Step
-                      id="additional-setup-cluster-wide-proxy"
+                      id={STEP_IDS.CLUSTER_WIDE_PROXY}
                       key="additional-setup-cluster-wide-proxy-key"
                       label={sl.clusterWideProxy}
                     >
@@ -258,20 +270,20 @@ const RosaWizardBody = (props: RosaWizardProps) => {
           />
 
           <ExpandableStep
-            id="additional-setup-step-id-expandable-section"
+            id={STEP_IDS.ADDITIONAL_SETUP}
             label={sl.additionalSetup}
             key="additional-setup-step-expandable-section-key"
             isExpandable
             steps={[
               <Step
-                id="additional-setup-encryption"
+                id={STEP_IDS.ENCRYPTION}
                 key="additional-setup-encryption-key"
                 label={sl.encryptionOptional}
               >
                 <EncryptionSubstep />
               </Step>,
               <Step
-                id="additional-setup-cluster-updates"
+                id={STEP_IDS.CLUSTER_UPDATES}
                 key="additional-setup-cluster-updates-key"
                 label={sl.clusterUpdatesOptional}
               >
@@ -279,7 +291,7 @@ const RosaWizardBody = (props: RosaWizardProps) => {
               </Step>,
             ]}
           />
-          <Step label={sl.review} id={'review-step'}>
+          <Step label={sl.review} id={STEP_IDS.REVIEW}>
             <ReviewStepData goToStepId={getUseWizardContext} />
           </Step>
         </WizardPage>

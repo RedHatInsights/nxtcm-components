@@ -91,7 +91,7 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
   );
 
   useLayoutEffect(() => {
-    if (values.length < minItems && values.length === 0) {
+    if (values.length === 0) {
       for (let i = 0; i < minItems; i++) {
         addItem(props.newValue ?? { machine_pool_subnet: '' });
       }

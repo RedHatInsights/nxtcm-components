@@ -13,7 +13,6 @@ import { ClusterNetwork, Resource, RosaWizardFormData, Subnet, VPC } from '../..
 import { constructSelectedSubnets, subnetsFilter } from '../../../helpers';
 import {
   Alert,
-  AlertActionCloseButton,
   Content,
   ContentVariants,
   ExpandableSection,
@@ -176,7 +175,6 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
 
           <Alert
             isExpandable
-            actionClose={<AlertActionCloseButton onClose={() => {}} />}
             variant="warning"
             title={n.cidrAlertTitle}
             ouiaId="networkingCidrAlert"
