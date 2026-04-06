@@ -80,8 +80,11 @@ export const FieldWithAPIErrorAlert = ({
         <Button
           type="button"
           variant="plain"
-          className="wiz-select-error-popover-trigger"
           aria-label="Show error details"
+          style={{
+            marginLeft:
+              'calc(-1 * var(--pf-t--global--spacer--action--horizontal--plain--default))',
+          }}
         >
           {summaryHelper}
         </Button>
