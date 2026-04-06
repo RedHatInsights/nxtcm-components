@@ -379,6 +379,9 @@ export const defaultRosaWizardStrings: RosaWizardStrings = {
     errorValidatingPrefix: 'Error validating',
     errorLoadingPrefix: 'Error loading',
     listSuffix: 'list',
+    errorDetails: 'Error details',
+    showErrorDetails: 'Show error details',
+    retry: 'Retry',
   },
 };
 

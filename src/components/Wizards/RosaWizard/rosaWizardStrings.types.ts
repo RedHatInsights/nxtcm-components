@@ -454,6 +454,11 @@ export type RosaWizardStrings = {
     errorValidatingPrefix: string;
     errorLoadingPrefix: string;
     listSuffix: string;
+    /** Popover `aria-label` for field API error details. */
+    errorDetails: string;
+    /** Trigger control `aria-label` to open error details popover. */
+    showErrorDetails: string;
+    retry: string;
   };
 };
 

@@ -29,6 +29,7 @@ export const FieldWithAPIErrorAlert = ({
   retry,
 }: FieldWithAPIErrorAlertProps) => {
   const { common } = useRosaWizardStrings();
+  const { errorDetails, showErrorDetails, retry: retryLabel } = common;
 
   const title = isValidation
     ? `${common.errorValidatingPrefix} ${fieldName}`
@@ -64,7 +65,7 @@ export const FieldWithAPIErrorAlert = ({
       {children ?? null}
       <Popover
         appendTo={() => document.body}
-        aria-label="Error details"
+        aria-label={errorDetails}
         alertSeverityVariant="danger"
         headerContent={title}
         headerIcon={<ExclamationCircleIcon />}
@@ -72,7 +73,7 @@ export const FieldWithAPIErrorAlert = ({
         footerContent={
           retry ? (
             <Button variant="link" onClick={retry}>
-              Retry
+              {retryLabel}
             </Button>
           ) : undefined
         }
@@ -80,7 +81,7 @@ export const FieldWithAPIErrorAlert = ({
         <Button
           type="button"
           variant="plain"
-          aria-label="Show error details"
+          aria-label={showErrorDetails}
           style={{
             marginLeft:
               'calc(-1 * var(--pf-t--global--spacer--action--horizontal--plain--default))',

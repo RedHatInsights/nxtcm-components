@@ -47,6 +47,7 @@ export const mockOIDCConfig: OIDCConfig[] = [
 export const createMockClusterData = (overrides: Record<string, unknown> = {}) => ({
   cluster: {
     name: 'my-rosa-cluster',
+    associated_aws_id: '123456789012',
     installer_role_arn: '',
     support_role_arn: '',
     worker_role_arn: '',
