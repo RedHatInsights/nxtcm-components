@@ -30,6 +30,7 @@ export type {
   RosaWizardStringsInput,
   DeepPartial,
   RosaWizardValidatorStrings,
+  RosaWizardOpenShiftVersionGroupLabels,
 } from './RosaWizard/rosaWizardStrings';
 export {
   buildWizardStringsForRosa,

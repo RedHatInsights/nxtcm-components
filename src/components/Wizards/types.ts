@@ -42,7 +42,7 @@ export type InstallerRole = SelectDropdownType & {
 export type OpenShiftVersionsData = {
   default?: SelectDropdownType;
   latest?: SelectDropdownType;
-  /** Additional releases. Shown as "Releases" when default/latest are absent, else "Previous releases". */
+  /** Additional releases; group labels are supplied with `buildOpenShiftVersionGroups` via Rosa wizard `details.openShiftVersionGroups`. */
   releases: SelectDropdownType[];
 };
 

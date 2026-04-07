@@ -98,8 +98,9 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   }, [roles.data, cluster?.installer_role_arn]);
 
   const openShiftVersionGroups = React.useMemo(
-    () => (versions.data ? buildOpenShiftVersionGroups(versions.data) : []),
-    [versions.data]
+    () =>
+      versions.data ? buildOpenShiftVersionGroups(versions.data, d.openShiftVersionGroups) : [],
+    [versions.data, d.openShiftVersionGroups]
   );
 
   const versionGroupsWithDisabled = React.useMemo(() => {

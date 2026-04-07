@@ -123,6 +123,13 @@ export const defaultRosaWizardStrings: RosaWizardStrings = {
     openShiftVersionPlaceholder: 'Select an OpenShift version',
     openShiftVersionOptionDisabledDescription:
       'Your current account roles do not support the version of OpenShift.',
+    openShiftVersionGroups: {
+      latestRelease: 'Latest release',
+      defaultRelease: 'Default release',
+      defaultRecommended: 'Default (Recommended)',
+      previousReleases: 'Previous releases',
+      releases: 'Releases',
+    },
     awsInfraLabel: 'Associated AWS infrastructure account',
     awsInfraPlaceholder: 'Select an AWS infrastructure account',
     awsInfraHelp:
