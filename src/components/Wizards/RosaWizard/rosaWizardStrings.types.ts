@@ -42,6 +42,16 @@ export type RosaWizardNoProxyValidatorStrings = {
   invalidDomains: (domains: string, plural: boolean) => string;
 };
 
+/** Select group headings for OpenShift version options on the Details step (from API latest/default/releases). */
+export type RosaWizardOpenShiftVersionGroupLabels = {
+  latestRelease: string;
+  defaultRelease: string;
+  defaultRecommended: string;
+  previousReleases: string;
+  /** Used when the payload has no separate latest/default (only `releases`). */
+  releases: string;
+};
+
 export type RosaWizardUrlValidatorStrings = {
   invalid: string;
   schemePrefix: (protocolList: string) => string;
@@ -223,6 +233,8 @@ export type RosaWizardStrings = {
     clusterNameHelp: string;
     openShiftVersionLabel: string;
     openShiftVersionPlaceholder: string;
+    openShiftVersionOptionDisabledDescription: string;
+    openShiftVersionGroups: RosaWizardOpenShiftVersionGroupLabels;
     awsInfraLabel: string;
     awsInfraPlaceholder: string;
     awsInfraHelp: string;
@@ -239,6 +251,7 @@ export type RosaWizardStrings = {
     accountRolesSection: string;
     installerRoleLabel: string;
     installerPlaceholder: string;
+    installerRoleOptionDisabledDescription: string;
     installerHelpLead: string;
     installerLearnMoreLink: string;
     arnsToggle: string;

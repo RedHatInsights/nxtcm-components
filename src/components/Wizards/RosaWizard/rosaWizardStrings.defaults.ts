@@ -121,6 +121,15 @@ export const defaultRosaWizardStrings: RosaWizardStrings = {
       'This will be how we refer to your cluster in the OpenShift cluster list and will form part of the cluster console subdomain.',
     openShiftVersionLabel: 'OpenShift version',
     openShiftVersionPlaceholder: 'Select an OpenShift version',
+    openShiftVersionOptionDisabledDescription:
+      'Your current account roles do not support the version of OpenShift.',
+    openShiftVersionGroups: {
+      latestRelease: 'Latest release',
+      defaultRelease: 'Default release',
+      defaultRecommended: 'Default (Recommended)',
+      previousReleases: 'Previous releases',
+      releases: 'Releases',
+    },
     awsInfraLabel: 'Associated AWS infrastructure account',
     awsInfraPlaceholder: 'Select an AWS infrastructure account',
     awsInfraHelp:
@@ -140,6 +149,8 @@ export const defaultRosaWizardStrings: RosaWizardStrings = {
     accountRolesSection: 'Account roles',
     installerRoleLabel: 'Installer role',
     installerPlaceholder: 'Select an Installer role',
+    installerRoleOptionDisabledDescription:
+      'This account role does not support the selected OpenShift version.',
     installerHelpLead: 'An AWS IAM role used by the ROSA installer',
     installerLearnMoreLink: 'Learn more about roles.',
     arnsToggle: 'Amazon Resource Names (ARNs)',
