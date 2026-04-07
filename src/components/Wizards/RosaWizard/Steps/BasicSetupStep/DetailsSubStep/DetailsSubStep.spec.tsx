@@ -559,6 +559,31 @@ test.describe('DetailsSubStep', () => {
     await expect(recommendedGroup.getByText('OpenShift 4.12.0', { exact: true })).toBeVisible();
   });
 
+  test('grouped OpenShift version typeahead shows No results found when the filter matches nothing', async ({
+    mount,
+    page,
+  }) => {
+    await mount(
+      <DetailsSubStepMount
+        versions={{
+          data: mockVersionsLatestDefaultPrevious,
+          isFetching: false,
+          error: null,
+          fetch: async () => {},
+        }}
+      />
+    );
+
+    const versionField = page.locator('#cluster-cluster_version');
+    await versionField.getByRole('combobox').click();
+    await versionField.locator('input').fill('3rf2wrf23');
+
+    await expect(page.getByRole('option', { name: 'No results found', exact: true })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Latest release', exact: true })
+    ).not.toBeVisible();
+  });
+
   test('should disable OpenShift version options newer than the selected installer role version', async ({
     mount,
     page,

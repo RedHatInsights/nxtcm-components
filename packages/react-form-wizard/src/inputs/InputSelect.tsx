@@ -258,6 +258,14 @@ type SelectListOptionsProps<T = any> = {
   isPending?: boolean;
 };
 
+function NoResultsFoundOption({ noResults }: { noResults: string }) {
+  return (
+    <SelectOption id="no-results" isDisabled value="no-results">
+      {noResults}
+    </SelectOption>
+  );
+}
+
 function renderSelectOption<T>(
   option: string | OptionType<T>,
   index: number,
@@ -280,11 +288,13 @@ function renderSelectOption<T>(
     return null;
   }
 
+  if (isSingleItem && !isCreateOption) {
+    return <NoResultsFoundOption key="no-results" noResults={noResults} />;
+  }
+
   let displayText: string;
   if (isCreateOption) {
     displayText = `${createOption} "${valueString}"`;
-  } else if (isSingleItem) {
-    displayText = noResults;
   } else if (isSimpleOption) {
     displayText = option;
   } else {
@@ -293,8 +303,7 @@ function renderSelectOption<T>(
 
   const opt = option as OptionType<T>;
   const isAriaDisabled = !isSimpleOption && Boolean(opt.ariaDisabled);
-  const isDisabled =
-    displayText === noResults || (!isSimpleOption && Boolean(opt.disabled) && !isAriaDisabled);
+  const isDisabled = !isSimpleOption && Boolean(opt.disabled) && !isAriaDisabled;
   const optionValue = isSimpleOption ? option : opt.id;
 
   return (
@@ -352,6 +361,14 @@ export const SelectListOptions = ({
 
   if (optionGroups && optionGroups.length > 0) {
     const groupsToRender = optionGroups.filter((g) => g.options.length > 0);
+    if (groupsToRender.length === 0) {
+      return (
+        <SelectList isAriaMultiselectable={isMultiSelect}>
+          <NoResultsFoundOption key="no-results" noResults={noResults} />
+          {footer && <MenuFooter>{footer}</MenuFooter>}
+        </SelectList>
+      );
+    }
     return (
       <SelectList isAriaMultiselectable={isMultiSelect}>
         {groupsToRender.map((group, index) => (
