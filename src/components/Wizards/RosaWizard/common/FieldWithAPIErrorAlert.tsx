@@ -9,6 +9,7 @@ import {
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { useRosaWizardStrings } from '../RosaWizardStringsContext';
 import '@patternfly-labs/react-form-wizard/inputs/Select.css';
+import './FieldWithAPIErrorAlert.css';
 
 type FieldWithAPIErrorAlertProps = {
   /** `false`/empty: children only. `true`: summary helper only (no popover). Other values: summary + popover with that detail. */
@@ -81,11 +82,8 @@ export const FieldWithAPIErrorAlert = ({
         <Button
           type="button"
           variant="plain"
+          className="field-with-api-error-alert__details-trigger"
           aria-label={showErrorDetails}
-          style={{
-            marginLeft:
-              'calc(-1 * var(--pf-t--global--spacer--action--horizontal--plain--default))',
-          }}
         >
           {summaryHelper}
         </Button>

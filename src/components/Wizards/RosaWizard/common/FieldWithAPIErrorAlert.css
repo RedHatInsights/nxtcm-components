@@ -1,0 +1,5 @@
+/* Popper wraps the trigger with display: contents; align-self avoids column flex ancestors stretching the plain button full-width (which centers its content). */
+.field-with-api-error-alert__details-trigger {
+  margin-inline-start: calc(-1 * var(--pf-t--global--spacer--action--horizontal--plain--default));
+  align-self: flex-start;
+}
