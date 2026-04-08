@@ -54,27 +54,31 @@ export const SecurityGroupsSection = ({
     >
       {incompatibleClusterVersion && <div>{incompatibleClusterVersionMessage}</div>}
       {!incompatibleClusterVersion && (
-        <FieldWithAPIErrorAlert
-          error={vpcList.error}
-          isFetching={vpcList.isFetching}
-          fieldName={securityGroups.formLabel}
-          retry={vpcList.fetch ? () => void vpcList.fetch?.() : undefined}
-        >
-          {showEmptyAlert && <SecurityGroupsEmptyAlert refreshVPCCallback={refreshVPCs} />}
-          {!showEmptyAlert && (
-            <>
-              <EditSecurityGroups
-                selectedVPC={selectedVPC}
-                selectedGroupIds={selectedGroupIds ?? []}
-                onChange={setSelectedGroupIds}
-                isReadOnly={false}
-                refreshVPCCallback={refreshVPCs}
-              />
-              <br />
-              <SecurityGroupsNoEditAlert />
-            </>
-          )}
-        </FieldWithAPIErrorAlert>
+        <>
+          <FieldWithAPIErrorAlert
+            error={vpcList.error}
+            isFetching={vpcList.isFetching}
+            fieldName={securityGroups.formLabel}
+            retry={vpcList.fetch ? () => void vpcList.fetch?.() : undefined}
+          >
+            {showEmptyAlert && !vpcList.error && (
+              <SecurityGroupsEmptyAlert refreshVPCCallback={refreshVPCs} />
+            )}
+            {!showEmptyAlert && (
+              <>
+                <EditSecurityGroups
+                  selectedVPC={selectedVPC}
+                  selectedGroupIds={selectedGroupIds ?? []}
+                  onChange={setSelectedGroupIds}
+                  isReadOnly={false}
+                  refreshVPCCallback={refreshVPCs}
+                />
+              </>
+            )}
+          </FieldWithAPIErrorAlert>
+
+          {!showEmptyAlert && <SecurityGroupsNoEditAlert />}
+        </>
       )}
     </ExpandableSection>
   );

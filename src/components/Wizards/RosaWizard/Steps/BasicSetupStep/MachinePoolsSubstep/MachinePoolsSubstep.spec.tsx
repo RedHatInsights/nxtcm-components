@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/experimental-ct-react';
 import { checkAccessibility } from '../../../../../../test-helpers';
-import { MachinePoolsSubstepStory } from './MachinePoolsSubstep.story';
+import { MachinePoolsSubstepMount } from './MachinePoolsSubstep.spec-helpers';
+import { machinePoolsSubstepCtStrings, mockVpcList } from './MachinePoolsSubstep.fixtures';
 import { ShowValidationContext } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
 import type { Resource, MachineTypesDropdownType, VPC } from '../../../../types';
 
@@ -13,12 +14,12 @@ const mockResource = <TData,>(data: TData): Resource<TData> => ({
 
 test.describe('MachinePoolsSubstep', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(<MachinePoolsSubstepStory />);
+    const component = await mount(<MachinePoolsSubstepMount />);
     await checkAccessibility({ component });
   });
 
   test('should render Machine pools section', async ({ mount }) => {
-    const component = await mount(<MachinePoolsSubstepStory />);
+    const component = await mount(<MachinePoolsSubstepMount />);
 
     await expect(component.getByText('Machine pools', { exact: true })).toBeVisible();
     await expect(
@@ -27,19 +28,19 @@ test.describe('MachinePoolsSubstep', () => {
   });
 
   test('should display VPC select dropdown', async ({ mount }) => {
-    const component = await mount(<MachinePoolsSubstepStory />);
+    const component = await mount(<MachinePoolsSubstepMount />);
 
     await expect(component.getByText(/Select a VPC to install your machine pools/)).toBeVisible();
   });
 
   test('should display Compute node instance type dropdown', async ({ mount }) => {
-    const component = await mount(<MachinePoolsSubstepStory />);
+    const component = await mount(<MachinePoolsSubstepMount />);
 
     await expect(component.getByText('Compute node instance type', { exact: true })).toBeVisible();
   });
 
   test('should display autoscaling checkbox', async ({ mount }) => {
-    const component = await mount(<MachinePoolsSubstepStory />);
+    const component = await mount(<MachinePoolsSubstepMount />);
 
     await expect(component.getByText('Autoscaling', { exact: true })).toBeVisible();
     await expect(component.getByRole('checkbox', { name: /Enable autoscaling/ })).toBeVisible();
@@ -47,27 +48,27 @@ test.describe('MachinePoolsSubstep', () => {
 
   test('should display Compute node count when autoscaling is disabled', async ({ mount }) => {
     const component = await mount(
-      <MachinePoolsSubstepStory clusterOverrides={{ autoscaling: false }} />
+      <MachinePoolsSubstepMount clusterOverrides={{ autoscaling: false }} />
     );
 
     await expect(component.getByText('Compute node count', { exact: true })).toBeVisible();
   });
 
   test('should display machine pool select component', async ({ mount }) => {
-    const component = await mount(<MachinePoolsSubstepStory />);
+    const component = await mount(<MachinePoolsSubstepMount />);
 
     await expect(component.getByText('Machine pool', { exact: true })).toBeVisible();
     await expect(component.getByText('Private subnet name', { exact: true })).toBeVisible();
   });
 
   test('should render with empty VPC list', async ({ mount }) => {
-    const component = await mount(<MachinePoolsSubstepStory vpcList={mockResource<VPC[]>([])} />);
+    const component = await mount(<MachinePoolsSubstepMount vpcList={mockResource<VPC[]>([])} />);
 
     await expect(component.getByText('Machine pools', { exact: true })).toBeVisible();
   });
 
   test('should display refresh button on VPC list', async ({ mount }) => {
-    const component = await mount(<MachinePoolsSubstepStory vpcList={mockResource<VPC[]>([])} />);
+    const component = await mount(<MachinePoolsSubstepMount vpcList={mockResource<VPC[]>([])} />);
 
     await expect(
       component.locator('#machine-pools-section').getByLabel('Refresh', { exact: true })
@@ -78,7 +79,7 @@ test.describe('MachinePoolsSubstep', () => {
     let fetchCallCount = 0;
 
     const component = await mount(
-      <MachinePoolsSubstepStory
+      <MachinePoolsSubstepMount
         vpcList={{
           data: [],
           error: null,
@@ -101,14 +102,14 @@ test.describe('MachinePoolsSubstep', () => {
 
   test('should render with empty machine types list', async ({ mount }) => {
     const component = await mount(
-      <MachinePoolsSubstepStory machineTypes={mockResource<MachineTypesDropdownType[]>([])} />
+      <MachinePoolsSubstepMount machineTypes={mockResource<MachineTypesDropdownType[]>([])} />
     );
 
     await expect(component.getByText('Compute node instance type', { exact: true })).toBeVisible();
   });
 
   test('should have autoscaling checkbox clickable', async ({ mount }) => {
-    const component = await mount(<MachinePoolsSubstepStory />);
+    const component = await mount(<MachinePoolsSubstepMount />);
 
     const autoscalingCheckbox = component.getByRole('checkbox', { name: /Enable autoscaling/ });
     await expect(autoscalingCheckbox).toBeVisible();
@@ -117,7 +118,7 @@ test.describe('MachinePoolsSubstep', () => {
   });
 
   test('should display helper text for autoscaling', async ({ mount }) => {
-    const component = await mount(<MachinePoolsSubstepStory />);
+    const component = await mount(<MachinePoolsSubstepMount />);
 
     await expect(
       component.getByText(/Autoscaling automatically adds and removes nodes/)
@@ -125,7 +126,7 @@ test.describe('MachinePoolsSubstep', () => {
   });
 
   test('should render Machine pools settings section', async ({ mount }) => {
-    const component = await mount(<MachinePoolsSubstepStory />);
+    const component = await mount(<MachinePoolsSubstepMount />);
 
     await expect(component.getByText('Machine pools settings', { exact: true })).toBeVisible();
     await expect(
@@ -137,7 +138,7 @@ test.describe('MachinePoolsSubstep', () => {
     mount,
   }) => {
     const component = await mount(
-      <MachinePoolsSubstepStory machineTypes={{ data: [], isFetching: true, error: null }} />
+      <MachinePoolsSubstepMount machineTypes={{ data: [], isFetching: true, error: null }} />
     );
 
     const machineTypeSelect = component.locator('#cluster-machine_type');
@@ -149,7 +150,7 @@ test.describe('MachinePoolsSubstep', () => {
     mount,
   }) => {
     const component = await mount(
-      <MachinePoolsSubstepStory machineTypes={{ data: [], isFetching: false, error: null }} />
+      <MachinePoolsSubstepMount machineTypes={{ data: [], isFetching: false, error: null }} />
     );
 
     const machineTypeSelect = component.locator('#cluster-machine_type');
@@ -162,8 +163,14 @@ test.describe('SecurityGroupsSection', () => {
   const vpcWithSecurityGroups = 'vpc-123';
   const vpcWithNoSecurityGroups = 'vpc-456';
 
+  const {
+    mp: mpStrings,
+    sg: sgStrings,
+    securityGroupsListErrorTitle,
+  } = machinePoolsSubstepCtStrings;
+
   test('should not show security groups section when no VPC is selected', async ({ mount }) => {
-    const component = await mount(<MachinePoolsSubstepStory />);
+    const component = await mount(<MachinePoolsSubstepMount />);
 
     const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
     await advancedToggle.click();
@@ -173,7 +180,7 @@ test.describe('SecurityGroupsSection', () => {
 
   test('should show security groups section when a VPC is selected', async ({ mount }) => {
     const component = await mount(
-      <MachinePoolsSubstepStory clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
+      <MachinePoolsSubstepMount clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
     );
 
     const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
@@ -186,7 +193,7 @@ test.describe('SecurityGroupsSection', () => {
     mount,
   }) => {
     const component = await mount(
-      <MachinePoolsSubstepStory clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
+      <MachinePoolsSubstepMount clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
     );
 
     const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
@@ -204,7 +211,7 @@ test.describe('SecurityGroupsSection', () => {
 
   test('should show empty alert when VPC has no security groups', async ({ mount }) => {
     const component = await mount(
-      <MachinePoolsSubstepStory clusterOverrides={{ selected_vpc: vpcWithNoSecurityGroups }} />
+      <MachinePoolsSubstepMount clusterOverrides={{ selected_vpc: vpcWithNoSecurityGroups }} />
     );
 
     const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
@@ -222,7 +229,7 @@ test.describe('SecurityGroupsSection', () => {
 
   test('should display security group options in the dropdown', async ({ mount, page }) => {
     const component = await mount(
-      <MachinePoolsSubstepStory clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
+      <MachinePoolsSubstepMount clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
     );
 
     const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
@@ -246,7 +253,7 @@ test.describe('SecurityGroupsSection', () => {
 
   test('should select a security group and show it as a label', async ({ mount, page }) => {
     const component = await mount(
-      <MachinePoolsSubstepStory clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
+      <MachinePoolsSubstepMount clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
     );
 
     const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
@@ -263,7 +270,7 @@ test.describe('SecurityGroupsSection', () => {
 
   test('should show refresh button for security groups', async ({ mount }) => {
     const component = await mount(
-      <MachinePoolsSubstepStory clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
+      <MachinePoolsSubstepMount clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
     );
 
     const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
@@ -276,9 +283,53 @@ test.describe('SecurityGroupsSection', () => {
     await expect(refreshButton).toBeVisible();
   });
 
+  test('should show incompatible cluster version message instead of security group controls below OpenShift 4.14', async ({
+    mount,
+  }) => {
+    const component = await mount(
+      <MachinePoolsSubstepMount
+        clusterOverrides={{ selected_vpc: vpcWithSecurityGroups, cluster_version: '4.12.0' }}
+      />
+    );
+
+    const advancedToggle = component.getByText(mpStrings.advancedToggle, { exact: true });
+    await advancedToggle.click();
+
+    const securityGroupsToggle = component.getByText(mpStrings.securityGroupsToggle, {
+      exact: true,
+    });
+    await securityGroupsToggle.click();
+
+    await expect(component.getByText(sgStrings.incompatibleVersion, { exact: true })).toBeVisible();
+    await expect(component.getByText(sgStrings.selectToggle, { exact: true })).not.toBeVisible();
+  });
+
+  test('should not show empty security groups alert when the VPC list request failed', async ({
+    mount,
+  }) => {
+    const component = await mount(
+      <MachinePoolsSubstepMount
+        clusterOverrides={{ selected_vpc: vpcWithNoSecurityGroups }}
+        vpcList={{ ...mockVpcList, error: 'Failed to load VPCs' }}
+      />
+    );
+
+    const advancedToggle = component.getByText(mpStrings.advancedToggle, { exact: true });
+    await advancedToggle.click();
+
+    const securityGroupsToggle = component.getByText(mpStrings.securityGroupsToggle, {
+      exact: true,
+    });
+    await securityGroupsToggle.click();
+
+    await expect(component.getByText(sgStrings.emptyTitle, { exact: true })).not.toBeVisible();
+    // Substring match: exact fails when the summary lives under Button > FormHelperText (PF layout).
+    await expect(component.getByText(securityGroupsListErrorTitle)).toBeVisible();
+  });
+
   test('should clear selected security groups when VPC is changed', async ({ mount, page }) => {
     const component = await mount(
-      <MachinePoolsSubstepStory clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
+      <MachinePoolsSubstepMount clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
     );
 
     const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
@@ -327,7 +378,7 @@ const mountWithValidation = (
 ) =>
   mount(
     <ShowValidationContext.Provider value={true}>
-      <MachinePoolsSubstepStory clusterOverrides={clusterOverrides} />
+      <MachinePoolsSubstepMount clusterOverrides={clusterOverrides} />
     </ShowValidationContext.Provider>
   );
 
