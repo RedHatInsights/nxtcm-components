@@ -29,7 +29,7 @@ export const Telemetry: React.FC<TelemetryProps> = ({ data }) => {
           className={styles.section}
         >
           <FlexItem>
-            <ConnectedIcon className={styles.connectedIcon} />
+            <ConnectedIcon className={styles.connectedIcon} aria-hidden="true" />
           </FlexItem>
           <FlexItem className={styles.count} data-testid="connected-count">
             {connected}
@@ -48,7 +48,7 @@ export const Telemetry: React.FC<TelemetryProps> = ({ data }) => {
           className={styles.section}
         >
           <FlexItem>
-            <DisconnectedIcon className={styles.disconnectedIcon} />
+            <DisconnectedIcon className={styles.disconnectedIcon} aria-hidden="true" />
           </FlexItem>
           <FlexItem className={styles.count} data-testid="disconnected-count">
             {disconnected}

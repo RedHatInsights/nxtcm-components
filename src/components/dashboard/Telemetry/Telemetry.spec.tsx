@@ -45,7 +45,7 @@ test.describe('Telemetry', () => {
   test('should render icons for both statuses', async ({ mount }) => {
     const component = await mount(<Telemetry data={defaultData} />);
     const icons = component.locator('svg');
-    expect(await icons.count()).toBe(2);
+    await expect(icons).toHaveCount(2);
   });
 
   test('should display zero for connected when none are connected', async ({ mount }) => {
