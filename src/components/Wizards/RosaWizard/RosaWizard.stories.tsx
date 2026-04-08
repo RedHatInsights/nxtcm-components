@@ -379,6 +379,91 @@ export const Default: Story = {
   },
 };
 
+/** Shared API error string for the `AllApiErrors` story (popover/detail body). */
+const storyApiErrorMessage = 'This is the error returned from the API call';
+
+/**
+ * Every basic-setup resource reports an error so `FieldWithAPIErrorAlert` can be reviewed.
+ * Mock data is kept so controls still populate for exploration.
+ */
+const basicSetupStepAllApiErrors: BasicSetupStepProps = {
+  ...mockBasicSetupStep,
+  clusterNameValidation: {
+    error: storyApiErrorMessage,
+    isFetching: false,
+  },
+  userRole: {
+    error: storyApiErrorMessage,
+    isFetching: false,
+  },
+  versions: {
+    ...mockBasicSetupStep.versions,
+    error: storyApiErrorMessage,
+    isFetching: false,
+  },
+  awsInfrastructureAccounts: {
+    ...mockBasicSetupStep.awsInfrastructureAccounts,
+    error: storyApiErrorMessage,
+    isFetching: false,
+  },
+  awsBillingAccounts: {
+    ...mockBasicSetupStep.awsBillingAccounts,
+    error: storyApiErrorMessage,
+    isFetching: false,
+  },
+  regions: {
+    ...mockBasicSetupStep.regions,
+    error: storyApiErrorMessage,
+    isFetching: false,
+  },
+  roles: {
+    ...mockBasicSetupStep.roles,
+    error: storyApiErrorMessage,
+    isFetching: false,
+  },
+  oidcConfig: {
+    ...mockBasicSetupStep.oidcConfig,
+    error: storyApiErrorMessage,
+    isFetching: false,
+  },
+  machineTypes: {
+    ...mockBasicSetupStep.machineTypes,
+    error: storyApiErrorMessage,
+    isFetching: false,
+  },
+  vpcList: {
+    ...mockBasicSetupStep.vpcList,
+    error: storyApiErrorMessage,
+    isFetching: false,
+  },
+  subnets: {
+    ...mockBasicSetupStep.subnets,
+    error: storyApiErrorMessage,
+    isFetching: false,
+  },
+  securityGroups: {
+    ...mockBasicSetupStep.securityGroups,
+    error: storyApiErrorMessage,
+    isFetching: false,
+  },
+};
+
+export const AllApiErrors: Story = {
+  args: {
+    title: 'Create ROSA Cluster — all API errors',
+    yaml: true,
+    onSubmit: async (data: unknown) => {
+      console.log('Wizard submitted (story):', data);
+    },
+    onCancel: () => {
+      console.log('Wizard cancelled (story)');
+    },
+    wizardsStepsData: {
+      basicSetupStep: basicSetupStepAllApiErrors,
+    },
+  },
+};
+
 /**
  * When default and latest versions have the same value (e.g. 4.21.8), only one group is shown:
  * "Default (Recommended)" — avoiding "Latest" to reduce anxiety for conservative enterprise customers.

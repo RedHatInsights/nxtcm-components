@@ -6,16 +6,19 @@ import EditSecurityGroups from './EditSecurityGroups';
 import SecurityGroupsEmptyAlert from './SecurityGroupsEmptyAlert';
 import SecurityGroupsNoEditAlert from './SecurityGroupsNoEditAlert';
 import { showSecurityGroupsSection } from '../../../../helpers';
-import { CloudVpc } from '../../../../../types';
+import { CloudVpc, Resource, VPC } from '../../../../../types';
 import { useRosaWizardStrings } from '../../../../RosaWizardStringsContext';
+import { FieldWithAPIErrorAlert } from '../../../../common/FieldWithAPIErrorAlert';
 
 export const SecurityGroupsSection = ({
   selectedVPC,
   clusterVersion,
+  vpcList,
   refreshVPCs,
 }: {
   selectedVPC: CloudVpc | undefined;
   clusterVersion: string;
+  vpcList: Resource<VPC[]>;
   refreshVPCs?: () => void;
 }) => {
   const { machinePools, securityGroups } = useRosaWizardStrings();
@@ -50,18 +53,31 @@ export const SecurityGroupsSection = ({
       onToggle={() => setIsExpanded(!isExpanded)}
     >
       {incompatibleClusterVersion && <div>{incompatibleClusterVersionMessage}</div>}
-      {showEmptyAlert && <SecurityGroupsEmptyAlert refreshVPCCallback={refreshVPCs} />}
-      {!incompatibleClusterVersion && !showEmptyAlert && (
+      {!incompatibleClusterVersion && (
         <>
-          <EditSecurityGroups
-            selectedVPC={selectedVPC}
-            selectedGroupIds={selectedGroupIds ?? []}
-            onChange={setSelectedGroupIds}
-            isReadOnly={false}
-            refreshVPCCallback={refreshVPCs}
-          />
-          <br />
-          <SecurityGroupsNoEditAlert />
+          <FieldWithAPIErrorAlert
+            error={vpcList.error}
+            isFetching={vpcList.isFetching}
+            fieldName={securityGroups.formLabel}
+            retry={vpcList.fetch ? () => void vpcList.fetch?.() : undefined}
+          >
+            {showEmptyAlert && !vpcList.error && (
+              <SecurityGroupsEmptyAlert refreshVPCCallback={refreshVPCs} />
+            )}
+            {!showEmptyAlert && (
+              <>
+                <EditSecurityGroups
+                  selectedVPC={selectedVPC}
+                  selectedGroupIds={selectedGroupIds ?? []}
+                  onChange={setSelectedGroupIds}
+                  isReadOnly={false}
+                  refreshVPCCallback={refreshVPCs}
+                />
+              </>
+            )}
+          </FieldWithAPIErrorAlert>
+
+          {!showEmptyAlert && <SecurityGroupsNoEditAlert />}
         </>
       )}
     </ExpandableSection>
