@@ -1,5 +1,6 @@
 import { Button, Flex, FlexItem } from '@patternfly/react-core';
 import ClusterIcon from '@patternfly/react-icons/dist/esm/icons/cluster-icon';
+import React from 'react';
 import styles from './TotalClusters.module.scss';
 
 export type ClusterBreakdown = {

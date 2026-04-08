@@ -1,5 +1,5 @@
 .container {
-  padding: 1rem;
+  padding: var(--pf-t--global--spacer--md);
   height: 100%;
 }
 
@@ -8,14 +8,14 @@
 }
 
 .totalNumber {
-  font-size: 2.5rem;
+  font-size: var(--pf-t--global--font--size--4xl);
   font-weight: 300;
   line-height: 1;
   color: var(--pf-t--global--text--color--regular);
 }
 
 .totalLabel {
-  font-size: 0.875rem;
+  font-size: var(--pf-t--global--font--size--sm);
   color: var(--pf-t--global--text--color--subtle);
 }
 
@@ -24,20 +24,20 @@
 }
 
 .breakdownCount {
-  font-size: 1.5rem;
+  font-size: var(--pf-t--global--font--size--2xl);
   font-weight: 400;
   line-height: 1;
   color: var(--pf-t--global--text--color--regular);
 }
 
 .breakdownLabel {
-  font-size: 0.875rem;
+  font-size: var(--pf-t--global--font--size--sm);
   color: var(--pf-t--global--text--color--regular);
 }
 
 .icon {
   color: var(--pf-t--global--text--color--regular);
-  font-size: 1rem;
+  font-size: var(--pf-t--global--font--size--md);
 }
 
 .viewLink {
