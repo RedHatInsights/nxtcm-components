@@ -9,12 +9,6 @@
   text-align: center;
 }
 
-.divider {
-  width: 1px;
-  align-self: stretch;
-  background-color: var(--pf-t--global--border--color--default);
-}
-
 .count {
   font-size: var(--pf-t--global--font--size--2xl);
   font-weight: 400;
@@ -29,10 +23,10 @@
 
 .connectedIcon {
   font-size: var(--pf-t--global--font--size--xl);
-  color: var(--pf-t--global--color--status--success--default);
+  color: var(--pf-t--global--icon--color--status--success--default);
 }
 
 .disconnectedIcon {
   font-size: var(--pf-t--global--font--size--xl);
-  color: var(--pf-t--global--color--status--danger--default);
+  color: var(--pf-t--global--icon--color--status--danger--default);
 }

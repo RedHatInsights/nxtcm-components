@@ -38,7 +38,7 @@ test.describe('Telemetry', () => {
 
   test('should render a vertical divider', async ({ mount }) => {
     const component = await mount(<Telemetry data={defaultData} />);
-    const divider = component.locator('[role="separator"]');
+    const divider = component.locator('hr');
     await expect(divider).toBeVisible();
   });
 

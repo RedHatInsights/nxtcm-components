@@ -1,4 +1,4 @@
-import { Flex, FlexItem } from '@patternfly/react-core';
+import { Divider, Flex, FlexItem } from '@patternfly/react-core';
 import ConnectedIcon from '@patternfly/react-icons/dist/esm/icons/connected-icon';
 import DisconnectedIcon from '@patternfly/react-icons/dist/esm/icons/disconnected-icon';
 import React from 'react';
@@ -38,7 +38,7 @@ export const Telemetry: React.FC<TelemetryProps> = ({ data }) => {
         </Flex>
       </FlexItem>
 
-      <div className={styles.divider} role="separator" />
+      <Divider orientation={{ default: 'vertical' }} />
 
       <FlexItem flex={{ default: 'flex_1' }}>
         <Flex
