@@ -14,3 +14,4 @@ export * from './dashboard/UpgradeRisks';
 export * from './dashboard/ClusterRecommendations';
 export * from './dashboard/Subscriptions';
 export * from './dashboard/LoadingPanel';
+export * from './dashboard/TotalClusters';

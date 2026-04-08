@@ -1,0 +1,45 @@
+.container {
+  padding: 1rem;
+  height: 100%;
+}
+
+.totalSection {
+  padding-bottom: var(--pf-t--global--spacer--md);
+}
+
+.totalNumber {
+  font-size: 2.5rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--pf-t--global--text--color--regular);
+}
+
+.totalLabel {
+  font-size: 0.875rem;
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+.breakdown {
+  padding: var(--pf-t--global--spacer--md) 0;
+}
+
+.breakdownCount {
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--pf-t--global--text--color--regular);
+}
+
+.breakdownLabel {
+  font-size: 0.875rem;
+  color: var(--pf-t--global--text--color--regular);
+}
+
+.icon {
+  color: var(--pf-t--global--text--color--regular);
+  font-size: 1rem;
+}
+
+.viewLink {
+  padding-top: var(--pf-t--global--spacer--md);
+}
