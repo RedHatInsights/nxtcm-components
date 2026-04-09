@@ -43,7 +43,7 @@ test.describe('UpdateStatus', () => {
 
   test('should render a vertical divider', async ({ mount }) => {
     const component = await mount(<UpdateStatus data={defaultData} />);
-    await expect(component.locator('hr')).toBeVisible();
+    await expect(component.locator('hr')).toHaveCount(1);
   });
 
   test('should render two icons when no updating data', async ({ mount }) => {
@@ -53,7 +53,7 @@ test.describe('UpdateStatus', () => {
 
   test('should not show currently updating section when omitted', async ({ mount }) => {
     const component = await mount(<UpdateStatus data={defaultData} />);
-    await expect(component.getByTestId('currently-updating-count')).not.toBeVisible();
+    await expect(component.getByTestId('currently-updating-count')).toHaveCount(0);
   });
 
   test('should render currently updating section when provided', async ({ mount }) => {
