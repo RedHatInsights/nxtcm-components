@@ -199,7 +199,7 @@ test.describe('DetailsSubStep', () => {
       }
     });
 
-    test('should disable refresh button but not billing select when AWS infrastructure accounts are loading', async ({
+    test('should disable refresh button but not aws infrastructure accounts select when AWS infrastructure accounts are loading', async ({
       mount,
     }) => {
       const component = await mount(
