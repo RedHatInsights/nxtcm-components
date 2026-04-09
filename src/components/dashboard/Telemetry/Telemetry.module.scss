@@ -1,0 +1,32 @@
+.container {
+  padding: var(--pf-t--global--spacer--md);
+  height: 100%;
+  align-items: center;
+}
+
+.section {
+  padding: var(--pf-t--global--spacer--sm) var(--pf-t--global--spacer--md);
+  text-align: center;
+}
+
+.count {
+  font-size: var(--pf-t--global--font--size--2xl);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--pf-t--global--text--color--regular);
+}
+
+.label {
+  font-size: var(--pf-t--global--font--size--sm);
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+.connectedIcon {
+  font-size: var(--pf-t--global--font--size--xl);
+  color: var(--pf-t--global--icon--color--status--success--default);
+}
+
+.disconnectedIcon {
+  font-size: var(--pf-t--global--font--size--xl);
+  color: var(--pf-t--global--icon--color--status--danger--default);
+}

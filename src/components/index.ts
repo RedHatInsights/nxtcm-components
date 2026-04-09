@@ -15,3 +15,4 @@ export * from './dashboard/ClusterRecommendations';
 export * from './dashboard/Subscriptions';
 export * from './dashboard/LoadingPanel';
 export * from './dashboard/TotalClusters';
+export * from './dashboard/Telemetry';
