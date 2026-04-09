@@ -3,11 +3,13 @@ import React from 'react';
 import { RosaWizard } from './RosaWizard';
 import type {
   MachineTypesDropdownType,
+  OIDCConfig,
   Region,
   AWSInfrastructureAccounts,
   OpenShiftVersionsData,
   Resource,
   Role,
+  SelectDropdownType,
   ValidationResource,
 } from '../types';
 import type { BasicSetupStepProps } from './RosaWizard';
@@ -46,6 +48,12 @@ function DefaultWithInitialVersionLoading(props: React.ComponentProps<typeof Ros
     return () => clearTimeout(t);
   }, []);
 
+  const [awsIsFetching, setAwsIsFetching] = React.useState(true);
+  React.useEffect(() => {
+    const t = setTimeout(() => setAwsIsFetching(false), 3000);
+    return () => clearTimeout(t);
+  }, []);
+
   const wizardsStepsData = React.useMemo(
     () => ({
       ...props.wizardsStepsData,
@@ -55,9 +63,13 @@ function DefaultWithInitialVersionLoading(props: React.ComponentProps<typeof Ros
           ...props.wizardsStepsData.basicSetupStep.versions,
           isFetching: versionsFetching,
         },
+        awsInfrastructureAccounts: {
+          ...props.wizardsStepsData.basicSetupStep.awsInfrastructureAccounts,
+          isFetching: awsIsFetching,
+        },
       },
     }),
-    [props.wizardsStepsData, versionsFetching]
+    [props.wizardsStepsData, versionsFetching, awsIsFetching]
   );
 
   return <RosaWizard {...props} wizardsStepsData={wizardsStepsData} />;
@@ -984,6 +996,135 @@ export const AsyncLoading: Story = {
     },
     wizardsStepsData: {
       basicSetupStep: mockBasicSetupStep,
+    },
+  },
+};
+
+const REFRESH_SIMULATED_DELAY_MS = 3000;
+
+/**
+ * Simulates ~3 s async refetches for AWS infrastructure accounts (Details), AWS billing accounts
+ * (Details), and OIDC configuration (Roles & policies) when each field’s refresh control is used.
+ */
+function BasicSetupSimulatedRefetchesWrapper(props: React.ComponentProps<typeof RosaWizard>) {
+  const [awsInfrastructureAccounts, setAwsInfrastructureAccounts] = React.useState<
+    Resource<AWSInfrastructureAccounts[]>
+  >({
+    data: mockAwsInfrastructureAccounts,
+    error: null,
+    isFetching: false,
+  });
+
+  const [awsBillingAccounts, setAwsBillingAccounts] = React.useState<
+    Resource<SelectDropdownType[]>
+  >({
+    data: mockAwsBillingAccounts,
+    error: null,
+    isFetching: false,
+  });
+
+  const [oidcConfig, setOidcConfig] = React.useState<Resource<OIDCConfig[]>>({
+    data: mockOicdConfig,
+    error: null,
+    isFetching: false,
+  });
+
+  const fetchAwsInfrastructureAccounts = React.useCallback(async () => {
+    setAwsInfrastructureAccounts((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFRESH_SIMULATED_DELAY_MS);
+    setAwsInfrastructureAccounts({
+      data: [
+        ...mockAwsInfrastructureAccounts,
+        {
+          label: 'AWS Account — loaded after refresh (999999999999)',
+          value: 'aws-refreshed-999999999999',
+        },
+      ],
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  const fetchAwsBillingAccounts = React.useCallback(async () => {
+    setAwsBillingAccounts((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFRESH_SIMULATED_DELAY_MS);
+    setAwsBillingAccounts({
+      data: [
+        ...mockAwsBillingAccounts,
+        {
+          label: 'Billing Account — loaded after refresh (999999999999)',
+          value: 'billing-refreshed-999999999999',
+        },
+      ],
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  const fetchOidcConfig = React.useCallback(async () => {
+    setOidcConfig((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFRESH_SIMULATED_DELAY_MS);
+    setOidcConfig({
+      data: [
+        ...mockOicdConfig,
+        {
+          label: 'refreshed-oidc-config-id',
+          value: 'refreshed-oidc-config-id',
+          issuer_url: 'https://oidc.os1.devshift.org/refreshed-after-refresh',
+        },
+      ],
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  return (
+    <RosaWizard
+      {...props}
+      wizardsStepsData={{
+        ...props.wizardsStepsData,
+        basicSetupStep: {
+          ...props.wizardsStepsData.basicSetupStep,
+          awsInfrastructureAccounts: {
+            ...awsInfrastructureAccounts,
+            fetch: fetchAwsInfrastructureAccounts,
+          },
+          awsBillingAccounts: {
+            ...awsBillingAccounts,
+            fetch: fetchAwsBillingAccounts,
+          },
+          oidcConfig: {
+            ...oidcConfig,
+            fetch: fetchOidcConfig,
+          },
+        },
+      }}
+    />
+  );
+}
+
+export const BasicSetupSimulatedRefetches: Story = {
+  render: (args) => <BasicSetupSimulatedRefetchesWrapper {...args} />,
+  args: {
+    title: 'Create ROSA Cluster — simulated refresh (infra, billing, OIDC)',
+    yaml: true,
+    onSubmit: async (data: unknown) => {
+      console.log('Wizard submitted with data:', data);
+      await sleep(2000);
+    },
+    onCancel: () => {
+      console.log('Wizard cancelled');
+    },
+    wizardsStepsData: {
+      basicSetupStep: mockBasicSetupStep,
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Details: use the refresh control on AWS infrastructure account and on billing account — each shows ~3 s loading then an extra option. Roles & policies: refresh OIDC configuration for the same behavior.',
+      },
     },
   },
 };

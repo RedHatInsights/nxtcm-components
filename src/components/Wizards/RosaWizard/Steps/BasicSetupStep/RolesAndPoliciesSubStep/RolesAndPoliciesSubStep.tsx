@@ -270,6 +270,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                     isFill
                     path="cluster.byo_oidc_config_id"
                     refreshCallback={oidcConfig.fetch}
+                    isPending={oidcConfig.isFetching}
                     label={rp.oidcLabel}
                     required
                     placeholder={rp.oidcPlaceholder}
@@ -279,7 +280,6 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                       value: config.value,
                       description: config.issuer_url,
                     }))}
-                    disabled={oidcConfig.isFetching}
                   />
                 </FieldWithAPIErrorAlert>
               </StackItem>
