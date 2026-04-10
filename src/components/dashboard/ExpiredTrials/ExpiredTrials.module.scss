@@ -1,0 +1,39 @@
+.container {
+  padding: var(--pf-t--global--spacer--md);
+  height: 100%;
+}
+
+.tableWrapper {
+  flex-grow: 1;
+}
+
+.trialLink {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: var(--pf-t--global--text--color--link--default);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 2px;
+    text-decoration: underline;
+  }
+}
+
+.pagination {
+  padding-top: var(--pf-t--global--spacer--sm);
+}
+
+.emptyState {
+  padding: var(--pf-t--global--spacer--xl) 0;
+  color: var(--pf-t--global--text--color--subtle);
+  font-size: var(--pf-t--global--font--size--sm);
+  text-align: center;
+}
