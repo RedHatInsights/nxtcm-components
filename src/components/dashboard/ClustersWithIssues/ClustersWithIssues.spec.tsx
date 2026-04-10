@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/experimental-ct-react';
 import React from 'react';
 import { ClustersWithIssues, ClustersWithIssuesProps } from './ClustersWithIssues';
+import { ClustersWithIssuesWithActions } from './ClustersWithIssues.spec-helpers';
 import { checkAccessibility } from '../../../test-helpers';
 
 const defaultData: ClustersWithIssuesProps['data'] = {
@@ -26,8 +27,7 @@ test.describe('ClustersWithIssues', () => {
 
   test('should display the danger icon', async ({ mount }) => {
     const component = await mount(<ClustersWithIssues data={defaultData} />);
-    const icon = component.locator('svg');
-    expect(await icon.count()).toBeGreaterThanOrEqual(1);
+    await expect(component.getByTestId('unhealthy-icon')).toBeVisible();
   });
 
   test('should render cluster names in the table', async ({ mount }) => {
@@ -42,10 +42,10 @@ test.describe('ClustersWithIssues', () => {
   test('should render issue counts in the table', async ({ mount }) => {
     const component = await mount(<ClustersWithIssues data={defaultData} />);
 
-    await expect(component.getByRole('cell', { name: '1' })).toBeVisible();
-    await expect(component.getByRole('cell', { name: '12' })).toBeVisible();
-    await expect(component.getByRole('cell', { name: '7' })).toBeVisible();
-    await expect(component.getByRole('cell', { name: '5' })).toBeVisible();
+    await expect(component.getByTestId('issues-c1')).toContainText('1');
+    await expect(component.getByTestId('issues-c2')).toContainText('12');
+    await expect(component.getByTestId('issues-c3')).toContainText('7');
+    await expect(component.getByTestId('issues-c4')).toContainText('5');
   });
 
   test('should render table headers', async ({ mount }) => {
@@ -101,18 +101,16 @@ test.describe('ClustersWithIssues', () => {
   });
 
   test('should render kebab actions when rowActions is provided', async ({ mount }) => {
-    const component = await mount(
-      <ClustersWithIssues data={defaultData} rowActions={() => [{ title: 'Open console' }]} />
-    );
+    const component = await mount(<ClustersWithIssuesWithActions data={defaultData} />);
 
-    const kebabs = component.getByRole('button', { name: 'Kebab toggle' });
+    const kebabs = component.locator('[aria-label="Kebab toggle"]');
     expect(await kebabs.count()).toBe(defaultData.clusters.length);
   });
 
   test('should not render kebab column when rowActions is not provided', async ({ mount }) => {
     const component = await mount(<ClustersWithIssues data={defaultData} />);
 
-    const kebabs = component.getByRole('button', { name: 'Kebab toggle' });
+    const kebabs = component.locator('[aria-label="Kebab toggle"]');
     expect(await kebabs.count()).toBe(0);
   });
 
@@ -125,7 +123,7 @@ test.describe('ClustersWithIssues', () => {
 
     await expect(component.getByTestId('unhealthy-count')).toContainText('1');
     await expect(component.getByText('prod-east')).toBeVisible();
-    await expect(component.getByRole('cell', { name: '3' })).toBeVisible();
+    await expect(component.getByTestId('issues-c1')).toContainText('3');
   });
 
   test('should handle high issue counts', async ({ mount }) => {
@@ -136,6 +134,6 @@ test.describe('ClustersWithIssues', () => {
     const component = await mount(<ClustersWithIssues data={data} />);
 
     await expect(component.getByTestId('unhealthy-count')).toContainText('999');
-    await expect(component.getByRole('cell', { name: '500' })).toBeVisible();
+    await expect(component.getByTestId('issues-c1')).toContainText('500');
   });
 });

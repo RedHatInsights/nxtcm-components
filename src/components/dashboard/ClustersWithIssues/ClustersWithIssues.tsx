@@ -42,7 +42,7 @@ export const ClustersWithIssues: React.FC<ClustersWithIssuesProps> = ({
       <FlexItem>
         <Flex alignItems={{ default: 'alignItemsCenter' }} spaceItems={{ default: 'spaceItemsSm' }}>
           <FlexItem>
-            <Icon status="danger">
+            <Icon status="danger" data-testid="unhealthy-icon">
               <ExclamationCircleIcon />
             </Icon>
           </FlexItem>
@@ -79,7 +79,9 @@ export const ClustersWithIssues: React.FC<ClustersWithIssuesProps> = ({
                       cluster.name
                     )}
                   </Td>
-                  <Td dataLabel="Issues">{cluster.issues}</Td>
+                  <Td dataLabel="Issues" data-testid={`issues-${cluster.id}`}>
+                    {cluster.issues}
+                  </Td>
                   {hasActions && (
                     <Td isActionCell>
                       <ActionsColumn items={rowActions(cluster)} />
