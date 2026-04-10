@@ -1,0 +1,35 @@
+.container {
+  padding: var(--pf-t--global--spacer--md);
+  height: 100%;
+}
+
+.count {
+  font-size: var(--pf-t--global--font--size--2xl);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--pf-t--global--text--color--regular);
+}
+
+.tableWrapper {
+  padding-top: var(--pf-t--global--spacer--sm);
+}
+
+.clusterLink {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: var(--pf-t--global--text--color--link--default);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.emptyState {
+  padding: var(--pf-t--global--spacer--xl) 0;
+  color: var(--pf-t--global--text--color--subtle);
+  font-size: var(--pf-t--global--font--size--sm);
+}
