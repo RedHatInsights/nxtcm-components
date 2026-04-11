@@ -1,4 +1,4 @@
-import { Divider, Flex, FlexItem } from '@patternfly/react-core';
+import { Divider, Flex, FlexItem, Title } from '@patternfly/react-core';
 import { ChartDonut } from '@patternfly/react-charts/victory';
 import AngleDoubleUpIcon from '@patternfly/react-icons/dist/esm/icons/angle-double-up-icon';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon';
@@ -113,9 +113,14 @@ export const AdvisorRecommendations: React.FC<AdvisorRecommendationsProps> = ({
 
       {/* recommendations by category */}
       <FlexItem>
-        <div className={styles.categoryTitle} data-testid="category-title">
+        <Title
+          headingLevel="h5"
+          size="lg"
+          className={styles.categoryTitle}
+          data-testid="category-title"
+        >
           Recommendations by category
-        </div>
+        </Title>
       </FlexItem>
 
       <FlexItem>
