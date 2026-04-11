@@ -19,3 +19,4 @@ export * from './dashboard/Telemetry';
 export * from './dashboard/UpdateStatus';
 export * from './dashboard/ExpiredTrials';
 export * from './dashboard/ResourceUtilization';
+export * from './dashboard/AdvisorRecommendations';
