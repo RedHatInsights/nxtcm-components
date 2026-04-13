@@ -1,0 +1,33 @@
+# Runs Renovate on a schedule. If you use the hosted Mend Renovate GitHub App
+# (https://github.com/apps/renovate) on this repo, disable this workflow to avoid duplicate PRs.
+name: Renovate
+
+on:
+  schedule:
+    - cron: "0 6 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: renovate
+  cancel-in-progress: false
+
+jobs:
+  renovate:
+    name: Run Renovate
+    if: github.repository == 'RedHatInsights/nxtcm-components'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      security-events: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Renovate
+        uses: renovatebot/github-action@v46.1.8
+        with:
+          configurationFile: renovate.json
+          renovate-version: full
+          token: ${{ github.token }}
