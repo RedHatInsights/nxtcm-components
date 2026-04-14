@@ -4,24 +4,17 @@
  * {@link ./MachinePoolsSubstep.fixtures}.
  * @see https://playwright.dev/docs/test-components#test-stories
  */
-import React, { useState, useCallback } from 'react';
+import React, { useMemo } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { MachinePoolsSubstep } from './MachinePoolsSubstep';
 import { RosaWizardStringsProvider } from '../../../RosaWizardStringsContext';
-import { ItemContext } from '@patternfly-labs/react-form-wizard/contexts/ItemContext';
-import { DataContext } from '@patternfly-labs/react-form-wizard/contexts/DataContext';
-import {
-  DisplayModeContext,
-  DisplayMode,
-} from '@patternfly-labs/react-form-wizard/contexts/DisplayModeContext';
-import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
-import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
-import { StepShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/StepShowValidationProvider';
 import {
   createMockClusterData,
   mockMachineTypesData,
   mockVpcList,
   type MachinePoolsSubstepStoryProps,
 } from './MachinePoolsSubstep.fixtures';
+import type { RosaWizardFormData } from '../../../../types';
 
 export type { MachinePoolsSubstepStoryProps };
 
@@ -30,27 +23,20 @@ export const MachinePoolsSubstepMount: React.FC<MachinePoolsSubstepStoryProps> =
   machineTypes = mockMachineTypesData,
   clusterOverrides = {},
 }) => {
-  const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
-
-  const update = useCallback(() => {
-    setData((currentData) => ({ ...currentData }));
-  }, []);
+  const defaultValues = useMemo(
+    () => createMockClusterData(clusterOverrides) as RosaWizardFormData,
+    [clusterOverrides]
+  );
+  const methods = useForm<RosaWizardFormData>({
+    defaultValues,
+    mode: 'onChange',
+  });
 
   return (
     <RosaWizardStringsProvider>
-      <DataContext.Provider value={{ update }}>
-        <DisplayModeContext.Provider value={DisplayMode.Step}>
-          <ItemContext.Provider value={data}>
-            <StepShowValidationProvider>
-              <ShowValidationProvider>
-                <ValidationProvider>
-                  <MachinePoolsSubstep vpcList={vpcList} machineTypes={machineTypes} />
-                </ValidationProvider>
-              </ShowValidationProvider>
-            </StepShowValidationProvider>
-          </ItemContext.Provider>
-        </DisplayModeContext.Provider>
-      </DataContext.Provider>
+      <FormProvider {...methods}>
+        <MachinePoolsSubstep vpcList={vpcList} machineTypes={machineTypes} />
+      </FormProvider>
     </RosaWizardStringsProvider>
   );
 };

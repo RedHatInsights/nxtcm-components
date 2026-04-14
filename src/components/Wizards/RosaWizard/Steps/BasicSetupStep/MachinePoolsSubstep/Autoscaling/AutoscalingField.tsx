@@ -1,5 +1,5 @@
-import { useData, WizCheckbox, WizNumberInput } from '@patternfly-labs/react-form-wizard';
 import { Flex, FlexItem } from '@patternfly/react-core';
+import { useFormContext } from 'react-hook-form';
 import {
   validateMinReplicas,
   validateMaxReplicas,
@@ -11,6 +11,7 @@ import {
   useRosaWizardStrings,
   useRosaWizardValidators,
 } from '../../../../RosaWizardStringsContext';
+import { RosaCheckbox, RosaNumberInput } from '../../../../Inputs';
 
 type AutoscalingFieldProps = {
   autoscaling?: boolean;
@@ -52,7 +53,7 @@ export const getAutoscalingMaxNodes = (openshiftVersion?: string) => {
 export const AutoscalingField = (props: AutoscalingFieldProps) => {
   const a = useRosaWizardStrings().autoscaling;
   const v = useRosaWizardValidators();
-  const { update } = useData();
+  const { setValue } = useFormContext();
 
   const { autoscaling, openshiftVersion, machinePoolsNumber } = props;
 
@@ -60,7 +61,7 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
 
   return (
     <>
-      <WizCheckbox
+      <RosaCheckbox
         id="autoscaling-checkbox"
         title={a.title}
         helperText={
@@ -73,26 +74,26 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
         }
         path="cluster.autoscaling"
         label={a.enableLabel}
-        onValueChange={(checked, item) => {
+        onValueChange={(checked) => {
           if (checked) {
-            delete item.cluster.nodes_compute;
-
-            item.cluster.min_replicas = scaleMinNodesOnMachinePoolNumber(machinePoolsNumber);
-            item.cluster.max_replicas = 4;
-
-            update();
+            setValue('cluster.nodes_compute', undefined, { shouldDirty: true });
+            setValue(
+              'cluster.min_replicas',
+              scaleMinNodesOnMachinePoolNumber(machinePoolsNumber),
+              { shouldDirty: true }
+            );
+            setValue('cluster.max_replicas', 4, { shouldDirty: true });
           } else {
-            delete item.cluster.min_replicas;
-            delete item.cluster.max_replicas;
-            item.cluster.nodes_compute = 2;
-            update();
+            setValue('cluster.min_replicas', undefined, { shouldDirty: true });
+            setValue('cluster.max_replicas', undefined, { shouldDirty: true });
+            setValue('cluster.nodes_compute', 2, { shouldDirty: true });
           }
         }}
       />
       {autoscaling ? (
         <Flex>
           <FlexItem>
-            <WizNumberInput
+            <RosaNumberInput
               required
               path="cluster.min_replicas"
               label={a.minLabel}
@@ -112,7 +113,7 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
             />
           </FlexItem>
           <FlexItem>
-            <WizNumberInput
+            <RosaNumberInput
               required
               path="cluster.max_replicas"
               label={a.maxLabel}
@@ -138,7 +139,7 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
           </FlexItem>
         </Flex>
       ) : (
-        <WizNumberInput
+        <RosaNumberInput
           required
           path="cluster.nodes_compute"
           label={a.computeCountLabel}

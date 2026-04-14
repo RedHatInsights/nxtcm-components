@@ -1,30 +1,21 @@
-import {
-  Radio,
-  Section,
-  useItem,
-  WizCheckbox,
-  WizRadioGroup,
-  WizTextInput,
-} from '@patternfly-labs/react-form-wizard';
 import { Alert, Flex, FlexItem, Grid, GridItem } from '@patternfly/react-core';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { validateAWSKMSKeyARN } from '../../../validators';
-import { ClusterEncryptionKeys, RosaWizardFormData } from '../../../../types';
+import { ClusterEncryptionKeys } from '../../../../types';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
+import { Radio, RosaCheckbox, RosaRadioGroup, RosaSection, RosaTextInput } from '../../../Inputs';
 
 export const EncryptionSubstep = () => {
   const e = useRosaWizardStrings().encryption;
   const v = useRosaWizardValidators();
-  const { cluster } = useItem<RosaWizardFormData>();
+  const { setValue } = useFormContext();
+  const cluster = useWatch({ name: 'cluster' });
 
   return (
-    <Section
-      label={e.sectionLabel}
-      id="encryption-substep-section"
-      key="encryption-substep-section-key"
-    >
-      <WizRadioGroup
+    <RosaSection label={e.sectionLabel} id="encryption-substep-section">
+      <RosaRadioGroup
         id="encryption-keys-radio-group"
         path="cluster.encryption_keys"
         label={e.keysGroupLabel}
@@ -34,9 +25,9 @@ export const EncryptionSubstep = () => {
             <ExternalLink href={links.AWS_DATA_PROTECTION}>{e.keysLearnMore}</ExternalLink>
           </>
         }
-        onValueChange={() => {
-          if (cluster?.encryption_keys !== ClusterEncryptionKeys.custom && cluster?.kms_key_arn) {
-            delete cluster.kms_key_arn;
+        onValueChange={(value) => {
+          if (value !== ClusterEncryptionKeys.custom) {
+            setValue('cluster.kms_key_arn', undefined, { shouldDirty: true });
           }
         }}
       >
@@ -56,15 +47,15 @@ export const EncryptionSubstep = () => {
             />
           </FlexItem>
         </Flex>
-      </WizRadioGroup>
-      {cluster?.['encryption_keys'] === ClusterEncryptionKeys.custom && (
+      </RosaRadioGroup>
+      {cluster?.encryption_keys === ClusterEncryptionKeys.custom && (
         <Grid>
           <GridItem span={4}>
-            <WizTextInput
+            <RosaTextInput
               path="cluster.kms_key_arn"
               label={e.keyArnLabel}
               validateOnBlur
-              validation={(value) => validateAWSKMSKeyARN(value, cluster.region, v.kmsKeyArn)}
+              validation={(value) => validateAWSKMSKeyARN(value, cluster?.region, v.kmsKeyArn)}
               required
               labelHelp={e.keyArnHelp}
             />
@@ -72,14 +63,14 @@ export const EncryptionSubstep = () => {
         </Grid>
       )}
 
-      <WizCheckbox
+      <RosaCheckbox
         id="etcd-encryption"
         path="cluster.etcd_encryption"
         title={e.etcdTitle}
         label={e.etcdLabel}
-        onValueChange={() => {
-          if (!cluster?.etcd_encryption && cluster?.etcd_key_arn) {
-            delete cluster.etcd_key_arn;
+        onValueChange={(checked) => {
+          if (!checked) {
+            setValue('cluster.etcd_key_arn', undefined, { shouldDirty: true });
           }
         }}
         helperText={
@@ -90,12 +81,12 @@ export const EncryptionSubstep = () => {
         }
       />
 
-      {cluster?.['etcd_encryption'] && (
+      {cluster?.etcd_encryption && (
         <Grid>
           <GridItem span={4}>
-            <WizTextInput
+            <RosaTextInput
               path="cluster.etcd_key_arn"
-              validation={(value) => validateAWSKMSKeyARN(value, cluster.region, v.kmsKeyArn)}
+              validation={(value) => validateAWSKMSKeyARN(value, cluster?.region, v.kmsKeyArn)}
               label={e.keyArnLabel}
               validateOnBlur
               required
@@ -109,6 +100,6 @@ export const EncryptionSubstep = () => {
           <Alert variant="info" title={e.keysNoteAlert} ouiaId="encryptionKeysAlert" />
         </GridItem>
       </Grid>
-    </Section>
+    </RosaSection>
   );
 };

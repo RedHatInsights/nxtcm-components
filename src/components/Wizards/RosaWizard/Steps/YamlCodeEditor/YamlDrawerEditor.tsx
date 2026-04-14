@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useItem, useData } from '@patternfly-labs/react-form-wizard';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { Alert, Button, ClipboardCopyButton, Tooltip } from '@patternfly/react-core';
 import { SearchIcon, UndoIcon, RedoIcon, TimesIcon } from '@patternfly/react-icons';
 import Editor, { OnMount, Monaco } from '@monaco-editor/react';
@@ -44,8 +44,8 @@ interface YamlDrawerEditorProps {
 }
 
 export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
-  const data = useItem<RosaWizardFormData>();
-  const { update } = useData();
+  const data = useWatch() as RosaWizardFormData;
+  const { reset, getValues } = useFormContext<RosaWizardFormData>();
   const [yamlContent, setYamlContent] = useState('');
   const [parseError, setParseError] = useState('');
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
@@ -96,7 +96,7 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
 
       const parsed = parseMultiDocYaml(newYaml);
       if (parsed) {
-        const current = data as Record<string, unknown>;
+        const current = getValues() as Record<string, unknown>;
         const merged = {
           ...current,
           cluster: {
@@ -104,7 +104,7 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
             ...(parsed.cluster as Record<string, unknown>),
           },
         };
-        update(merged);
+        reset(merged as RosaWizardFormData, { keepDefaultValues: false });
       }
 
       clearTimeout(validationTimerRef.current);
@@ -112,7 +112,7 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
         setEditorMarkers(newYaml);
       }, 300);
     },
-    [update, data, setEditorMarkers]
+    [reset, getValues, setEditorMarkers]
   );
 
   const handleEditorMount: OnMount = useCallback(

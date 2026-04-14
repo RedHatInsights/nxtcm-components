@@ -1,5 +1,5 @@
-import { Section, WizTextInput, WizFileUpload, useItem } from '@patternfly-labs/react-form-wizard';
 import { Alert, Content, ContentVariants, Stack, StackItem } from '@patternfly/react-core';
+import { useWatch } from 'react-hook-form';
 import {
   checkNoProxyDomains,
   composeValidators,
@@ -9,12 +9,12 @@ import {
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
-import { RosaWizardFormData } from '../../../../types';
+import { RosaFileUpload, RosaSection, RosaTextInput } from '../../../Inputs';
 
 export const ClusterWideProxySubstep = () => {
   const cw = useRosaWizardStrings().clusterWideProxy;
   const v = useRosaWizardValidators();
-  const { cluster } = useItem<RosaWizardFormData>();
+  const cluster = useWatch({ name: 'cluster' });
 
   const validateAtLeastOne = () => {
     if (!cluster.http_proxy_url && !cluster.https_proxy_url && !cluster.additional_trust_bundle) {
@@ -26,17 +26,13 @@ export const ClusterWideProxySubstep = () => {
   const validateUrlHttps = (value: string) => validateUrl(value, ['http', 'https'], v.url);
 
   return (
-    <Section
-      id="cluster-wide-proxy-section-id"
-      key="cluster-wide-proxy-section-key"
-      label={cw.sectionLabel}
-    >
+    <RosaSection id="cluster-wide-proxy-section-id" label={cw.sectionLabel}>
       <Content component={ContentVariants.p}>{cw.intro}</Content>
       <ExternalLink href={links.CONFIGURE_PROXY_URL}>{cw.learnMoreLink}</ExternalLink>
       <Alert variant="info" isInline isPlain title={cw.alertConfigureFields} />
       <Stack hasGutter>
         <StackItem>
-          <WizTextInput
+          <RosaTextInput
             validation={composeValidators(validateUrlHttp, validateAtLeastOne)}
             validateOnBlur
             label={cw.httpLabel}
@@ -45,7 +41,7 @@ export const ClusterWideProxySubstep = () => {
           />
         </StackItem>
         <StackItem>
-          <WizTextInput
+          <RosaTextInput
             validation={composeValidators(validateUrlHttps, validateAtLeastOne)}
             validateOnBlur
             label={cw.httpsLabel}
@@ -54,7 +50,7 @@ export const ClusterWideProxySubstep = () => {
           />
         </StackItem>
         <StackItem>
-          <WizTextInput
+          <RosaTextInput
             disabled={!cluster.http_proxy_url && !cluster.https_proxy_url}
             validateOnBlur
             validation={(value) => checkNoProxyDomains(value, v.noProxyDomains)}
@@ -64,7 +60,7 @@ export const ClusterWideProxySubstep = () => {
           />
         </StackItem>
         <StackItem>
-          <WizFileUpload
+          <RosaFileUpload
             label={cw.trustBundleLabel}
             path="cluster.additional_trust_bundle"
             validation={composeValidators(
@@ -74,6 +70,6 @@ export const ClusterWideProxySubstep = () => {
           />
         </StackItem>
       </Stack>
-    </Section>
+    </RosaSection>
   );
 };

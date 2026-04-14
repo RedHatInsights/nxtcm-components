@@ -1,14 +1,7 @@
-import React, { useCallback, useState } from 'react';
-import { DataContext } from '@patternfly-labs/react-form-wizard/contexts/DataContext';
-import {
-  DisplayMode,
-  DisplayModeContext,
-} from '@patternfly-labs/react-form-wizard/contexts/DisplayModeContext';
-import { ItemContext } from '@patternfly-labs/react-form-wizard/contexts/ItemContext';
-import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
-import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
+import React, { useMemo } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { RosaWizardStringsProvider } from '../../../RosaWizardStringsContext';
-import { OIDCConfig, Resource, Role } from '../../../../types';
+import { OIDCConfig, Resource, Role, type RosaWizardFormData } from '../../../../types';
 import { RolesAndPoliciesSubStep } from './RolesAndPoliciesSubStep';
 import {
   createMockClusterData,
@@ -53,25 +46,20 @@ export const RolesAndPoliciesSubStepMount = ({
   oidcConfig = mockResource(mockOIDCConfig),
   clusterOverrides = {},
 }: Props) => {
-  const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
-
-  const update = useCallback(() => {
-    setData((currentData) => ({ ...currentData }));
-  }, []);
+  const defaultValues = useMemo(
+    () => createMockClusterData(clusterOverrides) as RosaWizardFormData,
+    [clusterOverrides]
+  );
+  const methods = useForm<RosaWizardFormData>({
+    defaultValues,
+    mode: 'onChange',
+  });
 
   return (
     <RosaWizardStringsProvider>
-      <DataContext.Provider value={{ update }}>
-        <DisplayModeContext.Provider value={DisplayMode.Step}>
-          <ItemContext.Provider value={data}>
-            <ShowValidationProvider>
-              <ValidationProvider>
-                <RolesAndPoliciesSubStep roles={roles} oidcConfig={oidcConfig} />
-              </ValidationProvider>
-            </ShowValidationProvider>
-          </ItemContext.Provider>
-        </DisplayModeContext.Provider>
-      </DataContext.Provider>
+      <FormProvider {...methods}>
+        <RolesAndPoliciesSubStep roles={roles} oidcConfig={oidcConfig} />
+      </FormProvider>
     </RosaWizardStringsProvider>
   );
 };

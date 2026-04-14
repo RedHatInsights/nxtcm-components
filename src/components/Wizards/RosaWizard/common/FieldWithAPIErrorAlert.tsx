@@ -8,7 +8,7 @@ import {
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { useRosaWizardStrings } from '../RosaWizardStringsContext';
-import '@patternfly-labs/react-form-wizard/inputs/Select.css';
+import '../Inputs/Select.css';
 import './FieldWithAPIErrorAlert.css';
 
 type FieldWithAPIErrorAlertProps = {
