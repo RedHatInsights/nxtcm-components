@@ -10,28 +10,18 @@
   color: var(--pf-t--global--text--color--regular);
 }
 
-.tableWrapper {
-  padding-top: var(--pf-t--global--spacer--sm);
+.countSection {
+  padding-bottom: var(--pf-t--global--spacer--sm);
+  border-bottom: var(--pf-t--global--border--width--divider--default) solid
+    var(--pf-t--global--border--color--default);
 }
 
-.clusterLink {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  font: inherit;
-  color: var(--pf-t--global--text--color--link--default);
-  text-decoration: none;
+.tableWrapper {
+  padding-top: 0;
+}
 
-  &:hover {
-    text-decoration: underline;
-  }
-
-  &:focus-visible {
-    outline: 2px solid currentcolor;
-    outline-offset: 2px;
-    text-decoration: underline;
-  }
+.pagination {
+  margin-top: auto;
 }
 
 .emptyState {

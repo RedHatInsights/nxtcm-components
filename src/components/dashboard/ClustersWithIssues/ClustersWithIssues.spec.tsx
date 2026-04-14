@@ -14,6 +14,15 @@ const defaultData: ClustersWithIssuesProps['data'] = {
   ],
 };
 
+const paginatedData: ClustersWithIssuesProps['data'] = {
+  totalUnhealthy: 12,
+  clusters: Array.from({ length: 12 }, (_, i) => ({
+    id: `c${i + 1}`,
+    name: `cluster-${i + 1}`,
+    issues: 12 - i,
+  })),
+};
+
 test.describe('ClustersWithIssues', () => {
   test('should pass accessibility tests', async ({ mount }) => {
     const component = await mount(<ClustersWithIssues data={defaultData} />);
@@ -46,6 +55,17 @@ test.describe('ClustersWithIssues', () => {
     await expect(component.getByTestId('issues-c2')).toContainText('12');
     await expect(component.getByTestId('issues-c3')).toContainText('7');
     await expect(component.getByTestId('issues-c4')).toContainText('5');
+  });
+
+  test('should render the card title', async ({ mount }) => {
+    const component = await mount(<ClustersWithIssues data={defaultData} />);
+    await expect(component.getByRole('heading', { name: 'Clusters with issues' })).toBeVisible();
+  });
+
+  test('should render a divider after the cluster count', async ({ mount }) => {
+    const component = await mount(<ClustersWithIssues data={defaultData} />);
+    const countSection = component.getByTestId('unhealthy-count').locator('..');
+    await expect(countSection).toBeVisible();
   });
 
   test('should render table headers', async ({ mount }) => {
@@ -100,6 +120,14 @@ test.describe('ClustersWithIssues', () => {
     await expect(component.getByText('No clusters with issues')).toBeVisible();
   });
 
+  test('should not show pagination when no clusters', async ({ mount }) => {
+    const component = await mount(
+      <ClustersWithIssues data={{ totalUnhealthy: 0, clusters: [] }} />
+    );
+
+    await expect(component.locator('.pf-v6-c-pagination')).toHaveCount(0);
+  });
+
   test('should render kebab actions when rowActions is provided', async ({ mount }) => {
     const component = await mount(<ClustersWithIssuesWithActions data={defaultData} />);
 
@@ -135,5 +163,60 @@ test.describe('ClustersWithIssues', () => {
 
     await expect(component.getByTestId('unhealthy-count')).toContainText('999');
     await expect(component.getByTestId('issues-c1')).toContainText('500');
+  });
+});
+
+test.describe('ClustersWithIssues — pagination', () => {
+  test('should show only first page of clusters by default', async ({ mount }) => {
+    const component = await mount(<ClustersWithIssues data={paginatedData} perPage={5} />);
+
+    const rows = component.locator('tbody tr');
+    expect(await rows.count()).toBe(5);
+    await expect(component.getByText('cluster-1')).toBeVisible();
+    await expect(component.getByText('cluster-5')).toBeVisible();
+    await expect(component.getByText('cluster-6')).not.toBeVisible();
+  });
+
+  test('should show pagination controls', async ({ mount }) => {
+    const component = await mount(<ClustersWithIssues data={paginatedData} perPage={5} />);
+
+    await expect(component.locator('.pf-v6-c-pagination')).toBeVisible();
+  });
+
+  test('should navigate to next page', async ({ mount }) => {
+    const component = await mount(<ClustersWithIssues data={paginatedData} perPage={5} />);
+
+    await component.getByLabel('Go to next page').click();
+
+    await expect(component.getByText('cluster-6', { exact: true })).toBeVisible();
+    await expect(component.getByText('cluster-10', { exact: true })).toBeVisible();
+    await expect(component.getByText('cluster-1', { exact: true })).not.toBeVisible();
+  });
+
+  test('should navigate to last page', async ({ mount }) => {
+    const component = await mount(<ClustersWithIssues data={paginatedData} perPage={5} />);
+
+    await component.getByLabel('Go to last page').click();
+
+    await expect(component.getByText('cluster-11')).toBeVisible();
+    await expect(component.getByText('cluster-12')).toBeVisible();
+    const rows = component.locator('tbody tr');
+    expect(await rows.count()).toBe(2);
+  });
+
+  test('should not show pagination for fewer items than perPage', async ({ mount }) => {
+    const smallData: ClustersWithIssuesProps['data'] = {
+      totalUnhealthy: 3,
+      clusters: [
+        { id: 'c1', name: 'a', issues: 1 },
+        { id: 'c2', name: 'b', issues: 2 },
+        { id: 'c3', name: 'c', issues: 3 },
+      ],
+    };
+    const component = await mount(<ClustersWithIssues data={smallData} perPage={5} />);
+
+    const rows = component.locator('tbody tr');
+    expect(await rows.count()).toBe(3);
+    await expect(component.locator('.pf-v6-c-pagination')).toBeVisible();
   });
 });
