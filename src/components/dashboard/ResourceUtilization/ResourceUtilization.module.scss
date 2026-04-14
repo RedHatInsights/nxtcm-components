@@ -1,0 +1,36 @@
+.container {
+  padding: var(--pf-t--global--spacer--md);
+  height: 100%;
+}
+
+.chartsRow {
+  padding-bottom: var(--pf-t--global--spacer--sm);
+}
+
+.metricColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 180px;
+}
+
+.metricTitle {
+  text-align: center;
+  margin-bottom: var(--pf-t--global--spacer--xs);
+  color: var(--pf-t--global--text--color--regular);
+}
+
+.chartWrapper {
+  width: 200px;
+  height: 200px;
+}
+
+.viewLink {
+  padding-top: var(--pf-t--global--spacer--md);
+}
+
+.viewMoreBtn:focus-visible {
+  outline: 2px solid var(--pf-t--global--color--brand--default);
+  outline-offset: 2px;
+  border-radius: var(--pf-t--global--border--radius--sm);
+}
