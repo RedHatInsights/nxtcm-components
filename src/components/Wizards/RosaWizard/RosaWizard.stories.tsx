@@ -11,6 +11,7 @@ import type {
   Role,
   SelectDropdownType,
   ValidationResource,
+  VPC,
 } from '../types';
 import type { BasicSetupStepProps } from './RosaWizard';
 
@@ -1124,6 +1125,592 @@ export const BasicSetupSimulatedRefetches: Story = {
       description: {
         story:
           'Details: use the refresh control on AWS infrastructure account and on billing account — each shows ~3 s loading then an extra option. Roles & policies: refresh OIDC configuration for the same behavior.',
+      },
+    },
+  },
+};
+
+const REFETCH_ALL_DELAY_MS = 2000;
+
+/**
+ * Simulates 2 s async refetches for every WizSelect refresh button across
+ * the Basic Setup steps: AWS infrastructure accounts, AWS billing accounts,
+ * OpenShift versions, OIDC configuration, and VPC list.
+ */
+function AllRefetchesWrapper(props: React.ComponentProps<typeof RosaWizard>) {
+  const [awsInfrastructureAccounts, setAwsInfrastructureAccounts] = React.useState<
+    Resource<SelectDropdownType[]>
+  >({
+    data: mockAwsInfrastructureAccounts,
+    error: null,
+    isFetching: false,
+  });
+
+  const [awsBillingAccounts, setAwsBillingAccounts] = React.useState<
+    Resource<SelectDropdownType[]>
+  >({
+    data: mockAwsBillingAccounts,
+    error: null,
+    isFetching: false,
+  });
+
+  const [versions, setVersions] = React.useState<Resource<OpenShiftVersionsData>>({
+    data: mockVersionsData,
+    error: null,
+    isFetching: false,
+  });
+
+  const [oidcConfig, setOidcConfig] = React.useState<Resource<OIDCConfig[]>>({
+    data: mockOicdConfig,
+    error: null,
+    isFetching: false,
+  });
+
+  const [vpcList, setVpcList] = React.useState<Resource<VPC[]>>({
+    data: mockVPCs,
+    error: null,
+    isFetching: false,
+  });
+
+  const fetchAwsInfrastructureAccounts = React.useCallback(async () => {
+    setAwsInfrastructureAccounts((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFETCH_ALL_DELAY_MS);
+    setAwsInfrastructureAccounts({
+      data: [
+        ...mockAwsInfrastructureAccounts,
+        {
+          label: 'AWS Account — refreshed (999999999999)',
+          value: 'aws-refreshed-999999999999',
+        },
+      ],
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  const fetchAwsBillingAccounts = React.useCallback(async () => {
+    setAwsBillingAccounts((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFETCH_ALL_DELAY_MS);
+    setAwsBillingAccounts({
+      data: [
+        ...mockAwsBillingAccounts,
+        {
+          label: 'Billing Account — refreshed (999999999999)',
+          value: 'billing-refreshed-999999999999',
+        },
+      ],
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  const fetchVersions = React.useCallback(async () => {
+    setVersions((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFETCH_ALL_DELAY_MS);
+    setVersions({
+      data: mockVersionsData,
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  const fetchOidcConfig = React.useCallback(async () => {
+    setOidcConfig((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFETCH_ALL_DELAY_MS);
+    setOidcConfig({
+      data: [
+        ...mockOicdConfig,
+        {
+          label: 'refreshed-oidc-config-id',
+          value: 'refreshed-oidc-config-id',
+          issuer_url: 'https://oidc.os1.devshift.org/refreshed-oidc',
+        },
+      ],
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  const fetchVpcList = React.useCallback(async () => {
+    setVpcList((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFETCH_ALL_DELAY_MS);
+    setVpcList({
+      data: mockVPCs,
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  return (
+    <RosaWizard
+      {...props}
+      wizardsStepsData={{
+        ...props.wizardsStepsData,
+        basicSetupStep: {
+          ...props.wizardsStepsData.basicSetupStep,
+          awsInfrastructureAccounts: {
+            ...awsInfrastructureAccounts,
+            fetch: fetchAwsInfrastructureAccounts,
+          },
+          awsBillingAccounts: {
+            ...awsBillingAccounts,
+            fetch: fetchAwsBillingAccounts,
+          },
+          versions: {
+            ...versions,
+            fetch: fetchVersions,
+          },
+          oidcConfig: {
+            ...oidcConfig,
+            fetch: fetchOidcConfig,
+          },
+          vpcList: {
+            ...vpcList,
+            fetch: fetchVpcList,
+          },
+        },
+      }}
+    />
+  );
+}
+
+export const AllDropdownRefetches: Story = {
+  render: (args) => <AllRefetchesWrapper {...args} />,
+  args: {
+    title: 'Create ROSA Cluster — all dropdown refetches',
+    yaml: true,
+    onSubmit: async (data: unknown) => {
+      console.log('Wizard submitted with data:', data);
+      await sleep(2000);
+    },
+    onCancel: () => {
+      console.log('Wizard cancelled');
+    },
+    wizardsStepsData: {
+      basicSetupStep: mockBasicSetupStep,
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Covers every WizSelect refresh button: AWS infrastructure account, AWS billing account, OpenShift versions (Details step), OIDC configuration (Roles & Policies step), and VPC list (Machine Pools / Networking steps). Each refresh enters a 2 s loading state then repopulates with the same (or slightly extended) mock data.',
+      },
+    },
+  },
+};
+
+/**
+ * Like AllDropdownRefetches but every refresh replaces the data with a
+ * completely different set, so the user can verify the dropdown contents
+ * actually change after a refetch.
+ */
+function RefetchWithNewDataWrapper(props: React.ComponentProps<typeof RosaWizard>) {
+  const [awsInfrastructureAccounts, setAwsInfrastructureAccounts] = React.useState<
+    Resource<SelectDropdownType[]>
+  >({
+    data: mockAwsInfrastructureAccounts,
+    error: null,
+    isFetching: false,
+  });
+
+  const [awsBillingAccounts, setAwsBillingAccounts] = React.useState<
+    Resource<SelectDropdownType[]>
+  >({
+    data: mockAwsBillingAccounts,
+    error: null,
+    isFetching: false,
+  });
+
+  const [versions, setVersions] = React.useState<Resource<OpenShiftVersionsData>>({
+    data: mockVersionsData,
+    error: null,
+    isFetching: false,
+  });
+
+  const [oidcConfig, setOidcConfig] = React.useState<Resource<OIDCConfig[]>>({
+    data: mockOicdConfig,
+    error: null,
+    isFetching: false,
+  });
+
+  const [vpcList, setVpcList] = React.useState<Resource<VPC[]>>({
+    data: mockVPCs,
+    error: null,
+    isFetching: false,
+  });
+
+  const fetchAwsInfrastructureAccounts = React.useCallback(async () => {
+    setAwsInfrastructureAccounts((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFETCH_ALL_DELAY_MS);
+    setAwsInfrastructureAccounts({
+      data: [
+        {
+          label: 'AWS Account - EU Production (555000111222)',
+          value: 'aws-eu-prod-555000111222',
+        },
+        {
+          label: 'AWS Account - APAC Staging (555000333444)',
+          value: 'aws-apac-staging-555000333444',
+        },
+        {
+          label: 'AWS Account - US Sandbox (555000555666)',
+          value: 'aws-us-sandbox-555000555666',
+        },
+        {
+          label: 'AWS Account - GovCloud (555000777888)',
+          value: 'aws-govcloud-555000777888',
+        },
+      ],
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  const fetchAwsBillingAccounts = React.useCallback(async () => {
+    setAwsBillingAccounts((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFETCH_ALL_DELAY_MS);
+    setAwsBillingAccounts({
+      data: [
+        {
+          label: 'Billing - EMEA Cost Center (600111222333)',
+          value: 'billing-emea-600111222333',
+        },
+        {
+          label: 'Billing - Global Operations (600444555666)',
+          value: 'billing-global-ops-600444555666',
+        },
+        {
+          label: 'Billing - R&D Budget (600777888999)',
+          value: 'billing-rnd-600777888999',
+        },
+      ],
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  const fetchVersions = React.useCallback(async () => {
+    setVersions((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFETCH_ALL_DELAY_MS);
+    setVersions({
+      data: {
+        latest: { label: 'OpenShift 4.22.1', value: '4.22.1' },
+        default: { label: 'OpenShift 4.21.10', value: '4.21.10' },
+        releases: [
+          { label: 'OpenShift 4.21.9', value: '4.21.9' },
+          { label: 'OpenShift 4.21.8', value: '4.21.8' },
+          { label: 'OpenShift 4.20.12', value: '4.20.12' },
+          { label: 'OpenShift 4.19.6', value: '4.19.6' },
+        ],
+      },
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  const fetchOidcConfig = React.useCallback(async () => {
+    setOidcConfig((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFETCH_ALL_DELAY_MS);
+    setOidcConfig({
+      data: [
+        {
+          label: '7xk9m3bc4dp1qw2ef6ghjt5nrs8uv0ya',
+          value: '7xk9m3bc4dp1qw2ef6ghjt5nrs8uv0ya',
+          issuer_url: 'https://oidc.os1.devshift.org/7xk9m3bc4dp1qw2ef6ghjt5nrs8uv0ya',
+        },
+        {
+          label: '1ab2cd3ef4gh5ij6kl7mn8op9qr0st1uv',
+          value: '1ab2cd3ef4gh5ij6kl7mn8op9qr0st1uv',
+          issuer_url: 'https://oidc.os1.devshift.org/1ab2cd3ef4gh5ij6kl7mn8op9qr0st1uv',
+        },
+        {
+          label: 'zz0yy1xx2ww3vv4uu5tt6ss7rr8qq9pp0',
+          value: 'zz0yy1xx2ww3vv4uu5tt6ss7rr8qq9pp0',
+          issuer_url: 'https://oidc.os1.devshift.org/zz0yy1xx2ww3vv4uu5tt6ss7rr8qq9pp0',
+        },
+      ],
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  const fetchVpcList = React.useCallback(async () => {
+    setVpcList((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFETCH_ALL_DELAY_MS);
+    setVpcList({
+      data: [
+        {
+          name: 'refreshed-prod-vpc',
+          id: 'vpc-refreshed-prod-001',
+          aws_subnets: [
+            {
+              subnet_id: 'subnet-ref-priv-1a',
+              name: 'refreshed-prod-subnet-private1-us-west-2a',
+              availability_zone: 'us-west-2a',
+            },
+            {
+              subnet_id: 'subnet-ref-pub-1a',
+              name: 'refreshed-prod-subnet-public1-us-west-2a',
+              availability_zone: 'us-west-2a',
+            },
+            {
+              subnet_id: 'subnet-ref-priv-1b',
+              name: 'refreshed-prod-subnet-private1-us-west-2b',
+              availability_zone: 'us-west-2b',
+            },
+            {
+              subnet_id: 'subnet-ref-pub-1b',
+              name: 'refreshed-prod-subnet-public1-us-west-2b',
+              availability_zone: 'us-west-2b',
+            },
+          ],
+          aws_security_groups: [
+            { id: 'sg-ref-00001', name: 'refreshed-default' },
+            { id: 'sg-ref-00002', name: 'refreshed-app-traffic' },
+          ],
+        },
+        {
+          name: 'refreshed-staging-vpc',
+          id: 'vpc-refreshed-staging-002',
+          aws_subnets: [
+            {
+              subnet_id: 'subnet-ref-stg-priv-1a',
+              name: 'refreshed-staging-subnet-private1-eu-west-1a',
+              availability_zone: 'eu-west-1a',
+            },
+            {
+              subnet_id: 'subnet-ref-stg-pub-1a',
+              name: 'refreshed-staging-subnet-public1-eu-west-1a',
+              availability_zone: 'eu-west-1a',
+            },
+          ],
+        },
+        {
+          name: 'refreshed-dev-vpc',
+          id: 'vpc-refreshed-dev-003',
+          aws_subnets: [
+            {
+              subnet_id: 'subnet-ref-dev-priv-1a',
+              name: 'refreshed-dev-subnet-private1-ap-southeast-1a',
+              availability_zone: 'ap-southeast-1a',
+            },
+            {
+              subnet_id: 'subnet-ref-dev-pub-1a',
+              name: 'refreshed-dev-subnet-public1-ap-southeast-1a',
+              availability_zone: 'ap-southeast-1a',
+            },
+          ],
+        },
+      ],
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  return (
+    <RosaWizard
+      {...props}
+      wizardsStepsData={{
+        ...props.wizardsStepsData,
+        basicSetupStep: {
+          ...props.wizardsStepsData.basicSetupStep,
+          awsInfrastructureAccounts: {
+            ...awsInfrastructureAccounts,
+            fetch: fetchAwsInfrastructureAccounts,
+          },
+          awsBillingAccounts: {
+            ...awsBillingAccounts,
+            fetch: fetchAwsBillingAccounts,
+          },
+          versions: {
+            ...versions,
+            fetch: fetchVersions,
+          },
+          oidcConfig: {
+            ...oidcConfig,
+            fetch: fetchOidcConfig,
+          },
+          vpcList: {
+            ...vpcList,
+            fetch: fetchVpcList,
+          },
+        },
+      }}
+    />
+  );
+}
+
+export const RefetchWithNewData: Story = {
+  render: (args) => <RefetchWithNewDataWrapper {...args} />,
+  args: {
+    title: 'Create ROSA Cluster — refetch with different data',
+    yaml: true,
+    onSubmit: async (data: unknown) => {
+      console.log('Wizard submitted with data:', data);
+      await sleep(2000);
+    },
+    onCancel: () => {
+      console.log('Wizard cancelled');
+    },
+    wizardsStepsData: {
+      basicSetupStep: mockBasicSetupStep,
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Same as AllDropdownRefetches but every refresh replaces the dropdown contents with entirely new mock data — different AWS accounts, billing accounts, OpenShift versions, OIDC configs, and VPCs — so the change is clearly visible after each refetch.',
+      },
+    },
+  },
+};
+
+/**
+ * Simulates 2 s refetches that return the exact same data for every dropdown.
+ * Verifies that a previously selected value is retained after the refresh
+ * completes, since the item still exists in the returned list.
+ */
+function RefetchSameDataWrapper(props: React.ComponentProps<typeof RosaWizard>) {
+  const [awsInfrastructureAccounts, setAwsInfrastructureAccounts] = React.useState<
+    Resource<SelectDropdownType[]>
+  >({
+    data: mockAwsInfrastructureAccounts,
+    error: null,
+    isFetching: false,
+  });
+
+  const [awsBillingAccounts, setAwsBillingAccounts] = React.useState<
+    Resource<SelectDropdownType[]>
+  >({
+    data: mockAwsBillingAccounts,
+    error: null,
+    isFetching: false,
+  });
+
+  const [versions, setVersions] = React.useState<Resource<OpenShiftVersionsData>>({
+    data: mockVersionsData,
+    error: null,
+    isFetching: false,
+  });
+
+  const [oidcConfig, setOidcConfig] = React.useState<Resource<OIDCConfig[]>>({
+    data: mockOicdConfig,
+    error: null,
+    isFetching: false,
+  });
+
+  const [vpcList, setVpcList] = React.useState<Resource<VPC[]>>({
+    data: mockVPCs,
+    error: null,
+    isFetching: false,
+  });
+
+  const fetchAwsInfrastructureAccounts = React.useCallback(async () => {
+    setAwsInfrastructureAccounts((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFETCH_ALL_DELAY_MS);
+    setAwsInfrastructureAccounts({
+      data: mockAwsInfrastructureAccounts,
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  const fetchAwsBillingAccounts = React.useCallback(async () => {
+    setAwsBillingAccounts((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFETCH_ALL_DELAY_MS);
+    setAwsBillingAccounts({
+      data: mockAwsBillingAccounts,
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  const fetchVersions = React.useCallback(async () => {
+    setVersions((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFETCH_ALL_DELAY_MS);
+    setVersions({
+      data: mockVersionsData,
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  const fetchOidcConfig = React.useCallback(async () => {
+    setOidcConfig((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFETCH_ALL_DELAY_MS);
+    setOidcConfig({
+      data: mockOicdConfig,
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  const fetchVpcList = React.useCallback(async () => {
+    setVpcList((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(REFETCH_ALL_DELAY_MS);
+    setVpcList({
+      data: mockVPCs,
+      error: null,
+      isFetching: false,
+    });
+  }, []);
+
+  return (
+    <RosaWizard
+      {...props}
+      wizardsStepsData={{
+        ...props.wizardsStepsData,
+        basicSetupStep: {
+          ...props.wizardsStepsData.basicSetupStep,
+          awsInfrastructureAccounts: {
+            ...awsInfrastructureAccounts,
+            fetch: fetchAwsInfrastructureAccounts,
+          },
+          awsBillingAccounts: {
+            ...awsBillingAccounts,
+            fetch: fetchAwsBillingAccounts,
+          },
+          versions: {
+            ...versions,
+            fetch: fetchVersions,
+          },
+          oidcConfig: {
+            ...oidcConfig,
+            fetch: fetchOidcConfig,
+          },
+          vpcList: {
+            ...vpcList,
+            fetch: fetchVpcList,
+          },
+        },
+      }}
+    />
+  );
+}
+
+export const RefetchWithSameData: Story = {
+  render: (args) => <RefetchSameDataWrapper {...args} />,
+  args: {
+    title: 'Create ROSA Cluster — refetch with same data',
+    yaml: true,
+    onSubmit: async (data: unknown) => {
+      console.log('Wizard submitted with data:', data);
+      await sleep(2000);
+    },
+    onCancel: () => {
+      console.log('Wizard cancelled');
+    },
+    wizardsStepsData: {
+      basicSetupStep: mockBasicSetupStep,
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Every dropdown refresh returns the exact same mock data. Select a value in each dropdown, then click refresh — the selected value should be preserved after the 2 s loading completes because the item still exists in the returned list.',
       },
     },
   },

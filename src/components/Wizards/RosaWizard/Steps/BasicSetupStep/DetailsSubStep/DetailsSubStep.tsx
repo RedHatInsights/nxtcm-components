@@ -76,6 +76,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
 
   useResetFieldOnOptionsChange('cluster.region', regions.data);
   useResetFieldOnOptionsChange('cluster.machine_type', machineTypes.data, 'machinepools-sub-step');
+  useResetFieldOnOptionsChange('cluster.associated_aws_id', awsInfrastructureAccounts.data);
 
   React.useEffect(() => {
     if (awsBillingAccounts.isFetching) {

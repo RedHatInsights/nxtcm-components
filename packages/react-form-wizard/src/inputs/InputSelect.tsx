@@ -169,6 +169,8 @@ export function InputSelect<T>({
         toShow = toDisplayString(option?.label ?? option?.value ?? value);
       }
       setInputValue(toShow);
+    } else {
+      setInputValue('');
     }
   }, [value, options]);
 

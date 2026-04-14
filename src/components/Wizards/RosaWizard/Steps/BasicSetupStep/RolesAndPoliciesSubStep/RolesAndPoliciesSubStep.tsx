@@ -24,6 +24,7 @@ import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
 import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
+import { useResetFieldOnOptionsChange } from '../../../hooks/useResetFieldOnOptionsChange';
 
 type RolesAndPoliciesSubStepProps = {
   roles: Resource<Role[], [awsAccount: string]> & {
@@ -38,6 +39,11 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
 }) => {
   const rp = useRosaWizardStrings().rolesAndPolicies;
   const v = useRosaWizardValidators();
+
+  useResetFieldOnOptionsChange(
+    'cluster.byo_oidc_config_id',
+    oidcConfig.data.map((c) => ({ value: c.value }))
+  );
 
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
