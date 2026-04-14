@@ -199,7 +199,7 @@ test.describe('DetailsSubStep', () => {
       }
     });
 
-    test('should disable refresh button but not aws infrastructure accounts select when AWS infrastructure accounts are loading', async ({
+    test('should show pending state for AWS infrastructure account when loading', async ({
       mount,
     }) => {
       const component = await mount(
@@ -208,39 +208,116 @@ test.describe('DetailsSubStep', () => {
         />
       );
 
-      const awsSelect = component.locator('#cluster-associated_aws_id');
-      await expect(awsSelect).toBeVisible();
-      await expect(awsSelect.getByRole('combobox')).toBeEnabled();
-      const refreshButton = awsSelect.getByRole('button', { name: 'Refresh', exact: true });
-      await expect(refreshButton).toBeVisible();
-      await expect(refreshButton).toBeDisabled();
+      const awsCombobox = component.locator('#cluster-associated_aws_id [role="combobox"]');
+      await expect(awsCombobox).toBeVisible();
+      await expect(awsCombobox).toHaveValue('Loading...');
     });
 
-    test('should disable refresh button but not billing select when AWS billing accounts are loading', async ({
-      mount,
-    }) => {
+    test('should show pending state for AWS billing account when loading', async ({ mount }) => {
       const component = await mount(
         <DetailsSubStepMount awsBillingAccounts={{ data: [], isFetching: true, error: null }} />
       );
 
-      const billingGroup = component.locator('#cluster-billing_account_id');
-      await expect(billingGroup).toBeVisible();
-      await expect(billingGroup.getByRole('combobox')).toBeEnabled();
-      const refreshButton = billingGroup.getByRole('button', { name: 'Refresh', exact: true });
-      await expect(refreshButton).toBeVisible();
-      await expect(refreshButton).toBeDisabled();
+      const billingCombobox = component.locator('#cluster-billing_account_id [role="combobox"]');
+      await expect(billingCombobox).toBeVisible();
+      await expect(billingCombobox).toHaveValue('Loading...');
     });
 
-    test('should show disabled state for Region select when loading', async ({ mount }) => {
+    test('should show pending state for Region select when loading', async ({ mount }) => {
       const component = await mount(
         <DetailsSubStepMount
           regions={{ data: [], isFetching: true, error: null, fetch: async () => {} }}
         />
       );
 
-      const regionSelect = component.locator('#cluster-region');
-      await expect(regionSelect).toBeVisible();
-      await expect(regionSelect.locator('.pf-m-disabled')).toBeVisible();
+      const regionCombobox = component.locator('#cluster-region [role="combobox"]');
+      await expect(regionCombobox).toBeVisible();
+      await expect(regionCombobox).toHaveValue('Loading...');
+    });
+
+    test('should show spinner in AWS infrastructure account dropdown when loading', async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(
+        <DetailsSubStepMount
+          awsInfrastructureAccounts={{ data: [], isFetching: true, error: null }}
+        />
+      );
+
+      const awsCombobox = component.locator('#cluster-associated_aws_id [role="combobox"]');
+      await awsCombobox.click();
+
+      await expect(page.getByRole('option', { name: /Loading/ })).toBeVisible();
+    });
+
+    test('should show spinner in AWS billing account dropdown when loading', async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(
+        <DetailsSubStepMount awsBillingAccounts={{ data: [], isFetching: true, error: null }} />
+      );
+
+      const billingCombobox = component.locator('#cluster-billing_account_id [role="combobox"]');
+      await billingCombobox.click();
+
+      await expect(page.getByRole('option', { name: /Loading/ })).toBeVisible();
+    });
+
+    test('should show spinner in Region dropdown when loading', async ({ mount, page }) => {
+      const component = await mount(
+        <DetailsSubStepMount
+          regions={{ data: [], isFetching: true, error: null, fetch: async () => {} }}
+        />
+      );
+
+      const regionCombobox = component.locator('#cluster-region [role="combobox"]');
+      await regionCombobox.click();
+
+      await expect(page.getByRole('option', { name: /Loading/ })).toBeVisible();
+    });
+
+    test('should disable refresh button for AWS infrastructure account when loading', async ({
+      mount,
+    }) => {
+      const component = await mount(
+        <DetailsSubStepMount
+          awsInfrastructureAccounts={{
+            data: [],
+            isFetching: true,
+            error: null,
+            fetch: async () => {},
+          }}
+        />
+      );
+
+      const refreshButton = component
+        .locator('#cluster-associated_aws_id')
+        .getByLabel('Refresh', { exact: true });
+      await expect(refreshButton).toBeVisible();
+      await expect(refreshButton).toBeDisabled();
+    });
+
+    test('should disable refresh button for AWS billing account when loading', async ({
+      mount,
+    }) => {
+      const component = await mount(
+        <DetailsSubStepMount
+          awsBillingAccounts={{
+            data: [],
+            isFetching: true,
+            error: null,
+            fetch: async () => {},
+          }}
+        />
+      );
+
+      const refreshButton = component
+        .locator('#cluster-billing_account_id')
+        .getByLabel('Refresh', { exact: true });
+      await expect(refreshButton).toBeVisible();
+      await expect(refreshButton).toBeDisabled();
     });
 
     test('should auto-select billing account when only one is available', async ({ mount }) => {

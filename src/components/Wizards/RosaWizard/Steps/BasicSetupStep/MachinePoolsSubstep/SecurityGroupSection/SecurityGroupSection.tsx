@@ -72,6 +72,7 @@ export const SecurityGroupsSection = ({
                   onChange={setSelectedGroupIds}
                   isReadOnly={false}
                   refreshVPCCallback={refreshVPCs}
+                  isVPCLoading={vpcList.isFetching}
                 />
               </>
             )}
