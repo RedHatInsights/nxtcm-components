@@ -43,9 +43,13 @@ export const ClustersWithIssues: React.FC<ClustersWithIssuesProps> = ({
   const hasActions = typeof rowActions === 'function';
 
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(initialPerPage);
+  const [perPage, setPerPage] = useState(Math.max(1, initialPerPage));
 
-  const startIdx = (page - 1) * perPage;
+  const lastPage = Math.max(1, Math.ceil(clusters.length / perPage));
+  const clampedPage = Math.min(page, lastPage);
+  if (clampedPage !== page) setPage(clampedPage);
+
+  const startIdx = (clampedPage - 1) * perPage;
   const visibleClusters = clusters.slice(startIdx, startIdx + perPage);
 
   const handleSetPage = (
