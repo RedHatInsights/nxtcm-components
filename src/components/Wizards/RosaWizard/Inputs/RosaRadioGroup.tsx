@@ -23,7 +23,7 @@ import { useRosaShowFieldErrorsAfterStepNav } from '../rosaWizardStepValidation'
 import { useWizardFooterStrings } from '../wizardFooterStrings';
 import { fieldIdFromPath } from './fieldId';
 import { Indented } from './Indented';
-import { LabelHelp } from './LabelHelp';
+import { LabelHelp } from './components/LabelHelp';
 
 export type RosaRadioGroupProps = {
   id?: string;

@@ -112,7 +112,6 @@ function MachinePoolRow(props: MachinePoolRowProps) {
               isOpen={open}
               toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
                 <InputSelect
-                  required={required}
                   disabled={false}
                   validated={validated}
                   placeholder={selectPlaceholder}
@@ -128,12 +127,7 @@ function MachinePoolRow(props: MachinePoolRowProps) {
               selected={value}
               onSelect={(_event, val) => onSelect(extractOptionValue(val) ?? '')}
             >
-              <SelectListOptions
-                value={value}
-                options={filteredOptions}
-                isCreatable={false}
-                isMultiSelect={false}
-              />
+              <SelectListOptions value={value} options={filteredOptions} />
             </PfSelect>
           </InputGroupItem>
         </InputGroup>

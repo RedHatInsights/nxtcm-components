@@ -1,7 +1,7 @@
 import './Select.css';
 
 export { Indented } from './Indented';
-export { LabelHelp } from './LabelHelp';
+export { LabelHelp } from './components/LabelHelp';
 // export { InputSelect, SelectListOptions, toDisplayString } from './RosaInputSelect';
 export { RosaCheckbox } from './RosaCheckbox';
 export { RosaExpandableStep, RosaStep } from './RosaWizardSteps';

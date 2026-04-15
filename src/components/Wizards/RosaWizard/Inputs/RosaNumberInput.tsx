@@ -13,7 +13,7 @@ import { useRosaShowValidation } from '../RosaShowValidationContext';
 import { useRosaShowFieldErrorsAfterStepNav } from '../rosaWizardStepValidation';
 import { useWizardFooterStrings } from '../wizardFooterStrings';
 import { fieldIdFromPath } from './fieldId';
-import { LabelHelp } from './LabelHelp';
+import { LabelHelp } from './components/LabelHelp';
 
 function lowercaseFirst(label: string) {
   if (label) {

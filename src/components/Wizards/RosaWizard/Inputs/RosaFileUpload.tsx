@@ -4,7 +4,7 @@ import { useController, useFormContext, useFormState, type FieldPath } from 'rea
 import type { RosaWizardFormData } from '../../types';
 import { useRosaShowFieldErrorsAfterStepNav } from '../rosaWizardStepValidation';
 import { fieldIdFromPath } from './fieldId';
-import { LabelHelp } from './LabelHelp';
+import { LabelHelp } from './components/LabelHelp';
 
 export type RosaFileUploadProps = {
   id?: string;

@@ -1,7 +1,7 @@
 import { Button, Popover } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import { Fragment, ReactNode } from 'react';
-import { useWizardFooterStrings } from '../wizardFooterStrings';
+import { useWizardFooterStrings } from '../../wizardFooterStrings';
 
 export function LabelHelp(props: {
   id: string;

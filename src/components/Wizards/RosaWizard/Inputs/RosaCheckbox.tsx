@@ -1,19 +1,12 @@
-import {
-  Checkbox,
-  type CheckboxProps,
-  FormGroup,
-  FormHelperText,
-  HelperText,
-  HelperTextItem,
-  Stack,
-} from '@patternfly/react-core';
+import { Stack } from '@patternfly/react-core';
 import { useCallback } from 'react';
 import { useController, useFormContext, useFormState, type FieldPath } from 'react-hook-form';
 import type { RosaWizardFormData } from '../../types';
 import { useRosaShowFieldErrorsAfterStepNav } from '../rosaWizardStepValidation';
 import { useWizardFooterStrings } from '../wizardFooterStrings';
 import { fieldIdFromPath } from './fieldId';
-import { LabelHelp } from './LabelHelp';
+
+import { Checkbox, CheckboxProps } from './components/Checkbox';
 
 export type RosaCheckboxProps = {
   id?: string;
@@ -63,44 +56,27 @@ export function RosaCheckbox(props: RosaCheckboxProps) {
     [field, props]
   );
 
-  const showError =
-    !!fieldState.error && (fieldState.isTouched || isSubmitted || afterStepNav);
+  const showError = !!fieldState.error && (fieldState.isTouched || isSubmitted || afterStepNav);
 
   return (
     <Stack hasGutter>
-      <FormGroup
-        id={`${id}-form-group`}
-        fieldId={id}
-        label={props.title}
+      <Checkbox
+        id={id}
+        isChecked={getIsChecked(field.value)}
+        onChange={onChange}
+        onBlur={field.onBlur}
+        label={props.label}
+        value={String(field.value)}
+        isDisabled={props.disabled}
+        popoverHelpContent={props.labelHelp}
+        popoverHelpTitle={props.labelHelpTitle}
+        fieldHelperText={props.helperText}
+        error={showError ? fieldState.error?.message : undefined}
+        title={props.title}
         isRequired={props.required}
       >
-        <Checkbox
-          id={id}
-          isChecked={getIsChecked(field.value)}
-          onChange={onChange}
-          onBlur={field.onBlur}
-          label={
-            <>
-              {props.label}{' '}
-              <LabelHelp id={id} labelHelp={props.labelHelp} labelHelpTitle={props.labelHelpTitle} />
-            </>
-          }
-          value={String(field.value)}
-          isDisabled={props.disabled}
-          body={
-            props.helperText ? (
-              <FormHelperText>
-                <HelperText>
-                  <HelperTextItem variant={showError ? 'error' : undefined}>
-                    {showError ? fieldState.error?.message : props.helperText}
-                  </HelperTextItem>
-                </HelperText>
-              </FormHelperText>
-            ) : undefined
-          }
-        />
         {props.children}
-      </FormGroup>
+      </Checkbox>
     </Stack>
   );
 }

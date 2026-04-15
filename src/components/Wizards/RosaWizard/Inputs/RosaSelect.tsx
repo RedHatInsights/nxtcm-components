@@ -23,7 +23,7 @@ import type { RosaWizardFormData } from '../../types';
 import { useRosaShowFieldErrorsAfterStepNav } from '../rosaWizardStepValidation';
 import { useWizardFooterStrings } from '../wizardFooterStrings';
 import { fieldIdFromPath } from './fieldId';
-import { LabelHelp } from './LabelHelp';
+import { LabelHelp } from './components/LabelHelp';
 import { InputSelect, SelectListOptions, toDisplayString } from './RosaInputSelect';
 import {
   extractOptionValue,
@@ -253,7 +253,6 @@ export function RosaSelect<T = unknown>(props: RosaSelectProps<T>) {
             isOpen={open}
             toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
               <InputSelect
-                required={props.required}
                 disabled={!!props.disabled}
                 validated={showError ? 'error' : undefined}
                 placeholder={placeholder}
@@ -276,8 +275,6 @@ export function RosaSelect<T = unknown>(props: RosaSelectProps<T>) {
               value={displayValue}
               options={filteredOptions}
               optionGroups={hasOptionGroups ? filteredOptionGroups : undefined}
-              isCreatable={false}
-              isMultiSelect={false}
               isPending={props.isPending}
             />
           </PfSelect>
