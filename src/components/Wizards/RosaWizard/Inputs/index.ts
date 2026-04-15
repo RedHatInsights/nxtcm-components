@@ -12,6 +12,7 @@ export { RosaNumberInput } from './RosaNumberInput';
 export { Radio, RosaRadioGroup } from './RosaRadioGroup';
 export { RosaSection } from './RosaSection';
 export { RosaSelect } from './RosaSelect';
+export { TypeaheadSelectField, type TypeaheadSelectFieldProps } from './components/Select';
 export { RosaTextInput } from './RosaTextInput';
 export * from './RosaSelectTypes';
 // export { fieldIdFromPath } from './fieldId';

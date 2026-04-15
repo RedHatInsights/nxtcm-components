@@ -1,35 +1,14 @@
 /* Derived from @patternfly-labs/react-form-wizard WizSelect (Apache-2.0). */
-import {
-  Button,
-  FormGroup,
-  FormHelperText,
-  HelperText,
-  HelperTextItem,
-  InputGroup,
-  InputGroupItem,
-  type MenuToggleElement,
-} from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core';
 import get from 'get-value';
-import { useCallback, useEffect, useMemo, useState, type Ref } from 'react';
-import {
-  useController,
-  useFormContext,
-  useFormState,
-  type FieldPath,
-} from 'react-hook-form';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useController, useFormContext, useFormState, type FieldPath } from 'react-hook-form';
 import { RedoIcon } from '@patternfly/react-icons';
 import type { RosaWizardFormData } from '../../types';
 import { useRosaShowFieldErrorsAfterStepNav } from '../rosaWizardStepValidation';
 import { useWizardFooterStrings } from '../wizardFooterStrings';
 import { fieldIdFromPath } from './fieldId';
-import { LabelHelp } from './components/LabelHelp';
-import {
-  RosaTypeaheadFieldProvider,
-  RosaTypeaheadMenu,
-  RosaTypeaheadPfSelect,
-  RosaTypeaheadToggle,
-  toDisplayString,
-} from './RosaInputSelect';
+import { TypeaheadSelectField } from './components/Select';
 import {
   extractOptionValue,
   type Option,
@@ -37,7 +16,6 @@ import {
   type OptionType,
   type NormalizedOptionGroup,
 } from './RosaSelectTypes';
-import './Select.css';
 
 function lowercaseFirst(label: string) {
   if (label) {
@@ -68,13 +46,12 @@ export type RosaSelectProps<T = unknown> = {
 };
 
 export function RosaSelect<T = unknown>(props: RosaSelectProps<T>) {
-  const { required: requiredMsg } = useWizardFooterStrings();
+  const { required: requiredMsg, noResults, moreInfo } = useWizardFooterStrings();
   const { control, getValues } = useFormContext<RosaWizardFormData>();
   const { isSubmitted } = useFormState({ control });
   const afterStepNav = useRosaShowFieldErrorsAfterStepNav();
   const id = fieldIdFromPath(props);
-  const placeholder =
-    props.placeholder ?? `Select the ${lowercaseFirst(props.label)}`;
+  const placeholder = props.placeholder ?? `Select the ${lowercaseFirst(props.label)}`;
   const keyPath = props.keyPath ?? 'value';
   const [open, setOpen] = useState(false);
   const [localSelection, setLocalSelection] = useState<string | number | null>(null);
@@ -235,82 +212,51 @@ export function RosaSelect<T = unknown>(props: RosaSelectProps<T>) {
     [field, selectOptions, getValues]
   );
 
-  const showError =
-    !!fieldState.error && (fieldState.isTouched || isSubmitted || afterStepNav);
+  const showError = !!fieldState.error && (fieldState.isTouched || isSubmitted || afterStepNav);
 
   if (props.optionGroups && props.options) {
     throw new Error('Use either options or optionGroups, not both');
   }
 
-  const labelHelpEl =
-    props.labelHelp || props.labelHelpTitle ? (
-      <LabelHelp id={id} labelHelp={props.labelHelp} labelHelpTitle={props.labelHelpTitle} />
-    ) : undefined;
-
   return (
-    <div id={id}>
-      <FormGroup
-        id={`${id}-form-group`}
-        fieldId={id}
-        label={props.label}
-        isRequired={props.required}
-        labelHelp={labelHelpEl}
-      >
-      <InputGroup>
-        <InputGroupItem isFill={props.isFill}>
-          <RosaTypeaheadFieldProvider
-            open={open}
-            setOpen={setOpen}
-            allFlatOptions={selectOptions ?? []}
-            allGroups={normalizedOptionGroups}
-            hasGroups={hasOptionGroups}
-            committedDisplay={displayValue}
-            selectedOptionId={selectedOptionId}
-            onCommit={onSelect}
-            disabled={!!props.disabled}
-            validated={showError ? 'error' : undefined}
-            placeholder={placeholder}
-            isPending={props.isPending}
-            listboxId={`${id}-typeahead-listbox`}
-          >
-            <RosaTypeaheadPfSelect
-              isOpen={open}
-              selected={selectedOptionId}
-              onSelect={(_event, val) => onSelect(extractOptionValue(val) ?? '')}
-              toggle={(toggleRef: Ref<MenuToggleElement>) => (
-                <RosaTypeaheadToggle toggleRef={toggleRef} />
-              )}
-            >
-              <RosaTypeaheadMenu listValue={selectedOptionId} />
-            </RosaTypeaheadPfSelect>
-          </RosaTypeaheadFieldProvider>
-        </InputGroupItem>
-        {props.refreshCallback && (
-          <InputGroupItem>
-            <Button
-              variant="control"
-              aria-label="Refresh"
-              onClick={props.refreshCallback}
-              icon={<RedoIcon />}
-              isDisabled={props.isPending}
-            />
-          </InputGroupItem>
-        )}
-      </InputGroup>
-      {showError && fieldState.error?.message ? (
-        <FormHelperText>
-          <HelperText>
-            <HelperTextItem variant="error">{fieldState.error.message}</HelperTextItem>
-          </HelperText>
-        </FormHelperText>
-      ) : props.helperText ? (
-        <FormHelperText>
-          <HelperText>
-            <HelperTextItem>{props.helperText}</HelperTextItem>
-          </HelperText>
-        </FormHelperText>
-      ) : null}
-      </FormGroup>
-    </div>
+    <TypeaheadSelectField
+      id={id}
+      fieldId={id}
+      label={props.label}
+      isRequired={props.required}
+      labelHelp={props.labelHelp}
+      labelHelpTitle={props.labelHelpTitle}
+      labelHelpButtonAriaLabel={moreInfo}
+      helperText={props.helperText}
+      errorMessage={fieldState.error?.message}
+      showError={showError}
+      isFill={props.isFill}
+      refreshSlot={
+        props.refreshCallback ? (
+          <Button
+            variant="control"
+            aria-label="Refresh"
+            onClick={props.refreshCallback}
+            icon={<RedoIcon />}
+            isDisabled={props.isPending}
+          />
+        ) : undefined
+      }
+      open={open}
+      setOpen={setOpen}
+      allFlatOptions={selectOptions ?? []}
+      allGroups={normalizedOptionGroups}
+      hasGroups={hasOptionGroups}
+      committedDisplay={displayValue}
+      selectedOptionId={selectedOptionId}
+      onCommit={onSelect}
+      noResultsLabel={noResults}
+      disabled={!!props.disabled}
+      validated={showError ? 'error' : undefined}
+      placeholder={placeholder}
+      isPending={props.isPending}
+      listboxId={`${id}-typeahead-listbox`}
+      onMenuSelect={(_event, val) => onSelect(extractOptionValue(val) ?? '')}
+    />
   );
 }

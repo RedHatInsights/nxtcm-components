@@ -1,10 +1,16 @@
 /**
- * PatternFly typeahead Select pattern (aligned with react-core SelectTypeahead example):
- * separate input/filter vs committed selection, arrow keys + aria-activedescendant, Enter to commit.
+ * PatternFly typeahead Select (generic UI): input/filter vs committed value, arrows + aria-activedescendant.
+ * No react-hook-form or Rosa-specific strings — pass `noResultsLabel` and other copy from the caller.
  */
 import {
   Button,
   Divider,
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  InputGroup,
+  InputGroupItem,
   MenuToggle,
   MenuToggleElement,
   Select as PfSelect,
@@ -24,6 +30,8 @@ import {
   KeyboardEvent,
   type MouseEvent,
   type ReactNode,
+  type Ref,
+  type RefObject,
   useCallback,
   useContext,
   useEffect,
@@ -31,10 +39,11 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useWizardFooterStrings } from '../wizardFooterStrings';
-import type { NormalizedOptionGroup, OptionType } from './RosaSelectTypes';
+import type { NormalizedOptionGroup, OptionType } from '../RosaSelectTypes';
+import { LabelHelp } from './LabelHelp';
+import '../Select.css';
 
-const NO_RESULTS_VALUE = '__rosa_typeahead_no_results__';
+const NO_RESULTS_VALUE = '__typeahead_no_results__';
 
 /** Never return [object Object]; always a string safe for display. */
 export function toDisplayString(v: unknown): string {
@@ -80,7 +89,7 @@ type TypeaheadFieldContextValue<T = unknown> = {
   menuGroups: NormalizedOptionGroup<T>[] | null;
   flatNavItems: NavItem[];
   noResultsLabel: string;
-  textInputRef: React.RefObject<HTMLInputElement | null>;
+  textInputRef: RefObject<HTMLInputElement | null>;
   resetKeyboard: () => void;
   closeMenu: () => void;
   onTextInputChange: (e: FormEvent<HTMLInputElement>, v: string) => void;
@@ -90,6 +99,8 @@ type TypeaheadFieldContextValue<T = unknown> = {
   onClearButtonClick: () => void;
   selectById: (id: string | undefined) => void;
   createItemId: (rawId: string, index: number) => string;
+  ariaRequired?: boolean;
+  comboboxAriaLabel?: string;
 };
 
 const TypeaheadFieldContext = createContext<TypeaheadFieldContextValue | null>(null);
@@ -97,12 +108,12 @@ const TypeaheadFieldContext = createContext<TypeaheadFieldContextValue | null>(n
 function useTypeaheadFieldContext<T = unknown>() {
   const ctx = useContext(TypeaheadFieldContext) as TypeaheadFieldContextValue<T> | null;
   if (!ctx) {
-    throw new Error('Rosa typeahead components must be used inside RosaTypeaheadFieldProvider');
+    throw new Error('Typeahead select subcomponents must be used inside TypeaheadSelectProvider');
   }
   return ctx;
 }
 
-type RosaTypeaheadFieldProviderProps<T = unknown> = {
+export type TypeaheadSelectProviderProps<T = unknown> = {
   children: ReactNode;
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -111,18 +122,24 @@ type RosaTypeaheadFieldProviderProps<T = unknown> = {
   hasGroups: boolean;
   /** Label text shown when the field has a committed value (not necessarily option id). */
   committedDisplay: string;
-  /** Option `id` for the current form value (used for isSelected / commits). */
+  /** Option `id` for the current value (used for isSelected / commits). */
   selectedOptionId: string;
   onCommit: (optionId: string | undefined) => void;
+  /** Shown when the filter matches nothing (and for empty grouped menu). */
+  noResultsLabel: string;
   disabled?: boolean;
   validated?: 'error';
   placeholder: string;
   isPending?: boolean;
   /** Stable id for `aria-controls` / listbox (unique per field). */
   listboxId: string;
+  /** When FormGroup cannot show `isRequired` (e.g. visually hidden label), set on the combobox. */
+  ariaRequired?: boolean;
+  /** Overrides `placeholder` for `aria-label` on the typeahead (e.g. when FormGroup has no visible label). */
+  comboboxAriaLabel?: string;
 };
 
-export function RosaTypeaheadFieldProvider<T = unknown>({
+export function TypeaheadSelectProvider<T = unknown>({
   children,
   open,
   setOpen,
@@ -132,13 +149,15 @@ export function RosaTypeaheadFieldProvider<T = unknown>({
   committedDisplay,
   selectedOptionId,
   onCommit,
+  noResultsLabel,
   disabled,
   validated,
   placeholder,
   isPending,
   listboxId,
-}: RosaTypeaheadFieldProviderProps<T>) {
-  const { noResults } = useWizardFooterStrings();
+  ariaRequired,
+  comboboxAriaLabel,
+}: TypeaheadSelectProviderProps<T>) {
   const [inputValue, setInputValue] = useState(committedDisplay);
   const [filterValue, setFilterValue] = useState('');
   const [focusedItemIndex, setFocusedItemIndex] = useState<number | null>(null);
@@ -175,7 +194,7 @@ export function RosaTypeaheadFieldProvider<T = unknown>({
       rows = [
         {
           id: NO_RESULTS_VALUE,
-          label: `${noResults} for "${filterValue}"`,
+          label: `${noResultsLabel} for "${filterValue}"`,
           value: NO_RESULTS_VALUE,
           keyedValue: NO_RESULTS_VALUE,
           ariaDisabled: true,
@@ -183,7 +202,7 @@ export function RosaTypeaheadFieldProvider<T = unknown>({
       ];
     }
     return rows as (string | OptionType<T>)[];
-  }, [allFlatOptions, filterValue, hasGroups, noResults]);
+  }, [allFlatOptions, filterValue, hasGroups, noResultsLabel]);
 
   const menuGroups = useMemo(() => {
     if (!hasGroups || !allGroups) return null;
@@ -210,7 +229,7 @@ export function RosaTypeaheadFieldProvider<T = unknown>({
       if (typeof row === 'string' || typeof row === 'number') {
         return { id: String(row), isDisabled: false, isAriaDisabled: false };
       }
-      const opt = row as OptionType<T>;
+      const opt = row;
       return {
         id: opt.id ?? String(opt.value),
         isDisabled: Boolean(opt.disabled) && !opt.ariaDisabled,
@@ -257,7 +276,10 @@ export function RosaTypeaheadFieldProvider<T = unknown>({
         } else {
           indexToFocus = focusedItemIndex - 1;
         }
-        while (flatNavItems[indexToFocus]?.isDisabled || flatNavItems[indexToFocus]?.isAriaDisabled) {
+        while (
+          flatNavItems[indexToFocus]?.isDisabled ||
+          flatNavItems[indexToFocus]?.isAriaDisabled
+        ) {
           indexToFocus--;
           if (indexToFocus < 0) indexToFocus = flatNavItems.length - 1;
         }
@@ -267,7 +289,10 @@ export function RosaTypeaheadFieldProvider<T = unknown>({
         } else {
           indexToFocus = focusedItemIndex + 1;
         }
-        while (flatNavItems[indexToFocus]?.isDisabled || flatNavItems[indexToFocus]?.isAriaDisabled) {
+        while (
+          flatNavItems[indexToFocus]?.isDisabled ||
+          flatNavItems[indexToFocus]?.isAriaDisabled
+        ) {
           indexToFocus++;
           if (indexToFocus >= flatNavItems.length) indexToFocus = 0;
         }
@@ -310,11 +335,14 @@ export function RosaTypeaheadFieldProvider<T = unknown>({
     [closeMenu, onCommit, resetKeyboard, resolveLabelForId]
   );
 
-  const onTextInputChange = useCallback((_event: FormEvent<HTMLInputElement>, value: string) => {
-    setInputValue(value);
-    setFilterValue(value);
-    resetKeyboard();
-  }, [resetKeyboard]);
+  const onTextInputChange = useCallback(
+    (_event: FormEvent<HTMLInputElement>, value: string) => {
+      setInputValue(value);
+      setFilterValue(value);
+      resetKeyboard();
+    },
+    [resetKeyboard]
+  );
 
   const onInputKeyDown = useCallback(
     (event: KeyboardEvent<HTMLInputElement>) => {
@@ -399,7 +427,7 @@ export function RosaTypeaheadFieldProvider<T = unknown>({
     menuFlatRows,
     menuGroups,
     flatNavItems,
-    noResultsLabel: noResults,
+    noResultsLabel,
     textInputRef,
     resetKeyboard,
     closeMenu,
@@ -410,20 +438,24 @@ export function RosaTypeaheadFieldProvider<T = unknown>({
     onClearButtonClick,
     selectById,
     createItemId,
+    ariaRequired,
+    comboboxAriaLabel,
   };
 
-  return <TypeaheadFieldContext.Provider value={ctxValue}>{children}</TypeaheadFieldContext.Provider>;
+  return (
+    <TypeaheadFieldContext.Provider value={ctxValue}>{children}</TypeaheadFieldContext.Provider>
+  );
 }
 
 function useInternalTypeahead<T = unknown>() {
   return useTypeaheadFieldContext<T>();
 }
 
-type RosaTypeaheadToggleProps = {
-  toggleRef: React.Ref<MenuToggleElement>;
+export type TypeaheadSelectToggleProps = {
+  toggleRef: Ref<MenuToggleElement>;
 };
 
-export function RosaTypeaheadToggle({ toggleRef }: RosaTypeaheadToggleProps) {
+export function TypeaheadSelectToggle({ toggleRef }: TypeaheadSelectToggleProps) {
   const ctx = useInternalTypeahead();
   const {
     disabled,
@@ -440,13 +472,17 @@ export function RosaTypeaheadToggle({ toggleRef }: RosaTypeaheadToggleProps) {
     onInputClick,
     onToggleClick,
     onClearButtonClick,
+    ariaRequired,
+    comboboxAriaLabel,
   } = ctx;
+
+  const typeaheadAriaLabel = comboboxAriaLabel ?? placeholder;
 
   return (
     <MenuToggle
       variant="typeahead"
       ref={toggleRef}
-      aria-label={placeholder}
+      aria-label={typeaheadAriaLabel}
       onClick={onToggleClick}
       isExpanded={open}
       isDisabled={disabled}
@@ -463,10 +499,13 @@ export function RosaTypeaheadToggle({ toggleRef }: RosaTypeaheadToggleProps) {
           placeholder={isPending ? undefined : placeholder}
           isExpanded={open}
           autoComplete="off"
-          aria-label={placeholder}
+          aria-label={typeaheadAriaLabel}
           role="combobox"
           aria-controls={listboxId}
           {...(activeItemId ? { 'aria-activedescendant': activeItemId } : {})}
+          inputProps={{
+            ...(ariaRequired ? { 'aria-required': true } : {}),
+          }}
         />
         <TextInputGroupUtilities {...(!inputValue ? { style: { display: 'none' } } : {})}>
           <Button
@@ -481,13 +520,13 @@ export function RosaTypeaheadToggle({ toggleRef }: RosaTypeaheadToggleProps) {
   );
 }
 
-type RosaTypeaheadMenuProps<T = unknown> = {
-  /** Current option id used for isSelected (from form). */
+export type TypeaheadSelectMenuProps = {
+  /** Current option id used for isSelected (matches SelectOption value). */
   listValue: string;
 };
 
-export function RosaTypeaheadMenu<T = unknown>({ listValue }: RosaTypeaheadMenuProps<T>) {
-  const ctx = useInternalTypeahead<T>();
+export function TypeaheadSelectMenu({ listValue }: TypeaheadSelectMenuProps) {
+  const ctx = useInternalTypeahead();
   const {
     listboxId,
     isPending,
@@ -579,8 +618,8 @@ export function RosaTypeaheadMenu<T = unknown>({ listValue }: RosaTypeaheadMenuP
     <SelectList id={listboxId}>
       {menuFlatRows.map((option, index) => {
         const isSimple = typeof option === 'string' || typeof option === 'number';
-        const opt = option as OptionType<T>;
-        const optionValue = isSimple ? String(option) : opt.id ?? String(opt.value);
+        const opt = option as OptionType<unknown>;
+        const optionValue = isSimple ? String(option) : (opt.id ?? String(opt.value));
         const isAriaDisabled = !isSimple && Boolean(opt.ariaDisabled);
         const isDisabled = !isSimple && Boolean(opt.disabled) && !isAriaDisabled;
         const domId = createItemId(optionValue, index);
@@ -598,7 +637,9 @@ export function RosaTypeaheadMenu<T = unknown>({ listValue }: RosaTypeaheadMenuP
             isDisabled={isDisabled || isNoResultsRow}
             isAriaDisabled={isAriaDisabled || isNoResultsRow}
             tooltipProps={isAriaDisabled ? opt.tooltipProps : undefined}
-            isSelected={!isDisabled && !isAriaDisabled && !isNoResultsRow && optionValue === listValue}
+            isSelected={
+              !isDisabled && !isAriaDisabled && !isNoResultsRow && optionValue === listValue
+            }
             isFocused={focusedItemIndex === index}
           >
             {displayText}
@@ -609,23 +650,23 @@ export function RosaTypeaheadMenu<T = unknown>({ listValue }: RosaTypeaheadMenuP
   );
 }
 
-type RosaTypeaheadPfSelectProps = {
+export type TypeaheadSelectControlProps = {
   isOpen: boolean;
-  /** Pass the selected option id (matches `SelectOption` `value`), not the display label. */
+  /** Selected option id (matches SelectOption value), not the display label. */
   selected: string;
   onSelect: (event: MouseEvent<Element> | undefined, value: string | number | undefined) => void;
-  toggle: (toggleRef: React.Ref<MenuToggleElement>) => ReactNode;
+  toggle: (toggleRef: Ref<MenuToggleElement>) => ReactNode;
   children: React.ReactNode;
 };
 
 /** PatternFly `Select` wired to provider `closeMenu` on dismiss (Tab / outside click / Escape). */
-export function RosaTypeaheadPfSelect({
+export function TypeaheadSelectControl({
   isOpen,
   selected,
   onSelect,
   toggle,
   children,
-}: RosaTypeaheadPfSelectProps) {
+}: TypeaheadSelectControlProps) {
   const { closeMenu } = useInternalTypeahead();
   return (
     <PfSelect
@@ -643,4 +684,117 @@ export function RosaTypeaheadPfSelect({
       {children}
     </PfSelect>
   );
+}
+
+/** Full field shell: FormGroup → InputGroup → typeahead + optional trailing slot → helper/error text. */
+export type TypeaheadSelectFieldProps<T = unknown> = Omit<
+  TypeaheadSelectProviderProps<T>,
+  'children'
+> & {
+  /** Optional root element id. */
+  id?: string;
+  fieldId: string;
+  /** Defaults to `${fieldId}-form-group`. */
+  formGroupId?: string;
+  label: string;
+  isRequired?: boolean;
+  /** Popover body for the field label help control (shown when set). */
+  labelHelp?: ReactNode;
+  labelHelpTitle?: string;
+  /** Help button `aria-label`; wizard consumers typically pass footer `moreInfo`. */
+  labelHelpButtonAriaLabel?: string;
+  helperText?: ReactNode;
+  errorMessage?: string;
+  /** When true and `errorMessage` is set, shows error helper text. */
+  showError?: boolean;
+  isFill?: boolean;
+  /** Rendered inside a trailing `InputGroupItem` (e.g. refresh `Button`). */
+  refreshSlot?: ReactNode;
+  /**
+   * When true, `label` is only exposed to assistive tech (e.g. grid cells that already show a column header).
+   */
+  isLabelVisuallyHidden?: boolean;
+  onMenuSelect: TypeaheadSelectControlProps['onSelect'];
+};
+
+export function TypeaheadSelectField({
+  id,
+  fieldId,
+  formGroupId,
+  label,
+  isRequired,
+  labelHelp,
+  labelHelpTitle,
+  labelHelpButtonAriaLabel,
+  helperText,
+  errorMessage,
+  showError,
+  isFill,
+  refreshSlot,
+  isLabelVisuallyHidden,
+  onMenuSelect,
+  ...providerProps
+}: TypeaheadSelectFieldProps) {
+  const resolvedFormGroupId = formGroupId ?? `${fieldId}-form-group`;
+
+  /** PF FormGroup only omits the label row when `label` is falsy; a sr-only node still reserves layout. */
+  const formGroupLabel = isLabelVisuallyHidden ? undefined : label;
+
+  const labelHelpEl =
+    !isLabelVisuallyHidden && labelHelp ? (
+      <LabelHelp
+        id={fieldId}
+        labelHelp={labelHelp}
+        labelHelpTitle={labelHelpTitle}
+        helpButtonAriaLabel={labelHelpButtonAriaLabel}
+      />
+    ) : undefined;
+
+  const comboboxAriaLabelForProvider =
+    isLabelVisuallyHidden && label ? label : undefined;
+
+  const field = (
+    <FormGroup
+      id={resolvedFormGroupId}
+      fieldId={fieldId}
+      label={formGroupLabel}
+      isRequired={Boolean(isRequired && !isLabelVisuallyHidden)}
+      labelHelp={labelHelpEl}
+    >
+      <InputGroup>
+        <InputGroupItem isFill={isFill}>
+          <TypeaheadSelectProvider
+            {...providerProps}
+            ariaRequired={Boolean(isRequired && isLabelVisuallyHidden)}
+            comboboxAriaLabel={comboboxAriaLabelForProvider}
+          >
+            <TypeaheadSelectControl
+              isOpen={providerProps.open}
+              selected={providerProps.selectedOptionId}
+              onSelect={onMenuSelect}
+              toggle={(toggleRef) => <TypeaheadSelectToggle toggleRef={toggleRef} />}
+            >
+              <TypeaheadSelectMenu listValue={providerProps.selectedOptionId} />
+            </TypeaheadSelectControl>
+          </TypeaheadSelectProvider>
+        </InputGroupItem>
+        {refreshSlot ? <InputGroupItem>{refreshSlot}</InputGroupItem> : null}
+      </InputGroup>
+      {showError && errorMessage ? (
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem variant="error">{errorMessage}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
+      ) : helperText ? (
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{helperText}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
+      ) : null}
+    </FormGroup>
+  );
+
+  return id ? <div id={id}>{field}</div> : field;
 }

@@ -7,8 +7,11 @@ export function LabelHelp(props: {
   id: string;
   labelHelp?: ReactNode;
   labelHelpTitle?: string;
+  /** When set, used as the help button `aria-label` instead of wizard `moreInfo`. */
+  helpButtonAriaLabel?: string;
 }): JSX.Element {
   const { moreInfo } = useWizardFooterStrings();
+  const ariaLabel = props.helpButtonAriaLabel ?? moreInfo;
   return props.labelHelp ? (
     <Popover
       id={`${props.id}-label-help-popover`}
@@ -19,7 +22,7 @@ export function LabelHelp(props: {
         variant="plain"
         isInline
         id={`${props.id}-label-help-button`}
-        aria-label={moreInfo}
+        aria-label={ariaLabel}
         className="pf-v6-c-form__group-label-help"
         icon={<HelpIcon />}
       />

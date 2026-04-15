@@ -1,30 +1,13 @@
 /* Derived from @patternfly-labs/react-form-wizard WizMachinePoolSelect (Apache-2.0). */
-import {
-  Button,
-  Content,
-  ContentVariants,
-  FormHelperText,
-  Grid,
-  GridItem,
-  HelperText,
-  HelperTextItem,
-  InputGroup,
-  InputGroupItem,
-  type MenuToggleElement,
-} from '@patternfly/react-core';
+import { Button, Content, ContentVariants, Grid, GridItem } from '@patternfly/react-core';
 import { MinusCircleIcon } from '@patternfly/react-icons';
-import { Fragment, useCallback, useLayoutEffect, useMemo, useState, type Ref } from 'react';
-import { useFormContext, useFormState, useWatch, type FieldPath } from 'react-hook-form';
+import { Fragment, useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import { useController, useFormContext, useFormState, type FieldPath } from 'react-hook-form';
 import type { RosaWizardFormData } from '../../types';
 import { useRosaShowFieldErrorsAfterStepNav } from '../rosaWizardStepValidation';
 import { useWizardFooterStrings } from '../wizardFooterStrings';
 import { fieldIdFromPath } from './fieldId';
-import {
-  RosaTypeaheadFieldProvider,
-  RosaTypeaheadMenu,
-  RosaTypeaheadPfSelect,
-  RosaTypeaheadToggle,
-} from './RosaInputSelect';
+import { TypeaheadSelectField } from './components/Select';
 import { extractOptionValue, type Option, type OptionType } from './RosaSelectTypes';
 
 export type MachinePoolSubnet = {
@@ -48,6 +31,9 @@ interface MachinePoolRowProps {
   index: number;
   value: string;
   machinePoolLabel: string;
+  subnetColumnLabel: string;
+  /** Stable id prefix from {@link fieldIdFromPath} for the machine pool control. */
+  baseFieldId: string;
   selectPlaceholder: string;
   subnetOptions?: Option<string>[];
   selectedSubnets?: string[];
@@ -55,6 +41,8 @@ interface MachinePoolRowProps {
   onRemove: () => void;
   required?: boolean;
   showErrorsAfterStepNav?: boolean;
+  /** Align with {@link RosaSelect}: only show danger state when RHF has validated the list field. */
+  listFieldHasRhfError: boolean;
 }
 
 function MachinePoolRow(props: MachinePoolRowProps) {
@@ -62,6 +50,8 @@ function MachinePoolRow(props: MachinePoolRowProps) {
     index,
     value,
     machinePoolLabel,
+    subnetColumnLabel,
+    baseFieldId,
     selectPlaceholder,
     subnetOptions,
     selectedSubnets,
@@ -69,15 +59,18 @@ function MachinePoolRow(props: MachinePoolRowProps) {
     onRemove,
     required,
     showErrorsAfterStepNav = false,
+    listFieldHasRhfError,
   } = props;
 
   const [open, setOpen] = useState(false);
-  const { required: requiredErrorMessage } = useWizardFooterStrings();
+  const { required: requiredErrorMessage, noResults } = useWizardFooterStrings();
   const { isSubmitted } = useFormState();
 
+  const rowFieldId = `${baseFieldId}-row-${index}-subnet`;
   const hasError = Boolean(required && !value);
-  const validated =
-    hasError && (isSubmitted || showErrorsAfterStepNav) ? 'error' : undefined;
+  const showRowError = Boolean(
+    hasError && listFieldHasRhfError && (isSubmitted || showErrorsAfterStepNav)
+  );
 
   const selectOptionsTyped: OptionType<string>[] | undefined = useMemo(() => {
     if (!subnetOptions) return [];
@@ -119,42 +112,30 @@ function MachinePoolRow(props: MachinePoolRowProps) {
           {machinePoolLabel} {index + 1}
         </Content>
       </GridItem>
-      <GridItem span={5} rowSpan={2}>
-        <InputGroup>
-          <InputGroupItem isFill>
-            <RosaTypeaheadFieldProvider
-              open={open}
-              setOpen={setOpen}
-              allFlatOptions={selectOptionsTyped ?? []}
-              hasGroups={false}
-              committedDisplay={subnetDisplayLabel}
-              selectedOptionId={selectedSubnetOptionId}
-              onCommit={onSelect}
-              disabled={false}
-              validated={validated}
-              placeholder={selectPlaceholder}
-              listboxId={`rosa-machine-pool-subnet-${index}-listbox`}
-            >
-              <RosaTypeaheadPfSelect
-                isOpen={open}
-                selected={selectedSubnetOptionId}
-                onSelect={(_event, val) => onSelect(extractOptionValue(val) ?? '')}
-                toggle={(toggleRef: Ref<MenuToggleElement>) => (
-                  <RosaTypeaheadToggle toggleRef={toggleRef} />
-                )}
-              >
-                <RosaTypeaheadMenu listValue={selectedSubnetOptionId} />
-              </RosaTypeaheadPfSelect>
-            </RosaTypeaheadFieldProvider>
-          </InputGroupItem>
-        </InputGroup>
-        {validated === 'error' && requiredErrorMessage && (
-          <FormHelperText>
-            <HelperText>
-              <HelperTextItem variant="error">{requiredErrorMessage}</HelperTextItem>
-            </HelperText>
-          </FormHelperText>
-        )}
+      <GridItem span={5}>
+        <TypeaheadSelectField
+          id={rowFieldId}
+          fieldId={rowFieldId}
+          label={`${subnetColumnLabel} ${index + 1}`}
+          isLabelVisuallyHidden
+          isRequired={required}
+          errorMessage={requiredErrorMessage}
+          showError={showRowError}
+          isFill
+          open={open}
+          setOpen={setOpen}
+          allFlatOptions={selectOptionsTyped ?? []}
+          hasGroups={false}
+          committedDisplay={subnetDisplayLabel}
+          selectedOptionId={selectedSubnetOptionId}
+          onCommit={onSelect}
+          noResultsLabel={noResults}
+          disabled={false}
+          validated={showRowError ? 'error' : undefined}
+          placeholder={selectPlaceholder}
+          listboxId={`${rowFieldId}-typeahead-listbox`}
+          onMenuSelect={(_event, val) => onSelect(extractOptionValue(val) ?? '')}
+        />
       </GridItem>
       <GridItem span={2}>
         <Button
@@ -173,12 +154,31 @@ function MachinePoolRow(props: MachinePoolRowProps) {
 export function RosaMachinePoolSelect(props: RosaMachinePoolSelectProps) {
   const id = fieldIdFromPath(props);
   const afterStepNav = useRosaShowFieldErrorsAfterStepNav();
-  const { setValue } = useFormContext<RosaWizardFormData>();
+  const { control } = useFormContext<RosaWizardFormData>();
+  const { required: requiredErrorMessage } = useWizardFooterStrings();
   const path = props.path;
   const minItems = props.minItems ?? 1;
 
-  const watched = useWatch({ name: path }) as MachinePoolSubnet[] | undefined;
-  const values: MachinePoolSubnet[] = Array.isArray(watched) ? watched : [];
+  const { field, fieldState } = useController({
+    control,
+    name: path,
+    rules: {
+      validate: (val) => {
+        if (!props.required) return true;
+        const arr = (Array.isArray(val) ? val : []) as MachinePoolSubnet[];
+        if (arr.length < minItems) return requiredErrorMessage;
+        const hasEmpty = arr.some(
+          (r) => !r?.machine_pool_subnet || String(r.machine_pool_subnet).trim() === ''
+        );
+        return hasEmpty ? requiredErrorMessage : true;
+      },
+    },
+  });
+
+  const values = useMemo(
+    () => (Array.isArray(field.value) ? (field.value as MachinePoolSubnet[]) : []),
+    [field.value]
+  );
 
   const selectedSubnets = useMemo(() => {
     return values
@@ -188,16 +188,9 @@ export function RosaMachinePoolSelect(props: RosaMachinePoolSelectProps) {
 
   const setArrayValue = useCallback(
     (newArray: MachinePoolSubnet[]) => {
-      setValue(path, newArray as never, { shouldDirty: true, shouldValidate: true });
+      field.onChange(newArray as never);
     },
-    [path, setValue]
-  );
-
-  const addItem = useCallback(
-    (newItem: MachinePoolSubnet) => {
-      setArrayValue([...values, newItem]);
-    },
-    [setArrayValue, values]
+    [field]
   );
 
   useLayoutEffect(() => {
@@ -242,9 +235,9 @@ export function RosaMachinePoolSelect(props: RosaMachinePoolSelectProps) {
         </Content>
       </GridItem>
       <GridItem span={5}>
-        <Content component={ContentVariants.p} className="pf-v6-u-font-weight-bold">
-          {props.subnetLabel}
-        </Content>
+        <div className="pf-v6-c-form__label pf-v6-u-font-weight-bold">
+          <span className="pf-v6-c-form__label-text">{props.subnetLabel}</span>
+        </div>
       </GridItem>
 
       <GridItem>
@@ -254,11 +247,14 @@ export function RosaMachinePoolSelect(props: RosaMachinePoolSelectProps) {
               index={index}
               value={pool.machine_pool_subnet ?? ''}
               machinePoolLabel={props.machinePoolLabel}
+              subnetColumnLabel={props.subnetLabel}
+              baseFieldId={id}
               selectPlaceholder={props.selectPlaceholder}
               subnetOptions={props.subnetOptions}
               selectedSubnets={selectedSubnets}
               required={props.required}
               showErrorsAfterStepNav={afterStepNav}
+              listFieldHasRhfError={!!fieldState.error}
               onChange={(newValue) => updateItem(index, newValue)}
               onRemove={() => removeItem(index)}
             />
