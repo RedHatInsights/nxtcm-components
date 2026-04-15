@@ -21,9 +21,8 @@ import { MachineTypesDropdownType, Resource, Subnet, VPC } from '../../../../typ
 import { AutoscalingField } from './Autoscaling/AutoscalingField';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
-import { validateRootDiskSize } from '../../../validators';
 import { SecurityGroupsSection } from './SecurityGroupSection/SecurityGroupSection';
-import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
+import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
 import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
 
 type MachinePoolsSubstepProps = {
@@ -35,7 +34,6 @@ type MachinePoolsSubstepProps = {
 
 export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
   const mp = useRosaWizardStrings().machinePools;
-  const v = useRosaWizardValidators();
   const { setValue } = useFormContext();
   const cluster = useWatch({ name: 'cluster' });
   const currentRegion = cluster?.region;
@@ -134,7 +132,6 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
             >
               <RosaSelect
                 label={mp.instanceTypeLabel}
-                validateOnBlur={true}
                 disabled={props.machineTypes.isFetching}
                 path="cluster.machine_type"
                 required
@@ -196,9 +193,6 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
             labelHelp={mp.rootDiskHelp}
             min={75}
             max={maxRootDiskSize}
-            validation={(_value: number) =>
-              validateRootDiskSize(_value, v.rootDisk, maxRootDiskSize)
-            }
           />
         </Indented>
       </ExpandableSection>

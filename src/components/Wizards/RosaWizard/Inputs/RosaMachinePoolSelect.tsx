@@ -162,17 +162,6 @@ export function RosaMachinePoolSelect(props: RosaMachinePoolSelectProps) {
   const { field, fieldState } = useController({
     control,
     name: path,
-    rules: {
-      validate: (val) => {
-        if (!props.required) return true;
-        const arr = (Array.isArray(val) ? val : []) as MachinePoolSubnet[];
-        if (arr.length < minItems) return requiredErrorMessage;
-        const hasEmpty = arr.some(
-          (r) => !r?.machine_pool_subnet || String(r.machine_pool_subnet).trim() === ''
-        );
-        return hasEmpty ? requiredErrorMessage : true;
-      },
-    },
   });
 
   const values = useMemo(

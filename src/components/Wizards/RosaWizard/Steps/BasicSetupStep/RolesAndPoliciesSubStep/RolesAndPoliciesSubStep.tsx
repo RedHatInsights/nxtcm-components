@@ -13,11 +13,10 @@ import { RosaSection, RosaSelect, RosaTextInput } from '../../../Inputs';
 import PopoverHintWithTitle from '../../../common/PopoverHitWithTitle';
 import { OIDCConfigHint } from '../../../common/OIDCConfigHint';
 import { OIDCConfig, Resource, Role } from '../../../../types';
-import { validateCustomOperatorRolesPrefix } from '../../../validators';
 import { createOperatorRolesPrefix } from '../../../helpers';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
-import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
+import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
 import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
 
 type RolesAndPoliciesSubStepProps = {
@@ -32,7 +31,6 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
   oidcConfig,
 }) => {
   const rp = useRosaWizardStrings().rolesAndPolicies;
-  const v = useRosaWizardValidators();
 
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
@@ -275,9 +273,6 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
           <Grid>
             <GridItem span={4}>
               <RosaTextInput
-                validation={(value, item) =>
-                  validateCustomOperatorRolesPrefix(value, item, v.operatorRolesPrefix)
-                }
                 path="cluster.custom_operator_roles_prefix"
                 validateOnBlur
                 label={rp.operatorPrefixLabel}

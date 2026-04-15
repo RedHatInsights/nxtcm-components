@@ -11,7 +11,6 @@ import { useController, useFormContext, useFormState, type FieldPath } from 'rea
 import type { RosaWizardFormData } from '../../types';
 import { useRosaShowValidation } from '../RosaShowValidationContext';
 import { useRosaShowFieldErrorsAfterStepNav } from '../rosaWizardStepValidation';
-import { useWizardFooterStrings } from '../wizardFooterStrings';
 import { fieldIdFromPath } from './fieldId';
 import { LabelHelp } from './components/LabelHelp';
 
@@ -30,7 +29,6 @@ export type RosaNumberInputProps = {
   labelHelp?: React.ReactNode;
   labelHelpTitle?: string;
   required?: boolean;
-  validation?: (value: number, item?: RosaWizardFormData) => string | undefined;
   min?: number;
   max?: number;
   zeroIsUndefined?: boolean;
@@ -38,8 +36,7 @@ export type RosaNumberInputProps = {
 };
 
 export function RosaNumberInput(props: RosaNumberInputProps) {
-  const { required: requiredMsg } = useWizardFooterStrings();
-  const { control, getValues, trigger } = useFormContext<RosaWizardFormData>();
+  const { control, trigger } = useFormContext<RosaWizardFormData>();
   const { isSubmitted } = useFormState({ control });
   const showValidationForced = useRosaShowValidation();
   const afterStepNav = useRosaShowFieldErrorsAfterStepNav();
@@ -51,21 +48,6 @@ export function RosaNumberInput(props: RosaNumberInputProps) {
   const { field, fieldState } = useController({
     control,
     name: props.path,
-    rules: {
-      validate: (value) => {
-        if (
-          props.required &&
-          (value === undefined || value === null || (typeof value === 'number' && Number.isNaN(value)))
-        ) {
-          return requiredMsg;
-        }
-        if (typeof value === 'number') {
-          const err = props.validation?.(value, getValues());
-          if (err) return err;
-        }
-        return true;
-      },
-    },
   });
 
   /** Playwright CT: fields under collapsed sections mount late; force validation so errors exist. */

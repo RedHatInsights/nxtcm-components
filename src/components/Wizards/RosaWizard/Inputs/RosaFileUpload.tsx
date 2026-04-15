@@ -14,7 +14,6 @@ export type RosaFileUploadProps = {
   labelHelpTitle?: string;
   placeholder?: string;
   disabled?: boolean;
-  validation?: (value: string) => string | undefined;
 };
 
 export function RosaFileUpload(props: RosaFileUploadProps) {
@@ -27,13 +26,6 @@ export function RosaFileUpload(props: RosaFileUploadProps) {
   const { field, fieldState } = useController({
     control,
     name: props.path,
-    rules: {
-      validate: (value) => {
-        const v = typeof value === 'string' ? value : '';
-        const err = props.validation?.(v);
-        return err ? err : true;
-      },
-    },
   });
 
   const handleFileChange = async (_e: DropEvent, file: File) => {

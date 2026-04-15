@@ -57,7 +57,8 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   checkClusterNameUniqueness,
 }) => {
   const d = useRosaWizardStrings().details;
-  const { getValues, reset, setValue, trigger } = useFormContext<RosaWizardFormData>();
+  const { getValues, reset, setValue, trigger, setError, clearErrors } =
+    useFormContext<RosaWizardFormData>();
   const cluster = useWatch({ name: 'cluster' });
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const drawerRef = React.useRef<HTMLSpanElement>(null);
@@ -72,6 +73,18 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
       cancelCheck();
     }
   };
+
+  const prevClusterNameApiError = React.useRef<string | null>(null);
+  React.useEffect(() => {
+    const err = clusterNameValidation.error;
+    if (err) {
+      setError('cluster.name', { type: 'server', message: err });
+    } else if (prevClusterNameApiError.current) {
+      clearErrors('cluster.name');
+      void trigger('cluster.name');
+    }
+    prevClusterNameApiError.current = err;
+  }, [clusterNameValidation.error, setError, clearErrors, trigger]);
 
   useResetFieldOnOptionsChange('cluster.region', regions.data);
   useResetFieldOnOptionsChange('cluster.machine_type', machineTypes.data, 'machinepools-sub-step');
@@ -264,9 +277,6 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   isValidation
                 >
                   <RosaTextInput
-                    validation={(name: string, item: unknown) =>
-                      validateClusterName(name, item) || clusterNameValidation.error || undefined
-                    }
                     onValueChange={(value) => {
                       uniqueClusterNameCheck(value as string, cluster.region as string);
                     }}

@@ -1,15 +1,13 @@
 import { Alert, Flex, FlexItem, Grid, GridItem } from '@patternfly/react-core';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { validateAWSKMSKeyARN } from '../../../validators';
 import { ClusterEncryptionKeys } from '../../../../types';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
-import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
+import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
 import { Radio, RosaCheckbox, RosaRadioGroup, RosaSection, RosaTextInput } from '../../../Inputs';
 
 export const EncryptionSubstep = () => {
   const e = useRosaWizardStrings().encryption;
-  const v = useRosaWizardValidators();
   const { setValue } = useFormContext();
   const cluster = useWatch({ name: 'cluster' });
 
@@ -55,7 +53,6 @@ export const EncryptionSubstep = () => {
               path="cluster.kms_key_arn"
               label={e.keyArnLabel}
               validateOnBlur
-              validation={(value) => validateAWSKMSKeyARN(value, cluster?.region, v.kmsKeyArn)}
               required
               labelHelp={e.keyArnHelp}
             />
@@ -86,7 +83,6 @@ export const EncryptionSubstep = () => {
           <GridItem span={4}>
             <RosaTextInput
               path="cluster.etcd_key_arn"
-              validation={(value) => validateAWSKMSKeyARN(value, cluster?.region, v.kmsKeyArn)}
               label={e.keyArnLabel}
               validateOnBlur
               required

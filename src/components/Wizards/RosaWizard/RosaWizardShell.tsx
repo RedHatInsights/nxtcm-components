@@ -38,7 +38,6 @@ import { useFormContext, type FieldErrors } from 'react-hook-form';
 import type { RosaWizardFormData } from '../types';
 import {
   RosaWizardActiveStepIdPublisher,
-  RosaWizardStepValidationProvider,
   useRosaWizardStepValidationMarkAttempt,
   useRosaWizardStepValidationState,
   useRosaWizardStepValidationSyncActiveStep,
@@ -85,6 +84,28 @@ function hasErrorAt(errors: FieldErrors<RosaWizardFormData>, path: string): bool
     cur = cur && typeof cur === 'object' ? (cur as Record<string, unknown>)[part] : undefined;
   }
   return !!cur;
+}
+
+/** True if this path (or any field-array row under it) is marked touched in RHF. */
+function hasTouchedAt(touched: Record<string, unknown> | undefined, path: string): boolean {
+  if (!touched) return false;
+  const parts = path.split('.');
+  let cur: unknown = touched;
+  for (const part of parts) {
+    cur = cur && typeof cur === 'object' ? (cur as Record<string, unknown>)[part] : undefined;
+  }
+  if (cur === true) return true;
+  if (Array.isArray(cur)) {
+    return cur.some(
+      (item) =>
+        item === true ||
+        (item !== null && typeof item === 'object' && Object.keys(item as object).length > 0)
+    );
+  }
+  if (cur !== null && typeof cur === 'object') {
+    return Object.keys(cur as object).length > 0;
+  }
+  return false;
 }
 
 function WizardDrawer(props: { yamlEditor?: () => ReactNode }) {
@@ -167,6 +188,19 @@ export function RosaWizardShell(props: RosaWizardShellProps) {
 
 function RosaWizardShellInner(props: RosaWizardShellProps) {
   const { stepsAriaLabel, contentAriaLabel } = useWizardFooterStrings();
+  const { formState } = useFormContext<RosaWizardFormData>();
+  const { errors } = formState;
+  const stepValidationState = useRosaWizardStepValidationState();
+
+  const navStatusForStepId = (stepId: string): 'error' | undefined => {
+    if (!stepId) return undefined;
+    const shown = !!stepValidationState?.shownByStepId[stepId];
+    if (!shown) return undefined;
+    const fields = getTriggerFieldsForStepId(stepId);
+    if (!fields?.length) return undefined;
+    return fields.some((f) => hasErrorAt(errors, f as string)) ? 'error' : undefined;
+  };
+
   const stepComponents = useMemo(
     () =>
       Children.toArray(props.children).filter((child) => isValidElement(child)) as ReactElement[],
@@ -200,47 +234,52 @@ function RosaWizardShellInner(props: RosaWizardShellProps) {
   }, [stepComponents]);
 
   return (
-    <RosaWizardStepValidationProvider>
-      <PFWizard
-        navAriaLabel={`${stepsAriaLabel}`}
-        aria-label={`${contentAriaLabel}`}
-        onStepChange={props.onStepChange}
-        footer={
-          <RosaWizardFooter
-            setUseWizardContext={props.setUseWizardContext}
-            onSubmit={props.onSubmit}
-            steps={stepComponents}
-            skipToReviewStepIds={props.skipToReviewStepIds}
-            resumeAtStepId={props.resumeAtStepId}
-            onResumedToStep={props.onResumedToStep}
-          />
-        }
-        onClose={props.onCancel}
-      >
-        {steps.map(({ id, name, component, subSteps }) => {
-          if (subSteps) {
-            return (
-              <WizardStep
-                id={id}
-                key={id}
-                name={name}
-                isExpandable
-                steps={subSteps.map((subStep: SubStepComponent) => (
-                  <WizardStep id={subStep.id} key={subStep.id} name={subStep.name}>
-                    <RosaWizardActiveStepIdPublisher>{subStep.component}</RosaWizardActiveStepIdPublisher>
-                  </WizardStep>
-                ))}
-              />
-            );
-          }
+    <PFWizard
+      navAriaLabel={`${stepsAriaLabel}`}
+      aria-label={`${contentAriaLabel}`}
+      onStepChange={props.onStepChange}
+      footer={
+        <RosaWizardFooter
+          setUseWizardContext={props.setUseWizardContext}
+          onSubmit={props.onSubmit}
+          steps={stepComponents}
+          skipToReviewStepIds={props.skipToReviewStepIds}
+          resumeAtStepId={props.resumeAtStepId}
+          onResumedToStep={props.onResumedToStep}
+        />
+      }
+      onClose={props.onCancel}
+    >
+      {steps.map(({ id, name, component, subSteps }) => {
+        if (subSteps) {
+          const parentNavError = subSteps.some((s) => navStatusForStepId(s.id) === 'error');
           return (
-            <WizardStep key={id} id={id} name={name}>
-              <RosaWizardActiveStepIdPublisher>{component}</RosaWizardActiveStepIdPublisher>
-            </WizardStep>
+            <WizardStep
+              id={id}
+              key={id}
+              name={name}
+              isExpandable
+              status={parentNavError ? 'error' : undefined}
+              steps={subSteps.map((subStep: SubStepComponent) => (
+                <WizardStep
+                  id={subStep.id}
+                  key={subStep.id}
+                  name={subStep.name}
+                  status={navStatusForStepId(subStep.id)}
+                >
+                  <RosaWizardActiveStepIdPublisher>{subStep.component}</RosaWizardActiveStepIdPublisher>
+                </WizardStep>
+              ))}
+            />
           );
-        })}
-      </PFWizard>
-    </RosaWizardStepValidationProvider>
+        }
+        return (
+          <WizardStep key={id} id={id} name={name} status={navStatusForStepId(String(id))}>
+            <RosaWizardActiveStepIdPublisher>{component}</RosaWizardActiveStepIdPublisher>
+          </WizardStep>
+        );
+      })}
+    </PFWizard>
   );
 }
 
@@ -258,7 +297,7 @@ function RosaWizardFooter(props: RosaWizardFooterProps) {
   const wizContext = useWizardContext();
   const { activeStep, goToNextStep: onNext, goToPrevStep: onBack, close: onClose } = wizContext;
   const { getValues, trigger, formState } = useFormContext<RosaWizardFormData>();
-  const { errors } = formState;
+  const { errors, touchedFields } = formState;
 
   const strings = useWizardFooterStrings();
   const markStepValidationAttempted = useRosaWizardStepValidationMarkAttempt();
@@ -320,8 +359,20 @@ function RosaWizardFooter(props: RosaWizardFooterProps) {
   const hasBlockingErrorsOnStep =
     triggerFields?.some((f) => hasErrorAt(errors, f as string)) ?? false;
 
-  /** Inline alert after user tried Next / Skip; Next disables whenever the step has RHF errors. */
+  const hasTouchedTriggerField =
+    triggerFields?.some((f) => hasTouchedAt(touchedFields as Record<string, unknown>, f as string)) ??
+    false;
+
+  /**
+   * Inline alert after user tried Next / Skip. Next stays enabled on first paint if the only
+   * errors are on untouched fields (so the first click runs `trigger()` for the whole step); after
+   * a failed Next/Skip, or once the user has touched a field on this step, block while errors remain.
+   */
   const stepHasVisibleErrors = stepValidationShownForActive && hasBlockingErrorsOnStep;
+
+  const shouldBlockNextForValidationErrors =
+    hasBlockingErrorsOnStep &&
+    (stepValidationShownForActive || hasTouchedTriggerField);
 
   const onNextClick = useCallback(async () => {
     markStepValidationAttempted(activeStepId);
@@ -381,7 +432,7 @@ function RosaWizardFooter(props: RosaWizardFooterProps) {
     trigger,
   ]);
 
-  const isNextButtonDisabled = submitting || hasBlockingErrorsOnStep;
+  const isNextButtonDisabled = submitting || shouldBlockNextForValidationErrors;
 
   if (isLastStep) {
     return (

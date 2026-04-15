@@ -26,12 +26,18 @@ import {
 } from '../types';
 import { MachinePoolsSubstep } from './Steps/BasicSetupStep/MachinePoolsSubstep/MachinePoolsSubstep';
 import { YamlDrawerEditor } from './Steps/YamlCodeEditor';
-import { RosaWizardStringsProvider, useRosaWizardStrings } from './RosaWizardStringsContext';
+import {
+  RosaWizardStringsProvider,
+  useRosaWizardStrings,
+  useRosaWizardValidators,
+} from './RosaWizardStringsContext';
 import { buildWizardStringsForRosa, type RosaWizardStringsInput } from './rosaWizardStrings';
 import { RosaExpandableStep, RosaStep } from './Inputs';
 import { createDefaultRosaWizardFormValues } from './rosaWizardDefaultFormData';
+import { RosaWizardStepValidationProvider } from './rosaWizardStepValidation';
 import { RosaWizardShell, type RosaWizardCancel, type RosaWizardSubmitHandler } from './RosaWizardShell';
 import { WizardFooterStringsProvider } from './wizardFooterStrings';
+import { createRosaWizardYupResolver } from './yup/rosaWizardFormSchema';
 
 export type BasicSetupStepProps = {
   clusterNameValidation: ValidationResource;
@@ -114,7 +120,19 @@ const RosaWizardBody = (props: RosaWizardProps) => {
     [rosaStrings, strings?.formWizard]
   );
 
+  const validators = useRosaWizardValidators();
+
+  const resolver = React.useMemo(
+    () =>
+      createRosaWizardYupResolver({
+        validators,
+        footerStrings: wizardStrings,
+      }),
+    [validators, wizardStrings]
+  );
+
   const form = useForm<RosaWizardFormData>({
+    resolver,
     defaultValues: createDefaultRosaWizardFormValues(),
     mode: 'onChange',
     shouldUnregister: false,
@@ -164,23 +182,24 @@ const RosaWizardBody = (props: RosaWizardProps) => {
       <div style={{ display: hasSubmitError ? 'none' : undefined }}>
         <FormProvider {...form}>
           <WizardFooterStringsProvider value={wizardStrings}>
-            <RosaWizardShell
-              onSubmit={onSubmit}
-              onCancel={() => onCancel()}
-              title={title}
-              skipToReviewStepIds={skipToReviewStepIds}
-              resumeAtStepId={resumeAtStepId}
-              onResumedToStep={() => setResumeAtStepId(null)}
-              yaml={yaml}
-              yamlEditor={yamlEditor}
-              setUseWizardContext={setUseWizardContext}
-            >
-              <RosaExpandableStep
-                id={STEP_IDS.BASIC_SETUP}
-                label={sl.basicSetup}
-                key="basic-setup-step-expandable-section-key"
-                isExpandable
-                steps={[
+            <RosaWizardStepValidationProvider>
+              <RosaWizardShell
+                onSubmit={onSubmit}
+                onCancel={() => onCancel()}
+                title={title}
+                skipToReviewStepIds={skipToReviewStepIds}
+                resumeAtStepId={resumeAtStepId}
+                onResumedToStep={() => setResumeAtStepId(null)}
+                yaml={yaml}
+                yamlEditor={yamlEditor}
+                setUseWizardContext={setUseWizardContext}
+              >
+                <RosaExpandableStep
+                  id={STEP_IDS.BASIC_SETUP}
+                  label={sl.basicSetup}
+                  key="basic-setup-step-expandable-section-key"
+                  isExpandable
+                  steps={[
                   <RosaStep label={sl.details} id={STEP_IDS.DETAILS} key="basic-setup-details">
                     <DetailsSubStep
                       clusterNameValidation={basicSetupStep.clusterNameValidation}
@@ -230,15 +249,15 @@ const RosaWizardBody = (props: RosaWizardProps) => {
                         </RosaStep>,
                       ]
                     : []),
-                ]}
-              />
+                  ]}
+                />
 
-              <RosaExpandableStep
-                id={STEP_IDS.ADDITIONAL_SETUP}
-                label={sl.additionalSetup}
-                key="additional-setup-step-expandable-section-key"
-                isExpandable
-                steps={[
+                <RosaExpandableStep
+                  id={STEP_IDS.ADDITIONAL_SETUP}
+                  label={sl.additionalSetup}
+                  key="additional-setup-step-expandable-section-key"
+                  isExpandable
+                  steps={[
                   <RosaStep
                     id={STEP_IDS.ENCRYPTION}
                     key="additional-setup-encryption-key"
@@ -253,12 +272,13 @@ const RosaWizardBody = (props: RosaWizardProps) => {
                   >
                     <ClusterUpdatesSubstep goToStepId={getUseWizardContext} />
                   </RosaStep>,
-                ]}
-              />
-              <RosaStep label={sl.review} id={STEP_IDS.REVIEW}>
-                <ReviewStepData goToStepId={getUseWizardContext} />
-              </RosaStep>
-            </RosaWizardShell>
+                  ]}
+                />
+                <RosaStep label={sl.review} id={STEP_IDS.REVIEW}>
+                  <ReviewStepData goToStepId={getUseWizardContext} />
+                </RosaStep>
+              </RosaWizardShell>
+            </RosaWizardStepValidationProvider>
           </WizardFooterStringsProvider>
         </FormProvider>
       </div>

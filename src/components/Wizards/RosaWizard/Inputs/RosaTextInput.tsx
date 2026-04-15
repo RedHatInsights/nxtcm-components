@@ -17,7 +17,6 @@ import {
 } from 'react-hook-form';
 import type { RosaWizardFormData } from '../../types';
 import { useRosaShowFieldErrorsAfterStepNav } from '../rosaWizardStepValidation';
-import { useWizardFooterStrings } from '../wizardFooterStrings';
 import { fieldIdFromPath } from './fieldId';
 import { LabelHelp } from './components/LabelHelp';
 
@@ -33,7 +32,6 @@ export type RosaTextInputProps = {
   path: FieldPath<RosaWizardFormData>;
   label?: string;
   required?: boolean;
-  validation?: (value: string, item?: RosaWizardFormData) => string | undefined;
   validateOnBlur?: boolean;
   placeholder?: string;
   labelHelp?: React.ReactNode;
@@ -47,7 +45,6 @@ export type RosaTextInputProps = {
 };
 
 export function RosaTextInput(props: RosaTextInputProps) {
-  const { required: requiredMsg } = useWizardFooterStrings();
   const { control, getValues } = useFormContext<RosaWizardFormData>();
   const { isSubmitted } = useFormState({ control });
   const afterStepNav = useRosaShowFieldErrorsAfterStepNav();
@@ -57,16 +54,6 @@ export function RosaTextInput(props: RosaTextInputProps) {
   const { field, fieldState } = useController({
     control,
     name: props.path,
-    rules: {
-      validate: (value) => {
-        const v = typeof value === 'string' ? value : value == null ? '' : String(value);
-        if (props.required && (!v || (Array.isArray(v) && v.length === 0))) {
-          return requiredMsg;
-        }
-        const err = props.validation?.(v, getValues());
-        return err ? err : true;
-      },
-    },
   });
 
   const onChange = useCallback<NonNullable<TextInputProps['onChange']>>(

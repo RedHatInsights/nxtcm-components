@@ -3,7 +3,6 @@ import { useCallback } from 'react';
 import { useController, useFormContext, useFormState, type FieldPath } from 'react-hook-form';
 import type { RosaWizardFormData } from '../../types';
 import { useRosaShowFieldErrorsAfterStepNav } from '../rosaWizardStepValidation';
-import { useWizardFooterStrings } from '../wizardFooterStrings';
 import { fieldIdFromPath } from './fieldId';
 
 import { Checkbox, CheckboxProps } from './components/Checkbox';
@@ -14,7 +13,6 @@ export type RosaCheckboxProps = {
   label?: string;
   title?: string;
   required?: boolean;
-  validation?: (value: boolean, item?: RosaWizardFormData) => string | undefined;
   labelHelp?: React.ReactNode;
   labelHelpTitle?: string;
   helperText?: React.ReactNode;
@@ -30,8 +28,7 @@ function getIsChecked(value: unknown) {
 }
 
 export function RosaCheckbox(props: RosaCheckboxProps) {
-  const { required: requiredMsg } = useWizardFooterStrings();
-  const { control, getValues } = useFormContext<RosaWizardFormData>();
+  const { control } = useFormContext<RosaWizardFormData>();
   const { isSubmitted } = useFormState({ control });
   const afterStepNav = useRosaShowFieldErrorsAfterStepNav();
   const id = fieldIdFromPath(props);
@@ -39,13 +36,6 @@ export function RosaCheckbox(props: RosaCheckboxProps) {
   const { field, fieldState } = useController({
     control,
     name: props.path,
-    rules: {
-      validate: (value) => {
-        if (props.required && !value) return requiredMsg;
-        const err = props.validation?.(Boolean(value), getValues());
-        return err ? err : true;
-      },
-    },
   });
 
   const onChange = useCallback<NonNullable<CheckboxProps['onChange']>>(

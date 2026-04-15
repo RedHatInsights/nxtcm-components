@@ -34,7 +34,6 @@ export type RosaSelectProps<T = unknown> = {
   helperText?: React.ReactNode;
   required?: boolean;
   disabled?: boolean;
-  validation?: (value: T, item?: RosaWizardFormData) => string | undefined;
   keyPath?: string;
   options?: (Option<T> | string | number)[];
   optionGroups?: OptionGroup<T>[];
@@ -46,7 +45,7 @@ export type RosaSelectProps<T = unknown> = {
 };
 
 export function RosaSelect<T = unknown>(props: RosaSelectProps<T>) {
-  const { required: requiredMsg, noResults, moreInfo } = useWizardFooterStrings();
+  const { noResults, moreInfo } = useWizardFooterStrings();
   const { control, getValues } = useFormContext<RosaWizardFormData>();
   const { isSubmitted } = useFormState({ control });
   const afterStepNav = useRosaShowFieldErrorsAfterStepNav();
@@ -59,21 +58,6 @@ export function RosaSelect<T = unknown>(props: RosaSelectProps<T>) {
   const { field, fieldState } = useController({
     control,
     name: props.path,
-    rules: {
-      validate: (value) => {
-        if (
-          props.required &&
-          (value === undefined ||
-            value === null ||
-            value === '' ||
-            (Array.isArray(value) && value.length === 0))
-        ) {
-          return requiredMsg;
-        }
-        const err = props.validation?.(value as T, getValues());
-        return err ? err : true;
-      },
-    },
   });
 
   const value = field.value;

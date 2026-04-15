@@ -20,7 +20,6 @@ import {
 import { useController, useFormContext, useFormState, type FieldPath } from 'react-hook-form';
 import type { RosaWizardFormData } from '../../types';
 import { useRosaShowFieldErrorsAfterStepNav } from '../rosaWizardStepValidation';
-import { useWizardFooterStrings } from '../wizardFooterStrings';
 import { fieldIdFromPath } from './fieldId';
 import { Indented } from './Indented';
 import { LabelHelp } from './components/LabelHelp';
@@ -33,7 +32,6 @@ export type RosaRadioGroupProps = {
   labelHelpTitle?: string;
   helperText?: ReactNode;
   required?: boolean;
-  validation?: (value: unknown, item?: RosaWizardFormData) => string | undefined;
   disabled?: boolean;
   readonly?: boolean;
   children?: ReactNode;
@@ -52,8 +50,7 @@ const RadioGroupContext = createContext<RadioGroupContextState>({});
 RadioGroupContext.displayName = 'RosaRadioGroupContext';
 
 export function RosaRadioGroup(props: RosaRadioGroupProps) {
-  const { required: requiredMsg } = useWizardFooterStrings();
-  const { control, getValues } = useFormContext<RosaWizardFormData>();
+  const { control } = useFormContext<RosaWizardFormData>();
   const { isSubmitted } = useFormState({ control });
   const afterStepNav = useRosaShowFieldErrorsAfterStepNav();
   const id = fieldIdFromPath(props);
@@ -62,15 +59,6 @@ export function RosaRadioGroup(props: RosaRadioGroupProps) {
   const { field, fieldState } = useController({
     control,
     name: props.path,
-    rules: {
-      validate: (value) => {
-        if (props.required && (value === undefined || value === null || value === '')) {
-          return requiredMsg;
-        }
-        const err = props.validation?.(value, getValues());
-        return err ? err : true;
-      },
-    },
   });
 
   const showError =

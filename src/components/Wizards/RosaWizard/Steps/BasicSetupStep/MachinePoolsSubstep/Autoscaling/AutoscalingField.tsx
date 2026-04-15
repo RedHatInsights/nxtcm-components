@@ -1,16 +1,8 @@
 import { Flex, FlexItem } from '@patternfly/react-core';
 import { useFormContext } from 'react-hook-form';
-import {
-  validateMinReplicas,
-  validateMaxReplicas,
-  validateComputeNodes,
-} from '../../../../validators';
 import ExternalLink from '../../../../common/ExternalLink';
 import links from '../../../../externalLinks';
-import {
-  useRosaWizardStrings,
-  useRosaWizardValidators,
-} from '../../../../RosaWizardStringsContext';
+import { useRosaWizardStrings } from '../../../../RosaWizardStringsContext';
 import { RosaCheckbox, RosaNumberInput } from '../../../../Inputs';
 
 type AutoscalingFieldProps = {
@@ -52,7 +44,6 @@ export const getAutoscalingMaxNodes = (openshiftVersion?: string) => {
 
 export const AutoscalingField = (props: AutoscalingFieldProps) => {
   const a = useRosaWizardStrings().autoscaling;
-  const v = useRosaWizardValidators();
   const { setValue } = useFormContext();
 
   const { autoscaling, openshiftVersion, machinePoolsNumber } = props;
@@ -107,9 +98,6 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
               }
               min={machinePoolsNumber && scaleMinNodesOnMachinePoolNumber(machinePoolsNumber)}
               max={maxNodeBasedOnOpenshiftVersion}
-              validation={(value: number, item) =>
-                validateMinReplicas(value, item, machinePoolsNumber, v.replicas)
-              }
             />
           </FlexItem>
           <FlexItem>
@@ -127,14 +115,6 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
               }
               min={1}
               max={maxNodeBasedOnOpenshiftVersion}
-              validation={(value, item) =>
-                validateMaxReplicas(
-                  value as number,
-                  item,
-                  maxNodeBasedOnOpenshiftVersion,
-                  v.replicas
-                )
-              }
             />
           </FlexItem>
         </Flex>
@@ -152,7 +132,6 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
             </>
           }
           min={1}
-          validation={(value) => validateComputeNodes(value, v.replicas)}
         />
       )}
     </>
