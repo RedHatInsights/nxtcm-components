@@ -2,8 +2,9 @@
  * Playwright CT mount target. Components from *.story.tsx cannot be mounted (see playwright.dev/test-components#test-stories).
  */
 import React, { useMemo } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider } from 'react-hook-form';
 import { DetailsSubStep } from './DetailsSubStep';
+import { mergeRosaCtClusterDefaults, useRosaWizardCtForm } from '../../../rosaWizardCtForm';
 import { RosaWizardStringsProvider } from '../../../RosaWizardStringsContext';
 import type { DetailsSubStepStoryProps } from './DetailsSubStep.fixtures';
 import type { RosaWizardFormData } from '../../../../types';
@@ -17,7 +18,7 @@ import {
   mockRoles,
 } from './DetailsSubStep.fixtures';
 
-export const DetailsSubStepMount: React.FC<DetailsSubStepStoryProps> = ({
+function DetailsSubStepMountInner({
   clusterNameValidation = { error: null, isFetching: false },
   checkClusterNameUniqueness,
   versions,
@@ -27,15 +28,13 @@ export const DetailsSubStepMount: React.FC<DetailsSubStepStoryProps> = ({
   machineTypes,
   roles,
   clusterOverrides = {},
-}) => {
-  const defaultValues = useMemo(
-    () => createMockClusterData(clusterOverrides) as RosaWizardFormData,
-    [clusterOverrides]
-  );
-  const methods = useForm<RosaWizardFormData>({
-    defaultValues,
-    mode: 'onTouched',
-  });
+}: DetailsSubStepStoryProps) {
+  const defaultValues = useMemo((): RosaWizardFormData => {
+    const { cluster } = createMockClusterData(clusterOverrides);
+    return mergeRosaCtClusterDefaults(cluster as RosaWizardFormData['cluster']);
+  }, [clusterOverrides]);
+
+  const methods = useRosaWizardCtForm(defaultValues, { mode: 'onTouched' });
 
   const awsInfraProps = {
     data: awsInfrastructureAccounts?.data ?? mockAwsInfrastructureAccounts,
@@ -80,19 +79,23 @@ export const DetailsSubStepMount: React.FC<DetailsSubStepStoryProps> = ({
   };
 
   return (
-    <RosaWizardStringsProvider>
-      <FormProvider {...methods}>
-        <DetailsSubStep
-          clusterNameValidation={clusterNameValidation}
-          checkClusterNameUniqueness={checkClusterNameUniqueness}
-          roles={rolesProps}
-          versions={versionsProps}
-          awsInfrastructureAccounts={awsInfraProps}
-          awsBillingAccounts={awsBillingProps}
-          regions={regionsProps}
-          machineTypes={machineTypesProps}
-        />
-      </FormProvider>
-    </RosaWizardStringsProvider>
+    <FormProvider {...methods}>
+      <DetailsSubStep
+        clusterNameValidation={clusterNameValidation}
+        checkClusterNameUniqueness={checkClusterNameUniqueness}
+        roles={rolesProps}
+        versions={versionsProps}
+        awsInfrastructureAccounts={awsInfraProps}
+        awsBillingAccounts={awsBillingProps}
+        regions={regionsProps}
+        machineTypes={machineTypesProps}
+      />
+    </FormProvider>
   );
-};
+}
+
+export const DetailsSubStepMount: React.FC<DetailsSubStepStoryProps> = (props) => (
+  <RosaWizardStringsProvider>
+    <DetailsSubStepMountInner {...props} />
+  </RosaWizardStringsProvider>
+);

@@ -45,7 +45,7 @@ export type RosaTextInputProps = {
 };
 
 export function RosaTextInput(props: RosaTextInputProps) {
-  const { control, getValues } = useFormContext<RosaWizardFormData>();
+  const { control, getValues, trigger } = useFormContext<RosaWizardFormData>();
   const { isSubmitted } = useFormState({ control });
   const afterStepNav = useRosaShowFieldErrorsAfterStepNav();
   const id = fieldIdFromPath(props);
@@ -66,7 +66,10 @@ export function RosaTextInput(props: RosaTextInputProps) {
 
   const onBlur = useCallback(() => {
     field.onBlur();
-  }, [field]);
+    if (props.validateOnBlur) {
+      void trigger(props.path);
+    }
+  }, [field, props.path, props.validateOnBlur, trigger]);
 
   const placeholder =
     props.placeholder ??
@@ -83,7 +86,11 @@ export function RosaTextInput(props: RosaTextInputProps) {
           id={id}
           placeholder={placeholder}
           validated={showError ? 'error' : undefined}
-          value={typeof field.value === 'string' ? field.value : field.value ?? ''}
+          value={
+            typeof field.value === 'string' || typeof field.value === 'number'
+              ? String(field.value)
+              : ''
+          }
           onChange={onChange}
           onBlur={onBlur}
           type={!props.secret || showSecrets ? 'text' : 'password'}

@@ -5,8 +5,9 @@
  * @see https://playwright.dev/docs/test-components#test-stories
  */
 import React, { useMemo } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider } from 'react-hook-form';
 import { MachinePoolsSubstep } from './MachinePoolsSubstep';
+import { mergeRosaCtClusterDefaults, useRosaWizardCtForm } from '../../../rosaWizardCtForm';
 import { RosaWizardStringsProvider } from '../../../RosaWizardStringsContext';
 import {
   createMockClusterData,
@@ -18,25 +19,27 @@ import type { RosaWizardFormData } from '../../../../types';
 
 export type { MachinePoolsSubstepStoryProps };
 
-export const MachinePoolsSubstepMount: React.FC<MachinePoolsSubstepStoryProps> = ({
+function MachinePoolsSubstepMountInner({
   vpcList = mockVpcList,
   machineTypes = mockMachineTypesData,
   clusterOverrides = {},
-}) => {
-  const defaultValues = useMemo(
-    () => createMockClusterData(clusterOverrides) as RosaWizardFormData,
-    [clusterOverrides]
-  );
-  const methods = useForm<RosaWizardFormData>({
-    defaultValues,
-    mode: 'onChange',
-  });
+}: MachinePoolsSubstepStoryProps) {
+  const defaultValues = useMemo((): RosaWizardFormData => {
+    const { cluster } = createMockClusterData(clusterOverrides);
+    return mergeRosaCtClusterDefaults(cluster as RosaWizardFormData['cluster']);
+  }, [clusterOverrides]);
+
+  const methods = useRosaWizardCtForm(defaultValues, { mode: 'onChange' });
 
   return (
-    <RosaWizardStringsProvider>
-      <FormProvider {...methods}>
-        <MachinePoolsSubstep vpcList={vpcList} machineTypes={machineTypes} />
-      </FormProvider>
-    </RosaWizardStringsProvider>
+    <FormProvider {...methods}>
+      <MachinePoolsSubstep vpcList={vpcList} machineTypes={machineTypes} />
+    </FormProvider>
   );
-};
+}
+
+export const MachinePoolsSubstepMount: React.FC<MachinePoolsSubstepStoryProps> = (props) => (
+  <RosaWizardStringsProvider>
+    <MachinePoolsSubstepMountInner {...props} />
+  </RosaWizardStringsProvider>
+);
