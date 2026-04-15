@@ -19,10 +19,6 @@ const config: StorybookConfig = {
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '../src'),
-          '@patternfly-labs/react-form-wizard': path.resolve(
-            __dirname,
-            '../packages/react-form-wizard/src'
-          ),
         },
       },
       optimizeDeps: {
