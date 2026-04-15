@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import type { WizardSubmit } from '@patternfly-labs/react-form-wizard';
 import { RosaWizard } from './RosaWizard';
 import type {
   OIDCConfig,
@@ -97,7 +96,6 @@ const wizardStepsData: WizardStepsData = {
   },
 };
 
-// cast only on the prop: react-form-wizard still types submit as unknown
 const integrationContractOnSubmit = async (data: RosaWizardFormData): Promise<void> => {
   void data.cluster;
 };
@@ -116,7 +114,8 @@ Type-safe integration contract for consumers.
 - Output contract on submit: \`RosaWizardFormData\`
 - Source of truth for exported types: \`src/components/Wizards/index.ts\`
 
-This story keeps \`wizardsStepsData\` and the submit handler body typed like consumer code (\`WizardWrapper\` uses the same \`RosaWizardFormData\` shape). The handler is cast to \`WizardSubmit\` only at the prop boundary because react-form-wizard types submit as \`unknown\`.
+This story keeps \`wizardsStepsData\` and the submit handler typed like consumer code.
+The handler uses \`RosaWizardSubmitFn\` — TanStack Form resolves the data shape at the form boundary.
 `,
       },
     },
@@ -130,7 +129,7 @@ export const TypedConsumerExample: Story = {
   args: {
     title: 'Typed ROSA Wizard Integration',
     wizardsStepsData: wizardStepsData,
-    onSubmit: integrationContractOnSubmit as WizardSubmit,
+    onSubmit: integrationContractOnSubmit,
     onCancel: () => {
       void 0;
     },

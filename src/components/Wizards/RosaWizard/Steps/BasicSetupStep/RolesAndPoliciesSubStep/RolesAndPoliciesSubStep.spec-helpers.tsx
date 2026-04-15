@@ -1,14 +1,8 @@
-import React, { useCallback, useState } from 'react';
-import { DataContext } from '@patternfly-labs/react-form-wizard/contexts/DataContext';
-import {
-  DisplayMode,
-  DisplayModeContext,
-} from '@patternfly-labs/react-form-wizard/contexts/DisplayModeContext';
-import { ItemContext } from '@patternfly-labs/react-form-wizard/contexts/ItemContext';
-import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
-import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
+import React from 'react';
 import { RosaWizardStringsProvider } from '../../../RosaWizardStringsContext';
+import { useAppForm } from '../../../RosaFormContext';
 import { OIDCConfig, Resource, Role } from '../../../../types';
+import type { RosaWizardFormData } from '../../../../types';
 import { RolesAndPoliciesSubStep } from './RolesAndPoliciesSubStep';
 import {
   createMockClusterData,
@@ -42,6 +36,18 @@ const mockFetchResource = <TData, TArgs extends unknown[] = []>(
   fetch: async (..._args: TArgs) => {},
 });
 
+const RolesFormWrapper: React.FC<{
+  clusterOverrides?: Record<string, unknown>;
+  children: React.ReactNode;
+}> = ({ clusterOverrides = {}, children }) => {
+  const form = useAppForm({
+    defaultValues: createMockClusterData(clusterOverrides) as unknown as RosaWizardFormData,
+    onSubmit: async () => {},
+  });
+
+  return <form.AppForm>{children}</form.AppForm>;
+};
+
 export const RolesAndPoliciesSubStepMount = ({
   roles = mockFetchResource<Role[], [awsAccount: string]>([
     {
@@ -52,26 +58,10 @@ export const RolesAndPoliciesSubStepMount = ({
   ]),
   oidcConfig = mockResource(mockOIDCConfig),
   clusterOverrides = {},
-}: Props) => {
-  const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
-
-  const update = useCallback(() => {
-    setData((currentData) => ({ ...currentData }));
-  }, []);
-
-  return (
-    <RosaWizardStringsProvider>
-      <DataContext.Provider value={{ update }}>
-        <DisplayModeContext.Provider value={DisplayMode.Step}>
-          <ItemContext.Provider value={data}>
-            <ShowValidationProvider>
-              <ValidationProvider>
-                <RolesAndPoliciesSubStep roles={roles} oidcConfig={oidcConfig} />
-              </ValidationProvider>
-            </ShowValidationProvider>
-          </ItemContext.Provider>
-        </DisplayModeContext.Provider>
-      </DataContext.Provider>
-    </RosaWizardStringsProvider>
-  );
-};
+}: Props) => (
+  <RosaWizardStringsProvider>
+    <RolesFormWrapper clusterOverrides={clusterOverrides}>
+      <RolesAndPoliciesSubStep roles={roles} oidcConfig={oidcConfig} />
+    </RolesFormWrapper>
+  </RosaWizardStringsProvider>
+);

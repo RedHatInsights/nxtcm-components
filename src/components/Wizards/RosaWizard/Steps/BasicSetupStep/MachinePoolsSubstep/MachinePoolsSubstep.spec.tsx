@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/experimental-ct-react';
 import { checkAccessibility } from '../../../../../../test-helpers';
 import { MachinePoolsSubstepMount } from './MachinePoolsSubstep.spec-helpers';
 import { machinePoolsSubstepCtStrings, mockVpcList } from './MachinePoolsSubstep.fixtures';
-import { ShowValidationContext } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
 import type { Resource, MachineTypesDropdownType, VPC } from '../../../../types';
 
 const mockResource = <TData,>(data: TData): Resource<TData> => ({
@@ -375,12 +374,7 @@ const ADVANCED_TOGGLE_TEXT = 'Advanced machine pool configuration (optional)';
 const mountWithValidation = (
   mount: Parameters<Parameters<typeof test>[2]>[0]['mount'],
   clusterOverrides: Record<string, unknown> = {}
-) =>
-  mount(
-    <ShowValidationContext.Provider value={true}>
-      <MachinePoolsSubstepMount clusterOverrides={clusterOverrides} />
-    </ShowValidationContext.Provider>
-  );
+) => mount(<MachinePoolsSubstepMount clusterOverrides={clusterOverrides} showValidation />);
 
 test.describe('Root disk size validation', () => {
   test('should render root disk size input inside advanced section', async ({ mount }) => {

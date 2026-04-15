@@ -3,8 +3,6 @@
  * Default English values live in {@link ./rosaWizardStrings.defaults}.
  */
 
-import type { WizardStrings } from '@patternfly-labs/react-form-wizard';
-
 export type DeepPartial<T> = {
   [K in keyof T]?: T[K] extends (...args: any[]) => unknown
     ? T[K]
@@ -153,6 +151,13 @@ export type RosaWizardValidatorStrings = {
   hostPrefix: RosaWizardHostPrefixValidatorStrings;
 };
 
+export type RosaWizardChromeStrings = {
+  nextButtonText: string;
+  backButtonText: string;
+  cancelButtonText: string;
+  submitButtonText: string;
+};
+
 export type RosaWizardStrings = {
   wizard: {
     stepLabels: {
@@ -168,6 +173,8 @@ export type RosaWizardStrings = {
       yamlEditor: string;
       review: string;
     };
+    /** Button labels for wizard footer chrome (Next, Back, Cancel, Submit). */
+    chrome: RosaWizardChromeStrings;
   };
   submitError: {
     title: string;
@@ -466,9 +473,8 @@ export type RosaWizardStrings = {
 export type RosaWizardStringsInput = DeepPartial<RosaWizardStrings> & {
   validators?: DeepPartial<RosaWizardValidatorStrings>;
   /**
-   * Overrides for `@patternfly-labs/react-form-wizard` chrome (footer buttons, aria labels, required
-   * message, typeahead strings, etc.). Omitted keys use that package’s English defaults.
-   * `reviewLabel` is always aligned with {@link RosaWizardStrings.wizard.stepLabels.review} after merges.
+   * Legacy compatibility: if provided, known keys (`nextButtonText`, `backButtonText`,
+   * `cancelButtonText`, `submitButtonText`) are mapped into `wizard.chrome`.
    */
-  formWizard?: DeepPartial<WizardStrings>;
+  formWizard?: DeepPartial<RosaWizardChromeStrings> & Record<string, unknown>;
 };

@@ -1,18 +1,11 @@
 /**
  * Playwright CT mount target. Components from *.story.tsx cannot be mounted (see playwright.dev/test-components#test-stories).
  */
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import { DetailsSubStep } from './DetailsSubStep';
 import { RosaWizardStringsProvider } from '../../../RosaWizardStringsContext';
-import { ItemContext } from '@patternfly-labs/react-form-wizard/contexts/ItemContext';
-import { DataContext } from '@patternfly-labs/react-form-wizard/contexts/DataContext';
-import {
-  DisplayModeContext,
-  DisplayMode,
-} from '@patternfly-labs/react-form-wizard/contexts/DisplayModeContext';
-import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
-import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
-import { StepShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/StepShowValidationProvider';
+import { useAppForm } from '../../../RosaFormContext';
+import type { RosaWizardFormData } from '../../../../types';
 import type { DetailsSubStepStoryProps } from './DetailsSubStep.fixtures';
 import {
   createMockClusterData,
@@ -23,6 +16,18 @@ import {
   mockRegions,
   mockRoles,
 } from './DetailsSubStep.fixtures';
+
+const DetailsSubStepFormWrapper: React.FC<{
+  clusterOverrides?: Record<string, unknown>;
+  children: React.ReactNode;
+}> = ({ clusterOverrides = {}, children }) => {
+  const form = useAppForm({
+    defaultValues: createMockClusterData(clusterOverrides) as unknown as RosaWizardFormData,
+    onSubmit: async () => {},
+  });
+
+  return <form.AppForm>{children}</form.AppForm>;
+};
 
 export const DetailsSubStepMount: React.FC<DetailsSubStepStoryProps> = ({
   clusterNameValidation = { error: null, isFetching: false },
@@ -35,12 +40,6 @@ export const DetailsSubStepMount: React.FC<DetailsSubStepStoryProps> = ({
   roles,
   clusterOverrides = {},
 }) => {
-  const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
-
-  const update = useCallback(() => {
-    setData((currentData) => ({ ...currentData }));
-  }, []);
-
   const awsInfraProps = {
     data: awsInfrastructureAccounts?.data ?? mockAwsInfrastructureAccounts,
     isFetching: awsInfrastructureAccounts?.isFetching ?? false,
@@ -85,28 +84,18 @@ export const DetailsSubStepMount: React.FC<DetailsSubStepStoryProps> = ({
 
   return (
     <RosaWizardStringsProvider>
-      <DataContext.Provider value={{ update }}>
-        <DisplayModeContext.Provider value={DisplayMode.Step}>
-          <ItemContext.Provider value={data}>
-            <StepShowValidationProvider>
-              <ShowValidationProvider>
-                <ValidationProvider>
-                  <DetailsSubStep
-                    clusterNameValidation={clusterNameValidation}
-                    checkClusterNameUniqueness={checkClusterNameUniqueness}
-                    roles={rolesProps}
-                    versions={versionsProps}
-                    awsInfrastructureAccounts={awsInfraProps}
-                    awsBillingAccounts={awsBillingProps}
-                    regions={regionsProps}
-                    machineTypes={machineTypesProps}
-                  />
-                </ValidationProvider>
-              </ShowValidationProvider>
-            </StepShowValidationProvider>
-          </ItemContext.Provider>
-        </DisplayModeContext.Provider>
-      </DataContext.Provider>
+      <DetailsSubStepFormWrapper clusterOverrides={clusterOverrides}>
+        <DetailsSubStep
+          clusterNameValidation={clusterNameValidation}
+          checkClusterNameUniqueness={checkClusterNameUniqueness}
+          roles={rolesProps}
+          versions={versionsProps}
+          awsInfrastructureAccounts={awsInfraProps}
+          awsBillingAccounts={awsBillingProps}
+          regions={regionsProps}
+          machineTypes={machineTypesProps}
+        />
+      </DetailsSubStepFormWrapper>
     </RosaWizardStringsProvider>
   );
 };

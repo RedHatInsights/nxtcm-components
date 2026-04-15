@@ -1,15 +1,4 @@
-import {
-  Radio,
-  Section,
-  useData,
-  useItem,
-  WizCheckbox,
-  WizRadioGroup,
-  WizSelect,
-  WizTextInput,
-} from '@patternfly-labs/react-form-wizard';
-import { LabelHelp } from '@patternfly-labs/react-form-wizard/components/LabelHelp';
-import { ClusterNetwork, Resource, RosaWizardFormData, Subnet, VPC } from '../../../../types';
+import { ClusterNetwork, Resource, Subnet, VPC } from '../../../../types';
 import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
 import { constructSelectedSubnets, subnetsFilter } from '../../../helpers';
 import {
@@ -17,6 +6,7 @@ import {
   Content,
   ContentVariants,
   ExpandableSection,
+  FormSection,
   Grid,
   GridItem,
   Stack,
@@ -34,41 +24,48 @@ import {
   serviceCidr,
   podCidr,
 } from '../../../validators';
-import { Indented } from '@patternfly-labs/react-form-wizard/components/Indented';
 import links from '../../../externalLinks';
 import ExternalLink from '../../../common/ExternalLink';
 import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
+import { useClusterValues, useRosaForm } from '../../../RosaFormContext';
+import {
+  FormCheckbox,
+  FormRadioGroup,
+  FormSelect,
+  FormTextInput,
+  type SelectOptionItem,
+} from '../../../../../../TanstackForm';
 
 type NetworkingAndSubnetsSubStepProps = {
   vpcList: Resource<VPC[]>;
   setIsClusterWideProxySelected: (value: boolean) => void;
 };
 
-export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepProps) => {
+export const NetworkingAndSubnetsSubStep = (
+  props: NetworkingAndSubnetsSubStepProps
+): JSX.Element => {
   const { networking: n } = useRosaWizardStrings();
   const v = useRosaWizardValidators();
-  const { cluster } = useItem<RosaWizardFormData>();
+  const form = useRosaForm();
+  const cluster = useClusterValues();
   const { setIsClusterWideProxySelected } = props;
-  const { update } = useData();
-  const vpcRef = cluster?.selected_vpc;
+
+  const vpcRef = cluster.selected_vpc;
   const selectedVPC =
     typeof vpcRef === 'string' ? props.vpcList.data?.find((vpc: VPC) => vpc.id === vpcRef) : vpcRef;
 
   const { publicSubnets } = subnetsFilter(selectedVPC);
 
-  const defaultCidrValue = cluster?.cidr_default;
-  const clusterWideProxy = cluster?.['configure_proxy'];
+  const defaultCidrValue = cluster.cidr_default;
+  const clusterWideProxy = cluster.configure_proxy;
+
   React.useEffect(() => {
     setIsClusterWideProxySelected(!!clusterWideProxy);
     if (!clusterWideProxy) {
-      const {
-        http_proxy_url,
-        https_proxy_url,
-        no_proxy_domains,
-        additional_trust_bundle,
-        ...rest
-      } = cluster ?? {};
-      update({ cluster: rest });
+      form.setFieldValue('cluster.http_proxy_url', undefined);
+      form.setFieldValue('cluster.https_proxy_url', undefined);
+      form.setFieldValue('cluster.no_proxy_domains', undefined);
+      form.setFieldValue('cluster.additional_trust_bundle', undefined);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clusterWideProxy]);
@@ -80,11 +77,12 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
   const podDisjointSubnets = disjointSubnets('network_pod_cidr', v.disjointSubnets);
   const awsServiceSubnetMask = awsSubnetMask('network_service_cidr', v.serviceCidr);
 
-  const hostPrefixValidators = (value: string) => hostPrefix(value, v.hostPrefix);
-  const cidrValidators = (value: string) =>
+  const hostPrefixValidators = (value: string): string | undefined =>
+    hostPrefix(value, v.hostPrefix);
+  const cidrValidators = (value: string): string | undefined =>
     cidr(value, v.cidr) || validateRange(value, v.validateRange, v.cidr) || undefined;
 
-  const machineCidrValidators = (value: string) =>
+  const machineCidrValidators = (value: string): string | undefined =>
     cidrValidators(value) ||
     awsMachineCidr(value, cluster, v.awsMachineCidr) ||
     validateRange(value, v.validateRange, v.cidr) ||
@@ -92,7 +90,7 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
     machineDisjointSubnets(value, cluster) ||
     undefined;
 
-  const serviceCidrValidators = (value: string) =>
+  const serviceCidrValidators = (value: string): string | undefined =>
     cidrValidators(value) ||
     serviceCidr(value, v.serviceCidr) ||
     serviceDisjointSubnets(value, cluster) ||
@@ -100,85 +98,101 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
     subnetCidrs(value, cluster, 'network_service_cidr', selectedSubnets, v.subnetCidrs) ||
     undefined;
 
-  const podCidrValidators = (value: string) =>
+  const podCidrValidators = (value: string): string | undefined =>
     cidrValidators(value) ||
-    podCidr(value, cluster?.network_host_prefix, v.podCidr) ||
+    podCidr(value, cluster.network_host_prefix, v.podCidr) ||
     podDisjointSubnets(value, cluster) ||
     subnetCidrs(value, cluster, 'network_pod_cidr', selectedSubnets, v.subnetCidrs) ||
     undefined;
 
+  const publicSubnetOptions: SelectOptionItem[] = React.useMemo(
+    () =>
+      (publicSubnets ?? []).map((subnet: Subnet) => ({
+        value: subnet.subnet_id,
+        label: subnet.name,
+      })),
+    [publicSubnets]
+  );
+
   return (
     <>
-      <Section label={n.sectionLabel} id="networking-section" key="networking-section-key">
+      <FormSection title={n.sectionLabel} id="networking-section">
         <Grid>
           <GridItem span={7}>
-            <WizRadioGroup
-              id="public-private-subnet-radio-group"
-              path="cluster.cluster_privacy"
-              helperText={n.privacyHelper}
-              onValueChange={() => {
-                if (cluster.cluster_privacy && cluster.cluster_privacy_public_subnet_id) {
-                  delete cluster.cluster_privacy_public_subnet_id;
-                }
+            <form.Field
+              name="cluster.cluster_privacy"
+              listeners={{
+                onChange: () => {
+                  form.setFieldValue('cluster.cluster_privacy_public_subnet_id', undefined);
+                },
               }}
             >
-              <Radio
-                id="public"
-                label={n.publicLabel}
-                value={ClusterNetwork.external}
-                popover={<LabelHelp id="subnet-label-help-public" labelHelp={n.publicPopover} />}
-              >
-                <FieldWithAPIErrorAlert
-                  error={props.vpcList.error}
-                  isFetching={props.vpcList.isFetching}
-                  fieldName={n.publicSubnetLabel}
-                  retry={props.vpcList.fetch ? () => void props.vpcList.fetch?.() : undefined}
-                >
-                  <WizSelect
-                    label={n.publicSubnetLabel}
-                    path="cluster.cluster_privacy_public_subnet_id"
-                    options={
-                      props.vpcList.isFetching
-                        ? undefined
-                        : publicSubnets?.map((subnet: Subnet) => ({
-                            label: subnet.name,
-                            value: subnet.subnet_id,
-                          }))
-                    }
-                    placeholder={n.publicSubnetPlaceholder}
-                  />
-                </FieldWithAPIErrorAlert>
-              </Radio>
+              {(field) => (
+                <FormRadioGroup
+                  field={field}
+                  label=""
+                  helperText={n.privacyHelper}
+                  options={[
+                    {
+                      value: ClusterNetwork.external,
+                      label: n.publicLabel,
+                      popover: n.publicPopover,
+                    },
+                    {
+                      value: ClusterNetwork.internal,
+                      label: n.privateLabel,
+                      popover: n.privatePopover,
+                    },
+                  ]}
+                />
+              )}
+            </form.Field>
 
-              <Radio
-                id="private"
-                label={n.privateLabel}
-                value={ClusterNetwork.internal}
-                popover={<LabelHelp id="subnet-label-help-private" labelHelp={n.privatePopover} />}
-              ></Radio>
-            </WizRadioGroup>
+            {cluster.cluster_privacy === ClusterNetwork.external && (
+              <FieldWithAPIErrorAlert
+                error={props.vpcList.error}
+                isFetching={props.vpcList.isFetching}
+                fieldName={n.publicSubnetLabel}
+                retry={props.vpcList.fetch ? () => void props.vpcList.fetch?.() : undefined}
+              >
+                <form.Field name="cluster.cluster_privacy_public_subnet_id">
+                  {(field) => (
+                    <FormSelect
+                      field={field}
+                      label={n.publicSubnetLabel}
+                      placeholder={n.publicSubnetPlaceholder}
+                      options={props.vpcList.isFetching ? [] : publicSubnetOptions}
+                      isPending={props.vpcList.isFetching}
+                    />
+                  )}
+                </form.Field>
+              </FieldWithAPIErrorAlert>
+            )}
           </GridItem>
         </Grid>
-      </Section>
+      </FormSection>
 
       <ExpandableSection toggleText={n.advancedToggle}>
-        <Indented>
+        <div className="pf-v6-u-ml-lg">
           <Stack>
             <StackItem>
-              <WizCheckbox
-                id="cluster-wide-proxy"
-                path="cluster.configure_proxy"
-                label={n.proxyCheckboxLabel}
-                helperText={n.proxyCheckboxHelp}
-              />
+              <form.Field name="cluster.configure_proxy">
+                {(field) => (
+                  <FormCheckbox
+                    field={field}
+                    label={n.proxyCheckboxLabel}
+                    description={n.proxyCheckboxHelp}
+                  />
+                )}
+              </form.Field>
             </StackItem>
-            {clusterWideProxy ? (
-              <Indented>
+            {clusterWideProxy && (
+              <div className="pf-v6-u-ml-lg">
                 <StackItem>
                   <Alert variant="info" isInline isPlain title={n.proxyNextStepInfo} />
                 </StackItem>
-              </Indented>
-            ) : null}
+              </div>
+            )}
           </Stack>
 
           <Alert
@@ -188,7 +202,6 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
             ouiaId="networkingCidrAlert"
           >
             <Content component={ContentVariants.p}>{n.cidrAlertBody}</Content>
-
             <Content component={ContentVariants.p}>
               <ExternalLink href={links.CIDR_RANGE_DEFINITIONS_ROSA}>
                 {n.cidrLearnMoreLink}
@@ -196,59 +209,87 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
             </Content>
           </Alert>
 
-          <WizCheckbox
-            id="use-cidr-default-values"
-            path="cluster.cidr_default"
-            label={n.useDefaultsLabel}
-            helperText={n.useDefaultsHelp}
-          />
+          <form.Field name="cluster.cidr_default">
+            {(field) => (
+              <FormCheckbox
+                field={field}
+                label={n.useDefaultsLabel}
+                description={n.useDefaultsHelp}
+              />
+            )}
+          </form.Field>
 
           <Stack hasGutter>
             <StackItem>
-              <WizTextInput
-                validation={machineCidrValidators}
-                validateOnBlur
-                id="network_machine_cidr"
-                path="cluster.network_machine_cidr"
-                label={n.machineCidrLabel}
-                helperText={n.machineCidrHelp}
-                disabled={defaultCidrValue}
-              />
+              <form.Field
+                name="cluster.network_machine_cidr"
+                validators={{
+                  onBlur: ({ value }) => machineCidrValidators(value as string) || undefined,
+                }}
+              >
+                {(field) => (
+                  <FormTextInput
+                    field={field}
+                    label={n.machineCidrLabel}
+                    helperText={n.machineCidrHelp}
+                    isDisabled={defaultCidrValue}
+                  />
+                )}
+              </form.Field>
             </StackItem>
             <StackItem>
-              <WizTextInput
-                validation={serviceCidrValidators}
-                validateOnBlur
-                id="network_service_cidr"
-                path="cluster.network_service_cidr"
-                label={n.serviceCidrLabel}
-                helperText={n.serviceCidrHelp}
-                disabled={defaultCidrValue}
-              />
+              <form.Field
+                name="cluster.network_service_cidr"
+                validators={{
+                  onBlur: ({ value }) => serviceCidrValidators(value as string) || undefined,
+                }}
+              >
+                {(field) => (
+                  <FormTextInput
+                    field={field}
+                    label={n.serviceCidrLabel}
+                    helperText={n.serviceCidrHelp}
+                    isDisabled={defaultCidrValue}
+                  />
+                )}
+              </form.Field>
             </StackItem>
             <StackItem>
-              <WizTextInput
-                validation={podCidrValidators}
-                validateOnBlur
-                id="network_pod_cidr"
-                path="cluster.network_pod_cidr"
-                label={n.podCidrLabel}
-                helperText={n.podCidrHelp}
-                disabled={defaultCidrValue}
-              />
+              <form.Field
+                name="cluster.network_pod_cidr"
+                validators={{
+                  onBlur: ({ value }) => podCidrValidators(value as string) || undefined,
+                }}
+              >
+                {(field) => (
+                  <FormTextInput
+                    field={field}
+                    label={n.podCidrLabel}
+                    helperText={n.podCidrHelp}
+                    isDisabled={defaultCidrValue}
+                  />
+                )}
+              </form.Field>
             </StackItem>
             <StackItem>
-              <WizTextInput
-                validation={hostPrefixValidators}
-                validateOnBlur
-                path="cluster.network_host_prefix"
-                label={n.hostPrefixLabel}
-                helperText={n.hostPrefixHelp}
-                disabled={defaultCidrValue}
-              />
+              <form.Field
+                name="cluster.network_host_prefix"
+                validators={{
+                  onBlur: ({ value }) => hostPrefixValidators(value as string) || undefined,
+                }}
+              >
+                {(field) => (
+                  <FormTextInput
+                    field={field}
+                    label={n.hostPrefixLabel}
+                    helperText={n.hostPrefixHelp}
+                    isDisabled={defaultCidrValue}
+                  />
+                )}
+              </form.Field>
             </StackItem>
           </Stack>
-        </Indented>
+        </div>
       </ExpandableSection>
     </>
   );

@@ -1,36 +1,30 @@
 import React from 'react';
 import {
-  Radio,
-  Section,
-  useItem,
-  WizMachinePoolSelect,
-  WizNumberInput,
-  WizRadioGroup,
-  WizSelect,
-} from '@patternfly-labs/react-form-wizard';
-import {
   Content,
   ContentVariants,
   ExpandableSection,
+  FormSection,
   Grid,
   GridItem,
 } from '@patternfly/react-core';
 import { subnetsFilter, canSelectImds, getWorkerNodeVolumeSizeMaxGiB } from '../../../helpers';
-import {
-  MachineTypesDropdownType,
-  Resource,
-  RosaWizardFormData,
-  Subnet,
-  VPC,
-} from '../../../../types';
+import { MachineTypesDropdownType, Resource, Subnet, VPC } from '../../../../types';
 import { AutoscalingField } from './Autoscaling/AutoscalingField';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
-import { Indented } from '@patternfly-labs/react-form-wizard/components/Indented';
 import { validateRootDiskSize } from '../../../validators';
 import { SecurityGroupsSection } from './SecurityGroupSection/SecurityGroupSection';
 import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
 import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
+import { useClusterValues, useRosaForm } from '../../../RosaFormContext';
+import {
+  FormNumberInput,
+  FormRadioGroup,
+  FormSelect,
+  FormMachinePoolSelect,
+  type SelectOptionItem,
+  type MachinePoolSelectOption,
+} from '../../../../../../TanstackForm';
 
 type MachinePoolsSubstepProps = {
   vpcList: Resource<VPC[]>;
@@ -39,29 +33,57 @@ type MachinePoolsSubstepProps = {
   };
 };
 
-export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
+export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps): JSX.Element => {
   const mp = useRosaWizardStrings().machinePools;
   const v = useRosaWizardValidators();
-  const { cluster } = useItem<RosaWizardFormData>();
-  const currentRegion = cluster?.region;
+  const form = useRosaForm();
+  const cluster = useClusterValues();
+  const currentRegion = cluster.region;
   const clusterVersion = cluster.cluster_version ?? '';
   const maxRootDiskSize = getWorkerNodeVolumeSizeMaxGiB(clusterVersion);
 
-  // Refetch machine types with the selected region
   React.useEffect(() => {
     if (props.machineTypes.fetch && currentRegion) void props.machineTypes.fetch(currentRegion);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const vpcRef = cluster?.selected_vpc;
+  const vpcRef = cluster.selected_vpc;
   const selectedVPC =
     typeof vpcRef === 'string' ? props.vpcList.data.find((vpc: VPC) => vpc.id === vpcRef) : vpcRef;
 
   const { privateSubnets } = subnetsFilter(selectedVPC);
 
+  const vpcOptions: SelectOptionItem[] = React.useMemo(
+    () =>
+      props.vpcList.data.map((vpc: VPC) => ({
+        value: vpc.id,
+        label: vpc.name,
+      })),
+    [props.vpcList.data]
+  );
+
+  const machineTypeOptions: SelectOptionItem[] = React.useMemo(
+    () =>
+      props.machineTypes.data.map((mt) => ({
+        value: mt.value,
+        label: mt.label,
+        description: mt.description,
+      })),
+    [props.machineTypes.data]
+  );
+
+  const machinePoolSubnetOptions: MachinePoolSelectOption[] = React.useMemo(
+    () =>
+      (privateSubnets ?? []).map((subnet: Subnet) => ({
+        value: subnet.subnet_id,
+        label: subnet.name,
+      })),
+    [privateSubnets]
+  );
+
   return (
     <>
-      <Section label={mp.sectionLabel} id="machine-pools-section" key="machine-pools-key">
+      <FormSection title={mp.sectionLabel} id="machine-pools-section">
         <Content component={ContentVariants.p}>{mp.intro}</Content>
         <Grid>
           <GridItem span={5}>
@@ -71,30 +93,41 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
               fieldName={mp.vpcLabel}
               retry={props.vpcList.fetch ? () => void props.vpcList.fetch?.() : undefined}
             >
-              <WizSelect
-                onValueChange={(_newVpc, item) => {
-                  if (item?.cluster) {
-                    item.cluster.security_groups_worker = [];
-                  }
+              <form.Field
+                name="cluster.selected_vpc"
+                listeners={{
+                  onChange: () => {
+                    form.setFieldValue(
+                      'cluster' as never,
+                      {
+                        ...form.getFieldValue('cluster'),
+                        security_groups_worker: [],
+                      } as never
+                    );
+                  },
                 }}
-                label={`${mp.vpcLabelPrefix} ${cluster?.region}`}
-                path="cluster.selected_vpc"
-                keyPath="id"
-                placeholder={mp.vpcPlaceholder}
-                required
-                labelHelp={
-                  <>
-                    {mp.vpcHelpLead}{' '}
-                    <ExternalLink href={links.ROSA_SHARED_VPC}>{mp.vpcLearnMoreLink}</ExternalLink>
-                  </>
-                }
-                refreshCallback={props.vpcList.fetch}
-                options={props.vpcList.data.map((vpc: VPC) => ({
-                  label: vpc.name,
-                  value: vpc.id,
-                }))}
-                disabled={props.vpcList.isFetching}
-              />
+              >
+                {(field) => (
+                  <FormSelect
+                    field={field}
+                    label={`${mp.vpcLabelPrefix} ${cluster.region}`}
+                    placeholder={mp.vpcPlaceholder}
+                    labelHelp={
+                      <>
+                        {mp.vpcHelpLead}{' '}
+                        <ExternalLink href={links.ROSA_SHARED_VPC}>
+                          {mp.vpcLearnMoreLink}
+                        </ExternalLink>
+                      </>
+                    }
+                    isRequired
+                    isDisabled={props.vpcList.isFetching}
+                    isPending={props.vpcList.isFetching}
+                    options={vpcOptions}
+                    onRefresh={props.vpcList.fetch ? () => void props.vpcList.fetch?.() : undefined}
+                  />
+                )}
+              </form.Field>
             </FieldWithAPIErrorAlert>
           </GridItem>
         </Grid>
@@ -107,29 +140,26 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
               fieldName={mp.subnetLabel}
               retry={props.vpcList.fetch ? () => void props.vpcList.fetch?.() : undefined}
             >
-              <WizMachinePoolSelect
-                required
-                path="cluster.machine_pools_subnets"
-                machinePoolLabel={mp.machinePoolLabel}
-                subnetLabel={mp.subnetLabel}
-                addMachinePoolBtnLabel={mp.addPoolButton}
-                selectPlaceholder={mp.subnetPlaceholder}
-                subnetOptions={privateSubnets?.map((subnet: Subnet) => ({
-                  label: subnet.name,
-                  value: subnet.subnet_id,
-                }))}
-                newValue={{ machine_pool_subnet: '' }}
-                minItems={1}
-              />
+              <form.Field name="cluster.machine_pools_subnets">
+                {(field) => (
+                  <FormMachinePoolSelect
+                    field={field}
+                    machinePoolLabel={mp.machinePoolLabel}
+                    subnetLabel={mp.subnetLabel}
+                    addButtonLabel={mp.addPoolButton}
+                    selectPlaceholder={mp.subnetPlaceholder}
+                    subnetOptions={machinePoolSubnetOptions}
+                    minItems={1}
+                    isRequired
+                  />
+                )}
+              </form.Field>
             </FieldWithAPIErrorAlert>
           </GridItem>
         </Grid>
-      </Section>
-      <Section
-        label={mp.settingsSectionLabel}
-        id="machine-pools-settings-section"
-        key="machine-pools-settings-key"
-      >
+      </FormSection>
+
+      <FormSection title={mp.settingsSectionLabel} id="machine-pools-settings-section">
         <Content component={ContentVariants.p}>{mp.settingsIntro}</Content>
         <Grid>
           <GridItem span={5}>
@@ -143,22 +173,25 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
                   : undefined
               }
             >
-              <WizSelect
-                label={mp.instanceTypeLabel}
-                validateOnBlur={true}
-                disabled={props.machineTypes.isFetching}
-                path="cluster.machine_type"
-                required
-                labelHelp={
-                  <>
-                    {mp.instanceTypeHelpLead}{' '}
-                    <ExternalLink href={links.ROSA_INSTANCE_TYPES}>
-                      {mp.instanceTypeLearnMore}
-                    </ExternalLink>
-                  </>
-                }
-                options={props.machineTypes.data}
-              />
+              <form.Field name="cluster.machine_type">
+                {(field) => (
+                  <FormSelect
+                    field={field}
+                    label={mp.instanceTypeLabel}
+                    labelHelp={
+                      <>
+                        {mp.instanceTypeHelpLead}{' '}
+                        <ExternalLink href={links.ROSA_INSTANCE_TYPES}>
+                          {mp.instanceTypeLearnMore}
+                        </ExternalLink>
+                      </>
+                    }
+                    isRequired
+                    isDisabled={props.machineTypes.isFetching}
+                    options={machineTypeOptions}
+                  />
+                )}
+              </form.Field>
             </FieldWithAPIErrorAlert>
           </GridItem>
         </Grid>
@@ -168,51 +201,61 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
           machinePoolsNumber={cluster.machine_pools_subnets?.length}
           openshiftVersion={cluster.cluster_version}
         />
-      </Section>
+      </FormSection>
 
       <ExpandableSection toggleText={mp.advancedToggle}>
-        <Indented>
-          <WizRadioGroup
-            disabled={!canSelectImds(clusterVersion)}
-            labelHelpTitle={mp.imdsHelpTitle}
-            labelHelp={
-              <>
-                <Content component={ContentVariants.p}>{mp.imdsHelpP1}</Content>
-                <Content component={ContentVariants.p}>
-                  {/* TODO: External link component is in another PR */}
-                  {/* <ExternalLink href={links.AWS_IMDS}>Learn more about IMDS</ExternalLink> */}
-                </Content>
-              </>
-            }
-            label={mp.imdsLabel}
-            path="cluster.imds"
-          >
-            <Radio
-              id="cluster-metadata-service-imdsv1-imdsv2-btn"
-              label={mp.imdsBothLabel}
-              value="imdsv1andimdsv2"
-              description={mp.imdsBothDescription}
-            />
-            <Radio
-              id="cluster-metadata-service-imdsv2-only-btn"
-              label={mp.imdsV2Label}
-              value="imdsv2only"
-              description={mp.imdsV2Description}
-            />
-          </WizRadioGroup>
+        <div className="pf-v6-u-ml-lg">
+          <form.Field name="cluster.imds">
+            {(field) => (
+              <FormRadioGroup
+                field={field}
+                label={mp.imdsLabel}
+                labelHelp={
+                  <>
+                    <Content component={ContentVariants.p}>{mp.imdsHelpP1}</Content>
+                    <Content component={ContentVariants.p}>
+                      {/* TODO: ExternalLink to AWS IMDS documentation */}
+                    </Content>
+                  </>
+                }
+                labelHelpTitle={mp.imdsHelpTitle}
+                isDisabled={!canSelectImds(clusterVersion)}
+                options={[
+                  {
+                    value: 'imdsv1andimdsv2',
+                    label: mp.imdsBothLabel,
+                    description: mp.imdsBothDescription,
+                  },
+                  {
+                    value: 'imdsv2only',
+                    label: mp.imdsV2Label,
+                    description: mp.imdsV2Description,
+                  },
+                ]}
+              />
+            )}
+          </form.Field>
 
-          <WizNumberInput
-            path="cluster.compute_root_volume"
-            label={mp.rootDiskLabel}
-            labelHelp={mp.rootDiskHelp}
-            min={75}
-            max={maxRootDiskSize}
-            validation={(_value: number) =>
-              validateRootDiskSize(_value, v.rootDisk, maxRootDiskSize)
-            }
-          />
-        </Indented>
+          <form.Field
+            name="cluster.compute_root_volume"
+            validators={{
+              onChange: ({ value }) =>
+                validateRootDiskSize(value as number, v.rootDisk, maxRootDiskSize) || undefined,
+            }}
+          >
+            {(field) => (
+              <FormNumberInput
+                field={field}
+                label={mp.rootDiskLabel}
+                labelHelp={mp.rootDiskHelp}
+                min={75}
+                max={maxRootDiskSize}
+              />
+            )}
+          </form.Field>
+        </div>
       </ExpandableSection>
+
       <SecurityGroupsSection
         clusterVersion={clusterVersion}
         selectedVPC={selectedVPC}

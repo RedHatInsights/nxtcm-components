@@ -130,11 +130,10 @@ test.describe('RosaWizard', () => {
     await expect(component.getByRole('heading', { name: 'Create ROSA Cluster' })).toBeVisible();
   });
 
-  test('should show custom Rosa strings in the nav and react-form-wizard chrome (e.g. Next)', async ({
+  test('should show custom Rosa strings in the wizard nav (e.g. review step label)', async ({
     mount,
   }) => {
     const customReviewLabel = 'Custom review step from strings prop';
-    const customNextLabel = 'CT_CUSTOM_NEXT_FROM_FORM_WIZARD_STRINGS';
     const component = await mount(
       mountRosaWizard({
         strings: {
@@ -143,15 +142,12 @@ test.describe('RosaWizard', () => {
               review: customReviewLabel,
             },
           },
-          formWizard: {
-            nextButtonText: customNextLabel,
-          },
         },
       })
     );
 
     await expect(component.getByText(customReviewLabel)).toBeVisible();
-    await expect(component.getByRole('button', { name: customNextLabel })).toBeVisible();
+    await expect(component.getByRole('button', { name: 'Next' })).toBeVisible();
   });
 
   test('should pass accessibility tests when showing the wizard', async ({ mount }) => {

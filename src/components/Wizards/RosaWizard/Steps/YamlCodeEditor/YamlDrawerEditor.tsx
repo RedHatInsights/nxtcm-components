@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useItem, useData } from '@patternfly-labs/react-form-wizard';
+import { useStore } from '@tanstack/react-form';
 import { Alert, Button, ClipboardCopyButton, Tooltip } from '@patternfly/react-core';
 import { SearchIcon, UndoIcon, RedoIcon, TimesIcon } from '@patternfly/react-icons';
 import Editor, { OnMount, Monaco } from '@monaco-editor/react';
@@ -8,7 +8,8 @@ import rosaHcpTemplateRaw from './templates/rosa-hcp-template.hbs?raw';
 import './YamlDrawerEditor.css';
 import { parseMultiDocYaml } from './yamlUtils';
 import { validateYaml } from './yamlValidation';
-import { RosaWizardFormData } from '../../../types';
+
+import { useRosaForm } from '../../RosaFormContext';
 
 Handlebars.registerHelper(
   'eq',
@@ -44,8 +45,8 @@ interface YamlDrawerEditorProps {
 }
 
 export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
-  const data = useItem<RosaWizardFormData>();
-  const { update } = useData();
+  const form = useRosaForm();
+  const data = useStore(form.store, (s) => s.values);
   const [yamlContent, setYamlContent] = useState('');
   const [parseError, setParseError] = useState('');
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
@@ -96,15 +97,12 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
 
       const parsed = parseMultiDocYaml(newYaml);
       if (parsed) {
-        const current = data as Record<string, unknown>;
-        const merged = {
-          ...current,
-          cluster: {
-            ...(current.cluster as Record<string, unknown>),
-            ...(parsed.cluster as Record<string, unknown>),
-          },
-        };
-        update(merged);
+        const parsedCluster = parsed.cluster as Record<string, unknown> | undefined;
+        if (parsedCluster) {
+          for (const [key, val] of Object.entries(parsedCluster)) {
+            form.setFieldValue(`cluster.${key}` as never, val as never);
+          }
+        }
       }
 
       clearTimeout(validationTimerRef.current);
@@ -112,7 +110,7 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
         setEditorMarkers(newYaml);
       }, 300);
     },
-    [update, data, setEditorMarkers]
+    [form, setEditorMarkers]
   );
 
   const handleEditorMount: OnMount = useCallback(

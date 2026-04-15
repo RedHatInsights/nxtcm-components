@@ -1,11 +1,4 @@
-import {
-  Section,
-  useData,
-  useItem,
-  WizSelect,
-  WizTextInput,
-} from '@patternfly-labs/react-form-wizard';
-import { Button, Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
+import { Button, FormSection, Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
 import React from 'react';
 import semver from 'semver';
 import { StepDrawer } from '../../../common/StepDrawer';
@@ -13,7 +6,6 @@ import {
   OpenShiftVersionsData,
   Resource,
   Role,
-  RosaWizardFormData,
   SelectDropdownType,
   ValidationResource,
   Region,
@@ -29,6 +21,13 @@ import { useResetFieldOnOptionsChange } from '../../../hooks/useResetFieldOnOpti
 import { showSecurityGroupsSection } from '../../../helpers';
 import { useUniqueClusterNameCheck } from '../../../hooks/useUniqueClusterNameCheck';
 import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
+import { useClusterValues, useRosaForm } from '../../../RosaFormContext';
+import {
+  FormTextInput,
+  FormSelect,
+  type SelectOptionItem,
+  type SelectOptionGroup,
+} from '../../../../../../TanstackForm';
 
 type DetailsSubStepProps = {
   clusterNameValidation: ValidationResource;
@@ -58,45 +57,52 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   checkClusterNameUniqueness,
 }) => {
   const d = useRosaWizardStrings().details;
-  const { update } = useData();
+  const form = useRosaForm();
+  const cluster = useClusterValues();
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const drawerRef = React.useRef<HTMLSpanElement>(null);
-  const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
-  const { checkName, cancelCheck } = useUniqueClusterNameCheck(checkClusterNameUniqueness, 500);
-  const { cluster } = useItem<RosaWizardFormData>();
-
-  const uniqueClusterNameCheck = (value: string, region: string) => {
-    const syncError = validateClusterName(value);
-    if (!syncError && value) {
-      checkName(value, region);
-    } else {
-      cancelCheck();
-    }
+  const onWizardExpand = (): void => {
+    drawerRef.current?.focus();
   };
+  const { checkName, cancelCheck } = useUniqueClusterNameCheck(checkClusterNameUniqueness, 500);
+
+  const uniqueClusterNameCheck = React.useCallback(
+    (value: string, region?: string): void => {
+      const syncError = validateClusterName(value);
+      if (!syncError && value) {
+        checkName(value, region);
+      } else {
+        cancelCheck();
+      }
+    },
+    [checkName, cancelCheck]
+  );
 
   useResetFieldOnOptionsChange('cluster.region', regions.data);
-  useResetFieldOnOptionsChange('cluster.machine_type', machineTypes.data, 'machinepools-sub-step');
+  useResetFieldOnOptionsChange('cluster.machine_type', machineTypes.data);
 
   React.useEffect(() => {
-    if (awsBillingAccounts.isFetching) {
-      return;
+    if (cluster.name) {
+      void form.validateField('cluster.name', 'change');
     }
+  }, [clusterNameValidation.error, clusterNameValidation.isFetching, form, cluster.name]);
+
+  React.useEffect(() => {
+    if (awsBillingAccounts.isFetching) return;
     const optionValues = awsBillingAccounts.data.map(({ value }) => value);
     if (optionValues.length === 1 && cluster.billing_account_id !== optionValues[0]) {
-      cluster.billing_account_id = optionValues[0];
-      update();
+      form.setFieldValue('cluster.billing_account_id', optionValues[0]);
       return;
     }
     if (cluster.billing_account_id && !optionValues.includes(cluster.billing_account_id)) {
-      cluster.billing_account_id = undefined;
-      update();
+      form.setFieldValue('cluster.billing_account_id', undefined);
     }
-  }, [awsBillingAccounts.data, awsBillingAccounts.isFetching, cluster, update]);
+  }, [awsBillingAccounts.data, awsBillingAccounts.isFetching, cluster.billing_account_id, form]);
 
   const selectedInstallerRoleVersion = React.useMemo(() => {
-    const role = roles.data.find((r) => r.installerRole.value === cluster?.installer_role_arn);
+    const role = roles.data.find((r) => r.installerRole.value === cluster.installer_role_arn);
     return role?.installerRole.roleVersion;
-  }, [roles.data, cluster?.installer_role_arn]);
+  }, [roles.data, cluster.installer_role_arn]);
 
   const openShiftVersionGroups = React.useMemo(
     () =>
@@ -104,68 +110,68 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
     [versions.data, d.openShiftVersionGroups]
   );
 
-  const versionGroupsWithDisabled = React.useMemo(() => {
+  const versionOptionGroups: SelectOptionGroup[] = React.useMemo(() => {
     if (openShiftVersionGroups.length === 0) return [];
     const roleVer =
       selectedInstallerRoleVersion && semver.valid(semver.coerce(selectedInstallerRoleVersion));
-    if (!roleVer) return openShiftVersionGroups;
+
     return openShiftVersionGroups.map((group) => ({
-      ...group,
+      label: group.label,
       options: group.options.map((opt) => {
         const coerced = typeof opt.value === 'string' ? semver.coerce(opt.value) : null;
         const versionVal = coerced ? semver.valid(coerced) : null;
         const disabled = versionVal != null && roleVer != null && semver.gt(versionVal, roleVer);
-        return disabled
-          ? {
-              ...opt,
-              ariaDisabled: true,
-              tooltipProps: { content: d.openShiftVersionOptionDisabledDescription },
-            }
-          : opt;
+        return {
+          value: String(opt.value),
+          label: opt.label,
+          isDisabled: disabled,
+          tooltip: disabled ? d.openShiftVersionOptionDisabledDescription : undefined,
+        };
       }),
     }));
   }, [
-    d.openShiftVersionOptionDisabledDescription,
     openShiftVersionGroups,
     selectedInstallerRoleVersion,
+    d.openShiftVersionOptionDisabledDescription,
   ]);
 
-  /** Whether `cluster.cluster_version` appears in `versionGroupsWithDisabled` and, if so, whether that option is disabled. */
+  const flatVersionOptions = React.useMemo(
+    () => versionOptionGroups.flatMap((g) => g.options),
+    [versionOptionGroups]
+  );
+
   const selectedVersionIsDisabled = React.useMemo(() => {
-    if (!cluster?.cluster_version) {
-      return { exists: true, isDisabled: false };
-    }
-    if (versionGroupsWithDisabled.length === 0) {
-      return { exists: false, isDisabled: false };
-    }
-    const versionStr = String(cluster.cluster_version);
-    let matching: SelectDropdownType | undefined;
-    for (const group of versionGroupsWithDisabled) {
-      const opt = group.options.find((o) => String(o.value) === versionStr);
-      if (opt) {
-        matching = opt;
-        break;
-      }
-    }
-    if (!matching) {
-      return { exists: false, isDisabled: false };
-    }
-    return {
-      exists: true,
-      isDisabled: Boolean(matching.ariaDisabled || matching.disabled),
-    };
-  }, [cluster?.cluster_version, versionGroupsWithDisabled]);
+    if (!cluster.cluster_version) return { exists: true, isDisabled: false };
+    if (flatVersionOptions.length === 0) return { exists: false, isDisabled: false };
+    const matching = flatVersionOptions.find((o) => o.value === String(cluster.cluster_version));
+    if (!matching) return { exists: false, isDisabled: false };
+    return { exists: true, isDisabled: Boolean(matching.isDisabled) };
+  }, [cluster.cluster_version, flatVersionOptions]);
 
   React.useEffect(() => {
-    if (versions.isFetching || !cluster?.cluster_version) return;
+    if (versions.isFetching || !cluster.cluster_version) return;
     if (!selectedVersionIsDisabled.exists || selectedVersionIsDisabled.isDisabled) {
-      cluster.cluster_version = undefined;
-      update();
+      form.setFieldValue('cluster.cluster_version', undefined);
     }
-  }, [versions.isFetching, selectedVersionIsDisabled, cluster, update]);
+  }, [versions.isFetching, selectedVersionIsDisabled, form, cluster.cluster_version]);
+
+  const awsAccountOptions: SelectOptionItem[] = React.useMemo(
+    () => awsInfrastructureAccounts.data.map((a) => ({ value: a.value, label: a.label })),
+    [awsInfrastructureAccounts.data]
+  );
+
+  const billingOptions: SelectOptionItem[] = React.useMemo(
+    () => awsBillingAccounts.data.map((a) => ({ value: a.value, label: a.label })),
+    [awsBillingAccounts.data]
+  );
+
+  const regionOptions: SelectOptionItem[] = React.useMemo(
+    () => regions.data.map((r) => ({ value: r.value, label: r.label })),
+    [regions.data]
+  );
 
   return (
-    <Section label={d.sectionLabel}>
+    <FormSection title={d.sectionLabel}>
       <StepDrawer
         isDrawerExpanded={isDrawerExpanded}
         setIsDrawerExpanded={setIsDrawerExpanded}
@@ -185,36 +191,44 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                       : undefined
                   }
                 >
-                  <WizSelect
-                    isFill
-                    path="cluster.associated_aws_id"
-                    label={d.awsInfraLabel}
-                    placeholder={d.awsInfraPlaceholder}
-                    labelHelp={d.awsInfraHelp}
-                    options={awsInfrastructureAccounts.data}
-                    disabled={awsInfrastructureAccounts.isFetching}
-                    required
-                    refreshCallback={
-                      awsInfrastructureAccounts.fetch
-                        ? () => void awsInfrastructureAccounts.fetch?.()
-                        : undefined
-                    }
-                    onValueChange={(_value, item) => {
-                      void updateOnAWSAccountChange(_value as string, item, regions.fetch);
-                      if (_value) {
-                        void roles.fetch(_value as string);
-                      }
+                  <form.Field
+                    name="cluster.associated_aws_id"
+                    listeners={{
+                      onChange: ({ value }) => {
+                        void updateOnAWSAccountChange(
+                          value,
+                          form,
+                          value ? regions.fetch : undefined
+                        );
+                        if (value) {
+                          void roles.fetch(value);
+                        }
+                      },
                     }}
-                  />
+                  >
+                    {(field) => (
+                      <FormSelect
+                        field={field}
+                        label={d.awsInfraLabel}
+                        placeholder={d.awsInfraPlaceholder}
+                        labelHelp={d.awsInfraHelp}
+                        isRequired
+                        isDisabled={awsInfrastructureAccounts.isFetching}
+                        isPending={awsInfrastructureAccounts.isFetching}
+                        options={awsAccountOptions}
+                        onRefresh={
+                          awsInfrastructureAccounts.fetch
+                            ? () => void awsInfrastructureAccounts.fetch?.()
+                            : undefined
+                        }
+                      />
+                    )}
+                  </form.Field>
                 </FieldWithAPIErrorAlert>
               </GridItem>
             </Grid>
             {!isDrawerExpanded && (
-              <Button
-                isInline
-                variant="link"
-                onClick={() => setIsDrawerExpanded((prevExpanded) => !prevExpanded)}
-              >
+              <Button isInline variant="link" onClick={() => setIsDrawerExpanded((prev) => !prev)}>
                 {d.associateNewAccount}
               </Button>
             )}
@@ -231,19 +245,25 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                     awsBillingAccounts.fetch ? () => void awsBillingAccounts.fetch?.() : undefined
                   }
                 >
-                  <WizSelect
-                    isFill
-                    disabled={awsBillingAccounts.isFetching}
-                    path="cluster.billing_account_id"
-                    label={d.billingLabel}
-                    placeholder={d.billingPlaceholder}
-                    labelHelp={d.billingHelp}
-                    options={awsBillingAccounts.data}
-                    required
-                    refreshCallback={
-                      awsBillingAccounts.fetch ? () => void awsBillingAccounts.fetch?.() : undefined
-                    }
-                  />
+                  <form.Field name="cluster.billing_account_id">
+                    {(field) => (
+                      <FormSelect
+                        field={field}
+                        label={d.billingLabel}
+                        placeholder={d.billingPlaceholder}
+                        labelHelp={d.billingHelp}
+                        isRequired
+                        isDisabled={awsBillingAccounts.isFetching}
+                        isPending={awsBillingAccounts.isFetching}
+                        options={billingOptions}
+                        onRefresh={
+                          awsBillingAccounts.fetch
+                            ? () => void awsBillingAccounts.fetch?.()
+                            : undefined
+                        }
+                      />
+                    )}
+                  </form.Field>
                 </FieldWithAPIErrorAlert>
               </GridItem>
             </Grid>
@@ -255,6 +275,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
               {d.connectBillingLink}
             </ExternalLink>
           </StackItem>
+
           <StackItem>
             <Grid>
               <GridItem span={4} className="pf-v6-u-pr-2xl">
@@ -264,20 +285,39 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   fieldName={d.clusterNameLabel}
                   isValidation
                 >
-                  <WizTextInput
-                    validation={(name: string, item: unknown) =>
-                      validateClusterName(name, item) || clusterNameValidation.error || undefined
-                    }
-                    onValueChange={(value) => {
-                      uniqueClusterNameCheck(value as string, cluster.region as string);
+                  <form.Field
+                    name="cluster.name"
+                    validators={{
+                      onChange: ({ value }) =>
+                        validateClusterName(value as string) ||
+                        (typeof clusterNameValidation.error === 'string'
+                          ? clusterNameValidation.error
+                          : undefined),
+                      onBlur: ({ value }) =>
+                        validateClusterName(value as string) ||
+                        (typeof clusterNameValidation.error === 'string'
+                          ? clusterNameValidation.error
+                          : undefined),
                     }}
-                    path="cluster.name"
-                    label={d.clusterNameLabel}
-                    validateOnBlur
-                    placeholder={d.clusterNamePlaceholder}
-                    required
-                    labelHelp={d.clusterNameHelp}
-                  />
+                    listeners={{
+                      onChange: ({ value }) => {
+                        const currentRegion = form.getFieldValue('cluster.region') as
+                          | string
+                          | undefined;
+                        uniqueClusterNameCheck(value as string, currentRegion);
+                      },
+                    }}
+                  >
+                    {(field) => (
+                      <FormTextInput
+                        field={field}
+                        label={d.clusterNameLabel}
+                        placeholder={d.clusterNamePlaceholder}
+                        labelHelp={d.clusterNameHelp}
+                        isRequired
+                      />
+                    )}
+                  </form.Field>
                 </FieldWithAPIErrorAlert>
               </GridItem>
             </Grid>
@@ -292,25 +332,39 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   fieldName={d.openShiftVersionLabel}
                   retry={() => void versions.fetch()}
                 >
-                  <WizSelect
-                    isFill
-                    path="cluster.cluster_version"
-                    label={d.openShiftVersionLabel}
-                    placeholder={d.openShiftVersionPlaceholder}
-                    optionGroups={versionGroupsWithDisabled}
-                    isPending={versions.isFetching}
-                    refreshCallback={() => void versions.fetch()}
-                    required
-                    onValueChange={(_value, item) => {
-                      if (_value && !showSecurityGroupsSection(_value as string)) {
-                        item.cluster.security_groups_worker = undefined;
-                      }
+                  <form.Field
+                    name="cluster.cluster_version"
+                    listeners={{
+                      onChange: ({ value }) => {
+                        if (value && !showSecurityGroupsSection(value)) {
+                          form.setFieldValue(
+                            'cluster' as never,
+                            {
+                              ...form.getFieldValue('cluster'),
+                              security_groups_worker: undefined,
+                            } as never
+                          );
+                        }
+                      },
                     }}
-                  />
+                  >
+                    {(field) => (
+                      <FormSelect
+                        field={field}
+                        label={d.openShiftVersionLabel}
+                        placeholder={d.openShiftVersionPlaceholder}
+                        isRequired
+                        isPending={versions.isFetching}
+                        optionGroups={versionOptionGroups}
+                        onRefresh={() => void versions.fetch()}
+                      />
+                    )}
+                  </form.Field>
                 </FieldWithAPIErrorAlert>
               </GridItem>
             </Grid>
           </StackItem>
+
           <StackItem>
             <Grid>
               <GridItem span={4} className="pf-v6-u-pr-2xl">
@@ -319,39 +373,49 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   isFetching={regions.isFetching}
                   fieldName={d.regionLabel}
                   retry={
-                    cluster?.associated_aws_id
+                    cluster.associated_aws_id
                       ? () => void regions.fetch(cluster.associated_aws_id)
                       : undefined
                   }
                 >
-                  <WizSelect
-                    isFill
-                    path="cluster.region"
-                    label={d.regionLabel}
-                    placeholder={d.regionPlaceholder}
-                    labelHelp={d.regionHelp}
-                    options={regions.data}
-                    disabled={regions.isFetching}
-                    onValueChange={(_value, item) => {
-                      if (cluster.name) uniqueClusterNameCheck(cluster.name, _value as string);
-                      delete item.cluster.selected_vpc;
-                      delete item.cluster.cluster_privacy_public_subnet_id;
-                      if (
-                        item.cluster.machine_pools_subnets &&
-                        item.cluster.machine_pools_subnets.length > 0
-                      ) {
-                        item.cluster.machine_pools_subnets = [];
-                      }
-                      if (_value && machineTypes.fetch) void machineTypes.fetch(_value as string);
+                  <form.Field
+                    name="cluster.region"
+                    listeners={{
+                      onChange: ({ value }) => {
+                        const currentName = form.getFieldValue('cluster.name') as
+                          | string
+                          | undefined;
+                        if (currentName) {
+                          uniqueClusterNameCheck(currentName, value as string);
+                        }
+                        form.setFieldValue('cluster.selected_vpc', undefined);
+                        form.setFieldValue('cluster.cluster_privacy_public_subnet_id', undefined);
+                        form.setFieldValue('cluster.machine_pools_subnets', []);
+                        if (value && machineTypes.fetch) {
+                          void machineTypes.fetch(value);
+                        }
+                      },
                     }}
-                    required
-                  />
+                  >
+                    {(field) => (
+                      <FormSelect
+                        field={field}
+                        label={d.regionLabel}
+                        placeholder={d.regionPlaceholder}
+                        labelHelp={d.regionHelp}
+                        isRequired
+                        isDisabled={regions.isFetching}
+                        isPending={regions.isFetching}
+                        options={regionOptions}
+                      />
+                    )}
+                  </form.Field>
                 </FieldWithAPIErrorAlert>
               </GridItem>
             </Grid>
           </StackItem>
         </Stack>
       </StepDrawer>
-    </Section>
+    </FormSection>
   );
 };

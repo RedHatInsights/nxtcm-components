@@ -8,7 +8,6 @@
  * are filled from {@link defaultRosaWizardStrings} and {@link defaultRosaWizardValidatorStrings}.
  */
 
-import { defaultStrings, type WizardStrings } from '@patternfly-labs/react-form-wizard';
 import type {
   DeepPartial,
   RosaWizardStrings,
@@ -59,22 +58,23 @@ export function buildRosaWizardStringBundles(input?: RosaWizardStringsInput): {
   strings: RosaWizardStrings;
   validators: RosaWizardValidatorStrings;
 } {
-  const { validators: vPartial, formWizard: _formWizard, ...rest } = input ?? {};
+  const { validators: vPartial, formWizard, ...rest } = input ?? {};
+
+  const chromeFromFormWizard = formWizard
+    ? {
+        nextButtonText: formWizard.nextButtonText,
+        backButtonText: formWizard.backButtonText,
+        cancelButtonText: formWizard.cancelButtonText,
+        submitButtonText: formWizard.submitButtonText,
+      }
+    : undefined;
+
+  const stringPartial: DeepPartial<RosaWizardStrings> = chromeFromFormWizard
+    ? mergeDeep(rest, { wizard: { chrome: chromeFromFormWizard } })
+    : rest;
+
   return {
-    strings: mergeRosaWizardStrings(rest),
+    strings: mergeRosaWizardStrings(stringPartial),
     validators: mergeRosaWizardValidatorStrings(vPartial),
   };
-}
-
-/**
- * Merged strings for the `wizardStrings` prop on `WizardPage` / `Wizard` from
- * `@patternfly-labs/react-form-wizard`. Aligns `reviewLabel` with Rosa’s review step nav label, after
- * optional `strings.formWizard` overrides (so nav and form-wizard review label stay consistent).
- */
-export function buildWizardStringsForRosa(
-  rosa: RosaWizardStrings,
-  formWizardPartial?: DeepPartial<WizardStrings>
-): WizardStrings {
-  const base = mergeDeep(defaultStrings, formWizardPartial);
-  return mergeDeep(base, { reviewLabel: rosa.wizard.stepLabels.review });
 }

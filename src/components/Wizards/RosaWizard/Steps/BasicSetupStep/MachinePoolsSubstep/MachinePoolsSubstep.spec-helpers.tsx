@@ -4,18 +4,11 @@
  * {@link ./MachinePoolsSubstep.fixtures}.
  * @see https://playwright.dev/docs/test-components#test-stories
  */
-import React, { useState, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { MachinePoolsSubstep } from './MachinePoolsSubstep';
 import { RosaWizardStringsProvider } from '../../../RosaWizardStringsContext';
-import { ItemContext } from '@patternfly-labs/react-form-wizard/contexts/ItemContext';
-import { DataContext } from '@patternfly-labs/react-form-wizard/contexts/DataContext';
-import {
-  DisplayModeContext,
-  DisplayMode,
-} from '@patternfly-labs/react-form-wizard/contexts/DisplayModeContext';
-import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
-import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
-import { StepShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/StepShowValidationProvider';
+import { useAppForm, type RosaFormApi } from '../../../RosaFormContext';
+import type { RosaWizardFormData } from '../../../../types';
 import {
   createMockClusterData,
   mockMachineTypesData,
@@ -25,32 +18,46 @@ import {
 
 export type { MachinePoolsSubstepStoryProps };
 
-export const MachinePoolsSubstepMount: React.FC<MachinePoolsSubstepStoryProps> = ({
+/**
+ * Triggers onChange validation on all fields so errors are visible
+ * immediately — replaces the old ShowValidationContext.Provider pattern.
+ */
+function ValidateOnMount({ form }: { form: RosaFormApi }): null {
+  useEffect(() => {
+    void form.validateAllFields('change');
+  }, [form]);
+  return null;
+}
+
+const MachinePoolsFormWrapper: React.FC<{
+  clusterOverrides?: Record<string, unknown>;
+  showValidation?: boolean;
+  children: React.ReactNode;
+}> = ({ clusterOverrides = {}, showValidation, children }) => {
+  const form = useAppForm({
+    defaultValues: createMockClusterData(clusterOverrides) as unknown as RosaWizardFormData,
+    onSubmit: async () => {},
+  });
+
+  return (
+    <form.AppForm>
+      {showValidation && <ValidateOnMount form={form as RosaFormApi} />}
+      {children}
+    </form.AppForm>
+  );
+};
+
+export const MachinePoolsSubstepMount: React.FC<
+  MachinePoolsSubstepStoryProps & { showValidation?: boolean }
+> = ({
   vpcList = mockVpcList,
   machineTypes = mockMachineTypesData,
   clusterOverrides = {},
-}) => {
-  const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
-
-  const update = useCallback(() => {
-    setData((currentData) => ({ ...currentData }));
-  }, []);
-
-  return (
-    <RosaWizardStringsProvider>
-      <DataContext.Provider value={{ update }}>
-        <DisplayModeContext.Provider value={DisplayMode.Step}>
-          <ItemContext.Provider value={data}>
-            <StepShowValidationProvider>
-              <ShowValidationProvider>
-                <ValidationProvider>
-                  <MachinePoolsSubstep vpcList={vpcList} machineTypes={machineTypes} />
-                </ValidationProvider>
-              </ShowValidationProvider>
-            </StepShowValidationProvider>
-          </ItemContext.Provider>
-        </DisplayModeContext.Provider>
-      </DataContext.Provider>
-    </RosaWizardStringsProvider>
-  );
-};
+  showValidation,
+}) => (
+  <RosaWizardStringsProvider>
+    <MachinePoolsFormWrapper clusterOverrides={clusterOverrides} showValidation={showValidation}>
+      <MachinePoolsSubstep vpcList={vpcList} machineTypes={machineTypes} />
+    </MachinePoolsFormWrapper>
+  </RosaWizardStringsProvider>
+);

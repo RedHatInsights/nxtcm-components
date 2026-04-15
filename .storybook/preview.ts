@@ -1,5 +1,6 @@
 import '@patternfly/patternfly/patternfly.css';
 import '@patternfly/patternfly/patternfly-addons.css';
+import './preview.css';
 import type { Preview } from "@storybook/react";
 
 const preview: Preview = {

@@ -1,5 +1,11 @@
-import { Section, WizTextInput, WizFileUpload, useItem } from '@patternfly-labs/react-form-wizard';
-import { Alert, Content, ContentVariants, Stack, StackItem } from '@patternfly/react-core';
+import {
+  Alert,
+  Content,
+  ContentVariants,
+  FormSection,
+  Stack,
+  StackItem,
+} from '@patternfly/react-core';
 import {
   checkNoProxyDomains,
   composeValidators,
@@ -9,71 +15,93 @@ import {
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
-import { RosaWizardFormData } from '../../../../types';
+import { useClusterValues, useRosaForm } from '../../../RosaFormContext';
+import { FormTextInput, FormFileUpload } from '../../../../../../TanstackForm';
 
-export const ClusterWideProxySubstep = () => {
+export const ClusterWideProxySubstep = (): JSX.Element => {
   const cw = useRosaWizardStrings().clusterWideProxy;
   const v = useRosaWizardValidators();
-  const { cluster } = useItem<RosaWizardFormData>();
+  const form = useRosaForm();
+  const cluster = useClusterValues();
 
-  const validateAtLeastOne = () => {
+  const validateAtLeastOne = (): string | undefined => {
     if (!cluster.http_proxy_url && !cluster.https_proxy_url && !cluster.additional_trust_bundle) {
       return v.proxyConfigureAtLeastOne;
     }
     return undefined;
   };
-  const validateUrlHttp = (value: string) => validateUrl(value, 'http', v.url);
-  const validateUrlHttps = (value: string) => validateUrl(value, ['http', 'https'], v.url);
+
+  const validateUrlHttp = (value: string): string | undefined => validateUrl(value, 'http', v.url);
+  const validateUrlHttps = (value: string): string | undefined =>
+    validateUrl(value, ['http', 'https'], v.url);
 
   return (
-    <Section
-      id="cluster-wide-proxy-section-id"
-      key="cluster-wide-proxy-section-key"
-      label={cw.sectionLabel}
-    >
+    <FormSection id="cluster-wide-proxy-section-id" title={cw.sectionLabel}>
       <Content component={ContentVariants.p}>{cw.intro}</Content>
       <ExternalLink href={links.CONFIGURE_PROXY_URL}>{cw.learnMoreLink}</ExternalLink>
       <Alert variant="info" isInline isPlain title={cw.alertConfigureFields} />
       <Stack hasGutter>
         <StackItem>
-          <WizTextInput
-            validation={composeValidators(validateUrlHttp, validateAtLeastOne)}
-            validateOnBlur
-            label={cw.httpLabel}
-            helperText={cw.httpHelp}
-            path="cluster.http_proxy_url"
-          />
-        </StackItem>
-        <StackItem>
-          <WizTextInput
-            validation={composeValidators(validateUrlHttps, validateAtLeastOne)}
-            validateOnBlur
-            label={cw.httpsLabel}
-            helperText={cw.httpsHelp}
-            path="cluster.https_proxy_url"
-          />
-        </StackItem>
-        <StackItem>
-          <WizTextInput
-            disabled={!cluster.http_proxy_url && !cluster.https_proxy_url}
-            validateOnBlur
-            validation={(value) => checkNoProxyDomains(value, v.noProxyDomains)}
-            label={cw.noProxyLabel}
-            helperText={cw.noProxyHelp}
-            path="cluster.no_proxy_domains"
-          />
-        </StackItem>
-        <StackItem>
-          <WizFileUpload
-            label={cw.trustBundleLabel}
-            path="cluster.additional_trust_bundle"
-            validation={composeValidators(
-              (value: string) => validateCA(value, v.ca),
-              () => validateAtLeastOne()
+          <form.Field
+            name="cluster.http_proxy_url"
+            validators={{
+              onBlur: ({ value }) =>
+                composeValidators(validateUrlHttp, validateAtLeastOne)(value as string) ||
+                undefined,
+            }}
+          >
+            {(field) => (
+              <FormTextInput field={field} label={cw.httpLabel} helperText={cw.httpHelp} />
             )}
-          />
+          </form.Field>
+        </StackItem>
+        <StackItem>
+          <form.Field
+            name="cluster.https_proxy_url"
+            validators={{
+              onBlur: ({ value }) =>
+                composeValidators(validateUrlHttps, validateAtLeastOne)(value as string) ||
+                undefined,
+            }}
+          >
+            {(field) => (
+              <FormTextInput field={field} label={cw.httpsLabel} helperText={cw.httpsHelp} />
+            )}
+          </form.Field>
+        </StackItem>
+        <StackItem>
+          <form.Field
+            name="cluster.no_proxy_domains"
+            validators={{
+              onBlur: ({ value }) =>
+                checkNoProxyDomains(value as string, v.noProxyDomains) || undefined,
+            }}
+          >
+            {(field) => (
+              <FormTextInput
+                field={field}
+                label={cw.noProxyLabel}
+                helperText={cw.noProxyHelp}
+                isDisabled={!cluster.http_proxy_url && !cluster.https_proxy_url}
+              />
+            )}
+          </form.Field>
+        </StackItem>
+        <StackItem>
+          <form.Field
+            name="cluster.additional_trust_bundle"
+            validators={{
+              onBlur: ({ value }) =>
+                composeValidators(
+                  (val: string) => validateCA(val, v.ca),
+                  () => validateAtLeastOne()
+                )(value as string) || undefined,
+            }}
+          >
+            {(field) => <FormFileUpload field={field} label={cw.trustBundleLabel} />}
+          </form.Field>
         </StackItem>
       </Stack>
-    </Section>
+    </FormSection>
   );
 };

@@ -44,6 +44,12 @@ export const defaultRosaWizardStrings: RosaWizardStrings = {
       yamlEditor: 'YAML Editor',
       review: 'Review',
     },
+    chrome: {
+      nextButtonText: 'Next',
+      backButtonText: 'Back',
+      cancelButtonText: 'Cancel',
+      submitButtonText: 'Submit',
+    },
   },
   submitError: {
     title: 'Error creating cluster',

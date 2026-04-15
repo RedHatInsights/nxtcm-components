@@ -1,7 +1,6 @@
-import { WizardSubmit } from '@patternfly-labs/react-form-wizard';
-import { RosaWizard } from './RosaWizard/RosaWizard';
-import { RosaWizardFormData, WizardType } from './types';
-import { WizardStepsData } from './RosaWizard/RosaWizard';
+import { RosaWizard, type RosaWizardSubmitFn } from './RosaWizard/RosaWizard';
+import { type RosaWizardFormData, type WizardType } from './types';
+import { type WizardStepsData } from './RosaWizard/RosaWizard';
 
 type WizardWrapperProps = {
   type: WizardType;
@@ -17,7 +16,7 @@ export const WizardWrapper: React.FunctionComponent<WizardWrapperProps> = (props
       return (
         <RosaWizard
           wizardsStepsData={props.wizardsStepsData}
-          onSubmit={props.onSubmit as WizardSubmit}
+          onSubmit={props.onSubmit as RosaWizardSubmitFn}
           onCancel={props.onCancel}
           title={props.title}
         />

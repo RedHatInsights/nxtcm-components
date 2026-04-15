@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { ExpandableSection } from '@patternfly/react-core';
-import { useValue } from '@patternfly-labs/react-form-wizard/inputs/Input';
 
 import EditSecurityGroups from './EditSecurityGroups';
 import SecurityGroupsEmptyAlert from './SecurityGroupsEmptyAlert';
@@ -9,6 +8,8 @@ import { showSecurityGroupsSection } from '../../../../helpers';
 import { CloudVpc, Resource, VPC } from '../../../../../types';
 import { useRosaWizardStrings } from '../../../../RosaWizardStringsContext';
 import { FieldWithAPIErrorAlert } from '../../../../common/FieldWithAPIErrorAlert';
+import { useRosaForm } from '../../../../RosaFormContext';
+import { useStore } from '@tanstack/react-form';
 
 export const SecurityGroupsSection = ({
   selectedVPC,
@@ -22,9 +23,21 @@ export const SecurityGroupsSection = ({
   refreshVPCs?: () => void;
 }) => {
   const { machinePools, securityGroups } = useRosaWizardStrings();
-  const [selectedGroupIds, setSelectedGroupIds] = useValue(
-    { path: 'cluster.security_groups_worker' },
-    []
+  const form = useRosaForm();
+  const selectedGroupIds: string[] =
+    useStore(
+      form.store,
+      (s) =>
+        (s.values as Record<string, Record<string, unknown>>).cluster?.security_groups_worker as
+          | string[]
+          | undefined
+    ) ?? [];
+
+  const setSelectedGroupIds = useCallback(
+    (ids: string[]) => {
+      form.setFieldValue('cluster.security_groups_worker' as never, ids as never);
+    },
+    [form]
   );
 
   const [isExpanded, setIsExpanded] = useState(false);

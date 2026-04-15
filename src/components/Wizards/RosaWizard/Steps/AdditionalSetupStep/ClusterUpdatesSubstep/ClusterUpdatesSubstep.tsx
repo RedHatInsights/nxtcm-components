@@ -1,65 +1,60 @@
 import React, { useState } from 'react';
-import { Section, WizRadioGroup, Radio, useItem } from '@patternfly-labs/react-form-wizard';
-import { useData } from '@patternfly-labs/react-form-wizard';
 import {
   Button,
   Content,
   ContentVariants,
   FormGroup,
+  FormSection,
   Grid,
   GridItem,
   MenuToggle,
-  MenuToggleElement,
+  type MenuToggleElement,
   Select,
   SelectList,
   SelectOption,
   Split,
   SplitItem,
+  useWizardContext,
 } from '@patternfly/react-core';
 import parseUpdateSchedule from './parseUpdateSchedule';
-import { ClusterUpgrade, RosaWizardFormData, WizardNavigationContext } from '../../../../types';
+import { ClusterUpgrade } from '../../../../types';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
+import { useClusterValues, useRosaForm } from '../../../RosaFormContext';
+import { FormRadioGroup } from '../../../../../../TanstackForm';
 
 const hoursOptions = Array.from(Array(24).keys());
 
-type ClusterUpdatesSubstepProps = {
-  goToStepId?: WizardNavigationContext;
-};
-
-export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
+export const ClusterUpdatesSubstep = (): JSX.Element => {
   const cu = useRosaWizardStrings().clusterUpdates;
-  const { cluster } = useItem<RosaWizardFormData>();
-  const { update } = useData();
+  const form = useRosaForm();
+  const cluster = useClusterValues();
+  const wizardContext = useWizardContext();
 
   const [daySelectOpen, setDaySelectOpen] = useState(false);
   const [timeSelectOpen, setTimeSelectOpen] = useState(false);
 
-  const upgradeSchedule = cluster?.upgrade_schedule || '';
+  const upgradeSchedule = cluster.upgrade_schedule ?? '';
 
-  const parseCurrentValue = (): [string, string] => {
-    if (!upgradeSchedule) {
-      return ['', ''];
-    }
-    return parseUpdateSchedule(upgradeSchedule);
-  };
+  const parseCurrentValue = (): [string, string] =>
+    upgradeSchedule ? parseUpdateSchedule(upgradeSchedule) : ['', ''];
 
-  const onDaySelect = (selection: string | number | undefined) => {
+  const onDaySelect = (selection: string | number | undefined): void => {
     const selectedHour = parseCurrentValue()[0] || '0';
     const cronValue = `00 ${selectedHour} * * ${selection}`;
-    update({ cluster: { ...cluster, upgrade_schedule: cronValue } });
+    form.setFieldValue('cluster.upgrade_schedule', cronValue);
     setDaySelectOpen(false);
   };
 
-  const onHourSelect = (selection: string | number | undefined) => {
+  const onHourSelect = (selection: string | number | undefined): void => {
     const selectedDay = parseCurrentValue()[1] || '0';
     const cronValue = `00 ${selection} * * ${selectedDay}`;
-    update({ cluster: { ...cluster, upgrade_schedule: cronValue } });
+    form.setFieldValue('cluster.upgrade_schedule', cronValue);
     setTimeSelectOpen(false);
   };
 
-  const formatHourLabel = (hour: number) => `${hour.toString().padStart(2, '0')}:00 UTC`;
+  const formatHourLabel = (hour: number): string => `${hour.toString().padStart(2, '0')}:00 UTC`;
 
   const [selectedHour, selectedDay] = parseCurrentValue();
   const selectedDayIndex = Number(selectedDay);
@@ -68,7 +63,7 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
       ? cu.selectDayPlaceholder
       : (cu.daysOfWeek[selectedDayIndex] ?? cu.selectDayPlaceholder);
 
-  const dayToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
+  const dayToggle = (toggleRef: React.Ref<MenuToggleElement>): JSX.Element => (
     <MenuToggle
       ref={toggleRef}
       onClick={() => setDaySelectOpen(!daySelectOpen)}
@@ -79,7 +74,7 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
     </MenuToggle>
   );
 
-  const hourToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
+  const hourToggle = (toggleRef: React.Ref<MenuToggleElement>): JSX.Element => (
     <MenuToggle
       ref={toggleRef}
       onClick={() => setTimeSelectOpen(!timeSelectOpen)}
@@ -91,32 +86,24 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
   );
 
   return (
-    <Section
-      id="cluster-updates-substep-section"
-      key="cluster-updates-substep-section-key"
-      label={cu.sectionLabel}
-    >
+    <FormSection id="cluster-updates-substep-section" title={cu.sectionLabel}>
       <Content component={ContentVariants.p}>
         {cu.versionIntroPrefix} {cluster.cluster_version} {cu.versionIntroSuffix}{' '}
-        {
-          <Button
-            onClick={() => props.goToStepId?.goToStepById('basic-setup-step-details')}
-            variant="link"
-            isInline
-          >
-            {cu.detailsStepLink}
-          </Button>
-        }{' '}
+        <Button
+          onClick={() => wizardContext.goToStepById('basic-setup-step-details')}
+          variant="link"
+          isInline
+        >
+          {cu.detailsStepLink}
+        </Button>{' '}
         {cu.midSentence}{' '}
-        {
-          <Button
-            onClick={() => props.goToStepId?.goToStepById('networking-sub-step')}
-            variant="link"
-            isInline
-          >
-            {cu.networkingStepLink}
-          </Button>
-        }{' '}
+        <Button
+          onClick={() => wizardContext.goToStepById('networking-sub-step')}
+          variant="link"
+          isInline
+        >
+          {cu.networkingStepLink}
+        </Button>{' '}
         {cu.afterCreation}
       </Content>
 
@@ -128,33 +115,39 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
         {cu.cveTail}
       </Content>
 
-      <WizRadioGroup path="cluster.upgrade_policy">
-        <Radio
-          id="cluster-upgrade-strategy-individual-radio-btn"
-          label={cu.individualLabel}
-          value="automatic"
-          description={
-            <>
-              {cu.individualDescriptionLead}{' '}
-              <ExternalLink href={links.ROSA_LIFE_CYCLE}>{cu.lifecycleLink}</ExternalLink>
-            </>
-          }
-        />
-        <Radio
-          id="cluster-upgrade-strategy-recurring-radio-btn"
-          label={cu.recurringLabel}
-          value="manual"
-          description={
-            <>
-              {cu.recurringDescriptionBeforeZStream}
-              <ExternalLink href={links.ROSA_Z_STREAM}>{cu.zStreamLinkText}</ExternalLink>
-              {cu.recurringDescriptionAfterZStream}
-            </>
-          }
-        />
-      </WizRadioGroup>
+      <form.Field name="cluster.upgrade_policy">
+        {(field) => (
+          <FormRadioGroup
+            field={field}
+            label=""
+            options={[
+              {
+                value: 'automatic',
+                label: cu.individualLabel,
+                description: (
+                  <>
+                    {cu.individualDescriptionLead}{' '}
+                    <ExternalLink href={links.ROSA_LIFE_CYCLE}>{cu.lifecycleLink}</ExternalLink>
+                  </>
+                ),
+              },
+              {
+                value: 'manual',
+                label: cu.recurringLabel,
+                description: (
+                  <>
+                    {cu.recurringDescriptionBeforeZStream}
+                    <ExternalLink href={links.ROSA_Z_STREAM}>{cu.zStreamLinkText}</ExternalLink>
+                    {cu.recurringDescriptionAfterZStream}
+                  </>
+                ),
+              },
+            ]}
+          />
+        )}
+      </form.Field>
 
-      {cluster?.upgrade_policy === ClusterUpgrade.automatic && (
+      {cluster.upgrade_policy === ClusterUpgrade.automatic && (
         <FormGroup label={cu.dayTimeLabel} className="pf-v6-u-ml-xl">
           <Grid>
             <GridItem span={7}>
@@ -202,6 +195,6 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
           </Grid>
         </FormGroup>
       )}
-    </Section>
+    </FormSection>
   );
 };

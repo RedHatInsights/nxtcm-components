@@ -28,17 +28,18 @@ export type { BasicSetupStepProps, WizardStepsData } from './RosaWizard/RosaWiza
 export type {
   RosaWizardStrings,
   RosaWizardStringsInput,
+  RosaWizardChromeStrings,
   DeepPartial,
   RosaWizardValidatorStrings,
   RosaWizardOpenShiftVersionGroupLabels,
 } from './RosaWizard/rosaWizardStrings';
 export {
-  buildWizardStringsForRosa,
   defaultRosaWizardStrings,
   mergeRosaWizardStrings,
   buildRosaWizardStringBundles,
   defaultRosaWizardValidatorStrings,
 } from './RosaWizard/rosaWizardStrings';
+export { buildOpenShiftVersionGroups } from './RosaWizard/buildOpenShiftVersionGroups';
 export {
   RosaWizardStringsProvider,
   useRosaWizardStrings,
