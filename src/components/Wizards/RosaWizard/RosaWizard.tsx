@@ -28,7 +28,7 @@ import { MachinePoolsSubstep } from './Steps/BasicSetupStep/MachinePoolsSubstep/
 import { YamlDrawerEditor } from './Steps/YamlCodeEditor';
 import { RosaWizardStringsProvider, useRosaWizardStrings } from './RosaWizardStringsContext';
 import { buildWizardStringsForRosa, type RosaWizardStringsInput } from './rosaWizardStrings';
-import { RosaExpandableStep, RosaStep } from './Inputs/RosaWizardSteps';
+import { RosaExpandableStep, RosaStep } from './Inputs';
 import { createDefaultRosaWizardFormValues } from './rosaWizardDefaultFormData';
 import { RosaWizardShell, type RosaWizardCancel, type RosaWizardSubmitHandler } from './RosaWizardShell';
 import { WizardFooterStringsProvider } from './wizardFooterStrings';
