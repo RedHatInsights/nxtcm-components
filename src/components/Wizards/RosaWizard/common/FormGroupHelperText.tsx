@@ -8,6 +8,7 @@ import {
 } from '@patternfly/react-core';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
 
+/** Props for helper text under a form group, supporting neutral help copy or error state when touched or on submit. */
 interface FormGroupHelperTextProps {
   children?: React.ReactNode;
   id?: string;
@@ -18,6 +19,9 @@ interface FormGroupHelperTextProps {
   validateOnSubmit?: boolean;
 }
 
+/**
+ * Renders PatternFly helper text for a field, switching to an error message when validation rules apply.
+ */
 export const FormGroupHelperText = ({
   children,
   id,
@@ -27,6 +31,9 @@ export const FormGroupHelperText = ({
   icon,
   validateOnSubmit,
 }: FormGroupHelperTextProps) => {
+  /**
+   * Memoized helper text: wraps string children in a HelperTextItem with icon/variant; otherwise renders children as-is.
+   */
   const helpMessage = React.useMemo(
     () =>
       typeof children === 'string' ? (

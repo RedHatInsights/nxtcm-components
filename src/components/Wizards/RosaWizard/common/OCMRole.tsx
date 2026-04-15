@@ -4,6 +4,9 @@ import { TabGroup } from './TabGroup';
 import PopoverHintWithTitle from './PopoverHitWithTitle';
 import { useRosaWizardStrings } from '../RosaWizardStringsContext';
 
+/**
+ * Walks the user through checking and creating or linking an OCM role, with copyable ROSA CLI commands and tabs.
+ */
 export const OCMRole = () => {
   const o = useRosaWizardStrings().ocmRole;
 

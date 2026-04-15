@@ -11,31 +11,33 @@ import { FieldWithAPIErrorAlert } from '../../../../common/FieldWithAPIErrorAler
 import { useRosaForm } from '../../../../RosaFormContext';
 import { useStore } from '@tanstack/react-form';
 
+/** Inputs for worker security group selection scoped to the chosen VPC and cluster version. */
+type SecurityGroupsSectionProps = {
+  selectedVPC: CloudVpc | undefined;
+  clusterVersion: string;
+  vpcList: Resource<VPC[]>;
+  refreshVPCs?: () => void;
+};
+
+/**
+ * Expandable section to attach additional worker security groups when supported.
+ * Clears selections when the VPC changes and surfaces empty-state or version incompatibility messaging.
+ */
 export const SecurityGroupsSection = ({
   selectedVPC,
   clusterVersion,
   vpcList,
   refreshVPCs,
-}: {
-  selectedVPC: CloudVpc | undefined;
-  clusterVersion: string;
-  vpcList: Resource<VPC[]>;
-  refreshVPCs?: () => void;
-}) => {
+}: SecurityGroupsSectionProps) => {
   const { machinePools, securityGroups } = useRosaWizardStrings();
   const form = useRosaForm();
   const selectedGroupIds: string[] =
-    useStore(
-      form.store,
-      (s) =>
-        (s.values as Record<string, Record<string, unknown>>).cluster?.security_groups_worker as
-          | string[]
-          | undefined
-    ) ?? [];
+    useStore(form.store, (s) => s.values.cluster.security_groups_worker) ?? [];
 
+  /** Persists the worker security group id list on the ROSA wizard form. */
   const setSelectedGroupIds = useCallback(
     (ids: string[]) => {
-      form.setFieldValue('cluster.security_groups_worker' as never, ids as never);
+      form.setFieldValue('cluster.security_groups_worker', ids);
     },
     [form]
   );

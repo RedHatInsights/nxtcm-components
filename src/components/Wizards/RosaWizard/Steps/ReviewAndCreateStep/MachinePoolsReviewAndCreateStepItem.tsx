@@ -1,29 +1,32 @@
 import { Flex, FlexItem, Stack, StackItem } from '@patternfly/react-core';
 import { LockIcon } from '@patternfly/react-icons';
+import { type MachinePoolSubnetEntry } from '../../../types';
 
-type MachinePoolReviewAndCreateItem = {
-  availability_zone: string;
-  public_subnet: string;
+/** Props for the machine pool vs subnet summary list on the review step. */
+export type MachinePoolsReviewAndCreateStepItemProps = {
+  machinePools: MachinePoolSubnetEntry[];
+  poolLabel: string;
+  subnetLabel: string;
 };
 
-type MachinePoolsReviewAndCreateStepItemProps = {
-  machinePools: MachinePoolReviewAndCreateItem[];
-};
-
+/**
+ * Renders each machine pool’s subnet choice in a two-column layout with lock affordances
+ * for fields that are not editable on this screen.
+ */
 export const MachinePoolsReviewAndCreateStepItem: React.FunctionComponent<
   MachinePoolsReviewAndCreateStepItemProps
-> = ({ machinePools }) => {
+> = ({ machinePools, poolLabel, subnetLabel }) => {
   return (
     <Stack hasGutter>
       <StackItem>
         <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
           <FlexItem>
-            <strong>Availability zone</strong>
+            <strong>{poolLabel}</strong>
           </FlexItem>
           <FlexItem>
             <Flex>
               <FlexItem>
-                <strong>Public subnet</strong>
+                <strong>{subnetLabel}</strong>
               </FlexItem>
               <FlexItem>
                 <LockIcon />
@@ -33,16 +36,14 @@ export const MachinePoolsReviewAndCreateStepItem: React.FunctionComponent<
         </Flex>
       </StackItem>
 
-      {machinePools.map((machinePool: MachinePoolReviewAndCreateItem, index: number) => {
-        return (
-          <StackItem key={index}>
-            <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
-              <FlexItem>{machinePool?.availability_zone}</FlexItem>
-              <FlexItem>{machinePool?.public_subnet}</FlexItem>
-            </Flex>
-          </StackItem>
-        );
-      })}
+      {machinePools.map((entry, index) => (
+        <StackItem key={index}>
+          <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
+            <FlexItem>{`${poolLabel} ${index + 1}`}</FlexItem>
+            <FlexItem>{entry.machine_pool_subnet || '—'}</FlexItem>
+          </Flex>
+        </StackItem>
+      ))}
     </Stack>
   );
 };

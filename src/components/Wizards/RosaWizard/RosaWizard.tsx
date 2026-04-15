@@ -1,5 +1,6 @@
 import React, { type ReactNode } from 'react';
 import {
+  Alert,
   Wizard,
   WizardHeader,
   WizardStep,
@@ -15,6 +16,7 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core';
+import { useStore } from '@tanstack/react-form';
 
 import { ClusterUpdatesSubstep, EncryptionSubstep } from './Steps/AdditionalSetupStep';
 import { RosaWizardSubmitError } from './RosaWizardSubmitError';
@@ -45,9 +47,20 @@ import {
 import { MachinePoolsSubstep } from './Steps/BasicSetupStep/MachinePoolsSubstep/MachinePoolsSubstep';
 import { RosaWizardStringsProvider, useRosaWizardStrings } from './RosaWizardStringsContext';
 import { type RosaWizardStringsInput } from './rosaWizardStrings';
-import { useAppForm } from './RosaFormContext';
+import { useAppForm, useRosaForm } from './RosaFormContext';
 import { YamlDrawerEditor } from './Steps/YamlCodeEditor';
 
+/**
+ * Subscribes to TanStack Form derived state and returns true when any
+ * registered field has validation errors. Uses `isFieldsValid` which is
+ * computed from each field's `meta.errors`.
+ */
+function useFormHasErrors(): boolean {
+  const form = useRosaForm();
+  return useStore(form.store, (s) => !s.isFieldsValid);
+}
+
+/** Props and async resources passed into the Basic Setup wizard step (details, roles, pools, networking). */
 export type BasicSetupStepProps = {
   clusterNameValidation: ValidationResource;
   checkClusterNameUniqueness?: (name: string, region?: string) => void;
@@ -69,6 +82,7 @@ export type BasicSetupStepProps = {
   machineTypes: Resource<MachineTypesDropdownType[]>;
 };
 
+/** Per-step data passed into the wizard; currently supplies configuration for the basic setup branch. */
 export type WizardStepsData = {
   basicSetupStep: BasicSetupStepProps;
 };
@@ -82,6 +96,7 @@ export type WizardStepsData = {
  */
 export type RosaWizardSubmitFn = (data: RosaWizardFormData) => Promise<void>;
 
+/** Top-level props for the ROSA cluster creation wizard (submit handlers, copy, step data, optional YAML). */
 type RosaWizardProps = {
   onSubmit: RosaWizardSubmitFn;
   onSubmitError?: string | boolean;
@@ -94,6 +109,7 @@ type RosaWizardProps = {
   strings?: RosaWizardStringsInput;
 };
 
+/** Stable PatternFly Wizard step IDs used for navigation (e.g. skip to review, resume after error). */
 const STEP_IDS = {
   BASIC_SETUP: 'basic-setup-step-id-expandable-section',
   DETAILS: 'basic-setup-step-details',
@@ -107,12 +123,16 @@ const STEP_IDS = {
   REVIEW: 'review-step',
 } as const;
 
+/**
+ * ROSA cluster wizard: wraps content with string overrides and renders the full multi-step flow.
+ */
 export const RosaWizard = (props: RosaWizardProps): JSX.Element => (
   <RosaWizardStringsProvider strings={props.strings}>
     <RosaWizardBody {...props} />
   </RosaWizardStringsProvider>
 );
 
+/** Initial TanStack Form values for a new cluster before the user edits any fields. */
 const DEFAULT_CLUSTER_DATA: RosaWizardFormData = {
   cluster: {
     name: undefined,
@@ -163,18 +183,84 @@ function ReviewStepFooter({ onSubmit }: { onSubmit: () => void }): JSX.Element {
 }
 
 /**
- * Custom footer that skips optional Additional Setup steps and
- * jumps straight to Review when the user clicks "Next".
+ * Validation-aware standard footer. Validates all form fields on click; if any
+ * errors exist, the Next button is disabled and an inline alert is shown.
  */
-function SkipToReviewFooter(): JSX.Element {
-  const { goToPrevStep, goToStepById, close } = useWizardContext();
+function ValidatedStepFooter(): JSX.Element {
+  const { goToNextStep, goToPrevStep, close } = useWizardContext();
   const {
     wizard: { chrome },
   } = useRosaWizardStrings();
+  const form = useRosaForm();
+  const hasErrors = useFormHasErrors();
+  const [attempted, setAttempted] = React.useState(false);
+
+  const handleNext = React.useCallback(async () => {
+    await form.validateAllFields('change');
+    await form.validateAllFields('blur');
+    setAttempted(true);
+    if (form.state.isFieldsValid) {
+      void goToNextStep();
+    }
+  }, [form, goToNextStep]);
+
   return (
     <WizardFooterWrapper>
-      <Button variant="primary" onClick={() => goToStepById(STEP_IDS.REVIEW)}>
+      {attempted && hasErrors && (
+        <Alert variant="danger" isInline isPlain title={chrome.validationErrorText} />
+      )}
+      <Button variant="primary" onClick={() => void handleNext()} isDisabled={hasErrors}>
         {chrome.nextButtonText}
+      </Button>
+      <Button variant="secondary" onClick={() => void goToPrevStep()}>
+        {chrome.backButtonText}
+      </Button>
+      <Button variant="link" onClick={close}>
+        {chrome.cancelButtonText}
+      </Button>
+    </WizardFooterWrapper>
+  );
+}
+
+/**
+ * Footer for the last required substep. Shows both "Next" (to proceed into
+ * optional steps) and "Skip to review" (to jump straight to Review).
+ * Both buttons validate all mounted fields before navigating.
+ */
+function LastRequiredStepFooter(): JSX.Element {
+  const { goToNextStep, goToPrevStep, goToStepById, close } = useWizardContext();
+  const {
+    wizard: { chrome },
+  } = useRosaWizardStrings();
+  const form = useRosaForm();
+  const hasErrors = useFormHasErrors();
+  const [attempted, setAttempted] = React.useState(false);
+
+  const validate = React.useCallback(async (): Promise<boolean> => {
+    await form.validateAllFields('change');
+    await form.validateAllFields('blur');
+    setAttempted(true);
+    return form.state.isFieldsValid;
+  }, [form]);
+
+  const handleNext = React.useCallback(async () => {
+    if (await validate()) void goToNextStep();
+  }, [validate, goToNextStep]);
+
+  const handleSkip = React.useCallback(async () => {
+    if (await validate()) goToStepById(STEP_IDS.REVIEW);
+  }, [validate, goToStepById]);
+
+  return (
+    <WizardFooterWrapper>
+      {attempted && hasErrors && (
+        <Alert variant="danger" isInline isPlain title={chrome.validationErrorText} />
+      )}
+      <Button variant="primary" onClick={() => void handleNext()} isDisabled={hasErrors}>
+        {chrome.nextButtonText}
+      </Button>
+      <Button variant="secondary" onClick={() => void handleSkip()} isDisabled={hasErrors}>
+        {chrome.skipToReviewButtonText}
       </Button>
       <Button variant="secondary" onClick={() => void goToPrevStep()}>
         {chrome.backButtonText}
@@ -207,10 +293,14 @@ function ResumeToReviewStep({
   return null;
 }
 
+/** Returns the default YAML drawer editor element when YAML mode is enabled without a custom editor. */
 function getDefaultYamlEditor(): ReactNode {
   return <YamlDrawerEditor />;
 }
 
+/**
+ * Inner wizard shell: form provider, steps, optional YAML drawer, and submit-error overlay handling.
+ */
 const RosaWizardBody = (props: RosaWizardProps): JSX.Element => {
   const {
     onSubmit,
@@ -303,12 +393,14 @@ const RosaWizardBody = (props: RosaWizardProps): JSX.Element => {
               <Wizard
                 onClose={onCancel}
                 height="100%"
-                header={<WizardHeader title={title} onClose={onCancel} />}
-                footer={{
-                  nextButtonText: wizard.chrome.nextButtonText,
-                  backButtonText: wizard.chrome.backButtonText,
-                  cancelButtonText: wizard.chrome.cancelButtonText,
-                }}
+                header={
+                  <WizardHeader
+                    title={title}
+                    onClose={onCancel}
+                    closeButtonAriaLabel={wizard.chrome.closeButtonAriaLabel}
+                  />
+                }
+                footer={<ValidatedStepFooter />}
               >
                 {/* ─── Basic Setup (expandable parent with sub-steps) ─── */}
                 <WizardStep
@@ -356,7 +448,7 @@ const RosaWizardBody = (props: RosaWizardProps): JSX.Element => {
                       key={STEP_IDS.NETWORKING}
                       name={sl.networking}
                       id={STEP_IDS.NETWORKING}
-                      footer={isClusterWideProxySelected ? undefined : <SkipToReviewFooter />}
+                      footer={isClusterWideProxySelected ? undefined : <LastRequiredStepFooter />}
                     >
                       <NetworkingAndSubnetsSubStep
                         vpcList={basicSetupStep.vpcList}
@@ -368,7 +460,7 @@ const RosaWizardBody = (props: RosaWizardProps): JSX.Element => {
                       name={sl.clusterWideProxy}
                       id={STEP_IDS.CLUSTER_WIDE_PROXY}
                       isHidden={!isClusterWideProxySelected}
-                      footer={<SkipToReviewFooter />}
+                      footer={<LastRequiredStepFooter />}
                     >
                       <ClusterWideProxySubstep />
                     </WizardStep>,

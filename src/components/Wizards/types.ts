@@ -166,6 +166,7 @@ export type ClusterFormData = {
   selected_vpc?: string | VPC;
   machine_pools_subnets?: MachinePoolSubnetEntry[];
   machine_type?: string;
+  security_groups_worker?: string[];
   autoscaling?: boolean;
   nodes_compute?: number;
   min_replicas?: number;

@@ -314,6 +314,9 @@ const mockBasicSetupStep: BasicSetupStepProps = {
   securityGroups: mockResource([]),
 };
 
+/**
+ * Storybook metadata for the full ROSA wizard: sidebar title, fullscreen layout, decorators, and control docs.
+ */
 const meta: Meta<typeof RosaWizard> = {
   title: 'Wizards/RosaWizard',
   component: RosaWizard,
@@ -449,6 +452,9 @@ const basicSetupStepAllApiErrors: BasicSetupStepProps = {
   },
 };
 
+/**
+ * Shows how basic-setup fields look when each backing resource returns an API error while mock options remain visible.
+ */
 export const AllApiErrors: Story = {
   args: {
     title: 'Create ROSA Cluster — all API errors',
@@ -873,6 +879,9 @@ function SubmitErrorWrapper(props: React.ComponentProps<typeof RosaWizard>) {
   );
 }
 
+/**
+ * End-to-end submit path that surfaces a server-style error banner and lets the user dismiss or retry from review.
+ */
 export const SubmitError: Story = {
   render: (args) => <SubmitErrorWrapper {...args} />,
   args: {
@@ -971,6 +980,9 @@ function AsyncLoadingWrapper(props: React.ComponentProps<typeof RosaWizard>) {
   return <RosaWizard {...props} wizardsStepsData={{ ...props.wizardsStepsData, basicSetupStep }} />;
 }
 
+/**
+ * Demonstrates delayed AWS account, region, and machine-type loading and how the UI reacts between selections.
+ */
 export const AsyncLoading: Story = {
   render: (args) => <AsyncLoadingWrapper {...args} />,
   args: {
@@ -1039,6 +1051,9 @@ function AsyncClusterNameValidationWrapper(props: React.ComponentProps<typeof Ro
   );
 }
 
+/**
+ * Lets you type cluster names to see debounced async uniqueness validation and mock “already exists” errors.
+ */
 export const AsyncClusterNameValidation: Story = {
   render: (args) => <AsyncClusterNameValidationWrapper {...args} />,
   args: {

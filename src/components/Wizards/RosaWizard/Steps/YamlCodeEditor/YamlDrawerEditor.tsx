@@ -11,6 +11,7 @@ import { validateYaml } from './yamlValidation';
 
 import { useRosaForm } from '../../RosaFormContext';
 
+/** Handlebars helper: renders the block when `a` strictly equals `b`, else the inverse block. */
 Handlebars.registerHelper(
   'eq',
   function (this: unknown, a: unknown, b: unknown, options: Handlebars.HelperOptions) {
@@ -18,6 +19,7 @@ Handlebars.registerHelper(
   }
 );
 
+/** Handlebars helper: removes a leading `/` from string values (no-op for non-strings). */
 Handlebars.registerHelper('stripSlash', function (value: string) {
   if (typeof value === 'string' && value.startsWith('/')) {
     return value.slice(1);
@@ -27,6 +29,7 @@ Handlebars.registerHelper('stripSlash', function (value: string) {
 
 const compiledTemplate = Handlebars.compile(rosaHcpTemplateRaw);
 
+/** Builds YAML text from the ROSA HCP Handlebars template and strips blank-only lines. */
 function renderTemplate(data: Record<string, unknown>): string {
   try {
     const raw = compiledTemplate(data);
@@ -40,10 +43,15 @@ function renderTemplate(data: Record<string, unknown>): string {
   }
 }
 
+/** Optional drawer chrome: parent can supply a close handler for the YAML panel. */
 interface YamlDrawerEditorProps {
   onClose?: () => void;
 }
 
+/**
+ * Monaco YAML editor synced with wizard form values: renders from template when unfocused,
+ * writes parsed cluster fields back on edit, and shows schema validation in the editor.
+ */
 export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
   const form = useRosaForm();
   const data = useStore(form.store, (s) => s.values);
@@ -54,6 +62,7 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
   const hasFocusRef = useRef(false);
   const validationTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
+  /** Runs YAML validation and maps results to Monaco model markers plus inline error text. */
   const setEditorMarkers = useCallback((yamlStr: string) => {
     const editor = editorRef.current;
     const monaco = monacoRef.current;
@@ -82,6 +91,7 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
     }
   }, []);
 
+  /** Refreshes editor YAML from the Handlebars template when form data changes, unless the editor has focus. */
   useEffect(() => {
     if (!hasFocusRef.current) {
       const rendered = renderTemplate(data as Record<string, unknown>);
@@ -90,6 +100,7 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
     }
   }, [data]);
 
+  /** Updates local YAML state, merges parsed `cluster` into the form, and debounces validation. */
   const handleEditorChange = useCallback(
     (value: string | undefined) => {
       const newYaml = value ?? '';
@@ -113,6 +124,7 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
     [form, setEditorMarkers]
   );
 
+  /** Stores editor/Monaco refs, tracks focus for template refresh, adds a top spacer zone, and validates. */
   const handleEditorMount: OnMount = useCallback(
     (editor, monaco) => {
       editorRef.current = editor;
@@ -139,6 +151,7 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
     [setEditorMarkers, yamlContent]
   );
 
+  /** Copies the current selection if any, otherwise the full YAML document, to the clipboard. */
   const handleCopy = useCallback(() => {
     if (editorRef.current) {
       const model = editorRef.current.getModel();

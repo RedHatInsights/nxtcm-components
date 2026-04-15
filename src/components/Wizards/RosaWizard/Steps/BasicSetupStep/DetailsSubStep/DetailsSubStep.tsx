@@ -29,6 +29,7 @@ import {
   type SelectOptionGroup,
 } from '../../../../../../TanstackForm';
 
+/** Props for the cluster details step: API-backed dropdowns, validation, and account change handling. */
 type DetailsSubStepProps = {
   clusterNameValidation: ValidationResource;
   versions: Resource<OpenShiftVersionsData, []> & { fetch: () => Promise<void> };
@@ -46,6 +47,10 @@ type DetailsSubStepProps = {
   };
 };
 
+/**
+ * Basic setup step for cluster identity, billing, OpenShift version, and region.
+ * Keeps form fields in sync with AWS account, roles, versions, and uniqueness checks.
+ */
 export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   clusterNameValidation,
   versions,
@@ -56,16 +61,21 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   roles,
   checkClusterNameUniqueness,
 }) => {
-  const d = useRosaWizardStrings().details;
+  const strings = useRosaWizardStrings();
+  const d = strings.details;
+  const { requiredField } = strings.common;
   const form = useRosaForm();
   const cluster = useClusterValues();
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const drawerRef = React.useRef<HTMLSpanElement>(null);
+  /** Moves focus to the drawer trigger when the wizard layout expands the drawer region. */
   const onWizardExpand = (): void => {
     drawerRef.current?.focus();
   };
+  const accountChangeAbortRef = React.useRef<AbortController>();
   const { checkName, cancelCheck } = useUniqueClusterNameCheck(checkClusterNameUniqueness, 500);
 
+  /** Debounces async uniqueness checks when the name is valid, or cancels when it is not. */
   const uniqueClusterNameCheck = React.useCallback(
     (value: string, region?: string): void => {
       const syncError = validateClusterName(value);
@@ -193,12 +203,19 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                 >
                   <form.Field
                     name="cluster.associated_aws_id"
+                    validators={{
+                      onChange: ({ value }) => (!value ? requiredField : undefined),
+                    }}
                     listeners={{
                       onChange: ({ value }) => {
+                        accountChangeAbortRef.current?.abort();
+                        const controller = new AbortController();
+                        accountChangeAbortRef.current = controller;
                         void updateOnAWSAccountChange(
                           value,
                           form,
-                          value ? regions.fetch : undefined
+                          value ? regions.fetch : undefined,
+                          controller.signal
                         );
                         if (value) {
                           void roles.fetch(value);
@@ -245,7 +262,12 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                     awsBillingAccounts.fetch ? () => void awsBillingAccounts.fetch?.() : undefined
                   }
                 >
-                  <form.Field name="cluster.billing_account_id">
+                  <form.Field
+                    name="cluster.billing_account_id"
+                    validators={{
+                      onChange: ({ value }) => (!value ? requiredField : undefined),
+                    }}
+                  >
                     {(field) => (
                       <FormSelect
                         field={field}
@@ -288,16 +310,26 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   <form.Field
                     name="cluster.name"
                     validators={{
-                      onChange: ({ value }) =>
-                        validateClusterName(value as string) ||
-                        (typeof clusterNameValidation.error === 'string'
-                          ? clusterNameValidation.error
-                          : undefined),
-                      onBlur: ({ value }) =>
-                        validateClusterName(value as string) ||
-                        (typeof clusterNameValidation.error === 'string'
-                          ? clusterNameValidation.error
-                          : undefined),
+                      onChange: ({ value }) => {
+                        const v = value as string | undefined;
+                        if (!v || !v.trim()) return d.clusterNameRequired;
+                        return (
+                          validateClusterName(v) ||
+                          (typeof clusterNameValidation.error === 'string'
+                            ? clusterNameValidation.error
+                            : undefined)
+                        );
+                      },
+                      onBlur: ({ value }) => {
+                        const v = value as string | undefined;
+                        if (!v || !v.trim()) return d.clusterNameRequired;
+                        return (
+                          validateClusterName(v) ||
+                          (typeof clusterNameValidation.error === 'string'
+                            ? clusterNameValidation.error
+                            : undefined)
+                        );
+                      },
                     }}
                     listeners={{
                       onChange: ({ value }) => {
@@ -334,16 +366,13 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                 >
                   <form.Field
                     name="cluster.cluster_version"
+                    validators={{
+                      onChange: ({ value }) => (!value ? requiredField : undefined),
+                    }}
                     listeners={{
                       onChange: ({ value }) => {
                         if (value && !showSecurityGroupsSection(value)) {
-                          form.setFieldValue(
-                            'cluster' as never,
-                            {
-                              ...form.getFieldValue('cluster'),
-                              security_groups_worker: undefined,
-                            } as never
-                          );
+                          form.setFieldValue('cluster.security_groups_worker', undefined);
                         }
                       },
                     }}
@@ -380,6 +409,9 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                 >
                   <form.Field
                     name="cluster.region"
+                    validators={{
+                      onChange: ({ value }) => (!value ? requiredField : undefined),
+                    }}
                     listeners={{
                       onChange: ({ value }) => {
                         const currentName = form.getFieldValue('cluster.name') as

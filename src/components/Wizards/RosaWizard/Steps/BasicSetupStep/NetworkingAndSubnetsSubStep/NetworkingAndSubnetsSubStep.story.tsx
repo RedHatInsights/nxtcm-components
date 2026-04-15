@@ -5,6 +5,10 @@ import { useAppForm } from '../../../RosaFormContext';
 import { VPC, Subnet, Resource, MachineTypesDropdownType } from '../../../../types';
 import type { RosaWizardFormData } from '../../../../types';
 
+/**
+ * Isolated Networking and Subnets substep with Rosa form and strings providers for demos and component tests.
+ */
+
 const mockResource = <TData,>(data: TData): Resource<TData> => ({
   data,
   error: null,
@@ -110,6 +114,9 @@ const NetworkingFormWrapper: React.FC<{
   return <form.AppForm>{children}</form.AppForm>;
 };
 
+/**
+ * Renders VPC and subnet controls with optional loading or cluster overrides and optional proxy-selection callback.
+ */
 export const NetworkingSubStepStory: React.FC<NetworkingSubStepStoryProps> = ({
   vpcList = mockResource(mockVpcList),
   clusterOverrides = {},

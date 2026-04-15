@@ -7,6 +7,10 @@ import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWiza
 import { useClusterValues, useRosaForm } from '../../../RosaFormContext';
 import { FormCheckbox, FormRadioGroup, FormTextInput } from '../../../../../../TanstackForm';
 
+/**
+ * Configures default vs custom AWS KMS keys for cluster encryption, optional etcd encryption with its key,
+ * and clears dependent ARN fields when the user switches away from custom or etcd encryption.
+ */
 export const EncryptionSubstep = (): JSX.Element => {
   const e = useRosaWizardStrings().encryption;
   const v = useRosaWizardValidators();
@@ -49,6 +53,8 @@ export const EncryptionSubstep = (): JSX.Element => {
             <form.Field
               name="cluster.kms_key_arn"
               validators={{
+                onChange: ({ value }) =>
+                  validateAWSKMSKeyARN(value as string, cluster.region, v.kmsKeyArn) || undefined,
                 onBlur: ({ value }) =>
                   validateAWSKMSKeyARN(value as string, cluster.region, v.kmsKeyArn) || undefined,
               }}
@@ -99,6 +105,8 @@ export const EncryptionSubstep = (): JSX.Element => {
             <form.Field
               name="cluster.etcd_key_arn"
               validators={{
+                onChange: ({ value }) =>
+                  validateAWSKMSKeyARN(value as string, cluster.region, v.kmsKeyArn) || undefined,
                 onBlur: ({ value }) =>
                   validateAWSKMSKeyARN(value as string, cluster.region, v.kmsKeyArn) || undefined,
               }}

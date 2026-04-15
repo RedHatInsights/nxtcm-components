@@ -2,12 +2,15 @@ import { test, expect } from '@playwright/experimental-ct-react';
 import { checkAccessibility } from '../../../../../../test-helpers';
 import { NetworkingSubStepStory } from './NetworkingAndSubnetsSubStep.story';
 
+/** CT for networking mode, advanced expand, proxy hint, and CIDR default/disable behavior. */
 test.describe('NetworkingAndSubnetsSubStep', () => {
+  /** Default story mount satisfies accessibility checks. */
   test('should pass accessibility tests', async ({ mount }) => {
     const component = await mount(<NetworkingSubStepStory />);
     await checkAccessibility({ component });
   });
 
+  /** Public/Private radio group and Networking heading render. */
   test('should render Networking section with radio options', async ({ mount }) => {
     const component = await mount(<NetworkingSubStepStory />);
 
@@ -16,6 +19,7 @@ test.describe('NetworkingAndSubnetsSubStep', () => {
     await expect(component.getByRole('radio', { name: 'Private' })).toBeVisible();
   });
 
+  /** Private cluster radio is visible, enabled, and accepts a click. */
   test('should have Private radio option clickable', async ({ mount }) => {
     const component = await mount(<NetworkingSubStepStory />);
 
@@ -25,6 +29,7 @@ test.describe('NetworkingAndSubnetsSubStep', () => {
     await privateRadio.click();
   });
 
+  /** Advanced networking toggle button is present before expansion. */
   test('should render the advanced networking expandable section', async ({ mount }) => {
     const component = await mount(<NetworkingSubStepStory />);
 
@@ -35,6 +40,7 @@ test.describe('NetworkingAndSubnetsSubStep', () => {
     ).toBeVisible();
   });
 
+  /** Expanding advanced shows proxy and default-CIDR checkboxes. */
   test('should expand advanced networking section on click', async ({ mount }) => {
     const component = await mount(<NetworkingSubStepStory />);
 
@@ -49,6 +55,7 @@ test.describe('NetworkingAndSubnetsSubStep', () => {
     await expect(component.getByRole('checkbox', { name: /Use default values/ })).toBeVisible();
   });
 
+  /** Cluster-wide proxy checkbox and helper copy appear when advanced is expanded. */
   test('should display cluster-wide proxy checkbox inside expanded section', async ({ mount }) => {
     const component = await mount(<NetworkingSubStepStory />);
 
@@ -69,6 +76,7 @@ test.describe('NetworkingAndSubnetsSubStep', () => {
     ).toBeVisible();
   });
 
+  /** Pre-enabled proxy via overrides shows the "configure in next step" info alert. */
   test('should show proxy info alert when proxy checkbox is checked', async ({ mount }) => {
     const component = await mount(
       <NetworkingSubStepStory clusterOverrides={{ configure_proxy: true }} />
@@ -86,6 +94,7 @@ test.describe('NetworkingAndSubnetsSubStep', () => {
     ).toBeVisible();
   });
 
+  /** Immutable CIDR warning alert is visible under advanced networking. */
   test('should display CIDR warning alert inside expanded section', async ({ mount }) => {
     const component = await mount(<NetworkingSubStepStory />);
 
@@ -99,6 +108,7 @@ test.describe('NetworkingAndSubnetsSubStep', () => {
     ).toBeVisible();
   });
 
+  /** "Use default values" checkbox and its explanatory helper text render when expanded. */
   test('should display Use default values checkbox', async ({ mount }) => {
     const component = await mount(<NetworkingSubStepStory />);
 
@@ -116,6 +126,7 @@ test.describe('NetworkingAndSubnetsSubStep', () => {
     ).toBeVisible();
   });
 
+  /** Advanced section lists Machine/Service/Pod CIDR labels and Host prefix field. */
   test('should render CIDR and host prefix inputs inside expanded section', async ({ mount }) => {
     const component = await mount(<NetworkingSubStepStory />);
 
@@ -130,6 +141,7 @@ test.describe('NetworkingAndSubnetsSubStep', () => {
     await expect(component.getByText('Host prefix', { exact: true })).toBeVisible();
   });
 
+  /** Inline helper strings for CIDR mask constraints appear alongside the fields. */
   test('should show CIDR helper texts', async ({ mount }) => {
     const component = await mount(<NetworkingSubStepStory />);
 
@@ -144,6 +156,7 @@ test.describe('NetworkingAndSubnetsSubStep', () => {
     await expect(component.getByText('Must be between /23 and /26')).toBeVisible();
   });
 
+  /** With `cidr_default` true, all CIDR/host inputs are disabled in the advanced form. */
   test('should have CIDR inputs disabled when default values is checked', async ({ mount }) => {
     const component = await mount(
       <NetworkingSubStepStory clusterOverrides={{ cidr_default: true }} />
@@ -160,6 +173,7 @@ test.describe('NetworkingAndSubnetsSubStep', () => {
     await expect(component.getByRole('textbox', { name: 'Host prefix' })).toBeDisabled();
   });
 
+  /** With `cidr_default` false, CIDR/host inputs are editable after expanding advanced. */
   test('should have CIDR inputs enabled when default values is unchecked', async ({ mount }) => {
     const component = await mount(
       <NetworkingSubStepStory clusterOverrides={{ cidr_default: false }} />

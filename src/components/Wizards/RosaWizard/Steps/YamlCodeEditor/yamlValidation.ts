@@ -12,6 +12,7 @@ const schemaMap: Record<string, object> = {
   ROSANetwork: rosaNetworkSchema,
 };
 
+/** One editor-facing issue: human-readable message, location, severity, and optional JSON pointer path. */
 export interface ValidationError {
   message: string;
   line: number;
@@ -20,12 +21,14 @@ export interface ValidationError {
   path?: string;
 }
 
+/** One slice of a multi-doc YAML file: 1-based start line, raw content, and optional `kind` after parse. */
 interface DocRange {
   startLine: number;
   content: string;
   kind?: string;
 }
 
+/** Splits YAML on `---` document markers and attaches each slice’s Kubernetes-style `kind` when parseable. */
 function splitDocuments(yamlStr: string): DocRange[] {
   const lines = yamlStr.split('\n');
   const docs: DocRange[] = [];
@@ -64,6 +67,7 @@ function splitDocuments(yamlStr: string): DocRange[] {
   return docs;
 }
 
+/** Maps an AJV `instancePath` (JSON pointer segments) to the first matching key line within one doc’s text. */
 function findLineForPath(content: string, instancePath: string): number {
   if (!instancePath) return 1;
 
@@ -86,6 +90,7 @@ function findLineForPath(content: string, instancePath: string): number {
   return 1;
 }
 
+/** Turns a raw AJV error into a short, user-facing sentence keyed by validation keyword. */
 function formatAjvError(err: ErrorObject): string {
   const path = err.instancePath || '/';
   switch (err.keyword) {
@@ -106,6 +111,10 @@ function formatAjvError(err: ErrorObject): string {
   }
 }
 
+/**
+ * Validates each YAML document: syntax errors per doc, then JSON-schema checks for known `kind`s,
+ * with line/column adjusted to the document’s position in the full editor buffer.
+ */
 export function validateYaml(yamlStr: string): ValidationError[] {
   const errors: ValidationError[] = [];
   const docs = splitDocuments(yamlStr);

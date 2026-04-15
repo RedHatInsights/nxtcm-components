@@ -20,6 +20,7 @@ type Props = {
   clusterOverrides?: Record<string, unknown>;
 };
 
+/** Static `Resource` with noop `fetch` for OIDC config and similar CT props. */
 const mockResource = <TData,>(data: TData): Resource<TData> => ({
   data,
   error: null,
@@ -27,6 +28,7 @@ const mockResource = <TData,>(data: TData): Resource<TData> => ({
   fetch: async () => {},
 });
 
+/** `Resource` whose `fetch` is a no-op, used for roles lists keyed by AWS account in CT. */
 const mockFetchResource = <TData, TArgs extends unknown[] = []>(
   data: TData
 ): Resource<TData, TArgs> & { fetch: (...args: TArgs) => Promise<void> } => ({
@@ -36,6 +38,7 @@ const mockFetchResource = <TData, TArgs extends unknown[] = []>(
   fetch: async (..._args: TArgs) => {},
 });
 
+/** Provides `AppForm` + `useAppForm` defaults from `createMockClusterData` for roles substep tests. */
 const RolesFormWrapper: React.FC<{
   clusterOverrides?: Record<string, unknown>;
   children: React.ReactNode;
@@ -48,6 +51,10 @@ const RolesFormWrapper: React.FC<{
   return <form.AppForm>{children}</form.AppForm>;
 };
 
+/**
+ * Mounts `RolesAndPoliciesSubStep` with wizard strings and story fixtures for roles/OIDC resources.
+ * Defaults mirror `RolesAndPoliciesSubStep.story` data; override `roles`, `oidcConfig`, or cluster values.
+ */
 export const RolesAndPoliciesSubStepMount = ({
   roles = mockFetchResource<Role[], [awsAccount: string]>([
     {

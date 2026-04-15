@@ -4,6 +4,9 @@ import ExternalLink from './ExternalLink';
 import links from '../externalLinks';
 import { useRosaWizardStrings } from '../RosaWizardStringsContext';
 
+/**
+ * Explains how to create ROSA account roles via the CLI, with a copyable command and a link to manual AWS CLI setup.
+ */
 export const AccountRoles = () => {
   const a = useRosaWizardStrings().accountRoles;
 

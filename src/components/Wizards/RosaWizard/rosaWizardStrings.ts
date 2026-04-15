@@ -19,7 +19,9 @@ import {
   defaultRosaWizardValidatorStrings,
 } from './rosaWizardStrings.defaults';
 
+/** Re-exports RosaWizard string and validator TypeScript types for consumers and localization. */
 export * from './rosaWizardStrings.types';
+/** Re-exports default English UI and validation string objects. */
 export * from './rosaWizardStrings.defaults';
 
 function isPlainRecord(v: unknown): v is Record<string, unknown> {
@@ -42,18 +44,24 @@ function mergeDeep<T>(base: T, patch: DeepPartial<T> | undefined): T {
   return result as T;
 }
 
+/** Deep-merges partial UI strings with {@link defaultRosaWizardStrings} to produce a full bundle. */
 export function mergeRosaWizardStrings(
   partial?: DeepPartial<RosaWizardStrings>
 ): RosaWizardStrings {
   return mergeDeep(defaultRosaWizardStrings, partial);
 }
 
+/** Deep-merges partial validator messages with {@link defaultRosaWizardValidatorStrings}. */
 export function mergeRosaWizardValidatorStrings(
   partial?: DeepPartial<RosaWizardValidatorStrings>
 ): RosaWizardValidatorStrings {
   return mergeDeep(defaultRosaWizardValidatorStrings, partial);
 }
 
+/**
+ * Builds merged `strings` and `validators` bundles from optional partial input, including legacy
+ * `formWizard` chrome field mapping into `wizard.chrome`.
+ */
 export function buildRosaWizardStringBundles(input?: RosaWizardStringsInput): {
   strings: RosaWizardStrings;
   validators: RosaWizardValidatorStrings;

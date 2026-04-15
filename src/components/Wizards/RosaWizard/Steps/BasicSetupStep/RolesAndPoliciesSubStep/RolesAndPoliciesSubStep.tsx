@@ -21,6 +21,7 @@ import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
 import { useClusterValues, useRosaForm } from '../../../RosaFormContext';
 import { FormSelect, FormTextInput, type SelectOptionItem } from '../../../../../../TanstackForm';
 
+/** Props for IAM role sets and OIDC configuration loaded for the selected AWS account. */
 type RolesAndPoliciesSubStepProps = {
   roles: Resource<Role[], [awsAccount: string]> & {
     fetch: (awsAccount: string) => Promise<void>;
@@ -28,11 +29,16 @@ type RolesAndPoliciesSubStepProps = {
   oidcConfig: Resource<OIDCConfig[]>;
 };
 
+/**
+ * Account roles (installer/support/worker), OIDC config, operator role prefix, and ROSA CLI copy for operator roles.
+ */
 export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSubStepProps> = ({
   roles,
   oidcConfig,
 }) => {
-  const rp = useRosaWizardStrings().rolesAndPolicies;
+  const strings = useRosaWizardStrings();
+  const rp = strings.rolesAndPolicies;
+  const { requiredField } = strings.common;
   const v = useRosaWizardValidators();
   const form = useRosaForm();
   const cluster = useClusterValues();
@@ -125,6 +131,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
     }
   }, [selectedRoleIsDisabled, form]);
 
+  /** Resets or repopulates support and worker ARNs when the installer role selection changes. */
   const onInstallerRoleChange = React.useCallback(
     (installerRoleValue: string): void => {
       if (!installerRoleValue) {
@@ -141,6 +148,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
     [roles.data, form]
   );
 
+  /** Example `rosa create operator-roles` command populated from the current wizard field values. */
   const rosaCommand = `rosa create operator-roles --prefix "${cluster.custom_operator_roles_prefix}" --oidc-config-id "${cluster.byo_oidc_config_id}" --hosted-cp --installer-role-arn ${cluster.installer_role_arn}`;
 
   const oidcOptions: SelectOptionItem[] = React.useMemo(
@@ -170,6 +178,9 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
             >
               <form.Field
                 name="cluster.installer_role_arn"
+                validators={{
+                  onChange: ({ value }) => (!value ? requiredField : undefined),
+                }}
                 listeners={{
                   onChange: ({ value }) => {
                     onInstallerRoleChange(value as string);
@@ -257,7 +268,12 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                   fieldName={rp.oidcLabel}
                   retry={oidcConfig.fetch ? () => void oidcConfig.fetch?.() : undefined}
                 >
-                  <form.Field name="cluster.byo_oidc_config_id">
+                  <form.Field
+                    name="cluster.byo_oidc_config_id"
+                    validators={{
+                      onChange: ({ value }) => (!value ? requiredField : undefined),
+                    }}
+                  >
                     {(field) => (
                       <FormSelect
                         field={field}

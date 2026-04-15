@@ -18,12 +18,17 @@ import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWiza
 import { useClusterValues, useRosaForm } from '../../../RosaFormContext';
 import { FormTextInput, FormFileUpload } from '../../../../../../TanstackForm';
 
+/**
+ * Collects optional HTTP/HTTPS proxy URLs, no-proxy domains, and an additional CA trust bundle,
+ * with validation that at least one proxy-related field is set when configuring the cluster proxy.
+ */
 export const ClusterWideProxySubstep = (): JSX.Element => {
   const cw = useRosaWizardStrings().clusterWideProxy;
   const v = useRosaWizardValidators();
   const form = useRosaForm();
   const cluster = useClusterValues();
 
+  /** Ensures the user provided at least one of HTTP proxy, HTTPS proxy, or trust bundle before saving. */
   const validateAtLeastOne = (): string | undefined => {
     if (!cluster.http_proxy_url && !cluster.https_proxy_url && !cluster.additional_trust_bundle) {
       return v.proxyConfigureAtLeastOne;
@@ -31,7 +36,9 @@ export const ClusterWideProxySubstep = (): JSX.Element => {
     return undefined;
   };
 
+  /** Validates the HTTP proxy field as an `http` URL using shared wizard URL messages. */
   const validateUrlHttp = (value: string): string | undefined => validateUrl(value, 'http', v.url);
+  /** Validates the HTTPS proxy field as an `http` or `https` URL using shared wizard URL messages. */
   const validateUrlHttps = (value: string): string | undefined =>
     validateUrl(value, ['http', 'https'], v.url);
 

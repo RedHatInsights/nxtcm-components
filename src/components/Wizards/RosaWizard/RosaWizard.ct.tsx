@@ -6,6 +6,10 @@ import React from 'react';
 import { RosaWizard } from './RosaWizard';
 import { rosaWizardMockStepsData } from './rosaWizardTestMocks';
 
+/**
+ * Full wizard mount for CT using shared `rosaWizardMockStepsData` and minimal handlers.
+ * Import from this module so specs avoid defining mount components in the test file.
+ */
 export const RosaWizardMount: React.FC = () => (
   <RosaWizard
     title="Create cluster"

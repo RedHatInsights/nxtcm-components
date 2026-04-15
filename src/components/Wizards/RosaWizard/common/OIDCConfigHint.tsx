@@ -2,6 +2,9 @@ import { ClipboardCopyVariant, Content, ContentVariants } from '@patternfly/reac
 import { CopyInstruction } from './CopyInstruction';
 import { useRosaWizardStrings } from '../RosaWizardStringsContext';
 
+/**
+ * Shows how to log in to OCM and create an OIDC config via ROSA CLI, using localized intro copy and copyable commands.
+ */
 export const OIDCConfigHint = () => {
   const { oidcHint } = useRosaWizardStrings();
 

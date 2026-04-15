@@ -7,6 +7,9 @@ import links from '../externalLinks';
 import PopoverHintWithTitle from './PopoverHitWithTitle';
 import { useRosaWizardStrings } from '../RosaWizardStringsContext';
 
+/**
+ * Guides users through checking, creating, or linking a ROSA user role, with copyable commands and contextual popovers.
+ */
 export const UserRole = () => {
   const u = useRosaWizardStrings().userRole;
 

@@ -3,9 +3,12 @@ import ExternalLink from '../../../../common/ExternalLink';
 import links from '../../../../externalLinks';
 import { useRosaWizardStrings } from '../../../../RosaWizardStringsContext';
 
+/** Props for the empty-state alert when the VPC has no security groups loaded yet. */
 type SecurityGroupsEmptyAlertProps = {
   refreshVPCCallback?: () => void;
 };
+
+/** Inline info alert explaining how to create groups in AWS and optionally refresh VPC data. */
 const SecurityGroupsEmptyAlert = ({ refreshVPCCallback }: SecurityGroupsEmptyAlertProps) => {
   const sg = useRosaWizardStrings().securityGroups;
   return (

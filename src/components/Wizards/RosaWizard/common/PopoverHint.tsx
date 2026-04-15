@@ -6,6 +6,7 @@ import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons/dist/esm/ico
 
 import './PopoverHintWithTitle.css';
 
+/** Props for a plain icon button that opens a PatternFly popover with optional title, body, footer, and error styling. */
 interface PopoverHintProps extends Omit<PopoverProps, 'bodyContent'> {
   hint?: React.ReactNode;
   title?: React.ReactNode;
@@ -16,6 +17,9 @@ interface PopoverHintProps extends Omit<PopoverProps, 'bodyContent'> {
   isError?: boolean;
 }
 
+/**
+ * Renders a help or error icon button that reveals extra guidance in a popover, forwarding remaining Popover props.
+ */
 const PopoverHint = ({
   title,
   hint,

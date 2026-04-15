@@ -19,6 +19,7 @@ const secureRandomValueInRange = (min: number, max: number) => {
   return Math.floor(randomNumber * (maxNum - minNum + 1)) + minNum;
 };
 
+/** Returns a short random alphanumeric string used as the operator roles name suffix. */
 export const createOperatorRolesHash = () => {
   // random 4 alphanumeric hash
   const prefixArray = Array.from(
@@ -31,7 +32,8 @@ export const createOperatorRolesHash = () => {
   return prefixArray.join('');
 };
 
-const createOperatorRolesPrefix = (clusterName?: string) => {
+/** Builds the default operator roles prefix from an optional cluster name plus a random hash. */
+export const createOperatorRolesPrefix = (clusterName?: string) => {
   // increment allowedLength by 1 due to '-' character prepended to hash
   const allowedLength = MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH - (OPERATOR_ROLES_HASH_LENGTH + 1);
   const operatorRolesClusterName = clusterName?.slice(0, allowedLength);
@@ -39,10 +41,13 @@ const createOperatorRolesPrefix = (clusterName?: string) => {
   return `${operatorRolesClusterName}-${createOperatorRolesHash()}`;
 };
 
-const stringToArray = (str?: string) => str && str.trim().split(',');
-const arrayToString = (arr?: string[]) => arr && arr.join(',');
+/** Splits a comma-separated string into trimmed parts, or undefined when empty. */
+export const stringToArray = (str?: string) => str && str.trim().split(',');
+/** Joins a string array with commas, or undefined when missing. */
+export const arrayToString = (arr?: string[]) => arr && arr.join(',');
 
-const parseCIDRSubnetLength = (value?: string): number | undefined => {
+/** Reads the numeric prefix length from a CIDR or `/mask` string (e.g. `10.0.0.0/16` → 16). */
+export const parseCIDRSubnetLength = (value?: string): number | undefined => {
   if (!value) {
     return undefined;
   }
@@ -50,7 +55,8 @@ const parseCIDRSubnetLength = (value?: string): number | undefined => {
   return parseInt(value.split('/').pop() ?? '', 10);
 };
 
-const constructSelectedSubnets = (formValues?: ClusterFormData): CIDRSubnet[] => {
+/** Collects private and public subnets from the form’s VPC selection for validation and API payloads. */
+export const constructSelectedSubnets = (formValues?: ClusterFormData): CIDRSubnet[] => {
   if (!formValues?.selected_vpc) {
     return [];
   }
@@ -81,7 +87,8 @@ const constructSelectedSubnets = (formValues?: ClusterFormData): CIDRSubnet[] =>
   return privateSubnets.concat(publicSubnets);
 };
 
-const subnetsFilter = (selectedVPC: VPC | undefined) => {
+/** Splits a VPC’s subnets into public vs private lists using name heuristics. */
+export const subnetsFilter = (selectedVPC: VPC | undefined) => {
   const privateSubnets = selectedVPC?.aws_subnets.filter((privateSubnet: Subnet) =>
     privateSubnet.name.includes('private')
   );
@@ -96,20 +103,16 @@ const subnetsFilter = (selectedVPC: VPC | undefined) => {
   };
 };
 
-const truncateTextWithEllipsis = (text: string, maxLength?: number) => {
+/** Shortens long text with an ellipsis in the middle when it exceeds `maxLength`. */
+export const truncateTextWithEllipsis = (text: string, maxLength?: number) => {
   if (text && maxLength && text.length > maxLength) {
     return `${text.slice(0, maxLength / 3)}... ${text.slice((-maxLength * 2) / 3)}`;
   }
   return text;
 };
 
-/**
- * Split version string to an array.
- *
- * @param version cluster version raw ID (i.e. "4.13.5")
- * @returns An array with destructuralized version [major, minor, patch, ...]
- */
-const splitVersion = (version: string): number[] => {
+/** Parses an OpenShift version id like `4.13.5` into numeric `[major, minor, patch, ...]`, or `[]` on failure. */
+export const splitVersion = (version: string): number[] => {
   let versionArray = [];
   try {
     versionArray = version.split('.').map((num) => parseInt(num, 10));
@@ -121,35 +124,20 @@ const splitVersion = (version: string): number[] => {
   return versionArray;
 };
 
-const canSelectImds = (clusterVersionRawId: string): boolean => {
+/** Whether the cluster version supports choosing EC2 Instance Metadata Service (IMDS) options. */
+export const canSelectImds = (clusterVersionRawId: string): boolean => {
   const [major, minor] = splitVersion(clusterVersionRawId);
   return major > 4 || (major === 4 && minor >= 11);
 };
 
-/**
- * Returns ROSA/AWS max worker node volume size, varies per cluster version.
- * In GiB.
- */
-const getWorkerNodeVolumeSizeMaxGiB = (clusterVersionRawId: string): number => {
+/** Max allowed worker root volume size (GiB) for the given OpenShift version. */
+export const getWorkerNodeVolumeSizeMaxGiB = (clusterVersionRawId: string): number => {
   const [major, minor] = splitVersion(clusterVersionRawId);
   return (major > 4 || (major === 4 && minor >= 14) ? 16 : 1) * 1024;
 };
 
-const showSecurityGroupsSection = (clusterVersionRawId: string): boolean => {
+/** Whether additional security groups UI should appear for this OpenShift version. */
+export const showSecurityGroupsSection = (clusterVersionRawId: string): boolean => {
   const [major, minor] = splitVersion(clusterVersionRawId);
   return major > 4 || (major === 4 && minor >= 14);
-};
-
-export {
-  createOperatorRolesPrefix,
-  stringToArray,
-  arrayToString,
-  parseCIDRSubnetLength,
-  constructSelectedSubnets,
-  subnetsFilter,
-  truncateTextWithEllipsis,
-  splitVersion,
-  canSelectImds,
-  getWorkerNodeVolumeSizeMaxGiB,
-  showSecurityGroupsSection,
 };

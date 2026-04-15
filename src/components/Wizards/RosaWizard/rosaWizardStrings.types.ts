@@ -3,6 +3,7 @@
  * Default English values live in {@link ./rosaWizardStrings.defaults}.
  */
 
+/** Recursive partial for nested string bundles; function-typed leaves stay non-partial. */
 export type DeepPartial<T> = {
   [K in keyof T]?: T[K] extends (...args: any[]) => unknown
     ? T[K]
@@ -11,6 +12,7 @@ export type DeepPartial<T> = {
       : T[K];
 };
 
+/** Validation messages for the cluster name field. */
 export type RosaWizardClusterNameValidatorStrings = {
   maxLength: string;
   invalidChars: string;
@@ -19,12 +21,14 @@ export type RosaWizardClusterNameValidatorStrings = {
   mustEndAlphanumeric: string;
 };
 
+/** Validation messages and interpolators for the operator roles prefix field. */
 export type RosaWizardOperatorRolesPrefixValidatorStrings = {
   fieldLabel: string;
   invalidFormat: (label: string, value: string) => string;
   tooLong: (label: string, max: number) => string;
 };
 
+/** Validation messages for custom AWS KMS key ARN input. */
 export type RosaWizardKmsKeyValidatorStrings = {
   required: string;
   noWhitespace: string;
@@ -32,10 +36,12 @@ export type RosaWizardKmsKeyValidatorStrings = {
   wrongRegion: string;
 };
 
+/** Validation messages when too many EC2 security groups are selected. */
 export type RosaWizardSecurityGroupsValidatorStrings = {
   maxExceeded: (max: number) => string;
 };
 
+/** Validation messages for comma-separated no-proxy domain entries. */
 export type RosaWizardNoProxyValidatorStrings = {
   invalidDomains: (domains: string, plural: boolean) => string;
 };
@@ -50,16 +56,19 @@ export type RosaWizardOpenShiftVersionGroupLabels = {
   releases: string;
 };
 
+/** Validation messages for HTTP/HTTPS proxy URL fields. */
 export type RosaWizardUrlValidatorStrings = {
   invalid: string;
   schemePrefix: (protocolList: string) => string;
 };
 
+/** Validation messages for additional trust bundle (PEM) content. */
 export type RosaWizardCaValidatorStrings = {
   fileTooLarge: string;
   invalidPem: string;
 };
 
+/** Validation messages for machine pool root EBS volume size. */
 export type RosaWizardRootDiskValidatorStrings = {
   notInteger: string;
   tooSmall: string;
@@ -67,6 +76,7 @@ export type RosaWizardRootDiskValidatorStrings = {
   tooLargeOldOpenshift: string;
 };
 
+/** Validation messages for replica counts, autoscaling min/max, and compute pool rules. */
 export type RosaWizardReplicaValidatorStrings = {
   notInteger: string;
   notPositive: string;
@@ -130,6 +140,7 @@ export type RosaWizardHostPrefixValidatorStrings = {
   maskTooSmall: (minPrefix: number, maxPodIPs: number) => string;
 };
 
+/** All validator message groups used across RosaWizard networking, roles, disks, and forms. */
 export type RosaWizardValidatorStrings = {
   clusterName: RosaWizardClusterNameValidatorStrings;
   operatorRolesPrefix: RosaWizardOperatorRolesPrefixValidatorStrings;
@@ -151,13 +162,18 @@ export type RosaWizardValidatorStrings = {
   hostPrefix: RosaWizardHostPrefixValidatorStrings;
 };
 
+/** Footer and shell labels for wizard navigation (Next, Back, Cancel, Submit, errors). */
 export type RosaWizardChromeStrings = {
   nextButtonText: string;
   backButtonText: string;
   cancelButtonText: string;
   submitButtonText: string;
+  skipToReviewButtonText: string;
+  validationErrorText: string;
+  closeButtonAriaLabel: string;
 };
 
+/** Complete user-visible copy for RosaWizard steps, review, errors, and ancillary UI. */
 export type RosaWizardStrings = {
   wizard: {
     stepLabels: {
@@ -238,6 +254,7 @@ export type RosaWizardStrings = {
     clusterNameLabel: string;
     clusterNamePlaceholder: string;
     clusterNameHelp: string;
+    clusterNameRequired: string;
     openShiftVersionLabel: string;
     openShiftVersionPlaceholder: string;
     openShiftVersionOptionDisabledDescription: string;
@@ -445,6 +462,8 @@ export type RosaWizardStrings = {
     instanceType: string;
     computeCount: string;
     machinePoolsHeading: string;
+    machinePoolLabel: string;
+    subnetLabel: string;
     additionalEtcd: string;
     encryptionKeys: string;
     machineCidr: string;
@@ -466,6 +485,8 @@ export type RosaWizardStrings = {
     /** Trigger control `aria-label` to open error details popover. */
     showErrorDetails: string;
     retry: string;
+    /** Generic required-field error used by select fields that are marked `isRequired`. */
+    requiredField: string;
   };
 };
 

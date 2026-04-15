@@ -6,8 +6,7 @@ import { type RosaWizardFormData } from '../../types';
 type OptionWithValue = { value: string };
 
 /**
- * Clears a form field when its current value is no longer present
- * in the provided options list.
+ * Watches `options` and clears the field at `path` when its stored value is missing from the list.
  */
 export function useResetFieldOnOptionsChange(
   path: DeepKeys<RosaWizardFormData>,

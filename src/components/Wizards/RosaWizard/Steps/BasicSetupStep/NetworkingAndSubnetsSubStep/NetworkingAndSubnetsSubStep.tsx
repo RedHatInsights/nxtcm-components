@@ -36,11 +36,15 @@ import {
   type SelectOptionItem,
 } from '../../../../../../TanstackForm';
 
+/** Props for networking fields and a callback used to reflect cluster-wide proxy selection in parent UI. */
 type NetworkingAndSubnetsSubStepProps = {
   vpcList: Resource<VPC[]>;
   setIsClusterWideProxySelected: (value: boolean) => void;
 };
 
+/**
+ * Cluster privacy, public subnet for external clusters, proxy toggle, and advanced CIDR/host-prefix inputs.
+ */
 export const NetworkingAndSubnetsSubStep = (
   props: NetworkingAndSubnetsSubStepProps
 ): JSX.Element => {
@@ -77,11 +81,14 @@ export const NetworkingAndSubnetsSubStep = (
   const podDisjointSubnets = disjointSubnets('network_pod_cidr', v.disjointSubnets);
   const awsServiceSubnetMask = awsSubnetMask('network_service_cidr', v.serviceCidr);
 
+  /** Validates the pod network host prefix field. */
   const hostPrefixValidators = (value: string): string | undefined =>
     hostPrefix(value, v.hostPrefix);
+  /** Validates a generic CIDR string and numeric range rules from wizard copy. */
   const cidrValidators = (value: string): string | undefined =>
     cidr(value, v.cidr) || validateRange(value, v.validateRange, v.cidr) || undefined;
 
+  /** Validates machine CIDR against AWS rules, subnets, and disjointness with other cluster networks. */
   const machineCidrValidators = (value: string): string | undefined =>
     cidrValidators(value) ||
     awsMachineCidr(value, cluster, v.awsMachineCidr) ||
@@ -90,6 +97,7 @@ export const NetworkingAndSubnetsSubStep = (
     machineDisjointSubnets(value, cluster) ||
     undefined;
 
+  /** Validates Kubernetes service CIDR, disjointness, AWS mask rules, and subnet overlap. */
   const serviceCidrValidators = (value: string): string | undefined =>
     cidrValidators(value) ||
     serviceCidr(value, v.serviceCidr) ||
@@ -98,6 +106,7 @@ export const NetworkingAndSubnetsSubStep = (
     subnetCidrs(value, cluster, 'network_service_cidr', selectedSubnets, v.subnetCidrs) ||
     undefined;
 
+  /** Validates pod CIDR against host prefix, disjointness, and subnet overlap. */
   const podCidrValidators = (value: string): string | undefined =>
     cidrValidators(value) ||
     podCidr(value, cluster.network_host_prefix, v.podCidr) ||

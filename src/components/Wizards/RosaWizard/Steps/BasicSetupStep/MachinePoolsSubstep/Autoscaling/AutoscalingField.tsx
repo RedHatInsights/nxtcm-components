@@ -13,18 +13,26 @@ import {
 import { useRosaForm } from '../../../../RosaFormContext';
 import { FormCheckbox, FormNumberInput } from '../../../../../../../TanstackForm';
 
+/** Props for toggling autoscaling and supplying context used for min/max replica limits. */
 type AutoscalingFieldProps = {
   autoscaling?: boolean;
   machinePoolsNumber?: number;
   openshiftVersion?: string;
 };
 
+/** Default maximum worker nodes for hosted control plane when the OpenShift version allows the higher cap. */
 export const MAX_NODES_HCP_DEFAULT = 500;
+/** Lower maximum worker nodes for OpenShift versions that do not support the full HCP node limit. */
 export const MAX_NODES_HCP_INSUFFICIENT_VERSION = 90;
 
+/** Minimum replicas for autoscaling: 1 when multiple machine pools exist, otherwise 2. */
 const scaleMinNodesOnMachinePoolNumber = (machinePoolsNumber?: number): number =>
   machinePoolsNumber && machinePoolsNumber > 1 ? 1 : 2;
 
+/**
+ * Whether the cluster version supports the higher autoscaling maximum (500 nodes vs 90).
+ * Uses major.minor.patch rules aligned with ROSA HCP support.
+ */
 const scaleMaxNodesBasedOnOpenshiftVersion = (openshiftVersion: string): boolean => {
   const majorMinor = parseFloat(openshiftVersion.toString());
   const versionPatch = Number(openshiftVersion.toString().split('.')[2]);
@@ -35,6 +43,7 @@ const scaleMaxNodesBasedOnOpenshiftVersion = (openshiftVersion: string): boolean
   return true;
 };
 
+/** Returns the effective max replica count cap based on OpenShift version support. */
 export const getAutoscalingMaxNodes = (openshiftVersion?: string): number => {
   if (openshiftVersion && !scaleMaxNodesBasedOnOpenshiftVersion(openshiftVersion)) {
     return MAX_NODES_HCP_INSUFFICIENT_VERSION;
@@ -42,6 +51,9 @@ export const getAutoscalingMaxNodes = (openshiftVersion?: string): number => {
   return MAX_NODES_HCP_DEFAULT;
 };
 
+/**
+ * Autoscaling toggle with min/max replicas, or a fixed compute node count when autoscaling is off.
+ */
 export const AutoscalingField = (props: AutoscalingFieldProps): JSX.Element => {
   const a = useRosaWizardStrings().autoscaling;
   const v = useRosaWizardValidators();

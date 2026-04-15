@@ -19,6 +19,10 @@ import { ClusterEncryptionKeys, ClusterNetwork, ClusterUpgrade } from '../../typ
 import { useRosaWizardStrings } from '../RosaWizardStringsContext';
 import { useClusterValues } from '../RosaFormContext';
 
+/**
+ * Final review step: shows a read-only summary of cluster choices in expandable sections,
+ * with links to jump back and edit the relevant wizard steps.
+ */
 export const ReviewStepData = (): JSX.Element => {
   const r = useRosaWizardStrings().review;
   const cluster = useClusterValues();
@@ -34,6 +38,7 @@ export const ReviewStepData = (): JSX.Element => {
   const [isOptionalClusterUpgradesExpanded, setIsOptionalClusterUpgradesExpanded] =
     React.useState<boolean>(false);
 
+  /** Opens optional review sections when encryption, custom CIDRs, or manual upgrades are in use. */
   React.useEffect(() => {
     if (
       (cluster.encryption_keys && cluster.encryption_keys === ClusterEncryptionKeys.custom) ||
@@ -182,30 +187,25 @@ export const ReviewStepData = (): JSX.Element => {
                     : cluster.nodes_compute
                 }
               />
-              <Stack hasGutter>
-                <StackItem>
-                  <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
-                    <FlexItem>{r.machinePoolsHeading}</FlexItem>
-                    <FlexItem>
-                      <LockIcon />
-                    </FlexItem>
-                  </Flex>
-                </StackItem>
-                <StackItem style={{ marginLeft: '30px' }}>
-                  <MachinePoolsReviewAndCreateStepItem
-                    machinePools={[
-                      {
-                        availability_zone: 'us-east-1a',
-                        public_subnet: 'admin-rosa-2-subnet-private2-us-east-1a',
-                      },
-                      {
-                        availability_zone: 'us-east-1b',
-                        public_subnet: 'admin-rosa-2-subnet-private2-us-east-1b',
-                      },
-                    ]}
-                  />
-                </StackItem>
-              </Stack>
+              {(cluster.machine_pools_subnets ?? []).length > 0 && (
+                <Stack hasGutter>
+                  <StackItem>
+                    <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
+                      <FlexItem>{r.machinePoolsHeading}</FlexItem>
+                      <FlexItem>
+                        <LockIcon />
+                      </FlexItem>
+                    </Flex>
+                  </StackItem>
+                  <StackItem style={{ marginLeft: '30px' }}>
+                    <MachinePoolsReviewAndCreateStepItem
+                      machinePools={cluster.machine_pools_subnets ?? []}
+                      poolLabel={r.machinePoolLabel}
+                      subnetLabel={r.subnetLabel}
+                    />
+                  </StackItem>
+                </Stack>
+              )}
             </Stack>
           </ExpandableSection>
         </SplitItem>

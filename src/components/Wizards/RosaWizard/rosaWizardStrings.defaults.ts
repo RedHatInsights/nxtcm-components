@@ -49,6 +49,9 @@ export const defaultRosaWizardStrings: RosaWizardStrings = {
       backButtonText: 'Back',
       cancelButtonText: 'Cancel',
       submitButtonText: 'Submit',
+      skipToReviewButtonText: 'Skip to review',
+      validationErrorText: 'Please fix validation errors',
+      closeButtonAriaLabel: 'Close',
     },
   },
   submitError: {
@@ -125,6 +128,7 @@ export const defaultRosaWizardStrings: RosaWizardStrings = {
     clusterNamePlaceholder: 'Enter the cluster name',
     clusterNameHelp:
       'This will be how we refer to your cluster in the OpenShift cluster list and will form part of the cluster console subdomain.',
+    clusterNameRequired: 'Cluster name is required',
     openShiftVersionLabel: 'OpenShift version',
     openShiftVersionPlaceholder: 'Select an OpenShift version',
     openShiftVersionOptionDisabledDescription:
@@ -369,6 +373,8 @@ export const defaultRosaWizardStrings: RosaWizardStrings = {
     instanceType: 'Compute node instance type',
     computeCount: 'Compute node count',
     machinePoolsHeading: 'Machine pools',
+    machinePoolLabel: 'Machine pool',
+    subnetLabel: 'Subnet',
     additionalEtcd: 'Additional etcd encryption',
     encryptionKeys: 'Encryption keys',
     machineCidr: 'Machine CIDR',
@@ -388,6 +394,7 @@ export const defaultRosaWizardStrings: RosaWizardStrings = {
     errorDetails: 'Error details',
     showErrorDetails: 'Show error details',
     retry: 'Retry',
+    requiredField: 'This field is required',
   },
 };
 

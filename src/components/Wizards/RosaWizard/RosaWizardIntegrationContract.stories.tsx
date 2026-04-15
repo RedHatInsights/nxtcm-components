@@ -100,6 +100,9 @@ const integrationContractOnSubmit = async (data: RosaWizardFormData): Promise<vo
   void data.cluster;
 };
 
+/**
+ * Storybook entry for the typed integration contract: how consumers wire `WizardStepsData` and submit handlers.
+ */
 const meta: Meta<typeof RosaWizard> = {
   title: 'Wizards/RosaWizard/Integration Contract',
   component: RosaWizard,
@@ -125,6 +128,9 @@ The handler uses \`RosaWizardSubmitFn\` — TanStack Form resolves the data shap
 export default meta;
 type Story = StoryObj<typeof RosaWizard>;
 
+/**
+ * Minimal wizard wired like consumer code so types for step data and `onSubmit` stay aligned with the public API.
+ */
 export const TypedConsumerExample: Story = {
   args: {
     title: 'Typed ROSA Wizard Integration',

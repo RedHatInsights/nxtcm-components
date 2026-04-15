@@ -16,6 +16,7 @@ import {
   type MachinePoolsSubstepStoryProps,
 } from './MachinePoolsSubstep.fixtures';
 
+/** Re-exported props type for `MachinePoolsSubstepMount` consumers in specs and stories. */
 export type { MachinePoolsSubstepStoryProps };
 
 /**
@@ -29,6 +30,7 @@ function ValidateOnMount({ form }: { form: RosaFormApi }): null {
   return null;
 }
 
+/** Wraps children in `AppForm` with `createMockClusterData` defaults; optionally runs `validateAllFields` on mount. */
 const MachinePoolsFormWrapper: React.FC<{
   clusterOverrides?: Record<string, unknown>;
   showValidation?: boolean;
@@ -47,6 +49,10 @@ const MachinePoolsFormWrapper: React.FC<{
   );
 };
 
+/**
+ * CT mount for `MachinePoolsSubstep` with wizard strings, optional `showValidation`, and fixture-backed VPC/types.
+ * Pass `clusterOverrides`, `vpcList`, or `machineTypes` to exercise loading, empty lists, or validation.
+ */
 export const MachinePoolsSubstepMount: React.FC<
   MachinePoolsSubstepStoryProps & { showValidation?: boolean }
 > = ({

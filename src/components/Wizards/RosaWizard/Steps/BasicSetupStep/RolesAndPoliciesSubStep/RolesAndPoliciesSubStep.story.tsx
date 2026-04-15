@@ -5,6 +5,10 @@ import { useAppForm } from '../../../RosaFormContext';
 import { OIDCConfig, Resource, Role, SelectDropdownType } from '../../../../types';
 import type { RosaWizardFormData } from '../../../../types';
 
+/**
+ * Roles and Policies substep with shared mock roles, OIDC config, and a form wrapper for Storybook or CT usage.
+ */
+
 export const mockInstallerRoles: SelectDropdownType[] = [
   {
     label: 'arn:aws:iam::123456789012:role/ManagedOpenShift-Installer-Role',
@@ -87,6 +91,9 @@ const RolesFormWrapper: React.FC<{
   return <form.AppForm>{children}</form.AppForm>;
 };
 
+/**
+ * Renders installer, support, worker, and OIDC fields with mock resources and overridable cluster defaults.
+ */
 export const RolesAndPoliciesSubStepStory: React.FC<RolesAndPoliciesSubStepStoryProps> = ({
   roles = mockFetchResource<Role[], [awsAccount: string]>([
     {

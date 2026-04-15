@@ -20,6 +20,7 @@ import { UserRole } from './UserRole';
 import { AccountRoles } from './AccountRoles';
 import { useRosaWizardStrings } from '../RosaWizardStringsContext';
 
+/** Props for the associate-AWS side drawer that wraps wizard content and controls expand or close callbacks. */
 type StepDrawerProps = {
   isDrawerExpanded: boolean;
   setIsDrawerExpanded: (expanded: boolean) => void;
@@ -27,6 +28,9 @@ type StepDrawerProps = {
   children: React.ReactNode;
 };
 
+/**
+ * Inline drawer with STS setup steps (OCM role, user role, account roles) beside the main wizard children.
+ */
 export const StepDrawer = (props: StepDrawerProps) => {
   const { isDrawerExpanded, onWizardExpand, setIsDrawerExpanded } = props;
   const d = useRosaWizardStrings().associateAwsDrawer;

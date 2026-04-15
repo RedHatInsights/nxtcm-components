@@ -5,6 +5,7 @@ import { defaultRosaWizardStrings } from '../../../rosaWizardStrings.defaults';
 import { DetailsSubStepMount } from './DetailsSubStep.spec-helpers';
 import { mockRegions, mockSingleBillingAccount } from './DetailsSubStep.fixtures';
 
+/** Minimal `Resource` with static `data` and inert `fetch` for CT prop overrides. */
 const mockResource = <TData,>(data: TData): Resource<TData> => ({
   data,
   error: null,
@@ -22,14 +23,17 @@ const mockVersionsLatestDefaultPrevious: OpenShiftVersionsData = {
   ],
 };
 
+/** Version data where latest equals default semver to assert merged "Default (Recommended)" grouping. */
 const mockVersionsDefaultEqualsLatest: OpenShiftVersionsData = {
   latest: { label: 'OpenShift 4.12.0', value: '4.12.0' },
   default: { label: 'OpenShift 4.12.0', value: '4.12.0' },
   releases: [{ label: 'OpenShift 4.11.5', value: '4.11.5' }],
 };
 
+/** Installer role ARN aligned with `rolesWithInstallerVersion412` for cluster form overrides. */
 const INSTALLER_ARN = 'arn:aws:iam::123456789012:role/rosa-installer';
 
+/** Roles resource pinning installer `roleVersion` to 4.12 for OpenShift version disable rules. */
 const rolesWithInstallerVersion412: Resource<Role[], [awsAccount: string]> & {
   fetch: (awsAccount: string) => Promise<void>;
 } = {
@@ -49,25 +53,31 @@ const rolesWithInstallerVersion412: Resource<Role[], [awsAccount: string]> & {
   fetch: async () => {},
 };
 
+/** Expected tooltip copy when an OpenShift version option is incompatible with the installer role. */
 const versionDisabledDescription =
   defaultRosaWizardStrings.details.openShiftVersionOptionDisabledDescription;
 
+/** Playwright CT coverage for `DetailsSubStep`: rendering, selects, validation, and version UX. */
 test.describe('DetailsSubStep', () => {
+  /** Axe (project) accessibility run on default `DetailsSubStepMount`. */
   test('should pass accessibility tests', async ({ mount }) => {
     const component = await mount(<DetailsSubStepMount />);
     await checkAccessibility({ component });
   });
 
+  /** Section heading "Details" is visible with default strings. */
   test('should render the Details section title', async ({ mount }) => {
     const component = await mount(<DetailsSubStepMount />);
     await expect(component.getByText('Details', { exact: true })).toBeVisible();
   });
 
+  /** OpenShift version field label renders for the version combobox. */
   test('should render OpenShift version select', async ({ mount }) => {
     const component = await mount(<DetailsSubStepMount />);
     await expect(component.getByText('OpenShift version', { exact: true })).toBeVisible();
   });
 
+  /** Empty versions/regions/accounts still show Details shell and cluster name field. */
   test('should render with empty options', async ({ mount }) => {
     const component = await mount(
       <DetailsSubStepMount
@@ -87,6 +97,7 @@ test.describe('DetailsSubStep', () => {
     await expect(component.getByText('Cluster name', { exact: true })).toBeVisible();
   });
 
+  /** Cluster name label and accessible textbox are present. */
   test('should render the Cluster name input', async ({ mount }) => {
     const component = await mount(<DetailsSubStepMount />);
 
@@ -94,6 +105,7 @@ test.describe('DetailsSubStep', () => {
     await expect(component.getByRole('textbox', { name: 'Cluster name' })).toBeVisible();
   });
 
+  /** Infrastructure account field label is shown for the AWS account combobox. */
   test('should render the Associated AWS infrastructure account select', async ({ mount }) => {
     const component = await mount(<DetailsSubStepMount />);
 
@@ -102,6 +114,7 @@ test.describe('DetailsSubStep', () => {
     ).toBeVisible();
   });
 
+  /** Billing account field label is shown for the billing combobox. */
   test('should render the Associated AWS billing account select', async ({ mount }) => {
     const component = await mount(<DetailsSubStepMount />);
 
@@ -110,18 +123,21 @@ test.describe('DetailsSubStep', () => {
     ).toBeVisible();
   });
 
+  /** Region field label is visible for the region combobox. */
   test('should render the Region select', async ({ mount }) => {
     const component = await mount(<DetailsSubStepMount />);
 
     await expect(component.getByText('Region', { exact: true })).toBeVisible();
   });
 
+  /** CTA to associate a new AWS account is rendered in the infrastructure account area. */
   test('should render the Associate a new AWS account button', async ({ mount }) => {
     const component = await mount(<DetailsSubStepMount />);
 
     await expect(component.getByText('Associate a new AWS account')).toBeVisible();
   });
 
+  /** Opening the version menu lists expected OpenShift labels from default fixture data. */
   test('should show OpenShift version options in dropdown', async ({ mount, page }) => {
     const component = await mount(<DetailsSubStepMount />);
 
@@ -132,7 +148,9 @@ test.describe('DetailsSubStep', () => {
     await expect(page.getByText('OpenShift 4.16.0', { exact: true })).toBeVisible();
   });
 
+  /** Sync validation, loading disables, billing auto-select, and related Details field behaviors. */
   test.describe('DetailsSubStep - cluster name validation', () => {
+    /** Uppercase cluster name triggers lowercase-only validation after blur. */
     test('should display validation error for cluster name with uppercase characters', async ({
       mount,
     }) => {
@@ -145,6 +163,7 @@ test.describe('DetailsSubStep', () => {
       await expect(component.getByText(/can only contain lowercase/)).toBeVisible();
     });
 
+    /** Leading digit in cluster name shows "must not start with a number" after blur. */
     test('should display validation error for cluster name starting with a number', async ({
       mount,
     }) => {
@@ -157,6 +176,7 @@ test.describe('DetailsSubStep', () => {
       await expect(component.getByText(/must not start with a number/)).toBeVisible();
     });
 
+    /** When name flips to sync-invalid before debounce, uniqueness callback must not run. */
     test('should cancel pending async check when name becomes sync-invalid', async ({ mount }) => {
       const calls: Array<{ name: string; region: string }> = [];
       const component = await mount(
@@ -174,6 +194,7 @@ test.describe('DetailsSubStep', () => {
       expect(calls.length).toBe(0);
     });
 
+    /** Infrastructure account menu lists both mock production and staging account labels. */
     test('should show AWS infrastructure account options in dropdown', async ({ mount, page }) => {
       const component = await mount(<DetailsSubStepMount />);
 
@@ -188,6 +209,7 @@ test.describe('DetailsSubStep', () => {
       ).toBeVisible();
     });
 
+    /** Region menu exposes every label from `mockRegions`. */
     test('should show region options in dropdown', async ({ mount, page }) => {
       const component = await mount(<DetailsSubStepMount />);
 
@@ -199,6 +221,7 @@ test.describe('DetailsSubStep', () => {
       }
     });
 
+    /** While infrastructure accounts fetch, the AWS account control shows PatternFly disabled styling. */
     test('should show disabled state for AWS infrastructure account when loading', async ({
       mount,
     }) => {
@@ -213,6 +236,7 @@ test.describe('DetailsSubStep', () => {
       await expect(awsSelect.locator('.pf-m-disabled')).toBeVisible();
     });
 
+    /** Billing account select is disabled while `isFetching` is true with empty data. */
     test('should show disabled state for AWS billing account when loading', async ({ mount }) => {
       const component = await mount(
         <DetailsSubStepMount awsBillingAccounts={{ data: [], isFetching: true, error: null }} />
@@ -223,6 +247,7 @@ test.describe('DetailsSubStep', () => {
       await expect(billingSelect.locator('.pf-m-disabled')).toBeVisible();
     });
 
+    /** Region select is disabled while regions are loading. */
     test('should show disabled state for Region select when loading', async ({ mount }) => {
       const component = await mount(
         <DetailsSubStepMount
@@ -235,6 +260,7 @@ test.describe('DetailsSubStep', () => {
       await expect(regionSelect.locator('.pf-m-disabled')).toBeVisible();
     });
 
+    /** Single billing account in API data pre-fills the billing combobox display value. */
     test('should auto-select billing account when only one is available', async ({ mount }) => {
       const component = await mount(
         <DetailsSubStepMount
@@ -246,6 +272,7 @@ test.describe('DetailsSubStep', () => {
       await expect(billingCombobox).toHaveValue(mockSingleBillingAccount[0].label);
     });
 
+    /** Sync invalid name hides async "already exists" validation from `clusterNameValidation`. */
     test('should not display async error when sync validation fails', async ({ mount }) => {
       const component = await mount(
         <DetailsSubStepMount
@@ -265,6 +292,7 @@ test.describe('DetailsSubStep', () => {
       await expect(component.getByText('Cluster name already exists.')).not.toBeVisible();
     });
 
+    /** Multiple billing accounts leave billing combobox empty until the user chooses. */
     test('should not auto-select billing account when multiple are available', async ({
       mount,
     }) => {
@@ -274,6 +302,7 @@ test.describe('DetailsSubStep', () => {
       await expect(billingCombobox).toHaveValue('');
     });
 
+    /** Empty releases still render the OpenShift version field chrome. */
     test('should render with empty OpenShift versions', async ({ mount }) => {
       const component = await mount(
         <DetailsSubStepMount
@@ -289,6 +318,7 @@ test.describe('DetailsSubStep', () => {
       await expect(component.getByText('OpenShift version', { exact: true })).toBeVisible();
     });
 
+    /** Empty regions list still shows the Region field label. */
     test('should render with empty regions', async ({ mount }) => {
       const component = await mount(
         <DetailsSubStepMount
@@ -299,12 +329,14 @@ test.describe('DetailsSubStep', () => {
       await expect(component.getByText('Region', { exact: true })).toBeVisible();
     });
 
+    /** Link to connect a new billing account is visible with default copy. */
     test('should render the Connect ROSA to a new AWS billing account link', async ({ mount }) => {
       const component = await mount(<DetailsSubStepMount />);
 
       await expect(component.getByText('Connect ROSA to a new AWS billing account')).toBeVisible();
     });
 
+    /** Cluster name textbox accepts typed lowercase input and reflects the value. */
     test('should allow typing a cluster name', async ({ mount }) => {
       const component = await mount(<DetailsSubStepMount />);
 
@@ -314,6 +346,7 @@ test.describe('DetailsSubStep', () => {
       await expect(nameInput).toHaveValue('my-test-cluster');
     });
 
+    /** Choosing a version option updates the version combobox display value. */
     test('should select an OpenShift version', async ({ mount, page }) => {
       const component = await mount(<DetailsSubStepMount />);
 
@@ -324,6 +357,7 @@ test.describe('DetailsSubStep', () => {
       await expect(versionCombobox).toHaveValue('OpenShift 4.16.2');
     });
 
+    /** Choosing a region option updates the region combobox display value. */
     test('should select a region', async ({ mount, page }) => {
       const component = await mount(<DetailsSubStepMount />);
 
@@ -334,6 +368,7 @@ test.describe('DetailsSubStep', () => {
       await expect(regionCombobox).toHaveValue('US East (N. Virginia)');
     });
 
+    /** Pre-filled billing and name overrides do not surface false "name taken" on valid rename. */
     test('should render pre-filled cluster data', async ({ mount }) => {
       const component = await mount(
         <DetailsSubStepMount
@@ -351,7 +386,9 @@ test.describe('DetailsSubStep', () => {
     });
   });
 
+  /** Debounced `checkClusterNameUniqueness` integration: when it runs and when it is skipped. */
   test.describe('DetailsSubStep - async cluster name uniqueness check', () => {
+    /** Valid name with region set eventually invokes the uniqueness callback at least once. */
     test('should call checkClusterNameUniqueness when a valid name is typed', async ({ mount }) => {
       const calls: Array<{ name: string; region: string }> = [];
 
@@ -373,6 +410,7 @@ test.describe('DetailsSubStep', () => {
       expect(calls[calls.length - 1].name).toBe('valid-cluster');
     });
 
+    /** Invalid (sync-failing) name never triggers uniqueness checks after debounce window. */
     test('should NOT call checkClusterNameUniqueness for an invalid name', async ({ mount }) => {
       const calls: Array<{ name: string; region: string }> = [];
 
@@ -393,6 +431,7 @@ test.describe('DetailsSubStep', () => {
       expect(calls.length).toBe(0);
     });
 
+    /** Rapid sequential input collapses to one debounced uniqueness call for the final string. */
     test('should debounce rapid typing so only the final value triggers the check', async ({
       mount,
     }) => {
@@ -418,6 +457,7 @@ test.describe('DetailsSubStep', () => {
       expect(validCalls[0].name).toBe('abc');
     });
 
+    /** Picking a region with a preset valid name fires uniqueness check including that region. */
     test('should call checkClusterNameUniqueness when region is selected and name exists', async ({
       mount,
       page,
@@ -444,6 +484,7 @@ test.describe('DetailsSubStep', () => {
       expect(regionCalls[0].name).toBe('my-cluster');
     });
 
+    /** Region change alone without cluster name must not call the uniqueness callback. */
     test('should NOT call checkClusterNameUniqueness when region is selected but no name exists', async ({
       mount,
       page,
@@ -467,6 +508,7 @@ test.describe('DetailsSubStep', () => {
       expect(calls.length).toBe(0);
     });
 
+    /** With no `checkClusterNameUniqueness` prop, typing a valid name is a no-op for async checks. */
     test('should NOT call checkClusterNameUniqueness when callback is not provided', async ({
       mount,
     }) => {
@@ -483,6 +525,7 @@ test.describe('DetailsSubStep', () => {
     });
   });
 
+  /** Three-way version split shows Latest, Default, and Previous section headings and options. */
   test('version dropdown displays latest, default, and other versions correctly in grouped sections', async ({
     mount,
     page,
@@ -520,6 +563,7 @@ test.describe('DetailsSubStep', () => {
     await expect(previousGroup.getByText('OpenShift 4.11.5', { exact: true })).toBeVisible();
   });
 
+  /** Collapsed latest/default semver shows merged recommended group plus previous releases only. */
   test('version dropdown shows Default (Recommended) and Previous releases only when latest and default share the same value', async ({
     mount,
     page,
@@ -559,6 +603,7 @@ test.describe('DetailsSubStep', () => {
     await expect(recommendedGroup.getByText('OpenShift 4.12.0', { exact: true })).toBeVisible();
   });
 
+  /** Typeahead filter with no matches shows the empty option and hides release group headings. */
   test('grouped OpenShift version typeahead shows No results found when the filter matches nothing', async ({
     mount,
     page,
@@ -584,6 +629,7 @@ test.describe('DetailsSubStep', () => {
     ).not.toBeVisible();
   });
 
+  /** Installer role 4.12 disables newer OpenShift options while leaving compatible ones enabled. */
   test('should disable OpenShift version options newer than the selected installer role version', async ({
     mount,
     page,
@@ -610,6 +656,7 @@ test.describe('DetailsSubStep', () => {
     await expect(page.getByRole('option', { name: /^OpenShift 4\.11\.5$/ })).toBeEnabled();
   });
 
+  /** Hovering a disabled incompatible version shows the configured disabled-option tooltip text. */
   test('should show tooltip on disabled OpenShift version options when installer role is older', async ({
     mount,
     page,

@@ -26,6 +26,7 @@ import {
   type MachinePoolSelectOption,
 } from '../../../../../../TanstackForm';
 
+/** Props for configuring default machine pools: VPC list and instance types for the current region. */
 type MachinePoolsSubstepProps = {
   vpcList: Resource<VPC[]>;
   machineTypes: Resource<MachineTypesDropdownType[], [region: string]> & {
@@ -33,8 +34,13 @@ type MachinePoolsSubstepProps = {
   };
 };
 
+/**
+ * Machine pool defaults: VPC, subnets per pool, instance type, autoscaling, IMDS, disk, and worker security groups.
+ */
 export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps): JSX.Element => {
-  const mp = useRosaWizardStrings().machinePools;
+  const strings = useRosaWizardStrings();
+  const mp = strings.machinePools;
+  const { requiredField } = strings.common;
   const v = useRosaWizardValidators();
   const form = useRosaForm();
   const cluster = useClusterValues();
@@ -95,15 +101,12 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps): JSX.Elemen
             >
               <form.Field
                 name="cluster.selected_vpc"
+                validators={{
+                  onChange: ({ value }) => (!value ? requiredField : undefined),
+                }}
                 listeners={{
                   onChange: () => {
-                    form.setFieldValue(
-                      'cluster' as never,
-                      {
-                        ...form.getFieldValue('cluster'),
-                        security_groups_worker: [],
-                      } as never
-                    );
+                    form.setFieldValue('cluster.security_groups_worker', []);
                   },
                 }}
               >
@@ -173,7 +176,12 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps): JSX.Elemen
                   : undefined
               }
             >
-              <form.Field name="cluster.machine_type">
+              <form.Field
+                name="cluster.machine_type"
+                validators={{
+                  onChange: ({ value }) => (!value ? requiredField : undefined),
+                }}
+              >
                 {(field) => (
                   <FormSelect
                     field={field}

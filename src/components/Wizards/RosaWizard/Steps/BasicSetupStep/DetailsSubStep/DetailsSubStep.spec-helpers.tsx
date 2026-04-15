@@ -17,6 +17,7 @@ import {
   mockRoles,
 } from './DetailsSubStep.fixtures';
 
+/** Inner form shell: `useAppForm` with `createMockClusterData` defaults, wrapping children in `AppForm`. */
 const DetailsSubStepFormWrapper: React.FC<{
   clusterOverrides?: Record<string, unknown>;
   children: React.ReactNode;
@@ -29,6 +30,10 @@ const DetailsSubStepFormWrapper: React.FC<{
   return <form.AppForm>{children}</form.AppForm>;
 };
 
+/**
+ * Mounts `DetailsSubStep` under wizard strings + mocked resources (defaults from fixtures, overridable).
+ * Wires fetchable props with no-op `fetch` and null errors unless the story props supply them.
+ */
 export const DetailsSubStepMount: React.FC<DetailsSubStepStoryProps> = ({
   clusterNameValidation = { error: null, isFetching: false },
   checkClusterNameUniqueness,

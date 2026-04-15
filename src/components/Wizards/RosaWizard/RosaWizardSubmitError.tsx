@@ -8,6 +8,7 @@ import {
 } from '@patternfly/react-core';
 import { useRosaWizardStrings } from './RosaWizardStringsContext';
 
+/** Props for the submit-error empty state (message, optional back-to-review, cancel, loading). */
 export type RosaWizardSubmitErrorProps = {
   /** Error message or flag from parent (e.g. submit failure). */
   onSubmitError: string | boolean;
@@ -18,6 +19,9 @@ export type RosaWizardSubmitErrorProps = {
   onCancel: () => void;
 };
 
+/**
+ * Full-screen PatternFly empty state shown when cluster creation submission fails or is flagged.
+ */
 export function RosaWizardSubmitError(props: RosaWizardSubmitErrorProps) {
   const { onSubmitError, onBackToReviewStep, isNavigatingToReview, onCancel } = props;
   const { submitError } = useRosaWizardStrings();

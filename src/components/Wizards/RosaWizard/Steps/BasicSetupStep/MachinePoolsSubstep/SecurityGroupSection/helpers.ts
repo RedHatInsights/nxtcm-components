@@ -1,5 +1,6 @@
 import { SecurityGroup } from '../../../../../types';
 
+/** Sort comparator: groups with names first, then alphabetical by name or id. */
 export const securityGroupsSort = (a: SecurityGroup, b: SecurityGroup) => {
   // Sorts first VPCs that have a name over those that don't
   if (a.name && !b.name) {

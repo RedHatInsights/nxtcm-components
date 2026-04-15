@@ -26,4 +26,6 @@ const links = {
   AWS_CONSOLE_SECURITY_GROUPS: 'https://console.aws.amazon.com/ec2/home#SecurityGroups',
   ROSA_SECURITY_GROUPS: `${redHatRosaDocsBaseUrl}/prepare_your_environment/rosa-hcp-prereqs#rosa-security-groups_rosa-hcp-prereqs`,
 };
+
+/** Curated Red Hat and AWS documentation URLs used by RosaWizard help text and links. */
 export default links;

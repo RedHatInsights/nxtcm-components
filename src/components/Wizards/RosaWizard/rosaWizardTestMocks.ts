@@ -88,6 +88,7 @@ const mockVpcs: VPC[] = [
   },
 ];
 
+/** Sample `WizardStepsData` used in RosaWizard tests with inert fetchers and minimal domain data. */
 export const rosaWizardMockStepsData: WizardStepsData = {
   basicSetupStep: {
     clusterNameValidation: mockValidationResource(),
