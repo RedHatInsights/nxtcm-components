@@ -10,17 +10,21 @@ import {
   HelperTextItem,
   InputGroup,
   InputGroupItem,
-  MenuToggleElement,
-  Select as PfSelect,
+  type MenuToggleElement,
 } from '@patternfly/react-core';
 import { MinusCircleIcon } from '@patternfly/react-icons';
-import { Fragment, useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import { Fragment, useCallback, useLayoutEffect, useMemo, useState, type Ref } from 'react';
 import { useFormContext, useFormState, useWatch, type FieldPath } from 'react-hook-form';
 import type { RosaWizardFormData } from '../../types';
 import { useRosaShowFieldErrorsAfterStepNav } from '../rosaWizardStepValidation';
 import { useWizardFooterStrings } from '../wizardFooterStrings';
 import { fieldIdFromPath } from './fieldId';
-import { InputSelect, SelectListOptions } from './RosaInputSelect';
+import {
+  RosaTypeaheadFieldProvider,
+  RosaTypeaheadMenu,
+  RosaTypeaheadPfSelect,
+  RosaTypeaheadToggle,
+} from './RosaInputSelect';
 import { extractOptionValue, type Option, type OptionType } from './RosaSelectTypes';
 
 export type MachinePoolSubnet = {
@@ -68,7 +72,6 @@ function MachinePoolRow(props: MachinePoolRowProps) {
   } = props;
 
   const [open, setOpen] = useState(false);
-  const [filteredOptions, setFilteredOptions] = useState<(string | OptionType<string>)[]>([]);
   const { required: requiredErrorMessage } = useWizardFooterStrings();
   const { isSubmitted } = useFormState();
 
@@ -89,6 +92,18 @@ function MachinePoolRow(props: MachinePoolRowProps) {
       }));
   }, [subnetOptions, selectedSubnets, value]);
 
+  const selectedSubnetOptionId = useMemo(() => {
+    if (!value) return '';
+    const opt = selectOptionsTyped?.find((o) => o.value === value || o.keyedValue === value);
+    return opt?.id ?? value;
+  }, [selectOptionsTyped, value]);
+
+  const subnetDisplayLabel = useMemo(() => {
+    if (!value) return '';
+    const opt = selectOptionsTyped?.find((o) => o.value === value || o.keyedValue === value);
+    return opt?.label ?? value;
+  }, [selectOptionsTyped, value]);
+
   const onSelect = useCallback(
     (selectOptionObject: string | undefined) => {
       onChange(selectOptionObject ?? '');
@@ -107,28 +122,30 @@ function MachinePoolRow(props: MachinePoolRowProps) {
       <GridItem span={5} rowSpan={2}>
         <InputGroup>
           <InputGroupItem isFill>
-            <PfSelect
-              onOpenChange={(isOpen) => !isOpen && setOpen(false)}
-              isOpen={open}
-              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                <InputSelect
-                  disabled={false}
-                  validated={validated}
-                  placeholder={selectPlaceholder}
-                  options={selectOptionsTyped}
-                  setOptions={setFilteredOptions}
-                  toggleRef={toggleRef}
-                  value={value}
-                  onSelect={onSelect}
-                  open={open}
-                  setOpen={setOpen}
-                />
-              )}
-              selected={value}
-              onSelect={(_event, val) => onSelect(extractOptionValue(val) ?? '')}
+            <RosaTypeaheadFieldProvider
+              open={open}
+              setOpen={setOpen}
+              allFlatOptions={selectOptionsTyped ?? []}
+              hasGroups={false}
+              committedDisplay={subnetDisplayLabel}
+              selectedOptionId={selectedSubnetOptionId}
+              onCommit={onSelect}
+              disabled={false}
+              validated={validated}
+              placeholder={selectPlaceholder}
+              listboxId={`rosa-machine-pool-subnet-${index}-listbox`}
             >
-              <SelectListOptions value={value} options={filteredOptions} />
-            </PfSelect>
+              <RosaTypeaheadPfSelect
+                isOpen={open}
+                selected={selectedSubnetOptionId}
+                onSelect={(_event, val) => onSelect(extractOptionValue(val) ?? '')}
+                toggle={(toggleRef: Ref<MenuToggleElement>) => (
+                  <RosaTypeaheadToggle toggleRef={toggleRef} />
+                )}
+              >
+                <RosaTypeaheadMenu listValue={selectedSubnetOptionId} />
+              </RosaTypeaheadPfSelect>
+            </RosaTypeaheadFieldProvider>
           </InputGroupItem>
         </InputGroup>
         {validated === 'error' && requiredErrorMessage && (

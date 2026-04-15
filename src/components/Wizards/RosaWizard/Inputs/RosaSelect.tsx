@@ -7,11 +7,10 @@ import {
   HelperTextItem,
   InputGroup,
   InputGroupItem,
-  MenuToggleElement,
-  Select as PfSelect,
+  type MenuToggleElement,
 } from '@patternfly/react-core';
 import get from 'get-value';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, type Ref } from 'react';
 import {
   useController,
   useFormContext,
@@ -24,7 +23,13 @@ import { useRosaShowFieldErrorsAfterStepNav } from '../rosaWizardStepValidation'
 import { useWizardFooterStrings } from '../wizardFooterStrings';
 import { fieldIdFromPath } from './fieldId';
 import { LabelHelp } from './components/LabelHelp';
-import { InputSelect, SelectListOptions, toDisplayString } from './RosaInputSelect';
+import {
+  RosaTypeaheadFieldProvider,
+  RosaTypeaheadMenu,
+  RosaTypeaheadPfSelect,
+  RosaTypeaheadToggle,
+  toDisplayString,
+} from './RosaInputSelect';
 import {
   extractOptionValue,
   type Option,
@@ -72,8 +77,6 @@ export function RosaSelect<T = unknown>(props: RosaSelectProps<T>) {
     props.placeholder ?? `Select the ${lowercaseFirst(props.label)}`;
   const keyPath = props.keyPath ?? 'value';
   const [open, setOpen] = useState(false);
-  const [filteredOptions, setFilteredOptions] = useState<(string | OptionType<T>)[]>([]);
-  const [filteredOptionGroups, setFilteredOptionGroups] = useState<NormalizedOptionGroup<T>[]>([]);
   const [localSelection, setLocalSelection] = useState<string | number | null>(null);
 
   const { field, fieldState } = useController({
@@ -167,6 +170,19 @@ export function RosaSelect<T = unknown>(props: RosaSelectProps<T>) {
 
   const hasOptionGroups = normalizedOptionGroups != null && normalizedOptionGroups.length > 0;
 
+  const selectedOptionId = useMemo(() => {
+    const val = value === '' ? '' : value != null && value !== '' ? value : localSelection;
+    if (val == null || val === '') return '';
+    const opt = selectOptions?.find(
+      (o) =>
+        o.keyedValue === val ||
+        o.value === val ||
+        String(o.keyedValue) === String(val) ||
+        o.id === String(val)
+    );
+    return opt?.id ?? '';
+  }, [localSelection, selectOptions, value]);
+
   const displayValue = (() => {
     const val = value === '' ? '' : value != null && value !== '' ? value : localSelection;
     if (val == null || val === '') return '';
@@ -189,10 +205,6 @@ export function RosaSelect<T = unknown>(props: RosaSelectProps<T>) {
     }
     return '';
   })();
-
-  useEffect(() => {
-    if (normalizedOptionGroups) setFilteredOptionGroups(normalizedOptionGroups);
-  }, [normalizedOptionGroups]);
 
   useEffect(() => {
     if (value != null && value !== '') {
@@ -246,38 +258,32 @@ export function RosaSelect<T = unknown>(props: RosaSelectProps<T>) {
       >
       <InputGroup>
         <InputGroupItem isFill={props.isFill}>
-          <PfSelect
-            onOpenChange={(isOpen) => {
-              if (!isOpen) setOpen(false);
-            }}
-            isOpen={open}
-            toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-              <InputSelect
-                disabled={!!props.disabled}
-                validated={showError ? 'error' : undefined}
-                placeholder={placeholder}
-                options={selectOptions ?? []}
-                setOptions={setFilteredOptions}
-                optionGroups={hasOptionGroups ? normalizedOptionGroups : undefined}
-                setFilteredOptionGroups={hasOptionGroups ? setFilteredOptionGroups : undefined}
-                toggleRef={toggleRef}
-                value={displayValue}
-                onSelect={onSelect}
-                open={open}
-                setOpen={setOpen}
-                isPending={props.isPending}
-              />
-            )}
-            selected={displayValue}
-            onSelect={(_event, val) => onSelect(extractOptionValue(val) ?? '')}
+          <RosaTypeaheadFieldProvider
+            open={open}
+            setOpen={setOpen}
+            allFlatOptions={selectOptions ?? []}
+            allGroups={normalizedOptionGroups}
+            hasGroups={hasOptionGroups}
+            committedDisplay={displayValue}
+            selectedOptionId={selectedOptionId}
+            onCommit={onSelect}
+            disabled={!!props.disabled}
+            validated={showError ? 'error' : undefined}
+            placeholder={placeholder}
+            isPending={props.isPending}
+            listboxId={`${id}-typeahead-listbox`}
           >
-            <SelectListOptions
-              value={displayValue}
-              options={filteredOptions}
-              optionGroups={hasOptionGroups ? filteredOptionGroups : undefined}
-              isPending={props.isPending}
-            />
-          </PfSelect>
+            <RosaTypeaheadPfSelect
+              isOpen={open}
+              selected={selectedOptionId}
+              onSelect={(_event, val) => onSelect(extractOptionValue(val) ?? '')}
+              toggle={(toggleRef: Ref<MenuToggleElement>) => (
+                <RosaTypeaheadToggle toggleRef={toggleRef} />
+              )}
+            >
+              <RosaTypeaheadMenu listValue={selectedOptionId} />
+            </RosaTypeaheadPfSelect>
+          </RosaTypeaheadFieldProvider>
         </InputGroupItem>
         {props.refreshCallback && (
           <InputGroupItem>
