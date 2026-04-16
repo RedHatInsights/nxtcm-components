@@ -77,3 +77,24 @@ export const MockupValues: Story = {
     onViewMore: () => alert('View more clicked'),
   },
 };
+
+export const CustomTitle: Story = {
+  args: {
+    data: {
+      vCPU: { used: 32, total: 128, unit: 'Cores' },
+      memory: { used: 48, total: 256, unit: 'GiB' },
+    },
+    title: 'CPU and Memory utilization',
+    onViewMore: () => alert('View more clicked'),
+  },
+};
+
+export const NoTitle: Story = {
+  args: {
+    data: {
+      vCPU: { used: 32, total: 128, unit: 'Cores' },
+      memory: { used: 48, total: 256, unit: 'GiB' },
+    },
+    title: '',
+  },
+};

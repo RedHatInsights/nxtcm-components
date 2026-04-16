@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { AdvisorRecommendations } from './AdvisorRecommendations';
+import { AdvisorRecommendations, AdvisorRecommendationsData } from './AdvisorRecommendations';
 
 const meta: Meta<typeof AdvisorRecommendations> = {
   title: 'Components/Dashboard/AdvisorRecommendations',
@@ -13,22 +13,14 @@ const meta: Meta<typeof AdvisorRecommendations> = {
 export default meta;
 type Story = StoryObj<typeof AdvisorRecommendations>;
 
+const defaultData: AdvisorRecommendationsData = {
+  severity: { critical: 3, important: 7, moderate: 15, low: 2 },
+  categories: { serviceAvailability: 25, performance: 8, security: 12, faultTolerance: 4 },
+};
+
 export const Default: Story = {
   args: {
-    data: {
-      severity: {
-        critical: 3,
-        important: 7,
-        moderate: 15,
-        low: 2,
-      },
-      categories: {
-        serviceAvailability: 25,
-        performance: 8,
-        security: 12,
-        faultTolerance: 4,
-      },
-    },
+    data: defaultData,
     onViewMore: () => {},
   },
 };
@@ -128,6 +120,30 @@ export const MockupValues: Story = {
         faultTolerance: 4,
       },
     },
+    onViewMore: () => {},
+  },
+};
+
+export const WithoutLightspeedBadge: Story = {
+  args: {
+    data: defaultData,
+    showLightspeedBadge: false,
+    onViewMore: () => {},
+  },
+};
+
+export const CustomTitle: Story = {
+  args: {
+    data: defaultData,
+    title: 'Cluster recommendations',
+    onViewMore: () => {},
+  },
+};
+
+export const NoTitle: Story = {
+  args: {
+    data: defaultData,
+    title: '',
     onViewMore: () => {},
   },
 };

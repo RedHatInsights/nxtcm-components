@@ -8,6 +8,23 @@ const defaultData: ResourceUtilizationData = {
 };
 
 test.describe('ResourceUtilization', () => {
+  test('should render the default "Resource usage" title', async ({ mount }) => {
+    const component = await mount(<ResourceUtilization data={defaultData} />);
+    await expect(component.getByTestId('card-title')).toHaveText('Resource usage');
+  });
+
+  test('should render a custom title when provided', async ({ mount }) => {
+    const component = await mount(
+      <ResourceUtilization data={defaultData} title="CPU and Memory utilization" />
+    );
+    await expect(component.getByTestId('card-title')).toHaveText('CPU and Memory utilization');
+  });
+
+  test('should hide the title when empty string is passed', async ({ mount }) => {
+    const component = await mount(<ResourceUtilization data={defaultData} title="" />);
+    await expect(component.getByTestId('card-title')).toHaveCount(0);
+  });
+
   test('should render vCPU metric section', async ({ mount }) => {
     const component = await mount(<ResourceUtilization data={defaultData} />);
     await expect(component.getByTestId('metric-vcpu-donut')).toBeVisible();

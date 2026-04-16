@@ -1,9 +1,9 @@
-import { Divider, Flex, FlexItem, Title } from '@patternfly/react-core';
+import { Divider, Flex, FlexItem, Label, Title } from '@patternfly/react-core';
 import { ChartDonut } from '@patternfly/react-charts/victory';
-import AngleDoubleUpIcon from '@patternfly/react-icons/dist/esm/icons/angle-double-up-icon';
-import ExclamationTriangleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon';
+import SeverityCriticalIcon from '@patternfly/react-icons/dist/esm/icons/severity-critical-icon';
+import SeverityImportantIcon from '@patternfly/react-icons/dist/esm/icons/severity-important-icon';
 import EqualsIcon from '@patternfly/react-icons/dist/esm/icons/equals-icon';
-import ArrowDownIcon from '@patternfly/react-icons/dist/esm/icons/arrow-down-icon';
+import SeverityMinorIcon from '@patternfly/react-icons/dist/esm/icons/severity-minor-icon';
 import React from 'react';
 import styles from './AdvisorRecommendations.module.scss';
 
@@ -28,23 +28,29 @@ export type AdvisorRecommendationsData = {
   categories: CategoryCounts;
 };
 
+const DEFAULT_TITLE = 'Advisor recommendations by severity';
+
 export type AdvisorRecommendationsProps = {
   /** advisor recommendations data */
   data: AdvisorRecommendationsData;
+  /** card title — defaults to "Advisor recommendations by severity"; pass "" to hide */
+  title?: string;
   /** callback when "View more in Red Hat Advisor" link is clicked */
   onViewMore?: () => void;
+  /** show the "Powered by Red Hat Lightspeed" badge inline with the title; defaults to true */
+  showLightspeedBadge?: boolean;
 };
 
 const severityConfig = [
-  { key: 'critical' as const, label: 'Critical', Icon: AngleDoubleUpIcon, style: 'critical' },
+  { key: 'critical' as const, label: 'Critical', Icon: SeverityCriticalIcon, style: 'critical' },
   {
     key: 'important' as const,
     label: 'Important',
-    Icon: ExclamationTriangleIcon,
+    Icon: SeverityImportantIcon,
     style: 'important',
   },
   { key: 'moderate' as const, label: 'Moderate', Icon: EqualsIcon, style: 'moderate' },
-  { key: 'low' as const, label: 'Low', Icon: ArrowDownIcon, style: 'low' },
+  { key: 'low' as const, label: 'Low', Icon: SeverityMinorIcon, style: 'low' },
 ] as const;
 
 const categoryLabels: Record<keyof CategoryCounts, string> = {
@@ -58,7 +64,9 @@ const categoryColors = ['#004080', '#0066cc', '#4394e5', '#b8d4f0'];
 
 export const AdvisorRecommendations: React.FC<AdvisorRecommendationsProps> = ({
   data,
+  title = DEFAULT_TITLE,
   onViewMore,
+  showLightspeedBadge = true,
 }) => {
   const { severity, categories } = data;
 
@@ -72,6 +80,31 @@ export const AdvisorRecommendations: React.FC<AdvisorRecommendationsProps> = ({
 
   return (
     <Flex direction={{ default: 'column' }} className={styles.container}>
+      {/* card heading */}
+      {(title || showLightspeedBadge) && (
+        <FlexItem>
+          <Flex
+            alignItems={{ default: 'alignItemsCenter' }}
+            justifyContent={{ default: 'justifyContentSpaceBetween' }}
+          >
+            {title && (
+              <FlexItem>
+                <Title headingLevel="h3" size="md" data-testid="card-title">
+                  {title}
+                </Title>
+              </FlexItem>
+            )}
+            {showLightspeedBadge && (
+              <FlexItem>
+                <Label color="orange" isCompact data-testid="lightspeed-badge">
+                  Powered by Red Hat Lightspeed
+                </Label>
+              </FlexItem>
+            )}
+          </Flex>
+        </FlexItem>
+      )}
+
       {/* severity counts */}
       <FlexItem>
         <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
@@ -114,7 +147,7 @@ export const AdvisorRecommendations: React.FC<AdvisorRecommendationsProps> = ({
       {/* recommendations by category */}
       <FlexItem>
         <Title
-          headingLevel="h5"
+          headingLevel="h4"
           size="lg"
           className={styles.categoryTitle}
           data-testid="category-title"
@@ -159,7 +192,7 @@ export const AdvisorRecommendations: React.FC<AdvisorRecommendationsProps> = ({
         </Flex>
       </FlexItem>
 
-      {/* "view more" link */}
+      {/* footer */}
       {onViewMore && (
         <FlexItem>
           <button
