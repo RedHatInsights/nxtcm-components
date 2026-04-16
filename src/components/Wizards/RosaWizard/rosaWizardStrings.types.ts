@@ -143,12 +143,12 @@ export type RosaWizardValidatorStrings = {
   rootDisk: RosaWizardRootDiskValidatorStrings;
   replicas: RosaWizardReplicaValidatorStrings;
   proxyConfigureAtLeastOne: string;
-  cidr: RosaWizardCidrValidatorStrings;
-  validateRange: RosaWizardValidateRangeValidatorStrings;
-  awsMachineCidr: RosaWizardAwsMachineCidrValidatorStrings;
-  serviceCidr: RosaWizardServiceCidrValidatorStrings;
-  podCidr: RosaWizardPodCidrValidatorStrings;
-  subnetCidrs: RosaWizardSubnetCidrsValidatorStrings;
+  cidr: RosaWizardCidrValidatorStrings; // notsecret
+  validateRange: RosaWizardValidateRangeValidatorStrings; // notsecret
+  awsMachineCidr: RosaWizardAwsMachineCidrValidatorStrings; // notsecret
+  serviceCidr: RosaWizardServiceCidrValidatorStrings; // notsecret
+  podCidr: RosaWizardPodCidrValidatorStrings; // notsecret
+  subnetCidrs: RosaWizardSubnetCidrsValidatorStrings; // notsecret
   disjointSubnets: RosaWizardDisjointSubnetsValidatorStrings;
   hostPrefix: RosaWizardHostPrefixValidatorStrings;
 };
