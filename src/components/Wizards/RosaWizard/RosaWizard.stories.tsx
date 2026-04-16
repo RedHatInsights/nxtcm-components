@@ -44,7 +44,7 @@ function sleep(ms: number): Promise<void> {
 /** Default story: versions start loading, then resolve after 3 seconds. */
 function DefaultWithInitialVersionLoading(props: React.ComponentProps<typeof RosaWizard>) {
   const [versionsFetching, setVersionsFetching] = React.useState(true);
-  const [awsInfraFetching, setAwsIfraFetching] = React.useState(true);
+  const [awsInfraFetching, setAwsInfraFetching] = React.useState(true);
   const [awsBillingFetching, setAwsBillingFetching] = React.useState(true);
   const [regionsFetching, setRegionsFetching] = React.useState(true);
   const [oidcFetching, setOidcFetching] = React.useState(true);
@@ -53,7 +53,7 @@ function DefaultWithInitialVersionLoading(props: React.ComponentProps<typeof Ros
   React.useEffect(() => {
     const t = setTimeout(() => {
       setVersionsFetching(false);
-      setAwsIfraFetching(false);
+      setAwsInfraFetching(false);
       setAwsBillingFetching(false);
       setRegionsFetching(false);
       setOidcFetching(false);
