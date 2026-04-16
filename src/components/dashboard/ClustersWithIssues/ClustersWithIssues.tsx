@@ -1,10 +1,24 @@
-import { Button, Flex, FlexItem, Icon, Bullseye, Pagination, Title } from '@patternfly/react-core';
-import { ActionsColumn, IAction, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import {
+  Button,
+  Flex,
+  FlexItem,
+  Icon,
+  Bullseye,
+  Pagination,
+  Title,
+  Tooltip,
+} from '@patternfly/react-core';
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
+import ExternalLinkAltIcon from '@patternfly/react-icons/dist/esm/icons/external-link-alt-icon';
+import OutlinedQuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/outlined-question-circle-icon';
 import React, { useState } from 'react';
 import styles from './ClustersWithIssues.module.scss';
 
 const DEFAULT_PER_PAGE = 5;
+
+const DEFAULT_TOOLTIP =
+  'Clusters with critical alerts, failing operators, or resource usage above 95%.';
 
 export type ClusterIssue = {
   /** unique cluster identifier */
@@ -13,6 +27,8 @@ export type ClusterIssue = {
   name: string;
   /** number of detected issues */
   issues: number;
+  /** external console URL for this cluster */
+  consoleUrl?: string;
 };
 
 export type ClustersWithIssuesData = {
@@ -27,8 +43,10 @@ export type ClustersWithIssuesProps = {
   data: ClustersWithIssuesData;
   /** fired when a cluster name link is clicked */
   onClusterClick?: (cluster: ClusterIssue) => void;
-  /** builds the kebab actions per row; if omitted the kebab column is hidden */
-  rowActions?: (cluster: ClusterIssue) => IAction[];
+  /** fired when the "Open console" link is clicked for a row */
+  onOpenConsole?: (cluster: ClusterIssue) => void;
+  /** tooltip content for the info icon next to the title */
+  titleTooltip?: string;
   /** rows per page — defaults to 5 */
   perPage?: number;
 };
@@ -36,11 +54,11 @@ export type ClustersWithIssuesProps = {
 export const ClustersWithIssues: React.FC<ClustersWithIssuesProps> = ({
   data,
   onClusterClick,
-  rowActions,
+  onOpenConsole,
+  titleTooltip = DEFAULT_TOOLTIP,
   perPage: initialPerPage = DEFAULT_PER_PAGE,
 }) => {
   const { totalUnhealthy, clusters } = data;
-  const hasActions = typeof rowActions === 'function';
 
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(Math.max(1, initialPerPage));
@@ -71,9 +89,27 @@ export const ClustersWithIssues: React.FC<ClustersWithIssuesProps> = ({
   return (
     <Flex direction={{ default: 'column' }} className={styles.container}>
       <FlexItem>
-        <Title headingLevel="h3" size="md">
-          Clusters with issues
-        </Title>
+        <Flex alignItems={{ default: 'alignItemsCenter' }} spaceItems={{ default: 'spaceItemsSm' }}>
+          <FlexItem>
+            <Title headingLevel="h3" size="md">
+              Clusters with issues
+            </Title>
+          </FlexItem>
+          {titleTooltip && (
+            <FlexItem>
+              <Tooltip content={titleTooltip}>
+                <Button
+                  variant="plain"
+                  isInline
+                  aria-label="More info about clusters with issues"
+                  data-testid="title-tooltip-icon"
+                >
+                  <OutlinedQuestionCircleIcon aria-hidden="true" />
+                </Button>
+              </Tooltip>
+            </FlexItem>
+          )}
+        </Flex>
       </FlexItem>
 
       <FlexItem className={styles.countSection}>
@@ -97,7 +133,7 @@ export const ClustersWithIssues: React.FC<ClustersWithIssuesProps> = ({
                 <Tr>
                   <Th>Cluster name</Th>
                   <Th>Issues</Th>
-                  {hasActions && <Th screenReaderText="Actions" />}
+                  {onOpenConsole && <Th screenReaderText="Console" />}
                 </Tr>
               </Thead>
               <Tbody>
@@ -120,9 +156,17 @@ export const ClustersWithIssues: React.FC<ClustersWithIssuesProps> = ({
                     <Td dataLabel="Issues" data-testid={`issues-${cluster.id}`}>
                       {cluster.issues}
                     </Td>
-                    {hasActions && (
-                      <Td isActionCell>
-                        <ActionsColumn items={rowActions(cluster)} />
+                    {onOpenConsole && (
+                      <Td dataLabel="Console" data-testid={`open-console-${cluster.id}`}>
+                        <Button
+                          variant="link"
+                          isInline
+                          icon={<ExternalLinkAltIcon />}
+                          iconPosition="end"
+                          onClick={() => onOpenConsole(cluster)}
+                        >
+                          Open console
+                        </Button>
                       </Td>
                     )}
                   </Tr>

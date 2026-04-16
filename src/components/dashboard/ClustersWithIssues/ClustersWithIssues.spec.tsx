@@ -1,16 +1,16 @@
 import { test, expect } from '@playwright/experimental-ct-react';
 import React from 'react';
 import { ClustersWithIssues, ClustersWithIssuesProps } from './ClustersWithIssues';
-import { ClustersWithIssuesWithActions } from './ClustersWithIssues.spec-helpers';
+import { ClustersWithIssuesWithConsoleLink } from './ClustersWithIssues.spec-helpers';
 import { checkAccessibility } from '../../../test-helpers';
 
 const defaultData: ClustersWithIssuesProps['data'] = {
   totalUnhealthy: 4,
   clusters: [
-    { id: 'c1', name: 'cluster1', issues: 1 },
-    { id: 'c2', name: 'cluster2', issues: 12 },
-    { id: 'c3', name: 'cluster3', issues: 7 },
-    { id: 'c4', name: 'cluster4', issues: 5 },
+    { id: 'c1', name: 'cluster1', issues: 1, consoleUrl: 'https://console.example.com/c1' },
+    { id: 'c2', name: 'cluster2', issues: 12, consoleUrl: 'https://console.example.com/c2' },
+    { id: 'c3', name: 'cluster3', issues: 7, consoleUrl: 'https://console.example.com/c3' },
+    { id: 'c4', name: 'cluster4', issues: 5, consoleUrl: 'https://console.example.com/c4' },
   ],
 };
 
@@ -128,20 +128,6 @@ test.describe('ClustersWithIssues', () => {
     await expect(component.locator('.pf-v6-c-pagination')).toHaveCount(0);
   });
 
-  test('should render kebab actions when rowActions is provided', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssuesWithActions data={defaultData} />);
-
-    const kebabs = component.locator('[aria-label="Kebab toggle"]');
-    expect(await kebabs.count()).toBe(defaultData.clusters.length);
-  });
-
-  test('should not render kebab column when rowActions is not provided', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues data={defaultData} />);
-
-    const kebabs = component.locator('[aria-label="Kebab toggle"]');
-    expect(await kebabs.count()).toBe(0);
-  });
-
   test('should handle single cluster', async ({ mount }) => {
     const data: ClustersWithIssuesProps['data'] = {
       totalUnhealthy: 1,
@@ -163,6 +149,55 @@ test.describe('ClustersWithIssues', () => {
 
     await expect(component.getByTestId('unhealthy-count')).toContainText('999');
     await expect(component.getByTestId('issues-c1')).toContainText('500');
+  });
+});
+
+test.describe('ClustersWithIssues — open console link', () => {
+  test('should render "Open console" links when onOpenConsole is provided', async ({ mount }) => {
+    const component = await mount(<ClustersWithIssuesWithConsoleLink data={defaultData} />);
+
+    await expect(component.getByTestId('open-console-c1')).toBeVisible();
+    await expect(component.getByTestId('open-console-c1').getByText('Open console')).toBeVisible();
+  });
+
+  test('should render external link icon in each console link', async ({ mount }) => {
+    const component = await mount(<ClustersWithIssuesWithConsoleLink data={defaultData} />);
+
+    const consoleCell = component.getByTestId('open-console-c1');
+    await expect(consoleCell.locator('svg')).toBeVisible();
+  });
+
+  test('should not render console column when onOpenConsole is not provided', async ({ mount }) => {
+    const component = await mount(<ClustersWithIssues data={defaultData} />);
+
+    await expect(component.getByTestId('open-console-c1')).toHaveCount(0);
+  });
+
+  test('should render console links for all visible rows', async ({ mount }) => {
+    const component = await mount(<ClustersWithIssuesWithConsoleLink data={defaultData} />);
+
+    for (const cluster of defaultData.clusters) {
+      await expect(component.getByTestId(`open-console-${cluster.id}`)).toBeVisible();
+    }
+  });
+});
+
+test.describe('ClustersWithIssues — title tooltip', () => {
+  test('should render the tooltip icon by default', async ({ mount }) => {
+    const component = await mount(<ClustersWithIssues data={defaultData} />);
+    await expect(component.getByTestId('title-tooltip-icon')).toBeVisible();
+  });
+
+  test('should hide the tooltip icon when titleTooltip is empty', async ({ mount }) => {
+    const component = await mount(<ClustersWithIssues data={defaultData} titleTooltip="" />);
+    await expect(component.getByTestId('title-tooltip-icon')).toHaveCount(0);
+  });
+
+  test('should have an accessible label on the tooltip icon', async ({ mount }) => {
+    const component = await mount(<ClustersWithIssues data={defaultData} />);
+    await expect(
+      component.locator('[aria-label="More info about clusters with issues"]')
+    ).toBeVisible();
   });
 });
 
@@ -204,7 +239,7 @@ test.describe('ClustersWithIssues — pagination', () => {
     expect(await rows.count()).toBe(2);
   });
 
-  test('should not show pagination for fewer items than perPage', async ({ mount }) => {
+  test('should show all items on one page when fewer items than perPage', async ({ mount }) => {
     const smallData: ClustersWithIssuesProps['data'] = {
       totalUnhealthy: 3,
       clusters: [

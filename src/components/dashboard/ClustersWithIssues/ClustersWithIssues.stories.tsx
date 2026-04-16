@@ -15,10 +15,10 @@ export default meta;
 type Story = StoryObj<typeof ClustersWithIssues>;
 
 const sampleClusters: ClusterIssue[] = [
-  { id: 'c1', name: 'cluster1', issues: 1 },
-  { id: 'c2', name: 'cluster2', issues: 12 },
-  { id: 'c3', name: 'cluster3', issues: 7 },
-  { id: 'c4', name: 'cluster4', issues: 5 },
+  { id: 'c1', name: 'cluster1', issues: 1, consoleUrl: 'https://console.example.com/c1' },
+  { id: 'c2', name: 'cluster2', issues: 12, consoleUrl: 'https://console.example.com/c2' },
+  { id: 'c3', name: 'cluster3', issues: 7, consoleUrl: 'https://console.example.com/c3' },
+  { id: 'c4', name: 'cluster4', issues: 5, consoleUrl: 'https://console.example.com/c4' },
 ];
 
 function generateClusters(count: number): ClusterIssue[] {
@@ -28,6 +28,7 @@ function generateClusters(count: number): ClusterIssue[] {
     id: `c${i + 1}`,
     name: `${envs[i % envs.length]}-${regions[i % regions.length]}-${i + 1}`,
     issues: Math.max(1, Math.floor(50 / (i + 1))),
+    consoleUrl: `https://console.example.com/c${i + 1}`,
   }));
 }
 
@@ -50,14 +51,14 @@ export const WithClusterClick: Story = {
   },
 };
 
-export const WithRowActions: Story = {
+export const WithOpenConsole: Story = {
   args: {
     data: {
       totalUnhealthy: 4,
       clusters: sampleClusters,
     },
     onClusterClick: fn(),
-    rowActions: () => [{ title: 'Open console', onClick: fn() }],
+    onOpenConsole: fn(),
   },
 };
 
@@ -74,10 +75,12 @@ export const SingleCluster: Story = {
   args: {
     data: {
       totalUnhealthy: 1,
-      clusters: [{ id: 'c1', name: 'prod-east-1', issues: 3 }],
+      clusters: [
+        { id: 'c1', name: 'prod-east-1', issues: 3, consoleUrl: 'https://console.example.com/c1' },
+      ],
     },
     onClusterClick: fn(),
-    rowActions: () => [{ title: 'Open console', onClick: fn() }],
+    onOpenConsole: fn(),
   },
 };
 
@@ -88,7 +91,7 @@ export const ManyClustersPaginated: Story = {
       clusters: generateClusters(30),
     },
     onClusterClick: fn(),
-    rowActions: () => [{ title: 'Open console', onClick: fn() }],
+    onOpenConsole: fn(),
   },
 };
 
@@ -105,5 +108,26 @@ export const HighIssueCounts: Story = {
       ],
     },
     onClusterClick: fn(),
+  },
+};
+
+export const CustomTooltip: Story = {
+  args: {
+    data: {
+      totalUnhealthy: 4,
+      clusters: sampleClusters,
+    },
+    titleTooltip: 'Custom tooltip explaining issues criteria.',
+    onOpenConsole: fn(),
+  },
+};
+
+export const NoTooltip: Story = {
+  args: {
+    data: {
+      totalUnhealthy: 4,
+      clusters: sampleClusters,
+    },
+    titleTooltip: '',
   },
 };
