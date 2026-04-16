@@ -3,6 +3,8 @@ import { ChartDonutUtilization } from '@patternfly/react-charts/victory';
 import React from 'react';
 import styles from './ResourceUtilization.module.scss';
 
+const DEFAULT_TITLE = 'Resource usage';
+
 export type ResourceMetric = {
   /** amount currently in use */
   used: number;
@@ -24,6 +26,8 @@ export type ResourceUtilizationData = {
 export type ResourceUtilizationProps = {
   /** resource utilization metrics */
   data: ResourceUtilizationData;
+  /** card title — defaults to "Resource usage"; pass "" to hide */
+  title?: string;
   /** callback when "View more" is clicked; omit to hide the link */
   onViewMore?: () => void;
 };
@@ -71,11 +75,22 @@ const MetricChart: React.FC<MetricChartProps> = ({ label, metric, chartId }) => 
   );
 };
 
-export const ResourceUtilization: React.FC<ResourceUtilizationProps> = ({ data, onViewMore }) => {
+export const ResourceUtilization: React.FC<ResourceUtilizationProps> = ({
+  data,
+  title = DEFAULT_TITLE,
+  onViewMore,
+}) => {
   const { vCPU, memory, storage } = data;
 
   return (
     <Flex direction={{ default: 'column' }} className={styles.container}>
+      {title && (
+        <FlexItem>
+          <Title headingLevel="h3" size="md" data-testid="card-title">
+            {title}
+          </Title>
+        </FlexItem>
+      )}
       <FlexItem>
         <Flex
           justifyContent={{ default: 'justifyContentSpaceEvenly' }}

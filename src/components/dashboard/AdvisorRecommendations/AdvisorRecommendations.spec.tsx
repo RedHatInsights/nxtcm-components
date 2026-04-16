@@ -137,4 +137,37 @@ test.describe('AdvisorRecommendations', () => {
     await expect(component.getByTestId('severity-count-important')).toHaveText('2000');
     await expect(component.getByText('Service availability: 5000')).toBeVisible();
   });
+
+  test('should render the default card title', async ({ mount }) => {
+    const component = await mount(<AdvisorRecommendations data={defaultData} />);
+    const title = component.getByTestId('card-title');
+    await expect(title).toBeVisible();
+    await expect(title).toHaveText('Advisor recommendations by severity');
+  });
+
+  test('should render a custom card title', async ({ mount }) => {
+    const component = await mount(
+      <AdvisorRecommendations data={defaultData} title="Custom title" />
+    );
+    await expect(component.getByTestId('card-title')).toHaveText('Custom title');
+  });
+
+  test('should hide the card title when title is empty', async ({ mount }) => {
+    const component = await mount(<AdvisorRecommendations data={defaultData} title="" />);
+    await expect(component.getByTestId('card-title')).toHaveCount(0);
+  });
+
+  test('should render the lightspeed badge inline with the title by default', async ({ mount }) => {
+    const component = await mount(<AdvisorRecommendations data={defaultData} />);
+    const badge = component.getByTestId('lightspeed-badge');
+    await expect(badge).toBeVisible();
+    await expect(badge).toHaveText('Powered by Red Hat Lightspeed');
+  });
+
+  test('should hide the lightspeed badge when showLightspeedBadge is false', async ({ mount }) => {
+    const component = await mount(
+      <AdvisorRecommendations data={defaultData} showLightspeedBadge={false} />
+    );
+    await expect(component.getByTestId('lightspeed-badge')).toHaveCount(0);
+  });
 });
