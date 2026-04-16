@@ -1,9 +1,9 @@
 import { Divider, Flex, FlexItem, Label, Title } from '@patternfly/react-core';
 import { ChartDonut } from '@patternfly/react-charts/victory';
-import AngleDoubleUpIcon from '@patternfly/react-icons/dist/esm/icons/angle-double-up-icon';
-import ExclamationTriangleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon';
+import SeverityCriticalIcon from '@patternfly/react-icons/dist/esm/icons/severity-critical-icon';
+import SeverityImportantIcon from '@patternfly/react-icons/dist/esm/icons/severity-important-icon';
 import EqualsIcon from '@patternfly/react-icons/dist/esm/icons/equals-icon';
-import ArrowDownIcon from '@patternfly/react-icons/dist/esm/icons/arrow-down-icon';
+import SeverityMinorIcon from '@patternfly/react-icons/dist/esm/icons/severity-minor-icon';
 import React from 'react';
 import styles from './AdvisorRecommendations.module.scss';
 
@@ -42,15 +42,15 @@ export type AdvisorRecommendationsProps = {
 };
 
 const severityConfig = [
-  { key: 'critical' as const, label: 'Critical', Icon: AngleDoubleUpIcon, style: 'critical' },
+  { key: 'critical' as const, label: 'Critical', Icon: SeverityCriticalIcon, style: 'critical' },
   {
     key: 'important' as const,
     label: 'Important',
-    Icon: ExclamationTriangleIcon,
+    Icon: SeverityImportantIcon,
     style: 'important',
   },
   { key: 'moderate' as const, label: 'Moderate', Icon: EqualsIcon, style: 'moderate' },
-  { key: 'low' as const, label: 'Low', Icon: ArrowDownIcon, style: 'low' },
+  { key: 'low' as const, label: 'Low', Icon: SeverityMinorIcon, style: 'low' },
 ] as const;
 
 const categoryLabels: Record<keyof CategoryCounts, string> = {
