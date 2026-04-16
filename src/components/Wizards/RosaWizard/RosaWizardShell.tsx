@@ -44,6 +44,7 @@ import {
 } from './rosaWizardStepValidation';
 import { useWizardFooterStrings } from './wizardFooterStrings';
 import { getTriggerFieldsForStepId } from './rosaWizardStepTriggerFields';
+import { RosaWizardCrossStepDependencyNavSync } from './rosaWizardCrossStepDependencyNavSync';
 
 export type RosaWizardCancel = () => void;
 export type RosaWizardSubmitHandler = (data: RosaWizardFormData) => Promise<void>;
@@ -238,6 +239,7 @@ function RosaWizardShellInner(props: RosaWizardShellProps) {
       navAriaLabel={`${stepsAriaLabel}`}
       aria-label={`${contentAriaLabel}`}
       onStepChange={props.onStepChange}
+      isVisitRequired={true}
       footer={
         <RosaWizardFooter
           setUseWizardContext={props.setUseWizardContext}
@@ -436,22 +438,85 @@ function RosaWizardFooter(props: RosaWizardFooterProps) {
 
   if (isLastStep) {
     return (
+      <>
+        <RosaWizardCrossStepDependencyNavSync />
+        <div className="pf-v6-u-box-shadow-sm-top">
+          {submitError && <Alert title={submitError} isInline variant="danger" />}
+          <WizardFooterWrapper>
+            <div className="pf-v6-u-pb-sm">
+              <ActionList>
+                <ActionListGroup>
+                  <ActionListItem>
+                    <Button
+                      onClick={() => void onSubmitClick()}
+                      isDisabled={submitting}
+                      isLoading={submitting}
+                      type="button"
+                    >
+                      {submitting ? strings.submittingText : strings.submitText}
+                    </Button>
+                  </ActionListItem>
+                  <ActionListItem>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        void (async () => {
+                          await onBack();
+                        })();
+                      }}
+                    >
+                      {strings.backButtonText}
+                    </Button>
+                  </ActionListItem>
+                </ActionListGroup>
+                <ActionListGroup>
+                  <ActionListItem>
+                    <Button variant="link" onClick={onClose}>
+                      {strings.cancelButtonText}
+                    </Button>
+                  </ActionListItem>
+                </ActionListGroup>
+              </ActionList>
+            </div>
+          </WizardFooterWrapper>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <RosaWizardCrossStepDependencyNavSync />
       <div className="pf-v6-u-box-shadow-sm-top">
-        {submitError && <Alert title={submitError} isInline variant="danger" />}
+        {stepHasVisibleErrors && (
+          <Alert title={strings.fixValidationErrorsMsg} isInline variant="danger" />
+        )}
         <WizardFooterWrapper>
           <div className="pf-v6-u-pb-sm">
             <ActionList>
               <ActionListGroup>
                 <ActionListItem>
                   <Button
-                    onClick={() => void onSubmitClick()}
-                    isDisabled={submitting}
-                    isLoading={submitting}
-                    type="button"
+                    variant="primary"
+                    onClick={() => void onNextClick()}
+                    isDisabled={isNextButtonDisabled}
                   >
-                    {submitting ? strings.submittingText : strings.submitText}
+                    {strings.nextButtonText}
                   </Button>
                 </ActionListItem>
+
+                {canSkipToReview && (
+                  <ActionListItem>
+                    <Button
+                      variant="secondary"
+                      onClick={() => void onSkipToReviewClick()}
+                      isDisabled={isNextButtonDisabled}
+                    >
+                      {strings.skipToReviewButtonText}
+                    </Button>
+                  </ActionListItem>
+                )}
+
                 <ActionListItem>
                   <Button
                     variant="secondary"
@@ -460,6 +525,7 @@ function RosaWizardFooter(props: RosaWizardFooterProps) {
                         await onBack();
                       })();
                     }}
+                    isDisabled={activeStepId === firstStepId}
                   >
                     {strings.backButtonText}
                   </Button>
@@ -476,64 +542,6 @@ function RosaWizardFooter(props: RosaWizardFooterProps) {
           </div>
         </WizardFooterWrapper>
       </div>
-    );
-  }
-
-  return (
-    <div className="pf-v6-u-box-shadow-sm-top">
-      {stepHasVisibleErrors && (
-        <Alert title={strings.fixValidationErrorsMsg} isInline variant="danger" />
-      )}
-      <WizardFooterWrapper>
-        <div className="pf-v6-u-pb-sm">
-          <ActionList>
-            <ActionListGroup>
-              <ActionListItem>
-                <Button
-                  variant="primary"
-                  onClick={() => void onNextClick()}
-                  isDisabled={isNextButtonDisabled}
-                >
-                  {strings.nextButtonText}
-                </Button>
-              </ActionListItem>
-
-              {canSkipToReview && (
-                <ActionListItem>
-                  <Button
-                    variant="secondary"
-                    onClick={() => void onSkipToReviewClick()}
-                    isDisabled={isNextButtonDisabled}
-                  >
-                    {strings.skipToReviewButtonText}
-                  </Button>
-                </ActionListItem>
-              )}
-
-              <ActionListItem>
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    void (async () => {
-                      await onBack();
-                    })();
-                  }}
-                  isDisabled={activeStepId === firstStepId}
-                >
-                  {strings.backButtonText}
-                </Button>
-              </ActionListItem>
-            </ActionListGroup>
-            <ActionListGroup>
-              <ActionListItem>
-                <Button variant="link" onClick={onClose}>
-                  {strings.cancelButtonText}
-                </Button>
-              </ActionListItem>
-            </ActionListGroup>
-          </ActionList>
-        </div>
-      </WizardFooterWrapper>
-    </div>
+    </>
   );
 }
