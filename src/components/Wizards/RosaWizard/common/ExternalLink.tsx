@@ -3,6 +3,7 @@ import React from 'react';
 import { Button, ButtonProps, ButtonVariant, Icon } from '@patternfly/react-core';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons/dist/esm/icons/external-link-alt-icon';
 
+/** Props for an external anchor (or anchor-styled button) that opens a URL, optionally with an external-link icon. */
 type Props = {
   href: string;
   children?: React.ReactNode;
@@ -16,6 +17,9 @@ type Props = {
   'data-testid'?: string;
 };
 
+/**
+ * Renders a link to an external URL with safe rel/target defaults, optional icon, and optional Button styling.
+ */
 const ExternalLink = ({
   href,
   children,
@@ -27,6 +31,7 @@ const ExternalLink = ({
   variant = ButtonVariant.secondary,
   'data-testid': dataTestId,
 }: Props) => {
+  /** Stops the click from bubbling when the parent should not receive the same click (e.g. nested interactive UI). */
   const handleClick: React.MouseEventHandler = (event) => {
     if (stopClickPropagation) {
       event.stopPropagation();

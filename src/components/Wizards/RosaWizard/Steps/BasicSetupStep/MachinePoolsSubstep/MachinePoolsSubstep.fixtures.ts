@@ -7,6 +7,7 @@ import type {
   VPC,
 } from '../../../../types';
 
+/** Security groups returned for the production VPC in machine pool advanced networking tests. */
 export const mockSecurityGroups: SecurityGroup[] = [
   { id: 'sg-0a1b2c3d4e5f00001', name: 'default' },
   { id: 'sg-0a1b2c3d4e5f00002', name: 'k8s-traffic-rules' },
@@ -15,6 +16,7 @@ export const mockSecurityGroups: SecurityGroup[] = [
   { id: 'sg-0a1b2c3d4e5f00005', name: '' },
 ];
 
+/** Private and public subnets attached to the primary mock VPC for subnet picker scenarios. */
 export const mockSubnets: Subnet[] = [
   {
     subnet_id: 'subnet-private-1',
@@ -38,6 +40,7 @@ export const mockSubnets: Subnet[] = [
   },
 ];
 
+/** Two VPCs: production with subnets+security groups, staging with subnets only (no security groups). */
 export const mockVpcList: Resource<VPC[]> = {
   data: [
     {
@@ -69,6 +72,7 @@ export const mockVpcList: Resource<VPC[]> = {
   fetch: async () => {},
 };
 
+/** Loaded machine type options for the compute instance type select in machine pools. */
 export const mockMachineTypesData: Resource<MachineTypesDropdownType[]> = {
   data: [
     {
@@ -89,6 +93,7 @@ export const mockMachineTypesData: Resource<MachineTypesDropdownType[]> = {
   isFetching: false,
 };
 
+/** Default machine-pools step cluster slice merged with `overrides` for form defaultValues in CT. */
 export const createMockClusterData = (overrides: Record<string, unknown> = {}) => ({
   cluster: {
     region: 'us-east-1',
@@ -110,13 +115,17 @@ export const createMockClusterData = (overrides: Record<string, unknown> = {}) =
 const sgStrings = defaultRosaWizardStrings.securityGroups;
 const { common: commonStrings } = defaultRosaWizardStrings;
 
-/** Copy used by MachinePoolsSubstep.spec.tsx (aligned with default wizard strings). */
+/**
+ * String bundle for CT: machine pool labels, security group copy, and VPC list error title pattern.
+ * Keeps assertions aligned with `defaultRosaWizardStrings` without hardcoding long literals everywhere.
+ */
 export const machinePoolsSubstepCtStrings = {
   mp: defaultRosaWizardStrings.machinePools,
   sg: sgStrings,
   securityGroupsListErrorTitle: `${commonStrings.errorLoadingPrefix} ${sgStrings.formLabel} ${commonStrings.listSuffix}`,
 };
 
+/** Optional overrides for `MachinePoolsSubstepMount`: VPC list, machine types resource, cluster defaults. */
 export interface MachinePoolsSubstepStoryProps {
   vpcList?: Resource<VPC[]>;
   machineTypes?: Resource<MachineTypesDropdownType[]>;

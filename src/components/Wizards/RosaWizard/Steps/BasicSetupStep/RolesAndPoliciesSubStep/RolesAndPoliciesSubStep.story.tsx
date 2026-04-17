@@ -1,15 +1,13 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { RolesAndPoliciesSubStep } from './RolesAndPoliciesSubStep';
 import { RosaWizardStringsProvider } from '../../../RosaWizardStringsContext';
-import { ItemContext } from '@patternfly-labs/react-form-wizard/contexts/ItemContext';
-import { DataContext } from '@patternfly-labs/react-form-wizard/contexts/DataContext';
-import {
-  DisplayModeContext,
-  DisplayMode,
-} from '@patternfly-labs/react-form-wizard/contexts/DisplayModeContext';
-import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
-import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
+import { useAppForm } from '../../../RosaFormContext';
 import { OIDCConfig, Resource, Role, SelectDropdownType } from '../../../../types';
+import type { RosaWizardFormData } from '../../../../types';
+
+/**
+ * Roles and Policies substep with shared mock roles, OIDC config, and a form wrapper for Storybook or CT usage.
+ */
 
 export const mockInstallerRoles: SelectDropdownType[] = [
   {
@@ -81,6 +79,21 @@ export interface RolesAndPoliciesSubStepStoryProps {
   clusterOverrides?: Record<string, unknown>;
 }
 
+const RolesFormWrapper: React.FC<{
+  clusterOverrides?: Record<string, unknown>;
+  children: React.ReactNode;
+}> = ({ clusterOverrides = {}, children }) => {
+  const form = useAppForm({
+    defaultValues: createMockClusterData(clusterOverrides) as unknown as RosaWizardFormData,
+    onSubmit: async () => {},
+  });
+
+  return <form.AppForm>{children}</form.AppForm>;
+};
+
+/**
+ * Renders installer, support, worker, and OIDC fields with mock resources and overridable cluster defaults.
+ */
 export const RolesAndPoliciesSubStepStory: React.FC<RolesAndPoliciesSubStepStoryProps> = ({
   roles = mockFetchResource<Role[], [awsAccount: string]>([
     {
@@ -91,26 +104,10 @@ export const RolesAndPoliciesSubStepStory: React.FC<RolesAndPoliciesSubStepStory
   ]),
   oidcConfig = mockResource(mockOIDCConfig),
   clusterOverrides = {},
-}) => {
-  const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
-
-  const update = useCallback(() => {
-    setData((currentData) => ({ ...currentData }));
-  }, []);
-
-  return (
-    <RosaWizardStringsProvider>
-      <DataContext.Provider value={{ update }}>
-        <DisplayModeContext.Provider value={DisplayMode.Step}>
-          <ItemContext.Provider value={data}>
-            <ShowValidationProvider>
-              <ValidationProvider>
-                <RolesAndPoliciesSubStep roles={roles} oidcConfig={oidcConfig} />
-              </ValidationProvider>
-            </ShowValidationProvider>
-          </ItemContext.Provider>
-        </DisplayModeContext.Provider>
-      </DataContext.Provider>
-    </RosaWizardStringsProvider>
-  );
-};
+}) => (
+  <RosaWizardStringsProvider>
+    <RolesFormWrapper clusterOverrides={clusterOverrides}>
+      <RolesAndPoliciesSubStep roles={roles} oidcConfig={oidcConfig} />
+    </RolesFormWrapper>
+  </RosaWizardStringsProvider>
+);

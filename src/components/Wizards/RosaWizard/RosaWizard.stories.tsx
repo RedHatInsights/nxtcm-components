@@ -8,6 +8,7 @@ import type {
   OpenShiftVersionsData,
   Resource,
   Role,
+  RosaWizardFormData,
   ValidationResource,
 } from '../types';
 import type { BasicSetupStepProps } from './RosaWizard';
@@ -313,6 +314,9 @@ const mockBasicSetupStep: BasicSetupStepProps = {
   securityGroups: mockResource([]),
 };
 
+/**
+ * Storybook metadata for the full ROSA wizard: sidebar title, fullscreen layout, decorators, and control docs.
+ */
 const meta: Meta<typeof RosaWizard> = {
   title: 'Wizards/RosaWizard',
   component: RosaWizard,
@@ -364,7 +368,7 @@ export const Default: Story = {
   args: {
     title: 'Create ROSA Cluster',
     yaml: true,
-    onSubmit: async (data: unknown) => {
+    onSubmit: async (data: RosaWizardFormData) => {
       console.log('Wizard submitted with data:', data);
       await sleep(2000);
       alert('Cluster creation initiated successfully!');
@@ -448,11 +452,14 @@ const basicSetupStepAllApiErrors: BasicSetupStepProps = {
   },
 };
 
+/**
+ * Shows how basic-setup fields look when each backing resource returns an API error while mock options remain visible.
+ */
 export const AllApiErrors: Story = {
   args: {
     title: 'Create ROSA Cluster — all API errors',
     yaml: true,
-    onSubmit: async (data: unknown) => {
+    onSubmit: async (data: RosaWizardFormData) => {
       console.log('Wizard submitted (story):', data);
     },
     onCancel: () => {
@@ -472,7 +479,7 @@ export const VersionsDefaultEqualsLatest: Story = {
   args: {
     title: 'Create ROSA Cluster',
     yaml: true,
-    onSubmit: async (data: unknown) => {
+    onSubmit: async (data: RosaWizardFormData) => {
       console.log('Wizard submitted with data:', data);
       await sleep(2000);
       alert('Cluster creation initiated successfully!');
@@ -497,7 +504,7 @@ export const MinimalOptions: Story = {
   args: {
     title: 'Create ROSA Cluster - Limited Options',
     yaml: true,
-    onSubmit: async (data: unknown) => {
+    onSubmit: async (data: RosaWizardFormData) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
     },
@@ -536,7 +543,7 @@ export const EmptyOptions: Story = {
   args: {
     title: 'Create ROSA Cluster - No Options Available',
     yaml: true,
-    onSubmit: async (data: unknown) => {
+    onSubmit: async (data: RosaWizardFormData) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
     },
@@ -566,7 +573,7 @@ export const ExtensiveOptions: Story = {
   args: {
     title: 'Create ROSA Cluster - Many Options',
     yaml: true,
-    onSubmit: async (data: unknown) => {
+    onSubmit: async (data: RosaWizardFormData) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
     },
@@ -646,7 +653,7 @@ export const CustomTitle: Story = {
   args: {
     title: 'Deploy Red Hat OpenShift Service on AWS',
     yaml: true,
-    onSubmit: async (data: unknown) => {
+    onSubmit: async (data: RosaWizardFormData) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
     },
@@ -666,7 +673,7 @@ export const WithErrorHandling: Story = {
   args: {
     title: 'Create ROSA Cluster - Error Demo',
     yaml: true,
-    onSubmit: async (data: unknown) => {
+    onSubmit: async (data: RosaWizardFormData) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
       throw new Error('Failed to create cluster: AWS credentials are invalid');
@@ -689,7 +696,7 @@ export const WithMachinePoolsOptions: Story = {
   args: {
     title: 'Create ROSA Cluster - Machine Pools',
     yaml: true,
-    onSubmit: async (data: unknown) => {
+    onSubmit: async (data: RosaWizardFormData) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
     },
@@ -780,7 +787,7 @@ export const NoSecurityGroups: Story = {
   args: {
     title: 'Create ROSA Cluster - No Security Groups',
     yaml: true,
-    onSubmit: async (data: unknown) => {
+    onSubmit: async (data: RosaWizardFormData) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
     },
@@ -808,7 +815,7 @@ export const ProductionSetup: Story = {
   args: {
     title: 'Create Production ROSA Cluster',
     yaml: true,
-    onSubmit: async (data: unknown) => {
+    onSubmit: async (data: RosaWizardFormData) => {
       console.log('Production cluster submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 3000));
       alert('Production cluster creation initiated. This may take up to 30 minutes.');
@@ -853,7 +860,7 @@ function SubmitErrorWrapper(props: React.ComponentProps<typeof RosaWizard>) {
     <RosaWizard
       {...props}
       onSubmitError={submitError}
-      onSubmit={async (data: any) => {
+      onSubmit={async (data: RosaWizardFormData) => {
         console.log('Wizard submitted with data:', data);
         await new Promise((resolve) => setTimeout(resolve, 2000));
         setSubmitError(
@@ -872,6 +879,9 @@ function SubmitErrorWrapper(props: React.ComponentProps<typeof RosaWizard>) {
   );
 }
 
+/**
+ * End-to-end submit path that surfaces a server-style error banner and lets the user dismiss or retry from review.
+ */
 export const SubmitError: Story = {
   render: (args) => <SubmitErrorWrapper {...args} />,
   args: {
@@ -970,11 +980,14 @@ function AsyncLoadingWrapper(props: React.ComponentProps<typeof RosaWizard>) {
   return <RosaWizard {...props} wizardsStepsData={{ ...props.wizardsStepsData, basicSetupStep }} />;
 }
 
+/**
+ * Demonstrates delayed AWS account, region, and machine-type loading and how the UI reacts between selections.
+ */
 export const AsyncLoading: Story = {
   render: (args) => <AsyncLoadingWrapper {...args} />,
   args: {
     title: 'Create ROSA Cluster - Async Loading',
-    onSubmit: async (data: unknown) => {
+    onSubmit: async (data: RosaWizardFormData) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 2000));
       alert('Cluster creation initiated successfully!');
@@ -1038,12 +1051,15 @@ function AsyncClusterNameValidationWrapper(props: React.ComponentProps<typeof Ro
   );
 }
 
+/**
+ * Lets you type cluster names to see debounced async uniqueness validation and mock “already exists” errors.
+ */
 export const AsyncClusterNameValidation: Story = {
   render: (args) => <AsyncClusterNameValidationWrapper {...args} />,
   args: {
     title: 'Create ROSA Cluster - Async Name Validation',
     yaml: true,
-    onSubmit: async (data: unknown) => {
+    onSubmit: async (data: RosaWizardFormData) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 2000));
     },

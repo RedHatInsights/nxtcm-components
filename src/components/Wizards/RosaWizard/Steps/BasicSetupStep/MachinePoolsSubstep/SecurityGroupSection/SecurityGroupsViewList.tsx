@@ -3,19 +3,25 @@ import React from 'react';
 import { Label, LabelGroup } from '@patternfly/react-core';
 import { SecurityGroup } from '../../../../../types';
 
-// We increase Patternfly's maximum length of 16ch, due to https://github.com/patternfly/patternfly-react/issues/9690.
-// The tooltip won't show when mounted but not being visible (e.g. in an ExpandableSection)
+/**
+ * Label width for security group names; wider than PatternFly default so tooltips work in collapsed sections.
+ * @see https://github.com/patternfly/patternfly-react/issues/9690
+ */
 const SECURITY_GROUPS_NAME_MAX_WIDTH = '50ch';
 
+/** Props for rendering selected security groups as removable or static outline labels. */
+type SecurityGroupsViewListProps = {
+  securityGroups: SecurityGroup[];
+  emptyMessage?: string;
+  onCloseItem?: (groupId: string) => void;
+};
+
+/** Renders security groups as a `LabelGroup`, optional empty text, and optional per-label remove actions. */
 const SecurityGroupsViewList = ({
   securityGroups,
   emptyMessage,
   onCloseItem,
-}: {
-  securityGroups: SecurityGroup[];
-  emptyMessage?: string;
-  onCloseItem?: (groupId: string) => void;
-}) => {
+}: SecurityGroupsViewListProps) => {
   const itemCount = securityGroups.length;
   if (itemCount === 0) {
     return emptyMessage ? (

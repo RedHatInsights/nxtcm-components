@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { ExpandableSection } from '@patternfly/react-core';
-import { useValue } from '@patternfly-labs/react-form-wizard/inputs/Input';
 
 import EditSecurityGroups from './EditSecurityGroups';
 import SecurityGroupsEmptyAlert from './SecurityGroupsEmptyAlert';
@@ -9,22 +8,38 @@ import { showSecurityGroupsSection } from '../../../../helpers';
 import { CloudVpc, Resource, VPC } from '../../../../../types';
 import { useRosaWizardStrings } from '../../../../RosaWizardStringsContext';
 import { FieldWithAPIErrorAlert } from '../../../../common/FieldWithAPIErrorAlert';
+import { useRosaForm } from '../../../../RosaFormContext';
+import { useStore } from '@tanstack/react-form';
 
+/** Inputs for worker security group selection scoped to the chosen VPC and cluster version. */
+type SecurityGroupsSectionProps = {
+  selectedVPC: CloudVpc | undefined;
+  clusterVersion: string;
+  vpcList: Resource<VPC[]>;
+  refreshVPCs?: () => void;
+};
+
+/**
+ * Expandable section to attach additional worker security groups when supported.
+ * Clears selections when the VPC changes and surfaces empty-state or version incompatibility messaging.
+ */
 export const SecurityGroupsSection = ({
   selectedVPC,
   clusterVersion,
   vpcList,
   refreshVPCs,
-}: {
-  selectedVPC: CloudVpc | undefined;
-  clusterVersion: string;
-  vpcList: Resource<VPC[]>;
-  refreshVPCs?: () => void;
-}) => {
+}: SecurityGroupsSectionProps) => {
   const { machinePools, securityGroups } = useRosaWizardStrings();
-  const [selectedGroupIds, setSelectedGroupIds] = useValue(
-    { path: 'cluster.security_groups_worker' },
-    []
+  const form = useRosaForm();
+  const selectedGroupIds: string[] =
+    useStore(form.store, (s) => s.values.cluster.security_groups_worker) ?? [];
+
+  /** Persists the worker security group id list on the ROSA wizard form. */
+  const setSelectedGroupIds = useCallback(
+    (ids: string[]) => {
+      form.setFieldValue('cluster.security_groups_worker', ids);
+    },
+    [form]
   );
 
   const [isExpanded, setIsExpanded] = useState(false);

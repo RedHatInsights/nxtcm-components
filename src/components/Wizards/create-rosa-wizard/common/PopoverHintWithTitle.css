@@ -1,0 +1,17 @@
+.popover-with-title-div {
+  display: inline-block;
+  padding-top: var(--pf-t--global--spacer--md);
+}
+
+.popover-with-title-button {
+  padding: 0;
+}
+
+.popover-with-title-span {
+  color: var(--pf-t--global--text--color--link--default);
+}
+
+.popover-hint-button{
+    padding: 0;
+    color: inherit !important
+}

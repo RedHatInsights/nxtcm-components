@@ -9,6 +9,7 @@ import {
   ValidationResource,
 } from '../../../../types';
 
+/** Default OpenShift version list for Details CT: several patch lines without explicit latest/default keys. */
 export const mockOpenShiftVersionsData: OpenShiftVersionsData = {
   releases: [
     { label: 'OpenShift 4.16.2', value: '4.16.2' },
@@ -17,31 +18,37 @@ export const mockOpenShiftVersionsData: OpenShiftVersionsData = {
   ],
 };
 
+/** Two infrastructure AWS accounts for the associated account combobox scenarios. */
 export const mockAwsInfrastructureAccounts: SelectDropdownType[] = [
   { label: 'AWS Account - Production (123456789012)', value: 'aws-prod-123456789012' },
   { label: 'AWS Account - Staging (234567890123)', value: 'aws-staging-234567890123' },
 ];
 
+/** Two billing accounts to exercise manual selection vs single-account auto-select. */
 export const mockAwsBillingAccounts: SelectDropdownType[] = [
   { label: 'Billing Account - Main (123456789012)', value: 'billing-main-123456789012' },
   { label: 'Billing Account - Secondary (234567890123)', value: 'billing-secondary-234567890123' },
 ];
 
+/** Single billing account fixture: UI should auto-pick the lone option. */
 export const mockSingleBillingAccount: SelectDropdownType[] = [
   { label: 'Billing Account - Main (123456789012)', value: 'billing-main-123456789012' },
 ];
 
+/** Region dropdown options spanning multiple US zones for combobox visibility tests. */
 export const mockRegions: SelectDropdownType[] = [
   { label: 'US East (N. Virginia)', value: 'us-east-1' },
   { label: 'US East (Ohio)', value: 'us-east-2' },
   { label: 'US West (Oregon)', value: 'us-west-2' },
 ];
 
+/** Sample compute instance types passed through to Details-adjacent wiring in the mount helper. */
 export const mockMachineTypes: MachineTypesDropdownType[] = [
   { id: '1', label: 'm5.xlarge', value: 'm5.xlarge', description: 'm5.xlarge' },
   { id: '2', label: 'm5.2xlarge', value: 'm5.2xlarge', description: 'm5.2xlarge' },
 ];
 
+/** Default account roles for version vs installer-role compatibility tests (installer at 4.16.0). */
 export const mockRoles: Role[] = [
   {
     installerRole: {
@@ -64,6 +71,7 @@ export const mockRoles: Role[] = [
   },
 ];
 
+/** Factory for `cluster` defaultValues; spreads `overrides` onto empty-string baseline fields. */
 export const createMockClusterData = (overrides: Record<string, unknown> = {}) => ({
   cluster: {
     name: '',
@@ -79,6 +87,7 @@ export const createMockClusterData = (overrides: Record<string, unknown> = {}) =
   },
 });
 
+/** Props accepted by `DetailsSubStepMount` to override resources, validation, and form defaults. */
 export interface DetailsSubStepStoryProps {
   clusterNameValidation?: ValidationResource;
   checkClusterNameUniqueness?: (name: string, region?: string) => void;

@@ -42,6 +42,7 @@ import {
 
 const lowercaseAlphaNumericCharacters = 'abcdefghijklmnopqrstuvwxyz1234567890';
 
+/** Runs validators in order and returns the first error message, if any. */
 export const composeValidators =
   (...args: Array<(value: any, item?: unknown) => string | undefined>) =>
   (value: any, item?: unknown) => {
@@ -57,6 +58,7 @@ export const composeValidators =
     return undefined;
   };
 
+/** Validates ROSA cluster name format, length, and character rules; returns an error string or undefined. */
 export function validateClusterName(
   value: string,
   _item?: unknown,
@@ -75,6 +77,7 @@ export function validateClusterName(
   return undefined;
 }
 
+/** Ensures the custom operator roles prefix is a valid DNS-style label within max length. */
 export const validateCustomOperatorRolesPrefix = (
   value: string,
   _item?: unknown,
@@ -93,6 +96,7 @@ export const validateCustomOperatorRolesPrefix = (
   return undefined;
 };
 
+/** Validates a KMS key ARN format, optional multi-region form, and that the key region matches the selected region. */
 export const validateAWSKMSKeyARN = (
   value: string,
   region: string | undefined,
@@ -122,6 +126,7 @@ export const validateAWSKMSKeyARN = (
   return undefined;
 };
 
+/** Validates comma-separated no-proxy domains as lowercase multi-label DNS names. */
 export const checkNoProxyDomains = (
   value?: string,
   msgs: RosaWizardNoProxyValidatorStrings = defaultRosaWizardValidatorStrings.noProxyDomains
@@ -139,6 +144,7 @@ export const checkNoProxyDomains = (
   return undefined;
 };
 
+/** Checks pasted CA/trust bundle text for PEM structure and maximum size. */
 export const validateCA = (
   value: string,
   msgs: RosaWizardCaValidatorStrings = defaultRosaWizardValidatorStrings.ca
@@ -158,6 +164,7 @@ export const validateCA = (
   return undefined;
 };
 
+/** Validates a URL string and that its protocol matches one of the allowed schemes. */
 export const validateUrl = (
   value: string,
   protocol: string | string[] = 'http',
@@ -186,6 +193,7 @@ export const validateUrl = (
   return undefined;
 };
 
+/** Factory returning a validator that rejects machine/service/pod CIDRs overlapping other networking fields. */
 export const disjointSubnets =
   (
     fieldName: string,
@@ -224,7 +232,7 @@ export const disjointSubnets =
     return undefined;
   };
 
-// Function to validate IP address masks
+/** Validates the node host prefix mask format and allowed `/23`–`/26` range. */
 export const hostPrefix = (
   value?: string,
   msgs: RosaWizardHostPrefixValidatorStrings = defaultRosaWizardValidatorStrings.hostPrefix
@@ -253,7 +261,7 @@ export const hostPrefix = (
   return undefined;
 };
 
-// Function to validate IP address blocks
+/** Returns an error when the value is present but not valid IPv4 CIDR notation. */
 export const cidr = (
   value?: string,
   msgs: RosaWizardCidrValidatorStrings = defaultRosaWizardValidatorStrings.cidr
@@ -264,6 +272,7 @@ export const cidr = (
   return undefined;
 };
 
+/** After basic CIDR checks, ensures the address is the network address for its mask. */
 export const validateRange = (
   value?: string,
   msgs: RosaWizardValidateRangeValidatorStrings = defaultRosaWizardValidatorStrings.validateRange,
@@ -286,6 +295,7 @@ export const validateRange = (
   return undefined;
 };
 
+/** Validates machine CIDR prefix bounds for single vs multi-AZ and hosted control plane. */
 export const awsMachineCidr = (
   value?: string,
   formData?: ClusterFormData,
@@ -318,6 +328,7 @@ export const awsMachineCidr = (
   return undefined;
 };
 
+/** Ensures the service CIDR prefix is not wider than the allowed maximum. */
 export const serviceCidr = (
   value?: string,
   msgs: RosaWizardServiceCidrValidatorStrings = defaultRosaWizardValidatorStrings.serviceCidr
@@ -338,6 +349,7 @@ export const serviceCidr = (
   return undefined;
 };
 
+/** Validates pod CIDR prefix and that enough nodes can be addressed given the host prefix. */
 export const podCidr = (
   value?: string,
   network_host_prefix?: string,
@@ -364,6 +376,7 @@ export const podCidr = (
   return undefined;
 };
 
+/** Relates machine, service, or pod CIDR to selected VPC subnets (containment, overlap, start IP). */
 export const subnetCidrs = (
   value?: string,
   formData?: ClusterFormData,
@@ -449,6 +462,7 @@ export const subnetCidrs = (
   return undefined;
 };
 
+/** Factory validating AWS-specific mask ranges for machine or service CIDR fields. */
 export const awsSubnetMask =
   (
     fieldName: string | undefined,
@@ -481,9 +495,11 @@ export const awsSubnetMask =
     return undefined;
   };
 
+/** Standard required-field check using trimmed non-empty string. */
 export const required = (value?: string): string | undefined =>
   value && value.trim() ? undefined : 'Field is required';
 
+/** Parses numeric input with optional decimal, sign, range, and integer-only rules. */
 export const validateNumericInput = (
   input: string | undefined,
   { allowDecimal = false, allowNeg = false, allowZero = false, max = NaN, min = NaN } = {}
@@ -513,6 +529,7 @@ export const validateNumericInput = (
   return undefined;
 };
 
+/** Requires a defined integer value strictly greater than zero. */
 export const validatePositiveInteger = (
   value: number | undefined,
   msgs: RosaWizardReplicaValidatorStrings = defaultRosaWizardValidatorStrings.replicas
@@ -529,6 +546,7 @@ export const validatePositiveInteger = (
   return undefined;
 };
 
+/** Validates autoscaling minimum replicas against max, pool count, and platform limits. */
 export const validateMinReplicas = (
   value: number | undefined,
   item?: unknown,
@@ -552,6 +570,7 @@ export const validateMinReplicas = (
   return undefined;
 };
 
+/** Validates autoscaling maximum replicas against version cap and configured minimum. */
 export const validateMaxReplicas = (
   value: number | undefined,
   item?: unknown,
@@ -576,6 +595,7 @@ export const validateMaxReplicas = (
   return undefined;
 };
 
+/** Validates a fixed compute node count as a positive integer. */
 export const validateComputeNodes = (
   value: number | undefined,
   msgs: RosaWizardReplicaValidatorStrings = defaultRosaWizardValidatorStrings.replicas
@@ -583,6 +603,7 @@ export const validateComputeNodes = (
   return validatePositiveInteger(value, msgs);
 };
 
+/** Ensures root disk size is an integer in the allowed GiB range for the OpenShift generation. */
 export const validateRootDiskSize = (
   value: number | undefined,
   msgs = defaultRosaWizardValidatorStrings.rootDisk,
@@ -606,6 +627,7 @@ export const validateRootDiskSize = (
   return undefined;
 };
 
+/** Returns an error when more than the maximum number of security groups is selected. */
 export const validateSecurityGroups = (
   securityGroups: string[],
   msgs: RosaWizardSecurityGroupsValidatorStrings = defaultRosaWizardValidatorStrings.securityGroups

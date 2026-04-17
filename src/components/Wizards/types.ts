@@ -166,6 +166,7 @@ export type ClusterFormData = {
   selected_vpc?: string | VPC;
   machine_pools_subnets?: MachinePoolSubnetEntry[];
   machine_type?: string;
+  security_groups_worker?: string[];
   autoscaling?: boolean;
   nodes_compute?: number;
   min_replicas?: number;
@@ -202,6 +203,15 @@ export type ClusterFormData = {
   upgrade_schedule?: string;
 };
 
+/**
+ * Shape of the data passed to the `onSubmit` callback when the wizard is submitted.
+ *
+ * Optional fields on {@link ClusterFormData} may be present with value `undefined`
+ * (rather than absent from the object) because TanStack Form initialises and clears
+ * fields with explicit `undefined`. Consumers should compare with `value == null`
+ * rather than `'key' in obj` to handle both cases safely. When serialised via
+ * `JSON.stringify`, `undefined` values are dropped — making them equivalent to absent keys.
+ */
 export type RosaWizardFormData = {
   cluster: ClusterFormData;
 };

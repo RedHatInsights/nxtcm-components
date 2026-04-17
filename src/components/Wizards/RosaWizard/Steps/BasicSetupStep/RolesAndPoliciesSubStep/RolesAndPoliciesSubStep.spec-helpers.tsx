@@ -1,14 +1,8 @@
-import React, { useCallback, useState } from 'react';
-import { DataContext } from '@patternfly-labs/react-form-wizard/contexts/DataContext';
-import {
-  DisplayMode,
-  DisplayModeContext,
-} from '@patternfly-labs/react-form-wizard/contexts/DisplayModeContext';
-import { ItemContext } from '@patternfly-labs/react-form-wizard/contexts/ItemContext';
-import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
-import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
+import React from 'react';
 import { RosaWizardStringsProvider } from '../../../RosaWizardStringsContext';
+import { useAppForm } from '../../../RosaFormContext';
 import { OIDCConfig, Resource, Role } from '../../../../types';
+import type { RosaWizardFormData } from '../../../../types';
 import { RolesAndPoliciesSubStep } from './RolesAndPoliciesSubStep';
 import {
   createMockClusterData,
@@ -26,6 +20,7 @@ type Props = {
   clusterOverrides?: Record<string, unknown>;
 };
 
+/** Static `Resource` with noop `fetch` for OIDC config and similar CT props. */
 const mockResource = <TData,>(data: TData): Resource<TData> => ({
   data,
   error: null,
@@ -33,6 +28,7 @@ const mockResource = <TData,>(data: TData): Resource<TData> => ({
   fetch: async () => {},
 });
 
+/** `Resource` whose `fetch` is a no-op, used for roles lists keyed by AWS account in CT. */
 const mockFetchResource = <TData, TArgs extends unknown[] = []>(
   data: TData
 ): Resource<TData, TArgs> & { fetch: (...args: TArgs) => Promise<void> } => ({
@@ -42,6 +38,23 @@ const mockFetchResource = <TData, TArgs extends unknown[] = []>(
   fetch: async (..._args: TArgs) => {},
 });
 
+/** Provides `AppForm` + `useAppForm` defaults from `createMockClusterData` for roles substep tests. */
+const RolesFormWrapper: React.FC<{
+  clusterOverrides?: Record<string, unknown>;
+  children: React.ReactNode;
+}> = ({ clusterOverrides = {}, children }) => {
+  const form = useAppForm({
+    defaultValues: createMockClusterData(clusterOverrides) as unknown as RosaWizardFormData,
+    onSubmit: async () => {},
+  });
+
+  return <form.AppForm>{children}</form.AppForm>;
+};
+
+/**
+ * Mounts `RolesAndPoliciesSubStep` with wizard strings and story fixtures for roles/OIDC resources.
+ * Defaults mirror `RolesAndPoliciesSubStep.story` data; override `roles`, `oidcConfig`, or cluster values.
+ */
 export const RolesAndPoliciesSubStepMount = ({
   roles = mockFetchResource<Role[], [awsAccount: string]>([
     {
@@ -52,26 +65,10 @@ export const RolesAndPoliciesSubStepMount = ({
   ]),
   oidcConfig = mockResource(mockOIDCConfig),
   clusterOverrides = {},
-}: Props) => {
-  const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
-
-  const update = useCallback(() => {
-    setData((currentData) => ({ ...currentData }));
-  }, []);
-
-  return (
-    <RosaWizardStringsProvider>
-      <DataContext.Provider value={{ update }}>
-        <DisplayModeContext.Provider value={DisplayMode.Step}>
-          <ItemContext.Provider value={data}>
-            <ShowValidationProvider>
-              <ValidationProvider>
-                <RolesAndPoliciesSubStep roles={roles} oidcConfig={oidcConfig} />
-              </ValidationProvider>
-            </ShowValidationProvider>
-          </ItemContext.Provider>
-        </DisplayModeContext.Provider>
-      </DataContext.Provider>
-    </RosaWizardStringsProvider>
-  );
-};
+}: Props) => (
+  <RosaWizardStringsProvider>
+    <RolesFormWrapper clusterOverrides={clusterOverrides}>
+      <RolesAndPoliciesSubStep roles={roles} oidcConfig={oidcConfig} />
+    </RolesFormWrapper>
+  </RosaWizardStringsProvider>
+);

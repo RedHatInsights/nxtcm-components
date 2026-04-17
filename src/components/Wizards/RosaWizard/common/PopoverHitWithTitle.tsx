@@ -6,6 +6,9 @@ import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons/dist/esm/ico
 
 import './PopoverHintWithTitle.css';
 
+/**
+ * Props for an inline titled control that opens a popover; supports error styling and hiding the default hint icon.
+ */
 interface PopoverHintProps extends Omit<PopoverProps, 'bodyContent'> {
   title: string;
   footer?: React.ReactNode;
@@ -14,6 +17,9 @@ interface PopoverHintProps extends Omit<PopoverProps, 'bodyContent'> {
   displayHintIcon?: boolean;
 }
 
+/**
+ * Shows a title next to a trigger that opens a popover body, using either a question icon or an inline error link style.
+ */
 const PopoverHintWithTitle = ({
   title,
   bodyContent,

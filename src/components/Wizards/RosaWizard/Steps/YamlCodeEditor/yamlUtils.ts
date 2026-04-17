@@ -1,6 +1,7 @@
 import { ClusterNetwork } from '../../../types';
 import * as yaml from 'js-yaml';
 
+/** Outcome of parsing a YAML string: success with data or failure with a message and line hint. */
 export interface YamlParseResult {
   isValid: boolean;
   data?: any;
@@ -8,11 +9,7 @@ export interface YamlParseResult {
   errorLine?: number;
 }
 
-/**
- * Parse and validate YAML string
- * @param yamlString The YAML string to parse
- * @returns Parse result with validity status, data, and error information
- */
+/** Parses a single YAML document and returns either the loaded value or a structured parse error. */
 export function parseYaml(yamlString: string): YamlParseResult {
   try {
     const data = yaml.load(yamlString);
@@ -35,12 +32,7 @@ export function parseYaml(yamlString: string): YamlParseResult {
   }
 }
 
-/**
- * Format YAML with consistent indentation
- * @param yamlString The YAML string to prettify
- * @param indent Number of spaces for indentation (default: 2)
- * @returns Formatted YAML string, or original string if invalid
- */
+/** Re-serializes YAML with stable indentation; returns the input unchanged if parsing fails. */
 export function prettifyYaml(yamlString: string, indent: number = 2): string {
   try {
     const data = yaml.load(yamlString);
@@ -55,6 +47,7 @@ export function prettifyYaml(yamlString: string, indent: number = 2): string {
   }
 }
 
+/** Recursively drops null, undefined, empty string, and empty containers from a plain object tree. */
 export function removeEmptyValues(obj: Record<string, any>): Record<string, any> | undefined {
   const cleaned: Record<string, any> = {};
   for (const [key, value] of Object.entries(obj)) {
@@ -77,12 +70,7 @@ export function removeEmptyValues(obj: Record<string, any>): Record<string, any>
   return Object.keys(cleaned).length > 0 ? cleaned : undefined;
 }
 
-/**
- * Convert a JavaScript object to YAML string
- * @param obj The object to convert
- * @param indent Number of spaces for indentation (default: 2)
- * @returns YAML string representation
- */
+/** Converts an object to YAML after {@link removeEmptyValues}, using non-wrapping dump options. */
 export function objectToYaml(obj: any, indent: number = 2): string {
   const cleanedObj = removeEmptyValues(obj);
   return yaml.dump(cleanedObj ?? {}, {
@@ -93,11 +81,7 @@ export function objectToYaml(obj: any, indent: number = 2): string {
   });
 }
 
-/**
- * Quick validation check for YAML string
- * @param yamlString The YAML string to validate
- * @returns true if valid, false otherwise
- */
+/** Returns whether `yamlString` parses successfully as YAML (any thrown load error yields false). */
 export function isValidYaml(yamlString: string): boolean {
   try {
     yaml.load(yamlString);
@@ -107,6 +91,10 @@ export function isValidYaml(yamlString: string): boolean {
   }
 }
 
+/**
+ * Parses multi-document YAML, finds the `ROSAControlPlane` doc, and maps its spec/metadata
+ * into a partial `cluster` object shape used by the wizard form.
+ */
 export function parseMultiDocYaml(yamlStr: string): Record<string, unknown> | null {
   try {
     const docs = yamlStr.split(/^---$/m).filter((doc) => doc.trim());

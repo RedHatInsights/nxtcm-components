@@ -31,6 +31,7 @@ import {
   useRosaWizardValidators,
 } from '../../../../RosaWizardStringsContext';
 
+/** Props for selecting or displaying worker security groups for a VPC. */
 export interface EditSecurityGroupsProps {
   label?: string;
   selectedGroupIds: string[];
@@ -41,6 +42,7 @@ export interface EditSecurityGroupsProps {
   isVPCLoading?: boolean;
 }
 
+/** Truncates a security group name for the select label and records whether the full name was shortened. */
 const getDisplayName = (securityGroupName: string) => {
   if (securityGroupName) {
     const maxVisibleLength = 50;
@@ -50,6 +52,10 @@ const getDisplayName = (securityGroupName: string) => {
   return { displayName: '--', isCut: false };
 };
 
+/**
+ * Multi-select PatternFly menu for VPC security groups, or a read-only chip list when `isReadOnly`.
+ * Prunes invalid selections when the VPC’s group list changes and shows validation helper text.
+ */
 const EditSecurityGroups = ({
   label: labelProp,
   selectedVPC,
@@ -89,15 +95,18 @@ const EditSecurityGroups = ({
     );
   }
 
+  /** Removes one security group id from the selection and notifies the parent. */
   const onDeleteGroup = (deleteGroupId: string) => {
     const newGroupIdsValue = selectedGroupIds.filter((sgId) => sgId !== deleteGroupId);
     onChange(newGroupIdsValue);
   };
 
+  /** Opens or closes the security group multi-select menu. */
   const onToggle = () => {
     setIsOpen(!isOpen);
   };
 
+  /** PatternFly `MenuToggle` render function wired to open state and selection count badge. */
   const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
     <MenuToggle
       ref={toggleRef}
@@ -116,6 +125,7 @@ const EditSecurityGroups = ({
     </MenuToggle>
   );
 
+  /** Toggles membership for a security group in the multi-select, keeping ids sorted consistently. */
   const onSelect: SelectProps['onSelect'] = (_event, value) => {
     const selectedGroupId = value as string;
     const wasPreviouslySelected = selectedGroupIds.includes(selectedGroupId);

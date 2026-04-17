@@ -1,15 +1,13 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { NetworkingAndSubnetsSubStep } from './NetworkingAndSubnetsSubStep';
 import { RosaWizardStringsProvider } from '../../../RosaWizardStringsContext';
-import { ItemContext } from '@patternfly-labs/react-form-wizard/contexts/ItemContext';
-import { DataContext } from '@patternfly-labs/react-form-wizard/contexts/DataContext';
-import {
-  DisplayModeContext,
-  DisplayMode,
-} from '@patternfly-labs/react-form-wizard/contexts/DisplayModeContext';
-import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
-import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
+import { useAppForm } from '../../../RosaFormContext';
 import { VPC, Subnet, Resource, MachineTypesDropdownType } from '../../../../types';
+import type { RosaWizardFormData } from '../../../../types';
+
+/**
+ * Isolated Networking and Subnets substep with Rosa form and strings providers for demos and component tests.
+ */
 
 const mockResource = <TData,>(data: TData): Resource<TData> => ({
   data,
@@ -18,7 +16,6 @@ const mockResource = <TData,>(data: TData): Resource<TData> => ({
   fetch: async () => {},
 });
 
-// Mock VPC data with subnets
 export const mockSubnets: Subnet[] = [
   {
     subnet_id: 'subnet-private-1',
@@ -77,7 +74,6 @@ export const mockMachineTypes: MachineTypesDropdownType[] = [
   { id: 'r5.large', label: 'r5.large', description: '2 vCPU, 16 GiB Memory', value: 'r5.large' },
 ];
 
-// Default cluster data factory
 export const createMockClusterData = (overrides: Record<string, unknown> = {}) => ({
   cluster: {
     region: 'us-east-1',
@@ -100,25 +96,32 @@ export const createMockClusterData = (overrides: Record<string, unknown> = {}) =
   },
 });
 
-// Props interface for the wrapped component
 export interface NetworkingSubStepStoryProps {
   vpcList?: Resource<VPC[]>;
   clusterOverrides?: Record<string, unknown>;
   onClusterWideProxySelected?: (selected: boolean) => void;
 }
 
-// Wrapped component that can be mounted in tests
+const NetworkingFormWrapper: React.FC<{
+  clusterOverrides?: Record<string, unknown>;
+  children: React.ReactNode;
+}> = ({ clusterOverrides = {}, children }) => {
+  const form = useAppForm({
+    defaultValues: createMockClusterData(clusterOverrides) as unknown as RosaWizardFormData,
+    onSubmit: async () => {},
+  });
+
+  return <form.AppForm>{children}</form.AppForm>;
+};
+
+/**
+ * Renders VPC and subnet controls with optional loading or cluster overrides and optional proxy-selection callback.
+ */
 export const NetworkingSubStepStory: React.FC<NetworkingSubStepStoryProps> = ({
   vpcList = mockResource(mockVpcList),
   clusterOverrides = {},
   onClusterWideProxySelected,
 }) => {
-  const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
-
-  const update = useCallback(() => {
-    setData((currentData) => ({ ...currentData }));
-  }, []);
-
   const setIsClusterWideProxySelected = useCallback(
     (selected: boolean) => {
       onClusterWideProxySelected?.(selected);
@@ -128,20 +131,12 @@ export const NetworkingSubStepStory: React.FC<NetworkingSubStepStoryProps> = ({
 
   return (
     <RosaWizardStringsProvider>
-      <DataContext.Provider value={{ update }}>
-        <DisplayModeContext.Provider value={DisplayMode.Step}>
-          <ItemContext.Provider value={data}>
-            <ShowValidationProvider>
-              <ValidationProvider>
-                <NetworkingAndSubnetsSubStep
-                  vpcList={vpcList}
-                  setIsClusterWideProxySelected={setIsClusterWideProxySelected}
-                />
-              </ValidationProvider>
-            </ShowValidationProvider>
-          </ItemContext.Provider>
-        </DisplayModeContext.Provider>
-      </DataContext.Provider>
+      <NetworkingFormWrapper clusterOverrides={clusterOverrides}>
+        <NetworkingAndSubnetsSubStep
+          vpcList={vpcList}
+          setIsClusterWideProxySelected={setIsClusterWideProxySelected}
+        />
+      </NetworkingFormWrapper>
     </RosaWizardStringsProvider>
   );
 };

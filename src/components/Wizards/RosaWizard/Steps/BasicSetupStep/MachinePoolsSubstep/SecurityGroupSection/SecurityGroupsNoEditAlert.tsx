@@ -4,6 +4,7 @@ import { Alert, AlertActionLink } from '@patternfly/react-core';
 import links from '../../../../externalLinks';
 import { useRosaWizardStrings } from '../../../../RosaWizardStringsContext';
 
+/** Info alert with links for learning about security groups after creation (no in-wizard editing). */
 const SecurityGroupsNoEditAlert = () => {
   const sg = useRosaWizardStrings().securityGroups;
 

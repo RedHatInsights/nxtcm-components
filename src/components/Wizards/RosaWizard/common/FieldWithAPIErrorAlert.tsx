@@ -8,9 +8,11 @@ import {
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { useRosaWizardStrings } from '../RosaWizardStringsContext';
-import '@patternfly-labs/react-form-wizard/inputs/Select.css';
 import './FieldWithAPIErrorAlert.css';
 
+/**
+ * Props for wrapping a form field with API-driven error messaging, including optional detail popover and retry.
+ */
 type FieldWithAPIErrorAlertProps = {
   /** `false`/empty: children only. `true`: summary helper only (no popover). Other values: summary + popover with that detail. */
   error?: React.ReactNode;
@@ -21,6 +23,9 @@ type FieldWithAPIErrorAlertProps = {
   retry?: () => void;
 };
 
+/**
+ * Shows inline field children, and when `error` is set, a validation or load error with optional popover details and retry.
+ */
 export const FieldWithAPIErrorAlert = ({
   error,
   isFetching,

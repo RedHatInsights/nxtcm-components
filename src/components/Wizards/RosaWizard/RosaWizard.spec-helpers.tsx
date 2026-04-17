@@ -4,9 +4,8 @@ import { RosaWizard } from './RosaWizard';
 type RosaWizardProps = React.ComponentProps<typeof RosaWizard>;
 
 /**
- * Wrapper for CT only: starts in submit error state and clears error when
- * "Back to review step" is clicked. Exported so the spec can mount it
- * (Playwright CT does not allow mounting components defined in the test file).
+ * CT wrapper: starts with `onSubmitError` set; `onBackToReviewStep` clears it to re-show the wizard.
+ * Exported because Playwright CT cannot mount components declared only inside a spec file.
  */
 export function RosaWizardErrorThenBackToReviewMount(props: RosaWizardProps) {
   const [submitError, setSubmitError] = React.useState<string | boolean>(

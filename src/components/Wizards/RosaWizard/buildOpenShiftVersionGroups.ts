@@ -1,7 +1,10 @@
 import type { OpenShiftVersionGroup, OpenShiftVersionsData } from '../types';
 import type { RosaWizardOpenShiftVersionGroupLabels } from './rosaWizardStrings.types';
 
-/** Builds grouped OpenShift version options for the version select (Details step). */
+/**
+ * Groups OpenShift versions for the Details step select: latest, default, and remaining releases,
+ * with labels that depend on whether the API returned separate latest/default entries.
+ */
 export function buildOpenShiftVersionGroups(
   data: OpenShiftVersionsData,
   labels: RosaWizardOpenShiftVersionGroupLabels

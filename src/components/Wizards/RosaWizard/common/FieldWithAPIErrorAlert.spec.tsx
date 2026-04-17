@@ -3,12 +3,16 @@ import React from 'react';
 import { FieldWithAPIErrorAlert } from './FieldWithAPIErrorAlert';
 import { RosaWizardStringsProvider } from '../RosaWizardStringsContext';
 
-/** `FieldWithAPIErrorAlert` uses `useRosaWizardStrings`, which requires this provider. */
+/**
+ * Wraps UI in `RosaWizardStringsProvider` because `FieldWithAPIErrorAlert` reads wizard string hooks.
+ */
 function withRosaStrings(ui: React.ReactElement) {
   return <RosaWizardStringsProvider>{ui}</RosaWizardStringsProvider>;
 }
 
+/** CT for API/validation error chrome: summary alert, optional detail popover, and loading suppression. */
 test.describe('FieldWithAPIErrorAlert', () => {
+  /** String errors show the field summary and reveal the message body via Show error details. */
   test('shows alert and message body when string error is provided', async ({ mount, page }) => {
     const component = await mount(
       withRosaStrings(
@@ -28,6 +32,7 @@ test.describe('FieldWithAPIErrorAlert', () => {
     await expect(page.getByText('There has been an error')).toBeVisible({ timeout: 10_000 });
   });
 
+  /** Boolean `true` errors show summary text only—no details button or popover/dialog content. */
   test('shows summary helper only when error is boolean true (no popover)', async ({
     mount,
     page,
@@ -47,6 +52,7 @@ test.describe('FieldWithAPIErrorAlert', () => {
     await expect(page.getByText('There has been an error')).toHaveCount(0);
   });
 
+  /** While fetching, validation-style errors are suppressed (no summary or stray dialog text). */
   test('does not show alert when isFetching is true', async ({ mount, page }) => {
     const component = await mount(
       withRosaStrings(

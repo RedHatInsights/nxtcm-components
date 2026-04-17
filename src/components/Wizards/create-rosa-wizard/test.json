@@ -1,0 +1,48 @@
+{
+    "kind": "VPCList",
+    "page": 1,
+    "size": 1,
+    "total": 1,
+    "items": [
+        {
+            "name": "daz-vpc",
+            "red_hat_managed": false,
+            "id": "vpc-0dd40471494dd7337",
+            "cidr_block": "10.0.0.0/16",
+            "aws_subnets": [
+                {
+                    "subnet_id": "subnet-00e16e7f8f41ce999",
+                    "name": "daz-subnet-private1-us-east-1a",
+                    "red_hat_managed": false,
+                    "public": false,
+                    "availability_zone": "us-east-1a",
+                    "cidr_block": "10.0.128.0/20"
+                },
+                {
+                    "subnet_id": "subnet-0e740bdb6ac5a71a4",
+                    "name": "daz-subnet-private2-us-east-1b",
+                    "red_hat_managed": false,
+                    "public": false,
+                    "availability_zone": "us-east-1b",
+                    "cidr_block": "10.0.144.0/20"
+                },
+                {
+                    "subnet_id": "subnet-01c6b9e362a291671",
+                    "name": "daz-subnet-public1-us-east-1a",
+                    "red_hat_managed": false,
+                    "public": true,
+                    "availability_zone": "us-east-1a",
+                    "cidr_block": "10.0.0.0/20"
+                },
+                {
+                    "subnet_id": "subnet-0bb53383bd14bc252",
+                    "name": "daz-subnet-public2-us-east-1b",
+                    "red_hat_managed": false,
+                    "public": true,
+                    "availability_zone": "us-east-1b",
+                    "cidr_block": "10.0.16.0/20"
+                }
+            ]
+        }
+    ]
+}

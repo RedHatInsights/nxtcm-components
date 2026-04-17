@@ -7,6 +7,7 @@ import { RosaWizardMount } from './RosaWizard.ct';
 import type { BasicSetupStepProps } from './RosaWizard';
 import { OpenShiftVersionsData, Resource, Role, ValidationResource } from '../types';
 
+/** Builds a static `Resource` with data loaded and no fetch side effects for CT props. */
 const mockResource = <TData,>(data: TData): Resource<TData> => ({
   data,
   error: null,
@@ -14,6 +15,7 @@ const mockResource = <TData,>(data: TData): Resource<TData> => ({
   fetch: async () => {},
 });
 
+/** Builds a `Resource` whose `fetch` is a no-op, typed for CT wizard step APIs that refetch. */
 const mockFetchResource = <TData, TArgs extends unknown[] = []>(
   data: TData
 ): Resource<TData, TArgs> & { fetch: (...args: TArgs) => Promise<void> } => ({
@@ -23,11 +25,13 @@ const mockFetchResource = <TData, TArgs extends unknown[] = []>(
   fetch: async (..._args: TArgs) => {},
 });
 
+/** Minimal validation resource used where the wizard only needs idle validation state. */
 const mockValidationResource = (): ValidationResource => ({
   error: null,
   isFetching: false,
 });
 
+/** OpenShift version catalog with distinct latest, default, and prior releases for dropdown grouping. */
 const versionsData: OpenShiftVersionsData = {
   latest: { label: 'OpenShift 4.12.1', value: '4.12.1' },
   default: { label: 'OpenShift 4.12.0', value: '4.12.0' },
@@ -41,6 +45,7 @@ const versionsDefaultEqualsLatest: OpenShiftVersionsData = {
   releases: [{ label: 'OpenShift 4.11.5', value: '4.11.5' }],
 };
 
+/** Sample IAM role triple returned by the roles API for a single AWS account. */
 const roles: Role[] = [
   {
     installerRole: {
@@ -63,6 +68,7 @@ const roles: Role[] = [
   },
 ];
 
+/** Smallest `wizardsStepsData.basicSetupStep` graph needed to render the full wizard in CT. */
 const minimalWizardsStepsData: { basicSetupStep: BasicSetupStepProps } = {
   basicSetupStep: {
     clusterNameValidation: mockValidationResource(),
@@ -113,6 +119,7 @@ const minimalWizardsStepsData: { basicSetupStep: BasicSetupStepProps } = {
   },
 };
 
+/** Default `RosaWizard` props for this spec: noop handlers and `minimalWizardsStepsData`. */
 const defaultProps = {
   title: 'Create ROSA Cluster',
   onSubmit: async () => {},
@@ -120,21 +127,24 @@ const defaultProps = {
   wizardsStepsData: minimalWizardsStepsData,
 };
 
+/** Returns a `RosaWizard` element merged over `defaultProps` for Playwright CT `mount`. */
 function mountRosaWizard(overrides: Record<string, unknown> = {}) {
   return <RosaWizard {...defaultProps} {...overrides} />;
 }
 
+/** Component tests for `RosaWizard`: chrome, strings, versions UX, submit error flow, and navigation. */
 test.describe('RosaWizard', () => {
+  /** Verifies the wizard heading matches the `title` prop. */
   test('should render the wizard title', async ({ mount }) => {
     const component = await mount(mountRosaWizard());
     await expect(component.getByRole('heading', { name: 'Create ROSA Cluster' })).toBeVisible();
   });
 
-  test('should show custom Rosa strings in the nav and react-form-wizard chrome (e.g. Next)', async ({
+  /** Ensures `strings.wizard.stepLabels.review` overrides the review step label in the nav. */
+  test('should show custom Rosa strings in the wizard nav (e.g. review step label)', async ({
     mount,
   }) => {
     const customReviewLabel = 'Custom review step from strings prop';
-    const customNextLabel = 'CT_CUSTOM_NEXT_FROM_FORM_WIZARD_STRINGS';
     const component = await mount(
       mountRosaWizard({
         strings: {
@@ -143,22 +153,21 @@ test.describe('RosaWizard', () => {
               review: customReviewLabel,
             },
           },
-          formWizard: {
-            nextButtonText: customNextLabel,
-          },
         },
       })
     );
 
     await expect(component.getByText(customReviewLabel)).toBeVisible();
-    await expect(component.getByRole('button', { name: customNextLabel })).toBeVisible();
+    await expect(component.getByRole('button', { name: 'Next' })).toBeVisible();
   });
 
+  /** Runs axe (or project helper) accessibility checks on the default mounted wizard. */
   test('should pass accessibility tests when showing the wizard', async ({ mount }) => {
     const component = await mount(mountRosaWizard());
     await checkAccessibility({ component });
   });
 
+  /** When latest semver equals default, the version menu merges groups and hides duplicate headings. */
   test('when default and latest OpenShift versions share the same value, version dropdown shows Default (Recommended) and Previous releases only', async ({
     mount,
     page,
@@ -175,10 +184,10 @@ test.describe('RosaWizard', () => {
       })
     );
 
-    const versionCombobox = component.getByRole('combobox', {
+    const versionToggle = component.getByRole('button', {
       name: 'Select an OpenShift version',
     });
-    await versionCombobox.click();
+    await versionToggle.click();
 
     await expect(
       page.getByRole('heading', { name: 'Default (Recommended)', exact: true })
@@ -205,9 +214,11 @@ test.describe('RosaWizard', () => {
     await expect(previousGroup.getByText('OpenShift 4.11.5', { exact: true })).toBeVisible();
   });
 
+  /** Covers submit-failure UI: empty state, callbacks, returning to the wizard, a11y, and step validation. */
   test.describe('submit error state', () => {
     const errorMessage = 'There has been an error creating the cluster';
 
+    /** With `onSubmitError` set, shows cluster error title, message, and Exit wizard. */
     test('should show error EmptyState when onSubmitError is set', async ({ mount }) => {
       const component = await mount(mountRosaWizard({ onSubmitError: errorMessage }));
 
@@ -216,6 +227,7 @@ test.describe('RosaWizard', () => {
       await expect(component.getByRole('button', { name: 'Exit wizard' })).toBeVisible();
     });
 
+    /** Skipped: needs a path where error shows off the review step to assert Back to review visibility. */
     // This can't be fully tested unless there is a way for the user to not be on the review step when an error is shown.
     test.skip('should show Back to review step button when onBackToReviewStep is provided', async ({
       mount,
@@ -231,6 +243,7 @@ test.describe('RosaWizard', () => {
       await expect(component.getByRole('button', { name: 'Back to review step' })).toBeVisible();
     });
 
+    /** Clicking Exit wizard invokes `onCancel` from the error empty state. */
     test('should call onCancel when Exit wizard is clicked', async ({ mount }) => {
       let cancelCalled = false;
       const component = await mount(
@@ -248,6 +261,7 @@ test.describe('RosaWizard', () => {
       expect(cancelCalled).toBe(true);
     });
 
+    /** Back to review step triggers `onBackToReviewStep` while the error view is shown. */
     test('should call onBackToReviewStep when Back to review step is clicked', async ({
       mount,
     }) => {
@@ -267,6 +281,7 @@ test.describe('RosaWizard', () => {
       expect(backToReviewCalled).toBe(true);
     });
 
+    /** Wrapper clears `onSubmitError` on back; wizard chrome returns and error copy disappears. */
     test('should hide error view and show wizard when Back to review step is clicked and onBackToReviewStep clears error', async ({
       mount,
     }) => {
@@ -279,11 +294,13 @@ test.describe('RosaWizard', () => {
       await expect(component.getByRole('heading', { name: 'Create ROSA Cluster' })).toBeVisible();
     });
 
+    /** Accessibility check on the submit-error empty state. */
     test('should pass accessibility tests when showing the error state', async ({ mount }) => {
       const component = await mount(mountRosaWizard({ onSubmitError: errorMessage }));
       await checkAccessibility({ component });
     });
 
+    /** Empty required cluster name blocks advance from Details; Next ends disabled after attempt. */
     test('required field empty: user cannot advance to next step and Next button is disabled', async ({
       mount,
     }) => {
@@ -306,6 +323,7 @@ test.describe('RosaWizard', () => {
       await expect(nextButton).toBeDisabled();
     });
 
+    /** Invalid cluster name shows inline validation and keeps Next disabled on the first step. */
     test('invalid data: field-level validation is shown and Next button is disabled', async ({
       mount,
     }) => {
@@ -329,31 +347,28 @@ test.describe('RosaWizard', () => {
     });
   });
 
-  // This test will fail once the left navigation forces a user to go step by step
-  test('Skip to review step is disabled when there are validation errors', async ({ mount }) => {
+  /** From Networking (last required substep without proxy), Skip to review opens the Review step. */
+  test('Skip to review button appears on the last required step and navigates to Review', async ({
+    mount,
+  }) => {
     const component = await mount(<RosaWizardMount />);
 
-    // Click on "Additional setup" in the left navigation to expand it
-    await component.getByText('Additional setup').click();
-    // Wait for Encryption (optional) step to be visible (it fades in after expand)
-    const encryptionStepNav = component.getByRole('button', { name: 'Encryption (optional)' });
+    // Navigate to Networking (last required step when proxy is not enabled)
+    await component.getByRole('button', { name: 'Basic setup' }).click();
+    const networkingNav = component.getByRole('button', { name: 'Networking' });
+    await expect(networkingNav).toBeVisible();
+    await networkingNav.click();
 
-    await expect(encryptionStepNav).toBeVisible();
-    await encryptionStepNav.click();
+    // Both Next and Skip to review should be present alongside Back and Cancel
+    const nextButton = component.getByRole('button', { name: 'Next' });
+    const skipButton = component.getByRole('button', { name: 'Skip to review' });
+    await expect(nextButton).toBeVisible();
+    await expect(skipButton).toBeVisible();
+    await expect(component.getByRole('button', { name: 'Back' })).toBeVisible();
+    await expect(component.getByRole('button', { name: 'Cancel' })).toBeVisible();
 
-    const skipToReviewButtonText = 'Skip to review';
-
-    // Checking this box will cause a required Key ARN field to appear and be empty
-    await component.getByRole('checkbox', { name: /Enable additional etcd encryption/i }).check();
-    await expect(component.getByRole('button', { name: skipToReviewButtonText })).toBeEnabled();
-
-    await component.getByRole('button', { name: skipToReviewButtonText }).click();
-
-    // Ensure "Please fix validation errors" is shown
-    await expect(component.getByText('Please fix validation errors')).toBeVisible();
-
-    // Ensure both Next and Skip to review buttons are disabled
-    await expect(component.getByRole('button', { name: 'Next' })).toBeDisabled();
-    await expect(component.getByRole('button', { name: skipToReviewButtonText })).toBeDisabled();
+    // Clicking Skip to review navigates directly to Review step
+    await skipButton.click();
+    await expect(component.getByText('Review your ROSA cluster')).toBeVisible();
   });
 });

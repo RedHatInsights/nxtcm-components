@@ -6,6 +6,7 @@ import {
   type RosaWizardValidatorStrings,
 } from './rosaWizardStrings';
 
+/** Value held by `RosaWizardStringsContext`: merged UI strings plus validator message bundles. */
 export type RosaWizardStringsContextValue = {
   strings: RosaWizardStrings;
   validators: RosaWizardValidatorStrings;
@@ -13,12 +14,16 @@ export type RosaWizardStringsContextValue = {
 
 const RosaWizardStringsContext = createContext<RosaWizardStringsContextValue | null>(null);
 
+/** Props for `RosaWizardStringsProvider`: optional string overrides merged with English defaults. */
 export type RosaWizardStringsProviderProps = {
   children: React.ReactNode;
   /** Partial overrides; omitted keys use built-in English defaults. */
   strings?: RosaWizardStringsInput;
 };
 
+/**
+ * Supplies merged Rosa wizard UI and validator strings to descendants via React context.
+ */
 export function RosaWizardStringsProvider({
   children,
   strings: stringsInput,
@@ -34,6 +39,7 @@ export function RosaWizardStringsProvider({
   );
 }
 
+/** Returns wizard UI string bundles; throws if used outside `RosaWizardStringsProvider`. */
 export function useRosaWizardStrings(): RosaWizardStrings {
   const ctx = useContext(RosaWizardStringsContext);
   if (!ctx) {
@@ -42,6 +48,7 @@ export function useRosaWizardStrings(): RosaWizardStrings {
   return ctx.strings;
 }
 
+/** Returns validator-facing string bundles; throws if used outside `RosaWizardStringsProvider`. */
 export function useRosaWizardValidators(): RosaWizardValidatorStrings {
   const ctx = useContext(RosaWizardStringsContext);
   if (!ctx) {
