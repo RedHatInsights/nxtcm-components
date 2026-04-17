@@ -12,11 +12,10 @@ import semver from 'semver';
 import PopoverHintWithTitle from '../../../common/PopoverHitWithTitle';
 import { OIDCConfigHint } from '../../../common/OIDCConfigHint';
 import { OIDCConfig, Resource, Role } from '../../../../types';
-import { validateCustomOperatorRolesPrefix } from '../../../validators';
 import { createOperatorRolesPrefix } from '../../../helpers';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
-import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
+import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
 import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
 import { useClusterValues, useRosaForm } from '../../../RosaFormContext';
 import { FormSelect, FormTextInput, type SelectOptionItem } from '../../../../../../TanstackForm';
@@ -39,7 +38,6 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
   const strings = useRosaWizardStrings();
   const rp = strings.rolesAndPolicies;
   const { requiredField } = strings.common;
-  const v = useRosaWizardValidators();
   const form = useRosaForm();
   const cluster = useClusterValues();
 
@@ -311,12 +309,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
               <form.Field
                 name="cluster.custom_operator_roles_prefix"
                 validators={{
-                  onBlur: ({ value }) =>
-                    validateCustomOperatorRolesPrefix(
-                      value,
-                      { cluster: form.getFieldValue('cluster') },
-                      v.operatorRolesPrefix
-                    ) || undefined,
+                  onChange: ({ value }) => (!value ? requiredField : undefined),
                 }}
               >
                 {(field) => (

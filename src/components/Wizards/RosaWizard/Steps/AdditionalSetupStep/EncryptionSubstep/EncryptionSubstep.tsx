@@ -1,9 +1,10 @@
 import { Alert, FormSection, Grid, GridItem } from '@patternfly/react-core';
-import { validateAWSKMSKeyARN } from '../../../validators';
 import { ClusterEncryptionKeys } from '../../../../types';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
-import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
+import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
+import { useRosaWizardValidators } from '../../../RosaWizardStringsContext';
+import { validateAWSKMSKeyARN } from '../../../validators';
 import { useClusterValues, useRosaForm } from '../../../RosaFormContext';
 import { FormCheckbox, FormRadioGroup, FormTextInput } from '../../../../../../TanstackForm';
 
@@ -54,9 +55,7 @@ export const EncryptionSubstep = (): JSX.Element => {
               name="cluster.kms_key_arn"
               validators={{
                 onChange: ({ value }) =>
-                  validateAWSKMSKeyARN(value as string, cluster.region, v.kmsKeyArn) || undefined,
-                onBlur: ({ value }) =>
-                  validateAWSKMSKeyARN(value as string, cluster.region, v.kmsKeyArn) || undefined,
+                  validateAWSKMSKeyARN((value as string) ?? '', cluster.region, v.kmsKeyArn),
               }}
             >
               {(field) => (
@@ -106,9 +105,7 @@ export const EncryptionSubstep = (): JSX.Element => {
               name="cluster.etcd_key_arn"
               validators={{
                 onChange: ({ value }) =>
-                  validateAWSKMSKeyARN(value as string, cluster.region, v.kmsKeyArn) || undefined,
-                onBlur: ({ value }) =>
-                  validateAWSKMSKeyARN(value as string, cluster.region, v.kmsKeyArn) || undefined,
+                  validateAWSKMSKeyARN((value as string) ?? '', cluster.region, v.kmsKeyArn),
               }}
             >
               {(field) => (

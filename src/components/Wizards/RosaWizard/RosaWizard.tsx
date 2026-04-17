@@ -48,6 +48,7 @@ import { MachinePoolsSubstep } from './Steps/BasicSetupStep/MachinePoolsSubstep/
 import { RosaWizardStringsProvider, useRosaWizardStrings } from './RosaWizardStringsContext';
 import { type RosaWizardStringsInput } from './rosaWizardStrings';
 import { useAppForm, useRosaForm } from './RosaFormContext';
+import { validateFormWithSchema } from './rosaWizardSchema';
 import { YamlDrawerEditor } from './Steps/YamlCodeEditor';
 
 /**
@@ -334,6 +335,9 @@ const RosaWizardBody = (props: RosaWizardProps): JSX.Element => {
 
   const form = useAppForm({
     defaultValues: DEFAULT_CLUSTER_DATA,
+    validators: {
+      onSubmit: validateFormWithSchema,
+    },
     onSubmit: async ({ value }) => {
       await onSubmit(value);
     },
