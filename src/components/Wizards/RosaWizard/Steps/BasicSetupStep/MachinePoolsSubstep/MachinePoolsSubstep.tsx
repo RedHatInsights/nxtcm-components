@@ -12,9 +12,8 @@ import { MachineTypesDropdownType, Resource, Subnet, VPC } from '../../../../typ
 import { AutoscalingField } from './Autoscaling/AutoscalingField';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
-import { validateRootDiskSize } from '../../../validators';
 import { SecurityGroupsSection } from './SecurityGroupSection/SecurityGroupSection';
-import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
+import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
 import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
 import { useClusterValues, useRosaForm } from '../../../RosaFormContext';
 import {
@@ -40,8 +39,6 @@ type MachinePoolsSubstepProps = {
 export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps): JSX.Element => {
   const strings = useRosaWizardStrings();
   const mp = strings.machinePools;
-  const { requiredField } = strings.common;
-  const v = useRosaWizardValidators();
   const form = useRosaForm();
   const cluster = useClusterValues();
   const currentRegion = cluster.region;
@@ -101,9 +98,6 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps): JSX.Elemen
             >
               <form.Field
                 name="cluster.selected_vpc"
-                validators={{
-                  onChange: ({ value }) => (!value ? requiredField : undefined),
-                }}
                 listeners={{
                   onChange: () => {
                     form.setFieldValue('cluster.security_groups_worker', []);
@@ -176,12 +170,7 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps): JSX.Elemen
                   : undefined
               }
             >
-              <form.Field
-                name="cluster.machine_type"
-                validators={{
-                  onChange: ({ value }) => (!value ? requiredField : undefined),
-                }}
-              >
+              <form.Field name="cluster.machine_type">
                 {(field) => (
                   <FormSelect
                     field={field}
@@ -244,13 +233,7 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps): JSX.Elemen
             )}
           </form.Field>
 
-          <form.Field
-            name="cluster.compute_root_volume"
-            validators={{
-              onChange: ({ value }) =>
-                validateRootDiskSize(value as number, v.rootDisk, maxRootDiskSize) || undefined,
-            }}
-          >
+          <form.Field name="cluster.compute_root_volume">
             {(field) => (
               <FormNumberInput
                 field={field}

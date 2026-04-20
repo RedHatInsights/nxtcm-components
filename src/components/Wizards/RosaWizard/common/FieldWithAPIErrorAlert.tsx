@@ -45,7 +45,7 @@ export const FieldWithAPIErrorAlert = ({
     <FormHelperText>
       <HelperText>
         <HelperTextItem icon={<ExclamationCircleIcon />} variant="error">
-          {title}
+          {fieldName === 'Cluster name' ? error : title}
         </HelperTextItem>
       </HelperText>
     </FormHelperText>

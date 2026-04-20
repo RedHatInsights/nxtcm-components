@@ -3,8 +3,6 @@ import { ClusterEncryptionKeys } from '../../../../types';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
-import { useRosaWizardValidators } from '../../../RosaWizardStringsContext';
-import { validateAWSKMSKeyARN } from '../../../validators';
 import { useClusterValues, useRosaForm } from '../../../RosaFormContext';
 import { FormCheckbox, FormRadioGroup, FormTextInput } from '../../../../../../TanstackForm';
 
@@ -14,7 +12,6 @@ import { FormCheckbox, FormRadioGroup, FormTextInput } from '../../../../../../T
  */
 export const EncryptionSubstep = (): JSX.Element => {
   const e = useRosaWizardStrings().encryption;
-  const v = useRosaWizardValidators();
   const form = useRosaForm();
   const cluster = useClusterValues();
 
@@ -51,13 +48,7 @@ export const EncryptionSubstep = (): JSX.Element => {
       {cluster.encryption_keys === ClusterEncryptionKeys.custom && (
         <Grid>
           <GridItem span={4}>
-            <form.Field
-              name="cluster.kms_key_arn"
-              validators={{
-                onChange: ({ value }) =>
-                  validateAWSKMSKeyARN((value as string) ?? '', cluster.region, v.kmsKeyArn),
-              }}
-            >
+            <form.Field name="cluster.kms_key_arn">
               {(field) => (
                 <FormTextInput
                   field={field}
@@ -101,13 +92,7 @@ export const EncryptionSubstep = (): JSX.Element => {
       {cluster.etcd_encryption && (
         <Grid>
           <GridItem span={4}>
-            <form.Field
-              name="cluster.etcd_key_arn"
-              validators={{
-                onChange: ({ value }) =>
-                  validateAWSKMSKeyARN((value as string) ?? '', cluster.region, v.kmsKeyArn),
-              }}
-            >
+            <form.Field name="cluster.etcd_key_arn">
               {(field) => (
                 <FormTextInput
                   field={field}

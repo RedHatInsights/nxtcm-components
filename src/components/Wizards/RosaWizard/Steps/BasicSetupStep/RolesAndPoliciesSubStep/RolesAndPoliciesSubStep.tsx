@@ -37,7 +37,6 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
 }) => {
   const strings = useRosaWizardStrings();
   const rp = strings.rolesAndPolicies;
-  const { requiredField } = strings.common;
   const form = useRosaForm();
   const cluster = useClusterValues();
 
@@ -176,9 +175,6 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
             >
               <form.Field
                 name="cluster.installer_role_arn"
-                validators={{
-                  onChange: ({ value }) => (!value ? requiredField : undefined),
-                }}
                 listeners={{
                   onChange: ({ value }) => {
                     onInstallerRoleChange(value as string);
@@ -266,12 +262,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                   fieldName={rp.oidcLabel}
                   retry={oidcConfig.fetch ? () => void oidcConfig.fetch?.() : undefined}
                 >
-                  <form.Field
-                    name="cluster.byo_oidc_config_id"
-                    validators={{
-                      onChange: ({ value }) => (!value ? requiredField : undefined),
-                    }}
-                  >
+                  <form.Field name="cluster.byo_oidc_config_id">
                     {(field) => (
                       <FormSelect
                         field={field}
@@ -306,12 +297,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
         >
           <Grid>
             <GridItem span={4}>
-              <form.Field
-                name="cluster.custom_operator_roles_prefix"
-                validators={{
-                  onChange: ({ value }) => (!value ? requiredField : undefined),
-                }}
-              >
+              <form.Field name="cluster.custom_operator_roles_prefix">
                 {(field) => (
                   <FormTextInput
                     field={field}

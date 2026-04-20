@@ -1,15 +1,7 @@
 import { Flex, FlexItem } from '@patternfly/react-core';
-import {
-  validateMinReplicas,
-  validateMaxReplicas,
-  validateComputeNodes,
-} from '../../../../validators';
 import ExternalLink from '../../../../common/ExternalLink';
 import links from '../../../../externalLinks';
-import {
-  useRosaWizardStrings,
-  useRosaWizardValidators,
-} from '../../../../RosaWizardStringsContext';
+import { useRosaWizardStrings } from '../../../../RosaWizardStringsContext';
 import { useRosaForm } from '../../../../RosaFormContext';
 import { FormCheckbox, FormNumberInput } from '../../../../../../../TanstackForm';
 
@@ -56,7 +48,6 @@ export const getAutoscalingMaxNodes = (openshiftVersion?: string): number => {
  */
 export const AutoscalingField = (props: AutoscalingFieldProps): JSX.Element => {
   const a = useRosaWizardStrings().autoscaling;
-  const v = useRosaWizardValidators();
   const form = useRosaForm();
 
   const { autoscaling, openshiftVersion, machinePoolsNumber } = props;
@@ -103,18 +94,7 @@ export const AutoscalingField = (props: AutoscalingFieldProps): JSX.Element => {
       {autoscaling ? (
         <Flex>
           <FlexItem>
-            <form.Field
-              name="cluster.min_replicas"
-              validators={{
-                onChange: ({ value }) =>
-                  validateMinReplicas(
-                    value as number,
-                    { cluster: form.getFieldValue('cluster') },
-                    machinePoolsNumber,
-                    v.replicas
-                  ) || undefined,
-              }}
-            >
+            <form.Field name="cluster.min_replicas">
               {(field) => (
                 <FormNumberInput
                   field={field}
@@ -139,18 +119,7 @@ export const AutoscalingField = (props: AutoscalingFieldProps): JSX.Element => {
             </form.Field>
           </FlexItem>
           <FlexItem>
-            <form.Field
-              name="cluster.max_replicas"
-              validators={{
-                onChange: ({ value }) =>
-                  validateMaxReplicas(
-                    value as number,
-                    { cluster: form.getFieldValue('cluster') },
-                    maxNodeBasedOnOpenshiftVersion,
-                    v.replicas
-                  ) || undefined,
-              }}
-            >
+            <form.Field name="cluster.max_replicas">
               {(field) => (
                 <FormNumberInput
                   field={field}
@@ -172,12 +141,7 @@ export const AutoscalingField = (props: AutoscalingFieldProps): JSX.Element => {
           </FlexItem>
         </Flex>
       ) : (
-        <form.Field
-          name="cluster.nodes_compute"
-          validators={{
-            onChange: ({ value }) => validateComputeNodes(value as number, v.replicas) || undefined,
-          }}
-        >
+        <form.Field name="cluster.nodes_compute">
           {(field) => (
             <FormNumberInput
               field={field}

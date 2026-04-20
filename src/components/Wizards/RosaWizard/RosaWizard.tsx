@@ -16,7 +16,6 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { useStore } from '@tanstack/react-form';
 
 import { ClusterUpdatesSubstep, EncryptionSubstep } from './Steps/AdditionalSetupStep';
 import { RosaWizardSubmitError } from './RosaWizardSubmitError';
@@ -50,16 +49,13 @@ import { type RosaWizardStringsInput } from './rosaWizardStrings';
 import { useAppForm, useRosaForm } from './RosaFormContext';
 import { validateFormWithSchema } from './rosaWizardSchema';
 import { YamlDrawerEditor } from './Steps/YamlCodeEditor';
-
-/**
- * Subscribes to TanStack Form derived state and returns true when any
- * registered field has validation errors. Uses `isFieldsValid` which is
- * computed from each field's `meta.errors`.
- */
-function useFormHasErrors(): boolean {
-  const form = useRosaForm();
-  return useStore(form.store, (s) => !s.isFieldsValid);
-}
+import {
+  STEP_IDS,
+  STEP_FIELDS,
+  markStepFieldsTouched,
+  useCurrentStepHasErrors,
+  useStepStatusesFromStore,
+} from './hooks/useStepValidation';
 
 /** Props and async resources passed into the Basic Setup wizard step (details, roles, pools, networking). */
 export type BasicSetupStepProps = {
@@ -109,20 +105,6 @@ type RosaWizardProps = {
   yaml?: boolean;
   strings?: RosaWizardStringsInput;
 };
-
-/** Stable PatternFly Wizard step IDs used for navigation (e.g. skip to review, resume after error). */
-const STEP_IDS = {
-  BASIC_SETUP: 'basic-setup-step-id-expandable-section',
-  DETAILS: 'basic-setup-step-details',
-  ROLES_AND_POLICIES: 'roles-and-policies-sub-step',
-  MACHINE_POOLS: 'machinepools-sub-step',
-  NETWORKING: 'networking-sub-step',
-  ADDITIONAL_SETUP: 'additional-setup-step-id-expandable-section',
-  CLUSTER_WIDE_PROXY: 'additional-setup-cluster-wide-proxy',
-  ENCRYPTION: 'additional-setup-encryption',
-  CLUSTER_UPDATES: 'additional-setup-cluster-updates',
-  REVIEW: 'review-step',
-} as const;
 
 /**
  * ROSA cluster wizard: wraps content with string overrides and renders the full multi-step flow.
@@ -184,30 +166,44 @@ function ReviewStepFooter({ onSubmit }: { onSubmit: () => void }): JSX.Element {
 }
 
 /**
- * Validation-aware standard footer. Validates all form fields on click; if any
- * errors exist, the Next button is disabled and an inline alert is shown.
+ * Validation-aware standard footer. Only disables the Next button when the
+ * **current** step has touched validation errors (not the entire form).
+ *
+ * On "Next" click the footer:
+ * 1. Triggers the form-level schema so errors are populated even when no
+ *    field has been changed yet.
+ * 2. Marks every field in the current step as touched so errors become visible.
+ * 3. Reads the store synchronously — if the step is clean, navigates forward.
  */
 function ValidatedStepFooter(): JSX.Element {
-  const { goToNextStep, goToPrevStep, close } = useWizardContext();
+  const { activeStep, goToNextStep, goToPrevStep, close } = useWizardContext();
   const {
     wizard: { chrome },
   } = useRosaWizardStrings();
   const form = useRosaForm();
-  const hasErrors = useFormHasErrors();
-  const [attempted, setAttempted] = React.useState(false);
+  const hasErrors = useCurrentStepHasErrors();
 
   const handleNext = React.useCallback(async () => {
     await form.validateAllFields('change');
-    await form.validateAllFields('blur');
-    setAttempted(true);
-    if (form.state.isFieldsValid) {
-      void goToNextStep();
-    }
-  }, [form, goToNextStep]);
+
+    const stepId = String(activeStep.id);
+    markStepFieldsTouched(form, stepId);
+
+    const fields = STEP_FIELDS[stepId];
+    const fieldMeta = form.store.state.fieldMeta as Partial<
+      Record<string, { errors?: unknown[] }>
+    >;
+    const stepClean = !fields?.some((f) => {
+      const meta = fieldMeta[f];
+      return meta?.errors != null && (meta.errors as unknown[]).length > 0;
+    });
+
+    if (stepClean) void goToNextStep();
+  }, [form, activeStep.id, goToNextStep]);
 
   return (
     <WizardFooterWrapper>
-      {attempted && hasErrors && (
+      {hasErrors && (
         <Alert variant="danger" isInline isPlain title={chrome.validationErrorText} />
       )}
       <Button variant="primary" onClick={() => void handleNext()} isDisabled={hasErrors}>
@@ -226,23 +222,31 @@ function ValidatedStepFooter(): JSX.Element {
 /**
  * Footer for the last required substep. Shows both "Next" (to proceed into
  * optional steps) and "Skip to review" (to jump straight to Review).
- * Both buttons validate all mounted fields before navigating.
+ * Both buttons validate the current step's fields before navigating.
  */
 function LastRequiredStepFooter(): JSX.Element {
-  const { goToNextStep, goToPrevStep, goToStepById, close } = useWizardContext();
+  const { activeStep, goToNextStep, goToPrevStep, goToStepById, close } = useWizardContext();
   const {
     wizard: { chrome },
   } = useRosaWizardStrings();
   const form = useRosaForm();
-  const hasErrors = useFormHasErrors();
-  const [attempted, setAttempted] = React.useState(false);
+  const hasErrors = useCurrentStepHasErrors();
 
   const validate = React.useCallback(async (): Promise<boolean> => {
     await form.validateAllFields('change');
-    await form.validateAllFields('blur');
-    setAttempted(true);
-    return form.state.isFieldsValid;
-  }, [form]);
+
+    const stepId = String(activeStep.id);
+    markStepFieldsTouched(form, stepId);
+
+    const fields = STEP_FIELDS[stepId];
+    const fieldMeta = form.store.state.fieldMeta as Partial<
+      Record<string, { errors?: unknown[] }>
+    >;
+    return !fields?.some((f) => {
+      const meta = fieldMeta[f];
+      return meta?.errors != null && (meta.errors as unknown[]).length > 0;
+    });
+  }, [form, activeStep.id]);
 
   const handleNext = React.useCallback(async () => {
     if (await validate()) void goToNextStep();
@@ -254,7 +258,7 @@ function LastRequiredStepFooter(): JSX.Element {
 
   return (
     <WizardFooterWrapper>
-      {attempted && hasErrors && (
+      {hasErrors && (
         <Alert variant="danger" isInline isPlain title={chrome.validationErrorText} />
       )}
       <Button variant="primary" onClick={() => void handleNext()} isDisabled={hasErrors}>
@@ -336,12 +340,15 @@ const RosaWizardBody = (props: RosaWizardProps): JSX.Element => {
   const form = useAppForm({
     defaultValues: DEFAULT_CLUSTER_DATA,
     validators: {
+      onChange: validateFormWithSchema,
       onSubmit: validateFormWithSchema,
     },
     onSubmit: async ({ value }) => {
       await onSubmit(value);
     },
   });
+
+  const stepStatuses = useStepStatusesFromStore(form.store);
 
   const handleSubmit = React.useCallback(() => {
     void form.handleSubmit();
@@ -411,8 +418,14 @@ const RosaWizardBody = (props: RosaWizardProps): JSX.Element => {
                   name={sl.basicSetup}
                   id={STEP_IDS.BASIC_SETUP}
                   isExpandable
+                  status={stepStatuses[STEP_IDS.BASIC_SETUP]}
                   steps={[
-                    <WizardStep key={STEP_IDS.DETAILS} name={sl.details} id={STEP_IDS.DETAILS}>
+                    <WizardStep
+                      key={STEP_IDS.DETAILS}
+                      name={sl.details}
+                      id={STEP_IDS.DETAILS}
+                      status={stepStatuses[STEP_IDS.DETAILS]}
+                    >
                       <ResumeToReviewStep
                         shouldResume={shouldResumeToReview}
                         onResumed={handleResumed}
@@ -432,6 +445,7 @@ const RosaWizardBody = (props: RosaWizardProps): JSX.Element => {
                       key={STEP_IDS.ROLES_AND_POLICIES}
                       name={sl.rolesAndPolicies}
                       id={STEP_IDS.ROLES_AND_POLICIES}
+                      status={stepStatuses[STEP_IDS.ROLES_AND_POLICIES]}
                     >
                       <RolesAndPoliciesSubStep
                         roles={basicSetupStep.roles}
@@ -442,6 +456,7 @@ const RosaWizardBody = (props: RosaWizardProps): JSX.Element => {
                       key={STEP_IDS.MACHINE_POOLS}
                       name={sl.machinePools}
                       id={STEP_IDS.MACHINE_POOLS}
+                      status={stepStatuses[STEP_IDS.MACHINE_POOLS]}
                     >
                       <MachinePoolsSubstep
                         vpcList={basicSetupStep.vpcList}
@@ -452,7 +467,10 @@ const RosaWizardBody = (props: RosaWizardProps): JSX.Element => {
                       key={STEP_IDS.NETWORKING}
                       name={sl.networking}
                       id={STEP_IDS.NETWORKING}
-                      footer={isClusterWideProxySelected ? undefined : <LastRequiredStepFooter />}
+                      status={stepStatuses[STEP_IDS.NETWORKING]}
+                      footer={
+                        isClusterWideProxySelected ? undefined : <LastRequiredStepFooter />
+                      }
                     >
                       <NetworkingAndSubnetsSubStep
                         vpcList={basicSetupStep.vpcList}
@@ -464,6 +482,7 @@ const RosaWizardBody = (props: RosaWizardProps): JSX.Element => {
                       name={sl.clusterWideProxy}
                       id={STEP_IDS.CLUSTER_WIDE_PROXY}
                       isHidden={!isClusterWideProxySelected}
+                      status={stepStatuses[STEP_IDS.CLUSTER_WIDE_PROXY]}
                       footer={<LastRequiredStepFooter />}
                     >
                       <ClusterWideProxySubstep />
@@ -476,11 +495,13 @@ const RosaWizardBody = (props: RosaWizardProps): JSX.Element => {
                   name={sl.additionalSetup}
                   id={STEP_IDS.ADDITIONAL_SETUP}
                   isExpandable
+                  status={stepStatuses[STEP_IDS.ADDITIONAL_SETUP]}
                   steps={[
                     <WizardStep
                       key={STEP_IDS.ENCRYPTION}
                       name={sl.encryptionOptional}
                       id={STEP_IDS.ENCRYPTION}
+                      status={stepStatuses[STEP_IDS.ENCRYPTION]}
                     >
                       <EncryptionSubstep />
                     </WizardStep>,
@@ -488,6 +509,7 @@ const RosaWizardBody = (props: RosaWizardProps): JSX.Element => {
                       key={STEP_IDS.CLUSTER_UPDATES}
                       name={sl.clusterUpdatesOptional}
                       id={STEP_IDS.CLUSTER_UPDATES}
+                      status={stepStatuses[STEP_IDS.CLUSTER_UPDATES]}
                     >
                       <ClusterUpdatesSubstep />
                     </WizardStep>,

@@ -22,12 +22,7 @@ import { showSecurityGroupsSection } from '../../../helpers';
 import { useUniqueClusterNameCheck } from '../../../hooks/useUniqueClusterNameCheck';
 import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
 import { useClusterValues, useRosaForm } from '../../../RosaFormContext';
-import {
-  FormTextInput,
-  FormSelect,
-  type SelectOptionItem,
-  type SelectOptionGroup,
-} from '../../../../../../TanstackForm';
+import { FormTextInput, FormSelect, type SelectOptionItem, type SelectOptionGroup } from '../../../../../../TanstackForm';
 
 /** Props for the cluster details step: API-backed dropdowns, validation, and account change handling. */
 type DetailsSubStepProps = {
@@ -63,7 +58,6 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
 }) => {
   const strings = useRosaWizardStrings();
   const d = strings.details;
-  const { requiredField } = strings.common;
   const form = useRosaForm();
   const cluster = useClusterValues();
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
@@ -91,11 +85,11 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   useResetFieldOnOptionsChange('cluster.region', regions.data);
   useResetFieldOnOptionsChange('cluster.machine_type', machineTypes.data);
 
-  React.useEffect(() => {
-    if (cluster.name) {
-      void form.validateField('cluster.name', 'change');
-    }
-  }, [clusterNameValidation.error, clusterNameValidation.isFetching, form, cluster.name]);
+  // React.useEffect(() => {
+  //   if (cluster.name) {
+  //     void form.validateField('cluster.name', 'change');
+  //   }
+  // }, [clusterNameValidation.error, clusterNameValidation.isFetching, form, cluster.name]);
 
   React.useEffect(() => {
     if (awsBillingAccounts.isFetching) return;
@@ -203,9 +197,6 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                 >
                   <form.Field
                     name="cluster.associated_aws_id"
-                    validators={{
-                      onChange: ({ value }) => (!value ? requiredField : undefined),
-                    }}
                     listeners={{
                       onChange: ({ value }) => {
                         accountChangeAbortRef.current?.abort();
@@ -262,12 +253,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                     awsBillingAccounts.fetch ? () => void awsBillingAccounts.fetch?.() : undefined
                   }
                 >
-                  <form.Field
-                    name="cluster.billing_account_id"
-                    validators={{
-                      onChange: ({ value }) => (!value ? requiredField : undefined),
-                    }}
-                  >
+                  <form.Field name="cluster.billing_account_id">
                     {(field) => (
                       <FormSelect
                         field={field}
@@ -310,26 +296,10 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   <form.Field
                     name="cluster.name"
                     validators={{
-                      onChange: ({ value }) => {
-                        const v = value as string | undefined;
-                        if (!v || !v.trim()) return d.clusterNameRequired;
-                        return (
-                          validateClusterName(v) ||
-                          (typeof clusterNameValidation.error === 'string'
-                            ? clusterNameValidation.error
-                            : undefined)
-                        );
-                      },
-                      onBlur: ({ value }) => {
-                        const v = value as string | undefined;
-                        if (!v || !v.trim()) return d.clusterNameRequired;
-                        return (
-                          validateClusterName(v) ||
-                          (typeof clusterNameValidation.error === 'string'
-                            ? clusterNameValidation.error
-                            : undefined)
-                        );
-                      },
+                      onChange: () =>
+                        typeof clusterNameValidation.error === 'string'
+                          ? clusterNameValidation.error
+                          : undefined,
                     }}
                     listeners={{
                       onChange: ({ value }) => {
@@ -366,9 +336,6 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                 >
                   <form.Field
                     name="cluster.cluster_version"
-                    validators={{
-                      onChange: ({ value }) => (!value ? requiredField : undefined),
-                    }}
                     listeners={{
                       onChange: ({ value }) => {
                         if (value && !showSecurityGroupsSection(value)) {
@@ -409,9 +376,6 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                 >
                   <form.Field
                     name="cluster.region"
-                    validators={{
-                      onChange: ({ value }) => (!value ? requiredField : undefined),
-                    }}
                     listeners={{
                       onChange: ({ value }) => {
                         const currentName = form.getFieldValue('cluster.name') as
