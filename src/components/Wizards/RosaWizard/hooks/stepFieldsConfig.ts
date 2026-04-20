@@ -1,5 +1,3 @@
-import * as yup from 'yup';
-
 import { rosaWizardSchema } from '../rosaWizardSchema';
 import type { RosaWizardFormData } from '../../types';
 
@@ -116,21 +114,19 @@ export function stepHasErrors(fieldMeta: FieldMetaLike, stepId: string): boolean
 }
 
 /**
- * Runs the full Yup schema against form values and returns the set of
+ * Runs the full Zod schema against form values and returns the set of
  * step IDs whose fields have validation errors.
  */
-export function computeStepErrorsFromYup(values: RosaWizardFormData): Set<string> {
-  const result = new Set<string>();
-  try {
-    rosaWizardSchema.validateSync(values, { abortEarly: false });
-  } catch (err) {
-    if (err instanceof yup.ValidationError) {
-      for (const inner of err.inner) {
-        if (!inner.path) continue;
-        const stepId = FIELD_TO_STEP.get(inner.path);
-        if (stepId) result.add(stepId);
-      }
-    }
+export function computeStepErrors(values: RosaWizardFormData): Set<string> {
+  const stepsWithErrors = new Set<string>();
+  const parsed = rosaWizardSchema.safeParse(values);
+  if (parsed.success) return stepsWithErrors;
+
+  for (const issue of parsed.error.issues) {
+    const path = issue.path.join('.');
+    if (!path) continue;
+    const stepId = FIELD_TO_STEP.get(path);
+    if (stepId) stepsWithErrors.add(stepId);
   }
-  return result;
+  return stepsWithErrors;
 }

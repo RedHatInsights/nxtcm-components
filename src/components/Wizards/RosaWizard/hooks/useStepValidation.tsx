@@ -11,7 +11,7 @@ import {
   type FieldMetaLike,
 } from './stepFieldsConfig';
 
-export { STEP_IDS, STEP_FIELDS, computeStepErrorsFromYup } from './stepFieldsConfig';
+export { STEP_IDS, STEP_FIELDS, computeStepErrors } from './stepFieldsConfig';
 
 type StepStatus = 'default' | 'error';
 

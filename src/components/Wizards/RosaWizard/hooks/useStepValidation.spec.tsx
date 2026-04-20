@@ -3,14 +3,14 @@ import { test, expect } from '@playwright/experimental-ct-react';
 import {
   STEP_IDS,
   STEP_FIELDS,
-  computeStepErrorsFromYup,
+  computeStepErrors,
   stepHasErrors,
   type FieldMetaLike,
 } from './stepFieldsConfig';
 import type { RosaWizardFormData } from '../../types';
 import { ClusterEncryptionKeys, ClusterNetwork, ClusterUpgrade } from '../../types';
 
-/** Minimal valid form data that passes the Yup schema. */
+/** Minimal valid form data that passes the Zod schema. */
 const validFormData: RosaWizardFormData = {
   cluster: {
     name: 'my-cluster',
@@ -69,9 +69,9 @@ test.describe('STEP_FIELDS mapping', () => {
   });
 });
 
-test.describe('computeStepErrorsFromYup', () => {
+test.describe('computeStepErrors', () => {
   test('returns empty set for valid form data', () => {
-    const errors = computeStepErrorsFromYup(validFormData);
+    const errors = computeStepErrors(validFormData);
     expect(errors.size).toBe(0);
   });
 
@@ -80,7 +80,7 @@ test.describe('computeStepErrorsFromYup', () => {
       ...validFormData,
       cluster: { ...validFormData.cluster, name: undefined },
     };
-    const errors = computeStepErrorsFromYup(data);
+    const errors = computeStepErrors(data);
     expect(errors.has(STEP_IDS.DETAILS)).toBe(true);
     expect(errors.has(STEP_IDS.ROLES_AND_POLICIES)).toBe(false);
   });
@@ -90,7 +90,7 @@ test.describe('computeStepErrorsFromYup', () => {
       ...validFormData,
       cluster: { ...validFormData.cluster, installer_role_arn: undefined },
     };
-    const errors = computeStepErrorsFromYup(data);
+    const errors = computeStepErrors(data);
     expect(errors.has(STEP_IDS.ROLES_AND_POLICIES)).toBe(true);
     expect(errors.has(STEP_IDS.DETAILS)).toBe(false);
   });
@@ -105,7 +105,7 @@ test.describe('computeStepErrorsFromYup', () => {
         machine_type: undefined,
       },
     };
-    const errors = computeStepErrorsFromYup(data);
+    const errors = computeStepErrors(data);
     expect(errors.has(STEP_IDS.DETAILS)).toBe(true);
     expect(errors.has(STEP_IDS.ROLES_AND_POLICIES)).toBe(true);
     expect(errors.has(STEP_IDS.MACHINE_POOLS)).toBe(true);
@@ -116,7 +116,7 @@ test.describe('computeStepErrorsFromYup', () => {
       ...validFormData,
       cluster: { ...validFormData.cluster, network_machine_cidr: 'not-a-cidr' },
     };
-    const errors = computeStepErrorsFromYup(data);
+    const errors = computeStepErrors(data);
     expect(errors.has(STEP_IDS.NETWORKING)).toBe(true);
   });
 });
