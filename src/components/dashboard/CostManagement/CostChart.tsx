@@ -1,13 +1,6 @@
 import React from 'react';
 import { Flex, FlexItem, Title } from '@patternfly/react-core';
-import {
-  Chart,
-  ChartAxis,
-  ChartBar,
-  ChartLegend,
-  ChartThemeColor,
-  getTheme,
-} from '@patternfly/react-charts/victory';
+import { Chart, ChartAxis, ChartBar, ChartLegend } from '@patternfly/react-charts/victory';
 import styles from './CostChart.module.scss';
 
 interface ClusterCostData {
@@ -21,9 +14,15 @@ export interface CostChartProps {
   currency?: string;
 }
 
-// derive bar/legend colors from pf's multi-ordered theme so they adapt to dark mode
-const multiTheme = getTheme(ChartThemeColor.multiOrdered);
-const barColors = (multiTheme.chart?.colorScale?.slice(0, 3) ?? []) as string[];
+// pf-t multi-ordered colorscale tokens flip in dark mode via patternfly-charts.css.
+// hex fallbacks cover cases where patternfly-charts.css isn't loaded.
+const barColors = [
+  'var(--pf-t--chart--theme--colorscales--multi-colored-ordered--colorscale--100, #0066cc)',
+  'var(--pf-t--chart--theme--colorscales--multi-colored-ordered--colorscale--200, #63993d)',
+  'var(--pf-t--chart--theme--colorscales--multi-colored-ordered--colorscale--300, #37a3a3)',
+];
+
+const chartLabelFill = 'var(--pf-t--chart--global--label--fill, #1f1f1f)';
 
 export const CostChart: React.FC<CostChartProps> = ({ costData, currency = '$' }) => {
   const { rosaClusters, osdClusters, aroClusters } = costData;
@@ -83,7 +82,7 @@ export const CostChart: React.FC<CostChartProps> = ({ costData, currency = '$' }
               tickFormat={tickFormat}
               style={{
                 ticks: { stroke: 'none' },
-                tickLabels: { fontSize: 10 },
+                tickLabels: { fontSize: 10, fill: chartLabelFill },
               }}
             />
             <ChartBar
@@ -108,7 +107,7 @@ export const CostChart: React.FC<CostChartProps> = ({ costData, currency = '$' }
               height={40}
               width={600}
               style={{
-                labels: { fontSize: 10 },
+                labels: { fontSize: 10, fill: chartLabelFill },
               }}
             />
           </div>

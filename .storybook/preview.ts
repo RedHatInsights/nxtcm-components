@@ -1,5 +1,6 @@
 import '@patternfly/patternfly/patternfly.css';
 import '@patternfly/patternfly/patternfly-addons.css';
+import '@patternfly/patternfly/patternfly-charts.css';
 import type { Preview } from '@storybook/react';
 import { withThemeByClassName } from '@storybook/addon-themes';
 
