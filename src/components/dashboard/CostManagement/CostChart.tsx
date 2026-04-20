@@ -1,6 +1,13 @@
 import React from 'react';
 import { Flex, FlexItem, Title } from '@patternfly/react-core';
-import { Chart, ChartAxis, ChartBar, ChartLegend } from '@patternfly/react-charts/victory';
+import {
+  Chart,
+  ChartAxis,
+  ChartBar,
+  ChartLegend,
+  ChartThemeColor,
+  getTheme,
+} from '@patternfly/react-charts/victory';
 import styles from './CostChart.module.scss';
 
 interface ClusterCostData {
@@ -14,6 +21,10 @@ export interface CostChartProps {
   currency?: string;
 }
 
+// derive bar/legend colors from pf's multi-ordered theme so they adapt to dark mode
+const multiTheme = getTheme(ChartThemeColor.multiOrdered);
+const barColors = (multiTheme.chart?.colorScale?.slice(0, 3) ?? []) as string[];
+
 export const CostChart: React.FC<CostChartProps> = ({ costData, currency = '$' }) => {
   const { rosaClusters, osdClusters, aroClusters } = costData;
 
@@ -24,9 +35,9 @@ export const CostChart: React.FC<CostChartProps> = ({ costData, currency = '$' }
   ];
 
   const legendData = [
-    { name: 'ROSA Clusters', symbol: { fill: '#009596' } },
-    { name: 'OSD Clusters', symbol: { fill: '#002f5d' } },
-    { name: 'ARO Clusters', symbol: { fill: '#bde2b9' } },
+    { name: 'ROSA Clusters', symbol: { fill: barColors[0] } },
+    { name: 'OSD Clusters', symbol: { fill: barColors[1] } },
+    { name: 'ARO Clusters', symbol: { fill: barColors[2] } },
   ];
 
   const maxValue = Math.max(rosaClusters, osdClusters, aroClusters);
@@ -81,9 +92,9 @@ export const CostChart: React.FC<CostChartProps> = ({ costData, currency = '$' }
               style={{
                 data: {
                   fill: ({ datum }: { datum?: { name: string; x: number; y: number } }) => {
-                    if (datum?.name === 'ROSA Clusters') return '#009596';
-                    if (datum?.name === 'OSD Clusters') return '#002f5d';
-                    return '#bde2b9';
+                    if (datum?.name === 'ROSA Clusters') return barColors[0];
+                    if (datum?.name === 'OSD Clusters') return barColors[1];
+                    return barColors[2];
                   },
                 },
               }}

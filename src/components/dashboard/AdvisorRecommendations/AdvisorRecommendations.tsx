@@ -1,5 +1,5 @@
 import { Divider, Flex, FlexItem, Label, Title } from '@patternfly/react-core';
-import { ChartDonut } from '@patternfly/react-charts/victory';
+import { ChartDonut, ChartThemeColor, getTheme } from '@patternfly/react-charts/victory';
 import SeverityCriticalIcon from '@patternfly/react-icons/dist/esm/icons/severity-critical-icon';
 import SeverityImportantIcon from '@patternfly/react-icons/dist/esm/icons/severity-important-icon';
 import EqualsIcon from '@patternfly/react-icons/dist/esm/icons/equals-icon';
@@ -60,7 +60,9 @@ const categoryLabels: Record<keyof CategoryCounts, string> = {
   faultTolerance: 'Fault tolerance',
 };
 
-const categoryColors = ['#004080', '#0066cc', '#4394e5', '#b8d4f0'];
+// derive legend colors from pf's blue theme so chart + dots stay in sync automatically
+const blueTheme = getTheme(ChartThemeColor.blue);
+const categoryColors = (blueTheme.chart?.colorScale?.slice(0, 4) ?? []) as string[];
 
 export const AdvisorRecommendations: React.FC<AdvisorRecommendationsProps> = ({
   data,
