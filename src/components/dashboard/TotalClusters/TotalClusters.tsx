@@ -72,13 +72,11 @@ export const TotalClusters: React.FC<TotalClustersProps> = ({ data, onViewMore }
       )}
 
       {onViewMore && (
-        <Flex justifyContent={{ default: 'justifyContentFlexEnd' }} className={styles.viewLink}>
-          <FlexItem>
-            <Button variant="link" onClick={onViewMore}>
-              View all clusters
-            </Button>
-          </FlexItem>
-        </Flex>
+        <FlexItem className={styles.viewLink}>
+          <Button variant="link" onClick={onViewMore}>
+            View all clusters
+          </Button>
+        </FlexItem>
       )}
     </Flex>
   );

@@ -115,7 +115,7 @@ export const ClustersWithIssues: React.FC<ClustersWithIssuesProps> = ({
       <FlexItem className={styles.countSection}>
         <Flex alignItems={{ default: 'alignItemsCenter' }} spaceItems={{ default: 'spaceItemsSm' }}>
           <FlexItem>
-            <Icon status="danger" data-testid="unhealthy-icon">
+            <Icon status="danger" size="xl" data-testid="unhealthy-icon">
               <ExclamationCircleIcon aria-hidden="true" />
             </Icon>
           </FlexItem>

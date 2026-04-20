@@ -118,13 +118,11 @@ export const ResourceUtilization: React.FC<ResourceUtilizationProps> = ({
       </FlexItem>
 
       {onViewMore && (
-        <Flex justifyContent={{ default: 'justifyContentFlexEnd' }} className={styles.viewLink}>
-          <FlexItem>
-            <Button variant="link" onClick={onViewMore} className={styles.viewMoreBtn}>
-              View more
-            </Button>
-          </FlexItem>
-        </Flex>
+        <FlexItem className={styles.viewLink}>
+          <Button variant="link" onClick={onViewMore} className={styles.viewMoreBtn}>
+            View more
+          </Button>
+        </FlexItem>
       )}
     </Flex>
   );

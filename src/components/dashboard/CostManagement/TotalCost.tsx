@@ -27,25 +27,18 @@ export const TotalCost: React.FC<TotalCostProps> = ({ totalCost, currency = '$',
           </div>
         </FlexItem>
         <FlexItem>
-          <Flex
-            justifyContent={{ default: 'justifyContentSpaceBetween' }}
-            alignItems={{ default: 'alignItemsCenter' }}
-          >
-            <FlexItem>
-              <div className={styles.description}>
-                This type of cost is the sum of the infrastructure cost and supplementary cost
-              </div>
-            </FlexItem>
-            {onViewMore && (
-              <FlexItem>
-                <Button variant="link" isInline onClick={onViewMore}>
-                  View more cost information
-                </Button>
-              </FlexItem>
-            )}
-          </Flex>
+          <div className={styles.description}>
+            This type of cost is the sum of the infrastructure cost and supplementary cost
+          </div>
         </FlexItem>
       </Flex>
     </FlexItem>
+    {onViewMore && (
+      <FlexItem>
+        <Button variant="link" isInline onClick={onViewMore}>
+          View more cost information
+        </Button>
+      </FlexItem>
+    )}
   </Flex>
 );
