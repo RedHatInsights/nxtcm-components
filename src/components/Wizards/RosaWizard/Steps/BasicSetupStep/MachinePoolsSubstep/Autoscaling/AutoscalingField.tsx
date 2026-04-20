@@ -1,16 +1,9 @@
-import { useData, WizCheckbox, WizNumberInput } from '@patternfly-labs/react-form-wizard';
 import { Flex, FlexItem } from '@patternfly/react-core';
-import {
-  validateMinReplicas,
-  validateMaxReplicas,
-  validateComputeNodes,
-} from '../../../../validators';
+import { useFormContext } from 'react-hook-form';
 import ExternalLink from '../../../../common/ExternalLink';
 import links from '../../../../externalLinks';
-import {
-  useRosaWizardStrings,
-  useRosaWizardValidators,
-} from '../../../../RosaWizardStringsContext';
+import { useRosaWizardStrings } from '../../../../RosaWizardStringsContext';
+import { RosaCheckbox, RosaNumberInput } from '../../../../Inputs';
 
 type AutoscalingFieldProps = {
   autoscaling?: boolean;
@@ -51,8 +44,7 @@ export const getAutoscalingMaxNodes = (openshiftVersion?: string) => {
 
 export const AutoscalingField = (props: AutoscalingFieldProps) => {
   const a = useRosaWizardStrings().autoscaling;
-  const v = useRosaWizardValidators();
-  const { update } = useData();
+  const { setValue } = useFormContext();
 
   const { autoscaling, openshiftVersion, machinePoolsNumber } = props;
 
@@ -60,7 +52,7 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
 
   return (
     <>
-      <WizCheckbox
+      <RosaCheckbox
         id="autoscaling-checkbox"
         title={a.title}
         helperText={
@@ -73,26 +65,26 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
         }
         path="cluster.autoscaling"
         label={a.enableLabel}
-        onValueChange={(checked, item) => {
+        onValueChange={(checked) => {
           if (checked) {
-            delete item.cluster.nodes_compute;
-
-            item.cluster.min_replicas = scaleMinNodesOnMachinePoolNumber(machinePoolsNumber);
-            item.cluster.max_replicas = 4;
-
-            update();
+            setValue('cluster.nodes_compute', undefined, { shouldDirty: true });
+            setValue(
+              'cluster.min_replicas',
+              scaleMinNodesOnMachinePoolNumber(machinePoolsNumber),
+              { shouldDirty: true }
+            );
+            setValue('cluster.max_replicas', 4, { shouldDirty: true });
           } else {
-            delete item.cluster.min_replicas;
-            delete item.cluster.max_replicas;
-            item.cluster.nodes_compute = 2;
-            update();
+            setValue('cluster.min_replicas', undefined, { shouldDirty: true });
+            setValue('cluster.max_replicas', undefined, { shouldDirty: true });
+            setValue('cluster.nodes_compute', 2, { shouldDirty: true });
           }
         }}
       />
       {autoscaling ? (
         <Flex>
           <FlexItem>
-            <WizNumberInput
+            <RosaNumberInput
               required
               path="cluster.min_replicas"
               label={a.minLabel}
@@ -106,13 +98,10 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
               }
               min={machinePoolsNumber && scaleMinNodesOnMachinePoolNumber(machinePoolsNumber)}
               max={maxNodeBasedOnOpenshiftVersion}
-              validation={(value: number, item) =>
-                validateMinReplicas(value, item, machinePoolsNumber, v.replicas)
-              }
             />
           </FlexItem>
           <FlexItem>
-            <WizNumberInput
+            <RosaNumberInput
               required
               path="cluster.max_replicas"
               label={a.maxLabel}
@@ -126,19 +115,11 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
               }
               min={1}
               max={maxNodeBasedOnOpenshiftVersion}
-              validation={(value, item) =>
-                validateMaxReplicas(
-                  value as number,
-                  item,
-                  maxNodeBasedOnOpenshiftVersion,
-                  v.replicas
-                )
-              }
             />
           </FlexItem>
         </Flex>
       ) : (
-        <WizNumberInput
+        <RosaNumberInput
           required
           path="cluster.nodes_compute"
           label={a.computeCountLabel}
@@ -151,7 +132,6 @@ export const AutoscalingField = (props: AutoscalingFieldProps) => {
             </>
           }
           min={1}
-          validation={(value) => validateComputeNodes(value, v.replicas)}
         />
       )}
     </>

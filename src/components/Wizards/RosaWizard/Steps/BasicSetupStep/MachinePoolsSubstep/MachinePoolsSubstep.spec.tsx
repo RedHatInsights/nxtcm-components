@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/experimental-ct-react';
 import { checkAccessibility } from '../../../../../../test-helpers';
 import { MachinePoolsSubstepMount } from './MachinePoolsSubstep.spec-helpers';
 import { machinePoolsSubstepCtStrings, mockVpcList } from './MachinePoolsSubstep.fixtures';
-import { ShowValidationContext } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
+import { RosaShowValidationContext } from '../../../RosaShowValidationContext';
 import type { Resource, MachineTypesDropdownType, VPC } from '../../../../types';
 
 const mockResource = <TData,>(data: TData): Resource<TData> => ({
@@ -377,9 +377,9 @@ const mountWithValidation = (
   clusterOverrides: Record<string, unknown> = {}
 ) =>
   mount(
-    <ShowValidationContext.Provider value={true}>
+    <RosaShowValidationContext.Provider value={true}>
       <MachinePoolsSubstepMount clusterOverrides={clusterOverrides} />
-    </ShowValidationContext.Provider>
+    </RosaShowValidationContext.Provider>
   );
 
 test.describe('Root disk size validation', () => {

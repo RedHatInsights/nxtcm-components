@@ -1,11 +1,4 @@
 import {
-  Section,
-  useData,
-  useItem,
-  WizSelect,
-  WizTextInput,
-} from '@patternfly-labs/react-form-wizard';
-import {
   ClipboardCopy,
   ExpandableSection,
   Grid,
@@ -14,15 +7,16 @@ import {
   StackItem,
 } from '@patternfly/react-core';
 import React from 'react';
+import { useFormContext, useWatch } from 'react-hook-form';
 import semver from 'semver';
+import { RosaSection, RosaSelect, RosaTextInput } from '../../../Inputs';
 import PopoverHintWithTitle from '../../../common/PopoverHitWithTitle';
 import { OIDCConfigHint } from '../../../common/OIDCConfigHint';
-import { OIDCConfig, Resource, Role, RosaWizardFormData } from '../../../../types';
-import { validateCustomOperatorRolesPrefix } from '../../../validators';
+import { OIDCConfig, Resource, Role } from '../../../../types';
 import { createOperatorRolesPrefix } from '../../../helpers';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
-import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
+import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
 import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
 
 type RolesAndPoliciesSubStepProps = {
@@ -37,12 +31,11 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
   oidcConfig,
 }) => {
   const rp = useRosaWizardStrings().rolesAndPolicies;
-  const v = useRosaWizardValidators();
 
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
-  const { cluster } = useItem<RosaWizardFormData>();
-  const { update } = useData();
+  const { setValue } = useFormContext();
+  const cluster = useWatch({ name: 'cluster' });
   const selectedRole = React.useMemo(
     () => roles.data.find((roleSet) => roleSet.installerRole.value === cluster?.installer_role_arn),
     [roles.data, cluster?.installer_role_arn]
@@ -56,25 +49,13 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
       return;
     }
 
-    let hasChanges = false;
-
-    // installer role is no longer available in the refreshed role set
     if (cluster.installer_role_arn && !selectedRole) {
-      if (cluster.installer_role_arn) {
-        cluster.installer_role_arn = undefined;
-        hasChanges = true;
-      }
-      if (cluster.support_role_arn) {
-        cluster.support_role_arn = undefined;
-        hasChanges = true;
-      }
-      if (cluster.worker_role_arn) {
-        cluster.worker_role_arn = undefined;
-        hasChanges = true;
-      }
+      setValue('cluster.installer_role_arn', undefined, { shouldValidate: true });
+      setValue('cluster.support_role_arn', undefined, { shouldValidate: true });
+      setValue('cluster.worker_role_arn', undefined, { shouldValidate: true });
+      return;
     }
 
-    // installer is still valid, but child role values may be stale after refresh
     if (selectedRole) {
       if (
         cluster.support_role_arn &&
@@ -82,22 +63,20 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
           (roleOption) => roleOption.value === cluster.support_role_arn
         )
       ) {
-        cluster.support_role_arn = selectedRole.supportRole[0]?.value;
-        hasChanges = true;
+        setValue('cluster.support_role_arn', selectedRole.supportRole[0]?.value, {
+          shouldValidate: true,
+        });
       }
       if (
         cluster.worker_role_arn &&
         !selectedRole.workerRole.some((roleOption) => roleOption.value === cluster.worker_role_arn)
       ) {
-        cluster.worker_role_arn = selectedRole.workerRole[0]?.value;
-        hasChanges = true;
+        setValue('cluster.worker_role_arn', selectedRole.workerRole[0]?.value, {
+          shouldValidate: true,
+        });
       }
     }
-
-    if (hasChanges) {
-      update();
-    }
-  }, [cluster, roles.isFetching, selectedRole, update]);
+  }, [cluster, roles.isFetching, selectedRole, setValue]);
 
   const selectedClusterVersion = cluster?.cluster_version;
 
@@ -129,53 +108,45 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
 
   React.useEffect(() => {
     if (cluster?.name && !cluster.custom_operator_roles_prefix) {
-      cluster.custom_operator_roles_prefix = createOperatorRolesPrefix(cluster.name);
-      update();
+      setValue('cluster.custom_operator_roles_prefix', createOperatorRolesPrefix(cluster.name), {
+        shouldValidate: true,
+      });
     }
-  }, [cluster, update]);
+  }, [cluster?.name, cluster?.custom_operator_roles_prefix, setValue]);
 
   React.useEffect(() => {
     if (selectedRoleIsDisabled && cluster) {
-      cluster.installer_role_arn = undefined;
-      cluster.support_role_arn = undefined;
-      cluster.worker_role_arn = undefined;
-      update();
+      setValue('cluster.installer_role_arn', undefined, { shouldValidate: true });
+      setValue('cluster.support_role_arn', undefined, { shouldValidate: true });
+      setValue('cluster.worker_role_arn', undefined, { shouldValidate: true });
     }
-  }, [selectedRoleIsDisabled, cluster, update]);
+  }, [selectedRoleIsDisabled, cluster, setValue]);
 
   const onInstallerRoleChange = React.useCallback(
-    (
-      installerRoleValue: string | null | undefined,
-      itemFromForm?: { cluster?: Record<string, unknown> }
-    ) => {
-      const rootItem = itemFromForm ?? (cluster ? { cluster } : null);
-      const targetCluster = rootItem?.cluster;
-      if (!targetCluster) return;
+    (installerRoleValue: string | null | undefined) => {
       if (
         installerRoleValue == null ||
         installerRoleValue === '' ||
         installerRoleValue === undefined
       ) {
-        targetCluster.support_role_arn = undefined;
-        targetCluster.worker_role_arn = undefined;
+        setValue('cluster.support_role_arn', undefined, { shouldValidate: true });
+        setValue('cluster.worker_role_arn', undefined, { shouldValidate: true });
       } else {
         const role = roles.data.find((r) => r.installerRole.value === installerRoleValue);
         if (role) {
-          targetCluster.support_role_arn = role.supportRole[0]?.value ?? undefined;
-          targetCluster.worker_role_arn = role.workerRole[0]?.value ?? undefined;
+          setValue('cluster.support_role_arn', role.supportRole[0]?.value, { shouldValidate: true });
+          setValue('cluster.worker_role_arn', role.workerRole[0]?.value, { shouldValidate: true });
         }
       }
-      // Always call update() so the wizard re-renders with cleared/set support and worker values
-      update();
     },
-    [roles.data, cluster, update]
+    [roles.data, setValue]
   );
 
   const rosaCommand = `rosa create operator-roles --prefix "${cluster?.custom_operator_roles_prefix}" --oidc-config-id "${cluster?.byo_oidc_config_id}" --hosted-cp --installer-role-arn ${cluster?.installer_role_arn}`;
 
   return (
     <>
-      <Section label={rp.accountRolesSection}>
+      <RosaSection label={rp.accountRolesSection}>
         <Grid>
           <GridItem span={7}>
             <FieldWithAPIErrorAlert
@@ -188,7 +159,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                   : undefined
               }
             >
-              <WizSelect
+              <RosaSelect
                 isFill
                 path="cluster.installer_role_arn"
                 refreshCallback={
@@ -198,12 +169,12 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                 }
                 label={rp.installerRoleLabel}
                 disabled={roles.isFetching}
-                onValueChange={(installerRoleValue, itemFromForm) => {
+                onValueChange={(installerRoleValue) => {
                   const value =
                     installerRoleValue != null && installerRoleValue !== ''
                       ? String(installerRoleValue)
                       : null;
-                  onInstallerRoleChange(value, itemFromForm);
+                  onInstallerRoleChange(value);
                 }}
                 placeholder={rp.installerPlaceholder}
                 labelHelp={
@@ -227,7 +198,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
         >
           <Grid hasGutter>
             <GridItem span={7}>
-              <WizSelect
+              <RosaSelect
                 key={`support-${cluster?.installer_role_arn ?? 'none'}`}
                 isFill
                 path="cluster.support_role_arn"
@@ -240,7 +211,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
               />
             </GridItem>
             <GridItem span={7}>
-              <WizSelect
+              <RosaSelect
                 key={`worker-${cluster?.installer_role_arn ?? 'none'}`}
                 isFill
                 path="cluster.worker_role_arn"
@@ -254,8 +225,8 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
             </GridItem>
           </Grid>
         </ExpandableSection>
-      </Section>
-      <Section label={rp.operatorRolesSection}>
+      </RosaSection>
+      <RosaSection label={rp.operatorRolesSection}>
         <Grid>
           <GridItem span={7}>
             <Stack>
@@ -266,7 +237,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                   fieldName={rp.oidcLabel}
                   retry={oidcConfig.fetch ? () => void oidcConfig.fetch?.() : undefined}
                 >
-                  <WizSelect
+                  <RosaSelect
                     isFill
                     path="cluster.byo_oidc_config_id"
                     refreshCallback={oidcConfig.fetch}
@@ -301,10 +272,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
         >
           <Grid>
             <GridItem span={4}>
-              <WizTextInput
-                validation={(value, item) =>
-                  validateCustomOperatorRolesPrefix(value, item, v.operatorRolesPrefix)
-                }
+              <RosaTextInput
                 path="cluster.custom_operator_roles_prefix"
                 validateOnBlur
                 label={rp.operatorPrefixLabel}
@@ -332,7 +300,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
             {rosaCommand}
           </ClipboardCopy>
         </ExpandableSection>
-      </Section>
+      </RosaSection>
     </>
   );
 };

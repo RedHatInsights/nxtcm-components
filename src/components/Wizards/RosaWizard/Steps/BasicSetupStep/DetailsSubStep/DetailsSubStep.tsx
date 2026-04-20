@@ -1,13 +1,9 @@
-import {
-  Section,
-  useData,
-  useItem,
-  WizSelect,
-  WizTextInput,
-} from '@patternfly-labs/react-form-wizard';
 import { Button, Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
+import { klona } from 'klona/json';
 import React from 'react';
+import { useFormContext, useWatch } from 'react-hook-form';
 import semver from 'semver';
+import { RosaSection, RosaSelect, RosaTextInput } from '../../../Inputs';
 import { StepDrawer } from '../../../common/StepDrawer';
 import {
   OpenShiftVersionsData,
@@ -22,7 +18,10 @@ import {
 import { buildOpenShiftVersionGroups } from '../../../buildOpenShiftVersionGroups';
 import { validateClusterName } from '../../../validators';
 import ExternalLink from '../../../common/ExternalLink';
-import { updateOnAWSAccountChange } from '../../../hooks/updateOnAWSAccountChange';
+import {
+  clusterFieldPathsClearedOnAwsAccountChange,
+  updateOnAWSAccountChange,
+} from '../../../hooks/updateOnAWSAccountChange';
 import links from '../../../externalLinks';
 import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
 import { useResetFieldOnOptionsChange } from '../../../hooks/useResetFieldOnOptionsChange';
@@ -58,12 +57,13 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   checkClusterNameUniqueness,
 }) => {
   const d = useRosaWizardStrings().details;
-  const { update } = useData();
+  const { getValues, reset, setValue, trigger, setError, clearErrors } =
+    useFormContext<RosaWizardFormData>();
+  const cluster = useWatch({ name: 'cluster' });
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const drawerRef = React.useRef<HTMLSpanElement>(null);
   const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
   const { checkName, cancelCheck } = useUniqueClusterNameCheck(checkClusterNameUniqueness, 500);
-  const { cluster } = useItem<RosaWizardFormData>();
 
   const uniqueClusterNameCheck = (value: string, region: string) => {
     const syncError = validateClusterName(value);
@@ -74,6 +74,18 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
     }
   };
 
+  const prevClusterNameApiError = React.useRef<string | null>(null);
+  React.useEffect(() => {
+    const err = clusterNameValidation.error;
+    if (err) {
+      setError('cluster.name', { type: 'server', message: err });
+    } else if (prevClusterNameApiError.current) {
+      clearErrors('cluster.name');
+      void trigger('cluster.name');
+    }
+    prevClusterNameApiError.current = err;
+  }, [clusterNameValidation.error, setError, clearErrors, trigger]);
+
   useResetFieldOnOptionsChange('cluster.region', regions.data);
   useResetFieldOnOptionsChange('cluster.machine_type', machineTypes.data, 'machinepools-sub-step');
 
@@ -83,15 +95,13 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
     }
     const optionValues = awsBillingAccounts.data.map(({ value }) => value);
     if (optionValues.length === 1 && cluster.billing_account_id !== optionValues[0]) {
-      cluster.billing_account_id = optionValues[0];
-      update();
+      setValue('cluster.billing_account_id', optionValues[0], { shouldValidate: true });
       return;
     }
     if (cluster.billing_account_id && !optionValues.includes(cluster.billing_account_id)) {
-      cluster.billing_account_id = undefined;
-      update();
+      setValue('cluster.billing_account_id', undefined, { shouldValidate: true });
     }
-  }, [awsBillingAccounts.data, awsBillingAccounts.isFetching, cluster, update]);
+  }, [awsBillingAccounts.data, awsBillingAccounts.isFetching, cluster.billing_account_id, setValue]);
 
   const selectedInstallerRoleVersion = React.useMemo(() => {
     const role = roles.data.find((r) => r.installerRole.value === cluster?.installer_role_arn);
@@ -159,13 +169,12 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
   React.useEffect(() => {
     if (versions.isFetching || !cluster?.cluster_version) return;
     if (!selectedVersionIsDisabled.exists || selectedVersionIsDisabled.isDisabled) {
-      cluster.cluster_version = undefined;
-      update();
+      setValue('cluster.cluster_version', undefined, { shouldValidate: true });
     }
-  }, [versions.isFetching, selectedVersionIsDisabled, cluster, update]);
+  }, [versions.isFetching, selectedVersionIsDisabled, cluster?.cluster_version, setValue]);
 
   return (
-    <Section label={d.sectionLabel}>
+    <RosaSection label={d.sectionLabel}>
       <StepDrawer
         isDrawerExpanded={isDrawerExpanded}
         setIsDrawerExpanded={setIsDrawerExpanded}
@@ -185,7 +194,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                       : undefined
                   }
                 >
-                  <WizSelect
+                  <RosaSelect
                     isFill
                     path="cluster.associated_aws_id"
                     label={d.awsInfraLabel}
@@ -199,10 +208,13 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                         ? () => void awsInfrastructureAccounts.fetch?.()
                         : undefined
                     }
-                    onValueChange={(_value, item) => {
-                      void updateOnAWSAccountChange(_value as string, item, regions.fetch);
-                      if (_value) {
-                        void roles.fetch(_value as string);
+                    onValueChange={(value) => {
+                      const data = klona(getValues());
+                      void updateOnAWSAccountChange(value as string, data, regions.fetch);
+                      reset(data, { keepDefaultValues: false });
+                      void trigger(clusterFieldPathsClearedOnAwsAccountChange);
+                      if (value) {
+                        void roles.fetch(value as string);
                       }
                     }}
                   />
@@ -231,7 +243,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                     awsBillingAccounts.fetch ? () => void awsBillingAccounts.fetch?.() : undefined
                   }
                 >
-                  <WizSelect
+                  <RosaSelect
                     isFill
                     disabled={awsBillingAccounts.isFetching}
                     path="cluster.billing_account_id"
@@ -264,10 +276,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   fieldName={d.clusterNameLabel}
                   isValidation
                 >
-                  <WizTextInput
-                    validation={(name: string, item: unknown) =>
-                      validateClusterName(name, item) || clusterNameValidation.error || undefined
-                    }
+                  <RosaTextInput
                     onValueChange={(value) => {
                       uniqueClusterNameCheck(value as string, cluster.region as string);
                     }}
@@ -292,7 +301,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                   fieldName={d.openShiftVersionLabel}
                   retry={() => void versions.fetch()}
                 >
-                  <WizSelect
+                  <RosaSelect
                     isFill
                     path="cluster.cluster_version"
                     label={d.openShiftVersionLabel}
@@ -301,9 +310,9 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                     isPending={versions.isFetching}
                     refreshCallback={() => void versions.fetch()}
                     required
-                    onValueChange={(_value, item) => {
-                      if (_value && !showSecurityGroupsSection(_value as string)) {
-                        item.cluster.security_groups_worker = undefined;
+                    onValueChange={(value) => {
+                      if (value && !showSecurityGroupsSection(value as string)) {
+                        setValue('cluster.security_groups_worker', undefined, { shouldValidate: true });
                       }
                     }}
                   />
@@ -324,7 +333,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                       : undefined
                   }
                 >
-                  <WizSelect
+                  <RosaSelect
                     isFill
                     path="cluster.region"
                     label={d.regionLabel}
@@ -332,17 +341,14 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                     labelHelp={d.regionHelp}
                     options={regions.data}
                     disabled={regions.isFetching}
-                    onValueChange={(_value, item) => {
-                      if (cluster.name) uniqueClusterNameCheck(cluster.name, _value as string);
-                      delete item.cluster.selected_vpc;
-                      delete item.cluster.cluster_privacy_public_subnet_id;
-                      if (
-                        item.cluster.machine_pools_subnets &&
-                        item.cluster.machine_pools_subnets.length > 0
-                      ) {
-                        item.cluster.machine_pools_subnets = [];
-                      }
-                      if (_value && machineTypes.fetch) void machineTypes.fetch(_value as string);
+                    onValueChange={(value) => {
+                      if (cluster.name) uniqueClusterNameCheck(cluster.name, value as string);
+                      setValue('cluster.selected_vpc', undefined, { shouldDirty: true });
+                      setValue('cluster.cluster_privacy_public_subnet_id', undefined, {
+                        shouldDirty: true,
+                      });
+                      setValue('cluster.machine_pools_subnets', [], { shouldDirty: true });
+                      if (value && machineTypes.fetch) void machineTypes.fetch(value as string);
                     }}
                     required
                   />
@@ -352,6 +358,6 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
           </StackItem>
         </Stack>
       </StepDrawer>
-    </Section>
+    </RosaSection>
   );
 };

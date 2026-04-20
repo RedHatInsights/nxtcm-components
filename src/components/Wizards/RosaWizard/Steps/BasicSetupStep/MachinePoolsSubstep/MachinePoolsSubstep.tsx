@@ -1,35 +1,28 @@
 import React from 'react';
 import {
-  Radio,
-  Section,
-  useItem,
-  WizMachinePoolSelect,
-  WizNumberInput,
-  WizRadioGroup,
-  WizSelect,
-} from '@patternfly-labs/react-form-wizard';
-import {
   Content,
   ContentVariants,
   ExpandableSection,
   Grid,
   GridItem,
 } from '@patternfly/react-core';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { subnetsFilter, canSelectImds, getWorkerNodeVolumeSizeMaxGiB } from '../../../helpers';
 import {
-  MachineTypesDropdownType,
-  Resource,
-  RosaWizardFormData,
-  Subnet,
-  VPC,
-} from '../../../../types';
+  Indented,
+  Radio,
+  RosaMachinePoolSelect,
+  RosaNumberInput,
+  RosaRadioGroup,
+  RosaSection,
+  RosaSelect,
+} from '../../../Inputs';
+import { MachineTypesDropdownType, Resource, Subnet, VPC } from '../../../../types';
 import { AutoscalingField } from './Autoscaling/AutoscalingField';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
-import { Indented } from '@patternfly-labs/react-form-wizard/components/Indented';
-import { validateRootDiskSize } from '../../../validators';
 import { SecurityGroupsSection } from './SecurityGroupSection/SecurityGroupSection';
-import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
+import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
 import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
 
 type MachinePoolsSubstepProps = {
@@ -41,8 +34,8 @@ type MachinePoolsSubstepProps = {
 
 export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
   const mp = useRosaWizardStrings().machinePools;
-  const v = useRosaWizardValidators();
-  const { cluster } = useItem<RosaWizardFormData>();
+  const { setValue } = useFormContext();
+  const cluster = useWatch({ name: 'cluster' });
   const currentRegion = cluster?.region;
   const clusterVersion = cluster.cluster_version ?? '';
   const maxRootDiskSize = getWorkerNodeVolumeSizeMaxGiB(clusterVersion);
@@ -61,7 +54,7 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
 
   return (
     <>
-      <Section label={mp.sectionLabel} id="machine-pools-section" key="machine-pools-key">
+      <RosaSection label={mp.sectionLabel} id="machine-pools-section">
         <Content component={ContentVariants.p}>{mp.intro}</Content>
         <Grid>
           <GridItem span={5}>
@@ -71,11 +64,9 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
               fieldName={mp.vpcLabel}
               retry={props.vpcList.fetch ? () => void props.vpcList.fetch?.() : undefined}
             >
-              <WizSelect
-                onValueChange={(_newVpc, item) => {
-                  if (item?.cluster) {
-                    item.cluster.security_groups_worker = [];
-                  }
+              <RosaSelect
+                onValueChange={() => {
+                  setValue('cluster.security_groups_worker', [], { shouldDirty: true });
                 }}
                 label={`${mp.vpcLabelPrefix} ${cluster?.region}`}
                 path="cluster.selected_vpc"
@@ -107,7 +98,7 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
               fieldName={mp.subnetLabel}
               retry={props.vpcList.fetch ? () => void props.vpcList.fetch?.() : undefined}
             >
-              <WizMachinePoolSelect
+              <RosaMachinePoolSelect
                 required
                 path="cluster.machine_pools_subnets"
                 machinePoolLabel={mp.machinePoolLabel}
@@ -124,12 +115,8 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
             </FieldWithAPIErrorAlert>
           </GridItem>
         </Grid>
-      </Section>
-      <Section
-        label={mp.settingsSectionLabel}
-        id="machine-pools-settings-section"
-        key="machine-pools-settings-key"
-      >
+      </RosaSection>
+      <RosaSection label={mp.settingsSectionLabel} id="machine-pools-settings-section">
         <Content component={ContentVariants.p}>{mp.settingsIntro}</Content>
         <Grid>
           <GridItem span={5}>
@@ -143,9 +130,8 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
                   : undefined
               }
             >
-              <WizSelect
+              <RosaSelect
                 label={mp.instanceTypeLabel}
-                validateOnBlur={true}
                 disabled={props.machineTypes.isFetching}
                 path="cluster.machine_type"
                 required
@@ -168,11 +154,11 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
           machinePoolsNumber={cluster.machine_pools_subnets?.length}
           openshiftVersion={cluster.cluster_version}
         />
-      </Section>
+      </RosaSection>
 
       <ExpandableSection toggleText={mp.advancedToggle}>
         <Indented>
-          <WizRadioGroup
+          <RosaRadioGroup
             disabled={!canSelectImds(clusterVersion)}
             labelHelpTitle={mp.imdsHelpTitle}
             labelHelp={
@@ -199,17 +185,14 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
               value="imdsv2only"
               description={mp.imdsV2Description}
             />
-          </WizRadioGroup>
+          </RosaRadioGroup>
 
-          <WizNumberInput
+          <RosaNumberInput
             path="cluster.compute_root_volume"
             label={mp.rootDiskLabel}
             labelHelp={mp.rootDiskHelp}
             min={75}
             max={maxRootDiskSize}
-            validation={(_value: number) =>
-              validateRootDiskSize(_value, v.rootDisk, maxRootDiskSize)
-            }
           />
         </Indented>
       </ExpandableSection>

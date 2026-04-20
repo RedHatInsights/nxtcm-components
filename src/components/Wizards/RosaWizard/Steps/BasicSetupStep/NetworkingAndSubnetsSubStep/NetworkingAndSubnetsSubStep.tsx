@@ -1,17 +1,16 @@
+import { ClusterNetwork, Resource, Subnet, VPC } from '../../../../types';
 import {
+  Indented,
+  LabelHelp,
   Radio,
-  Section,
-  useData,
-  useItem,
-  WizCheckbox,
-  WizRadioGroup,
-  WizSelect,
-  WizTextInput,
-} from '@patternfly-labs/react-form-wizard';
-import { LabelHelp } from '@patternfly-labs/react-form-wizard/components/LabelHelp';
-import { ClusterNetwork, Resource, RosaWizardFormData, Subnet, VPC } from '../../../../types';
+  RosaCheckbox,
+  RosaRadioGroup,
+  RosaSection,
+  RosaSelect,
+  RosaTextInput,
+} from '../../../Inputs';
 import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
-import { constructSelectedSubnets, subnetsFilter } from '../../../helpers';
+import { subnetsFilter } from '../../../helpers';
 import {
   Alert,
   Content,
@@ -23,21 +22,10 @@ import {
   StackItem,
 } from '@patternfly/react-core';
 import React from 'react';
-import {
-  disjointSubnets,
-  awsSubnetMask,
-  hostPrefix,
-  cidr,
-  validateRange,
-  awsMachineCidr,
-  subnetCidrs,
-  serviceCidr,
-  podCidr,
-} from '../../../validators';
-import { Indented } from '@patternfly-labs/react-form-wizard/components/Indented';
 import links from '../../../externalLinks';
 import ExternalLink from '../../../common/ExternalLink';
-import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
+import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 type NetworkingAndSubnetsSubStepProps = {
   vpcList: Resource<VPC[]>;
@@ -46,10 +34,9 @@ type NetworkingAndSubnetsSubStepProps = {
 
 export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepProps) => {
   const { networking: n } = useRosaWizardStrings();
-  const v = useRosaWizardValidators();
-  const { cluster } = useItem<RosaWizardFormData>();
+  const { setValue } = useFormContext();
+  const cluster = useWatch({ name: 'cluster' });
   const { setIsClusterWideProxySelected } = props;
-  const { update } = useData();
   const vpcRef = cluster?.selected_vpc;
   const selectedVPC =
     typeof vpcRef === 'string' ? props.vpcList.data?.find((vpc: VPC) => vpc.id === vpcRef) : vpcRef;
@@ -61,65 +48,27 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
   React.useEffect(() => {
     setIsClusterWideProxySelected(!!clusterWideProxy);
     if (!clusterWideProxy) {
-      const {
-        http_proxy_url,
-        https_proxy_url,
-        no_proxy_domains,
-        additional_trust_bundle,
-        ...rest
-      } = cluster ?? {};
-      update({ cluster: rest });
+      setValue('cluster.http_proxy_url', undefined, { shouldDirty: true });
+      setValue('cluster.https_proxy_url', undefined, { shouldDirty: true });
+      setValue('cluster.no_proxy_domains', undefined, { shouldDirty: true });
+      setValue('cluster.additional_trust_bundle', undefined, { shouldDirty: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clusterWideProxy]);
-
-  const selectedSubnets = constructSelectedSubnets(cluster);
-
-  const machineDisjointSubnets = disjointSubnets('network_machine_cidr', v.disjointSubnets);
-  const serviceDisjointSubnets = disjointSubnets('network_service_cidr', v.disjointSubnets);
-  const podDisjointSubnets = disjointSubnets('network_pod_cidr', v.disjointSubnets);
-  const awsServiceSubnetMask = awsSubnetMask('network_service_cidr', v.serviceCidr);
-
-  const hostPrefixValidators = (value: string) => hostPrefix(value, v.hostPrefix);
-  const cidrValidators = (value: string) =>
-    cidr(value, v.cidr) || validateRange(value, v.validateRange, v.cidr) || undefined;
-
-  const machineCidrValidators = (value: string) =>
-    cidrValidators(value) ||
-    awsMachineCidr(value, cluster, v.awsMachineCidr) ||
-    validateRange(value, v.validateRange, v.cidr) ||
-    subnetCidrs(value, cluster, 'network_machine_cidr', selectedSubnets, v.subnetCidrs) ||
-    machineDisjointSubnets(value, cluster) ||
-    undefined;
-
-  const serviceCidrValidators = (value: string) =>
-    cidrValidators(value) ||
-    serviceCidr(value, v.serviceCidr) ||
-    serviceDisjointSubnets(value, cluster) ||
-    awsServiceSubnetMask(value) ||
-    subnetCidrs(value, cluster, 'network_service_cidr', selectedSubnets, v.subnetCidrs) ||
-    undefined;
-
-  const podCidrValidators = (value: string) =>
-    cidrValidators(value) ||
-    podCidr(value, cluster?.network_host_prefix, v.podCidr) ||
-    podDisjointSubnets(value, cluster) ||
-    subnetCidrs(value, cluster, 'network_pod_cidr', selectedSubnets, v.subnetCidrs) ||
-    undefined;
+  }, [clusterWideProxy, setValue]);
 
   return (
     <>
-      <Section label={n.sectionLabel} id="networking-section" key="networking-section-key">
+      <RosaSection label={n.sectionLabel} id="networking-section">
         <Grid>
           <GridItem span={7}>
-            <WizRadioGroup
+            <RosaRadioGroup
               id="public-private-subnet-radio-group"
               path="cluster.cluster_privacy"
               helperText={n.privacyHelper}
               onValueChange={() => {
-                if (cluster.cluster_privacy && cluster.cluster_privacy_public_subnet_id) {
-                  delete cluster.cluster_privacy_public_subnet_id;
-                }
+                setValue('cluster.cluster_privacy_public_subnet_id', undefined, {
+                  shouldDirty: true,
+                });
               }}
             >
               <Radio
@@ -134,7 +83,7 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                   fieldName={n.publicSubnetLabel}
                   retry={props.vpcList.fetch ? () => void props.vpcList.fetch?.() : undefined}
                 >
-                  <WizSelect
+                  <RosaSelect
                     label={n.publicSubnetLabel}
                     path="cluster.cluster_privacy_public_subnet_id"
                     options={
@@ -156,16 +105,16 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
                 value={ClusterNetwork.internal}
                 popover={<LabelHelp id="subnet-label-help-private" labelHelp={n.privatePopover} />}
               ></Radio>
-            </WizRadioGroup>
+            </RosaRadioGroup>
           </GridItem>
         </Grid>
-      </Section>
+      </RosaSection>
 
       <ExpandableSection toggleText={n.advancedToggle}>
         <Indented>
           <Stack>
             <StackItem>
-              <WizCheckbox
+              <RosaCheckbox
                 id="cluster-wide-proxy"
                 path="cluster.configure_proxy"
                 label={n.proxyCheckboxLabel}
@@ -196,7 +145,7 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
             </Content>
           </Alert>
 
-          <WizCheckbox
+          <RosaCheckbox
             id="use-cidr-default-values"
             path="cluster.cidr_default"
             label={n.useDefaultsLabel}
@@ -205,8 +154,7 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
 
           <Stack hasGutter>
             <StackItem>
-              <WizTextInput
-                validation={machineCidrValidators}
+              <RosaTextInput
                 validateOnBlur
                 id="network_machine_cidr"
                 path="cluster.network_machine_cidr"
@@ -216,8 +164,7 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
               />
             </StackItem>
             <StackItem>
-              <WizTextInput
-                validation={serviceCidrValidators}
+              <RosaTextInput
                 validateOnBlur
                 id="network_service_cidr"
                 path="cluster.network_service_cidr"
@@ -227,8 +174,7 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
               />
             </StackItem>
             <StackItem>
-              <WizTextInput
-                validation={podCidrValidators}
+              <RosaTextInput
                 validateOnBlur
                 id="network_pod_cidr"
                 path="cluster.network_pod_cidr"
@@ -238,8 +184,7 @@ export const NetworkingAndSubnetsSubStep = (props: NetworkingAndSubnetsSubStepPr
               />
             </StackItem>
             <StackItem>
-              <WizTextInput
-                validation={hostPrefixValidators}
+              <RosaTextInput
                 validateOnBlur
                 path="cluster.network_host_prefix"
                 label={n.hostPrefixLabel}

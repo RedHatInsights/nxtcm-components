@@ -172,6 +172,8 @@ export type ClusterFormData = {
   max_replicas?: number;
   compute_root_volume?: number;
   imds?: string;
+  /** Worker security group ids when supported by version / VPC. */
+  security_groups_worker?: SecurityGroup[];
 
   // networking
   cluster_privacy?: ClusterNetwork.external | ClusterNetwork.internal;

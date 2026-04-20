@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Section, WizRadioGroup, Radio, useItem } from '@patternfly-labs/react-form-wizard';
-import { useData } from '@patternfly-labs/react-form-wizard';
+import { useFormContext, useWatch } from 'react-hook-form';
+import { Radio, RosaRadioGroup, RosaSection } from '../../../Inputs';
 import {
   Button,
   Content,
@@ -17,7 +17,7 @@ import {
   SplitItem,
 } from '@patternfly/react-core';
 import parseUpdateSchedule from './parseUpdateSchedule';
-import { ClusterUpgrade, RosaWizardFormData, WizardNavigationContext } from '../../../../types';
+import { ClusterUpgrade, WizardNavigationContext } from '../../../../types';
 import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 import { useRosaWizardStrings } from '../../../RosaWizardStringsContext';
@@ -30,8 +30,8 @@ type ClusterUpdatesSubstepProps = {
 
 export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
   const cu = useRosaWizardStrings().clusterUpdates;
-  const { cluster } = useItem<RosaWizardFormData>();
-  const { update } = useData();
+  const { setValue } = useFormContext();
+  const cluster = useWatch({ name: 'cluster' });
 
   const [daySelectOpen, setDaySelectOpen] = useState(false);
   const [timeSelectOpen, setTimeSelectOpen] = useState(false);
@@ -48,14 +48,14 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
   const onDaySelect = (selection: string | number | undefined) => {
     const selectedHour = parseCurrentValue()[0] || '0';
     const cronValue = `00 ${selectedHour} * * ${selection}`;
-    update({ cluster: { ...cluster, upgrade_schedule: cronValue } });
+    setValue('cluster.upgrade_schedule', cronValue, { shouldDirty: true, shouldValidate: true });
     setDaySelectOpen(false);
   };
 
   const onHourSelect = (selection: string | number | undefined) => {
     const selectedDay = parseCurrentValue()[1] || '0';
     const cronValue = `00 ${selection} * * ${selectedDay}`;
-    update({ cluster: { ...cluster, upgrade_schedule: cronValue } });
+    setValue('cluster.upgrade_schedule', cronValue, { shouldDirty: true, shouldValidate: true });
     setTimeSelectOpen(false);
   };
 
@@ -91,11 +91,7 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
   );
 
   return (
-    <Section
-      id="cluster-updates-substep-section"
-      key="cluster-updates-substep-section-key"
-      label={cu.sectionLabel}
-    >
+    <RosaSection id="cluster-updates-substep-section" label={cu.sectionLabel}>
       <Content component={ContentVariants.p}>
         {cu.versionIntroPrefix} {cluster.cluster_version} {cu.versionIntroSuffix}{' '}
         {
@@ -128,7 +124,7 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
         {cu.cveTail}
       </Content>
 
-      <WizRadioGroup path="cluster.upgrade_policy">
+      <RosaRadioGroup path="cluster.upgrade_policy">
         <Radio
           id="cluster-upgrade-strategy-individual-radio-btn"
           label={cu.individualLabel}
@@ -152,7 +148,7 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
             </>
           }
         />
-      </WizRadioGroup>
+      </RosaRadioGroup>
 
       {cluster?.upgrade_policy === ClusterUpgrade.automatic && (
         <FormGroup label={cu.dayTimeLabel} className="pf-v6-u-ml-xl">
@@ -202,6 +198,6 @@ export const ClusterUpdatesSubstep = (props: ClusterUpdatesSubstepProps) => {
           </Grid>
         </FormGroup>
       )}
-    </Section>
+    </RosaSection>
   );
 };

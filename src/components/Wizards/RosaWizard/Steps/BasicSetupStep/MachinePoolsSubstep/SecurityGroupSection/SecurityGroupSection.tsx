@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { ExpandableSection } from '@patternfly/react-core';
-import { useValue } from '@patternfly-labs/react-form-wizard/inputs/Input';
+import { useController, useFormContext } from 'react-hook-form';
 
 import EditSecurityGroups from './EditSecurityGroups';
 import SecurityGroupsEmptyAlert from './SecurityGroupsEmptyAlert';
 import SecurityGroupsNoEditAlert from './SecurityGroupsNoEditAlert';
 import { showSecurityGroupsSection } from '../../../../helpers';
-import { CloudVpc, Resource, VPC } from '../../../../../types';
+import { CloudVpc, Resource, VPC, type RosaWizardFormData } from '../../../../../types';
 import { useRosaWizardStrings } from '../../../../RosaWizardStringsContext';
 import { FieldWithAPIErrorAlert } from '../../../../common/FieldWithAPIErrorAlert';
 
@@ -22,10 +22,14 @@ export const SecurityGroupsSection = ({
   refreshVPCs?: () => void;
 }) => {
   const { machinePools, securityGroups } = useRosaWizardStrings();
-  const [selectedGroupIds, setSelectedGroupIds] = useValue(
-    { path: 'cluster.security_groups_worker' },
-    []
-  );
+  const { control } = useFormContext<RosaWizardFormData>();
+  const {
+    field: { value: selectedGroupIds, onChange: setSelectedGroupIds },
+  } = useController({
+    control,
+    name: 'cluster.security_groups_worker',
+    defaultValue: [],
+  });
 
   const [isExpanded, setIsExpanded] = useState(false);
   const incompatibleClusterVersion = !showSecurityGroupsSection(clusterVersion);

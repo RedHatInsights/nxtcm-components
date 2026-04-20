@@ -1,19 +1,13 @@
 /**
  * Playwright CT mount target. Components from *.story.tsx cannot be mounted (see playwright.dev/test-components#test-stories).
  */
-import React, { useCallback, useState } from 'react';
+import React, { useMemo } from 'react';
+import { FormProvider } from 'react-hook-form';
 import { DetailsSubStep } from './DetailsSubStep';
+import { mergeRosaCtClusterDefaults, useRosaWizardCtForm } from '../../../rosaWizardCtForm';
 import { RosaWizardStringsProvider } from '../../../RosaWizardStringsContext';
-import { ItemContext } from '@patternfly-labs/react-form-wizard/contexts/ItemContext';
-import { DataContext } from '@patternfly-labs/react-form-wizard/contexts/DataContext';
-import {
-  DisplayModeContext,
-  DisplayMode,
-} from '@patternfly-labs/react-form-wizard/contexts/DisplayModeContext';
-import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
-import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
-import { StepShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/StepShowValidationProvider';
 import type { DetailsSubStepStoryProps } from './DetailsSubStep.fixtures';
+import type { RosaWizardFormData } from '../../../../types';
 import {
   createMockClusterData,
   mockAwsInfrastructureAccounts,
@@ -24,7 +18,7 @@ import {
   mockRoles,
 } from './DetailsSubStep.fixtures';
 
-export const DetailsSubStepMount: React.FC<DetailsSubStepStoryProps> = ({
+function DetailsSubStepMountInner({
   clusterNameValidation = { error: null, isFetching: false },
   checkClusterNameUniqueness,
   versions,
@@ -34,12 +28,13 @@ export const DetailsSubStepMount: React.FC<DetailsSubStepStoryProps> = ({
   machineTypes,
   roles,
   clusterOverrides = {},
-}) => {
-  const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
+}: DetailsSubStepStoryProps) {
+  const defaultValues = useMemo((): RosaWizardFormData => {
+    const { cluster } = createMockClusterData(clusterOverrides);
+    return mergeRosaCtClusterDefaults(cluster as RosaWizardFormData['cluster']);
+  }, [clusterOverrides]);
 
-  const update = useCallback(() => {
-    setData((currentData) => ({ ...currentData }));
-  }, []);
+  const methods = useRosaWizardCtForm(defaultValues, { mode: 'onTouched' });
 
   const awsInfraProps = {
     data: awsInfrastructureAccounts?.data ?? mockAwsInfrastructureAccounts,
@@ -84,29 +79,23 @@ export const DetailsSubStepMount: React.FC<DetailsSubStepStoryProps> = ({
   };
 
   return (
-    <RosaWizardStringsProvider>
-      <DataContext.Provider value={{ update }}>
-        <DisplayModeContext.Provider value={DisplayMode.Step}>
-          <ItemContext.Provider value={data}>
-            <StepShowValidationProvider>
-              <ShowValidationProvider>
-                <ValidationProvider>
-                  <DetailsSubStep
-                    clusterNameValidation={clusterNameValidation}
-                    checkClusterNameUniqueness={checkClusterNameUniqueness}
-                    roles={rolesProps}
-                    versions={versionsProps}
-                    awsInfrastructureAccounts={awsInfraProps}
-                    awsBillingAccounts={awsBillingProps}
-                    regions={regionsProps}
-                    machineTypes={machineTypesProps}
-                  />
-                </ValidationProvider>
-              </ShowValidationProvider>
-            </StepShowValidationProvider>
-          </ItemContext.Provider>
-        </DisplayModeContext.Provider>
-      </DataContext.Provider>
-    </RosaWizardStringsProvider>
+    <FormProvider {...methods}>
+      <DetailsSubStep
+        clusterNameValidation={clusterNameValidation}
+        checkClusterNameUniqueness={checkClusterNameUniqueness}
+        roles={rolesProps}
+        versions={versionsProps}
+        awsInfrastructureAccounts={awsInfraProps}
+        awsBillingAccounts={awsBillingProps}
+        regions={regionsProps}
+        machineTypes={machineTypesProps}
+      />
+    </FormProvider>
   );
-};
+}
+
+export const DetailsSubStepMount: React.FC<DetailsSubStepStoryProps> = (props) => (
+  <RosaWizardStringsProvider>
+    <DetailsSubStepMountInner {...props} />
+  </RosaWizardStringsProvider>
+);

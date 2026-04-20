@@ -1,15 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { NetworkingAndSubnetsSubStep } from './NetworkingAndSubnetsSubStep';
 import { RosaWizardStringsProvider } from '../../../RosaWizardStringsContext';
-import { ItemContext } from '@patternfly-labs/react-form-wizard/contexts/ItemContext';
-import { DataContext } from '@patternfly-labs/react-form-wizard/contexts/DataContext';
-import {
-  DisplayModeContext,
-  DisplayMode,
-} from '@patternfly-labs/react-form-wizard/contexts/DisplayModeContext';
-import { ShowValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ShowValidationProvider';
-import { ValidationProvider } from '@patternfly-labs/react-form-wizard/contexts/ValidationProvider';
-import { VPC, Subnet, Resource, MachineTypesDropdownType } from '../../../../types';
+import { VPC, Subnet, Resource, MachineTypesDropdownType, type RosaWizardFormData } from '../../../../types';
 
 const mockResource = <TData,>(data: TData): Resource<TData> => ({
   data,
@@ -113,11 +106,14 @@ export const NetworkingSubStepStory: React.FC<NetworkingSubStepStoryProps> = ({
   clusterOverrides = {},
   onClusterWideProxySelected,
 }) => {
-  const [data, setData] = useState(() => createMockClusterData(clusterOverrides));
-
-  const update = useCallback(() => {
-    setData((currentData) => ({ ...currentData }));
-  }, []);
+  const defaultValues = useMemo(
+    () => createMockClusterData(clusterOverrides) as RosaWizardFormData,
+    [clusterOverrides]
+  );
+  const methods = useForm<RosaWizardFormData>({
+    defaultValues,
+    mode: 'onChange',
+  });
 
   const setIsClusterWideProxySelected = useCallback(
     (selected: boolean) => {
@@ -128,20 +124,12 @@ export const NetworkingSubStepStory: React.FC<NetworkingSubStepStoryProps> = ({
 
   return (
     <RosaWizardStringsProvider>
-      <DataContext.Provider value={{ update }}>
-        <DisplayModeContext.Provider value={DisplayMode.Step}>
-          <ItemContext.Provider value={data}>
-            <ShowValidationProvider>
-              <ValidationProvider>
-                <NetworkingAndSubnetsSubStep
-                  vpcList={vpcList}
-                  setIsClusterWideProxySelected={setIsClusterWideProxySelected}
-                />
-              </ValidationProvider>
-            </ShowValidationProvider>
-          </ItemContext.Provider>
-        </DisplayModeContext.Provider>
-      </DataContext.Provider>
+      <FormProvider {...methods}>
+        <NetworkingAndSubnetsSubStep
+          vpcList={vpcList}
+          setIsClusterWideProxySelected={setIsClusterWideProxySelected}
+        />
+      </FormProvider>
     </RosaWizardStringsProvider>
   );
 };

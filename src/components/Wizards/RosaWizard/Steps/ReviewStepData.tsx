@@ -1,5 +1,6 @@
 import React from 'react';
-import { Section, useItem, WizCheckbox } from '@patternfly-labs/react-form-wizard';
+import { useWatch } from 'react-hook-form';
+import { RosaSection } from '../Inputs';
 import {
   Alert,
   Button,
@@ -18,7 +19,6 @@ import {
   ClusterEncryptionKeys,
   ClusterNetwork,
   ClusterUpgrade,
-  RosaWizardFormData,
   WizardNavigationContext,
 } from '../../types';
 import { useRosaWizardStrings } from '../RosaWizardStringsContext';
@@ -29,7 +29,7 @@ type ReviewStepDataProps = {
 
 export const ReviewStepData = (props: ReviewStepDataProps) => {
   const r = useRosaWizardStrings().review;
-  const { cluster } = useItem<RosaWizardFormData>();
+  const cluster = useWatch({ name: 'cluster' });
 
   const [isDetailsSectionExpanded, setIsDetailsSectionExpanded] = React.useState<boolean>(true);
   const [isRolesAndPoliciesExpanded, setIsRolesAndPoliciesExpanded] = React.useState<boolean>(true);
@@ -66,7 +66,7 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
   ]);
 
   return (
-    <Section label={r.sectionLabel}>
+    <RosaSection label={r.sectionLabel}>
       <Alert
         variant="info"
         title={
@@ -344,9 +344,6 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
                 hasIcon
               />
             </Stack>
-            <span style={{ display: 'none' }}>
-              <WizCheckbox path={''} id="non-displayed-checkbox" />
-            </span>
           </ExpandableSection>
         </SplitItem>
         <SplitItem>
@@ -359,6 +356,6 @@ export const ReviewStepData = (props: ReviewStepDataProps) => {
           </Button>
         </SplitItem>
       </Split>
-    </Section>
+    </RosaSection>
   );
 };

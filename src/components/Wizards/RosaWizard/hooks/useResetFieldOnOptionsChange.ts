@@ -1,31 +1,26 @@
-import get from 'get-value';
-import set from 'set-value';
 import React from 'react';
-import { useItem } from '../../../../../packages/react-form-wizard/src/contexts/ItemContext';
-import { useData } from '../../../../../packages/react-form-wizard/src/contexts/DataContext';
-import { useSetStepShowValidation } from '../../../../../packages/react-form-wizard/src/contexts/StepShowValidationProvider';
-import { RosaWizardFormData } from '../../types';
+import { useFormContext, useWatch, type FieldPath } from 'react-hook-form';
+import type { RosaWizardFormData } from '../../types';
 
 type OptionWithValue = { value: string };
 
+/**
+ * Clears a field when its current value is no longer present in `options` (e.g. region list refresh).
+ */
 export function useResetFieldOnOptionsChange(
-  path: string,
+  path: FieldPath<RosaWizardFormData>,
   options: OptionWithValue[],
-  stepId?: string
+  _stepId?: string
 ) {
-  const item = useItem<RosaWizardFormData>();
-  const { update } = useData();
-  const setStepShowValidation = useSetStepShowValidation();
+  const { setValue } = useFormContext<RosaWizardFormData>();
+  const currentValue = useWatch({ name: path });
 
   React.useEffect(() => {
-    const currentValue = get(item, path);
     if (currentValue && options.length > 0) {
       const isStillValid = options.some((o) => o.value === currentValue);
       if (!isStillValid) {
-        set(item, path, undefined, { preservePaths: false });
-        if (stepId) setStepShowValidation(stepId, true);
-        update();
+        setValue(path, undefined as never, { shouldDirty: true, shouldValidate: true });
       }
     }
-  }, [options, item, path, setStepShowValidation, stepId, update]);
+  }, [options, currentValue, path, setValue]);
 }

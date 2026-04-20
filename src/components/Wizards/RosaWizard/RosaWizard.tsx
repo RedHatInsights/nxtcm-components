@@ -1,10 +1,3 @@
-import {
-  ExpandableStep,
-  Step,
-  WizardCancel,
-  WizardPage,
-  WizardSubmit,
-} from '@patternfly-labs/react-form-wizard';
 import { ClusterUpdatesSubstep, EncryptionSubstep } from './Steps/AdditionalSetupStep';
 import { RosaWizardSubmitError } from './RosaWizardSubmitError';
 import {
@@ -13,6 +6,7 @@ import {
   RolesAndPoliciesSubStep,
 } from './Steps/BasicSetupStep';
 import React, { ReactNode } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { ClusterWideProxySubstep } from './Steps/AdditionalSetupStep/ClusterWideProxySubstep/ClusterWideProxySubstep';
 import { ReviewStepData } from './Steps/ReviewStepData';
 import {
@@ -28,22 +22,28 @@ import {
   WizardNavigationContext,
   MachineTypesDropdownType,
   Region,
-  ClusterNetwork,
-  ClusterUpgrade,
-  ClusterEncryptionKeys,
+  type RosaWizardFormData,
 } from '../types';
 import { MachinePoolsSubstep } from './Steps/BasicSetupStep/MachinePoolsSubstep/MachinePoolsSubstep';
 import { YamlDrawerEditor } from './Steps/YamlCodeEditor';
-import { RosaWizardStringsProvider, useRosaWizardStrings } from './RosaWizardStringsContext';
+import {
+  RosaWizardStringsProvider,
+  useRosaWizardStrings,
+  useRosaWizardValidators,
+} from './RosaWizardStringsContext';
 import { buildWizardStringsForRosa, type RosaWizardStringsInput } from './rosaWizardStrings';
+import { RosaExpandableStep, RosaStep } from './Inputs';
+import { createDefaultRosaWizardFormValues } from './rosaWizardDefaultFormData';
+import { RosaWizardStepValidationProvider } from './rosaWizardStepValidation';
+import { RosaWizardShell, type RosaWizardCancel, type RosaWizardSubmitHandler } from './RosaWizardShell';
+import { WizardFooterStringsProvider } from './wizardFooterStrings';
+import { createRosaWizardYupResolver } from './yup/rosaWizardFormSchema';
 
 export type BasicSetupStepProps = {
-  // validation-only fields (no data, just state)
   clusterNameValidation: ValidationResource;
   checkClusterNameUniqueness?: (name: string, region?: string) => void;
   userRole: ValidationResource;
 
-  // data resources — each carries data/error/loading and optional fetch
   versions: Resource<OpenShiftVersionsData, []> & { fetch: () => Promise<void> };
   awsInfrastructureAccounts: Resource<SelectDropdownType[]>;
   awsBillingAccounts: Resource<SelectDropdownType[]>;
@@ -55,7 +55,6 @@ export type BasicSetupStepProps = {
   };
   oidcConfig: Resource<OIDCConfig[]>;
   vpcList: Resource<VPC[]>;
-  // subnets are currently embedded in vpc.aws_subnets; resource shape is ready for future separation
   subnets: Resource<Subnet[]>;
   securityGroups: Resource<SecurityGroup[]>;
   machineTypes: Resource<MachineTypesDropdownType[]>;
@@ -65,13 +64,14 @@ export type WizardStepsData = {
   basicSetupStep: BasicSetupStepProps;
 };
 
+export type { RosaWizardCancel, RosaWizardSubmitHandler };
+
 type RosaWizardProps = {
-  onSubmit: WizardSubmit;
+  onSubmit: RosaWizardSubmitHandler;
   onSubmitError?: string | boolean;
-  onCancel: WizardCancel;
+  onCancel: RosaWizardCancel;
   title: string;
   wizardsStepsData: WizardStepsData;
-  /** Called when "Back to review step" is clicked so the parent can clear its error state. When this promise resolves, the wizard navigates to the review step. */
   onBackToReviewStep?: () => void | Promise<void>;
   yamlEditor?: () => ReactNode;
   yaml?: boolean;
@@ -120,8 +120,25 @@ const RosaWizardBody = (props: RosaWizardProps) => {
     [rosaStrings, strings?.formWizard]
   );
 
-  const [isClusterWideProxySelected, setIsClusterWideProxySelected] =
-    React.useState<boolean>(false);
+  const validators = useRosaWizardValidators();
+
+  const resolver = React.useMemo(
+    () =>
+      createRosaWizardYupResolver({
+        validators,
+        footerStrings: wizardStrings,
+      }),
+    [validators, wizardStrings]
+  );
+
+  const form = useForm<RosaWizardFormData>({
+    resolver,
+    defaultValues: createDefaultRosaWizardFormValues(),
+    mode: 'onChange',
+    shouldUnregister: false,
+  });
+
+  const [isClusterWideProxySelected, setIsClusterWideProxySelected] = React.useState<boolean>(false);
   const skipToReviewStepIds = React.useMemo(
     () => [
       ...(isClusterWideProxySelected ? [STEP_IDS.CLUSTER_WIDE_PROXY] : []),
@@ -135,7 +152,6 @@ const RosaWizardBody = (props: RosaWizardProps) => {
   const [isNavigatingToReview, setIsNavigatingToReview] = React.useState(false);
 
   const [getUseWizardContext, setUseWizardContext] = React.useState<
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     WizardNavigationContext | undefined
   >();
 
@@ -153,24 +169,6 @@ const RosaWizardBody = (props: RosaWizardProps) => {
     setIsNavigatingToReview(false);
   }, [onBackToReviewStep]);
 
-  const defaultClusterData = {
-    cluster: {
-      encryption_keys: ClusterEncryptionKeys.default,
-      etcd_encryption: false,
-      configure_proxy: false,
-      cidr_default: true,
-      network_machine_cidr: '10.0.0.0/16',
-      network_service_cidr: '172.30.0.0/16',
-      network_pod_cidr: '10.128.0.0/14',
-      network_host_prefix: '/23',
-      autoscaling: false,
-      nodes_compute: 2,
-      upgrade_policy: ClusterUpgrade.automatic,
-      cluster_privacy: ClusterNetwork.external,
-      compute_root_volume: 300,
-    },
-  };
-
   return (
     <>
       {hasSubmitError && (
@@ -182,103 +180,107 @@ const RosaWizardBody = (props: RosaWizardProps) => {
         />
       )}
       <div style={{ display: hasSubmitError ? 'none' : undefined }}>
-        <WizardPage
-          onSubmit={onSubmit}
-          onCancel={() => onCancel()}
-          title={title}
-          skipToReviewStepIds={skipToReviewStepIds}
-          defaultData={defaultClusterData}
-          setUseWizardContext={setUseWizardContext}
-          resumeAtStepId={resumeAtStepId}
-          onResumedToStep={() => setResumeAtStepId(null)}
-          yaml={yaml}
-          yamlEditor={yamlEditor}
-          wizardStrings={wizardStrings}
-        >
-          <ExpandableStep
-            id={STEP_IDS.BASIC_SETUP}
-            label={sl.basicSetup}
-            key="basic-setup-step-expandable-section-key"
-            isExpandable
-            steps={[
-              <Step label={sl.details} id={STEP_IDS.DETAILS} key="basic-setup-details">
-                <DetailsSubStep
-                  clusterNameValidation={basicSetupStep.clusterNameValidation}
-                  versions={basicSetupStep.versions}
-                  machineTypes={basicSetupStep.machineTypes}
-                  checkClusterNameUniqueness={basicSetupStep.checkClusterNameUniqueness}
-                  roles={basicSetupStep.roles}
-                  awsInfrastructureAccounts={basicSetupStep.awsInfrastructureAccounts}
-                  awsBillingAccounts={basicSetupStep.awsBillingAccounts}
-                  regions={basicSetupStep.regions}
-                />
-              </Step>,
-              <Step
-                id="roles-and-policies-sub-step"
-                label={sl.rolesAndPolicies}
-                key="roles-and-policies-sub-step-key"
+        <FormProvider {...form}>
+          <WizardFooterStringsProvider value={wizardStrings}>
+            <RosaWizardStepValidationProvider>
+              <RosaWizardShell
+                onSubmit={onSubmit}
+                onCancel={() => onCancel()}
+                title={title}
+                skipToReviewStepIds={skipToReviewStepIds}
+                resumeAtStepId={resumeAtStepId}
+                onResumedToStep={() => setResumeAtStepId(null)}
+                yaml={yaml}
+                yamlEditor={yamlEditor}
+                setUseWizardContext={setUseWizardContext}
               >
-                <RolesAndPoliciesSubStep
-                  roles={basicSetupStep.roles}
-                  oidcConfig={basicSetupStep.oidcConfig}
+                <RosaExpandableStep
+                  id={STEP_IDS.BASIC_SETUP}
+                  label={sl.basicSetup}
+                  key="basic-setup-step-expandable-section-key"
+                  isExpandable
+                  steps={[
+                  <RosaStep label={sl.details} id={STEP_IDS.DETAILS} key="basic-setup-details">
+                    <DetailsSubStep
+                      clusterNameValidation={basicSetupStep.clusterNameValidation}
+                      versions={basicSetupStep.versions}
+                      machineTypes={basicSetupStep.machineTypes}
+                      checkClusterNameUniqueness={basicSetupStep.checkClusterNameUniqueness}
+                      roles={basicSetupStep.roles}
+                      awsInfrastructureAccounts={basicSetupStep.awsInfrastructureAccounts}
+                      awsBillingAccounts={basicSetupStep.awsBillingAccounts}
+                      regions={basicSetupStep.regions}
+                    />
+                  </RosaStep>,
+                  <RosaStep
+                    id="roles-and-policies-sub-step"
+                    label={sl.rolesAndPolicies}
+                    key="roles-and-policies-sub-step-key"
+                  >
+                    <RolesAndPoliciesSubStep
+                      roles={basicSetupStep.roles}
+                      oidcConfig={basicSetupStep.oidcConfig}
+                    />
+                  </RosaStep>,
+                  <RosaStep
+                    id={STEP_IDS.MACHINE_POOLS}
+                    label={sl.machinePools}
+                    key="machinepools-sub-step-key"
+                  >
+                    <MachinePoolsSubstep
+                      vpcList={basicSetupStep.vpcList}
+                      machineTypes={basicSetupStep.machineTypes}
+                    />
+                  </RosaStep>,
+                  <RosaStep id={STEP_IDS.NETWORKING} label={sl.networking} key="networking-sub-step-key">
+                    <NetworkingAndSubnetsSubStep
+                      vpcList={basicSetupStep.vpcList}
+                      setIsClusterWideProxySelected={setIsClusterWideProxySelected}
+                    />
+                  </RosaStep>,
+                  ...(isClusterWideProxySelected
+                    ? [
+                        <RosaStep
+                          id={STEP_IDS.CLUSTER_WIDE_PROXY}
+                          key="additional-setup-cluster-wide-proxy-key"
+                          label={sl.clusterWideProxy}
+                        >
+                          <ClusterWideProxySubstep />
+                        </RosaStep>,
+                      ]
+                    : []),
+                  ]}
                 />
-              </Step>,
-              <Step
-                id={STEP_IDS.MACHINE_POOLS}
-                label={sl.machinePools}
-                key="machinepools-sub-step-key"
-              >
-                <MachinePoolsSubstep
-                  vpcList={basicSetupStep.vpcList}
-                  machineTypes={basicSetupStep.machineTypes}
-                />
-              </Step>,
-              <Step id={STEP_IDS.NETWORKING} label={sl.networking} key="networking-sub-step-key">
-                <NetworkingAndSubnetsSubStep
-                  vpcList={basicSetupStep.vpcList}
-                  setIsClusterWideProxySelected={setIsClusterWideProxySelected}
-                />
-              </Step>,
-              ...(isClusterWideProxySelected
-                ? [
-                    <Step
-                      id={STEP_IDS.CLUSTER_WIDE_PROXY}
-                      key="additional-setup-cluster-wide-proxy-key"
-                      label={sl.clusterWideProxy}
-                    >
-                      <ClusterWideProxySubstep />
-                    </Step>,
-                  ]
-                : []),
-            ]}
-          />
 
-          <ExpandableStep
-            id={STEP_IDS.ADDITIONAL_SETUP}
-            label={sl.additionalSetup}
-            key="additional-setup-step-expandable-section-key"
-            isExpandable
-            steps={[
-              <Step
-                id={STEP_IDS.ENCRYPTION}
-                key="additional-setup-encryption-key"
-                label={sl.encryptionOptional}
-              >
-                <EncryptionSubstep />
-              </Step>,
-              <Step
-                id={STEP_IDS.CLUSTER_UPDATES}
-                key="additional-setup-cluster-updates-key"
-                label={sl.clusterUpdatesOptional}
-              >
-                <ClusterUpdatesSubstep goToStepId={getUseWizardContext} />
-              </Step>,
-            ]}
-          />
-          <Step label={sl.review} id={STEP_IDS.REVIEW}>
-            <ReviewStepData goToStepId={getUseWizardContext} />
-          </Step>
-        </WizardPage>
+                <RosaExpandableStep
+                  id={STEP_IDS.ADDITIONAL_SETUP}
+                  label={sl.additionalSetup}
+                  key="additional-setup-step-expandable-section-key"
+                  isExpandable
+                  steps={[
+                  <RosaStep
+                    id={STEP_IDS.ENCRYPTION}
+                    key="additional-setup-encryption-key"
+                    label={sl.encryptionOptional}
+                  >
+                    <EncryptionSubstep />
+                  </RosaStep>,
+                  <RosaStep
+                    id={STEP_IDS.CLUSTER_UPDATES}
+                    key="additional-setup-cluster-updates-key"
+                    label={sl.clusterUpdatesOptional}
+                  >
+                    <ClusterUpdatesSubstep goToStepId={getUseWizardContext} />
+                  </RosaStep>,
+                  ]}
+                />
+                <RosaStep label={sl.review} id={STEP_IDS.REVIEW}>
+                  <ReviewStepData goToStepId={getUseWizardContext} />
+                </RosaStep>
+              </RosaWizardShell>
+            </RosaWizardStepValidationProvider>
+          </WizardFooterStringsProvider>
+        </FormProvider>
       </div>
     </>
   );
