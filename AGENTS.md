@@ -20,7 +20,7 @@ this repo provides UI components, types, and integration shapes. consuming apps 
 
 ## project layout
 
-```
+```text
 src/
   components/
     dashboard/              # dashboard card components
@@ -46,7 +46,7 @@ playwright/
 
 components follow a co-location pattern:
 
-```
+```text
 ComponentName/
   ComponentName.tsx           # the component
   ComponentName.stories.tsx   # storybook stories (CSF3)
