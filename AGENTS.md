@@ -1,8 +1,6 @@
 # AGENTS.md
 
-repo context for AI coding agents. this file is tool-agnostic — read by Claude Code, GitHub Copilot, OpenCode, ACP runners, and any other tool that follows the AGENTS.md convention.
-
-if you're using Cursor, this file is **not** read by Cursor. Cursor reads `.cursor/rules/` instead, which contains the same conventions in Cursor's format.
+repo context for AI coding agents. this file is tool-agnostic — read by Cursor, Claude Code, GitHub Copilot, OpenCode, ACP runners, and any other tool that follows the AGENTS.md convention.
 
 ## what is this repo?
 
