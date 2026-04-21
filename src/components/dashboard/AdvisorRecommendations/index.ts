@@ -1,7 +1,8 @@
-export { AdvisorRecommendations } from './AdvisorRecommendations';
+export { AdvisorSeverity, AdvisorCategories } from './AdvisorRecommendations';
+
 export type {
-  AdvisorRecommendationsData,
-  AdvisorRecommendationsProps,
   SeverityCounts,
+  AdvisorSeverityProps,
   CategoryCounts,
+  AdvisorCategoriesProps,
 } from './AdvisorRecommendations';
