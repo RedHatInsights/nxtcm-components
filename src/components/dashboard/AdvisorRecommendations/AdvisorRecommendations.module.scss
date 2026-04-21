@@ -70,23 +70,3 @@
   color: var(--pf-t--global--text--color--regular);
 }
 
-.viewMoreLink {
-  background: none;
-  border: none;
-  padding: 0;
-  color: var(--pf-t--global--text--color--link--default);
-  font-size: var(--pf-t--global--font--size--sm);
-  cursor: pointer;
-  text-decoration: none;
-
-  &:hover {
-    color: var(--pf-t--global--text--color--link--hover);
-    text-decoration: underline;
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--pf-t--global--border--color--clicked);
-    outline-offset: 2px;
-    border-radius: var(--pf-t--global--border--radius--tiny);
-  }
-}

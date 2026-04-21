@@ -1,23 +1,6 @@
-.costManagementContainer {
-  display: flex;
-  gap: var(--pf-t--global--spacer--md);
-  flex-wrap: wrap;
-}
-
-.totalCostCard {
-  flex: 0 0 auto;
-  min-width: 300px;
-}
-
-.chartCard {
-  flex: 1 1 auto;
-  min-width: 500px;
-}
-
-.totalCost {
-  display: flex;
-  flex-direction: column;
-  gap: var(--pf-t--global--spacer--sm);
+.section {
+  padding-inline: var(--pf-t--global--spacer--md);
+  padding-block: var(--pf-t--global--spacer--md);
 }
 
 .totalValue {
@@ -26,22 +9,8 @@
   color: var(--pf-t--global--text--color--regular);
 }
 
-.totalLabel {
+.description {
   font-size: var(--pf-t--global--font--size--sm);
+  font-weight: var(--pf-t--global--font--weight--bold);
   color: var(--pf-t--global--text--color--subtle);
-  margin-top: var(--pf-t--global--spacer--xs);
-}
-
-.chartContainer {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 260px;
-}
-
-.legendContainer {
-  display: flex;
-  justify-content: center;
-  margin-top: var(--pf-t--global--spacer--md);
 }

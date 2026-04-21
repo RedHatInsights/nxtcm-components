@@ -147,3 +147,12 @@ export const NoTitle: Story = {
     onViewMore: () => {},
   },
 };
+
+export const SeverityOnly: Story = {
+  args: {
+    data: {
+      severity: { critical: 3, important: 7, moderate: 15, low: 2 },
+    },
+    onViewMore: () => {},
+  },
+};

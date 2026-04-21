@@ -1,5 +1,5 @@
-import { Divider, Flex, FlexItem, Label, Title } from '@patternfly/react-core';
-import { ChartDonut, ChartThemeColor, getTheme } from '@patternfly/react-charts/victory';
+import { Button, Divider, Flex, FlexItem, Label, Title } from '@patternfly/react-core';
+import { ChartDonut } from '@patternfly/react-charts/victory';
 import SeverityCriticalIcon from '@patternfly/react-icons/dist/esm/icons/severity-critical-icon';
 import SeverityImportantIcon from '@patternfly/react-icons/dist/esm/icons/severity-important-icon';
 import EqualsIcon from '@patternfly/react-icons/dist/esm/icons/equals-icon';
@@ -24,8 +24,8 @@ export type CategoryCounts = {
 export type AdvisorRecommendationsData = {
   /** recommendation counts by severity level */
   severity: SeverityCounts;
-  /** recommendation counts by category */
-  categories: CategoryCounts;
+  /** recommendation counts by category — optional, omit to hide the category section */
+  categories?: CategoryCounts;
 };
 
 const DEFAULT_TITLE = 'Advisor recommendations by severity';
@@ -60,9 +60,14 @@ const categoryLabels: Record<keyof CategoryCounts, string> = {
   faultTolerance: 'Fault tolerance',
 };
 
-// derive legend colors from pf's blue theme so chart + dots stay in sync automatically
-const blueTheme = getTheme(ChartThemeColor.blue);
-const categoryColors = (blueTheme.chart?.colorScale?.slice(0, 4) ?? []) as string[];
+// pf-t chart blue tokens flip in dark mode via patternfly-charts.css overrides.
+// hex fallbacks cover cases where patternfly-charts.css isn't loaded.
+const categoryColors = [
+  'var(--pf-t--chart--color--blue--100, #92c5f9)',
+  'var(--pf-t--chart--color--blue--200, #4394e5)',
+  'var(--pf-t--chart--color--blue--300, #0066cc)',
+  'var(--pf-t--chart--color--blue--400, #004d99)',
+];
 
 export const AdvisorRecommendations: React.FC<AdvisorRecommendationsProps> = ({
   data,
@@ -72,13 +77,13 @@ export const AdvisorRecommendations: React.FC<AdvisorRecommendationsProps> = ({
 }) => {
   const { severity, categories } = data;
 
-  const chartData = (Object.keys(categoryLabels) as Array<keyof CategoryCounts>).map(
-    (key, index) => ({
-      x: categoryLabels[key],
-      y: categories[key],
-      color: categoryColors[index],
-    })
-  );
+  const chartData = categories
+    ? (Object.keys(categoryLabels) as Array<keyof CategoryCounts>).map((key, index) => ({
+        x: categoryLabels[key],
+        y: categories[key],
+        color: categoryColors[index],
+      }))
+    : null;
 
   return (
     <Flex direction={{ default: 'column' }} className={styles.container}>
@@ -144,67 +149,64 @@ export const AdvisorRecommendations: React.FC<AdvisorRecommendationsProps> = ({
         </Flex>
       </FlexItem>
 
-      <Divider />
+      {chartData && (
+        <>
+          <Divider />
 
-      {/* recommendations by category */}
-      <FlexItem>
-        <Title
-          headingLevel="h4"
-          size="lg"
-          className={styles.categoryTitle}
-          data-testid="category-title"
-        >
-          Recommendations by category
-        </Title>
-      </FlexItem>
-
-      <FlexItem>
-        <Flex alignItems={{ default: 'alignItemsCenter' }}>
           <FlexItem>
-            <div className={styles.chartContainer} data-testid="category-chart">
-              <ChartDonut
-                ariaTitle="Recommendations by category"
-                constrainToVisibleArea
-                data={chartData.map((d) => ({ x: d.x, y: d.y }))}
-                colorScale={categoryColors}
-                labels={({ datum }) => `${datum.x}: ${datum.y}`}
-                width={120}
-                height={120}
-                innerRadius={30}
-                padding={0}
-              />
-            </div>
+            <Title
+              headingLevel="h4"
+              size="lg"
+              className={styles.categoryTitle}
+              data-testid="category-title"
+            >
+              Recommendations by category
+            </Title>
           </FlexItem>
-          <FlexItem flex={{ default: 'flex_1' }}>
-            <div className={styles.legendGrid}>
-              {chartData.map((item) => (
-                <div key={item.x} className={styles.legendItem}>
-                  <span
-                    className={styles.legendDot}
-                    style={{ backgroundColor: item.color }}
-                    aria-hidden="true"
-                  />
-                  <span className={styles.legendText}>
-                    {item.x}: {item.y}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </FlexItem>
-        </Flex>
-      </FlexItem>
 
-      {/* footer */}
+          <FlexItem>
+            <Flex alignItems={{ default: 'alignItemsCenter' }}>
+              <FlexItem>
+                <div className={styles.chartContainer} data-testid="category-chart">
+                  <ChartDonut
+                    ariaTitle="Recommendations by category"
+                    constrainToVisibleArea
+                    data={chartData.map((d) => ({ x: d.x, y: d.y }))}
+                    colorScale={categoryColors}
+                    labels={({ datum }) => `${datum.x}: ${datum.y}`}
+                    width={120}
+                    height={120}
+                    innerRadius={30}
+                    padding={0}
+                  />
+                </div>
+              </FlexItem>
+              <FlexItem flex={{ default: 'flex_1' }}>
+                <div className={styles.legendGrid}>
+                  {chartData.map((item) => (
+                    <div key={item.x} className={styles.legendItem}>
+                      <span
+                        className={styles.legendDot}
+                        style={{ backgroundColor: item.color }}
+                        aria-hidden="true"
+                      />
+                      <span className={styles.legendText}>
+                        {item.x}: {item.y}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </FlexItem>
+            </Flex>
+          </FlexItem>
+        </>
+      )}
+
       {onViewMore && (
         <FlexItem>
-          <button
-            type="button"
-            className={styles.viewMoreLink}
-            onClick={onViewMore}
-            data-testid="view-more-link"
-          >
+          <Button variant="link" isInline onClick={onViewMore} data-testid="view-more-link">
             View more in Red Hat Advisor
-          </button>
+          </Button>
         </FlexItem>
       )}
     </Flex>

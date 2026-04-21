@@ -1,5 +1,5 @@
 import { Button, Flex, FlexItem, Title } from '@patternfly/react-core';
-import { ChartDonutUtilization } from '@patternfly/react-charts/victory';
+import { ChartDonutUtilization, ChartLabel } from '@patternfly/react-charts/victory';
 import React from 'react';
 import styles from './ResourceUtilization.module.scss';
 
@@ -48,6 +48,10 @@ type MetricChartProps = {
   chartId: string;
 };
 
+// pf-t label fill token flips to white in dark mode via patternfly-charts.css.
+// hex fallback covers cases where patternfly-charts.css isn't loaded.
+const chartLabelFill = 'var(--pf-t--chart--global--label--fill, #1f1f1f)';
+
 const MetricChart: React.FC<MetricChartProps> = ({ label, metric, chartId }) => {
   const { used, total, unit } = metric;
   const pct = calcPercentage(used, total);
@@ -66,6 +70,8 @@ const MetricChart: React.FC<MetricChartProps> = ({ label, metric, chartId }) => 
           height={200}
           subTitle={`of ${formatValue(total)} ${unit}`}
           title={`${pct}%`}
+          titleComponent={<ChartLabel style={{ fill: chartLabelFill, fontSize: 22 }} />}
+          subTitleComponent={<ChartLabel style={{ fill: chartLabelFill, fontSize: 14 }} />}
           width={200}
           padding={{ top: 20, bottom: 20, left: 20, right: 20 }}
           name={chartId}
@@ -112,13 +118,11 @@ export const ResourceUtilization: React.FC<ResourceUtilizationProps> = ({
       </FlexItem>
 
       {onViewMore && (
-        <Flex justifyContent={{ default: 'justifyContentFlexEnd' }} className={styles.viewLink}>
-          <FlexItem>
-            <Button variant="link" onClick={onViewMore} className={styles.viewMoreBtn}>
-              View more
-            </Button>
-          </FlexItem>
-        </Flex>
+        <FlexItem className={styles.viewLink}>
+          <Button variant="link" onClick={onViewMore} className={styles.viewMoreBtn}>
+            View more
+          </Button>
+        </FlexItem>
       )}
     </Flex>
   );

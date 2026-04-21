@@ -1,4 +1,3 @@
-import { Flex, FlexItem } from '@patternfly/react-core';
 import React from 'react';
 import styles from './StorageCard.module.scss';
 
@@ -109,13 +108,11 @@ export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMor
         </div>
       </div>
       {onViewMore && (
-        <Flex justifyContent={{ default: 'justifyContentFlexEnd' }} className={styles.viewLink}>
-          <FlexItem>
-            <button onClick={onViewMore} className={styles.viewMore}>
-              View more
-            </button>
-          </FlexItem>
-        </Flex>
+        <div className={styles.viewLink}>
+          <button onClick={onViewMore} className={styles.viewMore}>
+            View more
+          </button>
+        </div>
       )}
     </>
   );
