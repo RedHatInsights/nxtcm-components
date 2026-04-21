@@ -9,16 +9,22 @@ const meta: Meta<typeof CostManagement> = {
   },
   tags: ['autodocs'],
   argTypes: {
-    costData: {
-      description: 'Cost data for different cluster types',
+    totalCost: {
+      control: 'number',
+      description: 'Total month-to-date cost',
+    },
+    clusters: {
+      description: 'Top clusters sorted by cost descending',
     },
     currency: {
       control: 'text',
-      description: 'Currency symbol to display',
-      defaultValue: '$',
+      description: 'Currency unit string (e.g. "USD", "EUR")',
+    },
+    onClusterClick: {
+      description: 'Callback when a cluster name is clicked',
     },
     onViewMore: {
-      description: 'Callback when "View more cost information" link is clicked',
+      description: 'Callback when "View more in Cost Management" link is clicked',
     },
   },
 };
@@ -26,95 +32,81 @@ const meta: Meta<typeof CostManagement> = {
 export default meta;
 type Story = StoryObj<typeof CostManagement>;
 
+const sampleClusters = [
+  { id: 'prod-east-1', name: 'prod-east-1', cost: 4850 },
+  { id: 'prod-west-2', name: 'prod-west-2', cost: 3720 },
+  { id: 'staging-central', name: 'staging-central', cost: 2100 },
+  { id: 'dev-east-1', name: 'dev-east-1', cost: 1580 },
+  { id: 'test-west-1', name: 'test-west-1', cost: 890 },
+];
+
 export const Default: Story = {
   args: {
-    costData: {
-      rosaClusters: 12500.75,
-      osdClusters: 8300.5,
-      aroClusters: 4200.25,
-    },
-    onViewMore: () => console.log('View more cost information clicked'),
+    totalCost: 25001,
+    clusters: sampleClusters,
+    onViewMore: () => console.log('View more in Cost Management clicked'),
+    onClusterClick: (cluster) => console.log('Cluster clicked:', cluster.name),
   },
 };
 
-export const HighCosts: Story = {
+export const TopThree: Story = {
   args: {
-    costData: {
-      rosaClusters: 45000.0,
-      osdClusters: 32000.0,
-      aroClusters: 28000.0,
-    },
+    totalCost: 10670,
+    clusters: sampleClusters.slice(0, 3),
+    onViewMore: () => console.log('View more clicked'),
+    onClusterClick: (cluster) => console.log('Cluster clicked:', cluster.name),
   },
 };
 
-export const LowCosts: Story = {
+export const TopTen: Story = {
   args: {
-    costData: {
-      rosaClusters: 1500.0,
-      osdClusters: 800.0,
-      aroClusters: 600.0,
-    },
+    totalCost: 52300,
+    clusters: [
+      { id: 'prod-east-1', name: 'prod-east-1', cost: 8200 },
+      { id: 'prod-west-2', name: 'prod-west-2', cost: 7150 },
+      { id: 'staging-central', name: 'staging-central', cost: 6300 },
+      { id: 'prod-eu-west', name: 'prod-eu-west', cost: 5800 },
+      { id: 'prod-ap-south', name: 'prod-ap-south', cost: 5400 },
+      { id: 'dev-east-1', name: 'dev-east-1', cost: 4900 },
+      { id: 'qa-west-1', name: 'qa-west-1', cost: 4200 },
+      { id: 'staging-eu', name: 'staging-eu', cost: 3800 },
+      { id: 'dev-west-2', name: 'dev-west-2', cost: 3500 },
+      { id: 'test-central', name: 'test-central', cost: 3050 },
+    ],
+    onClusterClick: (cluster) => console.log('Cluster clicked:', cluster.name),
   },
 };
 
-export const RosaHeavy: Story = {
+export const WithoutLinks: Story = {
   args: {
-    costData: {
-      rosaClusters: 35000.0,
-      osdClusters: 2000.0,
-      aroClusters: 1500.0,
-    },
+    totalCost: 25001,
+    clusters: sampleClusters,
   },
 };
 
-export const EvenDistribution: Story = {
+export const NoClusters: Story = {
   args: {
-    costData: {
-      rosaClusters: 10000.0,
-      osdClusters: 10000.0,
-      aroClusters: 10000.0,
-    },
+    totalCost: 0,
+    clusters: [],
   },
 };
 
 export const WithCustomCurrency: Story = {
   args: {
-    costData: {
-      rosaClusters: 12500.75,
-      osdClusters: 8300.5,
-      aroClusters: 4200.25,
-    },
-    currency: '€',
+    totalCost: 25001,
+    clusters: sampleClusters,
+    currency: 'EUR',
+    onViewMore: () => console.log('View more clicked'),
   },
 };
 
-export const ZeroCosts: Story = {
+export const MockupValues: Story = {
   args: {
-    costData: {
-      rosaClusters: 0,
-      osdClusters: 0,
-      aroClusters: 0,
-    },
-  },
-};
-
-export const SingleClusterType: Story = {
-  args: {
-    costData: {
-      rosaClusters: 15000.0,
-      osdClusters: 0,
-      aroClusters: 0,
-    },
-    onViewMore: () => console.log('View more cost information clicked'),
-  },
-};
-
-export const WithoutLink: Story = {
-  args: {
-    costData: {
-      rosaClusters: 12500.75,
-      osdClusters: 8300.5,
-      aroClusters: 4200.25,
-    },
+    totalCost: 3000,
+    clusters: [
+      { id: 'cluster-a', name: 'some cluster name', cost: 700 },
+      { id: 'cluster-b', name: 'another cluster name', cost: 2300 },
+    ],
+    onViewMore: () => console.log('View more clicked'),
   },
 };
