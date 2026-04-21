@@ -1,15 +1,20 @@
 import React from 'react';
-import { Button, Flex, FlexItem, Title } from '@patternfly/react-core';
+import { Flex, FlexItem, Title } from '@patternfly/react-core';
 import styles from './TotalCost.module.scss';
 
 export interface TotalCostProps {
   totalCost: number;
   currency?: string;
-  onViewMore?: () => void;
 }
 
-export const TotalCost: React.FC<TotalCostProps> = ({ totalCost, currency = '$', onViewMore }) => (
-  <Flex direction={{ default: 'column' }} style={{ height: '100%', padding: '1rem' }}>
+export const TotalCost: React.FC<TotalCostProps> = ({ totalCost, currency = '$' }) => (
+  <Flex
+    direction={{ default: 'column' }}
+    style={{
+      paddingInline: 'var(--pf-t--global--spacer--md)',
+      paddingBlockStart: 'var(--pf-t--global--spacer--md)',
+    }}
+  >
     <FlexItem data-testid="cost-title">
       <Title headingLevel="h3" size="md">
         Cost Management
@@ -33,12 +38,5 @@ export const TotalCost: React.FC<TotalCostProps> = ({ totalCost, currency = '$',
         </FlexItem>
       </Flex>
     </FlexItem>
-    {onViewMore && (
-      <FlexItem>
-        <Button variant="link" isInline onClick={onViewMore}>
-          View more cost information
-        </Button>
-      </FlexItem>
-    )}
   </Flex>
 );

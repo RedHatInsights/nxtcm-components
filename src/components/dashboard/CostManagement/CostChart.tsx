@@ -43,7 +43,7 @@ export const CostChart: React.FC<CostChartProps> = ({ costData, currency = '$' }
 
   const tickFormat = (tick: number, index: number, ticks: number[]) => {
     if (tick === 0) {
-      return currency;
+      return `${currency}0`;
     }
     if (index === ticks.length - 1) {
       return `${currency}${tick.toLocaleString()}`;
@@ -52,7 +52,10 @@ export const CostChart: React.FC<CostChartProps> = ({ costData, currency = '$' }
   };
 
   return (
-    <Flex direction={{ default: 'column' }} style={{ height: '100%', padding: '1rem' }}>
+    <Flex
+      direction={{ default: 'column' }}
+      style={{ height: '100%', padding: 'var(--pf-t--global--spacer--md)' }}
+    >
       <FlexItem data-testid="chart-title">
         <Title headingLevel="h3" size="md">
           Type of clusters cost
