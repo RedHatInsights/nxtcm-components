@@ -27,7 +27,7 @@ PR Release Progress:
 - [ ] Step 3: Save draft to pr_draft.md
 - [ ] Step 4: Stage and commit changes
 - [ ] Step 5: Push branch to origin
-- [ ] Step 6: Create PR via gh CLI
+- [ ] Step 6: Create or update PR via gh CLI
 - [ ] Step 7: Clean up pr_draft.md
 ```
 
@@ -64,7 +64,7 @@ Fill every section using the gathered context:
 | Template section | How to fill |
 |---|---|
 | **Description** | Summarize the purpose and scope of the changes in 2–4 sentences. |
-| **Jira issue #** | Insert extracted ticket ID (or leave blank). |
+| **Jira issue #** | Insert a Markdown link: `[TICKET-ID](https://redhat.atlassian.net/browse/TICKET-ID)` (or leave blank if no ticket). |
 | **Backport of** | Leave blank unless commits reference a backport. |
 | **Type of Change** | Mark the checkbox(es) that match the changes. |
 | **Testing > Manual Testing** | Infer reasonable test steps from the diff. If the change is UI-related, suggest Storybook verification. If purely logic, suggest unit test verification. |
@@ -123,13 +123,27 @@ git push -u origin HEAD
 
 If the push fails (e.g. no upstream), surface the error and stop.
 
-### Step 6 — Create the PR
+### Step 6 — Create or update the PR
+
+First, check whether a PR already exists for the current branch:
+
+```bash
+gh pr view --json url,number 2>/dev/null
+```
+
+**If no PR exists** (command fails), create one:
 
 ```bash
 gh pr create --base main --title "<generated title>" --body-file pr_draft.md
 ```
 
-Capture and display the resulting PR URL to the user.
+**If a PR already exists**, update its title and body:
+
+```bash
+gh pr edit --title "<generated title>" --body-file pr_draft.md
+```
+
+In both cases, capture and display the resulting PR URL to the user.
 
 ### Step 7 — Clean up
 
@@ -141,7 +155,7 @@ Delete `pr_draft.md` from the workspace.
 - **`gh` not authenticated**: Stop and tell the user to run `gh auth login`.
 - **Commit fails**: Stop and show the error (e.g. pre-commit hook rejection).
 - **Push fails**: Stop and show the error.
-- **PR creation fails**: Keep `pr_draft.md` so the user can retry manually, and show the error.
+- **PR creation or update fails**: Keep `pr_draft.md` so the user can retry manually, and show the error.
 
 ## Important notes
 
