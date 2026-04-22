@@ -183,12 +183,13 @@ function WizSelectBase<T = any>(props: SelectProps<T>) {
       const option = selectOptions?.find(
         (o) => o.keyedValue === val || o.value === val || String(o.keyedValue) === String(val)
       );
+      if (!option) return '';
       const label = option?.label;
       return typeof label === 'string'
         ? label
         : typeof option?.value === 'string' || typeof option?.value === 'number'
-        ? String(option.value)
-        : String(val);
+          ? String(option.value)
+          : String(val);
     }
     if (typeof val === 'object') {
       const o = val as Record<string, unknown>;

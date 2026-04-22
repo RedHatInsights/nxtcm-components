@@ -76,6 +76,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
 
   useResetFieldOnOptionsChange('cluster.region', regions.data);
   useResetFieldOnOptionsChange('cluster.machine_type', machineTypes.data, 'machinepools-sub-step');
+  useResetFieldOnOptionsChange('cluster.associated_aws_id', awsInfrastructureAccounts.data);
 
   React.useEffect(() => {
     if (awsBillingAccounts.isFetching) {
@@ -189,10 +190,10 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                     isFill
                     path="cluster.associated_aws_id"
                     label={d.awsInfraLabel}
+                    isPending={awsInfrastructureAccounts.isFetching}
                     placeholder={d.awsInfraPlaceholder}
                     labelHelp={d.awsInfraHelp}
                     options={awsInfrastructureAccounts.data}
-                    disabled={awsInfrastructureAccounts.isFetching}
                     required
                     refreshCallback={
                       awsInfrastructureAccounts.fetch
@@ -233,8 +234,8 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                 >
                   <WizSelect
                     isFill
-                    disabled={awsBillingAccounts.isFetching}
                     path="cluster.billing_account_id"
+                    isPending={awsBillingAccounts.isFetching}
                     label={d.billingLabel}
                     placeholder={d.billingPlaceholder}
                     labelHelp={d.billingHelp}

@@ -24,6 +24,7 @@ import ExternalLink from '../../../common/ExternalLink';
 import links from '../../../externalLinks';
 import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
 import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
+import { useResetFieldOnOptionsChange } from '../../../hooks/useResetFieldOnOptionsChange';
 
 type RolesAndPoliciesSubStepProps = {
   roles: Resource<Role[], [awsAccount: string]> & {
@@ -38,6 +39,11 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
 }) => {
   const rp = useRosaWizardStrings().rolesAndPolicies;
   const v = useRosaWizardValidators();
+
+  useResetFieldOnOptionsChange(
+    'cluster.byo_oidc_config_id',
+    oidcConfig.data.map((c) => ({ value: c.value }))
+  );
 
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
@@ -270,6 +276,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                     isFill
                     path="cluster.byo_oidc_config_id"
                     refreshCallback={oidcConfig.fetch}
+                    isPending={oidcConfig.isFetching}
                     label={rp.oidcLabel}
                     required
                     placeholder={rp.oidcPlaceholder}
@@ -279,7 +286,6 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
                       value: config.value,
                       description: config.issuer_url,
                     }))}
-                    disabled={oidcConfig.isFetching}
                   />
                 </FieldWithAPIErrorAlert>
               </StackItem>

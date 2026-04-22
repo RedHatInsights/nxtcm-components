@@ -199,7 +199,7 @@ test.describe('DetailsSubStep', () => {
       }
     });
 
-    test('should show disabled state for AWS infrastructure account when loading', async ({
+    test('should disable refresh button but not aws infrastructure accounts select when AWS infrastructure accounts are loading', async ({
       mount,
     }) => {
       const component = await mount(
@@ -210,17 +210,25 @@ test.describe('DetailsSubStep', () => {
 
       const awsSelect = component.locator('#cluster-associated_aws_id');
       await expect(awsSelect).toBeVisible();
-      await expect(awsSelect.locator('.pf-m-disabled')).toBeVisible();
+      await expect(awsSelect.getByRole('combobox')).toBeEnabled();
+      const refreshButton = awsSelect.getByRole('button', { name: 'Refresh', exact: true });
+      await expect(refreshButton).toBeVisible();
+      await expect(refreshButton).toBeDisabled();
     });
 
-    test('should show disabled state for AWS billing account when loading', async ({ mount }) => {
+    test('should disable refresh button but not billing select when AWS billing accounts are loading', async ({
+      mount,
+    }) => {
       const component = await mount(
         <DetailsSubStepMount awsBillingAccounts={{ data: [], isFetching: true, error: null }} />
       );
 
-      const billingSelect = component.locator('#cluster-billing_account_id');
-      await expect(billingSelect).toBeVisible();
-      await expect(billingSelect.locator('.pf-m-disabled')).toBeVisible();
+      const billingGroup = component.locator('#cluster-billing_account_id');
+      await expect(billingGroup).toBeVisible();
+      await expect(billingGroup.getByRole('combobox')).toBeEnabled();
+      const refreshButton = billingGroup.getByRole('button', { name: 'Refresh', exact: true });
+      await expect(refreshButton).toBeVisible();
+      await expect(refreshButton).toBeDisabled();
     });
 
     test('should show disabled state for Region select when loading', async ({ mount }) => {
