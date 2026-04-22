@@ -20,24 +20,24 @@ this repo provides UI components, types, and integration shapes. consuming apps 
 
 ```text
 src/
-  components/
-    dashboard/              # dashboard card components
-    Wizards/RosaWizard/     # ROSA cluster creation wizard (multi-step)
-    ConsoleBreadcrumbs/     # breadcrumb nav component
-    PageHeader/             # page-level header
-  context/                  # TranslationContext (i18n provider)
-  test-helpers.ts           # shared playwright CT helpers
-  index.ts                  # main entry — all public exports
+  components/               # UI components consumed by other apps
+                             # subdirectories organized by feature area
+                             # each component is independent of the others
+  context/                   # shared React context providers (e.g. i18n)
+  types/                     # shared TypeScript types and interfaces
+  utilities/                 # shared helper functions and utilities
+  examples/                  # usage examples
+  test-helpers.ts            # shared playwright CT helpers
+  index.ts                   # main entry — all public exports
 
 packages/
-  react-form-wizard/        # separate package, own tsconfig, NOT in main build
+  react-form-wizard/         # separate package, own tsconfig, NOT in main build
 
 playwright/
-  e2e/                      # E2E tests (vite dev server)
+  e2e/                       # E2E tests (vite dev server)
 
-.storybook/                 # storybook 9 config (react-vite)
-.cursor/rules/              # Cursor IDE rule files
-.github/workflows/ci.yml    # CI pipeline
+.storybook/                  # storybook 9 config (react-vite)
+.github/workflows/           # CI pipeline definitions
 ```
 
 ## file conventions
@@ -79,20 +79,11 @@ ComponentName/
 | E2E | `npm run test:e2e` | playwright.config.ts | yes |
 | all local | `npm run test:all` | — | — |
 
-**important:** jest does NOT run in CI. only playwright CT, E2E, lint, prettier, type-check, and storybook build run in CI. a green CI doesn't mean jest tests passed — always run `npm run test:all` locally.
-
 ## CI pipeline
 
-runs on push to `main` and on PRs. jobs (parallel):
+defined in `.github/workflows/ci.yml`. runs on push to `main` and on PRs.
 
-1. **lint** — eslint + prettier check
-2. **type-check** — `tsc --noEmit`
-3. **component tests** — playwright CT
-4. **build** — `tsc && vite build`
-5. **E2E** — playwright E2E
-6. **storybook** — storybook build
-
-all jobs also run `npm ci` in `packages/react-form-wizard`.
+**important:** jest does NOT run in CI — only Playwright CT, E2E, lint, prettier, type-check, and storybook build do. a green CI doesn't mean jest tests passed — always run `npm run test:all` locally.
 
 ## path aliases
 
@@ -122,12 +113,10 @@ configured in: tsconfig.json, vite config, playwright-ct.config.ts, storybook ma
 
 ### react patterns
 
-- proper dependency arrays in useEffect/useCallback/useMemo
-- custom hooks for business logic separation
 - prefer `onValueChange` over useEffect for reacting to form value changes (react-form-wizard pattern)
-- useMemo for expensive computations
-- useCallback when passing callbacks to memoized children
-- proper key props for list items
+- custom hooks for business logic separation
+
+other react best practices (dependency arrays, key props, memoization) are enforced by eslint via `react-hooks/recommended`.
 
 ### TypeScript
 
@@ -145,11 +134,23 @@ configured in: tsconfig.json, vite config, playwright-ct.config.ts, storybook ma
 4. Relative imports from local directories
 5. CSS/SCSS imports and assets last
 
-## lint rules (notable)
+## verifying changes
 
-- `no-console: error` (off in stories and tests)
-- `@typescript-eslint/no-explicit-any: off` (tech debt — prefer proper types but it's not enforced)
-- `@typescript-eslint/no-unused-vars: error` (with `_` prefix ignore pattern)
+after making code changes, run these commands:
+
+1. `npm run lint` — check for lint errors (see `.eslintrc.json` for rules)
+2. `npm run type-check` — verify TypeScript compiles
+3. `npm run test:all` — run jest + playwright CT tests
+4. `npm run build` — verify the build succeeds
+
+## lint and formatting
+
+linting rules are defined in `.eslintrc.json` — run `npm run lint` after code changes.
+
+non-obvious rules worth knowing upfront:
+
+- `@typescript-eslint/no-explicit-any: off` — `any` is accepted (tech debt) but prefer proper types
+- `no-console: error` — but relaxed in story files only
 - eslint is check-only in git hooks (no `--fix`)
 - prettier auto-formats staged files via lint-staged
 
@@ -175,5 +176,3 @@ configured in: tsconfig.json, vite config, playwright-ct.config.ts, storybook ma
 
 - `prettier:check` script references a `cypress/` glob — legacy, no cypress dir at root
 - `packages/react-form-wizard` may still have cypress references
-- jest isn't in CI — run `npm run test:all` locally to catch unit test failures
-- `@typescript-eslint/no-explicit-any` is OFF — `any` isn't banned but should be avoided
