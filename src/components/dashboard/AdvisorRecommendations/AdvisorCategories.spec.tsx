@@ -20,7 +20,7 @@ test.describe('AdvisorCategories', () => {
     const component = await mount(<AdvisorCategories categories={defaultCategories} />);
     const title = component.getByTestId('category-title');
     await expect(title).toBeVisible();
-    await expect(title).toContainText('Recommendations by category');
+    await expect(title).toContainText('Advisor recommendations by category');
   });
 
   test('should render a custom title', async ({ mount }) => {

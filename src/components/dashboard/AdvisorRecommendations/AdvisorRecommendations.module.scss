@@ -46,9 +46,9 @@
 }
 
 .legendGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--pf-t--global--spacer--sm) var(--pf-t--global--spacer--lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--pf-t--global--spacer--sm);
 }
 
 .legendItem {

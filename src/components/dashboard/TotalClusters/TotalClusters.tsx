@@ -1,4 +1,4 @@
-import { Button, Flex, FlexItem } from '@patternfly/react-core';
+import { Button, Flex, FlexItem, Title } from '@patternfly/react-core';
 import React from 'react';
 import styles from './TotalClusters.module.scss';
 
@@ -10,12 +10,28 @@ export type TotalClustersData = {
 export type TotalClustersProps = {
   /** cluster data to display */
   data: TotalClustersData;
+  /** card title — defaults to "Total clusters" */
+  title?: string;
   /** callback when "View all clusters" is clicked */
   onViewMore?: () => void;
 };
 
-export const TotalClusters: React.FC<TotalClustersProps> = ({ data, onViewMore }) => (
+const DEFAULT_TITLE = 'Total clusters';
+
+export const TotalClusters: React.FC<TotalClustersProps> = ({
+  data,
+  title = DEFAULT_TITLE,
+  onViewMore,
+}) => (
   <Flex direction={{ default: 'column' }} className={styles.container}>
+    {title && (
+      <FlexItem>
+        <Title headingLevel="h3" size="md" data-testid="total-clusters-title">
+          {title}
+        </Title>
+      </FlexItem>
+    )}
+
     <Flex
       direction={{ default: 'column' }}
       spaceItems={{ default: 'spaceItemsXs' }}
@@ -24,7 +40,7 @@ export const TotalClusters: React.FC<TotalClustersProps> = ({ data, onViewMore }
       <FlexItem className={styles.totalNumber} data-testid="total-clusters">
         {data.total}
       </FlexItem>
-      <FlexItem className={styles.totalLabel}>total managed clusters</FlexItem>
+      <FlexItem className={styles.totalLabel}>managed clusters</FlexItem>
     </Flex>
 
     {onViewMore && (

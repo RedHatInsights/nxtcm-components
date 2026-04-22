@@ -71,7 +71,10 @@ export const ClusterProviders: React.FC<ClusterProvidersProps> = ({
             </div>
           </FlexItem>
           <FlexItem flex={{ default: 'flex_1' }}>
-            <div className={styles.legendGrid} data-testid="providers-legend">
+            <div
+              className={providers.length > 6 ? styles.legendGridWide : styles.legendGrid}
+              data-testid="providers-legend"
+            >
               {providers.map((item, index) => (
                 <div key={item.label} className={styles.legendItem}>
                   <span

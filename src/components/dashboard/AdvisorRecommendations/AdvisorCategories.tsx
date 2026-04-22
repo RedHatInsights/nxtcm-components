@@ -13,11 +13,11 @@ export type CategoryCounts = {
 export type AdvisorCategoriesProps = {
   /** recommendation counts by category */
   categories: CategoryCounts;
-  /** card title — defaults to "Recommendations by category" */
+  /** card title — defaults to "Advisor recommendations by category" */
   title?: string;
 };
 
-const DEFAULT_TITLE = 'Recommendations by category';
+const DEFAULT_TITLE = 'Advisor recommendations by category';
 
 const categoryLabels: Record<keyof CategoryCounts, string> = {
   serviceAvailability: 'Service availability',

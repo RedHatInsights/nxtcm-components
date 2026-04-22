@@ -14,9 +14,16 @@ test.describe('TotalClusters', () => {
     await expect(component.getByTestId('total-clusters')).toContainText('67');
   });
 
+  test('should render the default title', async ({ mount }) => {
+    const component = await mount(<TotalClusters data={{ total: 67 }} />);
+    const title = component.getByTestId('total-clusters-title');
+    await expect(title).toBeVisible();
+    await expect(title).toHaveText('Total clusters');
+  });
+
   test('should display the total label', async ({ mount }) => {
     const component = await mount(<TotalClusters data={{ total: 67 }} />);
-    await expect(component.getByText('total managed clusters')).toBeVisible();
+    await expect(component.getByText('managed clusters')).toBeVisible();
   });
 
   test('should render with zero total', async ({ mount }) => {
