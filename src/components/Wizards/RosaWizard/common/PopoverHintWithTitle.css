@@ -1,6 +1,5 @@
 .popover-with-title-div {
   display: inline-block;
-  padding-top: var(--pf-t--global--spacer--md);
 }
 
 .popover-with-title-button {
