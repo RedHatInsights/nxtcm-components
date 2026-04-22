@@ -63,12 +63,6 @@ function DefaultWithInitialVersionLoading(props: React.ComponentProps<typeof Ros
     return () => clearTimeout(t);
   }, []);
 
-  const [awsIsFetching, setAwsIsFetching] = React.useState(true);
-  React.useEffect(() => {
-    const t = setTimeout(() => setAwsIsFetching(false), 3000);
-    return () => clearTimeout(t);
-  }, []);
-
   const wizardsStepsData = React.useMemo(
     () => ({
       ...props.wizardsStepsData,
