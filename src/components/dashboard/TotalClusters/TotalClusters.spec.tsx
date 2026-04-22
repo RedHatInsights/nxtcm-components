@@ -36,20 +36,17 @@ test.describe('TotalClusters', () => {
     await expect(component.getByTestId('total-clusters')).toContainText('9999');
   });
 
-  test('should not show "View all clusters" button when onViewMore is not provided', async ({
-    mount,
-  }) => {
+  test('should render count as plain text when onViewMore is not provided', async ({ mount }) => {
     const component = await mount(<TotalClusters data={{ total: 67 }} />);
-    await expect(component.getByRole('button', { name: /View all clusters/i })).not.toBeVisible();
+    await expect(component.getByRole('button', { name: '67' })).not.toBeVisible();
   });
 
-  test('should show "View all clusters" button when onViewMore is provided', async ({ mount }) => {
+  test('should render count as clickable link when onViewMore is provided', async ({ mount }) => {
     const component = await mount(<TotalClusters data={{ total: 67 }} onViewMore={() => {}} />);
-    const viewButton = component.getByRole('button', { name: /View all clusters/i });
-    await expect(viewButton).toBeVisible();
+    await expect(component.getByRole('button', { name: '67' })).toBeVisible();
   });
 
-  test('should call onViewMore when button is clicked', async ({ mount }) => {
+  test('should call onViewMore when count is clicked', async ({ mount }) => {
     let viewMoreCalled = false;
     const component = await mount(
       <TotalClusters
@@ -59,7 +56,7 @@ test.describe('TotalClusters', () => {
         }}
       />
     );
-    await component.getByRole('button', { name: /View all clusters/i }).click();
+    await component.getByRole('button', { name: '67' }).click();
     expect(viewMoreCalled).toBe(true);
   });
 });

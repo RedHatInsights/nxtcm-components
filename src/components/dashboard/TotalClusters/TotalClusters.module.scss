@@ -14,11 +14,13 @@
   color: var(--pf-t--global--text--color--regular);
 }
 
+.totalNumberLink {
+  font-size: var(--pf-t--global--font--size--4xl);
+  font-weight: 300;
+  line-height: 1;
+}
+
 .totalLabel {
   font-size: var(--pf-t--global--font--size--sm);
   color: var(--pf-t--global--text--color--subtle);
-}
-
-.viewLink {
-  padding-top: var(--pf-t--global--spacer--md);
 }

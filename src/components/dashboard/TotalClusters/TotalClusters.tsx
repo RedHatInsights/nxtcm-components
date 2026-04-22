@@ -12,7 +12,7 @@ export type TotalClustersProps = {
   data: TotalClustersData;
   /** card title — defaults to "Total clusters" */
   title?: string;
-  /** callback when "View all clusters" is clicked */
+  /** callback when the cluster count is clicked (navigates to clusters page) */
   onViewMore?: () => void;
 };
 
@@ -37,18 +37,16 @@ export const TotalClusters: React.FC<TotalClustersProps> = ({
       spaceItems={{ default: 'spaceItemsXs' }}
       className={styles.totalSection}
     >
-      <FlexItem className={styles.totalNumber} data-testid="total-clusters">
-        {data.total}
+      <FlexItem data-testid="total-clusters">
+        {onViewMore ? (
+          <Button variant="link" isInline onClick={onViewMore} className={styles.totalNumberLink}>
+            {data.total}
+          </Button>
+        ) : (
+          <span className={styles.totalNumber}>{data.total}</span>
+        )}
       </FlexItem>
       <FlexItem className={styles.totalLabel}>managed clusters</FlexItem>
     </Flex>
-
-    {onViewMore && (
-      <FlexItem className={styles.viewLink}>
-        <Button variant="link" isInline onClick={onViewMore}>
-          View all clusters
-        </Button>
-      </FlexItem>
-    )}
   </Flex>
 );
