@@ -75,8 +75,8 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
             >
               <WizSelect
                 onValueChange={(_newVpc, item) => {
-                  item.cluster.machine_pools_subnets = [{ machine_pool_subnet: undefined }];
                   if (item?.cluster) {
+                    item.cluster.machine_pools_subnets = [{ machine_pool_subnet: undefined }];
                     item.cluster.security_groups_worker = [];
                   }
                 }}
