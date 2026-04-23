@@ -262,7 +262,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
           </Grid>
         </ExpandableSection>
       </Section>
-      <Section label={rp.operatorRolesSection}>
+      <Section id="operator-roles" label={rp.operatorRolesSection}>
         <Grid>
           <GridItem span={7}>
             <Stack>
