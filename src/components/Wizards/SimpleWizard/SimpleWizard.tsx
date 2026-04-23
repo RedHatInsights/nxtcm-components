@@ -1,14 +1,7 @@
-import { yupResolver } from '@hookform/resolvers/yup';
 import { isWizardSubStep, Wizard, WizardFooter, WizardStep } from '@patternfly/react-core';
 import type { WizardFooterProps, WizardStepType } from '@patternfly/react-core';
 import { useCallback } from 'react';
-import {
-  FormProvider,
-  useForm,
-  useFormContext,
-  useFormState,
-  type Resolver,
-} from 'react-hook-form';
+import { FormProvider, useForm, useFormContext, useFormState } from 'react-hook-form';
 import { handleWizardNext, type WizardContextGoNext } from './handleWizardNext';
 import ReviewStep from './Steps/ReviewStep';
 import { StepA } from './Steps/Required/StepA';
@@ -19,9 +12,9 @@ import { StepE } from './Steps/Optional/StepE';
 import { StepF } from './Steps/Optional/StepF';
 import {
   defaultSimpleWizardFormValues,
-  simpleWizardFormSchema,
   type SimpleWizardFormValues,
 } from './simpleWizardFormSchema';
+import { simpleWizardYupResolver } from './simpleWizardYupResolver';
 import {
   SimpleWizardFooterValidationProvider,
   useSimpleWizardFooterValidation,
@@ -173,7 +166,7 @@ export const WizardExpandableSteps = ({ onSubmitSuccess }: WizardExpandableSteps
     defaultValues: defaultSimpleWizardFormValues,
     mode: 'onBlur',
     reValidateMode: 'onChange',
-    resolver: yupResolver(simpleWizardFormSchema) as Resolver<SimpleWizardFormValues>,
+    resolver: simpleWizardYupResolver,
   });
 
   return (
