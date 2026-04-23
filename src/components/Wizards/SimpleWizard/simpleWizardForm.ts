@@ -12,6 +12,8 @@ export type SimpleWizardFormValues = {
   selectionD1: string;
   selectionD2: string;
   selectionD3: string;
+  optionText1: string;
+  optionText2: string;
 };
 
 export const defaultSimpleWizardFormValues: SimpleWizardFormValues = {
@@ -28,4 +30,6 @@ export const defaultSimpleWizardFormValues: SimpleWizardFormValues = {
   selectionD1: '',
   selectionD2: '',
   selectionD3: '',
+  optionText1: '',
+  optionText2: '',
 };
