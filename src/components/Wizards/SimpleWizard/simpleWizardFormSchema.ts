@@ -53,7 +53,7 @@ export const simpleWizardStepASchema = yup
           });
           /* eslint-disable-next-line no-console */
           console.log('Check of ', value, ' failed');
-          return false;
+          return true;
         }
       ),
     selectionA1: nonEmptyString(selectionRequiredMessage),

@@ -1,5 +1,10 @@
 import { FormGroup, FormSelect, FormSelectOption, TextInput } from '@patternfly/react-core';
-import { Controller, useFormContext } from 'react-hook-form';
+import {
+  Controller,
+  useFormContext,
+  type UseFormResetField,
+  type UseFormSetValue,
+} from 'react-hook-form';
 import { RhfFieldError } from '../../RhfFieldError';
 import type { SimpleWizardFormValues } from '../../simpleWizardFormSchema';
 import { WizardStepForm } from '../../WizardStepForm';
@@ -11,8 +16,31 @@ const numberOptions = [
   { value: '3', label: 'Three', disabled: false, isPlaceholder: false },
 ];
 
+const SELECTION_B1_RHF_PATH = 'required.stepB.selectionB1' as const;
+const SELECTION_C1_RHF_PATH = 'required.stepC.selectionC1' as const;
+
+/** Matches `simpleWizardFormSchema` defaults for these select fields. */
+const SELECTION_DEFAULT = '';
+
+const resetSelectionDependentField = (
+  path: typeof SELECTION_B1_RHF_PATH | typeof SELECTION_C1_RHF_PATH,
+  previousValue: string,
+  setValue: UseFormSetValue<SimpleWizardFormValues>,
+  resetField: UseFormResetField<SimpleWizardFormValues>
+) => {
+  if (previousValue === SELECTION_DEFAULT) {
+    resetField(path, { defaultValue: SELECTION_DEFAULT });
+    return;
+  }
+  setValue(path, SELECTION_DEFAULT, {
+    shouldValidate: true,
+    shouldTouch: true,
+    shouldDirty: true,
+  });
+};
+
 export const StepA = () => {
-  const { control } = useFormContext<SimpleWizardFormValues>();
+  const { control, getValues, resetField, setValue } = useFormContext<SimpleWizardFormValues>();
 
   return (
     <WizardStepForm>
@@ -60,7 +88,11 @@ export const StepA = () => {
                 isRequired
                 onBlur={field.onBlur}
                 onChange={(_e, value) => {
+                  const b1 = getValues(SELECTION_B1_RHF_PATH) ?? SELECTION_DEFAULT;
+                  const c1 = getValues(SELECTION_C1_RHF_PATH) ?? SELECTION_DEFAULT;
                   field.onChange(value);
+                  resetSelectionDependentField(SELECTION_B1_RHF_PATH, b1, setValue, resetField);
+                  resetSelectionDependentField(SELECTION_C1_RHF_PATH, c1, setValue, resetField);
                 }}
                 validated={fieldState.error ? 'error' : 'default'}
                 value={field.value}
