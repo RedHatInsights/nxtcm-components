@@ -1,5 +1,5 @@
 import type { UseFormReturn } from 'react-hook-form';
-import type { SimpleWizardFormValues } from './simpleWizardForm';
+import type { SimpleWizardFormValues } from './simpleWizardFormSchema';
 import {
   SIMPLE_WIZARD_REVIEW_STEP_ID,
   WIZARD_SUBSTEP_ID_TO_FIELD_PATHS,

@@ -2,7 +2,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { isWizardSubStep, Wizard, WizardFooter, WizardStep } from '@patternfly/react-core';
 import type { WizardFooterProps, WizardStepType } from '@patternfly/react-core';
 import { useCallback } from 'react';
-import { FormProvider, useForm, useFormContext, type Resolver } from 'react-hook-form';
+import {
+  FormProvider,
+  useForm,
+  useFormContext,
+  useFormState,
+  type Resolver,
+} from 'react-hook-form';
 import { handleWizardNext, type WizardContextGoNext } from './handleWizardNext';
 import ReviewStep from './Steps/ReviewStep';
 import { StepA } from './Steps/Required/StepA';
@@ -11,12 +17,22 @@ import { StepC } from './Steps/Required/StepC';
 import { StepD } from './Steps/Required/StepD';
 import { StepE } from './Steps/Optional/StepE';
 import { StepF } from './Steps/Optional/StepF';
-import { defaultSimpleWizardFormValues, type SimpleWizardFormValues } from './simpleWizardForm';
-import { simpleWizardFormSchema } from './simpleWizardFormSchema';
+import {
+  defaultSimpleWizardFormValues,
+  simpleWizardFormSchema,
+  type SimpleWizardFormValues,
+} from './simpleWizardFormSchema';
 import {
   SimpleWizardFooterValidationProvider,
   useSimpleWizardFooterValidation,
 } from './SimpleWizardFooterValidationContext';
+import {
+  WIZARD_OPTIONAL_SUBSTEP_IDS,
+  WIZARD_REQUIRED_SUBSTEP_IDS,
+  WIZARD_SUBSTEP_ID_TO_LABEL,
+  wizardExpandableParentNavStatus,
+  wizardSubstepNavStatus,
+} from './wizardStepFieldPaths';
 
 export type WizardExpandableStepsProps = {
   /** Called when the user clicks Finish on the last step with a valid form. Defaults to logging in the console. */
@@ -35,6 +51,7 @@ const SimpleWizardFrame = ({
   onSubmitSuccess = logSubmittedWizard,
 }: WizardExpandableStepsProps) => {
   const methods = useFormContext<SimpleWizardFormValues>();
+  const { errors } = useFormState({ control: methods.control });
   const { setFooterBlockedStepIndex } = useSimpleWizardFooterValidation();
 
   const onSubmit = (data: SimpleWizardFormValues) => {
@@ -82,17 +99,38 @@ const SimpleWizardFrame = ({
         id="required-steps"
         isExpandable
         name="Required"
+        status={wizardExpandableParentNavStatus(errors, WIZARD_REQUIRED_SUBSTEP_IDS)}
         steps={[
-          <WizardStep id="expand-steps-sub-a" key="expand-steps-sub-a" name="Substep A">
+          <WizardStep
+            id="expand-steps-sub-a"
+            key="expand-steps-sub-a"
+            name={WIZARD_SUBSTEP_ID_TO_LABEL['expand-steps-sub-a']}
+            status={wizardSubstepNavStatus(errors, 'expand-steps-sub-a')}
+          >
             <StepA />
           </WizardStep>,
-          <WizardStep id="expand-steps-sub-b" key="expand-steps-sub-b" name="Substep B">
+          <WizardStep
+            id="expand-steps-sub-b"
+            key="expand-steps-sub-b"
+            name={WIZARD_SUBSTEP_ID_TO_LABEL['expand-steps-sub-b']}
+            status={wizardSubstepNavStatus(errors, 'expand-steps-sub-b')}
+          >
             <StepB />
           </WizardStep>,
-          <WizardStep id="expand-steps-sub-c" key="expand-steps-sub-c" name="Substep C">
+          <WizardStep
+            id="expand-steps-sub-c"
+            key="expand-steps-sub-c"
+            name={WIZARD_SUBSTEP_ID_TO_LABEL['expand-steps-sub-c']}
+            status={wizardSubstepNavStatus(errors, 'expand-steps-sub-c')}
+          >
             <StepC />
           </WizardStep>,
-          <WizardStep id="expand-steps-sub-d" key="expand-steps-sub-d" name="Substep D">
+          <WizardStep
+            id="expand-steps-sub-d"
+            key="expand-steps-sub-d"
+            name={WIZARD_SUBSTEP_ID_TO_LABEL['expand-steps-sub-d']}
+            status={wizardSubstepNavStatus(errors, 'expand-steps-sub-d')}
+          >
             <StepD />
           </WizardStep>,
         ]}
@@ -102,11 +140,22 @@ const SimpleWizardFrame = ({
         id="optional-steps"
         isExpandable
         name="Optional"
+        status={wizardExpandableParentNavStatus(errors, WIZARD_OPTIONAL_SUBSTEP_IDS)}
         steps={[
-          <WizardStep id="expand-steps-sub-e" key="expand-steps-sub-e" name="Substep E">
+          <WizardStep
+            id="expand-steps-sub-e"
+            key="expand-steps-sub-e"
+            name={WIZARD_SUBSTEP_ID_TO_LABEL['expand-steps-sub-e']}
+            status={wizardSubstepNavStatus(errors, 'expand-steps-sub-e')}
+          >
             <StepE />
           </WizardStep>,
-          <WizardStep id="expand-steps-sub-f" key="expand-steps-sub-f" name="Substep F">
+          <WizardStep
+            id="expand-steps-sub-f"
+            key="expand-steps-sub-f"
+            name={WIZARD_SUBSTEP_ID_TO_LABEL['expand-steps-sub-f']}
+            status={wizardSubstepNavStatus(errors, 'expand-steps-sub-f')}
+          >
             <StepF />
           </WizardStep>,
         ]}

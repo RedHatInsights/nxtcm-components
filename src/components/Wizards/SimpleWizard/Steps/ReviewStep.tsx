@@ -7,7 +7,7 @@ import {
 } from '@patternfly/react-core';
 import type { FieldPath } from 'react-hook-form';
 import { useFormContext } from 'react-hook-form';
-import type { SimpleWizardFormValues } from '../simpleWizardForm';
+import type { SimpleWizardFormValues } from '../simpleWizardFormSchema';
 import { WizardStepForm } from '../WizardStepForm';
 
 const entries: { path: FieldPath<SimpleWizardFormValues>; label: string }[] = [

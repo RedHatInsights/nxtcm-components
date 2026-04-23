@@ -1,7 +1,7 @@
 import { Alert, Form, useWizardContext } from '@patternfly/react-core';
 import { useEffect, type ReactNode } from 'react';
 import { useFormContext } from 'react-hook-form';
-import type { SimpleWizardFormValues } from './simpleWizardForm';
+import type { SimpleWizardFormValues } from './simpleWizardFormSchema';
 import { hasFieldErrors } from './hasFieldErrors';
 import { useSimpleWizardFooterValidation } from './SimpleWizardFooterValidationContext';
 import {

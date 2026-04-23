@@ -1,7 +1,7 @@
 import { FormGroup, FormSelect, FormSelectOption } from '@patternfly/react-core';
 import { Controller, useFormContext } from 'react-hook-form';
 import { RhfFieldError } from '../../RhfFieldError';
-import type { SimpleWizardFormValues } from '../../simpleWizardForm';
+import type { SimpleWizardFormValues } from '../../simpleWizardFormSchema';
 import { WizardStepForm } from '../../WizardStepForm';
 
 const particleOptions = [
