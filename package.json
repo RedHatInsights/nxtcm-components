@@ -61,6 +61,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@monaco-editor/react": "^4.7.0",
     "@patternfly/patternfly": "^6.4.0",
     "@patternfly/react-component-groups": "^6.3.0",
@@ -76,7 +77,8 @@
     "progress": "^2.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "^7.73.1"
+    "react-hook-form": "^7.73.1",
+    "yup": "^1.7.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",

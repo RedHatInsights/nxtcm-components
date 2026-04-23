@@ -1,7 +1,8 @@
-import { Form, FormGroup, FormSelect, FormSelectOption, TextInput } from '@patternfly/react-core';
+import { FormGroup, FormSelect, FormSelectOption, TextInput } from '@patternfly/react-core';
 import { Controller, useFormContext } from 'react-hook-form';
 import { RhfFieldError } from '../../RhfFieldError';
 import type { SimpleWizardFormValues } from '../../simpleWizardForm';
+import { WizardStepForm } from '../../WizardStepForm';
 
 const numberOptions = [
   { value: '', label: 'Select a number', disabled: false, isPlaceholder: true },
@@ -14,124 +15,144 @@ export const StepA = () => {
   const { control } = useFormContext<SimpleWizardFormValues>();
 
   return (
-    <Form>
+    <WizardStepForm>
       <Controller
-        name="fullName"
+        name="required.stepA.fullName"
         control={control}
-        rules={{ required: 'Full name is required' }}
-        render={({ field, fieldState }) => (
-          <FormGroup label="Full name" isRequired fieldId="simple-form-name-01">
-            <TextInput
-              isRequired
-              type="text"
-              id="simple-form-name-01"
-              name={field.name}
-              aria-describedby="simple-form-name-01-helper"
-              value={field.value}
-              onBlur={field.onBlur}
-              onChange={(_e, value) => {
-                field.onChange(value);
-              }}
-              validated={fieldState.error ? 'error' : 'default'}
-            />
-            <RhfFieldError message={fieldState.error?.message} />
-          </FormGroup>
-        )}
+        render={({ field, fieldState }) => {
+          const fieldId = 'simple-form-name-01';
+          const errorHelperId = `${fieldId}-helper-error`;
+          return (
+            <FormGroup fieldId={fieldId} isRequired label="Full name">
+              <TextInput
+                aria-describedby={fieldState.error ? errorHelperId : undefined}
+                aria-invalid={fieldState.error ? true : undefined}
+                id={fieldId}
+                isRequired
+                name={field.name}
+                onBlur={field.onBlur}
+                onChange={(_e, value) => {
+                  field.onChange(value);
+                }}
+                type="text"
+                validated={fieldState.error ? 'error' : 'default'}
+                value={field.value}
+              />
+              <RhfFieldError id={errorHelperId} message={fieldState.error?.message} />
+            </FormGroup>
+          );
+        }}
       />
 
       <Controller
-        name="selectionA1"
+        name="required.stepA.selectionA1"
         control={control}
-        rules={{ required: 'Selection is required' }}
-        render={({ field, fieldState }) => (
-          <FormGroup label="Selection A-1:" type="string" fieldId="selection-a1" isRequired>
-            <FormSelect
-              id="selection-a1"
-              aria-label="Selection A-1"
-              isRequired
-              value={field.value}
-              onBlur={field.onBlur}
-              onChange={(_e, value) => {
-                field.onChange(value);
-              }}
-              validated={fieldState.error ? 'error' : 'default'}
-            >
-              {numberOptions.map((option, index) => (
-                <FormSelectOption
-                  isDisabled={option.disabled}
-                  key={index}
-                  value={option.value}
-                  label={option.label}
-                  isPlaceholder={option.isPlaceholder}
-                />
-              ))}
-            </FormSelect>
-            <RhfFieldError message={fieldState.error?.message} />
-          </FormGroup>
-        )}
+        render={({ field, fieldState }) => {
+          const fieldId = 'selection-a1';
+          const errorHelperId = `${fieldId}-helper-error`;
+          return (
+            <FormGroup fieldId={fieldId} isRequired label="Selection A-1:" type="string">
+              <FormSelect
+                aria-describedby={fieldState.error ? errorHelperId : undefined}
+                aria-invalid={fieldState.error ? true : undefined}
+                aria-label="Selection A-1"
+                id={fieldId}
+                isRequired
+                onBlur={field.onBlur}
+                onChange={(_e, value) => {
+                  field.onChange(value);
+                }}
+                validated={fieldState.error ? 'error' : 'default'}
+                value={field.value}
+              >
+                {numberOptions.map((option, index) => (
+                  <FormSelectOption
+                    isDisabled={option.disabled}
+                    key={index}
+                    value={option.value}
+                    label={option.label}
+                    isPlaceholder={option.isPlaceholder}
+                  />
+                ))}
+              </FormSelect>
+              <RhfFieldError id={errorHelperId} message={fieldState.error?.message} />
+            </FormGroup>
+          );
+        }}
       />
 
       <Controller
-        name="selectionA2"
+        name="required.stepA.selectionA2"
         control={control}
-        rules={{ required: 'Selection is required' }}
-        render={({ field, fieldState }) => (
-          <FormGroup label="Selection A-2:" type="string" fieldId="selection-a2" isRequired>
-            <FormSelect
-              id="selection-a2"
-              aria-label="Selection A-2"
-              isRequired
-              value={field.value}
-              onBlur={field.onBlur}
-              onChange={(_e, value) => {
-                field.onChange(value);
-              }}
-              validated={fieldState.error ? 'error' : 'default'}
-            >
-              {numberOptions.map((option, index) => (
-                <FormSelectOption
-                  isDisabled={option.disabled}
-                  key={index}
-                  value={option.value}
-                  label={option.label}
-                  isPlaceholder={option.isPlaceholder}
-                />
-              ))}
-            </FormSelect>
-            <RhfFieldError message={fieldState.error?.message} />
-          </FormGroup>
-        )}
+        render={({ field, fieldState }) => {
+          const fieldId = 'selection-a2';
+          const errorHelperId = `${fieldId}-helper-error`;
+          return (
+            <FormGroup fieldId={fieldId} isRequired label="Selection A-2:" type="string">
+              <FormSelect
+                aria-describedby={fieldState.error ? errorHelperId : undefined}
+                aria-invalid={fieldState.error ? true : undefined}
+                aria-label="Selection A-2"
+                id={fieldId}
+                isRequired
+                onBlur={field.onBlur}
+                onChange={(_e, value) => {
+                  field.onChange(value);
+                }}
+                validated={fieldState.error ? 'error' : 'default'}
+                value={field.value}
+              >
+                {numberOptions.map((option, index) => (
+                  <FormSelectOption
+                    isDisabled={option.disabled}
+                    key={index}
+                    value={option.value}
+                    label={option.label}
+                    isPlaceholder={option.isPlaceholder}
+                  />
+                ))}
+              </FormSelect>
+              <RhfFieldError id={errorHelperId} message={fieldState.error?.message} />
+            </FormGroup>
+          );
+        }}
       />
 
       <Controller
-        name="selectionA3"
+        name="required.stepA.selectionA3"
         control={control}
-        render={({ field, fieldState }) => (
-          <FormGroup label="Selection A-3:" type="string" fieldId="selection-a3">
-            <FormSelect
-              id="selection-a3"
-              aria-label="Selection A-3"
-              value={field.value}
-              onBlur={field.onBlur}
-              onChange={(_e, value) => {
-                field.onChange(value);
-              }}
-              validated={fieldState.error ? 'error' : 'default'}
-            >
-              {numberOptions.map((option, index) => (
-                <FormSelectOption
-                  isDisabled={option.disabled}
-                  key={index}
-                  value={option.value}
-                  label={option.label}
-                  isPlaceholder={option.isPlaceholder}
-                />
-              ))}
-            </FormSelect>
-            <RhfFieldError message={fieldState.error?.message} />
-          </FormGroup>
-        )}
+        render={({ field, fieldState }) => {
+          const fieldId = 'selection-a3';
+          const errorHelperId = `${fieldId}-helper-error`;
+          return (
+            <FormGroup fieldId={fieldId} label="Selection A-3:" type="string">
+              <FormSelect
+                aria-describedby={fieldState.error ? errorHelperId : undefined}
+                aria-invalid={fieldState.error ? true : undefined}
+                aria-label="Selection A-3"
+                id={fieldId}
+                onBlur={field.onBlur}
+                onChange={(_e, value) => {
+                  field.onChange(value);
+                }}
+                validated={fieldState.error ? 'error' : 'default'}
+                value={field.value}
+              >
+                {numberOptions.map((option, index) => (
+                  <FormSelectOption
+                    isDisabled={option.disabled}
+                    key={index}
+                    value={option.value}
+                    label={option.label}
+                    isPlaceholder={option.isPlaceholder}
+                  />
+                ))}
+              </FormSelect>
+              <RhfFieldError id={errorHelperId} message={fieldState.error?.message} />
+            </FormGroup>
+          );
+        }}
       />
-    </Form>
+    </WizardStepForm>
   );
 };

@@ -1,7 +1,8 @@
-import { Form, FormGroup, FormSelect, FormSelectOption } from '@patternfly/react-core';
+import { FormGroup, FormSelect, FormSelectOption } from '@patternfly/react-core';
 import { Controller, useFormContext } from 'react-hook-form';
 import { RhfFieldError } from '../../RhfFieldError';
 import type { SimpleWizardFormValues } from '../../simpleWizardForm';
+import { WizardStepForm } from '../../WizardStepForm';
 
 const appleOptions = [
   { value: '', label: 'Select an apple', disabled: false, isPlaceholder: true },
@@ -14,100 +15,116 @@ export const StepC = () => {
   const { control } = useFormContext<SimpleWizardFormValues>();
 
   return (
-    <Form>
+    <WizardStepForm>
       <Controller
-        name="selectionC1"
+        name="required.stepC.selectionC1"
         control={control}
-        rules={{ required: 'Selection is required' }}
-        render={({ field, fieldState }) => (
-          <FormGroup label="Selection C-1:" type="string" fieldId="selection-c1" isRequired>
-            <FormSelect
-              id="selection-c1"
-              aria-label="Selection C-1"
-              isRequired
-              value={field.value}
-              onBlur={field.onBlur}
-              onChange={(_e, value) => {
-                field.onChange(value);
-              }}
-              validated={fieldState.error ? 'error' : 'default'}
-            >
-              {appleOptions.map((option, index) => (
-                <FormSelectOption
-                  isDisabled={option.disabled}
-                  key={index}
-                  value={option.value}
-                  label={option.label}
-                  isPlaceholder={option.isPlaceholder}
-                />
-              ))}
-            </FormSelect>
-            <RhfFieldError message={fieldState.error?.message} />
-          </FormGroup>
-        )}
+        render={({ field, fieldState }) => {
+          const fieldId = 'selection-c1';
+          const errorHelperId = `${fieldId}-helper-error`;
+          return (
+            <FormGroup fieldId={fieldId} isRequired label="Selection C-1:" type="string">
+              <FormSelect
+                aria-describedby={fieldState.error ? errorHelperId : undefined}
+                aria-invalid={fieldState.error ? true : undefined}
+                aria-label="Selection C-1"
+                id={fieldId}
+                isRequired
+                onBlur={field.onBlur}
+                onChange={(_e, value) => {
+                  field.onChange(value);
+                }}
+                validated={fieldState.error ? 'error' : 'default'}
+                value={field.value}
+              >
+                {appleOptions.map((option, index) => (
+                  <FormSelectOption
+                    isDisabled={option.disabled}
+                    key={index}
+                    value={option.value}
+                    label={option.label}
+                    isPlaceholder={option.isPlaceholder}
+                  />
+                ))}
+              </FormSelect>
+              <RhfFieldError id={errorHelperId} message={fieldState.error?.message} />
+            </FormGroup>
+          );
+        }}
       />
 
       <Controller
-        name="selectionC2"
+        name="required.stepC.selectionC2"
         control={control}
-        rules={{ required: 'Selection is required' }}
-        render={({ field, fieldState }) => (
-          <FormGroup label="Selection C-2:" type="string" fieldId="selection-c2" isRequired>
-            <FormSelect
-              id="selection-c2"
-              aria-label="Selection C-2"
-              isRequired
-              value={field.value}
-              onBlur={field.onBlur}
-              onChange={(_e, value) => {
-                field.onChange(value);
-              }}
-              validated={fieldState.error ? 'error' : 'default'}
-            >
-              {appleOptions.map((option, index) => (
-                <FormSelectOption
-                  isDisabled={option.disabled}
-                  key={index}
-                  value={option.value}
-                  label={option.label}
-                  isPlaceholder={option.isPlaceholder}
-                />
-              ))}
-            </FormSelect>
-            <RhfFieldError message={fieldState.error?.message} />
-          </FormGroup>
-        )}
+        render={({ field, fieldState }) => {
+          const fieldId = 'selection-c2';
+          const errorHelperId = `${fieldId}-helper-error`;
+          return (
+            <FormGroup fieldId={fieldId} isRequired label="Selection C-2:" type="string">
+              <FormSelect
+                aria-describedby={fieldState.error ? errorHelperId : undefined}
+                aria-invalid={fieldState.error ? true : undefined}
+                aria-label="Selection C-2"
+                id={fieldId}
+                isRequired
+                onBlur={field.onBlur}
+                onChange={(_e, value) => {
+                  field.onChange(value);
+                }}
+                validated={fieldState.error ? 'error' : 'default'}
+                value={field.value}
+              >
+                {appleOptions.map((option, index) => (
+                  <FormSelectOption
+                    isDisabled={option.disabled}
+                    key={index}
+                    value={option.value}
+                    label={option.label}
+                    isPlaceholder={option.isPlaceholder}
+                  />
+                ))}
+              </FormSelect>
+              <RhfFieldError id={errorHelperId} message={fieldState.error?.message} />
+            </FormGroup>
+          );
+        }}
       />
 
       <Controller
-        name="selectionC3"
+        name="required.stepC.selectionC3"
         control={control}
-        render={({ field, fieldState }) => (
-          <FormGroup label="Selection C-3:" type="string" fieldId="selection-c3">
-            <FormSelect
-              id="selection-c3"
-              aria-label="Selection C-3"
-              value={field.value}
-              onBlur={field.onBlur}
-              onChange={(_e, value) => {
-                field.onChange(value);
-              }}
-              validated={fieldState.error ? 'error' : 'default'}
-            >
-              {appleOptions.map((option, index) => (
-                <FormSelectOption
-                  isDisabled={option.disabled}
-                  key={index}
-                  value={option.value}
-                  label={option.label}
-                  isPlaceholder={option.isPlaceholder}
-                />
-              ))}
-            </FormSelect>
-            <RhfFieldError message={fieldState.error?.message} />
-          </FormGroup>
-        )}
+        render={({ field, fieldState }) => {
+          const fieldId = 'selection-c3';
+          const errorHelperId = `${fieldId}-helper-error`;
+          return (
+            <FormGroup fieldId={fieldId} label="Selection C-3:" type="string">
+              <FormSelect
+                aria-describedby={fieldState.error ? errorHelperId : undefined}
+                aria-invalid={fieldState.error ? true : undefined}
+                aria-label="Selection C-3"
+                id={fieldId}
+                onBlur={field.onBlur}
+                onChange={(_e, value) => {
+                  field.onChange(value);
+                }}
+                validated={fieldState.error ? 'error' : 'default'}
+                value={field.value}
+              >
+                {appleOptions.map((option, index) => (
+                  <FormSelectOption
+                    isDisabled={option.disabled}
+                    key={index}
+                    value={option.value}
+                    label={option.label}
+                    isPlaceholder={option.isPlaceholder}
+                  />
+                ))}
+              </FormSelect>
+              <RhfFieldError id={errorHelperId} message={fieldState.error?.message} />
+            </FormGroup>
+          );
+        }}
       />
-    </Form>
+    </WizardStepForm>
   );
 };
