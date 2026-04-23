@@ -25,6 +25,7 @@ import links from '../../../externalLinks';
 import { useRosaWizardStrings, useRosaWizardValidators } from '../../../RosaWizardStringsContext';
 import { FieldWithAPIErrorAlert } from '../../../common/FieldWithAPIErrorAlert';
 import { useResetFieldOnOptionsChange } from '../../../hooks/useResetFieldOnOptionsChange';
+import './RolesAndPoliciesSubStep.css';
 
 type RolesAndPoliciesSubStepProps = {
   roles: Resource<Role[], [awsAccount: string]> & {
@@ -261,7 +262,7 @@ export const RolesAndPoliciesSubStep: React.FunctionComponent<RolesAndPoliciesSu
           </Grid>
         </ExpandableSection>
       </Section>
-      <Section label={rp.operatorRolesSection}>
+      <Section id="operator-roles" label={rp.operatorRolesSection}>
         <Grid>
           <GridItem span={7}>
             <Stack>
