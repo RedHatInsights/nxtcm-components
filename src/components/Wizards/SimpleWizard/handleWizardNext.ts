@@ -3,6 +3,7 @@ import type { SimpleWizardFormValues } from './simpleWizardFormSchema';
 import {
   SIMPLE_WIZARD_REVIEW_STEP_ID,
   WIZARD_SUBSTEP_ID_TO_FIELD_PATHS,
+  wizardNextNavigableFlatOneBasedIndex,
 } from './wizardStepFieldPaths';
 
 export type WizardNextActiveStep = {
@@ -16,6 +17,8 @@ export type WizardContextGoNext = () => void | Promise<void>;
 export type HandleWizardNextParams = {
   activeStep: WizardNextActiveStep;
   goNext: WizardContextGoNext;
+  /** Advances by flat index without `isDisabled` checks (PatternFly `goToNextStep` cannot). */
+  goToStepByIndex?: (flatOneBasedIndex: number) => void;
   methods: Pick<UseFormReturn<SimpleWizardFormValues>, 'trigger'>;
   setFooterBlockedStepIndex: (index: number | null) => void;
 };
@@ -28,6 +31,7 @@ export type HandleWizardNextParams = {
 export const handleWizardNext = async ({
   activeStep,
   goNext,
+  goToStepByIndex,
   methods,
   setFooterBlockedStepIndex,
 }: HandleWizardNextParams): Promise<void> => {
@@ -41,6 +45,11 @@ export const handleWizardNext = async ({
       return;
     }
     setFooterBlockedStepIndex(null);
+    const nextFlat = wizardNextNavigableFlatOneBasedIndex(activeStep.index);
+    if (nextFlat != null && goToStepByIndex) {
+      goToStepByIndex(nextFlat);
+      return;
+    }
     await Promise.resolve(goNext());
     return;
   }

@@ -97,6 +97,44 @@ export const WIZARD_REQUIRED_SUBSTEP_IDS = requiredNav.orderedIds;
 /** Substep ids under the expandable "Optional" group (E–F), in schema key order. */
 export const WIZARD_OPTIONAL_SUBSTEP_IDS = optionalNav.orderedIds;
 
+/** RHF paths that reset “furthest visited” to the current step when their value changes. */
+export const SIMPLE_WIZARD_FIELDS_THAT_INVALIDATE_FUTURE_STEPS = [
+  'required.stepA.selectionA1',
+  'required.stepB.selectionB1',
+] as const satisfies readonly FieldPath<SimpleWizardFormValues>[];
+
+/** PatternFly flat index (1-based) per substep id — matches `buildSteps` order in `SimpleWizard`. */
+export const WIZARD_SUBSTEP_FLAT_ONE_BASED_INDEX: Readonly<Record<string, number>> = (() => {
+  const m: Record<string, number> = {};
+  let i = 2;
+  for (const id of WIZARD_REQUIRED_SUBSTEP_IDS) {
+    m[id] = i;
+    i += 1;
+  }
+  i = 2 + WIZARD_REQUIRED_SUBSTEP_IDS.length + 1;
+  for (const id of WIZARD_OPTIONAL_SUBSTEP_IDS) {
+    m[id] = i;
+    i += 1;
+  }
+  return m;
+})();
+
+export const WIZARD_REVIEW_STEP_FLAT_ONE_BASED_INDEX =
+  2 + WIZARD_REQUIRED_SUBSTEP_IDS.length + 1 + WIZARD_OPTIONAL_SUBSTEP_IDS.length;
+
+const navigableFlatOneBasedOrder: readonly number[] = [
+  ...WIZARD_REQUIRED_SUBSTEP_IDS.map((id) => WIZARD_SUBSTEP_FLAT_ONE_BASED_INDEX[id]),
+  ...WIZARD_OPTIONAL_SUBSTEP_IDS.map((id) => WIZARD_SUBSTEP_FLAT_ONE_BASED_INDEX[id]),
+  WIZARD_REVIEW_STEP_FLAT_ONE_BASED_INDEX,
+];
+
+/** Next substep/review index after `activeFlat` (skips expandable parent-only rows). */
+export const wizardNextNavigableFlatOneBasedIndex = (activeFlat: number): number | undefined => {
+  const i = navigableFlatOneBasedOrder.indexOf(activeFlat);
+  if (i < 0 || i + 1 >= navigableFlatOneBasedOrder.length) return undefined;
+  return navigableFlatOneBasedOrder[i + 1];
+};
+
 export const stepFieldsHaveErrors = (
   errors: FieldErrors<SimpleWizardFormValues>,
   paths: FieldPath<SimpleWizardFormValues>[]

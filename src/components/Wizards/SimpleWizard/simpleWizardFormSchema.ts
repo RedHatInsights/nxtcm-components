@@ -46,13 +46,15 @@ export const simpleWizardStepASchema = yup
           /* eslint-disable-next-line no-console */
           console.log('STARTING CHECK OF', value);
           if (!shouldRunFullNameUniqueness(ctx?.rhfFieldNames) || !value?.trim()) {
+            /* eslint-disable-next-line no-console */
+            console.log('Check of ', value, ' complete');
             return true;
           }
           await new Promise((r) => {
             setTimeout(r, 2000);
           });
           /* eslint-disable-next-line no-console */
-          console.log('Check of ', value, ' failed');
+          console.log('Check of ', value, ' complete');
           return true;
         }
       ),
