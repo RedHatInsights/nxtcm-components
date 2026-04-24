@@ -23,6 +23,9 @@ type WizardSubstepListItem = {
    Single source: each substep = `nav` + `fields` (and `group` / `formKey` for RHF path).
    ============================================================================= */
 
+/** Avoid re-running async fullName validation when the value is unchanged (e.g. re-submit). */
+let lastFullNameAsyncValue: string | undefined;
+
 export const WIZARD_SUBSTEPS = [
   {
     group: 'required' as const,
@@ -31,7 +34,25 @@ export const WIZARD_SUBSTEPS = [
     fields: {
       fullName: z
         .string()
-        .min(1, { message: 'Full name is required' })
+        .min(1, { message: 'Full name is required', abort: true })
+        .refine(
+          async (value) => {
+            if (value === lastFullNameAsyncValue) {
+              return true;
+            }
+            // eslint-disable-next-line no-console
+            console.log('Starting validation for fullName', value);
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+            // eslint-disable-next-line no-console
+            console.log('Validation for fullName completed');
+
+            lastFullNameAsyncValue = value;
+            return true;
+          },
+          {
+            message: 'Full name must be unique',
+          }
+        )
         .default('')
         .meta({ label: 'Full name' }),
       selectionA1: z
