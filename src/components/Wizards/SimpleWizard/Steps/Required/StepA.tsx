@@ -11,7 +11,7 @@ const numberOptions = [
 ];
 
 export const StepA = () => {
-  const { control, trigger } = useFormContext<SimpleWizardFormValues>();
+  const { control, trigger, setValue, getValues } = useFormContext<SimpleWizardFormValues>();
 
   return (
     <Form>
@@ -56,6 +56,16 @@ export const StepA = () => {
               }}
               onChange={(_e, value) => {
                 field.onChange(value);
+                const prevB1 = getValues('required.stepB.selectionB1');
+                const prevC1 = getValues('required.stepC.selectionC1');
+                setValue('required.stepB.selectionB1', '');
+                setValue('required.stepC.selectionC1', '');
+                if (prevB1 !== '') {
+                  void trigger('required.stepB.selectionB1');
+                }
+                if (prevC1 !== '') {
+                  void trigger('required.stepC.selectionC1');
+                }
               }}
               validated={fieldState.error ? 'error' : 'default'}
             >
