@@ -6,8 +6,7 @@ import {
 } from '@patternfly/react-core';
 import type { MouseEvent } from 'react';
 import { useFormContext } from 'react-hook-form';
-import type { SimpleWizardFormValues } from './simpleWizardForm';
-import { FIELDS_PER_WIZARD_STEP } from './simpleWizardStepFields';
+import { FIELDS_PER_WIZARD_STEP, type SimpleWizardFormValues } from './simpleWizardSchema';
 
 type SimpleWizardFormFooterProps = {
   activeStep: WizardStepType;

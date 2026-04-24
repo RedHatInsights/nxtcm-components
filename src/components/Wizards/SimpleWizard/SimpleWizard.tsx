@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Wizard, WizardStep } from '@patternfly/react-core';
+import type { FC } from 'react';
 import { FormProvider, useForm, type Resolver, type SubmitHandler } from 'react-hook-form';
 import { SimpleWizardFormFooter } from './SimpleWizardFormFooter';
 import ReviewStep from './Steps/ReviewStep';
@@ -7,10 +8,31 @@ import { StepA } from './Steps/Required/StepA';
 import { StepB } from './Steps/Required/StepB';
 import { StepC } from './Steps/Required/StepC';
 import { StepD } from './Steps/Required/StepD';
-import { defaultSimpleWizardFormValues, type SimpleWizardFormValues } from './simpleWizardForm';
-import { simpleWizardSchema } from './simpleWizardSchema';
 import { StepE } from './Steps/Optional/StepE';
 import { StepF } from './Steps/Optional/StepF';
+import {
+  defaultSimpleWizardFormValues,
+  optionalWizardSubsteps,
+  requiredWizardSubsteps,
+  simpleWizardSchema,
+  WIZARD_GROUP,
+  WIZARD_REVIEW,
+  type SimpleWizardFormSubkey,
+  type SimpleWizardFormValues,
+} from './simpleWizardSchema';
+
+/**
+ * Wires list-driven substeps from the schema to React components. When you add a substep in
+ * `simpleWizardSchema.ts`’s `WIZARD_SUBSTEPS` list, add one entry here.
+ */
+const SIMPLE_WIZARD_SUBSTEP_VIEWS: Record<SimpleWizardFormSubkey, FC> = {
+  stepA: StepA,
+  stepB: StepB,
+  stepC: StepC,
+  stepD: StepD,
+  stepE: StepE,
+  stepF: StepF,
+};
 
 export type WizardExpandableStepsProps = {
   /** Called when the user clicks Finish on the last step with a valid form. Defaults to logging in the console. */
@@ -61,39 +83,37 @@ export const WizardExpandableSteps = ({
         }}
       >
         <WizardStep
-          name="Required"
-          id="required-steps"
+          name={WIZARD_GROUP.required.name}
+          id={WIZARD_GROUP.required.id}
           isExpandable
-          steps={[
-            <WizardStep name="Substep A" id="expand-steps-sub-a" key="expand-steps-sub-a">
-              <StepA />
-            </WizardStep>,
-            <WizardStep name="Substep B" id="expand-steps-sub-b" key="expand-steps-sub-b">
-              <StepB />
-            </WizardStep>,
-            <WizardStep name="Substep C" id="expand-steps-sub-c" key="expand-steps-sub-c">
-              <StepC />
-            </WizardStep>,
-            <WizardStep name="Substep D" id="expand-steps-sub-d" key="expand-steps-sub-d">
-              <StepD />
-            </WizardStep>,
-          ]}
+          steps={requiredWizardSubsteps.map((d) => {
+            const Sub = SIMPLE_WIZARD_SUBSTEP_VIEWS[d.formKey];
+            return (
+              <WizardStep name={d.nav.name} id={d.nav.id} key={d.nav.id}>
+                <Sub />
+              </WizardStep>
+            );
+          })}
         />
         <WizardStep
-          id="optional-steps"
+          id={WIZARD_GROUP.optional.id}
           isExpandable
-          name="Optional"
-          steps={[
-            <WizardStep id="expand-steps-sub-e" key="expand-steps-sub-e" name="Substep E">
-              <StepE />
-            </WizardStep>,
-            <WizardStep id="expand-steps-sub-f" key="expand-steps-sub-f" name="Substep F">
-              <StepF />
-            </WizardStep>,
-          ]}
+          name={WIZARD_GROUP.optional.name}
+          steps={optionalWizardSubsteps.map((d) => {
+            const Sub = SIMPLE_WIZARD_SUBSTEP_VIEWS[d.formKey];
+            return (
+              <WizardStep name={d.nav.name} id={d.nav.id} key={d.nav.id}>
+                <Sub />
+              </WizardStep>
+            );
+          })}
         />
 
-        <WizardStep name="Review" id="review-step" footer={{ nextButtonText: 'Submit' }}>
+        <WizardStep
+          name={WIZARD_REVIEW.name}
+          id={WIZARD_REVIEW.id}
+          footer={{ nextButtonText: 'Submit' }}
+        >
           <ReviewStep />
         </WizardStep>
       </Wizard>

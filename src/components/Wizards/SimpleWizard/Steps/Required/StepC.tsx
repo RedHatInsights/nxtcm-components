@@ -2,7 +2,7 @@
 import { Form, FormGroup, FormSelect, FormSelectOption } from '@patternfly/react-core';
 import { Controller, useFormContext } from 'react-hook-form';
 import { RhfFieldError } from '../../RhfFieldError';
-import type { SimpleWizardFormValues } from '../../simpleWizardForm';
+import type { SimpleWizardFormValues } from '../../simpleWizardSchema';
 
 const appleOptions = [
   { value: '', label: 'Select an apple', disabled: false, isPlaceholder: true },

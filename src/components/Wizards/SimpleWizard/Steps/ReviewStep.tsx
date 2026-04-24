@@ -6,7 +6,7 @@ import {
   DescriptionListTerm,
 } from '@patternfly/react-core';
 import { useFormContext } from 'react-hook-form';
-import type { SimpleWizardFormValues } from '../simpleWizardForm';
+import type { SimpleWizardFormValues } from '../simpleWizardSchema';
 
 const entries: { label: string; read: (v: SimpleWizardFormValues) => string }[] = [
   { label: 'Full name', read: (v) => v.required.stepA.fullName },

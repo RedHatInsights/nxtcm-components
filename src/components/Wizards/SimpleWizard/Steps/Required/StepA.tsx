@@ -1,7 +1,7 @@
 import { Form, FormGroup, FormSelect, FormSelectOption, TextInput } from '@patternfly/react-core';
 import { Controller, useFormContext } from 'react-hook-form';
 import { RhfFieldError } from '../../RhfFieldError';
-import type { SimpleWizardFormValues } from '../../simpleWizardForm';
+import type { SimpleWizardFormValues } from '../../simpleWizardSchema';
 
 const numberOptions = [
   { value: '', label: 'Select a number', disabled: false, isPlaceholder: true },

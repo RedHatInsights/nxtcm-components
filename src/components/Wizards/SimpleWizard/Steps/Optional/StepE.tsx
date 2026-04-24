@@ -1,7 +1,7 @@
 import { Form, FormGroup, TextInput } from '@patternfly/react-core';
 import { Controller, useFormContext } from 'react-hook-form';
 import { RhfFieldError } from '../../RhfFieldError';
-import type { SimpleWizardFormValues } from '../../simpleWizardForm';
+import type { SimpleWizardFormValues } from '../../simpleWizardSchema';
 
 export const StepE = () => {
   const { control, trigger } = useFormContext<SimpleWizardFormValues>();
