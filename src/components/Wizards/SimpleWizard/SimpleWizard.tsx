@@ -1,7 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Wizard, WizardStep } from '@patternfly/react-core';
 import type { FC } from 'react';
-import { FormProvider, useForm, type Resolver, type SubmitHandler } from 'react-hook-form';
+import {
+  FormProvider,
+  useForm,
+  type FieldErrors,
+  type Resolver,
+  type SubmitHandler,
+} from 'react-hook-form';
 import { SimpleWizardFormFooter } from './SimpleWizardFormFooter';
 import ReviewStep from './Steps/ReviewStep';
 import { StepA } from './Steps/Required/StepA';
@@ -44,6 +50,27 @@ const logSubmittedWizard = (data: SimpleWizardFormValues) => {
   console.log('SimpleWizard submitted:', data);
 };
 
+const wizardStepStatus = (hasError: boolean) =>
+  (hasError ? 'error' : 'default') as 'error' | 'default';
+
+const substepHasValidationError = (
+  formErrors: FieldErrors<SimpleWizardFormValues> | undefined,
+  group: 'required' | 'optional',
+  formKey: string
+) => {
+  if (!formErrors) {
+    return false;
+  }
+  const branch = formErrors[group] as
+    | Record<string, Record<string, object | string | undefined> | undefined>
+    | undefined;
+  const stepErrors = branch?.[formKey];
+  if (!stepErrors || typeof stepErrors !== 'object') {
+    return false;
+  }
+  return Object.values(stepErrors).some((e) => e != null && typeof e === 'object');
+};
+
 export const WizardExpandableSteps = ({
   onSubmitSuccess = logSubmittedWizard,
 }: WizardExpandableStepsProps = {}) => {
@@ -52,6 +79,7 @@ export const WizardExpandableSteps = ({
     mode: 'onSubmit',
     resolver: zodResolver(simpleWizardSchema as never) as Resolver<SimpleWizardFormValues>,
   });
+  const { errors } = methods.formState;
 
   const onSubmit: SubmitHandler<SimpleWizardFormValues> = (data) => {
     onSubmitSuccess(data);
@@ -86,10 +114,20 @@ export const WizardExpandableSteps = ({
           name={WIZARD_GROUP.required.name}
           id={WIZARD_GROUP.required.id}
           isExpandable
+          status={wizardStepStatus(
+            requiredWizardSubsteps.some((d) =>
+              substepHasValidationError(errors, 'required', d.formKey)
+            )
+          )}
           steps={requiredWizardSubsteps.map((d) => {
             const Sub = SIMPLE_WIZARD_SUBSTEP_VIEWS[d.formKey];
             return (
-              <WizardStep name={d.nav.name} id={d.nav.id} key={d.nav.id}>
+              <WizardStep
+                name={d.nav.name}
+                id={d.nav.id}
+                key={d.nav.id}
+                status={wizardStepStatus(substepHasValidationError(errors, d.group, d.formKey))}
+              >
                 <Sub />
               </WizardStep>
             );
@@ -99,10 +137,20 @@ export const WizardExpandableSteps = ({
           id={WIZARD_GROUP.optional.id}
           isExpandable
           name={WIZARD_GROUP.optional.name}
+          status={wizardStepStatus(
+            optionalWizardSubsteps.some((d) =>
+              substepHasValidationError(errors, 'optional', d.formKey)
+            )
+          )}
           steps={optionalWizardSubsteps.map((d) => {
             const Sub = SIMPLE_WIZARD_SUBSTEP_VIEWS[d.formKey];
             return (
-              <WizardStep name={d.nav.name} id={d.nav.id} key={d.nav.id}>
+              <WizardStep
+                name={d.nav.name}
+                id={d.nav.id}
+                key={d.nav.id}
+                status={wizardStepStatus(substepHasValidationError(errors, d.group, d.formKey))}
+              >
                 <Sub />
               </WizardStep>
             );
@@ -112,6 +160,7 @@ export const WizardExpandableSteps = ({
         <WizardStep
           name={WIZARD_REVIEW.name}
           id={WIZARD_REVIEW.id}
+          status="default"
           footer={{ nextButtonText: 'Submit' }}
         >
           <ReviewStep />
