@@ -1,13 +1,16 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Wizard, WizardStep } from '@patternfly/react-core';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, type Resolver, type SubmitHandler } from 'react-hook-form';
+import { SimpleWizardFormFooter } from './SimpleWizardFormFooter';
 import ReviewStep from './Steps/ReviewStep';
 import { StepA } from './Steps/Required/StepA';
 import { StepB } from './Steps/Required/StepB';
 import { StepC } from './Steps/Required/StepC';
 import { StepD } from './Steps/Required/StepD';
 import { defaultSimpleWizardFormValues, type SimpleWizardFormValues } from './simpleWizardForm';
-import { StepF } from './Steps/Optional/StepF';
+import { simpleWizardSchema } from './simpleWizardSchema';
 import { StepE } from './Steps/Optional/StepE';
+import { StepF } from './Steps/Optional/StepF';
 
 export type WizardExpandableStepsProps = {
   /** Called when the user clicks Finish on the last step with a valid form. Defaults to logging in the console. */
@@ -25,9 +28,10 @@ export const WizardExpandableSteps = ({
   const methods = useForm<SimpleWizardFormValues>({
     defaultValues: defaultSimpleWizardFormValues,
     mode: 'onSubmit',
+    resolver: zodResolver(simpleWizardSchema as never) as Resolver<SimpleWizardFormValues>,
   });
 
-  const onSubmit = (data: SimpleWizardFormValues) => {
+  const onSubmit: SubmitHandler<SimpleWizardFormValues> = (data) => {
     onSubmitSuccess(data);
   };
 
@@ -38,6 +42,20 @@ export const WizardExpandableSteps = ({
         height={400}
         title="Expandable steps wizard"
         nav={{ isExpanded: true }}
+        footer={(activeStep, onNext, onBack, onClose) => (
+          <SimpleWizardFormFooter
+            activeStep={activeStep}
+            onNext={(e) => {
+              void onNext(e);
+            }}
+            onBack={(e) => {
+              void onBack(e);
+            }}
+            onClose={(e) => {
+              void onClose(e);
+            }}
+          />
+        )}
         onSave={() => {
           void methods.handleSubmit(onSubmit)();
         }}

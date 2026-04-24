@@ -1,3 +1,4 @@
+// cspell:words patternfly
 import { Form, FormGroup, FormSelect, FormSelectOption } from '@patternfly/react-core';
 import { Controller, useFormContext } from 'react-hook-form';
 import { RhfFieldError } from '../../RhfFieldError';
@@ -11,14 +12,13 @@ const colorOptions = [
 ];
 
 export const StepB = () => {
-  const { control } = useFormContext<SimpleWizardFormValues>();
+  const { control, trigger } = useFormContext<SimpleWizardFormValues>();
 
   return (
     <Form>
       <Controller
-        name="selectionB1"
+        name="required.stepB.selectionB1"
         control={control}
-        rules={{ required: 'Selection is required' }}
         render={({ field, fieldState }) => (
           <FormGroup label="Selection B-1:" type="string" fieldId="selection-b1" isRequired>
             <FormSelect
@@ -26,21 +26,26 @@ export const StepB = () => {
               aria-label="Selection B-1"
               isRequired
               value={field.value}
-              onBlur={field.onBlur}
+              onBlur={() => {
+                field.onBlur();
+                void trigger('required.stepB.selectionB1');
+              }}
               onChange={(_e, value) => {
                 field.onChange(value);
               }}
               validated={fieldState.error ? 'error' : 'default'}
             >
-              {colorOptions.map((option, index) => (
-                <FormSelectOption
-                  isDisabled={option.disabled}
-                  key={index}
-                  value={option.value}
-                  label={option.label}
-                  isPlaceholder={option.isPlaceholder}
-                />
-              ))}
+              {colorOptions.map((option, index) => {
+                return (
+                  <FormSelectOption
+                    isDisabled={option.disabled}
+                    key={index}
+                    value={option.value}
+                    label={option.label}
+                    isPlaceholder={option.isPlaceholder}
+                  />
+                );
+              })}
             </FormSelect>
             <RhfFieldError message={fieldState.error?.message} />
           </FormGroup>
@@ -48,7 +53,7 @@ export const StepB = () => {
       />
 
       <Controller
-        name="selectionB2"
+        name="required.stepB.selectionB2"
         control={control}
         rules={{ required: 'Selection is required' }}
         render={({ field, fieldState }) => (
@@ -58,21 +63,26 @@ export const StepB = () => {
               aria-label="Selection B-2"
               isRequired
               value={field.value}
-              onBlur={field.onBlur}
+              onBlur={() => {
+                field.onBlur();
+                void trigger('required.stepB.selectionB2');
+              }}
               onChange={(_e, value) => {
                 field.onChange(value);
               }}
               validated={fieldState.error ? 'error' : 'default'}
             >
-              {colorOptions.map((option, index) => (
-                <FormSelectOption
-                  isDisabled={option.disabled}
-                  key={index}
-                  value={option.value}
-                  label={option.label}
-                  isPlaceholder={option.isPlaceholder}
-                />
-              ))}
+              {colorOptions.map((option, index) => {
+                return (
+                  <FormSelectOption
+                    isDisabled={option.disabled}
+                    key={index}
+                    value={option.value}
+                    label={option.label}
+                    isPlaceholder={option.isPlaceholder}
+                  />
+                );
+              })}
             </FormSelect>
             <RhfFieldError message={fieldState.error?.message} />
           </FormGroup>
@@ -80,7 +90,7 @@ export const StepB = () => {
       />
 
       <Controller
-        name="selectionB3"
+        name="required.stepB.selectionB3"
         control={control}
         render={({ field, fieldState }) => (
           <FormGroup label="Selection B-3:" type="string" fieldId="selection-b3">
@@ -88,21 +98,26 @@ export const StepB = () => {
               id="selection-b3"
               aria-label="Selection B-3"
               value={field.value}
-              onBlur={field.onBlur}
+              onBlur={() => {
+                field.onBlur();
+                void trigger('required.stepB.selectionB3');
+              }}
               onChange={(_e, value) => {
                 field.onChange(value);
               }}
               validated={fieldState.error ? 'error' : 'default'}
             >
-              {colorOptions.map((option, index) => (
-                <FormSelectOption
-                  isDisabled={option.disabled}
-                  key={index}
-                  value={option.value}
-                  label={option.label}
-                  isPlaceholder={option.isPlaceholder}
-                />
-              ))}
+              {colorOptions.map((option, index) => {
+                return (
+                  <FormSelectOption
+                    isDisabled={option.disabled}
+                    key={index}
+                    value={option.value}
+                    label={option.label}
+                    isPlaceholder={option.isPlaceholder}
+                  />
+                );
+              })}
             </FormSelect>
             <RhfFieldError message={fieldState.error?.message} />
           </FormGroup>

@@ -11,14 +11,13 @@ const numberOptions = [
 ];
 
 export const StepA = () => {
-  const { control } = useFormContext<SimpleWizardFormValues>();
+  const { control, trigger } = useFormContext<SimpleWizardFormValues>();
 
   return (
     <Form>
       <Controller
-        name="fullName"
+        name="required.stepA.fullName"
         control={control}
-        rules={{ required: 'Full name is required' }}
         render={({ field, fieldState }) => (
           <FormGroup label="Full name" isRequired fieldId="simple-form-name-01">
             <TextInput
@@ -27,7 +26,10 @@ export const StepA = () => {
               id="simple-form-name-01"
               name={field.name}
               value={field.value}
-              onBlur={field.onBlur}
+              onBlur={() => {
+                field.onBlur();
+                void trigger('required.stepA.fullName');
+              }}
               onChange={(_e, value) => {
                 field.onChange(value);
               }}
@@ -39,9 +41,8 @@ export const StepA = () => {
       />
 
       <Controller
-        name="selectionA1"
+        name="required.stepA.selectionA1"
         control={control}
-        rules={{ required: 'Selection is required' }}
         render={({ field, fieldState }) => (
           <FormGroup label="Selection A-1:" type="string" fieldId="selection-a1" isRequired>
             <FormSelect
@@ -49,7 +50,10 @@ export const StepA = () => {
               aria-label="Selection A-1"
               isRequired
               value={field.value}
-              onBlur={field.onBlur}
+              onBlur={() => {
+                field.onBlur();
+                void trigger('required.stepA.selectionA1');
+              }}
               onChange={(_e, value) => {
                 field.onChange(value);
               }}
@@ -71,9 +75,8 @@ export const StepA = () => {
       />
 
       <Controller
-        name="selectionA2"
+        name="required.stepA.selectionA2"
         control={control}
-        rules={{ required: 'Selection is required' }}
         render={({ field, fieldState }) => (
           <FormGroup label="Selection A-2:" type="string" fieldId="selection-a2" isRequired>
             <FormSelect
@@ -81,7 +84,10 @@ export const StepA = () => {
               aria-label="Selection A-2"
               isRequired
               value={field.value}
-              onBlur={field.onBlur}
+              onBlur={() => {
+                field.onBlur();
+                void trigger('required.stepA.selectionA2');
+              }}
               onChange={(_e, value) => {
                 field.onChange(value);
               }}
@@ -103,7 +109,7 @@ export const StepA = () => {
       />
 
       <Controller
-        name="selectionA3"
+        name="required.stepA.selectionA3"
         control={control}
         render={({ field, fieldState }) => (
           <FormGroup label="Selection A-3:" type="string" fieldId="selection-a3">
@@ -111,7 +117,10 @@ export const StepA = () => {
               id="selection-a3"
               aria-label="Selection A-3"
               value={field.value}
-              onBlur={field.onBlur}
+              onBlur={() => {
+                field.onBlur();
+                void trigger('required.stepA.selectionA3');
+              }}
               onChange={(_e, value) => {
                 field.onChange(value);
               }}

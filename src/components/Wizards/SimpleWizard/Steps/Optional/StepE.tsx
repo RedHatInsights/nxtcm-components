@@ -4,21 +4,24 @@ import { RhfFieldError } from '../../RhfFieldError';
 import type { SimpleWizardFormValues } from '../../simpleWizardForm';
 
 export const StepE = () => {
-  const { control } = useFormContext<SimpleWizardFormValues>();
+  const { control, trigger } = useFormContext<SimpleWizardFormValues>();
+
   return (
     <Form>
       <Controller
-        name="optionText1"
+        name="optional.stepE.optionText1"
         control={control}
-        rules={{ required: 'Selection is required' }}
         render={({ field, fieldState }) => (
           <FormGroup fieldId="option-text-1" label="Option text 1">
             <TextInput
-              id="option-text-1"
               type="text"
+              id="option-text-1"
               name={field.name}
               value={field.value}
-              onBlur={field.onBlur}
+              onBlur={() => {
+                field.onBlur();
+                void trigger('optional.stepE.optionText1');
+              }}
               onChange={(_e, value) => {
                 field.onChange(value);
               }}
