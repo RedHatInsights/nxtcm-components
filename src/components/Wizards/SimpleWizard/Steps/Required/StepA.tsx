@@ -58,8 +58,8 @@ export const StepA = () => {
                 field.onChange(value);
                 const prevB1 = getValues('required.stepB.selectionB1');
                 const prevC1 = getValues('required.stepC.selectionC1');
-                setValue('required.stepB.selectionB1', '');
-                setValue('required.stepC.selectionC1', '');
+                setValue('required.stepB.selectionB1', '', { shouldDirty: true });
+                setValue('required.stepC.selectionC1', '', { shouldDirty: true });
                 if (prevB1 !== '') {
                   void trigger('required.stepB.selectionB1');
                 }

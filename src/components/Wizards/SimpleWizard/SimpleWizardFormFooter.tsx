@@ -1,12 +1,17 @@
 import {
   isCustomWizardFooter,
   isWizardSubStep,
+  useWizardContext,
   WizardFooter,
   type WizardStepType,
 } from '@patternfly/react-core';
 import type { MouseEvent } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { FIELDS_PER_WIZARD_STEP, type SimpleWizardFormValues } from './simpleWizardSchema';
+import {
+  FIELDS_PER_WIZARD_STEP,
+  getNextNavLeafIndexAfterPatternFlyIndex,
+  type SimpleWizardFormValues,
+} from './simpleWizardSchema';
 
 type SimpleWizardFormFooterProps = {
   activeStep: WizardStepType;
@@ -22,6 +27,7 @@ export const SimpleWizardFormFooter = ({
   onClose,
 }: SimpleWizardFormFooterProps) => {
   const { trigger } = useFormContext<SimpleWizardFormValues>();
+  const { goToStepByIndex } = useWizardContext();
 
   const isBackDisabled =
     activeStep?.index === 1 || (isWizardSubStep(activeStep) && activeStep.index === 2);
@@ -42,6 +48,12 @@ export const SimpleWizardFormFooter = ({
         e.preventDefault();
         return;
       }
+    }
+    const nextLeaf = getNextNavLeafIndexAfterPatternFlyIndex(activeStep.index);
+    if (nextLeaf != null) {
+      e.preventDefault();
+      goToStepByIndex(nextLeaf);
+      return;
     }
     await onNext(e);
   };

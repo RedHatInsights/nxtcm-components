@@ -117,6 +117,60 @@ export const WIZARD_SUBSTEPS = [
 ] satisfies ReadonlyArray<WizardSubstepListItem>;
 
 /**
+ * PatternFly’s `buildSteps` assigns a 1-based `index` to the parent, then each sub-step, then the
+ * next parent, etc. Keep this in sync with the `Wizard` child order: Required → Optional → Review.
+ *
+ * @see `@patternfly/react-core` `buildSteps` in `components/Wizard/utils`
+ */
+const patternFlyFlatIndexForGroups = (() => {
+  const navIdToIndex: Record<string, number> = {};
+  const leafNavIds: string[] = [];
+  let acc = 0;
+
+  for (const group of [WIZARD_GROUP.required, WIZARD_GROUP.optional] as const) {
+    acc += 1;
+    navIdToIndex[group.id] = acc;
+    const subs = WIZARD_SUBSTEPS.filter(
+      (s) => s.group === (group.id === WIZARD_GROUP.required.id ? 'required' : 'optional')
+    );
+    for (const d of subs) {
+      acc += 1;
+      navIdToIndex[d.nav.id] = acc;
+      leafNavIds.push(d.nav.id);
+    }
+  }
+  acc += 1;
+  navIdToIndex[String(WIZARD_REVIEW.id)] = acc;
+  leafNavIds.push(String(WIZARD_REVIEW.id));
+
+  return { navIdToIndex, orderedLeafIds: leafNavIds } as const;
+})();
+
+/** Nav item id (parent or sub or review) → same `index` the wizard’s context uses. */
+export const PATTERNFLY_WIZARD_NAV_ID_TO_INDEX: Readonly<Record<string, number>> =
+  patternFlyFlatIndexForGroups.navIdToIndex;
+
+const ORDERED_LEAF_INDEXES: number[] = patternFlyFlatIndexForGroups.orderedLeafIds
+  .map((id) => PATTERNFLY_WIZARD_NAV_ID_TO_INDEX[id])
+  .filter((i): i is number => i != null);
+
+/**
+ * The next “leaf” step the wizard can advance to after `activeIndex` (skips inert parent-only
+ * indices). Returns `undefined` on the last step.
+ */
+export function getNextNavLeafIndexAfterPatternFlyIndex(activeIndex: number): number | undefined {
+  for (const idx of ORDERED_LEAF_INDEXES) {
+    if (idx > activeIndex) {
+      return idx;
+    }
+  }
+  return undefined;
+}
+
+/** First “leaf” step in nav order the wizard opens on (substep A). */
+export const PATTERNFLY_WIZARD_FIRST_LEAF_INDEX: number = ORDERED_LEAF_INDEXES[0] ?? 1;
+
+/**
  * Output shape for RHF and consumers. The Zod object under `required` / `optional` is built
  * from `WIZARD_SUBSTEPS` at runtime; TypeScript cannot infer nested keys, so the shape is written
  * here explicitly. Keep in sync with `WIZARD_SUBSTEPS` field definitions.
@@ -134,6 +188,53 @@ export type SimpleWizardFormValues = {
   };
 };
 
+/**
+ * Add or remove RHF field paths only here. When any of these values change, `furthest` is set to
+ * the current step, which disables nav to steps that have a higher `index` until the user
+ * advances (see `isWizardStepNavIndexDisabled`). The footer still advances with
+ * `getNextNavLeafIndexAfterPatternFlyIndex` + `goToStepByIndex` (see `SimpleWizardFormFooter`).
+ */
+export const WIZARD_RESET_FURTHEST_ON_FIELD_CHANGE = [
+  'required.stepA.selectionA1',
+  'required.stepB.selectionB1',
+] as const satisfies readonly FieldPath<SimpleWizardFormValues>[];
+
+/**
+ * `true` when the nav item (PatternFly `index`) should be `isDisabled` so users cannot jump in the
+ * sidebar to steps they have not reached yet. Uses **furthest** (the highest `index` you have
+ * landed on): any step with a higher `index` is not directly navigable.
+ *
+ * The default PatternFly `goToNext` treats disabled next steps as “end of flow” and can trigger
+ * submit; the footer should advance with `useWizardContext().goToStepByIndex(nextLeafIndex)`
+ * `nextLeaf` from {@link getNextNavLeafIndexAfterPatternFlyIndex}) so **Next** still works after
+ * validation.
+ */
+export function isWizardStepNavIndexDisabled(
+  stepFlatIndex: number | undefined,
+  furthest: number
+): boolean {
+  if (stepFlatIndex == null) {
+    return true;
+  }
+  return stepFlatIndex > furthest;
+}
+
+/**
+ * Whether a substep is “in range” to show a nav `status: error` based on progress. The wizard
+ * also ORs in “any dirty field on that substep” in `SimpleWizard` so that cross-step invalidation
+ * (e.g. A1 clearing B1/C1) can still show an error for steps beyond this range when those
+ * subobjects are dirty in RHF.
+ */
+export function isWizardSubstepInErrorDisplayRange(
+  stepFlatIndex: number | undefined,
+  furthest: number
+): boolean {
+  if (stepFlatIndex == null) {
+    return false;
+  }
+  return stepFlatIndex <= furthest;
+}
+
 /* =============================================================================
    Derived: Zod (same nesting as the form: required | optional > formKey > field)
    ============================================================================= */
@@ -142,6 +243,18 @@ const stepZod = (d: (typeof WIZARD_SUBSTEPS)[number]): z.ZodObject<z.ZodRawShape
   z
     .object(d.fields)
     .meta({ id: d.nav.id, name: d.nav.name }) as unknown as z.ZodObject<z.ZodRawShape>;
+
+/**
+ * The root {@link zodResolver} always parses the full form, so RHF’s `trigger(fieldNames)` and any
+ * `useForm().trigger(…)` from step UIs re-run the full schema. Do not use `trigger` in step
+ * components; use this sub-object for step-level checks (e.g. the Next footer) instead.
+ */
+export const getZodObjectForSubstep = (
+  d: (typeof WIZARD_SUBSTEPS)[number]
+): z.ZodObject<z.ZodRawShape> => stepZod(d);
+
+export const getWizardSubstepListItemByNavId = (navId: string) =>
+  WIZARD_SUBSTEPS.find((s) => s.nav.id === navId);
 
 const requiredFormShape: z.ZodRawShape = Object.fromEntries(
   WIZARD_SUBSTEPS.filter((s) => s.group === 'required').map((d) => [d.formKey, stepZod(d)] as const)
