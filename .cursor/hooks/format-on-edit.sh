@@ -4,7 +4,7 @@
 # the diff clean in real-time while the agent works.
 
 input=$(cat)
-filepath=$(echo "$input" | jq -r '.path // empty')
+filepath=$(echo "$input" | jq -r '.file_path // empty')
 
 if [ -z "$filepath" ]; then
   exit 0
