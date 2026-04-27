@@ -191,7 +191,7 @@ export type ClusterFormData = {
   no_proxy_domains?: string;
   additional_trust_bundle?: string;
 
-  // encryption
+  // encryption (notsecret — form field names matching OCM API, not actual keys)
   encryption_keys?: ClusterEncryptionKeys.default | ClusterEncryptionKeys.custom;
   kms_key_arn?: string;
   etcd_encryption?: boolean;

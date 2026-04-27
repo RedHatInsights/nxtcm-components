@@ -402,6 +402,7 @@ export const defaultRosaWizardValidatorStrings: RosaWizardValidatorStrings = {
   kmsKeyArn: {
     required: 'Field is required.',
     noWhitespace: 'Value must not contain whitespaces.',
+    // notsecret — example ARN format in user-facing error message
     invalidArn:
       'Key provided is not a valid ARN. It should be in the format "arn:aws:kms:<region>:<accountid>:key/<keyid>".',
     wrongRegion: 'Your KMS key must contain your selected region.',
@@ -419,7 +420,7 @@ export const defaultRosaWizardValidatorStrings: RosaWizardValidatorStrings = {
   },
   ca: {
     fileTooLarge: 'File must be no larger than 4 MB',
-    invalidPem: 'Must be a PEM encoded X.509 file (.pem, .crt, .ca, .cert) and no larger than 4 MB',
+    invalidPem: 'Must be a PEM encoded X.509 file (.pem, .crt, .ca, .cert) and no larger than 4 MB', // notsecret — user-facing validation message
   },
   rootDisk: {
     notInteger: 'Root disk size must be an integer.',
@@ -438,7 +439,7 @@ export const defaultRosaWizardValidatorStrings: RosaWizardValidatorStrings = {
   proxyConfigureAtLeastOne: 'Configure at least one of the cluster-wide proxy fields.',
   cidr: {
     invalidNotation: (value: string) =>
-      `IP address range '${value}' isn't valid CIDR notation. It must follow the RFC-4632 format: '192.168.0.0/16'.`,
+      `IP address range '${value}' isn't valid CIDR notation. It must follow the RFC-4632 format: '192.168.0.0/16'.`, // notsecret — example CIDR in error message
   },
   validateRange: {
     notSubnetAddress:

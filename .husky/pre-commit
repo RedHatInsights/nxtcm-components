@@ -1,2 +1,22 @@
 npx lint-staged
 npm run type-check
+
+# gitleaks — scan staged files for secrets before they reach the remote
+if command -v gitleaks >/dev/null 2>&1; then
+  staged_files=$(git diff --cached --name-only --diff-filter=ACMR)
+  if [ -n "$staged_files" ]; then
+    tmpdir=$(mktemp -d)
+    trap 'rm -rf "$tmpdir"' EXIT
+    echo "$staged_files" | while IFS= read -r file; do
+      mkdir -p "$tmpdir/$(dirname "$file")"
+      if ! git show ":$file" > "$tmpdir/$file" 2>/dev/null; then
+        echo "failed to extract staged file: $file" >&2
+        exit 1
+      fi
+    done
+    gitleaks detect --no-git --source "$tmpdir" --config .gitleaks.toml --verbose
+  fi
+else
+  echo "⚠ gitleaks not installed — staged files were NOT scanned for secrets"
+  echo "  install: brew install gitleaks"
+fi

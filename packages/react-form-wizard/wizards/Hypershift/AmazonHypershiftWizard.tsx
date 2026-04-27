@@ -1,8 +1,8 @@
 /* Copyright Contributors to the Open Cluster Management project */
 // eslint-disable-next-line no-use-before-define
-import { CodeBlock, Icon, List, ListItem, Stack } from '@patternfly/react-core'
-import { CheckIcon, CloseIcon } from '@patternfly/react-icons'
-import { useHistory } from 'react-router-dom'
+import { CodeBlock, Icon, List, ListItem, Stack } from '@patternfly/react-core';
+import { CheckIcon, CloseIcon } from '@patternfly/react-icons';
+import { useHistory } from 'react-router-dom';
 import {
   Section,
   WizSelect,
@@ -17,10 +17,10 @@ import {
   WizSingleSelect,
   WizTextDetail,
   WizTextInput,
-} from '../../src'
-import { IResource } from '../../src/common/resource'
-import { Sync } from '../../src/Sync'
-import { IHypershiftDeployment } from './IHypershiftDeployment'
+} from '../../src';
+import { IResource } from '../../src/common/resource';
+import { Sync } from '../../src/Sync';
+import { IHypershiftDeployment } from './IHypershiftDeployment';
 
 const newNodePool = {
   name: '',
@@ -39,7 +39,7 @@ const newNodePool = {
       image: '',
     },
   },
-}
+};
 
 const defaultData: IHypershiftDeployment = {
   apiVersion: 'cluster.open-cluster-management.io/v1alpha1',
@@ -80,15 +80,15 @@ const defaultData: IHypershiftDeployment = {
       sshKey: {},
     },
   },
-}
+};
 
 interface AWSHypershiftWizardProps {
-  clusterSets: IResource[]
+  clusterSets: IResource[];
 }
 
 export function AmazonHypershiftWizard(props: AWSHypershiftWizardProps) {
-  const history = useHistory()
-  const clusterSets = props.clusterSets.map((clusterSet) => clusterSet.metadata?.name) as string[]
+  const history = useHistory();
+  const clusterSets = props.clusterSets.map((clusterSet) => clusterSet.metadata?.name) as string[];
   return (
     <WizardPage
       title="Create cluster"
@@ -128,7 +128,9 @@ export function AmazonHypershiftWizard(props: AWSHypershiftWizardProps) {
                   }
                 >
                   <Stack style={{ width: '100%' }} hasGutter>
-                    <div>The hypershift-preview component is enabled on the multi-cluster engine.</div>
+                    <div>
+                      The hypershift-preview component is enabled on the multi-cluster engine.
+                    </div>
                     <CodeBlock>{`oc get mce multiclusterengine-sample -ojsonpath="{.spec.overrides.components[?(@.name=='hypershift-preview')].enabled}"`}</CodeBlock>
                   </Stack>
                 </ListItem>
@@ -157,19 +159,27 @@ export function AmazonHypershiftWizard(props: AWSHypershiftWizardProps) {
                 >
                   <Stack style={{ width: '100%' }} hasGutter>
                     <div>
-                      An OIDC s3 credentials secret for the HyperShift operator to use to access a public s3 bucket
+                      An OIDC s3 credentials secret for the HyperShift operator to use to access a
+                      public s3 bucket
                     </div>
                     <CodeBlock>{`oc get secret hypershift-operator-oidc-provider-s3-credentials -n local-cluster`}</CodeBlock>
                     <div>
                       See Getting started in the{' '}
-                      <a href="https://hypershift-docs.netlify.app/getting-started" target="_blank" rel="noreferrer">
+                      <a
+                        href="https://hypershift-docs.netlify.app/getting-started"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
                         HyperShift
                       </a>{' '}
                       documentation for more information about the secret.
                     </div>
-                    <CodeBlock>aws s3api create-bucket --acl public-read --bucket your-bucket-name</CodeBlock>
+                    <CodeBlock>
+                      aws s3api create-bucket --acl public-read --bucket your-bucket-name
+                    </CodeBlock>
 
                     <div>The following example shows how to create the secret:</div>
+                    {/* notsecret — example CLI command for docs, not actual credentials */}
                     <CodeBlock>{`oc create secret generic hypershift-operator-oidc-provider-s3-credentials --from-file=credentials=$HOME/.aws/credentials --from-literal=bucket=<your-bucket-name> --from-literal=region=<region> -n local-cluster`}</CodeBlock>
                   </Stack>
                 </ListItem>
@@ -264,11 +274,18 @@ export function AmazonHypershiftWizard(props: AWSHypershiftWizardProps) {
               path="spec.nodePools"
               label="Worker pools"
               placeholder="Add worker pool"
-              collapsedContent={<WizTextDetail path="name" placeholder="Expand to edit the worker pool details" />}
+              collapsedContent={
+                <WizTextDetail path="name" placeholder="Expand to edit the worker pool details" />
+              }
               newValue={newNodePool}
             >
               <WizTextInput path="name" label="Pool name" required />
-              <WizSelect path="spec.platform.aws.instanceType" label="Instance type" options={['default']} required />
+              <WizSelect
+                path="spec.platform.aws.instanceType"
+                label="Instance type"
+                options={['default']}
+                required
+              />
             </WizArrayInput>
           </Section>
         </WizItemSelector>
@@ -316,9 +333,21 @@ export function AmazonHypershiftWizard(props: AWSHypershiftWizardProps) {
               options={['OpenShiftSDN', 'OVNKubernetes']}
               required
             />
-            <WizTextInput path="spec.hostedClusterSpec.networking.podCIDR" label="Pod CIDR" required />
-            <WizTextInput path="spec.hostedClusterSpec.networking.serviceCIDR" label="Service CIDR" required />
-            <WizTextInput path="spec.hostedClusterSpec.networking.machineCIDR" label="Machine CIDR" required />
+            <WizTextInput
+              path="spec.hostedClusterSpec.networking.podCIDR"
+              label="Pod CIDR"
+              required
+            />
+            <WizTextInput
+              path="spec.hostedClusterSpec.networking.serviceCIDR"
+              label="Service CIDR"
+              required
+            />
+            <WizTextInput
+              path="spec.hostedClusterSpec.networking.machineCIDR"
+              label="Machine CIDR"
+              required
+            />
           </Section>
         </WizItemSelector>
       </Step>
@@ -334,7 +363,7 @@ export function AmazonHypershiftWizard(props: AWSHypershiftWizardProps) {
                 </WizItemSelector>
             </Step> */}
     </WizardPage>
-  )
+  );
 }
 
 export function ControlPlaneStep() {
@@ -357,7 +386,7 @@ export function ControlPlaneStep() {
       />
       <WizSelect path="rootStorage" label="Root storage (GiB)" options={['default']} />
     </Section>
-  )
+  );
 }
 
 // Ideally, we should use aws-sdk and the connection credentials to fetch this information,
@@ -371,27 +400,27 @@ do
   aws ec2 describe-availability-zones --region $region --output json | jq -c '[ .AvailabilityZones[].ZoneName ]' | sed -e "s/\"/'/g" -e 's/,/, /g' -e 's/]/],/g'
 done
 */
-const usEast1a = 'us-east-1a'
-const usEast1b = 'us-east-1b'
-const usEast1c = 'us-east-1c'
-const usEast1d = 'us-east-1d'
-const usEast1e = 'us-east-1e'
-const usEast1f = 'us-east-1f'
-const gp2Cpu8Gib = '2 vCPU, 8 GiB RAM - General Purpose'
-const gp4Cpu16Gib = '4 vCPU, 16 GiB RAM - General Purpose'
-const gp8Cpu32Gib = '8 vCPU, 32 GiB RAM - General Purpose'
-const gp16Cpu64Gib = '16 vCPU, 64 GiB RAM - General Purpose'
-const gp40Cpu160Gib = '40 vCPU, 160 GiB RAM - General Purpose'
-const gp64Cpu256Gib = '64 vCPU, 256 GiB RAM - General Purpose'
-const co96Cpu192Gib = '96 vCPU, 192 GiB RAM - Compute Optimized'
-const mo2Cpu16Gib = '2 vCPU, 16 GiB RAM - Memory Optimized'
-const mo8Cpu64Gib = '8 vCPU, 64 GiB RAM - Memory Optimized'
-const mo4Cpu64Gib = '4 vCPU, 32 GiB RAM - Memory Optimized'
-const mo16Cpu64Gib = '16 vCPU, 128 GiB RAM - Memory Optimized'
-const mo32Cpu64Gib = '32 vCPU, 256 GiB RAM - Memory Optimized'
-const mo48Cpu64Gib = '48 vCPU, 384 GiB RAM - Memory Optimized'
-const mo64Cpu64Gib = '64 vCPU, 512 GiB RAM - Memory Optimized'
-const mo96Cpu64Gib = '96 vCPU, 768 GiB RAM - Memory Optimized'
+const usEast1a = 'us-east-1a';
+const usEast1b = 'us-east-1b';
+const usEast1c = 'us-east-1c';
+const usEast1d = 'us-east-1d';
+const usEast1e = 'us-east-1e';
+const usEast1f = 'us-east-1f';
+const gp2Cpu8Gib = '2 vCPU, 8 GiB RAM - General Purpose';
+const gp4Cpu16Gib = '4 vCPU, 16 GiB RAM - General Purpose';
+const gp8Cpu32Gib = '8 vCPU, 32 GiB RAM - General Purpose';
+const gp16Cpu64Gib = '16 vCPU, 64 GiB RAM - General Purpose';
+const gp40Cpu160Gib = '40 vCPU, 160 GiB RAM - General Purpose';
+const gp64Cpu256Gib = '64 vCPU, 256 GiB RAM - General Purpose';
+const co96Cpu192Gib = '96 vCPU, 192 GiB RAM - Compute Optimized';
+const mo2Cpu16Gib = '2 vCPU, 16 GiB RAM - Memory Optimized';
+const mo8Cpu64Gib = '8 vCPU, 64 GiB RAM - Memory Optimized';
+const mo4Cpu64Gib = '4 vCPU, 32 GiB RAM - Memory Optimized';
+const mo16Cpu64Gib = '16 vCPU, 128 GiB RAM - Memory Optimized';
+const mo32Cpu64Gib = '32 vCPU, 256 GiB RAM - Memory Optimized';
+const mo48Cpu64Gib = '48 vCPU, 384 GiB RAM - Memory Optimized';
+const mo64Cpu64Gib = '64 vCPU, 512 GiB RAM - Memory Optimized';
+const mo96Cpu64Gib = '96 vCPU, 768 GiB RAM - Memory Optimized';
 
 export const awsRegions = {
   'us-east-1': [usEast1a, usEast1b, usEast1c, usEast1d, usEast1e, usEast1f],
@@ -417,7 +446,7 @@ export const awsRegions = {
   'sa-east-1': ['sa-east-1a', 'sa-east-1b', 'sa-east-1c'],
   'us-gov-west-1': ['us-gov-west-1a', 'us-gov-west-1b', 'us-gov-west-1c'],
   'us-gov-east-1': ['us-gov-east-1a', 'us-gov-east-1b', 'us-gov-east-1c'],
-}
+};
 
 const AWSmasterInstanceTypes = [
   { value: 'm5.large', description: gp2Cpu8Gib },
@@ -426,7 +455,7 @@ const AWSmasterInstanceTypes = [
   { value: 'm5.4xlarge', description: gp16Cpu64Gib },
   { value: 'm5.10xlarge', description: gp40Cpu160Gib },
   { value: 'm5.16xlarge', description: gp64Cpu256Gib },
-]
+];
 
 export const AWSworkerInstanceTypes = [
   {
@@ -806,8 +835,14 @@ export const AWSworkerInstanceTypes = [
       {
         label: 'P3 - NVIDIA Tesla V100 GPUs',
         children: [
-          { value: 'p3.2xlarge', description: '1 GPUs, 8 vCPU, 61 GiB, 16 GPU GiB- Accelerated Computing' },
-          { value: 'p3.8xlarge', description: '4 GPUs, 32 vCPU, 244 GiB, 64 GPU GiB- Accelerated Computing' },
+          {
+            value: 'p3.2xlarge',
+            description: '1 GPUs, 8 vCPU, 61 GiB, 16 GPU GiB- Accelerated Computing',
+          },
+          {
+            value: 'p3.8xlarge',
+            description: '4 GPUs, 32 vCPU, 244 GiB, 64 GPU GiB- Accelerated Computing',
+          },
           {
             value: 'p3.16xlarge',
             description: '8 GPUs, 64 vCPU, 488 GiB, 128 GPU GiB- Accelerated Computing',
@@ -821,8 +856,14 @@ export const AWSworkerInstanceTypes = [
       {
         label: 'P2 - NVIDIA K80 GPUs',
         children: [
-          { value: 'p2.xlarge', description: '1  GPUs, 4 vCPU, 61 GiB, 12 GPU GiB- Accelerated Computing' },
-          { value: 'p2.8xlarge', description: '8 GPUs, 32 vCPU, 488 GiB, 96 GPU GiB- Accelerated Computing' },
+          {
+            value: 'p2.xlarge',
+            description: '1  GPUs, 4 vCPU, 61 GiB, 12 GPU GiB- Accelerated Computing',
+          },
+          {
+            value: 'p2.8xlarge',
+            description: '8 GPUs, 32 vCPU, 488 GiB, 96 GPU GiB- Accelerated Computing',
+          },
           {
             value: 'p2.16xlarge',
             description: '16 GPUs, 64 vCPU, 732 GiB, 192 GPU GiB- Accelerated Computing',
@@ -832,8 +873,14 @@ export const AWSworkerInstanceTypes = [
       {
         label: 'G4 - NVIDIA T4 Tensor Core GPUs',
         children: [
-          { value: 'g4dn.xlarge', description: '1 GPUs, 4 vCPU, 16 GiB, 16 GPU GiB- Accelerated Computing' },
-          { value: 'g4dn.2xlarge', description: '1 GPUs, 8 vCPU, 32 GiB, 16 GPU GiB- Accelerated Computing' },
+          {
+            value: 'g4dn.xlarge',
+            description: '1 GPUs, 4 vCPU, 16 GiB, 16 GPU GiB- Accelerated Computing',
+          },
+          {
+            value: 'g4dn.2xlarge',
+            description: '1 GPUs, 8 vCPU, 32 GiB, 16 GPU GiB- Accelerated Computing',
+          },
           {
             value: 'g4dn.4xlarge',
             description: '1 GPUs, 16 vCPU, 64 GiB, 16 GPU GiB- Accelerated Computing',
@@ -859,9 +906,18 @@ export const AWSworkerInstanceTypes = [
       {
         label: 'G3 - NVIDIA Tesla M60 GPUs',
         children: [
-          { value: 'g3s.xlarge', description: '1 GPUs, 4 vCPU, 30.5 GiB, 8 GPU GiB- Accelerated Computing' },
-          { value: 'g3.4xlarge', description: '1 GPUs, 16 vCPU, 122 GiB, 8 GPU GiB- Accelerated Computing' },
-          { value: 'g3.8xlarge', description: '2 GPUs, 32 vCPU, 244 GiB, 16 GPU GiB- Accelerated Computing' },
+          {
+            value: 'g3s.xlarge',
+            description: '1 GPUs, 4 vCPU, 30.5 GiB, 8 GPU GiB- Accelerated Computing',
+          },
+          {
+            value: 'g3.4xlarge',
+            description: '1 GPUs, 16 vCPU, 122 GiB, 8 GPU GiB- Accelerated Computing',
+          },
+          {
+            value: 'g3.8xlarge',
+            description: '2 GPUs, 32 vCPU, 244 GiB, 16 GPU GiB- Accelerated Computing',
+          },
           {
             value: 'g3.16xlarge',
             description: '4 GPUs, 64 vCPU, 488 GiB, 32 GPU GiB- Accelerated Computing',
@@ -918,4 +974,4 @@ export const AWSworkerInstanceTypes = [
       },
     ],
   },
-]
+];

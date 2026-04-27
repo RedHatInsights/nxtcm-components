@@ -1,7 +1,7 @@
 /* Copyright Contributors to the Open Cluster Management project */
-import { Icon, Stack } from '@patternfly/react-core'
-import { ServerIcon, VirtualMachineIcon } from '@patternfly/react-icons'
-import { useHistory } from 'react-router-dom'
+import { Icon, Stack } from '@patternfly/react-core';
+import { ServerIcon, VirtualMachineIcon } from '@patternfly/react-icons';
+import { useHistory } from 'react-router-dom';
 import {
   WizHidden,
   ItemContext,
@@ -16,16 +16,16 @@ import {
   WizardPage,
   WizArrayInput,
   WizTextInput,
-} from '../../src'
-import { Catalog } from '../Catalog'
-import { RouteE } from '../Routes'
-import ALIBABA from './icons/alibaba.svg'
-import AWS from './icons/aws.svg'
-import AZURE from './icons/azure.svg'
-import GOOGLE from './icons/google-cloud.svg'
+} from '../../src';
+import { Catalog } from '../Catalog';
+import { RouteE } from '../Routes';
+import ALIBABA from './icons/alibaba.svg';
+import AWS from './icons/aws.svg';
+import AZURE from './icons/azure.svg';
+import GOOGLE from './icons/google-cloud.svg';
 
 export function ProviderCatalog() {
-  const history = useHistory()
+  const history = useHistory();
   return (
     <Catalog
       title="Provider"
@@ -42,7 +42,9 @@ export function ProviderCatalog() {
           icon: <AWS />,
           title: 'Amazon Web Services',
           descriptions: ['Create and manage your clusters through Amazon cloud.'],
-          featureGroups: [{ title: 'Available Control Planes', features: ['Hosted', 'Standalone', 'Managed'] }],
+          featureGroups: [
+            { title: 'Available Control Planes', features: ['Hosted', 'Standalone', 'Managed'] },
+          ],
           onClick: () => history.push(RouteE.ControlPlane),
         },
         {
@@ -53,7 +55,9 @@ export function ProviderCatalog() {
           ),
           title: 'Bare Metal',
           descriptions: ['Create and manage your clusters on your bare metal machines.'],
-          featureGroups: [{ title: 'Available Control Planes', features: ['Hosted', 'Standalone'] }],
+          featureGroups: [
+            { title: 'Available Control Planes', features: ['Hosted', 'Standalone'] },
+          ],
           onClick: () => history.push(RouteE.ControlPlane),
         },
         {
@@ -67,7 +71,9 @@ export function ProviderCatalog() {
           icon: <AZURE />,
           title: 'Microsoft Azure',
           descriptions: ['Create and manage your clusters through Azure cloud.'],
-          featureGroups: [{ title: 'Available Control Planes', features: ['Standalone', 'Managed'] }],
+          featureGroups: [
+            { title: 'Available Control Planes', features: ['Standalone', 'Managed'] },
+          ],
           onClick: () => history.push(RouteE.ControlPlane),
         },
         {
@@ -78,16 +84,18 @@ export function ProviderCatalog() {
           ),
           title: 'VIRT',
           descriptions: ['Create and manage your clusters on virtual machines.'],
-          featureGroups: [{ title: 'Available Control Planes', features: ['VSphere', 'RHV', 'OpenStack'] }],
+          featureGroups: [
+            { title: 'Available Control Planes', features: ['VSphere', 'RHV', 'OpenStack'] },
+          ],
           onClick: () => history.push(RouteE.ControlPlane),
         },
       ]}
     />
-  )
+  );
 }
 
 export function ControlPlaneCatalog() {
-  const history = useHistory()
+  const history = useHistory();
   return (
     <Catalog
       title="Control Plane Type"
@@ -135,11 +143,11 @@ export function ControlPlaneCatalog() {
       ]}
       onBack={() => history.push(RouteE.Provider)}
     />
-  )
+  );
 }
 
 export function HostsCatalog() {
-  const history = useHistory()
+  const history = useHistory();
   return (
     <Catalog
       title="Hosts"
@@ -163,11 +171,11 @@ export function HostsCatalog() {
       ]}
       onBack={() => history.push(RouteE.Provider)}
     />
-  )
+  );
 }
 
 export function CreateCluster() {
-  const history = useHistory()
+  const history = useHistory();
   return (
     <WizardPage
       title="Create cluster"
@@ -211,17 +219,20 @@ export function CreateCluster() {
           collapsedContent={
             <ItemContext.Consumer>
               {(item) => {
-                const typedItem = item as { name: string; hosts: string }
+                const typedItem = item as { name: string; hosts: string };
                 return (
                   <Stack hasGutter>
-                    <WizTextDetail path="name" placeholder="Expand to edit the worker pool details" />
+                    <WizTextDetail
+                      path="name"
+                      placeholder="Expand to edit the worker pool details"
+                    />
                     {typedItem.name && (typedItem.hosts?.length ?? 0) > 0 && (
                       <div>
                         <small>{typedItem.hosts?.length} worker nodes</small>
                       </div>
                     )}
                   </Stack>
-                )
+                );
               }}
             </ItemContext.Consumer>
           }
@@ -230,10 +241,20 @@ export function CreateCluster() {
           newValue={{ numberOfHosts: 1 }}
         >
           <WizTextInput path="name" label="Worker pool name" required />
-          <WizSingleSelect label="Infrastructure environment" path="infraEnv" options={['infrastructure-1']} required />
+          <WizSingleSelect
+            label="Infrastructure environment"
+            path="infraEnv"
+            options={['infrastructure-1']}
+            required
+          />
           <WizHidden hidden={(item) => !item.infraEnv}>
             <WizSwitch path="auto" label="Auto select hosts" />
-            <WizNumberInput label="Number of hosts" path="numberOfHosts" min={1} hidden={(item) => !item.auto} />
+            <WizNumberInput
+              label="Number of hosts"
+              path="numberOfHosts"
+              min={1}
+              hidden={(item) => !item.auto}
+            />
             <WizTableSelect
               label="Infrastructure hosts"
               path="hosts"
@@ -307,14 +328,14 @@ export function CreateCluster() {
                     <TextInput
                         path="httpProxy"
                         label="Http Proxy "
-                        helperText="Requires this format: http://<username>:<pswd>@<ip>:<port>"
+                        helperText="Requires this format: http://<username>:<pswd>@<ip>:<port>" // notsecret — URL format placeholder
                         required
                         hidden={(item) => !item.useProxy}
                     />
                     <TextInput
                         path="httpsProxy"
                         label="Https Proxy"
-                        helperText="Requires this format: https://<username>:<pswd>@<ip>:<port>"
+                        helperText="Requires this format: https://<username>:<pswd>@<ip>:<port>" // notsecret — URL format placeholder
                         required
                         hidden={(item) => !item.useProxy}
                     />
@@ -328,5 +349,5 @@ export function CreateCluster() {
                 </Section>
             </Step> */}
     </WizardPage>
-  )
+  );
 }

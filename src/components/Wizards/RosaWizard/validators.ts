@@ -146,7 +146,7 @@ export const validateCA = (
   if (!value) {
     return undefined;
   }
-  const pemRegex =
+  const pemRegex = // notsecret — validation regex for PEM format, not an actual certificate
     /-----BEGIN\s+(CERTIFICATE|TRUSTED CERTIFICATE|X509 CRL)-----[\s\S]+?-----END\s+(CERTIFICATE|TRUSTED CERTIFICATE|X509 CRL)-----/;
 
   if (value.length > MAX_CA_SIZE_BYTES) {
