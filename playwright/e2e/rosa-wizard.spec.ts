@@ -18,7 +18,7 @@ async function fillRolesStep(page: Page) {
   await page.getByRole('combobox', { name: 'Select an Installer role' }).click();
   await page.getByRole('option', { name: /ManagedOpenShift-HCP-ROSA-Installer-Role/ }).click();
   await page.getByRole('combobox', { name: 'Select an OIDC config ID' }).click();
-  await page.getByRole('option', { name: '2kl4t2st8eg2u5jppv8kjeemkvimfm99' }).click();
+  await page.getByRole('option', { name: 'oidc-config-test-id-1' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
 }
 
@@ -82,7 +82,7 @@ test.describe('ROSA Wizard', () => {
     await page.getByRole('option', { name: /ManagedOpenShift-HCP-ROSA-Installer-Role/ }).click();
 
     await page.getByRole('combobox', { name: 'Select an OIDC config ID' }).click();
-    await page.getByRole('option', { name: '2kl4t2st8eg2u5jppv8kjeemkvimfm99' }).click();
+    await page.getByRole('option', { name: 'oidc-config-test-id-1' }).click();
 
     await page.getByRole('button', { name: 'Next' }).click();
 
@@ -128,9 +128,7 @@ test.describe('ROSA Wizard', () => {
     ).toBeVisible();
     await expect(page.getByText('us-east-1', { exact: true }).first()).toBeVisible();
     await expect(page.getByText('ManagedOpenShift-HCP-ROSA-Installer-Role').first()).toBeVisible();
-    await expect(
-      page.getByText('2kl4t2st8eg2u5jppv8kjeemkvimfm99', { exact: true }).first()
-    ).toBeVisible();
+    await expect(page.getByText('oidc-config-test-id-1', { exact: true }).first()).toBeVisible();
     await expect(page.getByText(/test-cluster-[a-z][a-z0-9]+/).first()).toBeVisible();
     await expect(page.getByText('m5a.xlarge', { exact: true }).first()).toBeVisible();
   });

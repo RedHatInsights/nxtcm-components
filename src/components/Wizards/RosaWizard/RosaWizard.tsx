@@ -159,9 +159,9 @@ const RosaWizardBody = (props: RosaWizardProps) => {
       etcd_encryption: false,
       configure_proxy: false,
       cidr_default: true,
-      network_machine_cidr: '10.0.0.0/16',
-      network_service_cidr: '172.30.0.0/16',
-      network_pod_cidr: '10.128.0.0/14',
+      network_machine_cidr: '10.0.0.0/16', // notsecret — default ROSA CIDR
+      network_service_cidr: '172.30.0.0/16', // notsecret — default ROSA CIDR
+      network_pod_cidr: '10.128.0.0/14', // notsecret — default ROSA CIDR
       network_host_prefix: '/23',
       autoscaling: false,
       nodes_compute: 2,

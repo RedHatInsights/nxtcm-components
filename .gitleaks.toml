@@ -1,0 +1,56 @@
+# gitleaks configuration for nxtcm-components
+#
+# this repo builds a ROSA cluster creation wizard, so it's full of AWS
+# infrastructure terminology (ARNs, KMS keys, OIDC configs, CIDRs, VPC IDs)
+# that automated secret scanners will flag as false positives.
+#
+# path-based allowlists cover test/mock/story/schema/template files.
+# source files use inline gitleaks:allow comments instead (so real leaks
+# in source code are still caught).
+
+title = "nxtcm-components gitleaks config"
+
+[extend]
+  # load gitleaks' built-in detection rules (without this, custom config replaces them)
+  useDefault = true
+
+[allowlist]
+  description = "files that legitimately contain AWS-like patterns (test data, mocks, schemas, templates)"
+  paths = [
+    # test files — playwright CT specs, E2E specs
+    '''\.spec\.tsx?$''',
+    '''playwright/e2e/''',
+
+    # story files — storybook stories
+    '''\.stories\.tsx?$''',
+    '''\.story\.tsx?$''',
+
+    # mock and fixture files
+    '''TestMocks''',
+    '''\.fixtures\.ts$''',
+    '''test\.json$''',
+
+    # E2E app harness
+    '''e2e-app/''',
+
+    # example integration files
+    '''src/examples/''',
+
+    # schema files — vendored CRD schemas with AWS field descriptions
+    '''schemas/.*\.json$''',
+
+    # handlebars templates — contain placeholder values for YAML generation
+    '''\.hbs$''',
+
+    # react-form-wizard cypress tests (legacy, contain fake credentials)
+    '''packages/react-form-wizard/cypress/''',
+
+    # cursor hooks — contain secret-detection regex patterns that would self-trigger
+    '''\.cursor/hooks/''',
+
+    # test harness for secret prevention — uses planted fake secrets to verify scanning works
+    '''scripts/test-secret-prevention\.sh$''',
+
+    # patch files — npm patch-package creates these for dependency fixes
+    '''patches/.*\.patch$''',
+  ]

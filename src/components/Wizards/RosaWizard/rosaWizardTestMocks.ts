@@ -42,20 +42,20 @@ const mockVersionsData: OpenShiftVersionsData = {
 const mockRoles: Role[] = [
   {
     installerRole: {
-      label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
-      value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
+      label: 'arn:aws:iam::123456789012:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
+      value: 'arn:aws:iam::123456789012:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
       roleVersion: '4.12.0',
     },
     supportRole: [
       {
-        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
-        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
+        label: 'arn:aws:iam::123456789012:role/ManagedOpenShift-HCP-ROSA-Support-Role',
+        value: 'arn:aws:iam::123456789012:role/ManagedOpenShift-HCP-ROSA-Support-Role',
       },
     ],
     workerRole: [
       {
-        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
-        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
+        label: 'arn:aws:iam::123456789012:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
+        value: 'arn:aws:iam::123456789012:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
       },
     ],
   },
@@ -63,9 +63,9 @@ const mockRoles: Role[] = [
 
 const mockOidcConfig: OIDCConfig[] = [
   {
-    label: '2kl4t2st8eg2u5jppv8kjeemkvimfm99',
-    value: '2kl4t2st8eg2u5jppv8kjeemkvimfm99',
-    issuer_url: 'https://oidc.os1.devshift.org/2kl4t2st8eg2u5jppv8kjeemkvimfm99',
+    label: 'oidc-config-test-id-1',
+    value: 'oidc-config-test-id-1',
+    issuer_url: 'https://oidc.os1.devshift.org/oidc-config-test-id-1',
   },
 ];
 

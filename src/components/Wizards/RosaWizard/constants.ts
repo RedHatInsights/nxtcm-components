@@ -32,10 +32,10 @@ export const stepName = {
   REVIEW_AND_CREATE: 'Review and create',
 };
 
-export const AWS_KMS_SERVICE_ACCOUNT_REGEX =
+export const AWS_KMS_SERVICE_ACCOUNT_REGEX = // notsecret — validation regex, not an actual ARN
   /^arn:aws([-\w]+)?:kms:[\w-]+:\d{12}:key\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
-export const AWS_KMS_MULTI_REGION_SERVICE_ACCOUNT_REGEX =
+export const AWS_KMS_MULTI_REGION_SERVICE_ACCOUNT_REGEX = // notsecret — validation regex, not an actual ARN
   /^arn:aws([-\w]+)?:kms:[\w-]+:\d{12}:key\/mrk-[0-9a-f]{32}$/;
 
 // Regular expression used to check whether forward slash is multiple times

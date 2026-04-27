@@ -1,5 +1,5 @@
 /* Copyright Contributors to the Open Cluster Management project */
-import { AnsibleTowerIcon, ServerIcon } from '@patternfly/react-icons'
+import { AnsibleTowerIcon, ServerIcon } from '@patternfly/react-icons';
 import {
   Section,
   WizSelect,
@@ -11,14 +11,14 @@ import {
   WizardPage,
   WizardSubmit,
   WizTextInput,
-} from '../../src'
-import { isValidKubernetesResourceName } from '../common/validation'
-import AWSIcon from './icons/AWSIcon'
-import AzureIcon from './icons/AzureIcon'
-import GCPIcon from './icons/GCPIcon'
-import HybridIcon from './icons/HybridIcon'
-import RedHatIcon from './icons/RedHatIcon'
-import VMWareIcon from './icons/VMWareIcon'
+} from '../../src';
+import { isValidKubernetesResourceName } from '../common/validation';
+import AWSIcon from './icons/AWSIcon';
+import AzureIcon from './icons/AzureIcon';
+import GCPIcon from './icons/GCPIcon';
+import HybridIcon from './icons/HybridIcon';
+import RedHatIcon from './icons/RedHatIcon';
+import VMWareIcon from './icons/VMWareIcon';
 
 export enum CredentialsType {
   redhatcloud = 'rhocm',
@@ -60,7 +60,12 @@ export function CredentialsWizard(props: { onSubmit: WizardSubmit; onCancel: Wiz
             path="metadata.labels.cluster\.open-cluster-management\.io/type"
             label="Cloud provider credentials"
           >
-            <Tile id={CredentialsType.aws} icon={<AWSIcon />} value={CredentialsType.aws} label="Amazon Web Services" />
+            <Tile
+              id={CredentialsType.aws}
+              icon={<AWSIcon />}
+              value={CredentialsType.aws}
+              label="Amazon Web Services"
+            />
             <Tile
               id={CredentialsType.azure}
               icon={<AzureIcon />}
@@ -125,7 +130,12 @@ export function CredentialsWizard(props: { onSubmit: WizardSubmit; onCancel: Wiz
             path="metadata.labels.cluster\.open-cluster-management\.io/type"
             label="Centrally managed"
           >
-            <Tile id={CredentialsType.hybrid} icon={<HybridIcon />} value={CredentialsType.hybrid} label="On premise" />
+            <Tile
+              id={CredentialsType.hybrid}
+              icon={<HybridIcon />}
+              value={CredentialsType.hybrid}
+              label="On premise"
+            />
           </WizTiles>
         </Section>
       </Step>
@@ -159,13 +169,21 @@ export function CredentialsWizard(props: { onSubmit: WizardSubmit; onCancel: Wiz
       <Step
         label="Amazon Web Services"
         id="amazon-web-services"
-        hidden={(item) => item.metadata?.labels?.['cluster.open-cluster-management.io/type'] !== CredentialsType.aws}
+        hidden={(item) =>
+          item.metadata?.labels?.['cluster.open-cluster-management.io/type'] !== CredentialsType.aws
+        }
       >
         <Section label="Amazon Web Services" prompt="Enter the Amazon Web Services credentials">
-          <WizTextInput id="aws-key-id" path="stringData.aws_access_key_id" label="Access key ID" required />
+          <WizTextInput
+            id="aws-key-id"
+            path="stringData.aws_access_key_id"
+            label="Access key ID"
+            required
+          />{' '}
+          {/* notsecret — form field path */}
           <WizTextInput
             id="aws-access-key"
-            path="stringData.aws_secret_access_key"
+            path="stringData.aws_secret_access_key" // notsecret — form field path, not actual credentials
             label="Secret access key"
             required
             secret
@@ -202,7 +220,13 @@ export function CredentialsWizard(props: { onSubmit: WizardSubmit; onCancel: Wiz
       </Step>
       <Step label="Pull secret and SSH" id="pull-secret-and-ssh">
         <Section label="Pull secret and SSH" prompt="Enter the pull secret and SSH keys">
-          <WizTextArea id="pull-secret" path="stringData.pullSecret" label="Pull secret" required secret />
+          <WizTextArea
+            id="pull-secret"
+            path="stringData.pullSecret"
+            label="Pull secret"
+            required
+            secret
+          />
           <WizTextArea
             id="ssh-private-key"
             path="stringData.ssh-privatekey"
@@ -222,5 +246,5 @@ export function CredentialsWizard(props: { onSubmit: WizardSubmit; onCancel: Wiz
         </Section>
       </Step>
     </WizardPage>
-  )
+  );
 }

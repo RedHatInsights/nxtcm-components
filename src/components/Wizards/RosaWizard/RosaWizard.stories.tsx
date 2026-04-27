@@ -136,58 +136,58 @@ const mockRegions = [
 const mockRoles = [
   {
     installerRole: {
-      label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
-      value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
+      label: 'arn:aws:iam::123456789012:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
+      value: 'arn:aws:iam::123456789012:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
       roleVersion: '4.21.6',
     },
     supportRole: [
       {
-        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
-        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
+        label: 'arn:aws:iam::123456789012:role/ManagedOpenShift-HCP-ROSA-Support-Role',
+        value: 'arn:aws:iam::123456789012:role/ManagedOpenShift-HCP-ROSA-Support-Role',
       },
     ],
     workerRole: [
       {
-        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
-        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
+        label: 'arn:aws:iam::123456789012:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
+        value: 'arn:aws:iam::123456789012:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
       },
     ],
   },
   {
     installerRole: {
-      label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Installer-Role',
-      value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Installer-Role',
+      label: 'arn:aws:iam::123456789012:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Installer-Role',
+      value: 'arn:aws:iam::123456789012:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Installer-Role',
       roleVersion: '4.21.8',
     },
     supportRole: [
       {
-        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Support-Role',
-        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Support-Role',
+        label: 'arn:aws:iam::123456789012:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Support-Role',
+        value: 'arn:aws:iam::123456789012:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Support-Role',
       },
     ],
     workerRole: [
       {
-        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Worker-Role',
-        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Worker-Role',
+        label: 'arn:aws:iam::123456789012:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Worker-Role',
+        value: 'arn:aws:iam::123456789012:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Worker-Role',
       },
     ],
   },
   {
     // No roleVersion: this role is always shown regardless of selected cluster version
     installerRole: {
-      label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Installer-Role',
-      value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Installer-Role',
+      label: 'arn:aws:iam::123456789012:role/ManagedOpenShift-UNVERSIONED-Installer-Role',
+      value: 'arn:aws:iam::123456789012:role/ManagedOpenShift-UNVERSIONED-Installer-Role',
     },
     supportRole: [
       {
-        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Support-Role',
-        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Support-Role',
+        label: 'arn:aws:iam::123456789012:role/ManagedOpenShift-UNVERSIONED-Support-Role',
+        value: 'arn:aws:iam::123456789012:role/ManagedOpenShift-UNVERSIONED-Support-Role',
       },
     ],
     workerRole: [
       {
-        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Worker-Role',
-        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Worker-Role',
+        label: 'arn:aws:iam::123456789012:role/ManagedOpenShift-UNVERSIONED-Worker-Role',
+        value: 'arn:aws:iam::123456789012:role/ManagedOpenShift-UNVERSIONED-Worker-Role',
       },
     ],
   },
@@ -195,14 +195,14 @@ const mockRoles = [
 
 const mockOicdConfig = [
   {
-    label: '2kl4t2st8eg2u5jppv8kjeemkvimfm99',
-    value: '2kl4t2st8eg2u5jppv8kjeemkvimfm99',
-    issuer_url: 'https://oidc.os1.devshift.org/2kl4t2st8eg2u5jppv8kjeemkvimfm99',
+    label: 'oidc-config-test-id-1',
+    value: 'oidc-config-test-id-1',
+    issuer_url: 'https://oidc.os1.devshift.org/oidc-config-test-id-1',
   },
   {
-    label: '2gjb8s2fo7p5ofg2evjfmk9j4t8k52e0',
-    value: '2gjb8s2fo7p5ofg2evjfmk9j4t8k52e0',
-    issuer_url: 'https://oidc.os1.devshift.org/2gjb8s2fo7p5ofg2evjfmk9j4t8k52e0',
+    label: 'oidc-config-test-id-2',
+    value: 'oidc-config-test-id-2',
+    issuer_url: 'https://oidc.os1.devshift.org/oidc-config-test-id-2',
   },
 ];
 
@@ -1415,19 +1415,19 @@ function RefetchWithNewDataWrapper(props: React.ComponentProps<typeof RosaWizard
     setOidcConfig({
       data: [
         {
-          label: '7xk9m3bc4dp1qw2ef6ghjt5nrs8uv0ya',
-          value: '7xk9m3bc4dp1qw2ef6ghjt5nrs8uv0ya',
-          issuer_url: 'https://oidc.os1.devshift.org/7xk9m3bc4dp1qw2ef6ghjt5nrs8uv0ya',
+          label: 'oidc-config-test-id-3',
+          value: 'oidc-config-test-id-3',
+          issuer_url: 'https://oidc.os1.devshift.org/oidc-config-test-id-3',
         },
         {
-          label: '1ab2cd3ef4gh5ij6kl7mn8op9qr0st1uv',
-          value: '1ab2cd3ef4gh5ij6kl7mn8op9qr0st1uv',
-          issuer_url: 'https://oidc.os1.devshift.org/1ab2cd3ef4gh5ij6kl7mn8op9qr0st1uv',
+          label: 'oidc-config-test-id-4',
+          value: 'oidc-config-test-id-4',
+          issuer_url: 'https://oidc.os1.devshift.org/oidc-config-test-id-4',
         },
         {
-          label: 'zz0yy1xx2ww3vv4uu5tt6ss7rr8qq9pp0',
-          value: 'zz0yy1xx2ww3vv4uu5tt6ss7rr8qq9pp0',
-          issuer_url: 'https://oidc.os1.devshift.org/zz0yy1xx2ww3vv4uu5tt6ss7rr8qq9pp0',
+          label: 'oidc-config-test-id-5',
+          value: 'oidc-config-test-id-5',
+          issuer_url: 'https://oidc.os1.devshift.org/oidc-config-test-id-5',
         },
       ],
       error: null,
