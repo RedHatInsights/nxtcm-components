@@ -60,22 +60,22 @@ else
   fi
 
   # test: real secret in source file should be caught (with config — verifies [extend] useDefault works)
-  printf 'aws_access_key_id = AKIAZ5RQWLTGBHEC4J72\naws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\n' > src/test-secret-regression.ts
-  if gitleaks detect --source src/test-secret-regression.ts --no-git --config .gitleaks.toml --verbose 2>/dev/null; then
+  test_tmpdir=$(mktemp -d)
+  trap 'rm -rf "$test_tmpdir"' EXIT
+  printf 'aws_access_key_id = AKIAZ5RQWLTGBHEC4J72\naws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\n' > "$test_tmpdir/test-secret-regression.ts"
+  if gitleaks detect --source "$test_tmpdir/test-secret-regression.ts" --no-git --config .gitleaks.toml --verbose 2>/dev/null; then
     fail "gitleaks missed a real AWS secret in source file"
   else
     pass "gitleaks catches real AWS secret in source file (with config)"
   fi
-  rm -f src/test-secret-regression.ts
 
   # test: same secret in test file should be allowed
-  printf 'aws_access_key_id = AKIAZ5RQWLTGBHEC4J72\naws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\n' > src/test-secret-regression.spec.ts
-  if gitleaks detect --source src/test-secret-regression.spec.ts --no-git --config .gitleaks.toml 2>/dev/null; then
+  printf 'aws_access_key_id = AKIAZ5RQWLTGBHEC4J72\naws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\n' > "$test_tmpdir/test-secret-regression.spec.ts"
+  if gitleaks detect --source "$test_tmpdir/test-secret-regression.spec.ts" --no-git --config .gitleaks.toml 2>/dev/null; then
     pass "gitleaks skips test files per allowlist"
   else
     fail "gitleaks flagged a test file that should be allowlisted"
   fi
-  rm -f src/test-secret-regression.spec.ts
 fi
 
 echo ""

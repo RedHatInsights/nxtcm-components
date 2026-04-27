@@ -9,7 +9,10 @@ if command -v gitleaks >/dev/null 2>&1; then
     trap 'rm -rf "$tmpdir"' EXIT
     echo "$staged_files" | while IFS= read -r file; do
       mkdir -p "$tmpdir/$(dirname "$file")"
-      git show ":$file" > "$tmpdir/$file" 2>/dev/null || true
+      if ! git show ":$file" > "$tmpdir/$file" 2>/dev/null; then
+        echo "failed to extract staged file: $file" >&2
+        exit 1
+      fi
     done
     gitleaks detect --no-git --source "$tmpdir" --config .gitleaks.toml --verbose
   fi
