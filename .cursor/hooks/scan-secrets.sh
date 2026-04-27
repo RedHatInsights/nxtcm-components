@@ -112,6 +112,8 @@ secret_patterns=(
   "Database URL:::i:::(postgres|mysql|mongodb|redis)://[^[:space:]]{10,}"
   "Slack Token:::s:::xox[bpras]-[A-Za-z0-9-]{20,}"
   "NPM Token:::s:::npm_[A-Za-z0-9]{36}"
+  "OpenAI API Key:::s:::sk-[A-Za-z0-9]{48}"
+  "Anthropic API Key:::s:::sk-ant-api[0-9]{2}-[A-Za-z0-9_-]{93}"
 )
 
 found_secrets=()
@@ -125,7 +127,7 @@ for file in "${files_to_scan[@]}"; do
     *.spec.ts|*.spec.tsx|*.stories.ts|*.stories.tsx|*.story.ts|*.story.tsx|*.fixtures.ts)
       continue
       ;;
-    *TestMocks*|e2e-app/*|playwright/e2e/*|src/examples/*|packages/react-form-wizard/cypress/*|scripts/test-secret-prevention.sh)
+    *TestMocks*|e2e-app/*|playwright/e2e/*|src/examples/*|packages/react-form-wizard/cypress/*|scripts/test-secret-prevention.sh|scripts/test-scan-secrets-hook.sh)
       continue
       ;;
     # schema and template files contain AWS field descriptions and placeholder values
