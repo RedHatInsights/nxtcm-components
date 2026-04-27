@@ -81,6 +81,17 @@ for file in "${files_to_scan[@]}"; do
     node_modules/*|*.lock|package-lock.json|*.png|*.jpg|*.jpeg|*.gif|*.svg|*.ico|*.woff|*.woff2|*.ttf|*.eot|dist/*|.git/*|.cursor/hooks/*)
       continue
       ;;
+    # test, mock, story, and fixture files contain intentional fake credentials
+    *.spec.ts|*.spec.tsx|*.stories.ts|*.stories.tsx|*.story.ts|*.story.tsx|*.fixtures.ts)
+      continue
+      ;;
+    *TestMocks*|e2e-app/*|playwright/e2e/*|src/examples/*|packages/react-form-wizard/cypress/*|scripts/test-secret-prevention.sh)
+      continue
+      ;;
+    # schema and template files contain AWS field descriptions and placeholder values
+    schemas/*.json|*.hbs)
+      continue
+      ;;
   esac
 
   [ -f "$file" ] || continue
