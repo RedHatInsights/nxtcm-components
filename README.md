@@ -248,6 +248,16 @@ git commit --no-verify -m "emergency fix"
 
 ⚠️ **Note**: Use `--no-verify` sparingly, as it bypasses all quality checks.
 
+### Secret Scanning Hook
+
+This repo uses a Cursor IDE hook (`.cursor/hooks/scan-secrets.sh`) to block secrets before they reach git. When the Cursor agent runs `git add` or `git commit`, the hook scans staged files for hardcoded credentials and blocks the command if anything is found.
+
+**What it catches:** AWS keys, GitHub/GitLab tokens, OpenAI/Anthropic API keys, private keys, database URLs, Slack/NPM tokens, generic secrets and passwords (14 patterns total).
+
+**To bypass:** Run git commands directly in your terminal (outside the Cursor agent).
+
+**To test:** `bash scripts/test-scan-secrets-hook.sh`
+
 ## Testing in ACM/OCM
 
 To test components in ACM or OCM applications:
