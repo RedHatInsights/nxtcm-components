@@ -24,10 +24,11 @@ if ! command -v jq >/dev/null 2>&1; then
 fi
 
 input=$(cat)
-command=$(echo "$input" | jq -r '.command // empty')
+command=$(echo "$input" | jq -r '.command // empty') || {
+  deny_msg "scan-secrets hook: failed to parse input JSON."
+}
 
-# if jq failed to parse, fail closed
-if [ $? -ne 0 ] || [ -z "$command" ]; then
+if [ -z "$command" ]; then
   echo "$allow"
   exit 0
 fi
@@ -101,14 +102,15 @@ fi
 secret_patterns=(
   "AWS Access Key:::s:::AKIA[0-9A-Z]{16}"
   "AWS Secret Key:::i:::(aws_secret_access_key|aws_secret)[[:space:]]*[=:][[:space:]]*[A-Za-z0-9/+=]{40}"
-  "GitHub Token:::s:::gh[ps]_[A-Za-z0-9_]{36,}"
+  "GitHub Token:::s:::gh[psoru]_[A-Za-z0-9_]{36,}"
+  "GitHub Fine-Grained PAT:::s:::github_pat_[A-Za-z0-9_]{22,}"
   "GitLab Token:::s:::glpat-[A-Za-z0-9_-]{20,}"
   "Generic API Key:::i:::(api[_-]?key|apikey)[[:space:]]*[=:][[:space:]]*['\"]?[A-Za-z0-9_-]{20,}"
   "Generic Secret:::i:::(secret|password|passwd|pwd)[[:space:]]*[=:][[:space:]]*['\"][^'\"]{8,}['\"]"
-  "Bearer Token:::i:::bearer[[:space:]]+[A-Za-z0-9._~+/-]+={0,2}"
+  "JWT Bearer Token:::s:::eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}"
   "Private Key:::s:::-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----"
   "Database URL:::i:::(postgres|mysql|mongodb|redis)://[^[:space:]]{10,}"
-  "Slack Token:::s:::xox[bpras]-[A-Za-z0-9-]{10,}"
+  "Slack Token:::s:::xox[bpras]-[A-Za-z0-9-]{20,}"
   "NPM Token:::s:::npm_[A-Za-z0-9]{36}"
 )
 
