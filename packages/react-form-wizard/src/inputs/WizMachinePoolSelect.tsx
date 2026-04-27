@@ -164,6 +164,7 @@ export function WizMachinePoolSelect(props: WizMachinePoolSelectProps) {
           <ValidationProvider key={`${pool?.machine_pool_subnet ?? 'unset'}-${index}`}>
             <MachinePoolRow
               index={index}
+              disabled={props.disabled}
               value={pool.machine_pool_subnet ?? ''}
               machinePoolLabel={props.machinePoolLabel}
               selectPlaceholder={props.selectPlaceholder}
@@ -199,6 +200,7 @@ interface MachinePoolRowProps {
   selectPlaceholder: string;
   subnetOptions?: Option<string>[];
   selectedSubnets?: string[];
+  disabled?: boolean;
   viewUsedSubnetsLabel?: string;
   onViewUsedSubnets?: () => void;
   onChange: (value: string) => void;
@@ -217,8 +219,8 @@ function MachinePoolRow(props: MachinePoolRowProps) {
     onChange,
     onRemove,
     required,
+    disabled,
   } = props;
-
   const [open, setOpen] = useState(false);
   const [filteredOptions, setFilteredOptions] = useState<(string | OptionType<string>)[]>([]);
 
@@ -287,7 +289,7 @@ function MachinePoolRow(props: MachinePoolRowProps) {
               toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
                 <InputSelect
                   required={required}
-                  disabled={false}
+                  disabled={disabled}
                   validated={validated}
                   placeholder={selectPlaceholder}
                   options={selectOptionsTyped}

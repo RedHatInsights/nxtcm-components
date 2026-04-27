@@ -47,6 +47,8 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
   const clusterVersion = cluster.cluster_version ?? '';
   const maxRootDiskSize = getWorkerNodeVolumeSizeMaxGiB(clusterVersion);
 
+  const wrongVersionForIMDS = !canSelectImds(clusterVersion);
+
   // Refetch machine types with the selected region
   React.useEffect(() => {
     if (props.machineTypes.fetch && currentRegion) void props.machineTypes.fetch(currentRegion);
@@ -74,10 +76,12 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
               <WizSelect
                 onValueChange={(_newVpc, item) => {
                   if (item?.cluster) {
+                    item.cluster.machine_pools_subnets = [{ machine_pool_subnet: undefined }];
                     item.cluster.security_groups_worker = [];
                   }
                 }}
                 label={`${mp.vpcLabelPrefix} ${cluster?.region}`}
+                isPending={props.vpcList.isFetching}
                 path="cluster.selected_vpc"
                 keyPath="id"
                 placeholder={mp.vpcPlaceholder}
@@ -109,6 +113,7 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
             >
               <WizMachinePoolSelect
                 required
+                disabled={props.vpcList.isFetching}
                 path="cluster.machine_pools_subnets"
                 machinePoolLabel={mp.machinePoolLabel}
                 subnetLabel={mp.subnetLabel}
@@ -146,8 +151,13 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
               <WizSelect
                 label={mp.instanceTypeLabel}
                 validateOnBlur={true}
-                disabled={props.machineTypes.isFetching}
+                isPending={props.machineTypes.isFetching}
                 path="cluster.machine_type"
+                refreshCallback={
+                  props.machineTypes.fetch && currentRegion
+                    ? () => void props.machineTypes.fetch?.(currentRegion)
+                    : undefined
+                }
                 required
                 labelHelp={
                   <>
@@ -173,7 +183,7 @@ export const MachinePoolsSubstep = (props: MachinePoolsSubstepProps) => {
       <ExpandableSection toggleText={mp.advancedToggle}>
         <Indented>
           <WizRadioGroup
-            disabled={!canSelectImds(clusterVersion)}
+            disabled={wrongVersionForIMDS}
             labelHelpTitle={mp.imdsHelpTitle}
             labelHelp={
               <>

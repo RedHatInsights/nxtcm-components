@@ -134,28 +134,132 @@ test.describe('MachinePoolsSubstep', () => {
     ).toBeVisible();
   });
 
-  test('should show disabled state for Compute node instance type when machine types are loading', async ({
+  test('should show pending state for Compute node instance type when machine types are loading', async ({
     mount,
   }) => {
     const component = await mount(
       <MachinePoolsSubstepMount machineTypes={{ data: [], isFetching: true, error: null }} />
     );
 
-    const machineTypeSelect = component.locator('#cluster-machine_type');
-    await expect(machineTypeSelect).toBeVisible();
-    await expect(machineTypeSelect.locator('.pf-m-disabled')).toBeVisible();
+    const machineTypeCombobox = component.locator('#cluster-machine_type [role="combobox"]');
+    await expect(machineTypeCombobox).toBeVisible();
+    await expect(machineTypeCombobox).toHaveValue('Loading...');
   });
 
-  test('should not show disabled state for Compute node instance type when not loading', async ({
+  test('should not show pending state for Compute node instance type when not loading', async ({
     mount,
   }) => {
     const component = await mount(
       <MachinePoolsSubstepMount machineTypes={{ data: [], isFetching: false, error: null }} />
     );
 
-    const machineTypeSelect = component.locator('#cluster-machine_type');
-    await expect(machineTypeSelect).toBeVisible();
-    await expect(machineTypeSelect.locator('.pf-m-disabled')).not.toBeVisible();
+    const machineTypeCombobox = component.locator('#cluster-machine_type [role="combobox"]');
+    await expect(machineTypeCombobox).toBeVisible();
+    await expect(machineTypeCombobox).not.toHaveValue('Loading...');
+  });
+  test('should show pending state for VPC select when VPC list is loading', async ({ mount }) => {
+    const component = await mount(
+      <MachinePoolsSubstepMount
+        vpcList={{ data: [], isFetching: true, error: null, fetch: async () => {} }}
+      />
+    );
+
+    const vpcCombobox = component.locator('#cluster-selected_vpc [role="combobox"]');
+    await expect(vpcCombobox).toBeVisible();
+    await expect(vpcCombobox).toHaveValue('Loading...');
+  });
+
+  test('should show disabled VPC select toggle when VPC list is loading', async ({ mount }) => {
+    const component = await mount(
+      <MachinePoolsSubstepMount
+        vpcList={{ data: [], isFetching: true, error: null, fetch: async () => {} }}
+      />
+    );
+
+    const vpcSelect = component.locator('#cluster-selected_vpc');
+    await expect(vpcSelect).toBeVisible();
+    await expect(vpcSelect.locator('.pf-m-disabled')).toBeVisible();
+  });
+
+  test('should show spinner in Compute node instance type dropdown when loading', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount(
+      <MachinePoolsSubstepMount machineTypes={{ data: [], isFetching: true, error: null }} />
+    );
+
+    const machineTypeCombobox = component.locator('#cluster-machine_type [role="combobox"]');
+    await machineTypeCombobox.click();
+
+    await expect(page.getByRole('option', { name: /Loading/ })).toBeVisible();
+  });
+
+  test('should show refresh button on Compute node instance type', async ({ mount }) => {
+    let fetchCallCount = 0;
+
+    const component = await mount(
+      <MachinePoolsSubstepMount
+        machineTypes={{
+          data: [],
+          error: null,
+          isFetching: false,
+          // eslint-disable-next-line @typescript-eslint/require-await
+          fetch: async () => {
+            fetchCallCount++;
+          },
+        }}
+      />
+    );
+
+    await component.page().waitForTimeout(100);
+    const countBeforeClick = fetchCallCount;
+    const refreshButton = component
+      .locator('#cluster-machine_type')
+      .getByLabel('Refresh', { exact: true });
+    await expect(refreshButton).toBeVisible();
+    await refreshButton.click();
+
+    expect(fetchCallCount).toBe(countBeforeClick + 1);
+  });
+
+  test('should disable refresh button on Compute node instance type when loading', async ({
+    mount,
+  }) => {
+    const component = await mount(
+      <MachinePoolsSubstepMount
+        machineTypes={{
+          data: [],
+          error: null,
+          isFetching: true,
+          fetch: async () => {},
+        }}
+      />
+    );
+
+    const refreshButton = component
+      .locator('#cluster-machine_type')
+      .getByLabel('Refresh', { exact: true });
+    await expect(refreshButton).toBeVisible();
+    await expect(refreshButton).toBeDisabled();
+  });
+
+  test('should disable machine pool subnet select when VPC list is loading', async ({ mount }) => {
+    const component = await mount(
+      <MachinePoolsSubstepMount
+        vpcList={{
+          ...mockVpcList,
+          isFetching: true,
+        }}
+        clusterOverrides={{
+          selected_vpc: 'vpc-123',
+          machine_pools_subnets: [{ machine_pool_subnet: '' }],
+        }}
+      />
+    );
+
+    const subnetSection = component.locator('[id^="cluster-machine_pools_subnets"] .pf-m-disabled');
+    await expect(subnetSection.first()).toBeVisible();
   });
 });
 
@@ -266,6 +370,45 @@ test.describe('SecurityGroupsSection', () => {
     await page.getByText('default', { exact: true }).click();
 
     await expect(component.locator('.pf-v6-c-label').getByText('default')).toBeVisible();
+  });
+
+  test('should disable security groups refresh button when VPC list is loading', async ({
+    mount,
+  }) => {
+    const component = await mount(
+      <MachinePoolsSubstepMount
+        vpcList={{ ...mockVpcList, isFetching: true }}
+        clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }}
+      />
+    );
+
+    const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
+    await advancedToggle.click();
+
+    const securityGroupsToggle = component.getByText('Additional security groups');
+    await securityGroupsToggle.click();
+
+    const refreshButton = component.locator('#refreshSecurityGroupsButton');
+    await expect(refreshButton).toBeVisible();
+    await expect(refreshButton).toBeDisabled();
+  });
+
+  test('should enable security groups refresh button when VPC list is not loading', async ({
+    mount,
+  }) => {
+    const component = await mount(
+      <MachinePoolsSubstepMount clusterOverrides={{ selected_vpc: vpcWithSecurityGroups }} />
+    );
+
+    const advancedToggle = component.getByText('Advanced machine pool configuration (optional)');
+    await advancedToggle.click();
+
+    const securityGroupsToggle = component.getByText('Additional security groups');
+    await securityGroupsToggle.click();
+
+    const refreshButton = component.locator('#refreshSecurityGroupsButton');
+    await expect(refreshButton).toBeVisible();
+    await expect(refreshButton).toBeEnabled();
   });
 
   test('should show refresh button for security groups', async ({ mount }) => {

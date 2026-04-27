@@ -234,8 +234,8 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                 >
                   <WizSelect
                     isFill
-                    path="cluster.billing_account_id"
                     isPending={awsBillingAccounts.isFetching}
+                    path="cluster.billing_account_id"
                     label={d.billingLabel}
                     placeholder={d.billingPlaceholder}
                     labelHelp={d.billingHelp}
@@ -332,7 +332,7 @@ export const DetailsSubStep: React.FunctionComponent<DetailsSubStepProps> = ({
                     placeholder={d.regionPlaceholder}
                     labelHelp={d.regionHelp}
                     options={regions.data}
-                    disabled={regions.isFetching}
+                    isPending={regions.isFetching}
                     onValueChange={(_value, item) => {
                       if (cluster.name) uniqueClusterNameCheck(cluster.name, _value as string);
                       delete item.cluster.selected_vpc;

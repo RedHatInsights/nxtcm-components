@@ -44,14 +44,22 @@ function sleep(ms: number): Promise<void> {
 /** Default story: versions start loading, then resolve after 3 seconds. */
 function DefaultWithInitialVersionLoading(props: React.ComponentProps<typeof RosaWizard>) {
   const [versionsFetching, setVersionsFetching] = React.useState(true);
+  const [awsInfraFetching, setAwsInfraFetching] = React.useState(true);
+  const [awsBillingFetching, setAwsBillingFetching] = React.useState(true);
+  const [regionsFetching, setRegionsFetching] = React.useState(true);
+  const [oidcFetching, setOidcFetching] = React.useState(true);
+  const [vpcsFetching, setVpcsFetching] = React.useState(true);
+  const [machineTypesFetching, setMachineTypesFetching] = React.useState(true);
   React.useEffect(() => {
-    const t = setTimeout(() => setVersionsFetching(false), 3000);
-    return () => clearTimeout(t);
-  }, []);
-
-  const [awsIsFetching, setAwsIsFetching] = React.useState(true);
-  React.useEffect(() => {
-    const t = setTimeout(() => setAwsIsFetching(false), 3000);
+    const t = setTimeout(() => {
+      setVersionsFetching(false);
+      setAwsInfraFetching(false);
+      setAwsBillingFetching(false);
+      setRegionsFetching(false);
+      setOidcFetching(false);
+      setVpcsFetching(false);
+      setMachineTypesFetching(false);
+    }, 3000);
     return () => clearTimeout(t);
   }, []);
 
@@ -66,11 +74,40 @@ function DefaultWithInitialVersionLoading(props: React.ComponentProps<typeof Ros
         },
         awsInfrastructureAccounts: {
           ...props.wizardsStepsData.basicSetupStep.awsInfrastructureAccounts,
-          isFetching: awsIsFetching,
+          isFetching: awsInfraFetching,
+        },
+        awsBillingAccounts: {
+          ...props.wizardsStepsData.basicSetupStep.awsBillingAccounts,
+          isFetching: awsBillingFetching,
+        },
+        regions: {
+          ...props.wizardsStepsData.basicSetupStep.regions,
+          isFetching: regionsFetching,
+        },
+        oidcConfig: {
+          ...props.wizardsStepsData.basicSetupStep.oidcConfig,
+          isFetching: oidcFetching,
+        },
+        vpcList: {
+          ...props.wizardsStepsData.basicSetupStep.vpcList,
+          isFetching: vpcsFetching,
+        },
+        machineTypes: {
+          ...props.wizardsStepsData.basicSetupStep.machineTypes,
+          isFetching: machineTypesFetching,
         },
       },
     }),
-    [props.wizardsStepsData, versionsFetching, awsIsFetching]
+    [
+      props.wizardsStepsData,
+      versionsFetching,
+      awsBillingFetching,
+      awsInfraFetching,
+      machineTypesFetching,
+      oidcFetching,
+      regionsFetching,
+      vpcsFetching,
+    ]
   );
 
   return <RosaWizard {...props} wizardsStepsData={wizardsStepsData} />;
