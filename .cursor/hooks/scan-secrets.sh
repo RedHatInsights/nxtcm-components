@@ -7,12 +7,27 @@
 #   {"permission": "allow"} to let the command run
 #   {"permission": "deny", "agentMessage": "..."} to block it
 
+set -uo pipefail
+
 allow='{"permission": "allow"}'
+
+deny_msg() {
+  local escaped
+  escaped=$(printf '%s' "$1" | jq -Rs '.')
+  echo "{\"permission\": \"deny\", \"agentMessage\": $escaped}"
+  exit 0
+}
+
+# fail closed if jq is missing
+if ! command -v jq >/dev/null 2>&1; then
+  deny_msg "scan-secrets hook: jq not found on PATH. Install jq or run the git command directly in terminal."
+fi
 
 input=$(cat)
 command=$(echo "$input" | jq -r '.command // empty')
 
-if [ -z "$command" ]; then
+# if jq failed to parse, fail closed
+if [ $? -ne 0 ] || [ -z "$command" ]; then
   echo "$allow"
   exit 0
 fi
@@ -31,24 +46,47 @@ esac
 files_to_scan=()
 
 if [[ "$command" == git\ commit* ]]; then
+  # always scan what's already staged
   while IFS= read -r file; do
     [ -n "$file" ] && files_to_scan+=("$file")
   done < <(git diff --cached --name-only 2>/dev/null)
+
+  # git commit -a/-am/--all auto-stages tracked modified files at commit time,
+  # but they aren't in --cached yet when this hook fires (runs before git)
+  if [[ "$command" =~ (^|[[:space:]])(-a[a-zA-Z]*|--all)([[:space:]]|$) ]]; then
+    while IFS= read -r file; do
+      [ -n "$file" ] && files_to_scan+=("$file")
+    done < <(git diff --name-only 2>/dev/null)
+  fi
+
 elif [[ "$command" == git\ add* ]]; then
-  args="${command#git add}"
-  for arg in $args; do
-    case "$arg" in
-      -*) continue ;;
-      .)
-        while IFS= read -r file; do
-          [ -n "$file" ] && files_to_scan+=("$file")
-        done < <(git diff --name-only 2>/dev/null; git ls-files --others --exclude-standard 2>/dev/null)
-        ;;
-      *)
-        [ -f "$arg" ] && files_to_scan+=("$arg")
-        ;;
-    esac
-  done
+  # detect flag-based staging that covers everything (-A/--all/-u/--update)
+  if [[ "$command" =~ (^|[[:space:]])(-A|--all|-u|--update)([[:space:]]|$) ]]; then
+    while IFS= read -r file; do
+      [ -n "$file" ] && files_to_scan+=("$file")
+    done < <(git diff --name-only 2>/dev/null; git ls-files --others --exclude-standard 2>/dev/null)
+  else
+    read -r -a tokens <<< "${command#git add}"
+    for arg in "${tokens[@]}"; do
+      case "$arg" in
+        -*) continue ;;
+        .|./)
+          while IFS= read -r file; do
+            [ -n "$file" ] && files_to_scan+=("$file")
+          done < <(git diff --name-only 2>/dev/null; git ls-files --others --exclude-standard 2>/dev/null)
+          ;;
+        *)
+          if [ -d "$arg" ]; then
+            while IFS= read -r file; do
+              [ -n "$file" ] && files_to_scan+=("$file")
+            done < <(git diff --name-only -- "$arg" 2>/dev/null; git ls-files --others --exclude-standard -- "$arg" 2>/dev/null)
+          elif [ -f "$arg" ]; then
+            files_to_scan+=("$arg")
+          fi
+          ;;
+      esac
+    done
+  fi
 fi
 
 if [ ${#files_to_scan[@]} -eq 0 ]; then
@@ -117,18 +155,14 @@ for file in "${files_to_scan[@]}"; do
 done
 
 if [ ${#found_secrets[@]} -gt 0 ]; then
-  # build the agent message with findings
-  msg="Blocked: found potential secrets in files being staged.\n\n"
+  nl=$'\n'
+  msg="Blocked: found potential secrets in files being staged.${nl}${nl}"
   for secret in "${found_secrets[@]}"; do
-    msg+="- $secret\n"
+    msg+="- ${secret}${nl}"
   done
-  msg+="\nRemove the secrets or bypass by running the git command directly in terminal."
+  msg+="${nl}Remove the secrets or bypass by running the git command directly in terminal."
 
-  # escape for JSON
-  escaped_msg=$(printf '%s' "$msg" | jq -Rs '.')
-
-  echo "{\"permission\": \"deny\", \"agentMessage\": $escaped_msg}"
-  exit 0
+  deny_msg "$msg"
 fi
 
 echo "$allow"
