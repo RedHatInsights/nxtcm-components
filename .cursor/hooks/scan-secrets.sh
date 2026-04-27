@@ -2,11 +2,18 @@
 # scans files in git add/commit commands for hardcoded secrets.
 # blocks the command if secrets are detected so they never reach version control.
 # runs as a beforeShellExecution cursor hook.
+#
+# beforeShellExecution hooks must return JSON:
+#   {"permission": "allow"} to let the command run
+#   {"permission": "deny", "agentMessage": "..."} to block it
+
+allow='{"permission": "allow"}'
 
 input=$(cat)
 command=$(echo "$input" | jq -r '.command // empty')
 
 if [ -z "$command" ]; then
+  echo "$allow"
   exit 0
 fi
 
@@ -15,6 +22,7 @@ case "$command" in
   git\ add*|git\ commit*)
     ;;
   *)
+    echo "$allow"
     exit 0
     ;;
 esac
@@ -44,6 +52,7 @@ elif [[ "$command" == git\ add* ]]; then
 fi
 
 if [ ${#files_to_scan[@]} -eq 0 ]; then
+  echo "$allow"
   exit 0
 fi
 
@@ -90,26 +99,26 @@ for file in "${files_to_scan[@]}"; do
     if matches=$(grep $grep_flags -e "$regex" -- "$file" 2>/dev/null); then
       while IFS= read -r match; do
         line_num="${match%%:*}"
-        found_secrets+=("  ⚠ $label in $file:$line_num")
+        found_secrets+=("$label in $file:$line_num")
       done <<< "$matches"
     fi
   done
 done
 
 if [ ${#found_secrets[@]} -gt 0 ]; then
-  echo ""
-  echo "🚫 SECRET DETECTION — blocked command: $command"
-  echo ""
-  echo "found potential secrets in files being staged:"
-  echo ""
+  # build the agent message with findings
+  msg="Blocked: found potential secrets in files being staged.\n\n"
   for secret in "${found_secrets[@]}"; do
-    echo "$secret"
+    msg+="- $secret\n"
   done
-  echo ""
-  echo "if these are false positives (test fixtures, docs, etc.),"
-  echo "you can bypass by running the git command directly in terminal."
-  echo ""
-  exit 2
+  msg+="\nRemove the secrets or bypass by running the git command directly in terminal."
+
+  # escape for JSON
+  escaped_msg=$(printf '%s' "$msg" | jq -Rs '.')
+
+  echo "{\"permission\": \"deny\", \"agentMessage\": $escaped_msg}"
+  exit 0
 fi
 
+echo "$allow"
 exit 0
