@@ -3,6 +3,7 @@ import { useItem, useData } from '@patternfly-labs/react-form-wizard';
 import { Alert, Button, ClipboardCopyButton, Tooltip } from '@patternfly/react-core';
 import { SearchIcon, UndoIcon, RedoIcon, TimesIcon } from '@patternfly/react-icons';
 import Editor, { OnMount, Monaco } from '@monaco-editor/react';
+import './monacoYamlSetup';
 import Handlebars from 'handlebars';
 import rosaHcpTemplateRaw from './templates/rosa-hcp-template.hbs?raw';
 import './YamlDrawerEditor.css';
