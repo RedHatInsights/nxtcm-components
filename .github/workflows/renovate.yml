@@ -27,6 +27,8 @@ jobs:
 
       - name: Renovate
         uses: renovatebot/github-action@v46.1.8
+        env:
+          RENOVATE_REPOSITORY: ${{ github.repository }}
         with:
           configurationFile: renovate.json
           renovate-version: full
