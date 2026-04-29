@@ -1,8 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["node", "@playwright/test"]
+    "types": ["node", "@playwright/test"],
+    "moduleResolution": "bundler",
+    "module": "esnext"
   },
-  "include": ["playwright/**/*", "e2e-app/**/*"],
+  "include": ["playwright/**/*", "e2e-app/**/*", "playwright-ct.config.ts"],
   "exclude": ["node_modules"]
 }

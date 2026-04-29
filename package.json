@@ -56,7 +56,10 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:e2e": "playwright test",
+    "test:e2e:coverage": "rm -rf .nyc_output && COVERAGE=true playwright test && nyc report",
     "test:ct": "playwright test -c playwright-ct.config.ts",
+    "test:ct:coverage": "rm -rf .nyc_output && playwright test -c playwright-ct.config.ts --timeout 60000 && nyc report",
+    "coverage:report": "nyc report",
     "test:ct:watch": "playwright test -c playwright-ct.config.ts --ui",
     "test:ct:debug": "playwright test -c playwright-ct.config.ts --debug",
     "storybook": "storybook dev -p 6006",
@@ -121,6 +124,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "klona": "^2.0.6",
     "lint-staged": "^16.2.6",
+    "nyc": "^18.0.0",
     "prettier": "3.8.3",
     "pretty-html-log": "^1.1.1",
     "react": "^18.2.0",
@@ -147,6 +151,7 @@
     "victory-voronoi-container": "^37.3.6",
     "victory-zoom-container": "^37.3.6",
     "vite": "^7.3.5",
+    "vite-plugin-istanbul": "^8.0.0",
     "yaml": "^2.8.3"
   },
   "lint-staged": {

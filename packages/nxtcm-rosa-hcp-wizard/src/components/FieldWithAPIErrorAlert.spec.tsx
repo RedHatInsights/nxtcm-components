@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/experimental-ct-react';
+import { test, expect } from '../../../../ct-fixture';
 import React from 'react';
 import { FieldWithAPIErrorAlert } from './FieldWithAPIErrorAlert';
 import { RosaHcpWizardStringsProvider } from '../stringsProvider/RosaHcpWizardStringsContext';

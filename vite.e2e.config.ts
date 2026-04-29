@@ -2,8 +2,13 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
+const enableCoverage = process.env.COVERAGE === 'true' || !!process.env.CI;
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const istanbulPlugin = enableCoverage ? require('./playwright/istanbul-plugin.cjs') : null;
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), ...(istanbulPlugin ? [istanbulPlugin] : [])],
   root: './e2e-app',
   resolve: {
     alias: {
@@ -21,5 +26,6 @@ export default defineConfig({
   server: {
     port: 3200,
     strictPort: true,
+    watch: null,
   },
 });

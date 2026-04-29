@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/experimental-ct-react';
 import path from 'path';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const istanbulPlugin = require('./playwright/istanbul-plugin.cjs') as object;
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -33,6 +35,8 @@ export default defineConfig({
     /* Port to use for Playwright component endpoint. */
     ctPort: 3100,
     ctViteConfig: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      plugins: [istanbulPlugin as any],
       resolve: {
         alias: {
           '@redhat-cloud-services/nxtcm-dashboard': path.resolve(

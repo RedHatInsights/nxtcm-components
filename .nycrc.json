@@ -1,0 +1,13 @@
+{
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": [
+    "src/**/*.spec.tsx",
+    "src/ct-fixture.ts",
+    "src/test-helpers.ts",
+    "src/**/*.stories.*",
+    "node_modules"
+  ],
+  "reporter": ["html", "lcov", "text-summary"],
+  "report-dir": "coverage",
+  "all": true
+}
