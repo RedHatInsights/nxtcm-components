@@ -22,7 +22,7 @@ this repo provides UI components, types, and integration shapes. consuming apps 
 these are hard constraints. violating them will break builds, fail reviews, or produce incorrect output.
 
 1. **never make HTTP calls from components** — use injected callbacks. consuming apps supply data via the `Resource<T>` pattern (data + loading + error + optional fetch).
-2. **never override PatternFly styles with custom CSS** — use PF variants, modifiers, and design tokens. import icons from `@patternfly/react-icons`. prefer PF utility classes and spacing tokens.
+2. **never override PatternFly styles with custom CSS** — use PF variants, modifiers, and design tokens. follow PF design patterns, accessibility guidelines, and established CSS class naming conventions. import icons from `@patternfly/react-icons`. prefer PF utility classes and spacing tokens.
 3. **always co-locate component files** — component, stories, spec, and tests live together in one directory (see [file conventions](#file-conventions)).
 4. **always run verification before committing** — see [verifying changes](#verifying-changes).
 5. **jest does NOT run in CI** — a green CI doesn't mean jest tests passed. always run `npm run test:all` locally.
@@ -125,6 +125,8 @@ defined in `.github/workflows/ci.yml`. runs on push to `main` and on PRs.
 - PascalCase for file names and React components
 - camelCase for functions and variables
 - UPPER_SNAKE_CASE for constants
+- use descriptive names that indicate component purpose
+- prefer ternary operators over if-else when the expression is simple; never nest ternaries
 
 ### components
 
@@ -145,6 +147,7 @@ other react best practices (dependency arrays, key props, memoization) are enfor
 - TypeScript for all new components and utilities
 - avoid `any` — prefer `unknown` when the type isn't known
 - explicit return types on functions
+- use proper TypeScript error types instead of generic `Error` objects
 - type custom hooks with proper return types
 - type callback functions explicitly
 
@@ -170,6 +173,7 @@ other react best practices (dependency arrays, key props, memoization) are enfor
 - co-locate test files next to the component
 - use `*.spec-helpers.tsx` for test setup/context wrappers
 - mock data and provider wrappers go in spec-helpers, not inline
+- add unit tests for code changes
 - follow Arrange-Act-Assert pattern
 - test behavior, not implementation details
 - descriptive test names that say what's being tested
@@ -257,7 +261,6 @@ non-obvious rules worth knowing upfront:
 | Playwright CT config | `playwright-ct.config.ts` |
 | Playwright E2E config | `playwright.config.ts` |
 | Jest config | `jest.config.js` |
-| Cursor IDE rules | `.cursor/rules/*.mdc` |
 | Node version | `.nvmrc` |
 
 ---
