@@ -8,28 +8,17 @@ import {
   Stack,
   Content,
   Title,
-} from "@patternfly/react-core";
-import {
-  AngleDownIcon,
-  AngleLeftIcon,
-  ExclamationCircleIcon,
-} from "@patternfly/react-icons";
-import { Fragment, ReactNode, useEffect, useState } from "react";
-import { LabelHelp } from "./components/LabelHelp";
-import { DisplayMode, useDisplayMode } from "./contexts/DisplayModeContext";
-import {
-  HasInputsContext,
-  HasInputsProvider,
-  useSetHasInputs,
-} from "./contexts/HasInputsProvider";
-import { HasValueContext, HasValueProvider } from "./contexts/HasValueProvider";
-import { useShowValidation } from "./contexts/ShowValidationProvider";
-import { useStringContext } from "./contexts/StringContext";
-import {
-  HasValidationErrorContext,
-  ValidationProvider,
-} from "./contexts/ValidationProvider";
-import { HiddenFn, useInputHidden } from "./inputs/Input";
+} from '@patternfly/react-core';
+import { AngleDownIcon, AngleLeftIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
+import { Fragment, ReactNode, useEffect, useState } from 'react';
+import { LabelHelp } from './components/LabelHelp';
+import { DisplayMode, useDisplayMode } from './contexts/DisplayModeContext';
+import { HasInputsContext, HasInputsProvider, useSetHasInputs } from './contexts/HasInputsProvider';
+import { HasValueContext, HasValueProvider } from './contexts/HasValueProvider';
+import { useShowValidation } from './contexts/ShowValidationProvider';
+import { useStringContext } from './contexts/StringContext';
+import { HasValidationErrorContext, ValidationProvider } from './contexts/ValidationProvider';
+import { HiddenFn, useInputHidden } from './inputs/Input';
 
 type SectionProps = {
   id?: string;
@@ -51,7 +40,7 @@ export function Section(props: SectionProps) {
 
 function SectionInternal(props: SectionProps) {
   const mode = useDisplayMode();
-  const id = props.id ?? props.label?.toLowerCase().split(" ").join("-") ?? "";
+  const id = props.id ?? props.label?.toLowerCase().split(' ').join('-') ?? '';
   const showValidation = useShowValidation();
   const [expanded, setExpanded] = useState(
     props.defaultExpanded === undefined ? true : props.defaultExpanded
@@ -79,7 +68,7 @@ function SectionInternal(props: SectionProps) {
                 </DescriptionList>
               </>
             ) : (
-              <div style={{ display: "none" }}>{props.children}</div>
+              <div style={{ display: 'none' }}>{props.children}</div>
             )
           }
         </HasValueContext.Consumer>
@@ -95,13 +84,10 @@ function SectionInternal(props: SectionProps) {
               {(hasValidationError) => (
                 <section
                   id={id}
-                  className="pf-v6-c-form__section"
+                  className="pf-v6-c-form__group"
                   role="group"
                   style={{
-                    display:
-                      !hasInputs && props.autohide !== false
-                        ? "none"
-                        : undefined,
+                    display: !hasInputs && props.autohide !== false ? 'none' : undefined,
                   }}
                 >
                   <Split
@@ -165,7 +151,7 @@ function SectionInternal(props: SectionProps) {
                   {expanded ? (
                     props.children
                   ) : (
-                    <div style={{ display: "none" }}>{props.children}</div>
+                    <div style={{ display: 'none' }}>{props.children}</div>
                   )}
                   {!expanded && <Divider />}
                 </section>
