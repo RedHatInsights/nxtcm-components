@@ -71,15 +71,40 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright component tests
-        run: npm run test:ct
+        id: ct_run
+        continue-on-error: true
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_NAME: test-results/playwright-ct-results.json
+          PLAYWRIGHT_JUNIT_OUTPUT_NAME: test-results/playwright-ct-junit.xml
+        run: >-
+          npx playwright test -c playwright-ct.config.ts
+          --reporter=line,html,json,junit
+
+      - name: Build per-test CT summary
+        if: always()
+        run: |
+          node utils/summarize-playwright-ct.mjs \
+            --json test-results/playwright-ct-results.json \
+            --markdown test-results/playwright-ct-summary.md \
+            --summary-json test-results/playwright-ct-summary.json
+          cat test-results/playwright-ct-summary.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload test report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-ct-report
-          path: playwright-report/
+          path: |
+            playwright-report/
+            test-results/playwright-ct-results.json
+            test-results/playwright-ct-junit.xml
+            test-results/playwright-ct-summary.md
+            test-results/playwright-ct-summary.json
           retention-days: 7
+
+      - name: Fail job if CT failed
+        if: steps.ct_run.outcome == 'failure'
+        run: exit 1
 
   build:
     name: Build
@@ -165,4 +190,3 @@ jobs:
           name: storybook-static
           path: storybook-static/
           retention-days: 7
-
