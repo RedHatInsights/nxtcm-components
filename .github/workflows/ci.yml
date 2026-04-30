@@ -90,6 +90,9 @@ jobs:
           if [ "${{ steps.ct_run.outcome }}" = "failure" ]; then
             cat test-results/playwright-ct-summary.md >> "$GITHUB_STEP_SUMMARY"
           fi
+          REPORT_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "[View full HTML report and artifacts](${REPORT_URL})" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Post CT triage comment on PR
         if: github.event_name == 'pull_request' && steps.ct_run.outcome == 'failure'
