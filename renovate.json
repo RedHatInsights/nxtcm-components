@@ -1,7 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
-  "logLevel": "debug",
   "dependencyDashboard": true,
   "minimumReleaseAge": "4 days",
   "prConcurrentLimit": 5,

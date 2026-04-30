@@ -17,6 +17,7 @@ jobs:
     if: github.repository == 'RedHatInsights/nxtcm-components'
     runs-on: ubuntu-latest
     env:
+      LOG_LEVEL: debug
       RENOVATE_REPOSITORY: RedHatInsights/nxtcm-components
     permissions:
       contents: write
