@@ -89,6 +89,17 @@ jobs:
             --summary-json test-results/playwright-ct-summary.json
           cat test-results/playwright-ct-summary.md >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Post CT triage comment on PR
+        if: github.event_name == 'pull_request' && steps.ct_run.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BODY=$(node utils/ct-triage-comment.mjs \
+            --summary-json test-results/playwright-ct-summary.json)
+          if [ -n "$BODY" ]; then
+            gh pr comment "${{ github.event.pull_request.number }}" --body "$BODY"
+          fi
+
       - name: Upload test report
         uses: actions/upload-artifact@v4
         if: always()

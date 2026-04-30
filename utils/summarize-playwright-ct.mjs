@@ -12,9 +12,16 @@ function parseArgs(argv) {
 
   for (let index = 2; index < argv.length; index += 1) {
     const arg = argv[index];
-    if (arg === '--json') parsed.json = argv[index + 1];
-    if (arg === '--markdown') parsed.markdown = argv[index + 1];
-    if (arg === '--summary-json') parsed.summaryJson = argv[index + 1];
+    if (arg === '--json' || arg === '--markdown' || arg === '--summary-json') {
+      const value = argv[index + 1];
+      if (!value || value.startsWith('--')) {
+        throw new Error(`Missing value for ${arg}`);
+      }
+      if (arg === '--json') parsed.json = value;
+      if (arg === '--markdown') parsed.markdown = value;
+      if (arg === '--summary-json') parsed.summaryJson = value;
+      index += 1;
+    }
   }
 
   return parsed;
@@ -278,8 +285,15 @@ function main() {
     return;
   }
 
-  const raw = fs.readFileSync(args.json, 'utf8');
-  const parsed = JSON.parse(raw);
+  let raw;
+  let parsed;
+  try {
+    raw = fs.readFileSync(args.json, 'utf8');
+    parsed = JSON.parse(raw);
+  } catch {
+    writeFallbackOutputs(args.markdown, args.summaryJson, args.json);
+    return;
+  }
 
   const tests = [];
   const rootSuites = parsed?.suites ?? [];
