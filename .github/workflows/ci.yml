@@ -78,7 +78,7 @@ jobs:
           PLAYWRIGHT_JUNIT_OUTPUT_NAME: test-results/playwright-ct-junit.xml
         run: >-
           npx playwright test -c playwright-ct.config.ts
-          --reporter=line,html,json,junit
+          --reporter=list,github,html,json,junit
 
       - name: Build per-test CT summary
         if: always()
