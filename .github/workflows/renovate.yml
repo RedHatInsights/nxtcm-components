@@ -16,6 +16,8 @@ jobs:
     name: Run Renovate
     if: github.repository == 'RedHatInsights/nxtcm-components'
     runs-on: ubuntu-latest
+    env:
+      RENOVATE_REPOSITORY: RedHatInsights/nxtcm-components
     permissions:
       contents: write
       issues: write
@@ -27,8 +29,6 @@ jobs:
 
       - name: Renovate
         uses: renovatebot/github-action@v46.1.8
-        env:
-          RENOVATE_REPOSITORY: ${{ github.repository }}
         with:
           configurationFile: renovate.json
           renovate-version: full
