@@ -53,6 +53,15 @@ function classifyFailure(message) {
   const text = message.toLowerCase();
   if (!text) return 'unknown';
 
+  if (
+    text.includes('expect(') ||
+    text.includes('tocontaintext') ||
+    text.includes('tohavetext') ||
+    text.includes('tobevisible') ||
+    text.includes('assertionerror')
+  ) {
+    return 'assertion';
+  }
   if (text.includes('timeout') || text.includes('timed out')) return 'timeout';
   if (
     text.includes('locator') ||
@@ -76,7 +85,7 @@ function classifyFailure(message) {
   ) {
     return 'network';
   }
-  if (text.includes('expect(') || text.includes('assertionerror')) return 'assertion';
+  if (text.includes('assertionerror')) return 'assertion';
 
   return 'unknown';
 }
