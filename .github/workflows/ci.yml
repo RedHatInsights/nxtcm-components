@@ -87,7 +87,9 @@ jobs:
             --json test-results/playwright-ct-results.json \
             --markdown test-results/playwright-ct-summary.md \
             --summary-json test-results/playwright-ct-summary.json
-          cat test-results/playwright-ct-summary.md >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ steps.ct_run.outcome }}" = "failure" ]; then
+            cat test-results/playwright-ct-summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Post CT triage comment on PR
         if: github.event_name == 'pull_request' && steps.ct_run.outcome == 'failure'

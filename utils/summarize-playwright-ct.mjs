@@ -302,6 +302,11 @@ function main() {
   }
 
   const summary = aggregate(tests);
+  const { totals } = summary;
+
+  const oneLiner = `CT: ${totals.passed} passed, ${totals.failed} failed, ${totals.flaky} flaky, ${totals.skipped} skipped (${totals.total} total)`;
+  console.log(oneLiner);
+
   const markdown = createMarkdown(summary, tests, args.json, generatedAt);
 
   ensureParentDir(args.markdown);
