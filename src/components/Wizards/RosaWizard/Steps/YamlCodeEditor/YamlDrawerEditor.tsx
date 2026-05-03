@@ -7,8 +7,8 @@ import './monacoYamlSetup';
 import Handlebars from 'handlebars';
 import rosaHcpTemplateRaw from './templates/rosa-hcp-template.hbs?raw';
 import './YamlDrawerEditor.css';
-import { parseMultiDocYaml } from './yamlUtils';
 import { validateYaml } from './yamlValidation';
+import { parseMultiDocYaml } from './yamlUtils';
 import { RosaWizardFormData } from '../../../types';
 
 Handlebars.registerHelper(
@@ -26,6 +26,8 @@ Handlebars.registerHelper('stripSlash', function (value: string) {
 });
 
 const compiledTemplate = Handlebars.compile(rosaHcpTemplateRaw);
+const ROSA_YAML_MODEL_PATH = 'rosa-control-plane.yaml';
+const YAML_VALIDATION_OWNER = 'yaml-validation';
 
 function renderTemplate(data: Record<string, unknown>): string {
   try {
@@ -60,26 +62,28 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
     const model = editor?.getModel();
     if (!model || !monaco) return;
 
-    const validationErrors = validateYaml(yamlStr);
+    const errors = validateYaml(yamlStr);
+    const markers = errors.map((err) => {
+      const lineNumber = Math.min(Math.max(err.line, 1), model.getLineCount());
+      const startColumn = Math.max(err.column, 1);
+      const endColumn = Math.max(startColumn + 1, model.getLineMaxColumn(lineNumber));
 
-    const markers = validationErrors.map((err) => ({
-      severity:
-        err.severity === 'error' ? monaco.MarkerSeverity.Error : monaco.MarkerSeverity.Warning,
-      message: err.message,
-      startLineNumber: err.line,
-      startColumn: err.column,
-      endLineNumber: err.line,
-      endColumn: model.getLineMaxColumn(err.line),
-    }));
+      return {
+        severity:
+          err.severity === 'error' ? monaco.MarkerSeverity.Error : monaco.MarkerSeverity.Warning,
+        message: err.message,
+        startLineNumber: lineNumber,
+        startColumn,
+        endLineNumber: lineNumber,
+        endColumn,
+      };
+    });
 
-    monaco.editor.setModelMarkers(model, 'yaml-validation', markers);
-
-    if (validationErrors.length > 0) {
-      const errorCount = validationErrors.filter((e) => e.severity === 'error').length;
-      setParseError(`${errorCount} validation error${errorCount !== 1 ? 's' : ''} found`);
-    } else {
-      setParseError('');
-    }
+    monaco.editor.setModelMarkers(model, YAML_VALIDATION_OWNER, markers);
+    const errorCount = errors.filter((error) => error.severity === 'error').length;
+    setParseError(
+      errorCount > 0 ? `${errorCount} validation error${errorCount !== 1 ? 's' : ''} found` : ''
+    );
   }, []);
 
   useEffect(() => {
@@ -111,7 +115,7 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
       clearTimeout(validationTimerRef.current);
       validationTimerRef.current = setTimeout(() => {
         setEditorMarkers(newYaml);
-      }, 300);
+      }, 250);
     },
     [update, data, setEditorMarkers]
   );
@@ -137,10 +141,22 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
         });
       });
 
-      setEditorMarkers(yamlContent);
+      setEditorMarkers(editor.getValue());
     },
-    [setEditorMarkers, yamlContent]
+    [setEditorMarkers]
   );
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(validationTimerRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (editorRef.current && monacoRef.current) {
+      setEditorMarkers(yamlContent);
+    }
+  }, [yamlContent, setEditorMarkers]);
 
   const handleCopy = useCallback(() => {
     if (editorRef.current) {
@@ -219,7 +235,8 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
 
       <div className="yaml-drawer-editor__body">
         <Editor
-          defaultLanguage="yaml"
+          language="yaml"
+          path={ROSA_YAML_MODEL_PATH}
           value={yamlContent}
           onChange={handleEditorChange}
           onMount={handleEditorMount}
@@ -235,6 +252,7 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
             wordWrap: 'wordWrapColumn',
             wordWrapColumn: 256,
             glyphMargin: true,
+            quickSuggestions: { other: true, comments: true, strings: true },
             scrollbar: {
               verticalScrollbarSize: 17,
               horizontalScrollbarSize: 17,
