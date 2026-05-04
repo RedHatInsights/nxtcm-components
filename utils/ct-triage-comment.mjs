@@ -29,6 +29,20 @@ function parseArgs(argv) {
   return parsed;
 }
 
+function extractErrorSnippet(message) {
+  if (!message) return '';
+
+  const expectMatch = message.match(/expect\(.*?\)\.[\w.]+\(.*?\)/s);
+  if (expectMatch) {
+    const raw = expectMatch[0].replace(/\s+/g, ' ').trim();
+    return raw.length > 200 ? `${raw.slice(0, 200)}…` : raw;
+  }
+
+  const firstLine = message.split('\n').find((l) => l.trim().length > 0) ?? '';
+  const trimmed = firstLine.trim();
+  return trimmed.length > 200 ? `${trimmed.slice(0, 200)}…` : trimmed;
+}
+
 function buildComment(summary) {
   const { totals, failedByCategory, tests } = summary;
 
@@ -63,6 +77,10 @@ function buildComment(summary) {
       lines.push('**Failed tests:**');
       for (const test of failedTests.slice(0, 25)) {
         lines.push(`- \`${test.file}\` > ${test.name} | \`${test.failureCategory}\``);
+        const snippet = extractErrorSnippet(test.failureMessage);
+        if (snippet) {
+          lines.push(`  > \`${snippet}\``);
+        }
       }
       if (failedTests.length > 25) {
         lines.push(`- ... ${failedTests.length - 25} more (see full report artifact)`);
