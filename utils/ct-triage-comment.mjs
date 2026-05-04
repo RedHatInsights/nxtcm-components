@@ -29,18 +29,24 @@ function parseArgs(argv) {
   return parsed;
 }
 
+function stripAnsi(str) {
+  // eslint-disable-next-line no-control-regex
+  return str.replace(/\u001b\[[0-9;]*m/g, '');
+}
+
 function extractErrorSnippet(message) {
   if (!message) return '';
 
+  const clean = stripAnsi(message);
   const parts = [];
 
-  const expectMatch = message.match(/expect\(.*?\)\.[\w.]+\(.*?\)/s);
+  const expectMatch = clean.match(/expect\(.*?\)\.[\w.]+\(.*?\)/s);
   if (expectMatch) {
     parts.push(expectMatch[0].replace(/\s+/g, ' ').trim());
   }
 
-  const expectedMatch = message.match(/Expected\s*(?:string|value|pattern)?:\s*(.+)/i);
-  const receivedMatch = message.match(/Received\s*(?:string|value|element)?:\s*(.+)/i);
+  const expectedMatch = clean.match(/Expected\s*(?:string|substring|value|pattern)?:\s*(.+)/i);
+  const receivedMatch = clean.match(/Received\s*(?:string|value|element)?:\s*(.+)/i);
   if (expectedMatch && receivedMatch) {
     parts.push(`Expected: ${expectedMatch[1].trim()}, Received: ${receivedMatch[1].trim()}`);
   }
@@ -50,7 +56,7 @@ function extractErrorSnippet(message) {
     return combined.length > 250 ? `${combined.slice(0, 250)}…` : combined;
   }
 
-  const firstLine = message.split('\n').find((l) => l.trim().length > 0) ?? '';
+  const firstLine = clean.split('\n').find((l) => l.trim().length > 0) ?? '';
   const trimmed = firstLine.trim();
   return trimmed.length > 200 ? `${trimmed.slice(0, 200)}…` : trimmed;
 }

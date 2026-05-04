@@ -11,7 +11,7 @@ test.describe('TotalClusters', () => {
 
   test('should display the total cluster count', async ({ mount }) => {
     const component = await mount(<TotalClusters data={{ total: 67 }} />);
-    await expect(component.getByTestId('total-clusters')).toContainText('99');
+    await expect(component.getByTestId('total-clusters')).toContainText('67');
   });
 
   test('should render the default title', async ({ mount }) => {
