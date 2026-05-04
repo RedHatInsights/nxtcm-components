@@ -2,6 +2,10 @@ import { TooltipProps, useWizardContext } from '@patternfly/react-core';
 
 // -- dropdown / select option types --
 
+export type ClusterWithNonUniqueName = {
+  name: string;
+};
+
 export type Region = {
   label: string;
   value: string;

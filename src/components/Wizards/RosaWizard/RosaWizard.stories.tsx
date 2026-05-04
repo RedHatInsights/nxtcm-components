@@ -10,36 +10,26 @@ import type {
   Resource,
   Role,
   SelectDropdownType,
-  ValidationResource,
   VPC,
+  ClusterWithNonUniqueName,
 } from '../types';
 import type { BasicSetupStepProps } from './RosaWizard';
+import fixtures, {
+  sleep,
+  STORY_API_ERROR_MESSAGE,
+  useFetchNeededData,
+  useSetMockState,
+} from './RosaWizard.fixtures';
 
-// wraps static mock data in the Resource shape for stories
-const mockResource = <TData,>(data: TData): Resource<TData> => ({
-  data,
-  error: null,
-  isFetching: false,
-  fetch: async () => {},
-});
+const onWizardSubmit = async (data: unknown) => {
+  console.log('Wizard submitted with data:', data);
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+};
 
-const mockFetchResource = <TData, TArgs extends unknown[] = []>(
-  data: TData
-): Resource<TData, TArgs> & { fetch: (...args: TArgs) => Promise<void> } => ({
-  data,
-  error: null,
-  isFetching: false,
-  fetch: async (..._args: TArgs) => {},
-});
-
-const mockValidationResource = (): ValidationResource => ({
-  error: null,
-  isFetching: false,
-});
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+const onWizardCancel = () => {
+  console.log('Wizard was cancelled');
+  alert('Wizard cancelled');
+};
 
 /** Default story: versions start loading, then resolve after 3 seconds. */
 function DefaultWithInitialVersionLoading(props: React.ComponentProps<typeof RosaWizard>) {
@@ -113,254 +103,20 @@ function DefaultWithInitialVersionLoading(props: React.ComponentProps<typeof Ros
   return <RosaWizard {...props} wizardsStepsData={wizardsStepsData} />;
 }
 
-// Mock data for the wizard
-const mockVersionsData: OpenShiftVersionsData = {
-  latest: { label: 'OpenShift 4.21.8', value: '4.21.8' },
-  default: { label: 'OpenShift 4.12.0', value: '4.12.0' },
-  releases: [
-    { label: 'OpenShift 4.11.5', value: '4.11.5' },
-    { label: 'OpenShift 4.10.8', value: '4.10.8' },
-  ],
-};
-
-/** When default and latest share the same value, wizard shows a single "Default (Recommended)" group. */
-const mockOpenShiftVersionsDataDefaultEqualsLatest = {
-  latest: { label: 'OpenShift 4.21.8', value: '4.21.8' },
-  default: { label: 'OpenShift 4.21.8', value: '4.21.8' },
-  releases: [
-    { label: 'OpenShift 4.21.6', value: '4.21.6' },
-    { label: 'OpenShift 4.21.5', value: '4.21.5' },
-    { label: 'OpenShift 4.20.8', value: '4.20.8' },
-  ],
-};
-
-const mockAwsInfrastructureAccounts = [
-  {
-    label: 'AWS Account - Production (123456789012)',
-    value: 'aws-prod-123456789012',
-  },
-  {
-    label: 'AWS Account - Staging (234567890123)',
-    value: 'aws-staging-234567890123',
-  },
-  {
-    label: 'AWS Account - Development (345678901234)',
-    value: 'aws-dev-345678901234',
-  },
-];
-
-const mockAwsBillingAccounts = [
-  {
-    label: 'Billing Account - Main (123456789012)',
-    value: 'billing-main-123456789012',
-  },
-  {
-    label: 'Billing Account - Secondary (234567890123)',
-    value: 'billing-secondary-234567890123',
-  },
-];
-
-const mockRegions = [
-  { label: 'US East (N. Virginia)', value: 'us-east-1' },
-  { label: 'US East (Ohio)', value: 'us-east-2' },
-  { label: 'US West (N. California)', value: 'us-west-1' },
-  { label: 'US West (Oregon)', value: 'us-west-2' },
-  { label: 'EU (Ireland)', value: 'eu-west-1' },
-  { label: 'EU (Frankfurt)', value: 'eu-central-1' },
-  { label: 'Asia Pacific (Tokyo)', value: 'ap-northeast-1' },
-];
-
-const mockRoles = [
-  {
-    installerRole: {
-      label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
-      value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
-      roleVersion: '4.21.6',
-    },
-    supportRole: [
-      {
-        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
-        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Support-Role',
-      },
-    ],
-    workerRole: [
-      {
-        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
-        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Worker-Role',
-      },
-    ],
-  },
-  {
-    installerRole: {
-      label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Installer-Role',
-      value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Installer-Role',
-      roleVersion: '4.21.8',
-    },
-    supportRole: [
-      {
-        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Support-Role',
-        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Support-Role',
-      },
-    ],
-    workerRole: [
-      {
-        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Worker-Role',
-        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-MY-OTHER-HCP-ROSA-Worker-Role',
-      },
-    ],
-  },
-  {
-    // No roleVersion: this role is always shown regardless of selected cluster version
-    installerRole: {
-      label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Installer-Role',
-      value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Installer-Role',
-    },
-    supportRole: [
-      {
-        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Support-Role',
-        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Support-Role',
-      },
-    ],
-    workerRole: [
-      {
-        label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Worker-Role',
-        value: 'arn:aws:iam::720424066366:role/ManagedOpenShift-UNVERSIONED-Worker-Role',
-      },
-    ],
-  },
-];
-
-const mockOicdConfig = [
-  {
-    label: '2kl4t2st8eg2u5jppv8kjeemkvimfm99',
-    value: '2kl4t2st8eg2u5jppv8kjeemkvimfm99',
-    issuer_url: 'https://oidc.os1.devshift.org/2kl4t2st8eg2u5jppv8kjeemkvimfm99',
-  },
-  {
-    label: '2gjb8s2fo7p5ofg2evjfmk9j4t8k52e0',
-    value: '2gjb8s2fo7p5ofg2evjfmk9j4t8k52e0',
-    issuer_url: 'https://oidc.os1.devshift.org/2gjb8s2fo7p5ofg2evjfmk9j4t8k52e0',
-  },
-];
-
-const mockMachineTypes = [
-  {
-    id: 'm5a.xlarge',
-    label: 'm5a.xlarge',
-    description: '4 vCPU 16 GiB RAM',
-    value: 'm5a.xlarge',
-  },
-  {
-    id: 'm6a.xlarge',
-    label: 'm6a.xlarge',
-    description: '4 vCPU 16 GiB RAM',
-    value: 'm6a.xlarge',
-  },
-];
-
-const mockMachineTypesLimited = [
-  {
-    id: 'm6a.xlarge',
-    label: 'm6a.xlarge',
-    description: '4 vCPU 16 GiB RAM',
-    value: 'm6a.xlarge',
-  },
-];
-
-const mockSecurityGroups = [
-  { id: 'sg-0a1b2c3d4e5f00001', name: 'default' },
-  { id: 'sg-0a1b2c3d4e5f00002', name: 'k8s-traffic-rules' },
-  { id: 'sg-0a1b2c3d4e5f00003', name: 'web-server-sg' },
-  { id: 'sg-0a1b2c3d4e5f00004', name: 'database-access-sg' },
-  { id: 'sg-0a1b2c3d4e5f00005', name: '' },
-];
-
-const mockVPCs = [
-  {
-    name: 'test-vpc-1',
-    id: 'vpc-01496860a4b0475a3',
-    aws_subnets: [
-      {
-        subnet_id: 'subnet-0cd89766e94deb008',
-        name: 'test-1-subnet-public1-us-east-1b',
-        availability_zone: 'us-east-1b',
-        cidr_block: '10.0.16.0/20',
-      },
-      {
-        subnet_id: 'subnet-032asd766e94deb008',
-        name: 'test-1-subnet-private1-us-east-1a',
-        availability_zone: 'us-east-1a',
-        cidr_block: '10.0.128.0/20',
-      },
-      {
-        subnet_id: 'subnet-032as34ty2a6e94deb008',
-        name: 'test-1-subnet-public1-us-east-1a',
-        availability_zone: 'us-east-1a',
-        cidr_block: '10.0.160.0/20',
-      },
-      {
-        subnet_id: 'subnet-03aas45qwe94deb008',
-        name: 'test-1-subnet-private1-us-east-1b',
-        availability_zone: 'us-east-1b',
-        cidr_block: '10.0.144.0/20',
-      },
-      {
-        subnet_id: 'subnet-03azxc15qwe94deb008',
-        name: 'test-1-subnet-public1-us-east-1c',
-        availability_zone: 'us-east-1c',
-        cidr_block: '10.0.32.0/20',
-      },
-      {
-        subnet_id: 'subnet-03aas45qzxc123deb008',
-        name: 'test-1-subnet-private1-us-east-1c',
-        availability_zone: 'us-east-1c',
-        cidr_block: '10.0.160.0/20',
-      },
-    ],
-    aws_security_groups: mockSecurityGroups,
-  },
-  {
-    name: 'test-2-vpc',
-    id: 'vpc-9866ceabc28332c7144',
-    aws_subnets: [
-      {
-        name: 'test-subnet-private1-us-east-1a',
-        availability_zone: 'us-east-1a',
-        subnet_id: 'subnet-0b5b55dvdv12236d',
-      },
-      {
-        name: 'test-subnet-public1-us-east-1a',
-        availability_zone: 'us-east-1a',
-        subnet_id: 'subnet-0b5b33hgvdv12236d',
-      },
-      {
-        name: 'test-subnet-private1-us-east-1b',
-        availability_zone: 'us-east-1a',
-        subnet_id: 'subnet-0b5b5611aser12236d',
-      },
-      {
-        name: 'test-subnet-public1-us-east-1b',
-        availability_zone: 'us-east-1a',
-        subnet_id: 'subnet-0b776hbdfdfdv12236d',
-      },
-    ],
-  },
-];
-
 // shared baseline for basicSetupStep across stories — wraps all mock data in Resource shape
 const mockBasicSetupStep: BasicSetupStepProps = {
-  clusterNameValidation: mockValidationResource(),
-  userRole: mockValidationResource(),
-  versions: mockFetchResource(mockVersionsData),
-  awsInfrastructureAccounts: mockResource(mockAwsInfrastructureAccounts),
-  awsBillingAccounts: mockResource(mockAwsBillingAccounts),
-  regions: mockFetchResource<Region[], [awsAccount: string]>(mockRegions),
-  roles: mockFetchResource<Role[], [awsAccount: string]>(mockRoles),
-  oidcConfig: mockResource(mockOicdConfig),
-  machineTypes: mockResource(mockMachineTypes),
-  vpcList: mockResource(mockVPCs),
-  subnets: mockResource([]),
-  securityGroups: mockResource([]),
+  clusterNameValidation: fixtures.mockValidationResource(),
+  userRole: fixtures.mockValidationResource(),
+  versions: fixtures.mockFetchResource(fixtures.mockVersionsData),
+  awsInfrastructureAccounts: fixtures.mockResource(fixtures.mockAwsInfrastructureAccounts),
+  awsBillingAccounts: fixtures.mockResource(fixtures.mockAwsBillingAccounts),
+  regions: fixtures.mockFetchResource<Region[], [awsAccount: string]>(fixtures.mockRegions),
+  roles: fixtures.mockFetchResource<Role[], [awsAccount: string]>(fixtures.mockRoles),
+  oidcConfig: fixtures.mockResource(fixtures.mockOicdConfig),
+  machineTypes: fixtures.mockResource(fixtures.mockMachineTypes),
+  vpcList: fixtures.mockResource(fixtures.mockVPCs),
+  subnets: fixtures.mockResource([]),
+  securityGroups: fixtures.mockResource([]),
 };
 
 const meta: Meta<typeof RosaWizard> = {
@@ -419,18 +175,12 @@ export const Default: Story = {
       await sleep(2000);
       alert('Cluster creation initiated successfully!');
     },
-    onCancel: () => {
-      console.log('Wizard cancelled');
-      alert('Wizard cancelled');
-    },
+    onCancel: onWizardCancel,
     wizardsStepsData: {
       basicSetupStep: mockBasicSetupStep,
     },
   },
 };
-
-/** Shared API error string for the `AllApiErrors` story (popover/detail body). */
-const storyApiErrorMessage = 'This is the error returned from the API call';
 
 /**
  * Every basic-setup resource reports an error so `FieldWithAPIErrorAlert` can be reviewed.
@@ -439,61 +189,61 @@ const storyApiErrorMessage = 'This is the error returned from the API call';
 const basicSetupStepAllApiErrors: BasicSetupStepProps = {
   ...mockBasicSetupStep,
   clusterNameValidation: {
-    error: storyApiErrorMessage,
+    error: STORY_API_ERROR_MESSAGE,
     isFetching: false,
   },
   userRole: {
-    error: storyApiErrorMessage,
+    error: STORY_API_ERROR_MESSAGE,
     isFetching: false,
   },
   versions: {
     ...mockBasicSetupStep.versions,
-    error: storyApiErrorMessage,
+    error: STORY_API_ERROR_MESSAGE,
     isFetching: false,
   },
   awsInfrastructureAccounts: {
     ...mockBasicSetupStep.awsInfrastructureAccounts,
-    error: storyApiErrorMessage,
+    error: STORY_API_ERROR_MESSAGE,
     isFetching: false,
   },
   awsBillingAccounts: {
     ...mockBasicSetupStep.awsBillingAccounts,
-    error: storyApiErrorMessage,
+    error: STORY_API_ERROR_MESSAGE,
     isFetching: false,
   },
   regions: {
     ...mockBasicSetupStep.regions,
-    error: storyApiErrorMessage,
+    error: STORY_API_ERROR_MESSAGE,
     isFetching: false,
   },
   roles: {
     ...mockBasicSetupStep.roles,
-    error: storyApiErrorMessage,
+    error: STORY_API_ERROR_MESSAGE,
     isFetching: false,
   },
   oidcConfig: {
     ...mockBasicSetupStep.oidcConfig,
-    error: storyApiErrorMessage,
+    error: STORY_API_ERROR_MESSAGE,
     isFetching: false,
   },
   machineTypes: {
     ...mockBasicSetupStep.machineTypes,
-    error: storyApiErrorMessage,
+    error: STORY_API_ERROR_MESSAGE,
     isFetching: false,
   },
   vpcList: {
     ...mockBasicSetupStep.vpcList,
-    error: storyApiErrorMessage,
+    error: STORY_API_ERROR_MESSAGE,
     isFetching: false,
   },
   subnets: {
     ...mockBasicSetupStep.subnets,
-    error: storyApiErrorMessage,
+    error: STORY_API_ERROR_MESSAGE,
     isFetching: false,
   },
   securityGroups: {
     ...mockBasicSetupStep.securityGroups,
-    error: storyApiErrorMessage,
+    error: STORY_API_ERROR_MESSAGE,
     isFetching: false,
   },
 };
@@ -505,9 +255,7 @@ export const AllApiErrors: Story = {
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted (story):', data);
     },
-    onCancel: () => {
-      console.log('Wizard cancelled (story)');
-    },
+    onCancel: onWizardCancel,
     wizardsStepsData: {
       basicSetupStep: basicSetupStepAllApiErrors,
     },
@@ -527,14 +275,11 @@ export const VersionsDefaultEqualsLatest: Story = {
       await sleep(2000);
       alert('Cluster creation initiated successfully!');
     },
-    onCancel: () => {
-      console.log('Wizard cancelled');
-      alert('Wizard cancelled');
-    },
+    onCancel: onWizardCancel,
     wizardsStepsData: {
       basicSetupStep: {
         ...mockBasicSetupStep,
-        versions: mockFetchResource(mockOpenShiftVersionsDataDefaultEqualsLatest),
+        versions: fixtures.mockFetchResource(fixtures.mockOpenShiftVersionsDataDefaultEqualsLatest),
       },
     },
   },
@@ -547,33 +292,16 @@ export const MinimalOptions: Story = {
   args: {
     title: 'Create ROSA Cluster - Limited Options',
     yaml: true,
-    onSubmit: async (data: unknown) => {
-      console.log('Wizard submitted with data:', data);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-    },
-    onCancel: () => {
-      console.log('Wizard cancelled');
-    },
+    onSubmit: (data: unknown) => onWizardSubmit(data),
+    onCancel: onWizardCancel,
     wizardsStepsData: {
       basicSetupStep: {
         ...mockBasicSetupStep,
-        versions: mockFetchResource({
-          latest: { label: 'OpenShift 4.12.0', value: '4.12.0' },
-          default: { label: 'OpenShift 4.12.0', value: '4.12.0' },
-          releases: [],
-        }),
-        awsInfrastructureAccounts: mockResource([
-          {
-            label: 'AWS Account - Production (123456789012)',
-            value: 'aws-prod-123456789012',
-          },
-        ]),
-        awsBillingAccounts: mockResource([
-          {
-            label: 'Billing Account - Main (123456789012)',
-            value: 'billing-main-123456789012',
-          },
-        ]),
+        versions: fixtures.mockFetchResource(fixtures.mockLimitedOpenShiftVersions),
+        awsInfrastructureAccounts: fixtures.mockResource(
+          fixtures.mockLimitedAwsInfrastructureAccounts
+        ),
+        awsBillingAccounts: fixtures.mockResource(fixtures.mockLimitedAwsBillingAccounts),
       },
     },
   },
@@ -586,24 +314,19 @@ export const EmptyOptions: Story = {
   args: {
     title: 'Create ROSA Cluster - No Options Available',
     yaml: true,
-    onSubmit: async (data: unknown) => {
-      console.log('Wizard submitted with data:', data);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-    },
-    onCancel: () => {
-      console.log('Wizard cancelled');
-    },
+    onSubmit: (data: unknown) => onWizardSubmit(data),
+    onCancel: onWizardCancel,
     wizardsStepsData: {
       basicSetupStep: {
         ...mockBasicSetupStep,
-        versions: mockFetchResource({
+        versions: fixtures.mockFetchResource({
           latest: { label: '', value: '' },
           default: { label: '', value: '' },
           releases: [],
         }),
-        awsInfrastructureAccounts: mockResource([]),
-        awsBillingAccounts: mockResource([]),
-        regions: mockFetchResource([]),
+        awsInfrastructureAccounts: fixtures.mockResource([]),
+        awsBillingAccounts: fixtures.mockResource([]),
+        regions: fixtures.mockFetchResource([]),
       },
     },
   },
@@ -616,73 +339,20 @@ export const ExtensiveOptions: Story = {
   args: {
     title: 'Create ROSA Cluster - Many Options',
     yaml: true,
-    onSubmit: async (data: unknown) => {
-      console.log('Wizard submitted with data:', data);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-    },
-    onCancel: () => {
-      console.log('Wizard cancelled');
-    },
+    onSubmit: (data: unknown) => onWizardSubmit(data),
+    onCancel: onWizardCancel,
     wizardsStepsData: {
       basicSetupStep: {
         ...mockBasicSetupStep,
-        versions: mockFetchResource({
-          latest: { label: 'OpenShift 4.12.0', value: '4.12.0' },
-          default: { label: 'OpenShift 4.11.4', value: '4.11.4' },
-          releases: Array.from({ length: 18 }, (_, i) => ({
-            label: `OpenShift 4.${11 - Math.floor(i / 5)}.${i % 5}`,
-            value: `4.${11 - Math.floor(i / 5)}.${i % 5}`,
-          })),
-        }),
-        awsInfrastructureAccounts: mockResource(
-          Array.from({ length: 15 }, (_, i) => ({
-            label: `AWS Account - Environment ${i + 1} (${100000000000 + i})`,
-            value: `aws-env-${i + 1}-${100000000000 + i}`,
-          }))
+        versions: fixtures.mockFetchResource(fixtures.mockExtensiveNumOpenShiftVersions),
+        awsInfrastructureAccounts: fixtures.mockResource(
+          fixtures.mockExtensiveNumAWsInfrastructureAccounts
         ),
-        awsBillingAccounts: mockResource(
-          Array.from({ length: 10 }, (_, i) => ({
-            label: `Billing Account ${i + 1} (${100000000000 + i})`,
-            value: `billing-${i + 1}-${100000000000 + i}`,
-          }))
-        ),
-        vpcList: mockResource([
-          ...mockVPCs,
-          ...Array.from({ length: 5 }, (_, i) => ({
-            name: `extensive-vpc-${i + 3}`,
-            id: `vpc-extensive-${i + 3}`,
-            aws_subnets: [
-              {
-                subnet_id: `subnet-ext-private-${i}-a`,
-                name: `extensive-vpc-${i + 3}-subnet-private1-us-east-1a`,
-                availability_zone: 'us-east-1a',
-              },
-              {
-                subnet_id: `subnet-ext-public-${i}-a`,
-                name: `extensive-vpc-${i + 3}-subnet-public1-us-east-1a`,
-                availability_zone: 'us-east-1a',
-              },
-              {
-                subnet_id: `subnet-ext-private-${i}-b`,
-                name: `extensive-vpc-${i + 3}-subnet-private1-us-east-1b`,
-                availability_zone: 'us-east-1b',
-              },
-              {
-                subnet_id: `subnet-ext-public-${i}-b`,
-                name: `extensive-vpc-${i + 3}-subnet-public1-us-east-1b`,
-                availability_zone: 'us-east-1b',
-              },
-            ],
-          })),
-        ]),
-        machineTypes: mockResource([
-          ...mockMachineTypes,
-          ...Array.from({ length: 10 }, (_, i) => ({
-            id: `ext-instance-${i + 1}`,
-            label: `ext-instance-${i + 1}.xlarge`,
-            description: `${(i + 2) * 2} vCPU ${(i + 2) * 8} GiB RAM`,
-            value: `ext-instance-${i + 1}.xlarge`,
-          })),
+        awsBillingAccounts: fixtures.mockResource(fixtures.mockExtensiveNumAwsBillingAccounts),
+        vpcList: fixtures.mockResource([...fixtures.mockVPCs, ...fixtures.mockExtensiveNumVPCs]),
+        machineTypes: fixtures.mockResource([
+          ...fixtures.mockMachineTypes,
+          ...fixtures.mockExtensiveNumMachineTypes,
         ]),
       },
     },
@@ -696,13 +366,8 @@ export const CustomTitle: Story = {
   args: {
     title: 'Deploy Red Hat OpenShift Service on AWS',
     yaml: true,
-    onSubmit: async (data: unknown) => {
-      console.log('Wizard submitted with data:', data);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-    },
-    onCancel: () => {
-      console.log('Wizard cancelled');
-    },
+    onSubmit: (data: unknown) => onWizardSubmit(data),
+    onCancel: onWizardCancel,
     wizardsStepsData: {
       basicSetupStep: mockBasicSetupStep,
     },
@@ -721,9 +386,7 @@ export const WithErrorHandling: Story = {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       throw new Error('Failed to create cluster: AWS credentials are invalid');
     },
-    onCancel: () => {
-      console.log('Wizard cancelled');
-    },
+    onCancel: onWizardCancel,
     wizardsStepsData: {
       basicSetupStep: mockBasicSetupStep,
     },
@@ -739,83 +402,16 @@ export const WithMachinePoolsOptions: Story = {
   args: {
     title: 'Create ROSA Cluster - Machine Pools',
     yaml: true,
-    onSubmit: async (data: unknown) => {
-      console.log('Wizard submitted with data:', data);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-    },
-    onCancel: () => {
-      console.log('Wizard cancelled');
-    },
+    onSubmit: (data: unknown) => onWizardSubmit(data),
+    onCancel: onWizardCancel,
     wizardsStepsData: {
       basicSetupStep: {
         ...mockBasicSetupStep,
-        machineTypes: mockResource([
-          ...mockMachineTypes,
-          {
-            id: 'c5.2xlarge',
-            label: 'c5.2xlarge',
-            description: '8 vCPU 16 GiB RAM',
-            value: 'c5.2xlarge',
-          },
-          {
-            id: 'r5.xlarge',
-            label: 'r5.xlarge',
-            description: '4 vCPU 32 GiB RAM',
-            value: 'r5.xlarge',
-          },
-          {
-            id: 'm5.4xlarge',
-            label: 'm5.4xlarge',
-            description: '16 vCPU 64 GiB RAM',
-            value: 'm5.4xlarge',
-          },
-          {
-            id: 'c6i.8xlarge',
-            label: 'c6i.8xlarge',
-            description: '32 vCPU 64 GiB RAM',
-            value: 'c6i.8xlarge',
-          },
+        machineTypes: fixtures.mockResource([
+          ...fixtures.mockMachineTypes,
+          ...fixtures.mockAdditionalMachineTypes,
         ]),
-        vpcList: mockResource([
-          {
-            name: 'prod-vpc-multi-az',
-            id: 'vpc-prod-multi-az-001',
-            aws_subnets: [
-              {
-                subnet_id: 'subnet-mp-private-1a',
-                name: 'prod-vpc-subnet-private1-us-east-1a',
-                availability_zone: 'us-east-1a',
-              },
-              {
-                subnet_id: 'subnet-mp-public-1a',
-                name: 'prod-vpc-subnet-public1-us-east-1a',
-                availability_zone: 'us-east-1a',
-              },
-              {
-                subnet_id: 'subnet-mp-private-1b',
-                name: 'prod-vpc-subnet-private1-us-east-1b',
-                availability_zone: 'us-east-1b',
-              },
-              {
-                subnet_id: 'subnet-mp-public-1b',
-                name: 'prod-vpc-subnet-public1-us-east-1b',
-                availability_zone: 'us-east-1b',
-              },
-              {
-                subnet_id: 'subnet-mp-private-1c',
-                name: 'prod-vpc-subnet-private1-us-east-1c',
-                availability_zone: 'us-east-1c',
-              },
-              {
-                subnet_id: 'subnet-mp-public-1c',
-                name: 'prod-vpc-subnet-public1-us-east-1c',
-                availability_zone: 'us-east-1c',
-              },
-            ],
-            aws_security_groups: mockSecurityGroups,
-          },
-          ...mockVPCs,
-        ]),
+        vpcList: fixtures.mockResource([...fixtures.mockAdditionalVPCs, ...fixtures.mockVPCs]),
       },
     },
   },
@@ -830,18 +426,13 @@ export const NoSecurityGroups: Story = {
   args: {
     title: 'Create ROSA Cluster - No Security Groups',
     yaml: true,
-    onSubmit: async (data: unknown) => {
-      console.log('Wizard submitted with data:', data);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-    },
-    onCancel: () => {
-      console.log('Wizard cancelled');
-    },
+    onSubmit: (data: unknown) => onWizardSubmit(data),
+    onCancel: onWizardCancel,
     wizardsStepsData: {
       basicSetupStep: {
         ...mockBasicSetupStep,
-        vpcList: mockResource(
-          mockVPCs.map((vpc) => ({
+        vpcList: fixtures.mockResource(
+          fixtures.mockVPCs.map((vpc) => ({
             ...vpc,
             aws_security_groups: [],
           }))
@@ -872,18 +463,18 @@ export const ProductionSetup: Story = {
     wizardsStepsData: {
       basicSetupStep: {
         ...mockBasicSetupStep,
-        versions: mockFetchResource({
+        versions: fixtures.mockFetchResource({
           latest: { label: 'OpenShift 4.12.0 (LTS)', value: '4.12.0' },
           default: { label: 'OpenShift 4.11.5 (Stable)', value: '4.11.5' },
           releases: [],
         }),
-        awsInfrastructureAccounts: mockResource([
+        awsInfrastructureAccounts: fixtures.mockResource([
           {
             label: 'AWS Production Account (987654321098)',
             value: 'aws-prod-987654321098',
           },
         ]),
-        awsBillingAccounts: mockResource([
+        awsBillingAccounts: fixtures.mockResource([
           {
             label: 'Corporate Billing Account (987654321098)',
             value: 'billing-corp-987654321098',
@@ -927,10 +518,7 @@ export const SubmitError: Story = {
   args: {
     title: 'Create ROSA Cluster',
     yaml: true,
-    onCancel: () => {
-      console.log('Wizard cancelled');
-      alert('Wizard cancelled');
-    },
+    onCancel: onWizardCancel,
     wizardsStepsData: {
       basicSetupStep: mockBasicSetupStep,
     },
@@ -957,7 +545,7 @@ function AsyncLoadingWrapper(props: React.ComponentProps<typeof RosaWizard>) {
   });
 
   const [machineTypes, setMachineTypes] = React.useState<Resource<MachineTypesDropdownType[]>>({
-    data: mockMachineTypes,
+    data: fixtures.mockMachineTypes,
     error: null,
     isFetching: false,
   });
@@ -965,7 +553,7 @@ function AsyncLoadingWrapper(props: React.ComponentProps<typeof RosaWizard>) {
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setAwsAccounts({
-        data: mockAwsInfrastructureAccounts,
+        data: fixtures.mockAwsInfrastructureAccounts,
         error: null,
         isFetching: false,
       });
@@ -978,35 +566,20 @@ function AsyncLoadingWrapper(props: React.ComponentProps<typeof RosaWizard>) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     if (region === 'us-east-1') {
       // fetching m6a and m5a
-      setMachineTypes({ data: mockMachineTypes, error: null, isFetching: false });
+      setMachineTypes({ data: fixtures.mockMachineTypes, error: null, isFetching: false });
     } else {
       // fetching only m6a
-      setMachineTypes({ data: mockMachineTypesLimited, error: null, isFetching: false });
+      setMachineTypes({ data: fixtures.mockMachineTypesLimited, error: null, isFetching: false });
     }
   }, []);
 
   const regionsFetch = React.useCallback(async (awsAccount?: string) => {
-    const mockedRegions = [
-      { label: 'US East (N. Virginia)', value: 'us-east-1' },
-      { label: 'US West (Oregon)', value: 'us-west-2' },
-      { label: 'EU (London)', value: 'eu-west-2' },
-      { label: 'EU (Paris)', value: 'eu-west-3' },
-      { label: 'Asia Pacific (Singapore)', value: 'ap-southeast-1' },
-      { label: 'Asia Pacific (Sydney)', value: 'ap-southeast-2' },
-      { label: 'Canada (Central)', value: 'ca-central-1' },
-    ];
-    const mockedRegionsLimited = [
-      { label: 'US East (N. Virginia) - Limited', value: 'us-east-1' },
-      { label: 'US West (Oregon) - Limited', value: 'us-west-2' },
-      { label: 'EU (Frankfurt)', value: 'eu-west-4' },
-      { label: 'EU (Rome)', value: 'eu-west-5' },
-    ];
     setRegions((prev) => ({ ...prev, isFetching: true }));
     await new Promise((resolve) => setTimeout(resolve, 1500));
     if (awsAccount === 'aws-dev-345678901234') {
-      setRegions({ data: mockedRegionsLimited, error: null, isFetching: false });
+      setRegions({ data: fixtures.mockRegionsLimited, error: null, isFetching: false });
     } else {
-      setRegions({ data: mockedRegions, error: null, isFetching: false });
+      setRegions({ data: fixtures.mockRegions, error: null, isFetching: false });
     }
   }, []);
 
@@ -1029,92 +602,45 @@ export const AsyncLoading: Story = {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       alert('Cluster creation initiated successfully!');
     },
-    onCancel: () => {
-      console.log('Wizard cancelled');
-    },
+    onCancel: onWizardCancel,
     wizardsStepsData: {
       basicSetupStep: mockBasicSetupStep,
     },
   },
 };
 
-const REFRESH_SIMULATED_DELAY_MS = 3000;
-
 /**
  * Simulates ~3 s async refetches for AWS infrastructure accounts (Details), AWS billing accounts
  * (Details), and OIDC configuration (Roles & policies) when each field’s refresh control is used.
  */
 function BasicSetupSimulatedRefetchesWrapper(props: React.ComponentProps<typeof RosaWizard>) {
-  const [awsInfrastructureAccounts, setAwsInfrastructureAccounts] = React.useState<
-    Resource<AWSInfrastructureAccounts[]>
-  >({
-    data: mockAwsInfrastructureAccounts,
-    error: null,
-    isFetching: false,
-  });
+  const { state: awsInfrastructureAccounts, fetchData: fetchAwsInfrastructureAccounts } =
+    useFetchNeededData<AWSInfrastructureAccounts[]>([
+      ...fixtures.mockAwsInfrastructureAccounts,
+      {
+        label: 'AWS Account — loaded after refresh (999999999999)',
+        value: 'aws-refreshed-999999999999',
+      },
+    ]);
 
-  const [awsBillingAccounts, setAwsBillingAccounts] = React.useState<
-    Resource<SelectDropdownType[]>
-  >({
-    data: mockAwsBillingAccounts,
-    error: null,
-    isFetching: false,
-  });
+  const { state: awsBillingAccounts, fetchData: fetchAwsBillingAccounts } = useFetchNeededData<
+    SelectDropdownType[]
+  >([
+    ...fixtures.mockAwsBillingAccounts,
+    {
+      label: 'Billing Account — loaded after refresh (999999999999)',
+      value: 'billing-refreshed-999999999999',
+    },
+  ]);
 
-  const [oidcConfig, setOidcConfig] = React.useState<Resource<OIDCConfig[]>>({
-    data: mockOicdConfig,
-    error: null,
-    isFetching: false,
-  });
-
-  const fetchAwsInfrastructureAccounts = React.useCallback(async () => {
-    setAwsInfrastructureAccounts((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFRESH_SIMULATED_DELAY_MS);
-    setAwsInfrastructureAccounts({
-      data: [
-        ...mockAwsInfrastructureAccounts,
-        {
-          label: 'AWS Account — loaded after refresh (999999999999)',
-          value: 'aws-refreshed-999999999999',
-        },
-      ],
-      error: null,
-      isFetching: false,
-    });
-  }, []);
-
-  const fetchAwsBillingAccounts = React.useCallback(async () => {
-    setAwsBillingAccounts((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFRESH_SIMULATED_DELAY_MS);
-    setAwsBillingAccounts({
-      data: [
-        ...mockAwsBillingAccounts,
-        {
-          label: 'Billing Account — loaded after refresh (999999999999)',
-          value: 'billing-refreshed-999999999999',
-        },
-      ],
-      error: null,
-      isFetching: false,
-    });
-  }, []);
-
-  const fetchOidcConfig = React.useCallback(async () => {
-    setOidcConfig((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFRESH_SIMULATED_DELAY_MS);
-    setOidcConfig({
-      data: [
-        ...mockOicdConfig,
-        {
-          label: 'refreshed-oidc-config-id',
-          value: 'refreshed-oidc-config-id',
-          issuer_url: 'https://oidc.os1.devshift.org/refreshed-after-refresh',
-        },
-      ],
-      error: null,
-      isFetching: false,
-    });
-  }, []);
+  const { state: oidcConfig, fetchData: fetchOidcConfig } = useFetchNeededData<OIDCConfig[]>([
+    ...fixtures.mockOicdConfig,
+    {
+      label: 'refreshed-oidc-config-id',
+      value: 'refreshed-oidc-config-id',
+      issuer_url: 'https://oidc.os1.devshift.org/refreshed-after-refresh',
+    },
+  ]);
 
   return (
     <RosaWizard
@@ -1150,9 +676,7 @@ export const BasicSetupSimulatedRefetches: Story = {
       console.log('Wizard submitted with data:', data);
       await sleep(2000);
     },
-    onCancel: () => {
-      console.log('Wizard cancelled');
-    },
+    onCancel: onWizardCancel,
     wizardsStepsData: {
       basicSetupStep: mockBasicSetupStep,
     },
@@ -1167,116 +691,45 @@ export const BasicSetupSimulatedRefetches: Story = {
   },
 };
 
-const REFETCH_ALL_DELAY_MS = 2000;
-
 /**
  * Simulates 2 s async refetches for every WizSelect refresh button across
  * the Basic Setup steps: AWS infrastructure accounts, AWS billing accounts,
  * OpenShift versions, OIDC configuration, and VPC list.
  */
 function AllRefetchesWrapper(props: React.ComponentProps<typeof RosaWizard>) {
-  const [awsInfrastructureAccounts, setAwsInfrastructureAccounts] = React.useState<
-    Resource<SelectDropdownType[]>
-  >({
-    data: mockAwsInfrastructureAccounts,
-    error: null,
-    isFetching: false,
-  });
+  const { state: awsInfrastructureAccounts, fetchData: fetchAwsInfrastructureAccounts } =
+    useFetchNeededData<AWSInfrastructureAccounts[]>([
+      ...fixtures.mockAwsInfrastructureAccounts,
+      {
+        label: 'AWS Account — refreshed (999999999999)',
+        value: 'aws-refreshed-999999999999',
+      },
+    ]);
 
-  const [awsBillingAccounts, setAwsBillingAccounts] = React.useState<
-    Resource<SelectDropdownType[]>
-  >({
-    data: mockAwsBillingAccounts,
-    error: null,
-    isFetching: false,
-  });
+  const { state: awsBilling, fetchData: fetchAwsBillingAccounts } = useFetchNeededData<
+    SelectDropdownType[]
+  >([
+    ...fixtures.mockAwsBillingAccounts,
+    {
+      label: 'Billing Account — refreshed (999999999999)',
+      value: 'billing-refreshed-999999999999',
+    },
+  ]);
 
-  const [versions, setVersions] = React.useState<Resource<OpenShiftVersionsData>>({
-    data: mockVersionsData,
-    error: null,
-    isFetching: false,
-  });
+  const { state: versions, fetchData: fetchVersions } = useFetchNeededData<OpenShiftVersionsData>(
+    fixtures.mockVersionsData
+  );
 
-  const [oidcConfig, setOidcConfig] = React.useState<Resource<OIDCConfig[]>>({
-    data: mockOicdConfig,
-    error: null,
-    isFetching: false,
-  });
+  const { state: oidcConfig, fetchData: fetchOidcConfig } = useFetchNeededData<OIDCConfig[]>([
+    ...fixtures.mockOicdConfig,
+    {
+      label: 'refreshed-oidc-config-id',
+      value: 'refreshed-oidc-config-id',
+      issuer_url: 'https://oidc.os1.devshift.org/refreshed-oidc',
+    },
+  ]);
 
-  const [vpcList, setVpcList] = React.useState<Resource<VPC[]>>({
-    data: mockVPCs,
-    error: null,
-    isFetching: false,
-  });
-
-  const fetchAwsInfrastructureAccounts = React.useCallback(async () => {
-    setAwsInfrastructureAccounts((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFETCH_ALL_DELAY_MS);
-    setAwsInfrastructureAccounts({
-      data: [
-        ...mockAwsInfrastructureAccounts,
-        {
-          label: 'AWS Account — refreshed (999999999999)',
-          value: 'aws-refreshed-999999999999',
-        },
-      ],
-      error: null,
-      isFetching: false,
-    });
-  }, []);
-
-  const fetchAwsBillingAccounts = React.useCallback(async () => {
-    setAwsBillingAccounts((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFETCH_ALL_DELAY_MS);
-    setAwsBillingAccounts({
-      data: [
-        ...mockAwsBillingAccounts,
-        {
-          label: 'Billing Account — refreshed (999999999999)',
-          value: 'billing-refreshed-999999999999',
-        },
-      ],
-      error: null,
-      isFetching: false,
-    });
-  }, []);
-
-  const fetchVersions = React.useCallback(async () => {
-    setVersions((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFETCH_ALL_DELAY_MS);
-    setVersions({
-      data: mockVersionsData,
-      error: null,
-      isFetching: false,
-    });
-  }, []);
-
-  const fetchOidcConfig = React.useCallback(async () => {
-    setOidcConfig((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFETCH_ALL_DELAY_MS);
-    setOidcConfig({
-      data: [
-        ...mockOicdConfig,
-        {
-          label: 'refreshed-oidc-config-id',
-          value: 'refreshed-oidc-config-id',
-          issuer_url: 'https://oidc.os1.devshift.org/refreshed-oidc',
-        },
-      ],
-      error: null,
-      isFetching: false,
-    });
-  }, []);
-
-  const fetchVpcList = React.useCallback(async () => {
-    setVpcList((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFETCH_ALL_DELAY_MS);
-    setVpcList({
-      data: mockVPCs,
-      error: null,
-      isFetching: false,
-    });
-  }, []);
+  const { state: vpcList, fetchData: fetchVpcList } = useFetchNeededData<VPC[]>(fixtures.mockVPCs);
 
   return (
     <RosaWizard
@@ -1290,7 +743,7 @@ function AllRefetchesWrapper(props: React.ComponentProps<typeof RosaWizard>) {
             fetch: fetchAwsInfrastructureAccounts,
           },
           awsBillingAccounts: {
-            ...awsBillingAccounts,
+            ...awsBilling,
             fetch: fetchAwsBillingAccounts,
           },
           versions: {
@@ -1320,9 +773,7 @@ export const AllDropdownRefetches: Story = {
       console.log('Wizard submitted with data:', data);
       await sleep(2000);
     },
-    onCancel: () => {
-      console.log('Wizard cancelled');
-    },
+    onCancel: onWizardCancel,
     wizardsStepsData: {
       basicSetupStep: mockBasicSetupStep,
     },
@@ -1343,208 +794,20 @@ export const AllDropdownRefetches: Story = {
  * actually change after a refetch.
  */
 function RefetchWithNewDataWrapper(props: React.ComponentProps<typeof RosaWizard>) {
-  const [awsInfrastructureAccounts, setAwsInfrastructureAccounts] = React.useState<
-    Resource<SelectDropdownType[]>
-  >({
-    data: mockAwsInfrastructureAccounts,
-    error: null,
-    isFetching: false,
-  });
-
-  const [awsBillingAccounts, setAwsBillingAccounts] = React.useState<
-    Resource<SelectDropdownType[]>
-  >({
-    data: mockAwsBillingAccounts,
-    error: null,
-    isFetching: false,
-  });
-
-  const [versions, setVersions] = React.useState<Resource<OpenShiftVersionsData>>({
-    data: mockVersionsData,
-    error: null,
-    isFetching: false,
-  });
-
-  const [oidcConfig, setOidcConfig] = React.useState<Resource<OIDCConfig[]>>({
-    data: mockOicdConfig,
-    error: null,
-    isFetching: false,
-  });
-
-  const [vpcList, setVpcList] = React.useState<Resource<VPC[]>>({
-    data: mockVPCs,
-    error: null,
-    isFetching: false,
-  });
-
-  const fetchAwsInfrastructureAccounts = React.useCallback(async () => {
-    setAwsInfrastructureAccounts((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFETCH_ALL_DELAY_MS);
-    setAwsInfrastructureAccounts({
-      data: [
-        {
-          label: 'AWS Account - EU Production (555000111222)',
-          value: 'aws-eu-prod-555000111222',
-        },
-        {
-          label: 'AWS Account - APAC Staging (555000333444)',
-          value: 'aws-apac-staging-555000333444',
-        },
-        {
-          label: 'AWS Account - US Sandbox (555000555666)',
-          value: 'aws-us-sandbox-555000555666',
-        },
-        {
-          label: 'AWS Account - GovCloud (555000777888)',
-          value: 'aws-govcloud-555000777888',
-        },
-      ],
-      error: null,
-      isFetching: false,
-    });
-  }, []);
-
-  const fetchAwsBillingAccounts = React.useCallback(async () => {
-    setAwsBillingAccounts((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFETCH_ALL_DELAY_MS);
-    setAwsBillingAccounts({
-      data: [
-        {
-          label: 'Billing - EMEA Cost Center (600111222333)',
-          value: 'billing-emea-600111222333',
-        },
-        {
-          label: 'Billing - Global Operations (600444555666)',
-          value: 'billing-global-ops-600444555666',
-        },
-        {
-          label: 'Billing - R&D Budget (600777888999)',
-          value: 'billing-rnd-600777888999',
-        },
-      ],
-      error: null,
-      isFetching: false,
-    });
-  }, []);
-
-  const fetchVersions = React.useCallback(async () => {
-    setVersions((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFETCH_ALL_DELAY_MS);
-    setVersions({
-      data: {
-        latest: { label: 'OpenShift 4.22.1', value: '4.22.1' },
-        default: { label: 'OpenShift 4.21.10', value: '4.21.10' },
-        releases: [
-          { label: 'OpenShift 4.21.9', value: '4.21.9' },
-          { label: 'OpenShift 4.21.8', value: '4.21.8' },
-          { label: 'OpenShift 4.20.12', value: '4.20.12' },
-          { label: 'OpenShift 4.19.6', value: '4.19.6' },
-        ],
-      },
-      error: null,
-      isFetching: false,
-    });
-  }, []);
-
-  const fetchOidcConfig = React.useCallback(async () => {
-    setOidcConfig((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFETCH_ALL_DELAY_MS);
-    setOidcConfig({
-      data: [
-        {
-          label: '7xk9m3bc4dp1qw2ef6ghjt5nrs8uv0ya',
-          value: '7xk9m3bc4dp1qw2ef6ghjt5nrs8uv0ya',
-          issuer_url: 'https://oidc.os1.devshift.org/7xk9m3bc4dp1qw2ef6ghjt5nrs8uv0ya',
-        },
-        {
-          label: '1ab2cd3ef4gh5ij6kl7mn8op9qr0st1uv',
-          value: '1ab2cd3ef4gh5ij6kl7mn8op9qr0st1uv',
-          issuer_url: 'https://oidc.os1.devshift.org/1ab2cd3ef4gh5ij6kl7mn8op9qr0st1uv',
-        },
-        {
-          label: 'zz0yy1xx2ww3vv4uu5tt6ss7rr8qq9pp0',
-          value: 'zz0yy1xx2ww3vv4uu5tt6ss7rr8qq9pp0',
-          issuer_url: 'https://oidc.os1.devshift.org/zz0yy1xx2ww3vv4uu5tt6ss7rr8qq9pp0',
-        },
-      ],
-      error: null,
-      isFetching: false,
-    });
-  }, []);
-
-  const fetchVpcList = React.useCallback(async () => {
-    setVpcList((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFETCH_ALL_DELAY_MS);
-    setVpcList({
-      data: [
-        {
-          name: 'refreshed-prod-vpc',
-          id: 'vpc-refreshed-prod-001',
-          aws_subnets: [
-            {
-              subnet_id: 'subnet-ref-priv-1a',
-              name: 'refreshed-prod-subnet-private1-us-west-2a',
-              availability_zone: 'us-west-2a',
-            },
-            {
-              subnet_id: 'subnet-ref-pub-1a',
-              name: 'refreshed-prod-subnet-public1-us-west-2a',
-              availability_zone: 'us-west-2a',
-            },
-            {
-              subnet_id: 'subnet-ref-priv-1b',
-              name: 'refreshed-prod-subnet-private1-us-west-2b',
-              availability_zone: 'us-west-2b',
-            },
-            {
-              subnet_id: 'subnet-ref-pub-1b',
-              name: 'refreshed-prod-subnet-public1-us-west-2b',
-              availability_zone: 'us-west-2b',
-            },
-          ],
-          aws_security_groups: [
-            { id: 'sg-ref-00001', name: 'refreshed-default' },
-            { id: 'sg-ref-00002', name: 'refreshed-app-traffic' },
-          ],
-        },
-        {
-          name: 'refreshed-staging-vpc',
-          id: 'vpc-refreshed-staging-002',
-          aws_subnets: [
-            {
-              subnet_id: 'subnet-ref-stg-priv-1a',
-              name: 'refreshed-staging-subnet-private1-eu-west-1a',
-              availability_zone: 'eu-west-1a',
-            },
-            {
-              subnet_id: 'subnet-ref-stg-pub-1a',
-              name: 'refreshed-staging-subnet-public1-eu-west-1a',
-              availability_zone: 'eu-west-1a',
-            },
-          ],
-        },
-        {
-          name: 'refreshed-dev-vpc',
-          id: 'vpc-refreshed-dev-003',
-          aws_subnets: [
-            {
-              subnet_id: 'subnet-ref-dev-priv-1a',
-              name: 'refreshed-dev-subnet-private1-ap-southeast-1a',
-              availability_zone: 'ap-southeast-1a',
-            },
-            {
-              subnet_id: 'subnet-ref-dev-pub-1a',
-              name: 'refreshed-dev-subnet-public1-ap-southeast-1a',
-              availability_zone: 'ap-southeast-1a',
-            },
-          ],
-        },
-      ],
-      error: null,
-      isFetching: false,
-    });
-  }, []);
-
+  const { state: awsInfrastructureAccounts, fetchData: fetchAwsInfrastructureAccounts } =
+    useFetchNeededData<AWSInfrastructureAccounts[]>(fixtures.mockUpdatedAwsInfrastructureAccounts);
+  const { state: awsBillingAccounts, fetchData: fetchAwsBillingAccounts } = useFetchNeededData<
+    SelectDropdownType[]
+  >(fixtures.mockUpdatedAwsBillingAccounts);
+  const { state: versions, fetchData: fetchVersions } = useFetchNeededData<OpenShiftVersionsData>(
+    fixtures.mockUpdatedOpenShiftVersions
+  );
+  const { state: oidcConfig, fetchData: fetchOidcConfig } = useFetchNeededData<OIDCConfig[]>(
+    fixtures.mockUpdatedOIDCConfig
+  );
+  const { state: vpcList, fetchData: fetchVpcList } = useFetchNeededData<VPC[]>(
+    fixtures.mockUpdatedVPCList
+  );
   return (
     <RosaWizard
       {...props}
@@ -1587,9 +850,7 @@ export const RefetchWithNewData: Story = {
       console.log('Wizard submitted with data:', data);
       await sleep(2000);
     },
-    onCancel: () => {
-      console.log('Wizard cancelled');
-    },
+    onCancel: onWizardCancel,
     wizardsStepsData: {
       basicSetupStep: mockBasicSetupStep,
     },
@@ -1610,89 +871,18 @@ export const RefetchWithNewData: Story = {
  * completes, since the item still exists in the returned list.
  */
 function RefetchSameDataWrapper(props: React.ComponentProps<typeof RosaWizard>) {
-  const [awsInfrastructureAccounts, setAwsInfrastructureAccounts] = React.useState<
-    Resource<SelectDropdownType[]>
-  >({
-    data: mockAwsInfrastructureAccounts,
-    error: null,
-    isFetching: false,
-  });
-
-  const [awsBillingAccounts, setAwsBillingAccounts] = React.useState<
-    Resource<SelectDropdownType[]>
-  >({
-    data: mockAwsBillingAccounts,
-    error: null,
-    isFetching: false,
-  });
-
-  const [versions, setVersions] = React.useState<Resource<OpenShiftVersionsData>>({
-    data: mockVersionsData,
-    error: null,
-    isFetching: false,
-  });
-
-  const [oidcConfig, setOidcConfig] = React.useState<Resource<OIDCConfig[]>>({
-    data: mockOicdConfig,
-    error: null,
-    isFetching: false,
-  });
-
-  const [vpcList, setVpcList] = React.useState<Resource<VPC[]>>({
-    data: mockVPCs,
-    error: null,
-    isFetching: false,
-  });
-
-  const fetchAwsInfrastructureAccounts = React.useCallback(async () => {
-    setAwsInfrastructureAccounts((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFETCH_ALL_DELAY_MS);
-    setAwsInfrastructureAccounts({
-      data: mockAwsInfrastructureAccounts,
-      error: null,
-      isFetching: false,
-    });
-  }, []);
-
-  const fetchAwsBillingAccounts = React.useCallback(async () => {
-    setAwsBillingAccounts((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFETCH_ALL_DELAY_MS);
-    setAwsBillingAccounts({
-      data: mockAwsBillingAccounts,
-      error: null,
-      isFetching: false,
-    });
-  }, []);
-
-  const fetchVersions = React.useCallback(async () => {
-    setVersions((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFETCH_ALL_DELAY_MS);
-    setVersions({
-      data: mockVersionsData,
-      error: null,
-      isFetching: false,
-    });
-  }, []);
-
-  const fetchOidcConfig = React.useCallback(async () => {
-    setOidcConfig((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFETCH_ALL_DELAY_MS);
-    setOidcConfig({
-      data: mockOicdConfig,
-      error: null,
-      isFetching: false,
-    });
-  }, []);
-
-  const fetchVpcList = React.useCallback(async () => {
-    setVpcList((prev) => ({ ...prev, isFetching: true, error: null }));
-    await sleep(REFETCH_ALL_DELAY_MS);
-    setVpcList({
-      data: mockVPCs,
-      error: null,
-      isFetching: false,
-    });
-  }, []);
+  const { state: awsInfrastructureAccounts, fetchData: fetchAwsInfrastructureAccounts } =
+    useFetchNeededData<AWSInfrastructureAccounts[]>(fixtures.mockAwsInfrastructureAccounts);
+  const { state: awsBillingAccounts, fetchData: fetchAwsBillingAccounts } = useFetchNeededData<
+    SelectDropdownType[]
+  >(fixtures.mockAwsBillingAccounts);
+  const { state: versions, fetchData: fetchVersions } = useFetchNeededData<OpenShiftVersionsData>(
+    fixtures.mockVersionsData
+  );
+  const { state: oidcConfig, fetchData: fetchOidcConfig } = useFetchNeededData<OIDCConfig[]>(
+    fixtures.mockOicdConfig
+  );
+  const { state: vpcList, fetchData: fetchVpcList } = useFetchNeededData<VPC[]>(fixtures.mockVPCs);
 
   return (
     <RosaWizard
@@ -1736,9 +926,7 @@ export const RefetchWithSameData: Story = {
       console.log('Wizard submitted with data:', data);
       await sleep(2000);
     },
-    onCancel: () => {
-      console.log('Wizard cancelled');
-    },
+    onCancel: onWizardCancel,
     wizardsStepsData: {
       basicSetupStep: mockBasicSetupStep,
     },
@@ -1759,34 +947,36 @@ export const RefetchWithSameData: Story = {
  * after a simulated API delay. Any other valid name will pass.
  */
 function AsyncClusterNameValidationWrapper(props: React.ComponentProps<typeof RosaWizard>) {
-  const [validationState, setValidationState] = React.useState<ValidationResource>({
-    error: null,
-    isFetching: false,
-  });
+  const { mockStateData: validationState, setMockStateData: setValidationState } =
+    useSetMockState<ClusterWithNonUniqueName>([]);
 
-  const checkClusterNameUniqueness = React.useCallback((name: string, region?: string) => {
-    setValidationState({ error: null, isFetching: true });
+  const checkClusterNameUniqueness = React.useCallback(
+    (name: string, region?: string) => {
+      setValidationState({ data: [], error: null, isFetching: true });
 
-    // simulate API call with 800ms latency
-    const timer = setTimeout(() => {
-      const takenNames = ['taken', 'existing', 'my-cluster', 'production'];
-      const takenRegion = ['us-west-1'];
-      const isTaken = takenNames.includes(name);
-      const takenRegionData = takenRegion.includes(region ? region : '');
-      setValidationState({
-        error:
-          isTaken && takenRegionData
-            ? `Cluster name "${name}" already exists. Choose a different name.`
-            : null,
-        isFetching: false,
-      });
-      console.log(
-        `[Mock API] Checked "${name}" → ${isTaken && takenRegionData ? 'TAKEN' : 'available'}`
-      );
-    }, 800);
+      // simulate API call with 800ms latency
+      const timer = setTimeout(() => {
+        const takenNames = fixtures.mockClusterNonUniqueNames.map((el) => el.name);
+        const takenRegion = ['us-west-1'];
+        const isTaken = takenNames.includes(name);
+        const takenRegionData = takenRegion.includes(region ? region : '');
+        setValidationState({
+          data: fixtures.mockClusterNonUniqueNames,
+          error:
+            isTaken && takenRegionData
+              ? `Cluster name "${name}" already exists. Choose a different name.`
+              : null,
+          isFetching: false,
+        });
+        console.log(
+          `[Mock API] Checked "${name}" → ${isTaken && takenRegionData ? 'TAKEN' : 'available'}`
+        );
+      }, 800);
 
-    return () => clearTimeout(timer);
-  }, []);
+      return () => clearTimeout(timer);
+    },
+    [setValidationState]
+  );
 
   return (
     <RosaWizard
@@ -1808,13 +998,8 @@ export const AsyncClusterNameValidation: Story = {
   args: {
     title: 'Create ROSA Cluster - Async Name Validation',
     yaml: true,
-    onSubmit: async (data: unknown) => {
-      console.log('Wizard submitted with data:', data);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-    },
-    onCancel: () => {
-      console.log('Wizard cancelled');
-    },
+    onSubmit: (data: unknown) => onWizardSubmit(data),
+    onCancel: onWizardCancel,
     wizardsStepsData: {
       basicSetupStep: mockBasicSetupStep,
     },
