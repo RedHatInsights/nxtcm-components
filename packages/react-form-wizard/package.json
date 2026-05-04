@@ -78,7 +78,7 @@
         "babel-plugin-transform-class-properties": "6.24.1",
         "concurrently": "7.6.0",
         "cpy-cli": "4.2.0",
-        "cypress": "^11.2.0",
+        "cypress": "^15.14.2",
         "eslint": "8.57.1",
         "eslint-config-prettier": "8.10.2",
         "eslint-plugin-i18n-json": "^4.0.1",
@@ -103,6 +103,6 @@
         "vite-plugin-svgr": "^4.2.0"
     },
     "optionalDependencies": {
-        "cypress": "^11.2.0"
+        "cypress": "^15.14.2"
     }
 }
