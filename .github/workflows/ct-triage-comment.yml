@@ -19,7 +19,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
           sparse-checkout: |
             utils/ct-triage-comment.mjs
             .nvmrc
@@ -40,6 +39,7 @@ jobs:
 
       - name: Download CT summary artifact
         if: steps.pr.outputs.number
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: playwright-ct-report
