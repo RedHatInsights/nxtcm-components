@@ -32,10 +32,22 @@ function parseArgs(argv) {
 function extractErrorSnippet(message) {
   if (!message) return '';
 
+  const parts = [];
+
   const expectMatch = message.match(/expect\(.*?\)\.[\w.]+\(.*?\)/s);
   if (expectMatch) {
-    const raw = expectMatch[0].replace(/\s+/g, ' ').trim();
-    return raw.length > 200 ? `${raw.slice(0, 200)}…` : raw;
+    parts.push(expectMatch[0].replace(/\s+/g, ' ').trim());
+  }
+
+  const expectedMatch = message.match(/Expected\s*(?:string|value|pattern)?:\s*(.+)/i);
+  const receivedMatch = message.match(/Received\s*(?:string|value|element)?:\s*(.+)/i);
+  if (expectedMatch && receivedMatch) {
+    parts.push(`Expected: ${expectedMatch[1].trim()}, Received: ${receivedMatch[1].trim()}`);
+  }
+
+  if (parts.length > 0) {
+    const combined = parts.join(' — ');
+    return combined.length > 250 ? `${combined.slice(0, 250)}…` : combined;
   }
 
   const firstLine = message.split('\n').find((l) => l.trim().length > 0) ?? '';
