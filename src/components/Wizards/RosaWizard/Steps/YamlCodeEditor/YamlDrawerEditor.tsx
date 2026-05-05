@@ -5,6 +5,7 @@ import { SearchIcon, UndoIcon, RedoIcon, TimesIcon } from '@patternfly/react-ico
 import Editor, { OnMount, Monaco } from '@monaco-editor/react';
 import './monacoYamlSetup';
 import Handlebars from 'handlebars';
+import { RosaYamlMonacoLoader } from './RosaYamlMonacoLoader';
 import rosaHcpTemplateRaw from './templates/rosa-hcp-template.hbs?raw';
 import './YamlDrawerEditor.css';
 import { validateYaml } from './yamlValidation';
@@ -55,6 +56,7 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
   const monacoRef = useRef<Monaco | null>(null);
   const hasFocusRef = useRef(false);
   const validationTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const monacoYamlDisposeRef = useRef<(() => void) | null>(null);
 
   const setEditorMarkers = useCallback((yamlStr: string) => {
     const editor = editorRef.current;
@@ -125,6 +127,9 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
       editorRef.current = editor;
       monacoRef.current = monaco;
 
+      monacoYamlDisposeRef.current?.();
+      monacoYamlDisposeRef.current = new RosaYamlMonacoLoader().configure(monaco);
+
       editor.onDidFocusEditorWidget(() => {
         hasFocusRef.current = true;
       });
@@ -149,6 +154,8 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
   useEffect(() => {
     return () => {
       clearTimeout(validationTimerRef.current);
+      monacoYamlDisposeRef.current?.();
+      monacoYamlDisposeRef.current = null;
     };
   }, []);
 

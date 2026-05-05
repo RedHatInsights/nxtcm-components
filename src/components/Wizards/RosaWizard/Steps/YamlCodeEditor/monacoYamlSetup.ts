@@ -1,30 +1,15 @@
 import * as monaco from 'monaco-editor';
 import { loader } from '@monaco-editor/react';
-import { configureMonacoYaml, type SchemasSettings } from 'monaco-yaml';
-import { combinedSchema } from './schemas/combinedSchema';
+import editorWorkerUrl from 'monaco-editor/esm/vs/editor/editor.worker.js?url';
+import yamlWorkerUrl from 'monaco-yaml/yaml.worker.js?url';
 
 loader.config({ monaco });
 
 window.MonacoEnvironment = {
   getWorker(_, label) {
     if (label === 'yaml') {
-      return new Worker(new URL('monaco-yaml/yaml.worker', import.meta.url));
+      return new Worker(yamlWorkerUrl, { type: 'module' });
     }
-    return new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker', import.meta.url));
+    return new Worker(editorWorkerUrl, { type: 'module' });
   },
 };
-
-configureMonacoYaml(monaco, {
-  validate: false,
-  hover: true,
-  completion: true,
-  isKubernetes: true,
-  enableSchemaRequest: false,
-  schemas: [
-    {
-      uri: 'inmemory://rosa-combined-schema.json',
-      fileMatch: ['*'],
-      schema: combinedSchema as SchemasSettings['schema'],
-    },
-  ],
-});
