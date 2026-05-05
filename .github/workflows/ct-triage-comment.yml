@@ -1,0 +1,63 @@
+name: CT Triage Comment
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+
+permissions:
+  pull-requests: write
+  actions: read
+
+jobs:
+  comment:
+    name: Post CT triage comment
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            utils/ct-triage-comment.mjs
+            .nvmrc
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Find PR number
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR=$(gh api repos/${{ github.repository }}/commits/${{ github.event.workflow_run.head_sha }}/pulls \
+            --jq '.[0].number // empty')
+          echo "number=${PR}" >> "$GITHUB_OUTPUT"
+
+      - name: Download CT summary artifact
+        if: steps.pr.outputs.number
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: playwright-ct-report
+          path: ct-report
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post triage comment
+        if: steps.pr.outputs.number
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SUMMARY="ct-report/test-results/playwright-ct-summary.json"
+          if [ ! -f "$SUMMARY" ]; then
+            echo "No summary JSON found, skipping"
+            exit 0
+          fi
+          BODY=$(node utils/ct-triage-comment.mjs --summary-json "$SUMMARY")
+          if [ -n "$BODY" ]; then
+            gh pr comment "${{ steps.pr.outputs.number }}" --body "$BODY"
+          fi
