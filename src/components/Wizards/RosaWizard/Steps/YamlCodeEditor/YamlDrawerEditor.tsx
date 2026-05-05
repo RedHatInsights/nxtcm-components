@@ -3,7 +3,7 @@ import { useItem, useData } from '@patternfly-labs/react-form-wizard';
 import { Alert, Button, ClipboardCopyButton, Tooltip } from '@patternfly/react-core';
 import { SearchIcon, UndoIcon, RedoIcon, TimesIcon } from '@patternfly/react-icons';
 import Editor, { OnMount, Monaco } from '@monaco-editor/react';
-import './monacoYamlSetup';
+import { setupMonacoEnvironment } from './monacoYamlSetup';
 import Handlebars from 'handlebars';
 import { RosaYamlMonacoLoader } from './RosaYamlMonacoLoader';
 import rosaHcpTemplateRaw from './templates/rosa-hcp-template.hbs?raw';
@@ -48,6 +48,7 @@ interface YamlDrawerEditorProps {
 }
 
 export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
+  setupMonacoEnvironment();
   const data = useItem<RosaWizardFormData>();
   const { update } = useData();
   const [yamlContent, setYamlContent] = useState('');
@@ -93,8 +94,11 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
       const rendered = renderTemplate(data as Record<string, unknown>);
       setYamlContent(rendered);
       setParseError('');
+      if (editorRef.current && monacoRef.current) {
+        setEditorMarkers(rendered);
+      }
     }
-  }, [data]);
+  }, [data, setEditorMarkers]);
 
   const handleEditorChange = useCallback(
     (value: string | undefined) => {
@@ -158,12 +162,6 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
       monacoYamlDisposeRef.current = null;
     };
   }, []);
-
-  useEffect(() => {
-    if (editorRef.current && monacoRef.current) {
-      setEditorMarkers(yamlContent);
-    }
-  }, [yamlContent, setEditorMarkers]);
 
   const handleCopy = useCallback(() => {
     if (editorRef.current) {

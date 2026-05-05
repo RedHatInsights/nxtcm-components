@@ -8,9 +8,11 @@ import rosaMachinePoolSchema from './rosaMachinePoolSchema.json';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Schema = Record<string, any>;
 
-function buildIfThen(schema: Schema) {
-  const kindConst = schema.properties?.kind?.const as string;
-  if (!kindConst) throw new Error('Schema missing kind.const');
+function buildIfThen(
+  schema: Schema
+): { if: Record<string, unknown>; then: { properties: Record<string, unknown> } } | null {
+  const kindConst = schema.properties?.kind?.const as string | undefined;
+  if (!kindConst) return null;
 
   const thenProps: Record<string, unknown> = {};
 
@@ -42,7 +44,13 @@ const allSchemas: Schema[] = [
   rosaMachinePoolSchema,
 ];
 
-const kindValues = allSchemas.map((s) => s.properties?.kind?.const as string).filter(Boolean);
+const ifThenRules = allSchemas
+  .map(buildIfThen)
+  .filter((rule): rule is NonNullable<typeof rule> => rule !== null);
+
+const kindValues = allSchemas
+  .map((s) => s.properties?.kind?.const as string | undefined)
+  .filter((k): k is string => Boolean(k));
 
 export const combinedSchema = {
   $schema: 'http://json-schema.org/draft-07/schema#',
@@ -80,5 +88,5 @@ export const combinedSchema = {
     spec: { type: 'object' },
     status: { type: 'object' },
   },
-  allOf: allSchemas.map(buildIfThen),
+  allOf: ifThenRules,
 };

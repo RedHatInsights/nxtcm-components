@@ -5,11 +5,14 @@ import yamlWorkerUrl from 'monaco-yaml/yaml.worker.js?url';
 
 loader.config({ monaco });
 
-window.MonacoEnvironment = {
-  getWorker(_, label) {
-    if (label === 'yaml') {
-      return new Worker(yamlWorkerUrl, { type: 'module' });
-    }
-    return new Worker(editorWorkerUrl, { type: 'module' });
-  },
-};
+export function setupMonacoEnvironment(): void {
+  if (typeof window === 'undefined') return;
+  window.MonacoEnvironment = {
+    getWorker(_, label) {
+      if (label === 'yaml') {
+        return new Worker(yamlWorkerUrl, { type: 'module' });
+      }
+      return new Worker(editorWorkerUrl, { type: 'module' });
+    },
+  };
+}

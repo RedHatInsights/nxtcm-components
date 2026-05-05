@@ -5,6 +5,7 @@ import * as yaml from 'js-yaml';
 import clusterSchema from './schemas/clusterSchema.json';
 import rosaClusterSchema from './schemas/rosaClusterSchema.json';
 import rosaControlPlaneSchema from './schemas/rosaControlPlaneSchema.json';
+import rosaMachinePoolSchema from './schemas/rosaMachinePoolSchema.json';
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 addFormats(ajv);
@@ -17,6 +18,7 @@ const schemaMap: Record<string, object> = {
   Cluster: clusterSchema,
   ROSACluster: rosaClusterSchema,
   ROSAControlPlane: rosaControlPlaneSchema,
+  ROSAMachinePool: rosaMachinePoolSchema,
 };
 
 export interface ValidationError {
