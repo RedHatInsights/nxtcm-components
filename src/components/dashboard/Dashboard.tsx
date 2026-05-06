@@ -240,7 +240,7 @@ function filterTemplate(template: ExtendedTemplateConfig): ExtendedTemplateConfi
 
 export const Dashboard = (props: DashboardProps) => {
   const [template, setTemplate] = useLocalStorageWithObject<ExtendedTemplateConfig>(
-    'dashboard-template-v2',
+    'dashboard-template-v3',
     initialDashboardData
   );
 
