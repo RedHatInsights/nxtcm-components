@@ -465,7 +465,7 @@ export type RosaHcpWizardStrings = {
   };
 };
 
-/** Partial overrides for {@link RosaWizard}; omitted keys use defaults from {@link ./rosaHcpWizardStrings.defaults}. */
+/** Partial overrides for {@link RosaHCPWizard}; omitted keys use defaults from {@link ./rosaHcpWizardStrings.defaults}. */
 export type RosaHcpWizardStringsInput = DeepPartial<RosaHcpWizardStrings> & {
   validators?: DeepPartial<RosaHcpWizardValidatorStrings>;
   /**

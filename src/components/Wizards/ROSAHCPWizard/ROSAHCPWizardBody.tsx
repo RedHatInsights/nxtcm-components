@@ -3,7 +3,7 @@ import { Details } from './Steps/BasicSetup/Details/Details';
 import { RolesAndPolicies } from './Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies';
 import { MachinePools } from './Steps/BasicSetup/MachinePools/MachinePools';
 import { Networking } from './Steps/BasicSetup/Networking/Networking';
-import { Encryption } from './Steps/OptionalSetup/Ecnryption/Encryption';
+import { Encryption } from './Steps/OptionalSetup/Encryption/Encryption';
 import { ClusterUpdates } from './Steps/OptionalSetup/ClusterUpdates/ClusterUpdates';
 import React from 'react';
 import { ClusterWideProxy } from './Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy';
