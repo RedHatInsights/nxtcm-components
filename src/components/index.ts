@@ -6,6 +6,7 @@ export * from './ConsoleBreadcrumbs';
 export * from './PageHeader';
 export * from './Wizards';
 export * from './Wizards/RosaWizard/Steps/YamlCodeEditor';
+export * from './dashboard/Dashboard';
 export * from './dashboard/CostManagement';
 export * from './dashboard/NotificationsPanel';
 export * from './dashboard/StorageCard';

@@ -1,263 +1,219 @@
 /* eslint-disable react/display-name */
 import {
   ClusterIcon,
-  ExclamationTriangleIcon,
-  UploadIcon,
-  FolderIcon,
-  StorageDomainIcon,
-  BellIcon,
+  ExclamationCircleIcon,
+  ChartBarIcon,
+  OutlinedClockIcon,
+  ConnectedIcon,
+  SyncAltIcon,
+  LightbulbIcon,
+  TachometerAltIcon,
 } from '@patternfly/react-icons';
 import {
   ExtendedTemplateConfig,
   WidgetLayout,
   WidgetMapping,
 } from '@patternfly/widgetized-dashboard';
-import { CVECard, CVEData } from './CVECard';
-import { ClusterRecommendationProps, ClusterRecommendations } from './ClusterRecommendations';
-import { LoadingPanel } from './LoadingPanel';
-import { Subscriptions, SubscriptionsProps } from './Subscriptions';
-import { UpgradeRisks, UpgradeRisksProps } from './UpgradeRisks';
-import { ErrorState } from '@patternfly/react-component-groups';
-import { StorageCard, StorageData } from './StorageCard';
-import { NotificationItem, NotificationsPanel } from './NotificationsPanel';
+import { TotalClusters, TotalClustersData } from './TotalClusters/TotalClusters';
+import {
+  ClustersWithIssues,
+  ClustersWithIssuesData,
+  ClusterIssue,
+} from './ClustersWithIssues/ClustersWithIssues';
+import {
+  ResourceUtilization,
+  ResourceUtilizationData,
+} from './ResourceUtilization/ResourceUtilization';
+import { ExpiredTrials, ExpiredTrialsData, ExpiredTrial } from './ExpiredTrials/ExpiredTrials';
+import { Telemetry, TelemetryData } from './Telemetry/Telemetry';
+import { UpdateStatus, UpdateStatusData } from './UpdateStatus/UpdateStatus';
+import {
+  AdvisorSeverity,
+  SeverityCounts,
+  AdvisorCategories,
+  CategoryCounts,
+} from './AdvisorRecommendations/AdvisorRecommendations';
 import { useLocalStorageWithObject } from './useLocalStorage';
 
-type ClusterRecommendationsData = Omit<
-  ClusterRecommendationProps,
-  'onViewRecommendations' | 'onCategoryClick'
->;
-
-type UpdateRisksData = Omit<UpgradeRisksProps, 'onViewRisks'>;
-
-type SubscriptionsData = Omit<
-  SubscriptionsProps,
-  'onViewSubscriptions' | 'onSubscriptionsClick' | 'onInstancesClick'
->;
-
-type DashboardProps = {
-  clusterRecommendations: {
-    load: () => Promise<ClusterRecommendationsData>;
-    onViewRecommendations: () => void;
-    onCategoryClick: () => void;
+export type DashboardProps = {
+  totalClusters: {
+    data: TotalClustersData;
+    onViewMore?: () => void;
   };
-  cveCard: {
-    load: () => Promise<CVEData[]>;
+  clustersWithIssues: {
+    data: ClustersWithIssuesData;
+    onClusterClick?: (cluster: ClusterIssue) => void;
+    onOpenConsole?: (cluster: ClusterIssue) => void;
   };
-  subscriptions: {
-    load: () => Promise<SubscriptionsData>;
-    onViewSubscriptions: () => void;
-    onSubscriptionsClick?: () => void;
-    onInstancesClick?: () => void;
+  resourceUtilization: {
+    data: ResourceUtilizationData;
+    onViewMore?: () => void;
   };
-  updateRisks: {
-    load: () => Promise<UpdateRisksData>;
-    onViewRisks: () => void;
+  expiredTrials: {
+    data: ExpiredTrialsData;
+    onTrialClick?: (trial: ExpiredTrial) => void;
+    onPageChange?: (page: number) => void;
+    onPageSizeChange?: (size: number) => void;
   };
-  storage: {
-    load: () => Promise<StorageData>;
-    onViewMore: () => void;
+  telemetry: {
+    data: TelemetryData;
   };
-  notifications: {
-    load: () => Promise<NotificationItem[]>;
-    onNotificationClick: (notification: NotificationItem) => void;
+  updateStatus: {
+    data: UpdateStatusData;
+  };
+  advisorSeverity: {
+    severity: SeverityCounts;
+    onViewMore?: () => void;
+  };
+  advisorCategories: {
+    categories: CategoryCounts;
   };
 };
 
 const widgetMapping: (props: DashboardProps) => WidgetMapping = ({
-  cveCard,
-  clusterRecommendations,
-  subscriptions,
-  updateRisks,
-  storage,
-  notifications,
+  totalClusters,
+  clustersWithIssues,
+  resourceUtilization,
+  expiredTrials,
+  telemetry,
+  updateStatus,
+  advisorSeverity,
+  advisorCategories,
 }) => ({
-  'cve-card': {
-    defaults: { w: 2, h: 5, maxH: 6, minH: 3 },
+  'total-clusters': {
+    defaults: { w: 1, h: 3, maxH: 4, minH: 2 },
     config: {
-      title: 'CVE Card',
-      icon: <ExclamationTriangleIcon />,
-    },
-    renderWidget: () => (
-      <LoadingPanel<CVEData[]> callback={cveCard.load}>
-        {({ data, error }) => {
-          if (error || !data) {
-            return <ErrorState bodyText={error?.message || 'Unknown error'} />;
-          }
-          return <CVECard cveData={data} />;
-        }}
-      </LoadingPanel>
-    ),
-  },
-  'cluster-recommendations': {
-    defaults: { w: 2, h: 8, maxH: 6, minH: 5 },
-    config: {
-      title: 'Cluster Recommendations',
+      title: 'Total clusters',
       icon: <ClusterIcon />,
     },
     renderWidget: () => (
-      <LoadingPanel<ClusterRecommendationsData> callback={clusterRecommendations.load}>
-        {({ data, error }) => {
-          if (error || !data) {
-            return <ErrorState bodyText={error?.message || 'Unknown error'} />;
-          }
-          return (
-            <ClusterRecommendations
-              {...data}
-              onViewRecommendations={clusterRecommendations.onViewRecommendations}
-              onCategoryClick={clusterRecommendations.onCategoryClick}
-            />
-          );
-        }}
-      </LoadingPanel>
+      <TotalClusters data={totalClusters.data} onViewMore={totalClusters.onViewMore} />
     ),
   },
-  subscriptions: {
+  'clusters-with-issues': {
+    defaults: { w: 2, h: 7, maxH: 10, minH: 4 },
+    config: {
+      title: 'Clusters with issues',
+      icon: <ExclamationCircleIcon />,
+    },
+    renderWidget: () => (
+      <ClustersWithIssues
+        data={clustersWithIssues.data}
+        onClusterClick={clustersWithIssues.onClusterClick}
+        onOpenConsole={clustersWithIssues.onOpenConsole}
+      />
+    ),
+  },
+  'resource-utilization': {
+    defaults: { w: 2, h: 5, maxH: 6, minH: 4 },
+    config: {
+      title: 'Resource usage',
+      icon: <ChartBarIcon />,
+    },
+    renderWidget: () => (
+      <ResourceUtilization
+        data={resourceUtilization.data}
+        onViewMore={resourceUtilization.onViewMore}
+      />
+    ),
+  },
+  'expired-trials': {
+    defaults: { w: 2, h: 5, maxH: 8, minH: 3 },
+    config: {
+      title: 'Expired trials',
+      icon: <OutlinedClockIcon />,
+    },
+    renderWidget: () => (
+      <ExpiredTrials
+        data={expiredTrials.data}
+        onTrialClick={expiredTrials.onTrialClick}
+        onPageChange={expiredTrials.onPageChange}
+        onPageSizeChange={expiredTrials.onPageSizeChange}
+      />
+    ),
+  },
+  telemetry: {
+    defaults: { w: 1, h: 3, maxH: 4, minH: 2 },
+    config: {
+      title: 'Telemetry',
+      icon: <ConnectedIcon />,
+    },
+    renderWidget: () => <Telemetry data={telemetry.data} />,
+  },
+  'update-status': {
+    defaults: { w: 2, h: 3, maxH: 4, minH: 2 },
+    config: {
+      title: 'Update status',
+      icon: <SyncAltIcon />,
+    },
+    renderWidget: () => <UpdateStatus data={updateStatus.data} />,
+  },
+  'advisor-severity': {
     defaults: { w: 2, h: 4, maxH: 5, minH: 3 },
     config: {
-      title: 'Subscriptions',
-      icon: <FolderIcon />,
+      title: 'Advisor by severity',
+      icon: <LightbulbIcon />,
     },
     renderWidget: () => (
-      <LoadingPanel<SubscriptionsData> callback={subscriptions.load}>
-        {({ data, error }) => {
-          if (error || !data) {
-            return <ErrorState bodyText={error?.message || 'Unknown error'} />;
-          }
-          return (
-            <Subscriptions
-              {...data}
-              onViewSubscriptions={subscriptions.onViewSubscriptions}
-              onSubscriptionsClick={subscriptions.onSubscriptionsClick}
-              onInstancesClick={subscriptions.onInstancesClick}
-            />
-          );
-        }}
-      </LoadingPanel>
+      <AdvisorSeverity
+        severity={advisorSeverity.severity}
+        onViewMore={advisorSeverity.onViewMore}
+      />
     ),
   },
-  'update-risks': {
-    defaults: { w: 1, h: 3, maxH: 3, minH: 2 },
+  'advisor-categories': {
+    defaults: { w: 2, h: 4, maxH: 5, minH: 3 },
     config: {
-      title: 'Update Risks',
-      icon: <UploadIcon />,
+      title: 'Advisor by category',
+      icon: <TachometerAltIcon />,
     },
-    renderWidget: () => (
-      <LoadingPanel<UpgradeRisksProps> callback={updateRisks.load}>
-        {({ data, error }) => {
-          if (error || !data) {
-            return <ErrorState bodyText={error?.message || 'Unknown error'} />;
-          }
-          return <UpgradeRisks {...data} onViewRisks={updateRisks.onViewRisks} />;
-        }}
-      </LoadingPanel>
-    ),
-  },
-  storage: {
-    defaults: { w: 1, h: 3, maxH: 3, minH: 2 },
-    config: {
-      title: 'Storage',
-      icon: <StorageDomainIcon />,
-    },
-    renderWidget: () => (
-      <LoadingPanel<StorageData> callback={storage.load}>
-        {({ data, error }) => {
-          if (error || !data) {
-            return <ErrorState bodyText={error?.message || 'Unknown error'} />;
-          }
-          return <StorageCard storageData={data} onViewMore={storage.onViewMore} />;
-        }}
-      </LoadingPanel>
-    ),
-  },
-  notifications: {
-    defaults: { w: 2, h: 7, maxH: 7, minH: 7 },
-    config: {
-      title: 'Notifications',
-      icon: <BellIcon />,
-    },
-    renderWidget: () => (
-      <LoadingPanel<NotificationItem[]> callback={notifications.load}>
-        {({ data, error }) => {
-          if (error || !data) {
-            return <ErrorState bodyText={error?.message || 'Unknown error'} />;
-          }
-          return (
-            <NotificationsPanel
-              notifications={data}
-              onNotificationClick={notifications.onNotificationClick}
-            />
-          );
-        }}
-      </LoadingPanel>
-    ),
+    renderWidget: () => <AdvisorCategories categories={advisorCategories.categories} />,
   },
 });
 
 const initialDashboardData: ExtendedTemplateConfig = {
   sm: [
-    { i: 'cve-card#1', x: 1, y: 0, w: 2, h: 3, widgetType: 'cve-card' },
-    {
-      i: 'cluster-recommendations#1',
-      x: 0,
-      y: 0,
-      w: 2,
-      h: 4,
-      widgetType: 'cluster-recommendations',
-    },
-    { i: 'subscriptions#1', x: 0, y: 4, w: 2, h: 3, widgetType: 'subscriptions' },
-    { i: 'update-risks#1', x: 0, y: 0, w: 1, h: 5, widgetType: 'update-risks' },
-    { i: 'notifications#1', x: 0, y: 15, w: 2, h: 7, widgetType: 'notifications' },
+    { i: 'total-clusters#1', x: 0, y: 0, w: 2, h: 3, widgetType: 'total-clusters' },
+    { i: 'clusters-with-issues#1', x: 0, y: 3, w: 2, h: 7, widgetType: 'clusters-with-issues' },
+    { i: 'resource-utilization#1', x: 0, y: 10, w: 2, h: 5, widgetType: 'resource-utilization' },
+    { i: 'update-status#1', x: 0, y: 15, w: 2, h: 3, widgetType: 'update-status' },
+    { i: 'telemetry#1', x: 0, y: 18, w: 2, h: 3, widgetType: 'telemetry' },
+    { i: 'advisor-severity#1', x: 0, y: 21, w: 2, h: 4, widgetType: 'advisor-severity' },
+    { i: 'advisor-categories#1', x: 0, y: 25, w: 2, h: 4, widgetType: 'advisor-categories' },
+    { i: 'expired-trials#1', x: 0, y: 29, w: 2, h: 5, widgetType: 'expired-trials' },
   ],
   md: [
-    { i: 'cve-card#1', x: 1, y: 0, w: 1, h: 5, widgetType: 'cve-card' },
-    { i: 'storage#1', x: 1, y: 5, w: 1, h: 5, widgetType: 'storage' },
-    {
-      i: 'cluster-recommendations#1',
-      x: 0,
-      y: 0,
-      w: 1,
-      h: 7,
-      widgetType: 'cluster-recommendations',
-    },
-    { i: 'subscriptions#1', x: 0, y: 12, w: 1, h: 4, widgetType: 'subscriptions' },
-    { i: 'update-risks#1', x: 0, y: 7, w: 1, h: 5, widgetType: 'update-risks' },
-    { i: 'notifications#1', x: 0, y: 19, w: 2, h: 7, widgetType: 'notifications' },
+    { i: 'total-clusters#1', x: 0, y: 0, w: 1, h: 3, widgetType: 'total-clusters' },
+    { i: 'telemetry#1', x: 1, y: 0, w: 1, h: 3, widgetType: 'telemetry' },
+    { i: 'clusters-with-issues#1', x: 0, y: 3, w: 1, h: 7, widgetType: 'clusters-with-issues' },
+    { i: 'resource-utilization#1', x: 1, y: 3, w: 1, h: 5, widgetType: 'resource-utilization' },
+    { i: 'update-status#1', x: 0, y: 10, w: 2, h: 3, widgetType: 'update-status' },
+    { i: 'advisor-severity#1', x: 0, y: 13, w: 1, h: 4, widgetType: 'advisor-severity' },
+    { i: 'advisor-categories#1', x: 1, y: 13, w: 1, h: 4, widgetType: 'advisor-categories' },
+    { i: 'expired-trials#1', x: 0, y: 17, w: 2, h: 5, widgetType: 'expired-trials' },
   ],
   lg: [
-    { i: 'cve-card#1', x: 2, y: 0, w: 1, h: 5, widgetType: 'cve-card' },
-    { i: 'storage#1', x: 2, y: 5, w: 1, h: 5, widgetType: 'storage' },
-    {
-      i: 'cluster-recommendations#1',
-      x: 0,
-      y: 0,
-      w: 2,
-      h: 7,
-      widgetType: 'cluster-recommendations',
-    },
-    { i: 'subscriptions#1', x: 1, y: 7, w: 1, h: 5, widgetType: 'subscriptions' },
-    { i: 'update-risks#1', x: 0, y: 7, w: 1, h: 5, widgetType: 'update-risks' },
-    { i: 'notifications#1', x: 0, y: 12, w: 2, h: 7, widgetType: 'notifications' },
+    { i: 'total-clusters#1', x: 0, y: 0, w: 1, h: 3, widgetType: 'total-clusters' },
+    { i: 'telemetry#1', x: 1, y: 0, w: 1, h: 3, widgetType: 'telemetry' },
+    { i: 'update-status#1', x: 2, y: 0, w: 1, h: 3, widgetType: 'update-status' },
+    { i: 'clusters-with-issues#1', x: 0, y: 3, w: 1, h: 7, widgetType: 'clusters-with-issues' },
+    { i: 'resource-utilization#1', x: 1, y: 3, w: 2, h: 5, widgetType: 'resource-utilization' },
+    { i: 'advisor-severity#1', x: 0, y: 10, w: 2, h: 4, widgetType: 'advisor-severity' },
+    { i: 'advisor-categories#1', x: 2, y: 10, w: 1, h: 4, widgetType: 'advisor-categories' },
+    { i: 'expired-trials#1', x: 0, y: 14, w: 3, h: 5, widgetType: 'expired-trials' },
   ],
   xl: [
-    { i: 'cve-card#1', x: 2, y: 0, w: 2, h: 5, widgetType: 'cve-card' },
-    { i: 'storage#1', x: 2, y: 5, w: 2, h: 5, widgetType: 'storage' },
-    {
-      i: 'cluster-recommendations#1',
-      x: 0,
-      y: 0,
-      w: 2,
-      h: 7,
-      widgetType: 'cluster-recommendations',
-    },
-    { i: 'subscriptions#1', x: 1, y: 7, w: 1, h: 5, widgetType: 'subscriptions' },
-    { i: 'update-risks#1', x: 0, y: 7, w: 1, h: 5, widgetType: 'update-risks' },
-    { i: 'notifications#1', x: 0, y: 12, w: 2, h: 7, widgetType: 'notifications' },
+    { i: 'total-clusters#1', x: 0, y: 0, w: 1, h: 3, widgetType: 'total-clusters' },
+    { i: 'telemetry#1', x: 1, y: 0, w: 1, h: 3, widgetType: 'telemetry' },
+    { i: 'update-status#1', x: 2, y: 0, w: 2, h: 3, widgetType: 'update-status' },
+    { i: 'clusters-with-issues#1', x: 0, y: 3, w: 2, h: 7, widgetType: 'clusters-with-issues' },
+    { i: 'resource-utilization#1', x: 2, y: 3, w: 2, h: 5, widgetType: 'resource-utilization' },
+    { i: 'advisor-severity#1', x: 0, y: 10, w: 2, h: 4, widgetType: 'advisor-severity' },
+    { i: 'advisor-categories#1', x: 2, y: 10, w: 2, h: 4, widgetType: 'advisor-categories' },
+    { i: 'expired-trials#1', x: 0, y: 14, w: 4, h: 5, widgetType: 'expired-trials' },
   ],
 };
 
-// Filter template to only include the properties we want to persist
-// right now there is a cyclic dependency between the template and the widget mapping
-// see https://github.com/patternfly/patternfly-widgetized-dashboard/issues/130
 function filterTemplate(template: ExtendedTemplateConfig): ExtendedTemplateConfig {
   const allowedKeys = ['i', 'x', 'y', 'w', 'h', 'widgetType'] as const;
   const filterLayoutItem = (item: any) => {
@@ -282,30 +238,18 @@ function filterTemplate(template: ExtendedTemplateConfig): ExtendedTemplateConfi
   return filtered;
 }
 
-export const Dashboard = ({
-  cveCard,
-  clusterRecommendations,
-  subscriptions,
-  updateRisks,
-  storage,
-  notifications,
-}: DashboardProps) => {
+export const Dashboard = (props: DashboardProps) => {
   const [template, setTemplate] = useLocalStorageWithObject<ExtendedTemplateConfig>(
-    'dashboard-template',
+    'dashboard-template-v2',
     initialDashboardData
   );
+
   return (
     <WidgetLayout
-      widgetMapping={widgetMapping({
-        cveCard,
-        clusterRecommendations,
-        subscriptions,
-        updateRisks,
-        storage,
-        notifications,
-      })}
+      widgetMapping={widgetMapping(props)}
       initialTemplate={template}
       onTemplateChange={(template) => setTemplate(filterTemplate(template))}
+      showDrawer={false}
     />
   );
 };
