@@ -2,7 +2,7 @@ import { isValidElement, useMemo } from 'react';
 import { Content, Grid, GridItem, Stack } from '@patternfly/react-core';
 import * as yup from 'yup';
 
-import { type YupFieldDescribeOptions } from '@/utilities/yupFieldRequired';
+import { type YupFieldDescribeOptions } from '../../../../../utilities/yupFieldRequired';
 
 /** Yup's public `Test` type hides `OPTIONS`; `describe()` uses this internally. */
 type YupInternalTest = yup.AnySchema['tests'][number] & {

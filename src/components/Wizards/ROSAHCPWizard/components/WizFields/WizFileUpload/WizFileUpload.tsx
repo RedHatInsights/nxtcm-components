@@ -1,8 +1,8 @@
 import type { DropEvent } from '@patternfly/react-core';
 import { type FieldValues, useController } from 'react-hook-form';
 
-import { getYupFieldPresentationMeta } from '@/utilities/yupFieldPresentationMeta';
-import { requiredFromYup } from '@/utilities/yupFieldRequired';
+import { getYupFieldPresentationMeta } from '../../../../../../utilities/yupFieldPresentationMeta';
+import { requiredFromYup } from '../../../../../../utilities/yupFieldRequired';
 
 import { FileUpload, type FileUploadProps } from '../../Fields/FileUpload';
 import {

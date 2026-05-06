@@ -1,8 +1,8 @@
 import { type FormEvent } from 'react';
 import { type FieldValues, useController } from 'react-hook-form';
 
-import { getYupFieldPresentationMeta } from '@/utilities/yupFieldPresentationMeta';
-import { requiredFromYup } from '@/utilities/yupFieldRequired';
+import { getYupFieldPresentationMeta } from '../../../../../../utilities/yupFieldPresentationMeta';
+import { requiredFromYup } from '../../../../../../utilities/yupFieldRequired';
 
 import { TextInput, type TextInputProps } from '../../Fields/TextInput';
 import {

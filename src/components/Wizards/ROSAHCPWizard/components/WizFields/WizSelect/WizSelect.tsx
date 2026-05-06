@@ -1,7 +1,7 @@
 import { type FieldValues, useController } from 'react-hook-form';
 
-import { getYupFieldPresentationMeta } from '@/utilities/yupFieldPresentationMeta';
-import { requiredFromYup } from '@/utilities/yupFieldRequired';
+import { getYupFieldPresentationMeta } from '../../../../../../utilities/yupFieldPresentationMeta';
+import { requiredFromYup } from '../../../../../../utilities/yupFieldRequired';
 
 import { Select, type SelectProps } from '../../Fields/Select';
 import {
