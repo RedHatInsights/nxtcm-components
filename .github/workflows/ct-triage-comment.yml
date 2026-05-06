@@ -42,7 +42,7 @@ jobs:
           # fallback for fork PRs: commits API can't resolve fork SHAs,
           # so search open PRs by head SHA instead
           if [ -z "$PR" ]; then
-            PR=$(gh pr list --repo "$REPO" --state open --json number,headRefOid \
+            PR=$(gh pr list --repo "$REPO" --state open --limit 200 --json number,headRefOid \
               --jq ".[] | select(.headRefOid == \"${SHA}\") | .number" | head -1)
           fi
 
