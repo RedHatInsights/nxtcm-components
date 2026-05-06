@@ -3,7 +3,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Form } from '@patternfly/react-core';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
-import { WizCheckbox } from '@/components/Wizards/RosaWizard/common/WizFields/WizCheckbox';
+import { WizCheckbox } from './WizCheckbox';
 type FormValues = {
   enableAdvanced: boolean;
   acceptTerms: boolean;
