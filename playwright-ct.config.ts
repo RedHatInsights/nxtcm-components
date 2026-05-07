@@ -1,7 +1,10 @@
 import { defineConfig, devices } from '@playwright/experimental-ct-react';
 import path from 'path';
+const enableCoverage = process.env.COVERAGE === 'true' || !!process.env.CI;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const istanbulPlugin = require('./playwright/istanbul-plugin.cjs') as object;
+const istanbulPlugin = enableCoverage
+  ? (require('./playwright/istanbul-plugin.cjs') as object)
+  : null;
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -35,8 +38,7 @@ export default defineConfig({
     /* Port to use for Playwright component endpoint. */
     ctPort: 3100,
     ctViteConfig: {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      plugins: [istanbulPlugin as any],
+      plugins: [...(istanbulPlugin ? [istanbulPlugin] : [])],
       resolve: {
         alias: {
           '@redhat-cloud-services/nxtcm-dashboard': path.resolve(

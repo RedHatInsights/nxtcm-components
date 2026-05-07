@@ -15,15 +15,24 @@ const instrumenter = createInstrumenter({
 const testExclude = new TestExclude({
   cwd: process.cwd(),
   include: ['src/**/*.ts', 'src/**/*.tsx'],
-  exclude: ['**/*.spec.tsx', '**/ct-fixture.ts', '**/test-helpers.ts', 'node_modules'],
+  exclude: [
+    '**/*.spec.tsx',
+    '**/ct-fixture.ts',
+    '**/test-helpers.ts',
+    '**/*.stories.*',
+    'node_modules',
+  ],
   extension: ['.ts', '.tsx'],
   excludeNodeModules: true,
 });
+
+const coverageEnabled = process.env.COVERAGE === 'true' || !!process.env.CI;
 
 module.exports = {
   name: 'vite:istanbul',
   enforce: 'post',
   transform(srcCode, id) {
+    if (!coverageEnabled) return;
     if (id.includes('\0') || id.includes('node_modules')) return;
     const [filename] = id.split('?');
     if (!testExclude.shouldInstrument(filename)) return;
