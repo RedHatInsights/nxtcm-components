@@ -153,7 +153,7 @@ If there are uncommitted or untracked changes, stage and commit them:
 
 ```bash
 git add -u
-git commit -s -m "TICKET-ID: <short summary>"
+git commit -s -m "TICKET-ID: <short summary>" -m "Co-authored-by: cursor-agent <noreply@cursor.com>"
 ```
 
 - `TICKET-ID`: the extracted Jira ID (e.g. `FCN-340`). Omit if none found.
