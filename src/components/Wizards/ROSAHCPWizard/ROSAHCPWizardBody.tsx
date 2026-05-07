@@ -10,8 +10,10 @@ import { ClusterWideProxy } from './Steps/BasicSetup/ClusterWideProxy/ClusterWid
 import { Review } from './Steps/Review/Review';
 import { useRosaHcpWizardStrings } from './stringsProvider/RosaHcpWizardStringsContext';
 import { STEP_IDS } from './constants';
+import { RosaHCPWizardProps } from './types';
 
-export const ROSAHCPWizardBody = () => {
+export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
+  const { wizardData } = props;
   //setShowClusterWideProxy is needed to be passed into Networking step
   const [showClusterWideProxy, _] = React.useState<boolean>(false);
 
@@ -32,13 +34,12 @@ export const ROSAHCPWizardBody = () => {
             id={STEP_IDS.BASIC_SETUP}
             steps={[
               <WizardStep name={sl.details} id={STEP_IDS.DETAILS} key={STEP_IDS.DETAILS}>
-                {' '}
                 <Form
                   onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
                     event.preventDefault();
                   }}
                 >
-                  <Details />
+                  <Details {...wizardData} />
                 </Form>
               </WizardStep>,
               <WizardStep
@@ -51,7 +52,7 @@ export const ROSAHCPWizardBody = () => {
                     event.preventDefault();
                   }}
                 >
-                  <RolesAndPolicies />
+                  <RolesAndPolicies {...wizardData} />
                 </Form>
               </WizardStep>,
               <WizardStep
@@ -64,11 +65,11 @@ export const ROSAHCPWizardBody = () => {
                     event.preventDefault();
                   }}
                 >
-                  <MachinePools />
+                  <MachinePools {...wizardData} />
                 </Form>
               </WizardStep>,
               <WizardStep name={sl.networking} id={STEP_IDS.NETWORKING} key={STEP_IDS.NETWORKING}>
-                <Networking />
+                <Networking {...wizardData} />
               </WizardStep>,
             ]}
           />

@@ -13,10 +13,14 @@ import {
 } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { FieldWithAPIErrorAlert } from '../../../components/FieldWithAPIErrorAlert';
 import React from 'react';
-import PopoverHintWithTitle from '../../../components/PopoverHitWithTitle';
+import PopoverHintWithTitle from '../../../components/PopoverHintWithTitle';
 import { OIDCConfigHint } from '../../../components/OIDCConfigHint';
+import { ROSAHCPWizardData } from '../../../types';
 
-export const RolesAndPolicies = () => {
+type RolesAndPoliciesStepProps = Pick<ROSAHCPWizardData, 'roles' | 'oidcConfig'>;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
 
