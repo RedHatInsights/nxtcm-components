@@ -35,7 +35,7 @@ const meta: Meta<typeof ROSAHCPWizard> = {
       description: 'The title displayed at the top of the wizard',
       control: 'text',
     },
-    wizardsStepsData: {
+    wizardData: {
       description: 'Data object containing configuration for all wizard steps',
     },
   },

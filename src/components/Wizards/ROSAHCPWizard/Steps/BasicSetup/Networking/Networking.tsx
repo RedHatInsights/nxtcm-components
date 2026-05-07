@@ -17,7 +17,7 @@ import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../links';
 import { ROSAHCPWizardData } from '../../../types';
 
-type NetworkingStepProps = Pick<ROSAHCPWizardData, 'subnets'>;
+type NetworkingStepProps = Pick<ROSAHCPWizardData, 'vpcList' | 'subnets'>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Networking = (props: NetworkingStepProps) => {
