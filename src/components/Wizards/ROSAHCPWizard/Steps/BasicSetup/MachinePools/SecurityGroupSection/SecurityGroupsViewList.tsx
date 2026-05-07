@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Label, LabelGroup } from '@patternfly/react-core';
-import { SecurityGroup } from '../../../../../types';
+import { SecurityGroup } from '../../../../types';
 
 const SecurityGroupsViewList = ({
   securityGroups,
