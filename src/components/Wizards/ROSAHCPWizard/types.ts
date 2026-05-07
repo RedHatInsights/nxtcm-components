@@ -1,4 +1,3 @@
-import { WizardCancel, WizardSubmit } from '@patternfly-labs/react-form-wizard';
 import { TooltipProps, useWizardContext } from '@patternfly/react-core';
 
 // -- dropdown / select option types --
@@ -184,9 +183,9 @@ export type ROSAHCPWizardData = {
 
 export type RosaHCPWizardProps = {
   wizardData: ROSAHCPWizardData;
-  onSubmit: WizardSubmit;
+  onSubmit: (data: ROSAHCPCluster) => Promise<void>;
   onSubmitError?: string | boolean;
-  onCancel: WizardCancel;
+  onCancel: () => void;
   title: string;
   onBackToReviewStep?: () => void | Promise<void>;
   yamlEditor?: () => React.ReactNode;
@@ -194,3 +193,58 @@ export type RosaHCPWizardProps = {
 };
 
 export type WizardNavigationContext = ReturnType<typeof useWizardContext>;
+
+export type ROSAHCPCluster = {
+  // details
+  name: string | undefined;
+  cluster_version: string | undefined;
+  associated_aws_id: string;
+  billing_account_id: string | undefined;
+  region: string | undefined;
+
+  // roles & policies
+  installer_role_arn: string | undefined;
+  support_role_arn: string | undefined;
+  worker_role_arn: string | undefined;
+  byo_oidc_config_id: string;
+  custom_operator_roles_prefix: string;
+
+  // machine pools
+  selected_vpc?: string | VPC;
+  machine_pools_subnets?: MachinePoolSubnetEntry[];
+  machine_type?: string;
+  autoscaling?: boolean;
+  nodes_compute?: number;
+  min_replicas?: number;
+  max_replicas?: number;
+  compute_root_volume?: number;
+  imds?: string;
+
+  // networking
+  cluster_privacy?: ClusterNetwork.external | ClusterNetwork.internal;
+  cluster_privacy_public_subnet_id?: string;
+  cidr_default?: boolean;
+  network_machine_cidr?: string;
+  network_service_cidr?: string;
+  network_pod_cidr?: string;
+  network_host_prefix?: string;
+  configure_proxy?: boolean;
+  multi_az?: string;
+  hypershift?: string;
+
+  // proxy
+  http_proxy_url?: string;
+  https_proxy_url?: string;
+  no_proxy_domains?: string;
+  additional_trust_bundle?: string;
+
+  // encryption
+  encryption_keys?: ClusterEncryptionKeys.default | ClusterEncryptionKeys.custom;
+  kms_key_arn?: string;
+  etcd_encryption?: boolean;
+  etcd_key_arn?: string;
+
+  // cluster updates
+  upgrade_policy?: ClusterUpgrade.automatic | ClusterUpgrade.manual;
+  upgrade_schedule?: string;
+};

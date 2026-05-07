@@ -10,7 +10,13 @@ import { ClusterWideProxy } from './Steps/BasicSetup/ClusterWideProxy/ClusterWid
 import { Review } from './Steps/Review/Review';
 import { useRosaHcpWizardStrings } from './stringsProvider/RosaHcpWizardStringsContext';
 import { STEP_IDS } from './constants';
-import { RosaHCPWizardProps } from './types';
+import {
+  ClusterEncryptionKeys,
+  ClusterNetwork,
+  ClusterUpgrade,
+  ROSAHCPCluster,
+  RosaHCPWizardProps,
+} from './types';
 
 export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
   const { wizardData } = props;
@@ -20,6 +26,23 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
   const rosaStrings = useRosaHcpWizardStrings();
   const { wizard } = rosaStrings;
   const sl = wizard.stepLabels;
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const defaultClusterData: Partial<ROSAHCPCluster> = {
+    encryption_keys: ClusterEncryptionKeys.default,
+    etcd_encryption: false,
+    configure_proxy: false,
+    cidr_default: true,
+    network_machine_cidr: '10.0.0.0/16',
+    network_service_cidr: '172.30.0.0/16',
+    network_pod_cidr: '10.128.0.0/14',
+    network_host_prefix: '/23',
+    autoscaling: false,
+    nodes_compute: 2,
+    upgrade_policy: ClusterUpgrade.automatic,
+    cluster_privacy: ClusterNetwork.external,
+    compute_root_volume: 300,
+  };
 
   return (
     <div>
