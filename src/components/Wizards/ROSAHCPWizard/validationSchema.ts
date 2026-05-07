@@ -228,7 +228,7 @@ export function createClusterValidationSchema(
       if (value <= 0) {
         return this.createError({ message: msgs.replicas.notPositive });
       }
-      if (value > 500) {
+      if (value > maxAutoscalingNodes) {
         return this.createError({ message: msgs.replicas.maxNodes(500) });
       }
       const maxReplicas = this.parent?.max_replicas as number | undefined;
