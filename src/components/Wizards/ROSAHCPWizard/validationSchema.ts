@@ -38,6 +38,12 @@ export type ValidationSchemaOptions = {
   machinePoolsNumber: number;
   /** VPC subnets currently selected (for CIDR containment checks). */
   selectedSubnets?: CIDRSubnet[];
+  /**
+   * Async callback that checks whether a cluster name is already in use.
+   * Returns `null` when the name is available, or an error message string
+   * when it is taken / the check fails.
+   */
+  checkClusterNameUniqueness?: (name: string, region?: string) => Promise<string | null>;
 };
 
 // ---------------------------------------------------------------------------
@@ -62,6 +68,23 @@ function isCidrSubnetAddress(value: string): boolean {
 function getStartingIP(cidr: string): string {
   const ip = new IPCIDR(cidr);
   return ip.start().toString();
+}
+
+function validateClusterNameSync(
+  value: string,
+  msgs: RosaHcpWizardValidatorStrings['clusterName']
+): string | undefined {
+  if (!value) return undefined;
+  if (value.length > 54) return msgs.maxLength;
+  for (const char of value) {
+    if (!LOWERCASE_ALPHANUMERIC.includes(char) && char !== '-' && char !== '.') {
+      return msgs.invalidChars;
+    }
+  }
+  if (!LOWERCASE_ALPHANUMERIC.includes(value[0])) return msgs.mustStartAlphanumeric;
+  if (/^[0-9]/.test(value[0])) return msgs.mustNotStartNumber;
+  if (!LOWERCASE_ALPHANUMERIC.includes(value[value.length - 1])) return msgs.mustEndAlphanumeric;
+  return undefined;
 }
 
 function findOverlappingCidrFields(
@@ -105,8 +128,14 @@ function findOverlappingCidrFields(
 export function createClusterValidationSchema(
   options: ValidationSchemaOptions
 ): yup.ObjectSchema<Partial<ClusterFormData>> {
-  const { msgs, maxRootDiskSize, maxAutoscalingNodes, machinePoolsNumber, selectedSubnets } =
-    options;
+  const {
+    msgs,
+    maxRootDiskSize,
+    maxAutoscalingNodes,
+    machinePoolsNumber,
+    selectedSubnets,
+    checkClusterNameUniqueness,
+  } = options;
 
   const cidrFieldLabels: Record<string, string> = {
     network_machine_cidr: msgs.disjointSubnets.fieldLabelMachine,
@@ -118,33 +147,26 @@ export function createClusterValidationSchema(
 
   const nameSchema = yup
     .string()
-    .optional()
-    .test('cluster-name', '', function (value) {
+    .required()
+    .test('cluster-name-sync', '', function (value) {
       if (!value) return true;
-      if (value.length > 54) return this.createError({ message: msgs.clusterName.maxLength });
+      const error = validateClusterNameSync(value, msgs.clusterName);
+      return error ? this.createError({ message: error }) : true;
+    })
+    .test('cluster-name-unique', '', async function (value) {
+      if (!value || !checkClusterNameUniqueness) return true;
+      if (validateClusterNameSync(value, msgs.clusterName)) return true;
 
-      for (const char of value) {
-        if (!LOWERCASE_ALPHANUMERIC.includes(char) && char !== '-' && char !== '.') {
-          return this.createError({ message: msgs.clusterName.invalidChars });
-        }
-      }
-      if (!LOWERCASE_ALPHANUMERIC.includes(value[0])) {
-        return this.createError({ message: msgs.clusterName.mustStartAlphanumeric });
-      }
-      if (/^[0-9]/.test(value[0])) {
-        return this.createError({ message: msgs.clusterName.mustNotStartNumber });
-      }
-      if (!LOWERCASE_ALPHANUMERIC.includes(value[value.length - 1])) {
-        return this.createError({ message: msgs.clusterName.mustEndAlphanumeric });
-      }
-      return true;
+      const region = (this.parent as Partial<ClusterFormData>).region;
+      const error = await checkClusterNameUniqueness(value, region);
+      return error ? this.createError({ message: error }) : true;
     });
 
   // -- Roles & policies ------------------------------------------------------
 
   const operatorRolesPrefixSchema = yup
     .string()
-    .optional()
+    .required()
     .test('operator-roles-prefix', '', function (value) {
       if (!value) return true;
       const label = msgs.operatorRolesPrefix.fieldLabel;
@@ -597,20 +619,20 @@ export function createClusterValidationSchema(
 
   return yup.object({
     name: nameSchema,
-    cluster_version: yup.string().optional(),
-    associated_aws_id: yup.string().optional(),
-    billing_account_id: yup.string().optional(),
-    region: yup.string().optional(),
+    cluster_version: yup.string().required(),
+    associated_aws_id: yup.string().required(),
+    billing_account_id: yup.string().required(),
+    region: yup.string().required(),
 
-    installer_role_arn: yup.string().optional(),
-    support_role_arn: yup.string().optional(),
-    worker_role_arn: yup.string().optional(),
-    byo_oidc_config_id: yup.string().optional(),
+    installer_role_arn: yup.string().required(),
+    support_role_arn: yup.string().required(),
+    worker_role_arn: yup.string().required(),
+    byo_oidc_config_id: yup.string().required(),
     custom_operator_roles_prefix: operatorRolesPrefixSchema,
 
-    selected_vpc: yup.mixed().optional(),
-    machine_pools_subnets: yup.array().optional(),
-    machine_type: yup.string().optional(),
+    selected_vpc: yup.mixed().required(),
+    machine_pools_subnets: yup.array().required(),
+    machine_type: yup.string().required(),
     autoscaling: yup.boolean().optional(),
     nodes_compute: nodesComputeSchema,
     min_replicas: minReplicasSchema,
@@ -618,7 +640,7 @@ export function createClusterValidationSchema(
     compute_root_volume: rootDiskSchema,
     imds: yup.string().optional(),
 
-    cluster_privacy: yup.string().optional(),
+    cluster_privacy: yup.string().required(),
     cluster_privacy_public_subnet_id: yup.string().optional(),
     cidr_default: yup.boolean().optional(),
     network_machine_cidr: machineCidrSchema,
