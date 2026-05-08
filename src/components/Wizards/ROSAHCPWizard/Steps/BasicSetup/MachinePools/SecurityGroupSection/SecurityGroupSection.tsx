@@ -1,14 +1,13 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ExpandableSection } from '@patternfly/react-core';
 
 import EditSecurityGroups from './EditSecurityGroups';
 import SecurityGroupsEmptyAlert from './SecurityGroupsEmptyAlert';
 import SecurityGroupsNoEditAlert from './SecurityGroupsNoEditAlert';
 import { showSecurityGroupsSection } from '../../../../helpers';
-import { CloudVpc } from '../../../../../types';
 import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWizardStringsContext';
 import { FieldWithAPIErrorAlert } from '../../../../components/FieldWithAPIErrorAlert';
-import React from 'react';
+import { CloudVpc } from '../../../../types';
 
 export const SecurityGroupsSection = ({
   selectedVPC,
@@ -19,7 +18,7 @@ export const SecurityGroupsSection = ({
   selectedVPC: CloudVpc | undefined;
   clusterVersion: string;
   vpcList: any;
-  //vpcList: Resource<VPC[]>;
+  //vpcList: VpcListResource;
   refreshVPCs?: () => void;
 }) => {
   const { machinePools, securityGroups } = useRosaHcpWizardStrings();

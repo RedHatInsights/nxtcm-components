@@ -6,8 +6,19 @@ import React from 'react';
 import { FieldWithAPIErrorAlert } from '../../../components/FieldWithAPIErrorAlert';
 import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../links';
+import { ROSAHCPWizardData } from '../../../types';
 
-export const Details = () => {
+type DetailsStepProps = Pick<
+  ROSAHCPWizardData,
+  | 'awsInfrastructureAccounts'
+  | 'awsBillingAccounts'
+  | 'regions'
+  | 'versions'
+  | 'clusterNameValidation'
+  | 'checkClusterNameUniqueness'
+>;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const Details = (props: DetailsStepProps) => {
   const d = useRosaHcpWizardStrings().details;
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const drawerRef = React.useRef<HTMLSpanElement>(null);

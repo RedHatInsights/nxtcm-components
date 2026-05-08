@@ -1,7 +1,7 @@
 import { Alert, AlertVariant, Content, ContentVariants, Title } from '@patternfly/react-core';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { CopyInstruction } from '../CopyInstruction';
-import PopoverHintWithTitle from '../PopoverHitWithTitle';
+import PopoverHintWithTitle from '../PopoverHintWithTitle';
 import ExternalLink from '../ExternalLink';
 import links from '../../links';
 import { TabGroup } from '../TabGroup';

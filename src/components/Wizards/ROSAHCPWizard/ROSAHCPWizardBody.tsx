@@ -10,14 +10,39 @@ import { ClusterWideProxy } from './Steps/BasicSetup/ClusterWideProxy/ClusterWid
 import { Review } from './Steps/Review/Review';
 import { useRosaHcpWizardStrings } from './stringsProvider/RosaHcpWizardStringsContext';
 import { STEP_IDS } from './constants';
+import {
+  ClusterEncryptionKeys,
+  ClusterNetwork,
+  ClusterUpgrade,
+  ROSAHCPCluster,
+  RosaHCPWizardProps,
+} from './types';
 
-export const ROSAHCPWizardBody = () => {
+export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
+  const { wizardData } = props;
   //setShowClusterWideProxy is needed to be passed into Networking step
   const [showClusterWideProxy, _] = React.useState<boolean>(false);
 
   const rosaStrings = useRosaHcpWizardStrings();
   const { wizard } = rosaStrings;
   const sl = wizard.stepLabels;
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const defaultClusterData: Partial<ROSAHCPCluster> = {
+    encryption_keys: ClusterEncryptionKeys.default,
+    etcd_encryption: false,
+    configure_proxy: false,
+    cidr_default: true,
+    network_machine_cidr: '10.0.0.0/16',
+    network_service_cidr: '172.30.0.0/16',
+    network_pod_cidr: '10.128.0.0/14',
+    network_host_prefix: '/23',
+    autoscaling: false,
+    nodes_compute: 2,
+    upgrade_policy: ClusterUpgrade.automatic,
+    cluster_privacy: ClusterNetwork.external,
+    compute_root_volume: 300,
+  };
 
   return (
     <div>
@@ -32,13 +57,12 @@ export const ROSAHCPWizardBody = () => {
             id={STEP_IDS.BASIC_SETUP}
             steps={[
               <WizardStep name={sl.details} id={STEP_IDS.DETAILS} key={STEP_IDS.DETAILS}>
-                {' '}
                 <Form
                   onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
                     event.preventDefault();
                   }}
                 >
-                  <Details />
+                  <Details {...wizardData} />
                 </Form>
               </WizardStep>,
               <WizardStep
@@ -51,7 +75,7 @@ export const ROSAHCPWizardBody = () => {
                     event.preventDefault();
                   }}
                 >
-                  <RolesAndPolicies />
+                  <RolesAndPolicies {...wizardData} />
                 </Form>
               </WizardStep>,
               <WizardStep
@@ -64,11 +88,11 @@ export const ROSAHCPWizardBody = () => {
                     event.preventDefault();
                   }}
                 >
-                  <MachinePools />
+                  <MachinePools {...wizardData} />
                 </Form>
               </WizardStep>,
               <WizardStep name={sl.networking} id={STEP_IDS.NETWORKING} key={STEP_IDS.NETWORKING}>
-                <Networking />
+                <Networking {...wizardData} />
               </WizardStep>,
             ]}
           />

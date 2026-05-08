@@ -12,8 +12,15 @@ import {
 } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { FieldWithAPIErrorAlert } from '../../../components/FieldWithAPIErrorAlert';
 import { SecurityGroupsSection } from './SecurityGroupSection/SecurityGroupSection';
+import { ROSAHCPWizardData } from '../../../types';
 
-export const MachinePools = () => {
+type MachinePoolsProps = Pick<
+  ROSAHCPWizardData,
+  'machineTypes' | 'subnets' | 'vpcList' | 'securityGroups'
+>;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const MachinePools = (props: MachinePoolsProps) => {
   const mp = useRosaHcpWizardStrings().machinePools;
   // const v = useRosaHcpWizardValidators();
 

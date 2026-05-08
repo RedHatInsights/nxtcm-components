@@ -2,7 +2,7 @@ import { Alert, AlertVariant, Content, ContentVariants, Title } from '@patternfl
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { CopyInstruction } from '../CopyInstruction';
 import { TabGroup } from '../TabGroup';
-import PopoverHintWithTitle from '../PopoverHitWithTitle';
+import PopoverHintWithTitle from '../PopoverHintWithTitle';
 
 export const OCMRole = () => {
   const { ocmRole: o, associateAwsDrawer: a } = useRosaHcpWizardStrings();
