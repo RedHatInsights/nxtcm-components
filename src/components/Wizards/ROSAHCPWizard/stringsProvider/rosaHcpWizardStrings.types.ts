@@ -421,6 +421,7 @@ export type RosaHcpWizardStrings = {
   review: {
     sectionLabel: string;
     alertTitle: string;
+    lockedSettings: string;
     detailsToggle: string;
     rolesToggle: string;
     networkingToggle: string;

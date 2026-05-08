@@ -88,7 +88,6 @@ export const regionSchema = yup
     stepId: STEP_IDS.DETAILS,
     fieldType: 'select',
     noEditAfterSubmit: true,
-    showInReview: true,
   } satisfies WizardFieldMeta);
 
 export const detailsFields = {
