@@ -7,7 +7,9 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|scss)$': 'identity-obj-proxy',
   },
-  transformIgnorePatterns: ['/node_modules/(?!@patternfly/).+\\.(js|jsx|ts|tsx)$'],
+  transformIgnorePatterns: [
+    '/node_modules/(?!@patternfly/|cidr-tools/|ip-bigint/).+\\.(js|jsx|ts|tsx)$',
+  ],
   transform: {
     '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest',
   },
