@@ -1,0 +1,109 @@
+name: A11y PR Review
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      pr-number:
+        description: PR number to review
+        required: true
+        type: number
+
+concurrency:
+  group: a11y-review-${{ github.event.pull_request.number || github.event.inputs.pr-number }}
+  cancel-in-progress: true
+
+jobs:
+  a11y-review:
+    name: Accessibility Review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run ACP a11y review
+        uses: ambient-code/ambient-action@v2
+        with:
+          api-url: ${{ secrets.AMBIENT_API_URL }}
+          api-token: ${{ secrets.AMBIENT_BOT_TOKEN }}
+          project: ${{ secrets.ACP_PROJECT }}
+          prompt: |
+            You are an accessibility reviewer checking a pull request for WCAG 2.1 AA compliance.
+            This project uses React with PatternFly 6 and has axe-core via @axe-core/playwright for runtime a11y testing.
+
+            PR: https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number || github.event.inputs.pr-number }}
+
+            Steps:
+
+            1. Get the PR diff:
+               gh pr diff ${{ github.event.pull_request.number || github.event.inputs.pr-number }} --repo ${{ github.repository }}
+
+            2. Identify all changed or added .tsx files. Focus your review on those files only.
+
+            3. For each changed component file, check for these anti-patterns:
+
+               HTML semantics:
+               - <div onClick> or <span onClick> without role="button" and tabIndex (critical)
+               - <a> without href used as a button (serious)
+               - <img> without alt attribute (critical)
+               - heading level skips e.g. h1 -> h3 (serious)
+               - <input>/<select>/<textarea> without associated label (critical)
+
+               Keyboard and focus:
+               - outline: none or :focus { outline: 0 } removing focus indicators (critical)
+               - tabindex > 0 (serious)
+               - mouse-only handlers (onMouseDown/onMouseOver) without keyboard equivalents (serious)
+
+               ARIA usage:
+               - icon-only buttons without aria-label (critical)
+               - aria-hidden="true" on focusable elements (critical)
+               - dynamic content updates without aria-live (serious)
+
+               PatternFly-specific:
+               - PF FormGroup without fieldId (serious)
+               - PF FormGroup missing helperTextInvalid for validated fields (serious)
+               - PF action columns without screenReaderText (serious)
+               - custom dropdowns instead of PF Select/Dropdown (moderate)
+               - PF Spinner without aria-label (moderate)
+
+               Color and contrast:
+               - hardcoded hex/rgb colors instead of design tokens (moderate)
+               - color as the only indicator of state without icon or text (serious)
+
+            4. For each changed component, check if a corresponding .spec.tsx file exists and contains:
+               - a checkAccessibility() call (this project uses @axe-core/playwright)
+               - keyboard navigation tests (.focus(), .press('Tab'), .press('Enter'))
+               - screen reader text assertions (aria-label, aria-describedby)
+               If the component is new or modified and lacks these, flag it.
+
+            5. Post a comment on the PR with your findings using:
+               gh pr comment ${{ github.event.pull_request.number || github.event.inputs.pr-number }} --repo ${{ github.repository }} --body "YOUR_COMMENT"
+
+               Format the comment as:
+
+               ## A11y Review: PR #<number>
+
+               ### project context
+               - framework: PatternFly 6
+               - test tooling: Playwright CT with @axe-core/playwright
+               - a11y helper: checkAccessibility() in src/test-helpers.ts
+
+               ### critical (must fix)
+               List issues with [file:line] references and concrete fixes.
+
+               ### serious (should fix)
+               List issues with [file:line] references and concrete fixes.
+
+               ### moderate (consider fixing)
+               List issues with [file:line] references and concrete fixes.
+
+               ### test coverage gaps
+               List components missing checkAccessibility() calls or keyboard tests.
+
+               ### summary
+               One sentence overall assessment.
+
+               If no issues are found, post a short "no a11y issues found" comment instead.
+
+            6. Only review files that were actually changed in the PR. Do not review the entire codebase.
+          wait: 'true'
+          timeout: '30'
