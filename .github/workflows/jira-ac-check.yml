@@ -1,0 +1,98 @@
+name: Jira AC Check
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      pr-number:
+        description: PR number to review
+        required: true
+        type: number
+      jira-key:
+        description: Jira ticket key (e.g. FCN-325). If empty, extracted from PR title.
+        required: false
+        type: string
+
+concurrency:
+  group: jira-ac-check-${{ github.event.pull_request.number || github.event.inputs.pr-number }}
+  cancel-in-progress: true
+
+jobs:
+  jira-ac-check:
+    name: Jira Acceptance Criteria Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract Jira key from PR title
+        id: jira
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title || '' }}
+          MANUAL_KEY: ${{ github.event.inputs.jira-key || '' }}
+        run: |
+          if [ -n "$MANUAL_KEY" ]; then
+            echo "key=$MANUAL_KEY" >> "$GITHUB_OUTPUT"
+          else
+            KEY=$(echo "$PR_TITLE" | grep -oE 'FCN-[0-9]+' | head -1)
+            if [ -z "$KEY" ]; then
+              echo "No Jira key found in PR title: $PR_TITLE"
+              echo "key=" >> "$GITHUB_OUTPUT"
+            else
+              echo "key=$KEY" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      - name: Skip if no Jira key
+        if: steps.jira.outputs.key == ''
+        run: |
+          echo "No Jira ticket key found in PR title. Skipping AC check."
+          echo "To run manually, use workflow_dispatch with the jira-key input."
+
+      - name: Run ACP Jira AC review
+        if: steps.jira.outputs.key != ''
+        uses: ambient-code/ambient-action@v2
+        with:
+          api-url: ${{ secrets.AMBIENT_API_URL }}
+          api-token: ${{ secrets.AMBIENT_BOT_TOKEN }}
+          project: ${{ secrets.ACP_PROJECT }}
+          prompt: |
+            You are a PR reviewer checking whether a pull request satisfies the acceptance criteria from its linked Jira ticket.
+
+            Jira ticket: ${{ steps.jira.outputs.key }}
+            PR: https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number || github.event.inputs.pr-number }}
+
+            Steps:
+
+            1. Wait 10-15 seconds for the Jira MCP to initialize, then use the Atlassian MCP to read the Jira ticket ${{ steps.jira.outputs.key }} and extract the acceptance criteria.
+
+            2. Use gh pr view ${{ github.event.pull_request.number || github.event.inputs.pr-number }} --repo ${{ github.repository }} and gh pr diff ${{ github.event.pull_request.number || github.event.inputs.pr-number }} --repo ${{ github.repository }} to read the PR description and code changes.
+
+            3. For each acceptance criterion, check whether the PR addresses it. Be specific -- reference actual code changes, file names, and line ranges.
+
+            4. Post your review as a comment on the PR using:
+               gh pr comment ${{ github.event.pull_request.number || github.event.inputs.pr-number }} --repo ${{ github.repository }} --body "YOUR_COMMENT"
+
+               Format the comment as:
+
+               ## PR Review: ${{ steps.jira.outputs.key }} — <PR title>
+
+               Reviewed against the acceptance criteria in ${{ steps.jira.outputs.key }}.
+
+               ### Acceptance Criteria Checklist
+
+               | # | AC Item | Status | Evidence |
+               |---|---------|--------|----------|
+               | 1 | <criterion> | Met / Partially Met / Not Met | <specific evidence from the PR> |
+               | 2 | ... | ... | ... |
+
+               ### Additional Observations
+               Note anything that doesn't map to a specific AC but is worth calling out (e.g. scope creep, missing edge cases, test coverage gaps).
+
+               ### Summary
+               One paragraph overall assessment of whether the PR satisfies the ticket.
+
+            5. If the Jira MCP fails to access the ticket, base the review on the PR's own stated goals and diff. Note the limitation transparently in the comment.
+
+            6. Only review what's in the PR diff. Do not review the entire codebase.
+          wait: 'true'
+          timeout: '30'
