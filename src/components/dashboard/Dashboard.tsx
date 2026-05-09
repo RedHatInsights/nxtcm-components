@@ -476,7 +476,7 @@ export const Dashboard = (props: DashboardProps) => {
       widgetMapping={mapping}
       initialTemplate={template}
       onTemplateChange={(template) => setTemplate(filterTemplate(template))}
-      showDrawer={false}
+      showDrawer
     />
   );
 };
