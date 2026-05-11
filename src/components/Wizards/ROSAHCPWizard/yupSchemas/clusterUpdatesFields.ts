@@ -1,10 +1,12 @@
 import * as yup from 'yup';
 
 import { STEP_IDS } from '../constants';
+import { ClusterUpgrade } from '../../types';
 import type { WizardFieldMeta } from './types';
 
 export const upgradePolicySchema = yup
   .string()
+  .default(ClusterUpgrade.automatic)
   .optional()
   .meta({
     id: 'upgrade_policy',

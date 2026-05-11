@@ -7,6 +7,7 @@ import { ctx, validateClusterNameSync } from './helpers';
 
 export const nameSchema = yup
   .string()
+  .default('')
   .required()
   .meta({
     id: 'name',
@@ -35,6 +36,7 @@ export const nameSchema = yup
 
 export const clusterVersionSchema = yup
   .string()
+  .default('')
   .required()
   .meta({
     id: 'cluster_version',
@@ -47,6 +49,7 @@ export const clusterVersionSchema = yup
 
 export const associatedAwsIdSchema = yup
   .string()
+  .default('')
   .required()
   .meta({
     id: 'associated_aws_id',
@@ -59,6 +62,7 @@ export const associatedAwsIdSchema = yup
 
 export const billingAccountIdSchema = yup
   .string()
+  .default('')
   .required()
   .meta({
     id: 'billing_account_id',
@@ -71,6 +75,7 @@ export const billingAccountIdSchema = yup
 
 export const regionSchema = yup
   .string()
+  .default('')
   .required()
   .meta({
     id: 'region',

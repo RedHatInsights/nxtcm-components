@@ -6,6 +6,7 @@ import { ctx } from './helpers';
 
 export const installerRoleArnSchema = yup
   .string()
+  .default('')
   .required()
   .meta({
     id: 'installer_role_arn',
@@ -17,6 +18,7 @@ export const installerRoleArnSchema = yup
 
 export const supportRoleArnSchema = yup
   .string()
+  .default('')
   .required()
   .meta({
     id: 'support_role_arn',
@@ -27,6 +29,7 @@ export const supportRoleArnSchema = yup
 
 export const workerRoleArnSchema = yup
   .string()
+  .default('')
   .required()
   .meta({
     id: 'worker_role_arn',
@@ -37,6 +40,7 @@ export const workerRoleArnSchema = yup
 
 export const byoOidcConfigIdSchema = yup
   .string()
+  .default('')
   .required()
   .meta({
     id: 'byo_oidc_config_id',
@@ -48,6 +52,7 @@ export const byoOidcConfigIdSchema = yup
 
 export const customOperatorRolesPrefixSchema = yup
   .string()
+  .default('')
   .required()
   .meta({
     id: 'custom_operator_roles_prefix',

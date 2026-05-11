@@ -15,7 +15,7 @@ import {
   STEP_IDS,
 } from '../constants';
 import { parseCIDRSubnetLength } from '../helpers';
-import type { ClusterFormData } from '../../types';
+import { ClusterNetwork, type ClusterFormData } from '../../types';
 import type { WizardFieldMeta } from './types';
 import {
   ctx,
@@ -27,6 +27,7 @@ import {
 
 export const clusterPrivacySchema = yup
   .string()
+  .default(ClusterNetwork.external)
   .required()
   .meta({
     id: 'cluster_privacy',
@@ -49,6 +50,7 @@ export const clusterPrivacyPublicSubnetIdSchema = yup
 
 export const cidrDefaultSchema = yup
   .boolean()
+  .default(true)
   .optional()
   .meta({
     id: 'cidr_default',
@@ -60,6 +62,7 @@ export const cidrDefaultSchema = yup
 
 export const networkMachineCidrSchema = yup
   .string()
+  .default('10.0.0.0/16')
   .optional()
   .meta({
     id: 'network_machine_cidr',
@@ -140,6 +143,7 @@ export const networkMachineCidrSchema = yup
 
 export const networkServiceCidrSchema = yup
   .string()
+  .default('172.30.0.0/16')
   .optional()
   .meta({
     id: 'network_service_cidr',
@@ -217,6 +221,7 @@ export const networkServiceCidrSchema = yup
 
 export const networkPodCidrSchema = yup
   .string()
+  .default('10.128.0.0/14')
   .optional()
   .meta({
     id: 'network_pod_cidr',
@@ -292,6 +297,7 @@ export const networkPodCidrSchema = yup
 
 export const networkHostPrefixSchema = yup
   .string()
+  .default('/23')
   .optional()
   .meta({
     id: 'network_host_prefix',
@@ -330,6 +336,7 @@ export const networkHostPrefixSchema = yup
 
 export const configureProxySchema = yup
   .boolean()
+  .default(false)
   .optional()
   .meta({
     id: 'configure_proxy',

@@ -32,6 +32,10 @@ export const clusterValidationSchema = yup.object({
   ...clusterUpdatesFields,
 }) as yup.ObjectSchema<Partial<ClusterFormData>>;
 
+export function getClusterValidationSchemaDefaultValues(): Partial<ClusterFormData> {
+  return clusterValidationSchema.getDefault() as Partial<ClusterFormData>;
+}
+
 /**
  * Retrieves the {@link WizardFieldMeta} for a given field path in the schema.
  *
