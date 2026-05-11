@@ -7,6 +7,7 @@ import * as yup from 'yup';
 
 import { WizFieldsYupStoryDebugGrid } from '../WizFieldsStorybookHelpers';
 import { Radio } from '../../Fields/RadioGroup';
+import { RosaHcpWizardStringsProvider } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { WizRadioGroup, type WizRadioGroupProps } from './WizRadioGroup';
 
 type DemoFormValues = { apiVisibility: string };
@@ -64,6 +65,13 @@ const meta: Meta<typeof WizRadioGroup> = {
   title: 'Form Elements/Connected Form Elements/WizRadioGroup',
   component: WizRadioGroup,
   tags: ['autodocs'],
+  decorators: [
+    (Story) => (
+      <RosaHcpWizardStringsProvider>
+        <Story />
+      </RosaHcpWizardStringsProvider>
+    ),
+  ],
   parameters: {
     layout: 'padded',
   },

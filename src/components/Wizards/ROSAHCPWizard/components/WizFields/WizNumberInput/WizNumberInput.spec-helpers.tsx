@@ -4,7 +4,11 @@ import { Button, Form } from '@patternfly/react-core';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
-import { WizCtWatchStatus, wizCtSubmitValidationPreview } from '../wizFieldCtSpecHelpers';
+import {
+  WizCtWatchStatus,
+  wizCtSubmitValidationPreview,
+  withRosaCt,
+} from '../wizFieldCtSpecHelpers';
 import { WizNumberInput } from './WizNumberInput';
 
 export const WIZ_NUMBER_INPUT_EXPLICIT_LABEL = 'Explicit number label';
@@ -27,7 +31,7 @@ export function WizNumberInputExplicitHarness() {
     defaultValues: { nodeCount: undefined },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizNumberInput<ExplicitFormValues>
@@ -63,7 +67,7 @@ export function WizNumberInputYupMetaHarness() {
     defaultValues: { replicas: undefined },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizNumberInput<YupMetaFormValues> name="replicas" schema={yupMetaSchema} min={0} />
@@ -90,7 +94,7 @@ export function WizNumberInputSubmitValidationHarness() {
     mode: 'onSubmit',
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form onSubmit={wizCtSubmitValidationPreview(methods)}>
         <WizNumberInput<SubmitValidationFormValues>
@@ -116,7 +120,7 @@ export function WizNumberInputNestedFallbackHarness() {
     defaultValues: { topology: { poolSize: undefined } },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizNumberInput<NestedTopologyFormValues> name="topology.poolSize" min={0} />
@@ -138,7 +142,7 @@ export function WizNumberInputMinusClearsHarness() {
     defaultValues: { slots: 2 },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizNumberInput<{ slots?: number }> name="slots" label="Slots counter" min={0} />
@@ -163,7 +167,7 @@ export function WizNumberInputExplicitControlOnlyHarness() {
     defaultValues: { shards: undefined },
   });
 
-  return (
+  return withRosaCt(
     <>
       <WizNumberInput<ShardCounterValues>
         control={methods.control}

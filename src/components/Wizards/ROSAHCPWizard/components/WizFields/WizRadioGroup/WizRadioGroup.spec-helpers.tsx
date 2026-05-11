@@ -5,7 +5,11 @@ import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import { Radio } from '../../Fields/RadioGroup';
-import { WizCtWatchStatus, wizCtSubmitValidationPreview } from '../wizFieldCtSpecHelpers';
+import {
+  WizCtWatchStatus,
+  wizCtSubmitValidationPreview,
+  withRosaCt,
+} from '../wizFieldCtSpecHelpers';
 import { WizRadioGroup } from './WizRadioGroup';
 
 export const WIZ_RADIO_GROUP_EXPLICIT_LABEL = 'Explicit radio group label';
@@ -26,7 +30,7 @@ export function WizRadioGroupExplicitHarness() {
     defaultValues: { tier: undefined },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizRadioGroup<ExplicitFormValues>
@@ -64,7 +68,7 @@ export function WizRadioGroupYupMetaHarness() {
     defaultValues: { channel: undefined },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizRadioGroup<YupMetaFormValues> name="channel" schema={yupMetaSchema}>
@@ -94,7 +98,7 @@ export function WizRadioGroupSubmitValidationHarness() {
     mode: 'onSubmit',
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form onSubmit={wizCtSubmitValidationPreview(methods)}>
         <WizRadioGroup<SubmitValidationFormValues>
@@ -132,7 +136,7 @@ export function WizRadioGroupNestedFallbackHarness() {
     defaultValues: { plan: { target: undefined } },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizRadioGroup<NestedPlanFormValues> name="plan.target">
@@ -170,7 +174,7 @@ export function WizRadioGroupExplicitPropsOverrideMetaHarness() {
     defaultValues: { sizing: undefined },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizRadioGroup<SizingRadioFormValues>
@@ -198,7 +202,7 @@ export function WizRadioGroupNumericMetaLabelHarness() {
     defaultValues: { lane: undefined },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizRadioGroup<NumericRadioFormValues> name="lane" schema={numericRadioMetaSchema}>
@@ -220,7 +224,7 @@ export function WizRadioGroupExplicitControlOnlyHarness() {
     defaultValues: { tier: undefined },
   });
 
-  return (
+  return withRosaCt(
     <>
       <WizRadioGroup<SoloRadioValues>
         control={methods.control}

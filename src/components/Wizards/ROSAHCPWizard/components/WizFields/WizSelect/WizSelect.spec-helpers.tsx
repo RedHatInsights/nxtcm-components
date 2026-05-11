@@ -1,10 +1,13 @@
-import React from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Form } from '@patternfly/react-core';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
-import { WizCtWatchStatus, wizCtSubmitValidationPreview } from '../wizFieldCtSpecHelpers';
+import {
+  WizCtWatchStatus,
+  wizCtSubmitValidationPreview,
+  withRosaCt,
+} from '../wizFieldCtSpecHelpers';
 import { WizSelect } from './WizSelect';
 
 export const WIZ_SELECT_EXPLICIT_LABEL = 'Explicit region label';
@@ -29,7 +32,7 @@ export function WizSelectExplicitHarness() {
     defaultValues: { region: undefined },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizSelect<ExplicitFormValues>
@@ -66,7 +69,7 @@ export function WizSelectYupMetaHarness() {
     defaultValues: { zone: undefined },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizSelect<YupMetaFormValues>
@@ -93,7 +96,7 @@ export function WizSelectSubmitValidationHarness() {
     mode: 'onSubmit',
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form onSubmit={wizCtSubmitValidationPreview(methods)}>
         <WizSelect<SubmitValidationFormValues>
@@ -125,7 +128,7 @@ export function WizSelectNestedFallbackHarness() {
     defaultValues: { vpc: { subnet: undefined } },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizSelect<NestedVpcFormValues>
@@ -164,7 +167,7 @@ export function WizSelectExplicitPropsOverrideMetaHarness() {
     defaultValues: { sku: undefined },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizSelect<SkuSelectFormValues>
@@ -194,7 +197,7 @@ export function WizSelectNumericMetaLabelHarness() {
     defaultValues: { qtyBucket: undefined },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizSelect<NumericLabelSelectValues>
@@ -221,7 +224,7 @@ export function WizSelectExplicitControlOnlyHarness() {
     defaultValues: { vpcId: undefined },
   });
 
-  return (
+  return withRosaCt(
     <>
       <WizSelect<ControlOnlyVpcValues>
         control={methods.control}

@@ -12,10 +12,19 @@ import { type YupFieldDescribeOptions } from './yupFieldRequired';
 export interface YupFieldPresentationMeta {
   id?: string;
   label?: ReactNode;
+  /** Dot-path into bundled UI strings (e.g. ROSA wizard) when labels are resolved at runtime. */
+  labelKey?: string;
   title?: string;
   helperText?: ReactNode;
+  /** Dot-path into bundled UI strings when `helperText` is resolved at runtime. */
+  helperTextKey?: string;
   labelHelp?: ReactNode;
+  labelHelpKey?: string;
   labelHelpTitle?: string;
+  labelHelpTitleKey?: string;
+  placeholder?: string;
+  /** Dot-path into bundled UI strings when `placeholder` is resolved at runtime. */
+  placeholderKey?: string;
 }
 
 function metaFromDescription(description: unknown): Record<string, unknown> {
@@ -31,7 +40,16 @@ function metaFromDescription(description: unknown): Record<string, unknown> {
 
 function stringFromMeta(
   meta: Record<string, unknown>,
-  key: 'id' | 'title' | 'labelHelpTitle'
+  key:
+    | 'id'
+    | 'title'
+    | 'labelHelpTitle'
+    | 'labelKey'
+    | 'helperTextKey'
+    | 'labelHelpKey'
+    | 'labelHelpTitleKey'
+    | 'placeholder'
+    | 'placeholderKey'
 ): string | undefined {
   const v = meta[key];
   return typeof v === 'string' ? v : undefined;
@@ -66,12 +84,22 @@ export function getYupFieldPresentationMeta(
   const fieldSchema = yup.reach(schema, path);
   const meta = metaFromDescription(fieldSchema.describe(describeOptions));
 
-  return {
+  const out: YupFieldPresentationMeta = {
     id: stringFromMeta(meta, 'id'),
     label: reactNodeFromMeta(meta, 'label'),
+    labelKey: stringFromMeta(meta, 'labelKey'),
     title: stringFromMeta(meta, 'title'),
     helperText: reactNodeFromMeta(meta, 'helperText'),
+    helperTextKey: stringFromMeta(meta, 'helperTextKey'),
     labelHelp: reactNodeFromMeta(meta, 'labelHelp'),
+    labelHelpKey: stringFromMeta(meta, 'labelHelpKey'),
     labelHelpTitle: stringFromMeta(meta, 'labelHelpTitle'),
+    labelHelpTitleKey: stringFromMeta(meta, 'labelHelpTitleKey'),
+    placeholder: stringFromMeta(meta, 'placeholder'),
+    placeholderKey: stringFromMeta(meta, 'placeholderKey'),
   };
+
+  return Object.fromEntries(
+    Object.entries(out).filter(([, value]) => value !== undefined)
+  ) as YupFieldPresentationMeta;
 }

@@ -5,6 +5,7 @@ import { Button, Form } from '@patternfly/react-core';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
+import { RosaHcpWizardStringsProvider } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { WizFieldsYupStoryDebugGrid } from '../WizFieldsStorybookHelpers';
 import { WizFileUpload, type WizFileUploadProps } from './WizFileUpload';
 
@@ -60,6 +61,13 @@ const meta: Meta<typeof WizFileUpload> = {
   title: 'Form Elements/Connected Form Elements/WizFileUpload',
   component: WizFileUpload,
   tags: ['autodocs'],
+  decorators: [
+    (Story) => (
+      <RosaHcpWizardStringsProvider>
+        <Story />
+      </RosaHcpWizardStringsProvider>
+    ),
+  ],
   parameters: {
     layout: 'padded',
   },

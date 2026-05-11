@@ -44,6 +44,44 @@ describe('getYupFieldPresentationMeta', () => {
     });
   });
 
+  it('returns labelKey from .meta() when set', () => {
+    const schema = yup.object({
+      billing: yup.string().meta({ labelKey: 'details.billingLabel', id: 'billing-field' }),
+    });
+    expect(getYupFieldPresentationMeta(schema, 'billing')).toEqual({
+      id: 'billing-field',
+      labelKey: 'details.billingLabel',
+    });
+  });
+
+  it('returns placeholder and placeholderKey from .meta() when set', () => {
+    const schema = yup.object({
+      short: yup.string().meta({
+        placeholder: 'Inline placeholder',
+        placeholderKey: 'networking.publicSubnetPlaceholder',
+      }),
+    });
+    expect(getYupFieldPresentationMeta(schema, 'short')).toEqual({
+      placeholder: 'Inline placeholder',
+      placeholderKey: 'networking.publicSubnetPlaceholder',
+    });
+  });
+
+  it('returns *Key helpers from .meta() when set', () => {
+    const schema = yup.object({
+      field: yup.string().meta({
+        helperTextKey: 'networking.machineCidrHelp',
+        labelHelpKey: 'networking.publicPopover',
+        labelHelpTitleKey: 'details.clusterNameLabel',
+      }),
+    });
+    expect(getYupFieldPresentationMeta(schema, 'field')).toEqual({
+      helperTextKey: 'networking.machineCidrHelp',
+      labelHelpKey: 'networking.publicPopover',
+      labelHelpTitleKey: 'details.clusterNameLabel',
+    });
+  });
+
   it('preserves React element helperText from .meta()', () => {
     const helper = React.createElement('span', { 'data-testid': 'meta-helper' }, 'From meta');
     const schema = yup.object({

@@ -10,13 +10,16 @@ import * as yup from 'yup';
 
 import { type YupFieldDescribeOptions } from '../../../../../utilities/yupFieldRequired';
 
+import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.types';
+import { getRosaHcpWizardStringByLabelKey } from '../../stringsProvider/getRosaHcpWizardStringByLabelKey';
+
 /**
  * Shared react-hook-form + Yup wiring for RosaWizard `Wiz*` fields.
  *
  * - **control**: pass from `useForm()` when the tree is not wrapped with react-hook-form `FormProvider`; otherwise omit and the widget resolves context via {@link useFormContext}.
  * - **schema**: when set, reads presentation from Yup `.meta({ ... })` (see `yupFieldPresentationMeta.ts`) and, together with `name`, derives **`isRequired`** via `requiredFromYup` (see `yupFieldRequired.ts`) unless you pass **`isRequired`** on the widget props.
  *
- * Each `Wiz*` field accepts optional **`id`**, **`label`**, **`helperText`**, **`labelHelp`**, and **`labelHelpTitle`** on its props. When a prop is omitted and **`schema`** is set, that value comes from the schema field’s `.meta()`; otherwise the widget uses path-based fallbacks where applicable (`id` / `label`). Explicit props always win over Yup meta.
+ * Each `Wiz*` field accepts optional **`id`**, **`label`**, **`placeholder`** (where supported), **`helperText`**, **`labelHelp`**, and **`labelHelpTitle`** on its props. Resolved together via **`useWizFieldPresentation`** from **`wizFieldPresentation.ts`**, which prefers explicit props then Yup `.meta()` / `*Key` strings from `RosaHcpWizardStringsProvider`. Helpers {@link wizResolvePresentationString} / {@link wizResolvePresentationLabelString} implement the merge order.
  *
  * **`isRequired`**: each bound field exposes PatternFly **`isRequired`** (optional). When omitted and **`schema`** is set, the widget sets it from **`requiredFromYup`** / **`isYupFieldRequired`** for that path; when **`schema`** is omitted, the underlying field default applies. **`WizTextInput`** also accepts native **`required`**; the underlying `TextInput` forwards `required={isRequired || required}` to the actual input.
  *
@@ -61,6 +64,53 @@ export function stringLabelFromYupMeta(metaLabel: ReactNode | undefined, fallbac
     return String(metaLabel);
   }
   return fallback;
+}
+
+/** Explicit string prop, then ROSA string from `.meta().*Key`, then Yup `.meta()` inline string. */
+export function wizResolvePresentationString(
+  prop: string | undefined,
+  metaKey: string | undefined,
+  strings: RosaHcpWizardStrings,
+  yupFallback: string | undefined
+): string | undefined {
+  return (
+    prop ??
+    (metaKey !== undefined ? getRosaHcpWizardStringByLabelKey(strings, metaKey) : undefined) ??
+    yupFallback
+  );
+}
+
+/** Explicit ReactNode prop, then ROSA string from `.meta().*Key`, then Yup `.meta()` inline node. */
+export function wizResolvePresentationReactNode(
+  prop: ReactNode | undefined,
+  metaKey: string | undefined,
+  strings: RosaHcpWizardStrings,
+  yupFallback: ReactNode | undefined
+): ReactNode | undefined {
+  return (
+    prop ??
+    (metaKey !== undefined ? getRosaHcpWizardStringByLabelKey(strings, metaKey) : undefined) ??
+    yupFallback
+  );
+}
+
+/**
+ * String `label` on fields that coerce non-string Yup `.meta().label` via {@link stringLabelFromYupMeta}.
+ */
+export function wizResolvePresentationLabelString(
+  labelProp: string | undefined,
+  labelKey: string | undefined,
+  strings: RosaHcpWizardStrings,
+  yupLabel: ReactNode | undefined,
+  hasSchema: boolean,
+  fallbackLabel: string
+): string {
+  return (
+    labelProp ??
+    (labelKey !== undefined ? getRosaHcpWizardStringByLabelKey(strings, labelKey) : undefined) ??
+    (hasSchema ? stringLabelFromYupMeta(yupLabel, fallbackLabel) : undefined) ??
+    fallbackLabel
+  );
 }
 
 export function wizFieldShowsError(
