@@ -1,15 +1,15 @@
 import { RosaHcpWizardStringsProvider } from './stringsProvider/RosaHcpWizardStringsContext';
-import { ROSAHCPWizardBody } from './ROSAHCPWizardBody';
+import { RosaHcpWizardFormProvider } from './RosaHcpWizardFormProvider';
 import { RosaHcpWizardStringsInput } from './stringsProvider/rosaHcpWizardStrings';
 import { RosaHCPWizardProps } from './types';
 
 type ROSAHCPWrapperProps = RosaHCPWizardProps & {
-  strings: RosaHcpWizardStringsInput;
+  strings?: RosaHcpWizardStringsInput;
 };
 
-export const RosaHCPWizard = (props: ROSAHCPWrapperProps) => (
-  <RosaHcpWizardStringsProvider strings={props.strings}>
-    <ROSAHCPWizardBody {...props} />
+export const RosaHCPWizard = ({ strings, ...wizardProps }: ROSAHCPWrapperProps) => (
+  <RosaHcpWizardStringsProvider strings={strings}>
+    <RosaHcpWizardFormProvider {...wizardProps} />
   </RosaHcpWizardStringsProvider>
 );
 
