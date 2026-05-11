@@ -1,8 +1,11 @@
 import React from 'react';
-import { PageSection, Title, Wizard, WizardStep } from '@patternfly/react-core';
 import { useFormContext } from 'react-hook-form';
 
 import type { ClusterFormData } from '../types';
+import {
+  Wizard,
+  WizardStep,
+} from '@patternfly/react-core';
 import { Details } from './Steps/BasicSetup/Details/Details';
 import { RolesAndPolicies } from './Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies';
 import { MachinePools } from './Steps/BasicSetup/MachinePools/MachinePools';
@@ -29,10 +32,6 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
   const sl = wizard.stepLabels;
 
   return (
-    <div>
-      <PageSection>
-        <Title headingLevel="h1">ROSA HCP Wizard</Title>
-      </PageSection>
       <div>
         <Wizard height="100vh" onStepChange={onStepChange}>
           <WizardStep
@@ -63,44 +62,43 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
             ]}
           />
 
-          <WizardStep
-            isExpandable
-            name={sl.additionalSetup}
-            id={STEP_IDS.OPTIONAL_SETUP}
-            key={STEP_IDS.OPTIONAL_SETUP}
-            steps={[
-              <WizardStep
-                name={sl.encryptionOptional}
-                id={STEP_IDS.ENCRYPTION}
-                key={STEP_IDS.ENCRYPTION}
-              >
-                <Encryption />
-              </WizardStep>,
-              <WizardStep
-                name={sl.clusterUpdatesOptional}
-                id={STEP_IDS.CLUSTER_UPDATES}
-                key={STEP_IDS.CLUSTER_UPDATES}
-              >
-                <ClusterUpdates />
-              </WizardStep>,
-              ...(showClusterWideProxy
-                ? [
-                    <WizardStep
-                      name={sl.clusterWideProxy}
-                      id={STEP_IDS.CLUSTER_WIDE_PROXY}
-                      key={STEP_IDS.CLUSTER_WIDE_PROXY}
-                    >
-                      <ClusterWideProxy />{' '}
-                    </WizardStep>,
-                  ]
-                : []),
-            ]}
-          />
-          <WizardStep name={sl.review} id={STEP_IDS.REVIEW} key={STEP_IDS.REVIEW}>
-            <Review />
-          </WizardStep>
-        </Wizard>
-      </div>
-    </div>
+            <WizardStep
+              isExpandable
+              name={sl.additionalSetup}
+              id={STEP_IDS.OPTIONAL_SETUP}
+              key={STEP_IDS.OPTIONAL_SETUP}
+              steps={[
+                <WizardStep
+                  name={sl.encryptionOptional}
+                  id={STEP_IDS.ENCRYPTION}
+                  key={STEP_IDS.ENCRYPTION}
+                >
+                  <Encryption />
+                </WizardStep>,
+                <WizardStep
+                  name={sl.clusterUpdatesOptional}
+                  id={STEP_IDS.CLUSTER_UPDATES}
+                  key={STEP_IDS.CLUSTER_UPDATES}
+                >
+                  <ClusterUpdates />
+                </WizardStep>,
+                ...(showClusterWideProxy
+                  ? [
+                      <WizardStep
+                        name={sl.clusterWideProxy}
+                        id={STEP_IDS.CLUSTER_WIDE_PROXY}
+                        key={STEP_IDS.CLUSTER_WIDE_PROXY}
+                      >
+                        <ClusterWideProxy />{' '}
+                      </WizardStep>,
+                    ]
+                  : []),
+              ]}
+            />
+            <WizardStep name={sl.review} id={STEP_IDS.REVIEW} key={STEP_IDS.REVIEW}>
+              <Review />
+            </WizardStep>
+          </Wizard>
+        </div>
   );
 };
