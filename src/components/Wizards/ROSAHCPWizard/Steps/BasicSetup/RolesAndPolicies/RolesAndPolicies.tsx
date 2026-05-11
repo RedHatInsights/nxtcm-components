@@ -29,8 +29,8 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
 
   const { control, watch, setValue, getValues } = useFormContext<ROSAHCPCluster>();
 
-  const selectedClusterVersion = getValues('cluster_version') || '4.22.9';
-  const awsInfrastructureAccount = getValues('associated_aws_id') || '1234567890';
+  const selectedClusterVersion = getValues('cluster_version');
+  const awsInfrastructureAccount = getValues('associated_aws_id');
 
   const installerRoleOptions = React.useMemo(() => {
     const clusterVer =
@@ -92,7 +92,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
             >
               <WizSelect
                 isRequired
-                onRefresh={() => void roles.fetch(awsInfrastructureAccount)}
+                onRefresh={() => void roles.fetch(awsInfrastructureAccount ?? '')}
                 labelHelp={
                   <>
                     {rp.installerHelpLead}{' '}
