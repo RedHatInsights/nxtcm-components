@@ -1,6 +1,13 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
+  "packageRules": [
+    {
+      "description": "Disable all major updates",
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
+  ],
   "reviewers": ["nitin-dhevar", "kdoberst", "davidaznaur", "jloss-redhat", "vishsanghishetty"],
   "reviewersSampleSize": 2,
   "dependencyDashboard": true,
