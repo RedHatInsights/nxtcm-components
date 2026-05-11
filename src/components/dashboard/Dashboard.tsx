@@ -17,6 +17,7 @@ import {
   WidgetLayout,
   WidgetMapping,
 } from '@patternfly/widgetized-dashboard';
+import '@patternfly/widgetized-dashboard/dist/esm/styles.css';
 import { TotalClusters, TotalClustersData } from './TotalClusters/TotalClusters';
 import {
   ClustersWithIssues,
