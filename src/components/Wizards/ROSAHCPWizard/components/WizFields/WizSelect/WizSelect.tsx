@@ -114,7 +114,7 @@ export function WizSelect<TFieldValues extends FieldValues = FieldValues, TOptio
     />
   );
 
-  if (onRefresh || apiError) {
+  if (apiError) {
     return (
       <FieldWithAPIErrorAlert
         error={apiError}

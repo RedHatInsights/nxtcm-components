@@ -76,3 +76,7 @@ export function findOverlappingCidrFields(
   });
   return overlapping;
 }
+
+export const requiredMessage = (_params: yup.TestContext) => {
+  return 'This field is required';
+};

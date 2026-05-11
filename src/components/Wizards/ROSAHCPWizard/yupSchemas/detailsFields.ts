@@ -3,19 +3,19 @@ import * as yup from 'yup';
 import { STEP_IDS } from '../constants';
 import type { ClusterFormData } from '../../types';
 import type { WizardFieldMeta } from './types';
-import { ctx, validateClusterNameSync } from './helpers';
+import { ctx, requiredMessage, validateClusterNameSync } from './helpers';
 
 export const nameSchema = yup
   .string()
   .default('')
-  .required()
+  .required(requiredMessage)
   .meta({
     id: 'name',
     labelKey: 'details.clusterNameLabel',
+    placeholderKey: 'details.clusterNamePlaceholder',
+    labelHelpKey: 'details.clusterNameHelp',
     stepId: STEP_IDS.DETAILS,
     fieldType: 'text',
-    noEditAfterSubmit: true,
-    showInReview: true,
   } satisfies WizardFieldMeta)
   .test('cluster-name-sync', '', function (value) {
     if (!value) return true;
@@ -37,49 +37,54 @@ export const nameSchema = yup
 export const clusterVersionSchema = yup
   .string()
   .default('')
-  .required()
+  .required(requiredMessage)
   .meta({
     id: 'cluster_version',
     labelKey: 'details.openShiftVersionLabel',
+    placeholderKey: 'details.openShiftVersionPlaceholder',
+    labelHelpKey: 'details.openShiftVersionHelp',
     stepId: STEP_IDS.DETAILS,
     fieldType: 'select',
-    noEditAfterSubmit: true,
-    showInReview: true,
   } satisfies WizardFieldMeta);
 
 export const associatedAwsIdSchema = yup
   .string()
   .default('')
-  .required()
+  .required(requiredMessage)
   .meta({
     id: 'associated_aws_id',
     labelKey: 'details.awsInfraLabel',
+    labelHelpKey: 'details.awsInfraHelp',
+    placeholderKey: 'details.awsInfraPlaceholder',
     stepId: STEP_IDS.DETAILS,
     fieldType: 'select',
     noEditAfterSubmit: true,
-    showInReview: true,
   } satisfies WizardFieldMeta);
 
 export const billingAccountIdSchema = yup
   .string()
   .default('')
-  .required()
+  .required(requiredMessage)
   .meta({
     id: 'billing_account_id',
     labelKey: 'details.billingLabel',
+    labelHelpKey: 'details.billingHelp',
+    placeholderKey: 'details.billingPlaceholder',
     stepId: STEP_IDS.DETAILS,
     fieldType: 'select',
-    showInReview: true,
+    noEditAfterSubmit: true,
     reviewLabel: 'AWS billing account',
   } satisfies WizardFieldMeta);
 
 export const regionSchema = yup
   .string()
   .default('')
-  .required()
+  .required(requiredMessage)
   .meta({
     id: 'region',
     labelKey: 'details.regionLabel',
+    labelHelpKey: 'details.regionHelp',
+    placeholderKey: 'details.regionPlaceholder',
     stepId: STEP_IDS.DETAILS,
     fieldType: 'select',
     noEditAfterSubmit: true,

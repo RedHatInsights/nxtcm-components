@@ -1,6 +1,152 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 import ROSAHCPWizard from './ROSAHCPWizard';
+import type { OpenShiftVersionsData, ROSAHCPWizardData } from './types';
+import { STORY_API_ERROR_MESSAGE } from '../RosaWizard/RosaWizard.fixtures';
+import {
+  mockAwsBillingAccounts,
+  mockAwsInfrastructureAccounts,
+  mockOpenShiftVersionsData,
+  mockRegions,
+  mockRoles,
+} from './Steps/BasicSetup/Details/Details.fixtures';
+
+const emptyVersionsOnApiFailure: OpenShiftVersionsData = { releases: [] };
+
+const rosaHcpWizardStoryData: ROSAHCPWizardData = {
+  awsInfrastructureAccounts: {
+    data: mockAwsInfrastructureAccounts,
+    error: null,
+    isFetching: false,
+    fetch: async () => {},
+  },
+  awsBillingAccounts: {
+    data: mockAwsBillingAccounts,
+    error: null,
+    isFetching: false,
+    fetch: async () => {},
+  },
+  regions: {
+    data: mockRegions,
+    error: null,
+    isFetching: false,
+    fetch: async () => {},
+  },
+  versions: {
+    data: mockOpenShiftVersionsData,
+    error: null,
+    isFetching: false,
+    fetch: async () => {},
+  },
+  machineTypes: {
+    data: [],
+    error: null,
+    isFetching: false,
+    fetch: async () => {},
+  },
+  roles: {
+    data: mockRoles,
+    error: null,
+    isFetching: false,
+    fetch: async () => {},
+  },
+  oidcConfig: {
+    data: [],
+    error: null,
+    isFetching: false,
+  },
+  vpcList: {
+    data: [],
+    error: null,
+    isFetching: false,
+  },
+  subnets: {
+    data: [],
+    error: null,
+    isFetching: false,
+  },
+  securityGroups: {
+    data: [],
+    error: null,
+    isFetching: false,
+  },
+  clusterNameValidation: {
+    error: null,
+    isFetching: false,
+  },
+};
+
+/** Details step: AWS account, billing account, region, and OpenShift version all failed — errors shown, no options. */
+const rosaHcpWizardDetailsFieldsAllApiErrorsData: ROSAHCPWizardData = {
+  ...rosaHcpWizardStoryData,
+  awsInfrastructureAccounts: {
+    data: [],
+    error: STORY_API_ERROR_MESSAGE,
+    isFetching: false,
+    fetch: async () => {},
+  },
+  awsBillingAccounts: {
+    data: [],
+    error: STORY_API_ERROR_MESSAGE,
+    isFetching: false,
+    fetch: async () => {},
+  },
+  regions: {
+    data: [],
+    error: STORY_API_ERROR_MESSAGE,
+    isFetching: false,
+    fetch: async () => {},
+  },
+  versions: {
+    data: emptyVersionsOnApiFailure,
+    error: STORY_API_ERROR_MESSAGE,
+    isFetching: false,
+    fetch: async () => {},
+  },
+};
+
+/** Default story: AWS account, billing account, region, and OpenShift version start loading, then resolve after 1 second. */
+function DefaultWithInitialResourceLoading(props: React.ComponentProps<typeof ROSAHCPWizard>) {
+  const [versionsFetching, setVersionsFetching] = React.useState(true);
+  const [awsInfraFetching, setAwsInfraFetching] = React.useState(true);
+  const [awsBillingFetching, setAwsBillingFetching] = React.useState(true);
+  const [regionsFetching, setRegionsFetching] = React.useState(true);
+
+  React.useEffect(() => {
+    const t = setTimeout(() => {
+      setVersionsFetching(false);
+      setAwsInfraFetching(false);
+      setAwsBillingFetching(false);
+      setRegionsFetching(false);
+    }, 1500);
+    return () => clearTimeout(t);
+  }, []);
+
+  const wizardData = React.useMemo(
+    () => ({
+      ...props.wizardData,
+      awsInfrastructureAccounts: {
+        ...props.wizardData.awsInfrastructureAccounts,
+        isFetching: awsInfraFetching,
+      },
+      awsBillingAccounts: {
+        ...props.wizardData.awsBillingAccounts,
+        isFetching: awsBillingFetching,
+      },
+      regions: {
+        ...props.wizardData.regions,
+        isFetching: regionsFetching,
+      },
+      versions: {
+        ...props.wizardData.versions,
+        isFetching: versionsFetching,
+      },
+    }),
+    [props.wizardData, versionsFetching, awsBillingFetching, awsInfraFetching, regionsFetching]
+  );
+
+  return <ROSAHCPWizard {...props} wizardData={wizardData} />;
+}
 
 const meta: Meta<typeof ROSAHCPWizard> = {
   title: 'Wizards/RosaHCPWizard',
@@ -45,14 +191,16 @@ export default meta;
 type Story = StoryObj<typeof ROSAHCPWizard>;
 
 /**
- * Default story with all required data populated.
- * Versions start in a loading state (isFetching true), then resolve after 3 seconds.
+ * Default story with all required `wizardData` resources populated (aligned with Details step fixtures).
+ * AWS infrastructure account, billing account, region, and OpenShift version start in a loading state,
+ * then finish loading after 1 second.
  */
 export const Default: Story = {
-  render: (args) => <ROSAHCPWizard {...args} />,
+  render: (args) => <DefaultWithInitialResourceLoading {...args} />,
   args: {
     title: 'Create ROSA Cluster',
     yaml: true,
+    wizardData: rosaHcpWizardStoryData,
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       //await sleep(2000);
@@ -61,6 +209,34 @@ export const Default: Story = {
     onCancel: () => {
       console.log('Wizard cancelled');
       alert('Wizard cancelled');
+    },
+  },
+};
+
+/**
+ * Details step only: the AWS infrastructure account, billing account, region, and OpenShift version
+ * API calls all fail with no dropdown options (empty lists), so `FieldWithAPIErrorAlert` can be reviewed.
+ * Other wizard resources match the default story fixtures.
+ */
+export const DetailsFieldsAllApiErrors: Story = {
+  render: (args) => <ROSAHCPWizard {...args} />,
+  args: {
+    title: 'Create ROSA Cluster — API errors',
+    yaml: true,
+    wizardData: rosaHcpWizardDetailsFieldsAllApiErrorsData,
+    onSubmit: async (data: unknown) => {
+      console.log('Wizard submitted with data:', data);
+    },
+    onCancel: () => {
+      console.log('Wizard cancelled');
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Simulates failed fetches for the four Details dropdowns only. Each field shows the API error alert and has no selectable options.',
+      },
     },
   },
 };
