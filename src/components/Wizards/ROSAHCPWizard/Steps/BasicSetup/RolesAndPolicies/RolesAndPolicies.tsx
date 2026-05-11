@@ -7,25 +7,77 @@ import {
   StackItem,
 } from '@patternfly/react-core';
 import { Section } from '../../../components/Section';
-import {
-  useRosaHcpWizardStrings,
-  // useRosaHcpWizardValidators,
-} from '../../../stringsProvider/RosaHcpWizardStringsContext';
+import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+import semver from 'semver';
 import { FieldWithAPIErrorAlert } from '../../../components/FieldWithAPIErrorAlert';
 import React from 'react';
 import PopoverHintWithTitle from '../../../components/PopoverHintWithTitle';
 import { OIDCConfigHint } from '../../../components/OIDCConfigHint';
-import { ROSAHCPWizardData } from '../../../types';
+import { useFormContext } from 'react-hook-form';
+import { WizSelect } from '../../../components/WizFields/WizSelect';
+import ExternalLink from '@/components/Wizards/RosaWizard/common/ExternalLink';
+import links from '../../../links';
+import { ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
 
 type RolesAndPoliciesStepProps = Pick<ROSAHCPWizardData, 'roles' | 'oidcConfig'>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
+  const { roles, oidcConfig } = props;
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
-
   const rp = useRosaHcpWizardStrings().rolesAndPolicies;
-  // const v = useRosaHcpWizardValidators();
+
+  const { control, watch, setValue, getValues } = useFormContext<ROSAHCPCluster>();
+
+  const selectedClusterVersion = getValues('cluster_version') || '4.22.9';
+  const awsInfrastructureAccount = getValues('associated_aws_id') || '1234567890';
+
+  const installerRoleOptions = React.useMemo(() => {
+    const clusterVer =
+      selectedClusterVersion && semver.valid(semver.coerce(selectedClusterVersion));
+    return roles.data.map((r) => {
+      const role = r.installerRole;
+      if (!role.roleVersion || !clusterVer) {
+        return role;
+      }
+      const roleVer = semver.valid(semver.coerce(role.roleVersion));
+      const disabled = roleVer != null && semver.lt(roleVer, clusterVer);
+      return disabled
+        ? {
+            ...role,
+            ariaDisabled: true,
+            tooltipProps: { content: rp.installerRoleOptionDisabledDescription },
+          }
+        : { ...role };
+    });
+  }, [roles, selectedClusterVersion, rp.installerRoleOptionDisabledDescription]);
+
+  const selectedInstallerArn = watch('installer_role_arn');
+  const selectedRole = React.useMemo(
+    () => roles.data.find((r) => r.installerRole.value === selectedInstallerArn),
+    [roles, selectedInstallerArn]
+  );
+  const supportRoleOptions = selectedRole?.supportRole ?? [];
+  const workerRoleOptions = selectedRole?.workerRole ?? [];
+
+  React.useEffect(() => {
+    const subscription = watch((formValues, { name }) => {
+      if (name !== 'installer_role_arn') return;
+      const installerValue = formValues.installer_role_arn;
+      if (!installerValue) {
+        setValue('support_role_arn', '');
+        setValue('worker_role_arn', '');
+        return;
+      }
+      const role = roles.data.find((r) => r.installerRole.value === installerValue);
+      if (role) {
+        setValue('support_role_arn', role.supportRole[0]?.value ?? '');
+        setValue('worker_role_arn', role.workerRole[0]?.value ?? '');
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, roles, setValue]);
+
   const rosaCommand = `rosa create operator-roles --prefix "custom-operator-roles-prefix" --oidc-config-id "byo-oidc-config-id" --hosted-cp --installer-role-arn "installer-role-arn`;
 
   return (
@@ -33,8 +85,29 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
       <Section label={rp.accountRolesSection}>
         <Grid>
           <GridItem span={7}>
-            <FieldWithAPIErrorAlert error={''} isFetching={false} fieldName={rp.installerRoleLabel}>
-              installer_role_arn
+            <FieldWithAPIErrorAlert
+              error={roles.error}
+              isFetching={roles.isFetching}
+              fieldName={rp.installerRoleLabel}
+            >
+              <WizSelect
+                isRequired
+                onRefresh={() => void roles.fetch(awsInfrastructureAccount)}
+                labelHelp={
+                  <>
+                    {rp.installerHelpLead}{' '}
+                    <ExternalLink href={links.ROSA_ROLES_LEARN_MORE}>
+                      {rp.installerLearnMoreLink}
+                    </ExternalLink>
+                  </>
+                }
+                label={rp.installerRoleLabel}
+                name="installer_role_arn"
+                keyPath="installer_role_arn"
+                control={control}
+                placeholder={rp.installerPlaceholder}
+                options={installerRoleOptions}
+              />
             </FieldWithAPIErrorAlert>
           </GridItem>
         </Grid>
@@ -44,8 +117,32 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
           toggleText={rp.arnsToggle}
         >
           <Grid hasGutter>
-            <GridItem span={7}>support_role_arn</GridItem>
-            <GridItem span={7}>worker_role_arn</GridItem>
+            <GridItem span={7}>
+              <WizSelect
+                isRequired
+                name="support_role_arn"
+                label={rp.supportRoleLabel}
+                keyPath="support_role_arn"
+                control={control}
+                labelHelp={rp.supportHelp}
+                placeholder={rp.supportPlaceholder}
+                options={supportRoleOptions}
+                isDisabled
+              />
+            </GridItem>
+            <GridItem span={7}>
+              <WizSelect
+                isRequired
+                name="worker_role_arn"
+                label={rp.workerRoleLabel}
+                keyPath="worker_role_arn"
+                control={control}
+                labelHelp={rp.workerHelp}
+                placeholder={rp.workerPlaceholder}
+                options={workerRoleOptions}
+                isDisabled
+              />
+            </GridItem>
           </Grid>
         </ExpandableSection>
       </Section>
@@ -54,8 +151,22 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
           <GridItem span={7}>
             <Stack>
               <StackItem>
-                <FieldWithAPIErrorAlert error={''} isFetching={false} fieldName={rp.oidcLabel}>
-                  byo_oidc_config_id
+                <FieldWithAPIErrorAlert
+                  error={oidcConfig.error}
+                  isFetching={oidcConfig.isFetching}
+                  fieldName={rp.oidcLabel}
+                >
+                  <WizSelect
+                    onRefresh={oidcConfig.fetch}
+                    control={control}
+                    name="byo_oidc_config_id"
+                    label={rp.oidcLabel}
+                    isRequired
+                    labelHelp={rp.oidcHelp}
+                    placeholder={rp.oidcPlaceholder}
+                    labelHelpTitle={rp.oidcPopoverTitle}
+                    options={oidcConfig.data}
+                  />
                 </FieldWithAPIErrorAlert>
               </StackItem>
               <StackItem>
