@@ -9,6 +9,8 @@ import {
   SyncAltIcon,
   LightbulbIcon,
   TachometerAltIcon,
+  CubesIcon,
+  DollarSignIcon,
 } from '@patternfly/react-icons';
 import {
   ExtendedTemplateConfig,
@@ -34,6 +36,8 @@ import {
   AdvisorCategories,
   CategoryCounts,
 } from './AdvisorRecommendations/AdvisorRecommendations';
+import { ClusterProviders, ProviderBreakdown } from './TotalClusters/ClusterProviders';
+import { CostManagement, ClusterCost } from './CostManagement/CostManagement';
 import { useLocalStorageWithObject } from './useLocalStorage';
 
 export type DashboardProps = {
@@ -69,6 +73,16 @@ export type DashboardProps = {
   advisorCategories: {
     categories: CategoryCounts;
   };
+  clusterProviders: {
+    providers: ProviderBreakdown[];
+  };
+  costManagement: {
+    totalCost: number;
+    clusters: ClusterCost[];
+    currency?: string;
+    onClusterClick?: (cluster: ClusterCost) => void;
+    onViewMore?: () => void;
+  };
 };
 
 const widgetMapping: (props: DashboardProps) => WidgetMapping = ({
@@ -80,6 +94,8 @@ const widgetMapping: (props: DashboardProps) => WidgetMapping = ({
   updateStatus,
   advisorSeverity,
   advisorCategories,
+  clusterProviders,
+  costManagement,
 }) => ({
   'total-clusters': {
     defaults: { w: 1, h: 3, maxH: 4, minH: 2 },
@@ -170,6 +186,30 @@ const widgetMapping: (props: DashboardProps) => WidgetMapping = ({
     },
     renderWidget: () => <AdvisorCategories categories={advisorCategories.categories} />,
   },
+  'cluster-providers': {
+    defaults: { w: 2, h: 4, maxH: 5, minH: 3 },
+    config: {
+      title: 'Clusters by provider',
+      icon: <CubesIcon />,
+    },
+    renderWidget: () => <ClusterProviders providers={clusterProviders.providers} />,
+  },
+  'cost-management': {
+    defaults: { w: 2, h: 5, maxH: 7, minH: 4 },
+    config: {
+      title: 'Cost management',
+      icon: <DollarSignIcon />,
+    },
+    renderWidget: () => (
+      <CostManagement
+        totalCost={costManagement.totalCost}
+        clusters={costManagement.clusters}
+        currency={costManagement.currency}
+        onClusterClick={costManagement.onClusterClick}
+        onViewMore={costManagement.onViewMore}
+      />
+    ),
+  },
 });
 
 const initialDashboardData: ExtendedTemplateConfig = {
@@ -184,9 +224,18 @@ const initialDashboardData: ExtendedTemplateConfig = {
       title: 'Total clusters',
     },
     {
-      i: 'clusters-with-issues#1',
+      i: 'cluster-providers#1',
       x: 0,
       y: 3,
+      w: 2,
+      h: 4,
+      widgetType: 'cluster-providers',
+      title: 'Clusters by provider',
+    },
+    {
+      i: 'clusters-with-issues#1',
+      x: 0,
+      y: 7,
       w: 2,
       h: 7,
       widgetType: 'clusters-with-issues',
@@ -195,7 +244,7 @@ const initialDashboardData: ExtendedTemplateConfig = {
     {
       i: 'resource-utilization#1',
       x: 0,
-      y: 10,
+      y: 14,
       w: 2,
       h: 5,
       widgetType: 'resource-utilization',
@@ -204,17 +253,17 @@ const initialDashboardData: ExtendedTemplateConfig = {
     {
       i: 'update-status#1',
       x: 0,
-      y: 15,
+      y: 19,
       w: 2,
       h: 3,
       widgetType: 'update-status',
       title: 'Update status',
     },
-    { i: 'telemetry#1', x: 0, y: 18, w: 2, h: 3, widgetType: 'telemetry', title: 'Telemetry' },
+    { i: 'telemetry#1', x: 0, y: 22, w: 2, h: 3, widgetType: 'telemetry', title: 'Telemetry' },
     {
       i: 'advisor-severity#1',
       x: 0,
-      y: 21,
+      y: 25,
       w: 2,
       h: 4,
       widgetType: 'advisor-severity',
@@ -223,16 +272,25 @@ const initialDashboardData: ExtendedTemplateConfig = {
     {
       i: 'advisor-categories#1',
       x: 0,
-      y: 25,
+      y: 29,
       w: 2,
       h: 4,
       widgetType: 'advisor-categories',
       title: 'Advisor by category',
     },
     {
+      i: 'cost-management#1',
+      x: 0,
+      y: 33,
+      w: 2,
+      h: 5,
+      widgetType: 'cost-management',
+      title: 'Cost management',
+    },
+    {
       i: 'expired-trials#1',
       x: 0,
-      y: 29,
+      y: 38,
       w: 2,
       h: 5,
       widgetType: 'expired-trials',
@@ -249,11 +307,29 @@ const initialDashboardData: ExtendedTemplateConfig = {
       widgetType: 'total-clusters',
       title: 'Total clusters',
     },
-    { i: 'telemetry#1', x: 1, y: 0, w: 1, h: 3, widgetType: 'telemetry', title: 'Telemetry' },
+    {
+      i: 'cluster-providers#1',
+      x: 1,
+      y: 0,
+      w: 1,
+      h: 4,
+      widgetType: 'cluster-providers',
+      title: 'Clusters by provider',
+    },
+    { i: 'telemetry#1', x: 0, y: 4, w: 1, h: 3, widgetType: 'telemetry', title: 'Telemetry' },
+    {
+      i: 'update-status#1',
+      x: 1,
+      y: 4,
+      w: 1,
+      h: 3,
+      widgetType: 'update-status',
+      title: 'Update status',
+    },
     {
       i: 'clusters-with-issues#1',
       x: 0,
-      y: 3,
+      y: 7,
       w: 1,
       h: 7,
       widgetType: 'clusters-with-issues',
@@ -262,25 +338,16 @@ const initialDashboardData: ExtendedTemplateConfig = {
     {
       i: 'resource-utilization#1',
       x: 1,
-      y: 3,
+      y: 7,
       w: 1,
       h: 5,
       widgetType: 'resource-utilization',
       title: 'Resource usage',
     },
     {
-      i: 'update-status#1',
-      x: 0,
-      y: 10,
-      w: 2,
-      h: 3,
-      widgetType: 'update-status',
-      title: 'Update status',
-    },
-    {
       i: 'advisor-severity#1',
       x: 0,
-      y: 13,
+      y: 14,
       w: 1,
       h: 4,
       widgetType: 'advisor-severity',
@@ -289,16 +356,25 @@ const initialDashboardData: ExtendedTemplateConfig = {
     {
       i: 'advisor-categories#1',
       x: 1,
-      y: 13,
+      y: 14,
       w: 1,
       h: 4,
       widgetType: 'advisor-categories',
       title: 'Advisor by category',
     },
     {
+      i: 'cost-management#1',
+      x: 0,
+      y: 18,
+      w: 2,
+      h: 5,
+      widgetType: 'cost-management',
+      title: 'Cost management',
+    },
+    {
       i: 'expired-trials#1',
       x: 0,
-      y: 17,
+      y: 23,
       w: 2,
       h: 5,
       widgetType: 'expired-trials',
@@ -315,39 +391,38 @@ const initialDashboardData: ExtendedTemplateConfig = {
       widgetType: 'total-clusters',
       title: 'Total clusters',
     },
-    { i: 'telemetry#1', x: 1, y: 0, w: 1, h: 3, widgetType: 'telemetry', title: 'Telemetry' },
     {
-      i: 'update-status#1',
-      x: 2,
+      i: 'cluster-providers#1',
+      x: 1,
       y: 0,
       w: 1,
-      h: 3,
-      widgetType: 'update-status',
-      title: 'Update status',
-    },
-    {
-      i: 'clusters-with-issues#1',
-      x: 0,
-      y: 3,
-      w: 1,
-      h: 7,
-      widgetType: 'clusters-with-issues',
-      title: 'Clusters with issues',
+      h: 4,
+      widgetType: 'cluster-providers',
+      title: 'Clusters by provider',
     },
     {
       i: 'resource-utilization#1',
-      x: 1,
-      y: 3,
-      w: 2,
+      x: 2,
+      y: 0,
+      w: 1,
       h: 5,
       widgetType: 'resource-utilization',
       title: 'Resource usage',
     },
     {
-      i: 'advisor-severity#1',
+      i: 'clusters-with-issues#1',
       x: 0,
-      y: 10,
+      y: 5,
       w: 2,
+      h: 7,
+      widgetType: 'clusters-with-issues',
+      title: 'Clusters with issues',
+    },
+    {
+      i: 'advisor-severity#1',
+      x: 2,
+      y: 5,
+      w: 1,
       h: 4,
       widgetType: 'advisor-severity',
       title: 'Advisor by severity',
@@ -355,17 +430,36 @@ const initialDashboardData: ExtendedTemplateConfig = {
     {
       i: 'advisor-categories#1',
       x: 2,
-      y: 10,
+      y: 9,
       w: 1,
       h: 4,
       widgetType: 'advisor-categories',
       title: 'Advisor by category',
     },
+    { i: 'telemetry#1', x: 0, y: 12, w: 1, h: 3, widgetType: 'telemetry', title: 'Telemetry' },
+    {
+      i: 'update-status#1',
+      x: 1,
+      y: 12,
+      w: 1,
+      h: 3,
+      widgetType: 'update-status',
+      title: 'Update status',
+    },
+    {
+      i: 'cost-management#1',
+      x: 2,
+      y: 13,
+      w: 1,
+      h: 5,
+      widgetType: 'cost-management',
+      title: 'Cost management',
+    },
     {
       i: 'expired-trials#1',
       x: 0,
-      y: 14,
-      w: 3,
+      y: 15,
+      w: 2,
       h: 5,
       widgetType: 'expired-trials',
       title: 'Expired trials',
@@ -381,57 +475,75 @@ const initialDashboardData: ExtendedTemplateConfig = {
       widgetType: 'total-clusters',
       title: 'Total clusters',
     },
-    { i: 'telemetry#1', x: 1, y: 0, w: 1, h: 3, widgetType: 'telemetry', title: 'Telemetry' },
     {
-      i: 'update-status#1',
-      x: 2,
+      i: 'cluster-providers#1',
+      x: 1,
       y: 0,
-      w: 2,
-      h: 3,
-      widgetType: 'update-status',
-      title: 'Update status',
-    },
-    {
-      i: 'clusters-with-issues#1',
-      x: 0,
-      y: 3,
-      w: 2,
-      h: 7,
-      widgetType: 'clusters-with-issues',
-      title: 'Clusters with issues',
+      w: 1,
+      h: 4,
+      widgetType: 'cluster-providers',
+      title: 'Clusters by provider',
     },
     {
       i: 'resource-utilization#1',
       x: 2,
-      y: 3,
+      y: 0,
       w: 2,
       h: 5,
       widgetType: 'resource-utilization',
       title: 'Resource usage',
     },
     {
-      i: 'advisor-severity#1',
+      i: 'clusters-with-issues#1',
       x: 0,
-      y: 10,
+      y: 5,
       w: 2,
+      h: 7,
+      widgetType: 'clusters-with-issues',
+      title: 'Clusters with issues',
+    },
+    {
+      i: 'advisor-severity#1',
+      x: 2,
+      y: 5,
+      w: 1,
       h: 4,
       widgetType: 'advisor-severity',
       title: 'Advisor by severity',
     },
     {
       i: 'advisor-categories#1',
-      x: 2,
-      y: 10,
-      w: 2,
+      x: 3,
+      y: 5,
+      w: 1,
       h: 4,
       widgetType: 'advisor-categories',
       title: 'Advisor by category',
     },
+    { i: 'telemetry#1', x: 2, y: 9, w: 1, h: 3, widgetType: 'telemetry', title: 'Telemetry' },
+    {
+      i: 'update-status#1',
+      x: 3,
+      y: 9,
+      w: 1,
+      h: 3,
+      widgetType: 'update-status',
+      title: 'Update status',
+    },
+    {
+      i: 'cost-management#1',
+      x: 0,
+      y: 12,
+      w: 2,
+      h: 5,
+      widgetType: 'cost-management',
+      title: 'Cost management',
+    },
     {
       i: 'expired-trials#1',
-      x: 0,
-      y: 14,
-      w: 4,
+      x: 2,
+      y: 12,
+      w: 2,
       h: 5,
       widgetType: 'expired-trials',
       title: 'Expired trials',
@@ -465,7 +577,7 @@ function filterTemplate(template: ExtendedTemplateConfig): ExtendedTemplateConfi
 
 export const Dashboard = (props: DashboardProps) => {
   const [template, setTemplate] = useLocalStorageWithObject<ExtendedTemplateConfig>(
-    'dashboard-template-v4',
+    'dashboard-template-v5',
     initialDashboardData
   );
 

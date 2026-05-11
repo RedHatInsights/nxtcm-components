@@ -14,6 +14,13 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  decorators: [
+    (Story) => (
+      <div style={{ height: '100vh', overflow: 'auto' }}>
+        <Story />
+      </div>
+    ),
+  ],
   render: () => (
     <Dashboard
       totalClusters={{
@@ -76,6 +83,27 @@ export const Default: Story = {
       }}
       advisorCategories={{
         categories: { serviceAvailability: 25, performance: 8, security: 12, faultTolerance: 4 },
+      }}
+      clusterProviders={{
+        providers: [
+          { label: 'ROSA', count: 32 },
+          { label: 'ARO', count: 18 },
+          { label: 'OSD', count: 12 },
+          { label: 'Self-managed', count: 5 },
+        ],
+      }}
+      costManagement={{
+        totalCost: 12450.75,
+        clusters: [
+          { id: 'c1', name: 'prod-east-1', cost: 4200.5 },
+          { id: 'c2', name: 'prod-eu-west-1', cost: 3100.25 },
+          { id: 'c3', name: 'staging-west-2', cost: 2800.0 },
+          { id: 'c4', name: 'dev-central-1', cost: 1350.0 },
+          { id: 'c5', name: 'rosa-sandbox', cost: 1000.0 },
+        ],
+        currency: 'USD',
+        onClusterClick: () => {},
+        onViewMore: () => {},
       }}
     />
   ),
