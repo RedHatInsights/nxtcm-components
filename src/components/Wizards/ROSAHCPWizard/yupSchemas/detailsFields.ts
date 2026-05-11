@@ -1,9 +1,9 @@
 import * as yup from 'yup';
 
 import { STEP_IDS } from '../constants';
-import type { ClusterFormData } from '../../types';
 import type { WizardFieldMeta } from './types';
 import { ctx, rosaCommonRequiredNonEmptyTest, validateClusterNameSync } from './helpers';
+import { ROSAHCPCluster } from '../types';
 
 export const nameSchema = yup
   .string()
@@ -30,7 +30,7 @@ export const nameSchema = yup
     if (!checkClusterNameUniqueness) return true;
     if (validateClusterNameSync(value, msgs.clusterName)) return true;
 
-    const region = (this.parent as Partial<ClusterFormData>).region;
+    const region = (this.parent as Partial<ROSAHCPCluster>).region;
     const error = await checkClusterNameUniqueness(value, region);
     return error ? this.createError({ message: error }) : true;
   });

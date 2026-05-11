@@ -1,6 +1,5 @@
 import * as yup from 'yup';
 
-import type { ClusterFormData } from '../../types';
 import type { WizardFieldMeta } from './types';
 import { detailsFields } from './detailsFields';
 import { rolesAndPoliciesFields } from './rolesAndPoliciesFields';
@@ -9,9 +8,10 @@ import { networkingFields } from './networkingFields';
 import { clusterWideProxyFields } from './clusterWideProxyFields';
 import { encryptionFields } from './encryptionFields';
 import { clusterUpdatesFields } from './clusterUpdatesFields';
+import { ROSAHCPCluster } from '../types';
 
 /**
- * Composed Yup schema for `ClusterFormData` — built from individual
+ * Composed Yup schema for `ROSAHCPCluster` — built from individual
  * per-field schemas grouped by wizard step.
  *
  * Each field carries its own `.meta()` with a {@link WizardFieldMeta} payload,
@@ -30,7 +30,7 @@ export const clusterValidationSchema = yup.object({
   ...clusterWideProxyFields,
   ...encryptionFields,
   ...clusterUpdatesFields,
-}) as yup.ObjectSchema<Partial<ClusterFormData>>;
+}) as yup.ObjectSchema<Partial<ROSAHCPCluster>>;
 
 export function getClusterValidationSchemaDefaultValues(): Partial<ClusterFormData> {
   return clusterValidationSchema.getDefault() as Partial<ClusterFormData>;

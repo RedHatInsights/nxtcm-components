@@ -25,6 +25,7 @@ import {
   isValidCidr,
   rosaCommonRequiredNonEmptyTest,
 } from './helpers';
+import { ROSAHCPCluster } from '../types';
 
 export const clusterPrivacySchema = yup
   .string()
@@ -85,7 +86,7 @@ export const networkMachineCidrSchema = yup
     }
 
     const prefixLength = parseCIDRSubnetLength(value);
-    const formData = this.parent as Partial<ClusterFormData>;
+    const formData = this.parent as Partial<ROSAHCPCluster>;
     const isMultiAz = formData.multi_az === 'true';
 
     if (prefixLength != null) {
@@ -180,7 +181,7 @@ export const networkServiceCidrSchema = yup
       });
     }
 
-    const formData = this.parent as Partial<ClusterFormData>;
+    const formData = this.parent as Partial<ROSAHCPCluster>;
 
     if (selectedSubnets && selectedSubnets.length > 0) {
       for (const subnet of selectedSubnets) {
@@ -241,7 +242,7 @@ export const networkPodCidrSchema = yup
       return this.createError({ message: msgs.validateRange.notSubnetAddress });
     }
 
-    const formData = this.parent as Partial<ClusterFormData>;
+    const formData = this.parent as Partial<ROSAHCPCluster>;
     const prefixLength = parseCIDRSubnetLength(value);
 
     if (prefixLength != null) {

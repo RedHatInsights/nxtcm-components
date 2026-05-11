@@ -47,7 +47,6 @@ jest.mock('ip-cidr', () => {
 import { clusterValidationSchema, wizardFieldMetaByPath } from './index';
 import type { ValidationSchemaContext } from './types';
 import { defaultRosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings.defaults';
-import type { ClusterFormData, CIDRSubnet } from '../../types';
 import {
   MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH,
   HOST_PREFIX_MIN,
@@ -59,6 +58,7 @@ import {
   POD_CIDR_MAX,
   MAX_CA_SIZE_BYTES,
 } from '../constants';
+import { CIDRSubnet, ROSAHCPCluster } from '../types';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -76,7 +76,7 @@ function buildContext(overrides: Partial<ValidationSchemaContext> = {}): Validat
   };
 }
 
-function buildFormData(overrides: Partial<ClusterFormData> = {}): Partial<ClusterFormData> {
+function buildFormData(overrides: Partial<ROSAHCPCluster> = {}): Partial<ROSAHCPCluster> {
   return {
     name: 'mycluster',
     cluster_version: '4.15.0',
@@ -91,7 +91,7 @@ function buildFormData(overrides: Partial<ClusterFormData> = {}): Partial<Cluste
     selected_vpc: 'vpc-123',
     machine_pools_subnets: [{ machine_pool_subnet: 'subnet-123' }],
     machine_type: 'm5.xlarge',
-    cluster_privacy: 'external' as ClusterFormData['cluster_privacy'],
+    cluster_privacy: 'external' as ROSAHCPCluster['cluster_privacy'],
     network_machine_cidr: '10.0.0.0/16',
     network_service_cidr: '172.30.0.0/16',
     network_pod_cidr: '10.128.0.0/14',
@@ -102,8 +102,8 @@ function buildFormData(overrides: Partial<ClusterFormData> = {}): Partial<Cluste
 
 async function validate(
   context: ValidationSchemaContext,
-  data: Partial<ClusterFormData>,
-  field: keyof ClusterFormData
+  data: Partial<ROSAHCPCluster>,
+  field: keyof ROSAHCPCluster
 ): Promise<string | null> {
   try {
     await clusterValidationSchema.validateAt(field, data, { context });
@@ -215,7 +215,7 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
   // Required detail fields
   // -----------------------------------------------------------------------
   describe('required detail fields', () => {
-    const requiredFields: (keyof ClusterFormData)[] = [
+    const requiredFields: (keyof ROSAHCPCluster)[] = [
       'cluster_version',
       'associated_aws_id',
       'billing_account_id',
@@ -232,7 +232,7 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
   // Roles & policies
   // -----------------------------------------------------------------------
   describe('required role fields', () => {
-    const roleFields: (keyof ClusterFormData)[] = [
+    const roleFields: (keyof ROSAHCPCluster)[] = [
       'installer_role_arn',
       'support_role_arn',
       'worker_role_arn',

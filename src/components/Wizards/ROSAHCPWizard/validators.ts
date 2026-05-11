@@ -19,7 +19,6 @@ import {
 } from './constants';
 import { parseCIDRSubnetLength, stringToArray } from './helpers';
 import IPCIDR from 'ip-cidr';
-import type { ClusterFormData, CIDRSubnet } from '../types';
 import {
   defaultRosaHcpWizardValidatorStrings,
   type RosaHcpWizardAwsMachineCidrValidatorStrings,
@@ -39,6 +38,8 @@ import {
   type RosaHcpWizardUrlValidatorStrings,
   type RosaHcpWizardValidateRangeValidatorStrings,
 } from './stringsProvider/rosaHcpWizardStrings';
+import { CIDRSubnet } from '../types';
+import { ROSAHCPCluster } from './types';
 
 const lowercaseAlphaNumericCharacters = 'abcdefghijklmnopqrstuvwxyz1234567890';
 
@@ -191,7 +192,7 @@ export const disjointSubnets =
     fieldName: string,
     msgs: RosaHcpWizardDisjointSubnetsValidatorStrings = defaultRosaHcpWizardValidatorStrings.disjointSubnets
   ) =>
-  (value: string | undefined, formData: ClusterFormData | undefined): string | undefined => {
+  (value: string | undefined, formData: ROSAHCPCluster | undefined): string | undefined => {
     if (!value) {
       return undefined;
     }
@@ -288,7 +289,7 @@ export const validateRange = (
 
 export const awsMachineCidr = (
   value?: string,
-  formData?: ClusterFormData,
+  formData?: ROSAHCPCluster,
   msgs: RosaHcpWizardAwsMachineCidrValidatorStrings = defaultRosaHcpWizardValidatorStrings.awsMachineCidr
 ): string | undefined => {
   if (!value) {
@@ -366,7 +367,7 @@ export const podCidr = (
 
 export const subnetCidrs = (
   value?: string,
-  formData?: ClusterFormData,
+  formData?: ROSAHCPCluster,
   fieldName?: string,
   selectedSubnets?: CIDRSubnet[],
   msgs: RosaHcpWizardSubnetCidrsValidatorStrings = defaultRosaHcpWizardValidatorStrings.subnetCidrs
