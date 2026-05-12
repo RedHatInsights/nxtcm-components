@@ -120,7 +120,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     manualInstructionsLink: 'these instructions',
   },
   details: {
-    sectionLabel: 'Details',
+    sectionLabel: 'Cluster details',
     clusterNameLabel: 'Cluster name',
     clusterNamePlaceholder: 'Enter the cluster name',
     clusterNameHelp:

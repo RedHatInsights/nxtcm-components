@@ -3,7 +3,6 @@ import { Button, Stack } from '@patternfly/react-core';
 import semver from 'semver';
 import { useWatch } from 'react-hook-form';
 
-import type { ClusterFormData } from '../../../../types';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import { buildOpenShiftVersionGroups } from '../../../buildOpenShiftVersionGroups';
 import { DetailsStepDrawer } from '../../../components/DetailsStepDrawer/DetailsStepDrawer';
@@ -11,7 +10,7 @@ import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../links';
-import { ROSAHCPWizardData } from '../../../types';
+import { ROSAHCPWizardData, type ROSAHCPCluster } from '../../../types';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { FieldWrapper } from '../../../components/FieldWrapper';
@@ -58,8 +57,8 @@ export const Details = ({
   const drawerRef = React.useRef<HTMLSpanElement>(null);
   const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
 
-  const installerRoleArn = useWatch<ClusterFormData>({ name: 'installer_role_arn' });
-  const associatedAwsIdRaw = useWatch<ClusterFormData>({ name: 'associated_aws_id' });
+  const installerRoleArn = useWatch<ROSAHCPCluster>({ name: 'installer_role_arn' });
+  const associatedAwsIdRaw = useWatch<ROSAHCPCluster>({ name: 'associated_aws_id' });
   const associatedAwsIdForRegions =
     typeof associatedAwsIdRaw === 'string' && associatedAwsIdRaw !== ''
       ? associatedAwsIdRaw
@@ -119,7 +118,7 @@ export const Details = ({
               />
             }
           >
-            <WizSelect<ClusterFormData>
+            <WizSelect<ROSAHCPCluster>
               isFill
               isTypeAhead
               name="associated_aws_id"
@@ -146,7 +145,7 @@ export const Details = ({
               </ExternalLink>
             }
           >
-            <WizSelect<ClusterFormData>
+            <WizSelect<ROSAHCPCluster>
               isFill
               isTypeAhead
               name="billing_account_id"
@@ -161,7 +160,7 @@ export const Details = ({
           </FieldWrapper>
 
           <FieldWrapper>
-            <WizSelect<ClusterFormData>
+            <WizSelect<ROSAHCPCluster>
               isFill
               isTypeAhead
               name="region"
@@ -177,11 +176,11 @@ export const Details = ({
             />
           </FieldWrapper>
           <FieldWrapper>
-            <WizTextInput<ClusterFormData> name="name" schema={clusterValidationSchema} />
+            <WizTextInput<ROSAHCPCluster> name="name" schema={clusterValidationSchema} />
           </FieldWrapper>
 
           <FieldWrapper>
-            <WizSelect<ClusterFormData>
+            <WizSelect<ROSAHCPCluster>
               isFill
               isTypeAhead
               name="cluster_version"

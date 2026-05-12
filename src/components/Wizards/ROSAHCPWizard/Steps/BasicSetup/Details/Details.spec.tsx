@@ -32,7 +32,7 @@ test.describe('Details (ROSA HCP)', () => {
 
   test('should render the Details section title', async ({ mount }) => {
     const component = await mount(<DetailsMount />);
-    await expect(component.getByText('Details', { exact: true })).toBeVisible();
+    await expect(component.getByText('Cluster details', { exact: true })).toBeVisible();
   });
 
   test('should render OpenShift version select', async ({ mount }) => {
@@ -55,7 +55,7 @@ test.describe('Details (ROSA HCP)', () => {
       />
     );
 
-    await expect(component.getByText('Details', { exact: true })).toBeVisible();
+    await expect(component.getByText('Cluster details', { exact: true })).toBeVisible();
     await expect(component.getByText('Cluster name', { exact: true })).toBeVisible();
   });
 
@@ -535,7 +535,7 @@ test.describe('Details (ROSA HCP)', () => {
       await nameInput.blur();
 
       await expect(nameInput).toHaveValue('valid-cluster');
-      await expect(component.getByText('Details', { exact: true })).toBeVisible();
+      await expect(component.getByText('Cluster details', { exact: true })).toBeVisible();
     });
   });
 
