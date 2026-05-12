@@ -8,7 +8,7 @@ interface UseDependentRolesResult {
 }
 export const useDependentRoles = (roles: RolesResource): UseDependentRolesResult => {
   const { setValue } = useFormContext<ROSAHCPCluster>();
-  const selectedInstallerArn = useWatch<ROSAHCPCluster>({ name: 'installer_role_arn' });
+  const selectedInstallerArn = useWatch({ name: 'installer_role_arn' });
   const selectedRole = React.useMemo(
     () => roles.data.find((r) => r.installerRole.value === selectedInstallerArn),
     [roles, selectedInstallerArn]

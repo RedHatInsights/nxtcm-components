@@ -5,7 +5,7 @@ import React from 'react';
 
 export const useUpdateOperatorPrefix = () => {
   const { setValue } = useFormContext<ROSAHCPCluster>();
-  const clusterName = useWatch<Pick<ROSAHCPCluster, 'name'>>({ name: 'name' });
+  const clusterName = useWatch({ name: 'name' });
 
   const operatorRolesPrefix = createOperatorRolesPrefix(clusterName);
   React.useEffect(() => {

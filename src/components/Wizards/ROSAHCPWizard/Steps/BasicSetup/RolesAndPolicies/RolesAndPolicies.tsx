@@ -30,9 +30,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
   const rp = useRosaHcpWizardStrings().rolesAndPolicies;
 
-  const awsInfrastructureAccount = useWatch<Pick<ROSAHCPCluster, 'associated_aws_id'>>({
-    name: 'associated_aws_id',
-  });
+  const awsInfrastructureAccount = useWatch({ name: 'associated_aws_id' });
 
   const installerRoleOptions = useInstallerRoleOptions(roles);
   const { supportRoleOptions, workerRoleOptions } = useDependentRoles(roles);
