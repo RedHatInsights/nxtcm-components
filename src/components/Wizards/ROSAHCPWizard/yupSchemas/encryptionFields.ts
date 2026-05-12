@@ -5,7 +5,7 @@ import {
   AWS_KMS_SERVICE_ACCOUNT_REGEX,
   STEP_IDS,
 } from '../constants';
-import type { ClusterFormData } from '../../types';
+import { ClusterEncryptionKeys, type ClusterFormData } from '../../types';
 import type { WizardFieldMeta } from './types';
 import { ctx } from './helpers';
 
@@ -35,6 +35,7 @@ function validateKmsArn(
 
 export const encryptionKeysSchema = yup
   .string()
+  .default(ClusterEncryptionKeys.default)
   .optional()
   .meta({
     id: 'encryption_keys',
@@ -58,6 +59,7 @@ export const kmsKeyArnSchema = yup
 
 export const etcdEncryptionSchema = yup
   .boolean()
+  .default(false)
   .optional()
   .meta({
     id: 'etcd_encryption',

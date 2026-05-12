@@ -19,6 +19,7 @@ export const selectedVpcSchema = yup
 
 export const machinePoolsSubnetsSchema = yup
   .array()
+  .default([])
   .required()
   .meta({
     id: 'machine_pools_subnets',
@@ -41,6 +42,7 @@ export const machineTypeSchema = yup
 
 export const autoscalingSchema = yup
   .boolean()
+  .default(false)
   .optional()
   .meta({
     id: 'autoscaling',
@@ -51,6 +53,7 @@ export const autoscalingSchema = yup
 
 export const nodesComputeSchema = yup
   .number()
+  .default(2)
   .optional()
   .meta({
     id: 'nodes_compute',
@@ -134,6 +137,7 @@ export const maxReplicasSchema = yup
 
 export const computeRootVolumeSchema = yup
   .number()
+  .default(300)
   .optional()
   .meta({
     id: 'compute_root_volume',
