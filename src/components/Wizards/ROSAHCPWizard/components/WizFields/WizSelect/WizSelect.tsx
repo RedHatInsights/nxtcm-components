@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 import { type FieldValues, useController } from 'react-hook-form';
 
 import { requiredFromYup } from '../../../../../../utilities/yupFieldRequired';
@@ -86,6 +86,8 @@ export function WizSelect<TFieldValues extends FieldValues = FieldValues, TOptio
 
   const isRequired = isRequiredProp ?? requiredFromYup(schema, name, yupDescribeOptions);
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const {
     field,
     fieldState: { invalid, isTouched, error },
@@ -108,7 +110,8 @@ export function WizSelect<TFieldValues extends FieldValues = FieldValues, TOptio
       onBlur={field.onBlur}
       onChange={field.onChange}
       errorMessage={error?.message}
-      isError={showError}
+      isError={showError && !isMenuOpen}
+      onMenuOpenChange={setIsMenuOpen}
       isLoading={isLoading}
       onRefresh={onRefresh}
     />

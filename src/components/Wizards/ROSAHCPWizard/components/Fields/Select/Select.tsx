@@ -87,6 +87,8 @@ export interface SelectProps<T = unknown> {
   noResultsText?: string;
   isSuccess?: boolean;
   successMessage?: ReactNode | string;
+  /** Fires when the dropdown menu opens or closes (after internal `open` updates). */
+  onMenuOpenChange?: (isOpen: boolean) => void;
 }
 
 export function Select<T = unknown>(props: SelectProps<T>) {
@@ -114,6 +116,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     noResultsText = 'No results found',
     isSuccess,
     successMessage,
+    onMenuOpenChange,
   } = props;
 
   const disabled = isDisabled;
@@ -125,6 +128,10 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   const [open, setOpen] = useState(false);
   const [typeaheadQuery, setTypeaheadQuery] = useState('');
   const textInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    onMenuOpenChange?.(open);
+  }, [open, onMenuOpenChange]);
 
   const {
     normalizedFlat,
@@ -156,7 +163,15 @@ export function Select<T = unknown>(props: SelectProps<T>) {
         return;
       }
       if (optionId == null || optionId === '') {
-        onChange(undefined as T | string | number | undefined);
+        /**
+         * PatternFly can emit `onSelect` with an empty selection while the menu is closing or
+         * during option transitions. Clearing the RHF value here briefly fails `.required()` and
+         * flashes the error state. Plain selects have no in-menu "clear"; use {@link onClearTypeahead}
+         * for typeahead clears.
+         */
+        if (isTypeAhead) {
+          onChange(undefined as T | string | number | undefined);
+        }
         setOpen(false);
         return;
       }
@@ -166,7 +181,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
       }
       setOpen(false);
     },
-    [flatForLookup, onChange]
+    [flatForLookup, isTypeAhead, onChange]
   );
 
   const onPfSelect = useCallback(
