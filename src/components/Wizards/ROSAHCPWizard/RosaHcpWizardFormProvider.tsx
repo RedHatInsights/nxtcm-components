@@ -11,22 +11,24 @@ import type { RosaHCPWizardProps } from './types';
 import type { ValidationSchemaContext } from './yupSchemas/types';
 import { clusterValidationSchema, getClusterValidationSchemaDefaultValues } from './yupSchemas';
 
+const clusterYupResolver = yupResolver(clusterValidationSchema) as Resolver<
+  Partial<ClusterFormData>
+>;
+
 export function RosaHcpWizardFormProvider(props: RosaHCPWizardProps) {
   const msgs = useRosaHcpWizardValidators();
-  const { wizardData } = props;
+  const checkClusterNameUniqueness = props.wizardData?.checkClusterNameUniqueness;
 
   const resolver = useCallback<Resolver<Partial<ClusterFormData>>>(
-    async (values, context, options) => {
-      const validate = yupResolver(clusterValidationSchema, {
-        context: buildClusterValidationSchemaContext(values, msgs, {
-          checkClusterNameUniqueness: wizardData.checkClusterNameUniqueness as
-            | ValidationSchemaContext['checkClusterNameUniqueness']
-            | undefined,
-        }),
-      }) as Resolver<Partial<ClusterFormData>>;
-      return validate(values, context, options);
+    async (values, _rhfContext, options) => {
+      const yupContext = buildClusterValidationSchemaContext(values, msgs, {
+        checkClusterNameUniqueness: checkClusterNameUniqueness as
+          | ValidationSchemaContext['checkClusterNameUniqueness']
+          | undefined,
+      });
+      return clusterYupResolver(values, yupContext, options);
     },
-    [msgs, wizardData.checkClusterNameUniqueness]
+    [msgs, checkClusterNameUniqueness]
   );
 
   const methods = useForm<Partial<ClusterFormData>>({
