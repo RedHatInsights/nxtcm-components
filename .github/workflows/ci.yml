@@ -33,7 +33,7 @@ jobs:
             echo "::error::lockfile was modified by npm ci"
             exit 1
           }
-          if grep -qE '"resolved":\s*"git[+:]|"github:' package-lock.json packages/react-form-wizard/package-lock.json; then
+          if grep -qE '"resolved":\s*"(git\+|git:|github:)' package-lock.json packages/react-form-wizard/package-lock.json; then
             echo "::error::git-based dependency found in lockfile (supply chain risk)"
             exit 1
           fi

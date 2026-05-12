@@ -52,7 +52,7 @@ done
 
 # 4. check for git-based deps in lockfile (same as CI step, but usable locally)
 if [ -f package-lock.json ]; then
-  if grep -qE '"resolved":\s*"git[+:]|"github:' package-lock.json; then
+  if grep -qE '"resolved":\s*"(git\+|git:|github:)' package-lock.json; then
     echo "::error::git-based dependency found in package-lock.json"
     EXIT_CODE=1
   fi
