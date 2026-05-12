@@ -131,7 +131,7 @@ export const Default: Story = {
   },
 };
 
-export const FullMockedData: Story = {
+export const WizardWithLoadingState: Story = {
   render: (args) => <DefaultWithInitialLoading {...args} />,
   args: {
     title: 'Create ROSA Cluster',
@@ -141,7 +141,7 @@ export const FullMockedData: Story = {
     onSubmit: onWizardSubmit,
     onCancel: onWizardCancel,
   },
-}
+};
 
 /** Every resource reports an API error so error alerts can be reviewed. */
 const allErrorsWizardData: ROSAHCPWizardData = {
