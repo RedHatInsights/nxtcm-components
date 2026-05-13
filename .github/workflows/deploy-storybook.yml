@@ -19,8 +19,8 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
-      - name: Upgrade npm
-        run: npm install -g npm@^11.10.0
+      - name: Enable Corepack for npm
+        run: corepack enable npm
 
       # install main dependencies and subpackage dependencies
       - name: Install dependencies

@@ -22,9 +22,9 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
-      - name: Upgrade npm
-        run: npm install -g npm@^11.10.0
-
+      - name: Enable Corepack for npm
+        run: corepack enable npm
+        
       - name: Install dependencies
         run: npm ci
       - name: Install subpackage dependencies
@@ -55,8 +55,11 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
-      - name: Upgrade npm (package.json engines)
-        run: npm install -g npm@^11.10.0
+      - name: Enable Corepack for npm
+        run: corepack enable npm
+
+      - name: Install pinned npm from packageManager
+        run: corepack install
 
       - name: Install dependencies
         run: npm ci
@@ -78,8 +81,11 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
-      - name: Upgrade npm (package.json engines)
-        run: npm install -g npm@^11.10.0
+      - name: Enable Corepack for npm
+        run: corepack enable npm
+
+      - name: Install pinned npm from packageManager
+        run: corepack install
 
       - name: Install dependencies
         run: npm ci
@@ -139,8 +145,11 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
-      - name: Upgrade npm (package.json engines)
-        run: npm install -g npm@^11.10.0
+      - name: Enable Corepack for npm
+        run: corepack enable npm
+
+      - name: Install pinned npm from packageManager
+        run: corepack install
 
       - name: Install dependencies
         run: npm ci
@@ -169,8 +178,11 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
-      - name: Upgrade npm (package.json engines)
-        run: npm install -g npm@^11.10.0
+      - name: Enable Corepack for npm
+        run: corepack enable npm
+
+      - name: Install pinned npm from packageManager
+        run: corepack install
 
       - name: Install dependencies
         run: npm ci
@@ -203,8 +215,11 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
-      - name: Upgrade npm (package.json engines)
-        run: npm install -g npm@^11.10.0
+      - name: Enable Corepack for npm
+        run: corepack enable npm
+
+      - name: Install pinned npm from packageManager
+        run: corepack install
 
       - name: Install dependencies
         run: npm ci

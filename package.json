@@ -35,6 +35,7 @@
     "node": ">=24",
     "npm": ">=11.10.0"
   },
+  "packageManager": "npm@11.14.1",
   "peerDependencies": {
     "@patternfly/react-core": "^6.0.0",
     "js-yaml": "^4.1.0",
