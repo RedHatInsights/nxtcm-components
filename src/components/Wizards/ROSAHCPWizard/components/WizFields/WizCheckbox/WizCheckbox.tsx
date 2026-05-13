@@ -1,16 +1,10 @@
-import { type FormEvent, type ReactNode } from 'react';
+import { type FormEvent } from 'react';
 import { type FieldValues, useController } from 'react-hook-form';
 
-import { getYupFieldPresentationMeta } from '../../../../../../utilities/yupFieldPresentationMeta';
 import { requiredFromYup } from '../../../../../../utilities/yupFieldRequired';
 import { Checkbox, type CheckboxProps } from '../../Fields/Checkbox';
-import {
-  useWizRhfControl,
-  wizFallbackFieldId,
-  wizFallbackLabelFromFieldPath,
-  wizFieldShowsError,
-  type WizRhfBoundFieldProps,
-} from '../wizFieldRhf';
+import { useWizFieldPresentation } from '../wizFieldPresentation';
+import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizCheckboxControlledKeys =
   | 'isChecked'
@@ -44,7 +38,7 @@ export type WizCheckboxProps<TFieldValues extends FieldValues = FieldValues> =
  * Bound to react-hook-form and Yup (via `resolver` on `useForm`).
  * Prefer wrapping the form with `FormProvider` so you can omit `control`.
  * Optional `schema` pulls UI defaults and required state from Yup `.meta()` / optionality.
- * You may set `id`, `label`, `helperText`, `labelHelp`, and `labelHelpTitle` via props; when omitted and `schema` is set, they come from that field’s Yup `.meta()` (use `title` in meta for the group heading when needed).
+ * You may set `id`, `label`, `helperText`, `labelHelp`, and `labelHelpTitle` via props. When omitted, Yup `.meta()` may supply inline copy or `*Key` paths resolved from `RosaHcpWizardStringsProvider`. Use `title` in meta for the group heading when needed.
  * Pass `isRequired` to override;
  */
 export function WizCheckbox<TFieldValues extends FieldValues = FieldValues>(
@@ -66,18 +60,18 @@ export function WizCheckbox<TFieldValues extends FieldValues = FieldValues>(
   } = props;
 
   const control = useWizRhfControl<TFieldValues>('WizCheckbox', controlProp);
-
-  const fromYup =
-    schema !== undefined
-      ? getYupFieldPresentationMeta(schema, String(name), yupDescribeOptions)
-      : undefined;
-
-  const id = idProp ?? fromYup?.id ?? wizFallbackFieldId(name);
-  const label: ReactNode = labelProp ?? fromYup?.label ?? wizFallbackLabelFromFieldPath(name);
-  const title = titleProp ?? fromYup?.title;
-  const helperText = helperTextProp ?? fromYup?.helperText;
-  const labelHelp = labelHelpProp ?? fromYup?.labelHelp;
-  const labelHelpTitle = labelHelpTitleProp ?? fromYup?.labelHelpTitle;
+  const { id, title, label, helperText, labelHelp, labelHelpTitle } = useWizFieldPresentation({
+    name,
+    schema,
+    yupDescribeOptions,
+    idProp,
+    labelProp,
+    titleProp,
+    helperTextProp,
+    labelHelpProp,
+    labelHelpTitleProp,
+    labelMode: 'checkbox',
+  });
 
   const isRequired = isRequiredProp ?? requiredFromYup(schema, name, yupDescribeOptions);
 

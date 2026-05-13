@@ -5,6 +5,7 @@ import { Button, Form } from '@patternfly/react-core';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
+import { RosaHcpWizardStringsProvider } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { WizFieldsYupStoryDebugGrid } from '../WizFieldsStorybookHelpers';
 import { WizTextInput, type WizTextInputProps } from './WizTextInput';
 
@@ -109,6 +110,13 @@ const meta: Meta<typeof WizTextInput> = {
   title: 'Form Elements/Connected Form Elements/WizTextInput',
   component: WizTextInput,
   tags: ['autodocs'],
+  decorators: [
+    (Story) => (
+      <RosaHcpWizardStringsProvider>
+        <Story />
+      </RosaHcpWizardStringsProvider>
+    ),
+  ],
   parameters: {
     layout: 'padded',
   },

@@ -4,7 +4,11 @@ import { Button, Form } from '@patternfly/react-core';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
-import { WizCtWatchStatus, wizCtSubmitValidationPreview } from '../wizFieldCtSpecHelpers';
+import {
+  WizCtWatchStatus,
+  wizCtSubmitValidationPreview,
+  withRosaCt,
+} from '../wizFieldCtSpecHelpers';
 import { WizTextInput } from './WizTextInput';
 
 export const WIZ_TEXT_INPUT_EXPLICIT_LABEL = 'Explicit text label';
@@ -25,7 +29,7 @@ export function WizTextInputExplicitHarness() {
     defaultValues: { notes: '' },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizTextInput<ExplicitFormValues>
@@ -60,7 +64,7 @@ export function WizTextInputYupMetaHarness() {
     defaultValues: { summary: '' },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizTextInput<YupMetaFormValues> name="summary" schema={yupMetaSchema} />
@@ -82,7 +86,7 @@ export function WizTextInputSubmitValidationHarness() {
     mode: 'onSubmit',
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form onSubmit={wizCtSubmitValidationPreview(methods)}>
         <WizTextInput<SubmitValidationFormValues>
@@ -108,7 +112,7 @@ export function WizTextInputNestedFallbackHarness() {
     defaultValues: { gateway: { host: '' } },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizTextInput<NestedGatewayFormValues> name="gateway.host" />
@@ -137,7 +141,7 @@ export function WizTextInputExplicitPropsOverrideMetaHarness() {
     defaultValues: { slot: '' },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizTextInput<PropsOverrideFormValues>
@@ -163,7 +167,7 @@ export function WizTextInputNumericMetaLabelHarness() {
     defaultValues: { yearCode: '' },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizTextInput<NumericLabelFormValues> name="yearCode" schema={numericLabelSchema} />
@@ -188,7 +192,7 @@ export function WizTextInputBlurValidationHarness() {
     mode: 'onBlur',
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizTextInput
@@ -217,7 +221,7 @@ export function WizTextInputExplicitIsRequiredHarness() {
     defaultValues: { tag: '' },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizTextInput<TagFormValues>
@@ -241,7 +245,7 @@ export function WizTextInputExplicitControlOnlyHarness() {
     defaultValues: { remote: '' },
   });
 
-  return (
+  return withRosaCt(
     <>
       <WizTextInput<RemoteFieldValues>
         control={methods.control}

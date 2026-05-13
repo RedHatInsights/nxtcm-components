@@ -1,10 +1,13 @@
-import React from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Form } from '@patternfly/react-core';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
-import { WizCtWatchStatus, wizCtSubmitValidationPreview } from '../wizFieldCtSpecHelpers';
+import {
+  WizCtWatchStatus,
+  wizCtSubmitValidationPreview,
+  withRosaCt,
+} from '../wizFieldCtSpecHelpers';
 import { WizCheckbox } from './WizCheckbox';
 
 export const WIZ_CHECKBOX_EXPLICIT_TITLE = 'Explicit title';
@@ -25,7 +28,7 @@ export function WizCheckboxExplicitHarness() {
     defaultValues: { acceptTerms: false },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizCheckbox<ExplicitFormValues>
@@ -62,7 +65,7 @@ export function WizCheckboxYupMetaHarness() {
     defaultValues: { notifications: false },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizCheckbox<YupMetaFormValues> name="notifications" schema={yupMetaSchema} />
@@ -84,7 +87,7 @@ export function WizCheckboxSubmitValidationHarness() {
     mode: 'onSubmit',
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form onSubmit={wizCtSubmitValidationPreview(methods)}>
         <WizCheckbox<SubmitValidationFormValues>
@@ -111,7 +114,7 @@ export function WizCheckboxNestedFallbackHarness() {
     defaultValues: { prefs: { digest: false } },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizCheckbox<NestedPrefsFormValues> name="prefs.digest" />
@@ -143,7 +146,7 @@ export function WizCheckboxExplicitPropsOverrideMetaHarness() {
     defaultValues: { flagOpt: false },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizCheckbox<CheckboxPropsOverrideValues>
@@ -167,7 +170,7 @@ export function WizCheckboxExplicitControlOnlyHarness() {
     defaultValues: { solo: false },
   });
 
-  return (
+  return withRosaCt(
     <>
       <WizCheckbox<SoloCheckboxValues>
         control={methods.control}

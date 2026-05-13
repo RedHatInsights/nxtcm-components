@@ -4,7 +4,11 @@ import { Button, Form } from '@patternfly/react-core';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
-import { WizCtWatchStatus, wizCtSubmitValidationPreview } from '../wizFieldCtSpecHelpers';
+import {
+  WizCtWatchStatus,
+  wizCtSubmitValidationPreview,
+  withRosaCt,
+} from '../wizFieldCtSpecHelpers';
 import { WizFileUpload } from './WizFileUpload';
 
 export const WIZ_FILE_UPLOAD_EXPLICIT_LABEL = 'Explicit pull secret label';
@@ -23,7 +27,7 @@ export function WizFileUploadExplicitHarness() {
     defaultValues: { pullSecret: '' },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizFileUpload<ExplicitFormValues>
@@ -58,7 +62,7 @@ export function WizFileUploadYupMetaHarness() {
     defaultValues: { pullSecret: '' },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizFileUpload<YupMetaFormValues> name="pullSecret" schema={yupMetaSchema} />
@@ -84,7 +88,7 @@ export function WizFileUploadSubmitValidationHarness() {
     mode: 'onSubmit',
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form onSubmit={wizCtSubmitValidationPreview(methods)}>
         <WizFileUpload<SubmitValidationFormValues>
@@ -112,7 +116,7 @@ export function WizFileUploadNestedFallbackHarness() {
     defaultValues: { bundle: { manifest: '' } },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizFileUpload<NestedBundleFormValues>
@@ -137,7 +141,7 @@ export function WizFileUploadClearViaButtonHarness() {
     defaultValues: { docUpload: '' },
   });
 
-  return (
+  return withRosaCt(
     <FormProvider {...methods}>
       <Form>
         <WizFileUpload<{ docUpload: string }>
@@ -164,7 +168,7 @@ export function WizFileUploadExplicitControlOnlyHarness() {
     defaultValues: { bodyText: '' },
   });
 
-  return (
+  return withRosaCt(
     <>
       <WizFileUpload<ControlManifestBodyValues>
         control={methods.control}

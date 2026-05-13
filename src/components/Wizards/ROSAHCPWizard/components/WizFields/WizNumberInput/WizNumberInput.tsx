@@ -1,18 +1,11 @@
 import { type SyntheticEvent } from 'react';
 import { type FieldValues, useController } from 'react-hook-form';
 
-import { getYupFieldPresentationMeta } from '../../../../../../utilities/yupFieldPresentationMeta';
 import { requiredFromYup } from '../../../../../../utilities/yupFieldRequired';
 
 import { NumberInput, type NumberInputProps } from '../../Fields/NumberInput';
-import {
-  stringLabelFromYupMeta,
-  useWizRhfControl,
-  wizFallbackFieldId,
-  wizFallbackLabelFromFieldPath,
-  wizFieldShowsError,
-  type WizRhfBoundFieldProps,
-} from '../wizFieldRhf';
+import { useWizFieldPresentation } from '../wizFieldPresentation';
+import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizNumberInputControlledKeys =
   | 'value'
@@ -31,11 +24,12 @@ type WizNumberInputSpreadProps = Omit<
   | 'helperText'
   | 'labelHelp'
   | 'labelHelpTitle'
+  | 'placeholder'
 > &
   Partial<
     Pick<
       NumberInputProps,
-      'id' | 'label' | 'isRequired' | 'helperText' | 'labelHelp' | 'labelHelpTitle'
+      'id' | 'label' | 'isRequired' | 'helperText' | 'labelHelp' | 'labelHelpTitle' | 'placeholder'
     >
   >;
 
@@ -45,7 +39,7 @@ export type WizNumberInputProps<TFieldValues extends FieldValues = FieldValues> 
 /**
  * Prefer wrapping the form with `FormProvider` so you can omit `control`.
  * Optional `schema` pulls UI defaults and required state from Yup `.meta()` / optionality.
- * You may set `id`, `label`, `helperText`, `labelHelp`, and `labelHelpTitle` via props; when omitted and `schema` is set, they come from that field’s Yup `.meta()`.
+ * You may set `id`, `label`, `placeholder`, `helperText`, `labelHelp`, and `labelHelpTitle` via props. When omitted, Yup `.meta()` may supply inline copy or `*Key` paths resolved from `RosaHcpWizardStringsProvider`.
  * Pass `isRequired` to override; when omitted and `schema` is set, required UI follows Yup for this path.
  */
 export function WizNumberInput<TFieldValues extends FieldValues = FieldValues>(
@@ -62,25 +56,26 @@ export function WizNumberInput<TFieldValues extends FieldValues = FieldValues>(
     helperText: helperTextProp,
     labelHelp: labelHelpProp,
     labelHelpTitle: labelHelpTitleProp,
+    placeholder: placeholderProp,
     ...rest
   } = props;
 
   const control = useWizRhfControl<TFieldValues>('WizNumberInput', controlProp);
-
-  const fromYup =
-    schema !== undefined
-      ? getYupFieldPresentationMeta(schema, String(name), yupDescribeOptions)
-      : undefined;
-
-  const id = idProp ?? fromYup?.id ?? wizFallbackFieldId(name);
-  const fallbackLabel = wizFallbackLabelFromFieldPath(name);
-  const label =
-    labelProp ??
-    (schema !== undefined ? stringLabelFromYupMeta(fromYup?.label, fallbackLabel) : undefined) ??
-    fallbackLabel;
-  const helperText = helperTextProp ?? fromYup?.helperText;
-  const labelHelp = labelHelpProp ?? fromYup?.labelHelp;
-  const labelHelpTitle = labelHelpTitleProp ?? fromYup?.labelHelpTitle;
+  const { id, label, helperText, labelHelp, labelHelpTitle, placeholder } = useWizFieldPresentation(
+    {
+      name,
+      schema,
+      yupDescribeOptions,
+      idProp,
+      labelProp,
+      helperTextProp,
+      labelHelpProp,
+      labelHelpTitleProp,
+      placeholderProp,
+      labelMode: 'stringField',
+      includePlaceholder: true,
+    }
+  );
 
   const isRequired = isRequiredProp ?? requiredFromYup(schema, name, yupDescribeOptions);
 
@@ -104,6 +99,7 @@ export function WizNumberInput<TFieldValues extends FieldValues = FieldValues>(
       {...rest}
       id={id}
       label={label}
+      placeholder={placeholder}
       helperText={helperText}
       labelHelp={labelHelp}
       labelHelpTitle={labelHelpTitle}

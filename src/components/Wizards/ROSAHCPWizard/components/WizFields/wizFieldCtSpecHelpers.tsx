@@ -1,4 +1,4 @@
-import { type FormEvent } from 'react';
+import { type FormEvent, type ReactElement } from 'react';
 import {
   type Control,
   type FieldPath,
@@ -6,6 +6,13 @@ import {
   type UseFormReturn,
   useWatch,
 } from 'react-hook-form';
+
+import { RosaHcpWizardStringsProvider } from '../../stringsProvider/RosaHcpWizardStringsContext';
+
+/** Playwright CT: `Wiz*` fields resolve `.meta().*Key` copy from `RosaHcpWizardStringsProvider`. */
+export function withRosaCt(children: ReactElement): ReactElement {
+  return <RosaHcpWizardStringsProvider>{children}</RosaHcpWizardStringsProvider>;
+}
 
 /** Playwright CT: runs resolver validation without a success handler (errors surface on the field). */
 export function wizCtSubmitValidationPreview<T extends FieldValues>(

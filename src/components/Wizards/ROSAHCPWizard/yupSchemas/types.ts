@@ -7,6 +7,14 @@ export type WizardFieldMeta = {
   id: string;
   /** Dot-path key into the strings provider for resolving label, placeholder, and helper text at runtime. */
   labelKey: string;
+  /** Dot-path for `helperText` when not inlined in `.meta()`. */
+  helperTextKey?: string;
+  /** Dot-path for `labelHelp` when not inlined in `.meta()`. */
+  labelHelpKey?: string;
+  /** Dot-path for `labelHelpTitle` when not inlined in `.meta()`. */
+  labelHelpTitleKey?: string;
+  /** Dot-path for placeholder when not inlined in `.meta()`. */
+  placeholderKey?: string;
   /** Which wizard step this field belongs to. */
   stepId: string;
   /** If true, field is read-only after the cluster is created / submitted. */

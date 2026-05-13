@@ -1,18 +1,11 @@
 import type { DropEvent } from '@patternfly/react-core';
 import { type FieldValues, useController } from 'react-hook-form';
 
-import { getYupFieldPresentationMeta } from '../../../../../../utilities/yupFieldPresentationMeta';
 import { requiredFromYup } from '../../../../../../utilities/yupFieldRequired';
 
 import { FileUpload, type FileUploadProps } from '../../Fields/FileUpload';
-import {
-  stringLabelFromYupMeta,
-  useWizRhfControl,
-  wizFallbackFieldId,
-  wizFallbackLabelFromFieldPath,
-  wizFieldShowsError,
-  type WizRhfBoundFieldProps,
-} from '../wizFieldRhf';
+import { useWizFieldPresentation } from '../wizFieldPresentation';
+import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizFileUploadControlledKeys =
   | 'value'
@@ -42,7 +35,7 @@ type WizFileUploadSpreadProps = Omit<
   >;
 
 /**
- * @remarks {@link FileUpload} labels are strings; non-string Yup meta labels are passed through {@link stringLabelFromYupMeta}.
+ * @remarks {@link FileUpload} labels are strings; non-string Yup meta labels are coerced like other `Wiz*` string labels.
  */
 export type WizFileUploadProps<TFieldValues extends FieldValues = FieldValues> =
   WizFileUploadSpreadProps & WizRhfBoundFieldProps<TFieldValues>;
@@ -50,7 +43,7 @@ export type WizFileUploadProps<TFieldValues extends FieldValues = FieldValues> =
 /**
  * Prefer wrapping the form with `FormProvider` so you can omit `control`.
  * Optional `schema` pulls UI defaults and required state from Yup `.meta()` / optionality.
- * You may set `id`, `label`, `helperText`, `labelHelp`, and `labelHelpTitle` via props; when omitted and `schema` is set, they come from that field’s Yup `.meta()`.
+ * You may set `id`, `label`, `helperText`, `labelHelp`, and `labelHelpTitle` via props. When omitted, Yup `.meta()` may supply inline copy or `*Key` paths resolved from `RosaHcpWizardStringsProvider`.
  * Pass `isRequired` to override; when omitted and `schema` is set, required UI follows Yup for this path.
  */
 export function WizFileUpload<TFieldValues extends FieldValues = FieldValues>(
@@ -71,21 +64,17 @@ export function WizFileUpload<TFieldValues extends FieldValues = FieldValues>(
   } = props;
 
   const control = useWizRhfControl<TFieldValues>('WizFileUpload', controlProp);
-
-  const fromYup =
-    schema !== undefined
-      ? getYupFieldPresentationMeta(schema, String(name), yupDescribeOptions)
-      : undefined;
-
-  const id = idProp ?? fromYup?.id ?? wizFallbackFieldId(name);
-  const fallbackLabel = wizFallbackLabelFromFieldPath(name);
-  const label =
-    labelProp ??
-    (schema !== undefined ? stringLabelFromYupMeta(fromYup?.label, fallbackLabel) : undefined) ??
-    fallbackLabel;
-  const helperText = helperTextProp ?? fromYup?.helperText;
-  const labelHelp = labelHelpProp ?? fromYup?.labelHelp;
-  const labelHelpTitle = labelHelpTitleProp ?? fromYup?.labelHelpTitle;
+  const { id, label, helperText, labelHelp, labelHelpTitle } = useWizFieldPresentation({
+    name,
+    schema,
+    yupDescribeOptions,
+    idProp,
+    labelProp,
+    helperTextProp,
+    labelHelpProp,
+    labelHelpTitleProp,
+    labelMode: 'stringField',
+  });
 
   const isRequired = isRequiredProp ?? requiredFromYup(schema, name, yupDescribeOptions);
 
