@@ -32,8 +32,8 @@ export const clusterValidationSchema = yup.object({
   ...clusterUpdatesFields,
 }) as yup.ObjectSchema<Partial<ROSAHCPCluster>>;
 
-export function getClusterValidationSchemaDefaultValues(): Partial<ClusterFormData> {
-  return clusterValidationSchema.getDefault() as Partial<ClusterFormData>;
+export function getClusterValidationSchemaDefaultValues(): Partial<ROSAHCPCluster> {
+  return clusterValidationSchema.getDefault() as Partial<ROSAHCPCluster>;
 }
 
 /**

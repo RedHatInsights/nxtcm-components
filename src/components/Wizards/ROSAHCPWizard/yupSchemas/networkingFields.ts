@@ -15,7 +15,7 @@ import {
   STEP_IDS,
 } from '../constants';
 import { parseCIDRSubnetLength } from '../helpers';
-import { ClusterNetwork, type ClusterFormData } from '../../types';
+import { ClusterNetwork } from '../../types';
 import type { WizardFieldMeta } from './types';
 import {
   ctx,
