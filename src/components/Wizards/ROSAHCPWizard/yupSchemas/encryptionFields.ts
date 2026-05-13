@@ -40,7 +40,7 @@ export const encryptionKeysSchema = yup
   .optional()
   .meta({
     id: 'encryption_keys',
-    labelKey: 'encryption.keysLabel',
+    labelKey: 'encryption.keysGroupLabel',
     stepId: STEP_IDS.ENCRYPTION,
     fieldType: 'radio',
   } satisfies WizardFieldMeta);
