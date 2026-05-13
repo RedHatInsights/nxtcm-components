@@ -1,25 +1,77 @@
-import { Alert, Grid, GridItem } from '@patternfly/react-core';
+import { Alert } from '@patternfly/react-core';
 import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import { Radio } from '../../../components/Fields/Radio';
+import { useWatch } from 'react-hook-form';
+import { ClusterEncryptionKeys, ROSAHCPCluster } from '../../../types';
+import { WizTextInput } from '../../../components/WizFields/WizTextInput';
+import ExternalLink from '../../../components/ExternalLink';
+import links from '../../../links';
+import { FieldWrapper } from '../../../components/FieldWrapper';
+import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
 
 export const Encryption = () => {
   const e = useRosaHcpWizardStrings().encryption;
-  //const v = useRosaHcpWizardValidators();
+  const customKmsSelected = useWatch<ROSAHCPCluster>({ name: 'encryption_keys' });
+  const etcdIsChecked = useWatch<Pick<ROSAHCPCluster, 'etcd_encryption'>>({
+    name: 'etcd_encryption',
+  });
+
   return (
     <Section label={e.sectionLabel}>
-      <WizRadioGroup name="encryption_keys" schema={clusterValidationSchema}>
-        <Radio id="wiz-radio-public" label={e.defaultKms} value="public" />
-        <Radio id="wiz-radio-private" label={e.customKms} value="private" />
+      <WizRadioGroup<ROSAHCPCluster>
+        name="encryption_keys"
+        schema={clusterValidationSchema}
+        helperText={
+          <>
+            {e.keysHelperLead}{' '}
+            <ExternalLink href={links.AWS_DATA_PROTECTION}>{e.keysLearnMore}</ExternalLink>
+          </>
+        }
+      >
+        <FieldWrapper>
+          <Radio
+            id="wiz-radio-default"
+            label={e.defaultKms}
+            value={ClusterEncryptionKeys.default}
+          />
+          <Radio id="wiz-radio-custom" label={e.customKms} value={ClusterEncryptionKeys.custom} />
+        </FieldWrapper>
       </WizRadioGroup>
-      encryption_keys etcd_encryption
-      <Grid>
-        <GridItem span={6}>
-          <Alert variant="info" title={e.keysNoteAlert} ouiaId="encryptionKeysAlert" />
-        </GridItem>
-      </Grid>
+
+      {customKmsSelected === 'custom' ? (
+        <WizTextInput<ROSAHCPCluster>
+          isRequired={customKmsSelected === 'custom'}
+          name="kms_key_arn"
+          schema={clusterValidationSchema}
+        />
+      ) : null}
+      <FieldWrapper span={6}>
+        <WizCheckbox<ROSAHCPCluster>
+          name="etcd_encryption"
+          schema={clusterValidationSchema}
+          helperText={
+            <>
+              {e.etcdHelperLead}{' '}
+              <ExternalLink href={links.ROSA_SERVICE_ETCD_ENCRYPTION}>
+                {e.etcdLearnMore}
+              </ExternalLink>
+            </>
+          }
+        />
+      </FieldWrapper>
+      {etcdIsChecked ? (
+        <WizTextInput<ROSAHCPCluster>
+          isRequired={etcdIsChecked}
+          name="etcd_key_arn"
+          schema={clusterValidationSchema}
+        />
+      ) : null}
+      <FieldWrapper span={6}>
+        <Alert variant="info" title={e.keysNoteAlert} ouiaId="encryptionKeysAlert" />
+      </FieldWrapper>
     </Section>
   );
 };

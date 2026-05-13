@@ -29,6 +29,8 @@ export type WizardFieldMeta = {
   advanced?: boolean;
   /** Display unit for the review step. */
   unit?: string;
+  /** Display checkbox title */
+  title?: string;
 };
 
 /**
