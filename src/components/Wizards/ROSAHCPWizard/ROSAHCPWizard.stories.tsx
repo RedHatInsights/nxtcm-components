@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 import ROSAHCPWizard from './ROSAHCPWizard';
-import { createMockRosaHcpWizardData, rosaHcpWizardDetailsFieldsAllApiErrorsData } from './ROSAHCPWizard.stories.helpers';
+import {
+  createMockRosaHcpWizardData,
+  rosaHcpWizardDetailsFieldsAllApiErrorsData,
+} from './ROSAHCPWizard.stories.helpers';
 import { MachineTypesDropdownType, Region, Role, ROSAHCPWizardData } from './types';
 import fixtures, { STORY_API_ERROR_MESSAGE } from './ROSAHCPWizard.fixtures';
 import { defaultRosaWizardStrings } from '../RosaWizard/rosaWizardStrings.defaults';
