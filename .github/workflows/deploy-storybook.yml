@@ -19,6 +19,9 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
+      - name: Upgrade npm
+        run: npm install -g npm@^11.10.0
+
       # install main dependencies and subpackage dependencies
       - name: Install dependencies
         run: |
