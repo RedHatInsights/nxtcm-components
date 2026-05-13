@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/RedHatInsights/nxtcm-components#readme",
   "engines": {
-    "node": ">=20",
+    "node": ">=24",
     "npm": ">=11.10.0"
   },
   "peerDependencies": {

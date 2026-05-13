@@ -90,7 +90,7 @@ configured in: tsconfig.json, vite config, playwright-ct.config.ts, storybook ma
 | lint | ESLint 8 | typescript-eslint |
 | format | Prettier | 3 |
 | git hooks | Husky + lint-staged | — |
-| node | 20 | (via .nvmrc) |
+| node | 24 | (via .nvmrc) |
 
 ---
 
