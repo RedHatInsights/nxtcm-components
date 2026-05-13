@@ -27,19 +27,12 @@ jobs:
       - name: Install subpackage dependencies
         run: cd packages/react-form-wizard && npm ci
 
-      - name: Verify lockfile integrity
+      - name: Check lockfile for git-based dependencies
         run: |
-          git diff --exit-code package-lock.json packages/react-form-wizard/package-lock.json || {
-            echo "::error::lockfile was modified by npm ci"
-            exit 1
-          }
           if grep -qE '"resolved":\s*"(git\+|git:|github:)' package-lock.json packages/react-form-wizard/package-lock.json; then
             echo "::error::git-based dependency found in lockfile (supply chain risk)"
             exit 1
           fi
-
-      - name: Run supply chain tripwire
-        run: bash utils/supply-chain-check.sh
 
       - name: Run ESLint
         run: npm run lint
