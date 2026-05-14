@@ -73,7 +73,7 @@
         "@types/validator": "13.15.3",
         "@typescript-eslint/eslint-plugin": "5.62.0",
         "@typescript-eslint/parser": "5.62.0",
-        "@vitejs/plugin-react": "^4.3.0",
+        "@vitejs/plugin-react": "^6.0.0",
         "babel-plugin-istanbul": "6.1.1",
         "babel-plugin-transform-class-properties": "6.24.1",
         "concurrently": "7.6.0",
