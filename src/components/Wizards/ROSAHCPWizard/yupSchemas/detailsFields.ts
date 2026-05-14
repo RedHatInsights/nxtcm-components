@@ -3,12 +3,13 @@ import * as yup from 'yup';
 import { STEP_IDS } from '../constants';
 import type { ClusterFormData } from '../../types';
 import type { WizardFieldMeta } from './types';
-import { ctx, requiredMessage, validateClusterNameSync } from './helpers';
+import { ctx, rosaCommonRequiredNonEmptyTest, validateClusterNameSync } from './helpers';
 
 export const nameSchema = yup
   .string()
   .default('')
-  .required(requiredMessage)
+  .test(rosaCommonRequiredNonEmptyTest)
+  .required()
   .meta({
     id: 'name',
     labelKey: 'details.clusterNameLabel',
@@ -37,7 +38,8 @@ export const nameSchema = yup
 export const clusterVersionSchema = yup
   .string()
   .default('')
-  .required(requiredMessage)
+  .test(rosaCommonRequiredNonEmptyTest)
+  .required()
   .meta({
     id: 'cluster_version',
     labelKey: 'details.openShiftVersionLabel',
@@ -50,7 +52,8 @@ export const clusterVersionSchema = yup
 export const associatedAwsIdSchema = yup
   .string()
   .default('')
-  .required(requiredMessage)
+  .test(rosaCommonRequiredNonEmptyTest)
+  .required()
   .meta({
     id: 'associated_aws_id',
     labelKey: 'details.awsInfraLabel',
@@ -64,7 +67,8 @@ export const associatedAwsIdSchema = yup
 export const billingAccountIdSchema = yup
   .string()
   .default('')
-  .required(requiredMessage)
+  .test(rosaCommonRequiredNonEmptyTest)
+  .required()
   .meta({
     id: 'billing_account_id',
     labelKey: 'details.billingLabel',
@@ -79,7 +83,8 @@ export const billingAccountIdSchema = yup
 export const regionSchema = yup
   .string()
   .default('')
-  .required(requiredMessage)
+  .test(rosaCommonRequiredNonEmptyTest)
+  .required()
   .meta({
     id: 'region',
     labelKey: 'details.regionLabel',

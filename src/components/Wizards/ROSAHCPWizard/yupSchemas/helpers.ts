@@ -77,6 +77,36 @@ export function findOverlappingCidrFields(
   return overlapping;
 }
 
-export const requiredMessage = (_params: yup.TestContext) => {
-  return 'This field is required';
+/**
+ * Yup test (use before `.required()` on the same chain) so the message comes from
+ * {@link RosaHcpWizardValidatorStrings.commonRequired} (override via `strings.validators.commonRequired`
+ * on {@link RosaHCPWizard} / the strings provider).
+ *
+ * Treats a value as **missing** when it is `null`/`undefined`, an empty string, or an empty array.
+ * Non-empty strings, non-empty arrays, and non-null objects (e.g. a selected VPC record from the machine pools step)
+ * count as present. Yup’s `.required(fn)` message callbacks do not receive validation `context`, so this
+ * pattern is required for contextual copy.
+ */
+export function rosaRequiredPresentValue(
+  this: yup.TestContext,
+  value: unknown
+): true | yup.ValidationError {
+  if (value == null) {
+    return this.createError({ message: ctx(this).msgs.commonRequired });
+  }
+  if (typeof value === 'string' && value.length === 0) {
+    return this.createError({ message: ctx(this).msgs.commonRequired });
+  }
+  if (Array.isArray(value) && value.length === 0) {
+    return this.createError({ message: ctx(this).msgs.commonRequired });
+  }
+  return true;
+}
+
+/** Use on `string` / `mixed` / `array` schemas before `.required()` — see {@link rosaRequiredPresentValue}. */
+export const rosaCommonRequiredNonEmptyTest = {
+  name: 'rosa-common-required-nonempty',
+  exclusive: true,
+  skipAbsent: true,
+  test: rosaRequiredPresentValue,
 };

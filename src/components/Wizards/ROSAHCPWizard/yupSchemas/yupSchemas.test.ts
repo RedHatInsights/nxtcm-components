@@ -89,7 +89,7 @@ function buildFormData(overrides: Partial<ClusterFormData> = {}): Partial<Cluste
     byo_oidc_config_id: 'oidc-123',
     custom_operator_roles_prefix: 'mycluster-a1b2',
     selected_vpc: 'vpc-123',
-    machine_pools_subnets: [],
+    machine_pools_subnets: [{ machine_pool_subnet: 'subnet-123' }],
     machine_type: 'm5.xlarge',
     cluster_privacy: 'external' as ClusterFormData['cluster_privacy'],
     network_machine_cidr: '10.0.0.0/16',
@@ -302,6 +302,42 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
         field
       );
       expect(error).toBeNull();
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // Machine pools — required presence (string | VPC, subnet array)
+  // -----------------------------------------------------------------------
+  describe('machine pools required fields', () => {
+    it('selected_vpc accepts a VPC object (mixed)', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({
+          selected_vpc: { id: 'vpc-abc', name: 'my-vpc', aws_subnets: [] },
+        }),
+        'selected_vpc'
+      );
+      expect(error).toBeNull();
+    });
+
+    it('machine_pools_subnets accepts a non-empty array', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({
+          machine_pools_subnets: [{ machine_pool_subnet: 'subnet-a' }],
+        }),
+        'machine_pools_subnets'
+      );
+      expect(error).toBeNull();
+    });
+
+    it('machine_pools_subnets rejects empty array with common required message', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({ machine_pools_subnets: [] }),
+        'machine_pools_subnets'
+      );
+      expect(error).toBe(msgs.commonRequired);
     });
   });
 

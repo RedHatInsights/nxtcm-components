@@ -23,11 +23,13 @@ import {
   getStartingIP,
   isCidrSubnetAddress,
   isValidCidr,
+  rosaCommonRequiredNonEmptyTest,
 } from './helpers';
 
 export const clusterPrivacySchema = yup
   .string()
   .default(ClusterNetwork.external)
+  .test(rosaCommonRequiredNonEmptyTest)
   .required()
   .meta({
     id: 'cluster_privacy',

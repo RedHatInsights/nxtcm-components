@@ -133,6 +133,8 @@ export type RosaHcpWizardHostPrefixValidatorStrings = {
 };
 
 export type RosaHcpWizardValidatorStrings = {
+  /** Generic empty required-field message for Yup checks (override via `strings.validators.commonRequired`). */
+  commonRequired: string;
   clusterName: RosaHcpWizardClusterNameValidatorStrings;
   operatorRolesPrefix: RosaHcpWizardOperatorRolesPrefixValidatorStrings;
   kmsKeyArn: RosaHcpWizardKmsKeyValidatorStrings;
