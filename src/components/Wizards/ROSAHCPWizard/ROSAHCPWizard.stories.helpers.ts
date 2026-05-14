@@ -60,13 +60,13 @@ export function createMockRosaHcpWizardData(
       },
     },
     oidcConfig: {
-      data: [],
+      data: fixtures.mockOicdConfig,
       error: null,
       isFetching: false,
       fetch: noopFetch,
     },
     vpcList: {
-      data: [],
+      data: fixtures.mockVPCs,
       error: null,
       isFetching: false,
       fetch: noopFetch,
