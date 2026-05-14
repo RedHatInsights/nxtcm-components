@@ -102,4 +102,15 @@ test.describe('UpdateStatus', () => {
     await expect(component.getByTestId('update-available-count')).toHaveText('5678');
     await expect(component.getByTestId('currently-updating-count')).toHaveText('1234');
   });
+
+  test('should render skeleton when isLoading is true', async ({ mount }) => {
+    const component = await mount(<UpdateStatus isLoading />);
+    await expect(component.getByTestId('update-status-skeleton')).toBeVisible();
+    await expect(component.getByTestId('up-to-date-count')).not.toBeVisible();
+  });
+
+  test('should render skeleton when data is undefined', async ({ mount }) => {
+    const component = await mount(<UpdateStatus />);
+    await expect(component.getByTestId('update-status-skeleton')).toBeVisible();
+  });
 });

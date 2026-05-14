@@ -71,4 +71,15 @@ test.describe('ClusterProviders', () => {
     await expect(component.getByText('ROSA: 0')).toBeVisible();
     await expect(component.getByText('ARO: 0')).toBeVisible();
   });
+
+  test('should render skeleton when isLoading is true', async ({ mount }) => {
+    const component = await mount(<ClusterProviders isLoading />);
+    await expect(component.getByTestId('cluster-providers-skeleton')).toBeVisible();
+    await expect(component.getByTestId('providers-chart')).not.toBeVisible();
+  });
+
+  test('should render skeleton when providers is undefined', async ({ mount }) => {
+    const component = await mount(<ClusterProviders />);
+    await expect(component.getByTestId('cluster-providers-skeleton')).toBeVisible();
+  });
 });

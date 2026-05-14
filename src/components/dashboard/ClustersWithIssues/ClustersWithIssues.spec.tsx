@@ -254,4 +254,15 @@ test.describe('ClustersWithIssues — pagination', () => {
     expect(await rows.count()).toBe(3);
     await expect(component.locator('.pf-v6-c-pagination')).toBeVisible();
   });
+
+  test('should render skeleton when isLoading is true', async ({ mount }) => {
+    const component = await mount(<ClustersWithIssues isLoading />);
+    await expect(component.getByTestId('clusters-with-issues-skeleton')).toBeVisible();
+    await expect(component.getByTestId('unhealthy-count')).not.toBeVisible();
+  });
+
+  test('should render skeleton when data is undefined', async ({ mount }) => {
+    const component = await mount(<ClustersWithIssues />);
+    await expect(component.getByTestId('clusters-with-issues-skeleton')).toBeVisible();
+  });
 });

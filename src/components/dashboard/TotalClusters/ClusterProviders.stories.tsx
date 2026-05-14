@@ -59,3 +59,9 @@ export const CustomTitle: Story = {
     title: 'Provider breakdown',
   },
 };
+
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+  },
+};

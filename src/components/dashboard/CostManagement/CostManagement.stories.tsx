@@ -110,3 +110,9 @@ export const MockupValues: Story = {
     onViewMore: () => console.log('View more clicked'),
   },
 };
+
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+  },
+};

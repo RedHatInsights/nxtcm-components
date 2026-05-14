@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, FlexItem, Title } from '@patternfly/react-core';
+import { Flex, FlexItem, Skeleton, Title } from '@patternfly/react-core';
 import { ChartDonut } from '@patternfly/react-charts/victory';
 import styles from './ClusterProviders.module.scss';
 
@@ -12,9 +12,11 @@ export type ProviderBreakdown = {
 
 export type ClusterProvidersProps = {
   /** per-provider cluster breakdown */
-  providers: ProviderBreakdown[];
+  providers?: ProviderBreakdown[];
   /** card title — defaults to "Clusters by provider" */
   title?: string;
+  /** renders skeleton placeholders when true or when providers is undefined */
+  isLoading?: boolean;
 };
 
 const DEFAULT_TITLE = 'Clusters by provider';
@@ -32,12 +34,11 @@ const providerColors = [
 export const ClusterProviders: React.FC<ClusterProvidersProps> = ({
   providers,
   title = DEFAULT_TITLE,
+  isLoading,
 }) => {
-  if (providers.length === 0) return null;
+  const showSkeleton = isLoading || !providers;
 
-  const total = providers.reduce((sum, p) => sum + p.count, 0);
-  const chartData = providers.map((p) => ({ x: p.label, y: p.count }));
-  const colorScale = providerColors.slice(0, providers.length);
+  if (!showSkeleton && providers.length === 0) return null;
 
   return (
     <Flex direction={{ default: 'column' }} className={styles.container}>
@@ -49,48 +50,72 @@ export const ClusterProviders: React.FC<ClusterProvidersProps> = ({
         </FlexItem>
       )}
 
-      <FlexItem>
-        <Flex alignItems={{ default: 'alignItemsCenter' }}>
-          <FlexItem>
-            <div className={styles.chartContainer} data-testid="providers-chart">
-              <ChartDonut
-                ariaDesc="Donut chart showing cluster counts per provider"
-                ariaTitle="Clusters by provider"
-                constrainToVisibleArea
-                data={chartData}
-                colorScale={colorScale}
-                labels={({ datum }) => `${datum.x}: ${datum.y}`}
-                padAngle={1}
-                subTitle="clusters"
-                title={String(total)}
-                width={160}
-                height={160}
-                innerRadius={45}
-                padding={0}
+      {showSkeleton ? (
+        <FlexItem data-testid="cluster-providers-skeleton">
+          <Flex alignItems={{ default: 'alignItemsCenter' }}>
+            <FlexItem>
+              <Skeleton
+                shape="circle"
+                width="160px"
+                height="160px"
+                screenreaderText="Loading cluster providers"
               />
-            </div>
-          </FlexItem>
-          <FlexItem flex={{ default: 'flex_1' }}>
-            <div
-              className={providers.length > 6 ? styles.legendGridWide : styles.legendGrid}
-              data-testid="providers-legend"
-            >
-              {providers.map((item, index) => (
-                <div key={item.label} className={styles.legendItem}>
-                  <span
-                    className={styles.legendDot}
-                    style={{ backgroundColor: providerColors[index] }}
-                    aria-hidden="true"
-                  />
-                  <span className={styles.legendText}>
-                    {item.label}: {item.count}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </FlexItem>
-        </Flex>
-      </FlexItem>
+            </FlexItem>
+            <FlexItem flex={{ default: 'flex_1' }}>
+              <div className={styles.legendGrid}>
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className={styles.legendItem}>
+                    <Skeleton width="100%" height="14px" />
+                  </div>
+                ))}
+              </div>
+            </FlexItem>
+          </Flex>
+        </FlexItem>
+      ) : (
+        <FlexItem>
+          <Flex alignItems={{ default: 'alignItemsCenter' }}>
+            <FlexItem>
+              <div className={styles.chartContainer} data-testid="providers-chart">
+                <ChartDonut
+                  ariaDesc="Donut chart showing cluster counts per provider"
+                  ariaTitle="Clusters by provider"
+                  constrainToVisibleArea
+                  data={providers.map((p) => ({ x: p.label, y: p.count }))}
+                  colorScale={providerColors.slice(0, providers.length)}
+                  labels={({ datum }) => `${datum.x}: ${datum.y}`}
+                  padAngle={1}
+                  subTitle="clusters"
+                  title={String(providers.reduce((sum, p) => sum + p.count, 0))}
+                  width={160}
+                  height={160}
+                  innerRadius={45}
+                  padding={0}
+                />
+              </div>
+            </FlexItem>
+            <FlexItem flex={{ default: 'flex_1' }}>
+              <div
+                className={providers.length > 6 ? styles.legendGridWide : styles.legendGrid}
+                data-testid="providers-legend"
+              >
+                {providers.map((item, index) => (
+                  <div key={item.label} className={styles.legendItem}>
+                    <span
+                      className={styles.legendDot}
+                      style={{ backgroundColor: providerColors[index] }}
+                      aria-hidden="true"
+                    />
+                    <span className={styles.legendText}>
+                      {item.label}: {item.count}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </FlexItem>
+          </Flex>
+        </FlexItem>
+      )}
     </Flex>
   );
 };

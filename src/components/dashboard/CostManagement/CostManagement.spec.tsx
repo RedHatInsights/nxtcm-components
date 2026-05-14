@@ -115,4 +115,15 @@ test.describe('CostManagement', () => {
     await expect(component.getByTestId('cluster-cost-big')).toContainText('$500,000.00');
     await expect(component.getByTestId('cluster-cost-big')).toContainText('50%');
   });
+
+  test('should render skeleton when isLoading is true', async ({ mount }) => {
+    const component = await mount(<CostManagement isLoading />);
+    await expect(component.getByTestId('cost-management-skeleton')).toBeVisible();
+    await expect(component.getByTestId('total-cost')).not.toBeVisible();
+  });
+
+  test('should render skeleton when totalCost is undefined', async ({ mount }) => {
+    const component = await mount(<CostManagement />);
+    await expect(component.getByTestId('cost-management-skeleton')).toBeVisible();
+  });
 });

@@ -66,3 +66,9 @@ export const ZeroClusters: Story = {
     },
   },
 };
+
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+  },
+};

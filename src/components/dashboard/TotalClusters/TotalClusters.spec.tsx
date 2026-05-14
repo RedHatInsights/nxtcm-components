@@ -59,4 +59,20 @@ test.describe('TotalClusters', () => {
     await component.getByRole('button', { name: '67' }).click();
     expect(viewMoreCalled).toBe(true);
   });
+
+  test('should render skeleton when isLoading is true', async ({ mount }) => {
+    const component = await mount(<TotalClusters isLoading />);
+    await expect(component.getByTestId('total-clusters-skeleton')).toBeVisible();
+    await expect(component.getByTestId('total-clusters')).not.toBeVisible();
+  });
+
+  test('should render skeleton when data is undefined', async ({ mount }) => {
+    const component = await mount(<TotalClusters />);
+    await expect(component.getByTestId('total-clusters-skeleton')).toBeVisible();
+  });
+
+  test('should still show title when loading', async ({ mount }) => {
+    const component = await mount(<TotalClusters isLoading />);
+    await expect(component.getByTestId('total-clusters-title')).toBeVisible();
+  });
 });

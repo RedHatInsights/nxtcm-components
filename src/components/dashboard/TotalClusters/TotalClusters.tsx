@@ -1,4 +1,4 @@
-import { Button, Flex, FlexItem, Title } from '@patternfly/react-core';
+import { Button, Flex, FlexItem, Skeleton, Title } from '@patternfly/react-core';
 import React from 'react';
 import styles from './TotalClusters.module.scss';
 
@@ -9,11 +9,13 @@ export type TotalClustersData = {
 
 export type TotalClustersProps = {
   /** cluster data to display */
-  data: TotalClustersData;
+  data?: TotalClustersData;
   /** card title — defaults to "Total clusters" */
   title?: string;
   /** callback when the cluster count is clicked (navigates to clusters page) */
   onViewMore?: () => void;
+  /** renders skeleton placeholders when true or when data is undefined */
+  isLoading?: boolean;
 };
 
 const DEFAULT_TITLE = 'Total clusters';
@@ -22,31 +24,54 @@ export const TotalClusters: React.FC<TotalClustersProps> = ({
   data,
   title = DEFAULT_TITLE,
   onViewMore,
-}) => (
-  <Flex direction={{ default: 'column' }} className={styles.container}>
-    {title && (
-      <FlexItem>
-        <Title headingLevel="h3" size="md" data-testid="total-clusters-title">
-          {title}
-        </Title>
-      </FlexItem>
-    )}
+  isLoading,
+}) => {
+  const showSkeleton = isLoading || !data;
 
-    <Flex
-      direction={{ default: 'column' }}
-      spaceItems={{ default: 'spaceItemsXs' }}
-      className={styles.totalSection}
-    >
-      <FlexItem data-testid="total-clusters">
-        {onViewMore ? (
-          <Button variant="link" isInline onClick={onViewMore} className={styles.totalNumberLink}>
-            {data.total}
-          </Button>
+  return (
+    <Flex direction={{ default: 'column' }} className={styles.container}>
+      {title && (
+        <FlexItem>
+          <Title headingLevel="h3" size="md" data-testid="total-clusters-title">
+            {title}
+          </Title>
+        </FlexItem>
+      )}
+
+      <Flex
+        direction={{ default: 'column' }}
+        spaceItems={{ default: 'spaceItemsXs' }}
+        className={styles.totalSection}
+      >
+        {showSkeleton ? (
+          <>
+            <FlexItem data-testid="total-clusters-skeleton">
+              <Skeleton width="60px" height="38px" screenreaderText="Loading cluster count" />
+            </FlexItem>
+            <FlexItem>
+              <Skeleton width="120px" height="14px" />
+            </FlexItem>
+          </>
         ) : (
-          <span className={styles.totalNumber}>{data.total}</span>
+          <>
+            <FlexItem data-testid="total-clusters">
+              {onViewMore ? (
+                <Button
+                  variant="link"
+                  isInline
+                  onClick={onViewMore}
+                  className={styles.totalNumberLink}
+                >
+                  {data.total}
+                </Button>
+              ) : (
+                <span className={styles.totalNumber}>{data.total}</span>
+              )}
+            </FlexItem>
+            <FlexItem className={styles.totalLabel}>managed clusters</FlexItem>
+          </>
         )}
-      </FlexItem>
-      <FlexItem className={styles.totalLabel}>managed clusters</FlexItem>
+      </Flex>
     </Flex>
-  </Flex>
-);
+  );
+};

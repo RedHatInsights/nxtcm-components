@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, FlexItem, Title } from '@patternfly/react-core';
+import { Flex, FlexItem, Skeleton, Title } from '@patternfly/react-core';
 import { ChartDonut } from '@patternfly/react-charts/victory';
 import styles from './AdvisorRecommendations.module.scss';
 
@@ -12,9 +12,11 @@ export type CategoryCounts = {
 
 export type AdvisorCategoriesProps = {
   /** recommendation counts by category */
-  categories: CategoryCounts;
+  categories?: CategoryCounts;
   /** card title — defaults to "Advisor recommendations by category" */
   title?: string;
+  /** renders skeleton placeholders when true or when categories is undefined */
+  isLoading?: boolean;
 };
 
 const DEFAULT_TITLE = 'Advisor recommendations by category';
@@ -38,14 +40,9 @@ const categoryColors = [
 export const AdvisorCategories: React.FC<AdvisorCategoriesProps> = ({
   categories,
   title = DEFAULT_TITLE,
+  isLoading,
 }) => {
-  const chartData = (Object.keys(categoryLabels) as Array<keyof CategoryCounts>).map(
-    (key, index) => ({
-      x: categoryLabels[key],
-      y: categories[key],
-      color: categoryColors[index],
-    })
-  );
+  const showSkeleton = isLoading || !categories;
 
   return (
     <Flex direction={{ default: 'column' }} className={styles.container}>
@@ -62,43 +59,73 @@ export const AdvisorCategories: React.FC<AdvisorCategoriesProps> = ({
         </FlexItem>
       )}
 
-      <FlexItem>
-        <Flex alignItems={{ default: 'alignItemsCenter' }}>
-          <FlexItem>
-            <div className={styles.chartContainer} data-testid="category-chart">
-              <ChartDonut
-                ariaDesc="Donut chart showing recommendation counts per category"
-                ariaTitle="Recommendations by category"
-                constrainToVisibleArea
-                data={chartData.map((d) => ({ x: d.x, y: d.y }))}
-                colorScale={categoryColors}
-                labels={({ datum }) => `${datum.x}: ${datum.y}`}
-                padAngle={1}
-                width={120}
-                height={120}
-                innerRadius={30}
-                padding={0}
+      {showSkeleton ? (
+        <FlexItem data-testid="advisor-categories-skeleton">
+          <Flex alignItems={{ default: 'alignItemsCenter' }}>
+            <FlexItem>
+              <Skeleton
+                shape="circle"
+                width="120px"
+                height="120px"
+                screenreaderText="Loading category data"
               />
-            </div>
-          </FlexItem>
-          <FlexItem flex={{ default: 'flex_1' }}>
-            <div className={styles.legendGrid}>
-              {chartData.map((item) => (
-                <div key={item.x} className={styles.legendItem}>
-                  <span
-                    className={styles.legendDot}
-                    style={{ backgroundColor: item.color }}
-                    aria-hidden="true"
-                  />
-                  <span className={styles.legendText}>
-                    {item.x}: {item.y}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </FlexItem>
-        </Flex>
-      </FlexItem>
+            </FlexItem>
+            <FlexItem flex={{ default: 'flex_1' }}>
+              <div className={styles.legendGrid}>
+                {Object.keys(categoryLabels).map((key) => (
+                  <div key={key} className={styles.legendItem}>
+                    <Skeleton width="100%" height="14px" />
+                  </div>
+                ))}
+              </div>
+            </FlexItem>
+          </Flex>
+        </FlexItem>
+      ) : (
+        <FlexItem>
+          <Flex alignItems={{ default: 'alignItemsCenter' }}>
+            <FlexItem>
+              <div className={styles.chartContainer} data-testid="category-chart">
+                <ChartDonut
+                  ariaDesc="Donut chart showing recommendation counts per category"
+                  ariaTitle="Recommendations by category"
+                  constrainToVisibleArea
+                  data={(Object.keys(categoryLabels) as Array<keyof CategoryCounts>).map(
+                    (key, index) => ({
+                      x: categoryLabels[key],
+                      y: categories[key],
+                      color: categoryColors[index],
+                    })
+                  )}
+                  colorScale={categoryColors}
+                  labels={({ datum }) => `${datum.x}: ${datum.y}`}
+                  padAngle={1}
+                  width={120}
+                  height={120}
+                  innerRadius={30}
+                  padding={0}
+                />
+              </div>
+            </FlexItem>
+            <FlexItem flex={{ default: 'flex_1' }}>
+              <div className={styles.legendGrid}>
+                {(Object.keys(categoryLabels) as Array<keyof CategoryCounts>).map((key, index) => (
+                  <div key={key} className={styles.legendItem}>
+                    <span
+                      className={styles.legendDot}
+                      style={{ backgroundColor: categoryColors[index] }}
+                      aria-hidden="true"
+                    />
+                    <span className={styles.legendText}>
+                      {categoryLabels[key]}: {categories[key]}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </FlexItem>
+          </Flex>
+        </FlexItem>
+      )}
     </Flex>
   );
 };

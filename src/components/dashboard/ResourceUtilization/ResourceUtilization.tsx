@@ -1,4 +1,4 @@
-import { Button, Flex, FlexItem, Title } from '@patternfly/react-core';
+import { Button, Flex, FlexItem, Skeleton, Title } from '@patternfly/react-core';
 import { ChartDonutUtilization, ChartLabel } from '@patternfly/react-charts/victory';
 import React from 'react';
 import styles from './ResourceUtilization.module.scss';
@@ -25,11 +25,13 @@ export type ResourceUtilizationData = {
 
 export type ResourceUtilizationProps = {
   /** resource utilization metrics */
-  data: ResourceUtilizationData;
+  data?: ResourceUtilizationData;
   /** card title — defaults to "Resource usage"; pass "" to hide */
   title?: string;
   /** callback when "View more" is clicked; omit to hide the link */
   onViewMore?: () => void;
+  /** renders skeleton placeholders when true or when data is undefined */
+  isLoading?: boolean;
 };
 
 const formatValue = (value: number): string => {
@@ -81,12 +83,27 @@ const MetricChart: React.FC<MetricChartProps> = ({ label, metric, chartId }) => 
   );
 };
 
+const MetricSkeleton: React.FC<{ label: string; screenreaderText?: string }> = ({
+  label,
+  screenreaderText,
+}) => (
+  <div className={styles.metricColumn}>
+    <Title headingLevel="h4" size="md" className={styles.metricTitle}>
+      {label}
+    </Title>
+    <div className={styles.chartWrapper}>
+      <Skeleton shape="circle" width="200px" height="200px" screenreaderText={screenreaderText} />
+    </div>
+  </div>
+);
+
 export const ResourceUtilization: React.FC<ResourceUtilizationProps> = ({
   data,
   title = DEFAULT_TITLE,
   onViewMore,
+  isLoading,
 }) => {
-  const { vCPU, memory, storage } = data;
+  const showSkeleton = isLoading || !data;
 
   return (
     <Flex direction={{ default: 'column' }} className={styles.container}>
@@ -97,32 +114,52 @@ export const ResourceUtilization: React.FC<ResourceUtilizationProps> = ({
           </Title>
         </FlexItem>
       )}
-      <FlexItem>
-        <Flex
-          justifyContent={{ default: 'justifyContentSpaceEvenly' }}
-          alignItems={{ default: 'alignItemsFlexStart' }}
-          className={styles.chartsRow}
-        >
-          <FlexItem>
-            <MetricChart label="vCPU" metric={vCPU} chartId="vcpu-donut" />
-          </FlexItem>
-          <FlexItem>
-            <MetricChart label="Memory" metric={memory} chartId="memory-donut" />
-          </FlexItem>
-          {storage && (
+
+      {showSkeleton ? (
+        <FlexItem data-testid="resource-utilization-skeleton">
+          <Flex
+            justifyContent={{ default: 'justifyContentSpaceEvenly' }}
+            alignItems={{ default: 'alignItemsFlexStart' }}
+            className={styles.chartsRow}
+          >
             <FlexItem>
-              <MetricChart label="Storage" metric={storage} chartId="storage-donut" />
+              <MetricSkeleton label="vCPU" screenreaderText="Loading resource utilization" />
+            </FlexItem>
+            <FlexItem>
+              <MetricSkeleton label="Memory" />
+            </FlexItem>
+          </Flex>
+        </FlexItem>
+      ) : (
+        <>
+          <FlexItem>
+            <Flex
+              justifyContent={{ default: 'justifyContentSpaceEvenly' }}
+              alignItems={{ default: 'alignItemsFlexStart' }}
+              className={styles.chartsRow}
+            >
+              <FlexItem>
+                <MetricChart label="vCPU" metric={data.vCPU} chartId="vcpu-donut" />
+              </FlexItem>
+              <FlexItem>
+                <MetricChart label="Memory" metric={data.memory} chartId="memory-donut" />
+              </FlexItem>
+              {data.storage && (
+                <FlexItem>
+                  <MetricChart label="Storage" metric={data.storage} chartId="storage-donut" />
+                </FlexItem>
+              )}
+            </Flex>
+          </FlexItem>
+
+          {onViewMore && (
+            <FlexItem className={styles.viewLink}>
+              <Button variant="link" onClick={onViewMore} className={styles.viewMoreBtn}>
+                View more
+              </Button>
             </FlexItem>
           )}
-        </Flex>
-      </FlexItem>
-
-      {onViewMore && (
-        <FlexItem className={styles.viewLink}>
-          <Button variant="link" onClick={onViewMore} className={styles.viewMoreBtn}>
-            View more
-          </Button>
-        </FlexItem>
+        </>
       )}
     </Flex>
   );
