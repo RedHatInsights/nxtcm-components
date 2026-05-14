@@ -349,7 +349,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
   review: {
     sectionLabel: 'Review your ROSA cluster',
     alertTitle: 'Double check your settings.',
-    lockedSettings: 'Locked settings can not be changed later.',
+    lockedSettings: 'Locked settings cannot be changed later.',
     detailsToggle: 'Details',
     rolesToggle: 'Roles and policies',
     networkingToggle: 'Networking and subnets',
