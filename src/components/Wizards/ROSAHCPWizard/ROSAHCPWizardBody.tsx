@@ -2,7 +2,7 @@ import React from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import type { ClusterFormData } from '../types';
-import { Wizard, WizardStep } from '@patternfly/react-core';
+import { Form, Wizard, WizardStep } from '@patternfly/react-core';
 import { Details } from './Steps/BasicSetup/Details/Details';
 import { RolesAndPolicies } from './Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies';
 import { MachinePools } from './Steps/BasicSetup/MachinePools/MachinePools';
@@ -37,24 +37,34 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
           id={STEP_IDS.BASIC_SETUP}
           steps={[
             <WizardStep name={sl.details} id={STEP_IDS.DETAILS} key={STEP_IDS.DETAILS}>
-              <Details {...wizardData} />
+              <Form>
+                <Details {...wizardData} />
+              </Form>
             </WizardStep>,
             <WizardStep
               name={sl.rolesAndPolicies}
               id={STEP_IDS.ROLES_AND_POLICIES}
               key={STEP_IDS.ROLES_AND_POLICIES}
             >
-              <RolesAndPolicies {...wizardData} />
+              <Form>
+                <RolesAndPolicies {...wizardData} />
+              </Form>
             </WizardStep>,
             <WizardStep
               name={sl.machinePools}
               id={STEP_IDS.MACHINE_POOLS}
               key={STEP_IDS.MACHINE_POOLS}
             >
-              <MachinePools {...wizardData} />
+              <Form>
+                {' '}
+                <MachinePools {...wizardData} />
+              </Form>
             </WizardStep>,
             <WizardStep name={sl.networking} id={STEP_IDS.NETWORKING} key={STEP_IDS.NETWORKING}>
-              <Networking {...wizardData} />
+              <Form>
+                {' '}
+                <Networking {...wizardData} />
+              </Form>
             </WizardStep>,
           ]}
         />
@@ -70,14 +80,20 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
               id={STEP_IDS.ENCRYPTION}
               key={STEP_IDS.ENCRYPTION}
             >
-              <Encryption />
+              <Form>
+                {' '}
+                <Encryption />
+              </Form>
             </WizardStep>,
             <WizardStep
               name={sl.clusterUpdatesOptional}
               id={STEP_IDS.CLUSTER_UPDATES}
               key={STEP_IDS.CLUSTER_UPDATES}
             >
-              <ClusterUpdates />
+              <Form>
+                {' '}
+                <ClusterUpdates />
+              </Form>
             </WizardStep>,
             ...(showClusterWideProxy
               ? [
@@ -86,7 +102,10 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
                     id={STEP_IDS.CLUSTER_WIDE_PROXY}
                     key={STEP_IDS.CLUSTER_WIDE_PROXY}
                   >
-                    <ClusterWideProxy />{' '}
+                    <Form>
+                      {' '}
+                      <ClusterWideProxy />
+                    </Form>{' '}
                   </WizardStep>,
                 ]
               : []),

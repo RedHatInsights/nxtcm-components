@@ -1,4 +1,5 @@
 import { STORY_API_ERROR_MESSAGE } from '../RosaWizard/RosaWizard.fixtures';
+import fixtures from './ROSAHCPWizard.fixtures';
 import type { OpenShiftVersionsData, ROSAHCPWizardData } from './types';
 
 const noopFetch = async (): Promise<void> => {
@@ -51,7 +52,7 @@ export function createMockRosaHcpWizardData(
       fetch: noopFetch,
     },
     roles: {
-      data: [],
+      data: fixtures.mockRoles,
       error: null,
       isFetching: false,
       fetch: async () => {

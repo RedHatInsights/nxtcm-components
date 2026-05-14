@@ -6,7 +6,7 @@ import {
   rosaHcpWizardDetailsFieldsAllApiErrorsData,
 } from './ROSAHCPWizard.stories.helpers';
 import { MachineTypesDropdownType, Region, Role, ROSAHCPWizardData } from './types';
-import fixtures, { STORY_API_ERROR_MESSAGE } from './ROSAHCPWizard.fixtures';
+import fixtures from './ROSAHCPWizard.fixtures';
 import { defaultRosaWizardStrings } from '../RosaWizard/rosaWizardStrings.defaults';
 
 const onWizardSubmit = async (data: unknown) => {
@@ -134,6 +134,7 @@ export const Default: Story = {
   },
 };
 
+/** Wizard with initially loading state for fetched data */
 export const WizardWithLoadingState: Story = {
   render: (args) => <DefaultWithInitialLoading {...args} />,
   args: {
@@ -146,25 +147,6 @@ export const WizardWithLoadingState: Story = {
   },
 };
 
-/** Every resource reports an API error so error alerts can be reviewed. */
-const allErrorsWizardData: ROSAHCPWizardData = {
-  ...mockWizardData,
-  clusterNameValidation: { error: STORY_API_ERROR_MESSAGE, isFetching: false },
-  versions: { ...mockWizardData.versions, error: STORY_API_ERROR_MESSAGE },
-  awsInfrastructureAccounts: {
-    ...mockWizardData.awsInfrastructureAccounts,
-    error: STORY_API_ERROR_MESSAGE,
-  },
-  awsBillingAccounts: { ...mockWizardData.awsBillingAccounts, error: STORY_API_ERROR_MESSAGE },
-  regions: { ...mockWizardData.regions, error: STORY_API_ERROR_MESSAGE },
-  roles: { ...mockWizardData.roles, error: STORY_API_ERROR_MESSAGE },
-  oidcConfig: { ...mockWizardData.oidcConfig, error: STORY_API_ERROR_MESSAGE },
-  machineTypes: { ...mockWizardData.machineTypes, error: STORY_API_ERROR_MESSAGE },
-  vpcList: { ...mockWizardData.vpcList, error: STORY_API_ERROR_MESSAGE },
-  subnets: { ...mockWizardData.subnets, error: STORY_API_ERROR_MESSAGE },
-  securityGroups: { ...mockWizardData.securityGroups, error: STORY_API_ERROR_MESSAGE },
-};
-
 export const AllApiErrors: Story = {
   args: {
     title: 'Create ROSA HCP Cluster — all API errors',
@@ -172,34 +154,6 @@ export const AllApiErrors: Story = {
     strings: defaultRosaWizardStrings,
     onSubmit: onWizardSubmit,
     onCancel: onWizardCancel,
-    wizardData: allErrorsWizardData,
-  },
-};
-
-/**
- * Details step only: the AWS infrastructure account, billing account, region, and OpenShift version
- * API calls all fail with no dropdown options (empty lists), so `FieldWithAPIErrorAlert` can be reviewed.
- * Other wizard resources match the default story fixtures.
- */
-export const DetailsFieldsAllApiErrors: Story = {
-  render: (args) => <ROSAHCPWizard {...args} />,
-  args: {
-    title: 'Create ROSA Cluster — API errors',
-    yaml: true,
     wizardData: rosaHcpWizardDetailsFieldsAllApiErrorsData,
-    onSubmit: async (data: unknown) => {
-      console.log('Wizard submitted with data:', data);
-    },
-    onCancel: () => {
-      console.log('Wizard cancelled');
-    },
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Simulates failed fetches for the four Details dropdowns only. Each field shows the API error alert and has no selectable options.',
-      },
-    },
   },
 };
