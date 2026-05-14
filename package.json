@@ -127,7 +127,7 @@
     "sass": "^1.93.2",
     "set-value": "^4.1.0",
     "storybook": "^9.1.10",
-    "typescript": "^5.2.2",
+    "typescript": "^6.0.0",
     "victory-area": "^37.3.6",
     "victory-axis": "^37.3.6",
     "victory-bar": "^37.3.6",
