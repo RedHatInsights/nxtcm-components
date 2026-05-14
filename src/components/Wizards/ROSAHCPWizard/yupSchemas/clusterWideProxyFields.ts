@@ -11,6 +11,8 @@ export const httpProxyUrlSchema = yup
   .meta({
     id: 'http_proxy_url',
     labelKey: 'clusterWideProxy.httpLabel',
+    helperTextKey: 'clusterWideProxy.httpHelp',
+    placeholderKey: 'clusterWideProxy.httpPlaceholder',
     stepId: STEP_IDS.CLUSTER_WIDE_PROXY,
     fieldType: 'text',
   } satisfies WizardFieldMeta)
@@ -36,6 +38,8 @@ export const httpsProxyUrlSchema = yup
   .meta({
     id: 'https_proxy_url',
     labelKey: 'clusterWideProxy.httpsLabel',
+    helperTextKey: 'clusterWideProxy.httpsHelp',
+    placeholderKey: 'clusterWideProxy.httpsPlaceholder',
     stepId: STEP_IDS.CLUSTER_WIDE_PROXY,
     fieldType: 'text',
   } satisfies WizardFieldMeta)
@@ -61,6 +65,8 @@ export const noProxyDomainsSchema = yup
   .meta({
     id: 'no_proxy_domains',
     labelKey: 'clusterWideProxy.noProxyLabel',
+    helperTextKey: 'clusterWideProxy.noProxyHelp',
+    placeholderKey: 'clusterWideProxy.noProxyPlaceholder',
     stepId: STEP_IDS.CLUSTER_WIDE_PROXY,
     fieldType: 'text',
   } satisfies WizardFieldMeta)
