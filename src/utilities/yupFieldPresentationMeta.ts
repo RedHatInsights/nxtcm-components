@@ -25,6 +25,7 @@ export interface YupFieldPresentationMeta {
   placeholder?: string;
   /** Dot-path into bundled UI strings when `placeholder` is resolved at runtime. */
   placeholderKey?: string;
+  displayLabel?: boolean;
 }
 
 function metaFromDescription(description: unknown): Record<string, unknown> {
@@ -53,6 +54,11 @@ function stringFromMeta(
 ): string | undefined {
   const v = meta[key];
   return typeof v === 'string' ? v : undefined;
+}
+
+function booleanFromMeta(meta: Record<string, unknown>, key: 'displayLabel'): boolean | undefined {
+  const v = meta[key];
+  return typeof v === 'boolean' ? v : undefined;
 }
 
 function reactNodeFromMeta(
@@ -97,6 +103,7 @@ export function getYupFieldPresentationMeta(
     labelHelpTitleKey: stringFromMeta(meta, 'labelHelpTitleKey'),
     placeholder: stringFromMeta(meta, 'placeholder'),
     placeholderKey: stringFromMeta(meta, 'placeholderKey'),
+    displayLabel: booleanFromMeta(meta, 'displayLabel'),
   };
 
   return Object.fromEntries(
