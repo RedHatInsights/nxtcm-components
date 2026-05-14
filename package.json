@@ -76,8 +76,6 @@
     "js-yaml": "^4.1.0",
     "monaco-yaml": "^5.4.1",
     "progress": "^2.0.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "react-hook-form": "^7.74.0",
     "yup": "^1.7.1"
   },
