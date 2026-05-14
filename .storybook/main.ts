@@ -26,7 +26,7 @@ const config: StorybookConfig = {
         },
       },
       optimizeDeps: {
-        include: ['ip-address', 'ip-cidr'],
+        include: ['ip-address', 'ip-cidr', 'monaco-editor', 'monaco-yaml'],
       },
     });
   },

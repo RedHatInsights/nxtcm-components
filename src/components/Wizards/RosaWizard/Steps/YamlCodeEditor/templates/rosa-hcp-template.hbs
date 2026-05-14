@@ -1,4 +1,3 @@
----
 apiVersion: controlplane.cluster.x-k8s.io/v1beta2
 kind: ROSAControlPlane
 metadata:
@@ -7,8 +6,9 @@ metadata:
 spec:
   rosaClusterName: '{{{cluster.name}}}'
   version: '{{{cluster.cluster_version}}}'
+  versionGate: WaitForAcknowledge
   channelGroup: stable
-  region: {{{cluster.region}}}
+  region: '{{{cluster.region}}}'
 {{#if cluster.billing_account_id}}
   billingAccount: '{{{cluster.billing_account_id}}}'
 {{/if}}
@@ -56,17 +56,3 @@ spec:
 {{/if}}
   credentialsSecretRef:
     name: '{{{cluster.name}}}-creds'
-
----
-apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
-kind: ROSANetwork
-metadata:
-  name: '{{{cluster.name}}}-network'
-  namespace: '{{{cluster.name}}}'
-spec:
-  region: {{{cluster.region}}}
-  stackName: '{{{cluster.name}}}-stack'
-  cidrBlock: '{{{cluster.network_machine_cidr}}}'
-{{#if cluster.selected_vpc}}
-  availabilityZoneCount: {{#if cluster.machine_pools_subnets}}{{{cluster.machine_pools_subnets.length}}}{{else}}1{{/if}}
-{{/if}}

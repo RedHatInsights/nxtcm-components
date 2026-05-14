@@ -3,11 +3,13 @@ import { useItem, useData } from '@patternfly-labs/react-form-wizard';
 import { Alert, Button, ClipboardCopyButton, Tooltip } from '@patternfly/react-core';
 import { SearchIcon, UndoIcon, RedoIcon, TimesIcon } from '@patternfly/react-icons';
 import Editor, { OnMount, Monaco } from '@monaco-editor/react';
+import { setupMonacoEnvironment } from './monacoYamlSetup';
 import Handlebars from 'handlebars';
+import { RosaYamlMonacoLoader } from './RosaYamlMonacoLoader';
 import rosaHcpTemplateRaw from './templates/rosa-hcp-template.hbs?raw';
 import './YamlDrawerEditor.css';
-import { parseMultiDocYaml } from './yamlUtils';
 import { validateYaml } from './yamlValidation';
+import { parseMultiDocYaml } from './yamlUtils';
 import { RosaWizardFormData } from '../../../types';
 
 Handlebars.registerHelper(
@@ -25,6 +27,8 @@ Handlebars.registerHelper('stripSlash', function (value: string) {
 });
 
 const compiledTemplate = Handlebars.compile(rosaHcpTemplateRaw);
+const ROSA_YAML_MODEL_PATH = 'rosa-control-plane.yaml';
+const YAML_VALIDATION_OWNER = 'yaml-validation';
 
 function renderTemplate(data: Record<string, unknown>): string {
   try {
@@ -44,6 +48,7 @@ interface YamlDrawerEditorProps {
 }
 
 export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
+  setupMonacoEnvironment();
   const data = useItem<RosaWizardFormData>();
   const { update } = useData();
   const [yamlContent, setYamlContent] = useState('');
@@ -52,6 +57,7 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
   const monacoRef = useRef<Monaco | null>(null);
   const hasFocusRef = useRef(false);
   const validationTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const monacoYamlDisposeRef = useRef<(() => void) | null>(null);
 
   const setEditorMarkers = useCallback((yamlStr: string) => {
     const editor = editorRef.current;
@@ -59,26 +65,28 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
     const model = editor?.getModel();
     if (!model || !monaco) return;
 
-    const validationErrors = validateYaml(yamlStr);
+    const errors = validateYaml(yamlStr);
+    const markers = errors.map((err) => {
+      const lineNumber = Math.min(Math.max(err.line, 1), model.getLineCount());
+      const startColumn = Math.max(err.column, 1);
+      const endColumn = Math.max(startColumn + 1, model.getLineMaxColumn(lineNumber));
 
-    const markers = validationErrors.map((err) => ({
-      severity:
-        err.severity === 'error' ? monaco.MarkerSeverity.Error : monaco.MarkerSeverity.Warning,
-      message: err.message,
-      startLineNumber: err.line,
-      startColumn: err.column,
-      endLineNumber: err.line,
-      endColumn: model.getLineMaxColumn(err.line),
-    }));
+      return {
+        severity:
+          err.severity === 'error' ? monaco.MarkerSeverity.Error : monaco.MarkerSeverity.Warning,
+        message: err.message,
+        startLineNumber: lineNumber,
+        startColumn,
+        endLineNumber: lineNumber,
+        endColumn,
+      };
+    });
 
-    monaco.editor.setModelMarkers(model, 'yaml-validation', markers);
-
-    if (validationErrors.length > 0) {
-      const errorCount = validationErrors.filter((e) => e.severity === 'error').length;
-      setParseError(`${errorCount} validation error${errorCount !== 1 ? 's' : ''} found`);
-    } else {
-      setParseError('');
-    }
+    monaco.editor.setModelMarkers(model, YAML_VALIDATION_OWNER, markers);
+    const errorCount = errors.filter((error) => error.severity === 'error').length;
+    setParseError(
+      errorCount > 0 ? `${errorCount} validation error${errorCount !== 1 ? 's' : ''} found` : ''
+    );
   }, []);
 
   useEffect(() => {
@@ -86,8 +94,11 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
       const rendered = renderTemplate(data as Record<string, unknown>);
       setYamlContent(rendered);
       setParseError('');
+      if (editorRef.current && monacoRef.current) {
+        setEditorMarkers(rendered);
+      }
     }
-  }, [data]);
+  }, [data, setEditorMarkers]);
 
   const handleEditorChange = useCallback(
     (value: string | undefined) => {
@@ -110,7 +121,7 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
       clearTimeout(validationTimerRef.current);
       validationTimerRef.current = setTimeout(() => {
         setEditorMarkers(newYaml);
-      }, 300);
+      }, 250);
     },
     [update, data, setEditorMarkers]
   );
@@ -119,6 +130,9 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
     (editor, monaco) => {
       editorRef.current = editor;
       monacoRef.current = monaco;
+
+      monacoYamlDisposeRef.current?.();
+      monacoYamlDisposeRef.current = new RosaYamlMonacoLoader().configure(monaco);
 
       editor.onDidFocusEditorWidget(() => {
         hasFocusRef.current = true;
@@ -136,10 +150,18 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
         });
       });
 
-      setEditorMarkers(yamlContent);
+      setEditorMarkers(editor.getValue());
     },
-    [setEditorMarkers, yamlContent]
+    [setEditorMarkers]
   );
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(validationTimerRef.current);
+      monacoYamlDisposeRef.current?.();
+      monacoYamlDisposeRef.current = null;
+    };
+  }, []);
 
   const handleCopy = useCallback(() => {
     if (editorRef.current) {
@@ -218,7 +240,8 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
 
       <div className="yaml-drawer-editor__body">
         <Editor
-          defaultLanguage="yaml"
+          language="yaml"
+          path={ROSA_YAML_MODEL_PATH}
           value={yamlContent}
           onChange={handleEditorChange}
           onMount={handleEditorMount}
@@ -234,6 +257,7 @@ export function YamlDrawerEditor({ onClose }: YamlDrawerEditorProps) {
             wordWrap: 'wordWrapColumn',
             wordWrapColumn: 256,
             glyphMargin: true,
+            quickSuggestions: { other: true, comments: true, strings: true },
             scrollbar: {
               verticalScrollbarSize: 17,
               horizontalScrollbarSize: 17,

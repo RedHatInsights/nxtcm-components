@@ -22,6 +22,9 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    include: ['monaco-editor', 'monaco-yaml'],
+  },
   server: {
     port: 4004,
     open: true,
@@ -35,7 +38,15 @@ export default defineConfig({
     },
     rollupOptions: {
       // Externalize deps that shouldn't be bundled into the library
-      external: ['react', 'react-dom', /^@patternfly\/.*/, 'js-yaml', 'yaml'],
+      external: [
+        'react',
+        'react-dom',
+        /^@patternfly\/.*/,
+        'js-yaml',
+        'yaml',
+        /^monaco-editor/,
+        /^monaco-yaml/,
+      ],
       output: {
         // Provide global variables to use in the UMD build for externalized deps
         globals: {

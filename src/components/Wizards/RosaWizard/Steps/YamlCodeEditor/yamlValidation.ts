@@ -1,15 +1,24 @@
 import Ajv, { ErrorObject } from 'ajv';
 import addFormats from 'ajv-formats';
+import IPCIDR from 'ip-cidr';
 import * as yaml from 'js-yaml';
+import clusterSchema from './schemas/clusterSchema.json';
+import rosaClusterSchema from './schemas/rosaClusterSchema.json';
 import rosaControlPlaneSchema from './schemas/rosaControlPlaneSchema.json';
-import rosaNetworkSchema from './schemas/rosaNetworkSchema.json';
+import rosaMachinePoolSchema from './schemas/rosaMachinePoolSchema.json';
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 addFormats(ajv);
+ajv.addFormat('cidr', {
+  type: 'string',
+  validate: (value: string) => IPCIDR.isValidCIDR(value),
+});
 
 const schemaMap: Record<string, object> = {
+  Cluster: clusterSchema,
+  ROSACluster: rosaClusterSchema,
   ROSAControlPlane: rosaControlPlaneSchema,
-  ROSANetwork: rosaNetworkSchema,
+  ROSAMachinePool: rosaMachinePoolSchema,
 };
 
 export interface ValidationError {
