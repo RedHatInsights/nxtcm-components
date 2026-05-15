@@ -394,6 +394,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
 
 /** Default validation messages (English). Keep function signatures when translating. */
 export const defaultRosaHcpWizardValidatorStrings: RosaHcpWizardValidatorStrings = {
+  commonRequired: 'This field is required',
   clusterName: {
     maxLength: 'This value can contain at most 54 characters',
     invalidChars: "This value can only contain lowercase alphanumeric characters or '-' or '.'",

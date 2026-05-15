@@ -2,10 +2,11 @@ import * as yup from 'yup';
 
 import { STEP_IDS } from '../constants';
 import type { WizardFieldMeta } from './types';
-import { ctx } from './helpers';
+import { ctx, rosaCommonRequiredNonEmptyTest } from './helpers';
 
 export const selectedVpcSchema = yup
   .mixed()
+  .test(rosaCommonRequiredNonEmptyTest)
   .required()
   .meta({
     id: 'selected_vpc',
@@ -19,6 +20,7 @@ export const selectedVpcSchema = yup
 export const machinePoolsSubnetsSchema = yup
   .array()
   .default([])
+  .test(rosaCommonRequiredNonEmptyTest)
   .required()
   .meta({
     id: 'machine_pools_subnets',
@@ -29,6 +31,7 @@ export const machinePoolsSubnetsSchema = yup
 
 export const machineTypeSchema = yup
   .string()
+  .test(rosaCommonRequiredNonEmptyTest)
   .required()
   .meta({
     id: 'machine_type',
