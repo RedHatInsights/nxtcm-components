@@ -4,6 +4,8 @@ export type Option<T> = {
   id?: string;
   label: string;
   description?: string;
+  /** Optional native `title` on the menu row (e.g. full label when `label` is truncated). */
+  title?: string;
   value: T;
   disabled?: boolean;
   ariaDisabled?: boolean;

@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 
 import type { NormalizedOptionGroup, Option, OptionGroup, OptionType } from './SelectTypes';
-import { findOptionByValue, normalizeOption, toDisplayString } from './SelectOptions';
+import { findOptionByValue, toDisplayString } from './SelectOptions';
+import { useNormalizedSelectOptions } from './useNormalizedSelectOptions';
 
 export interface UseSelectDerivedParams<T> {
   options?: (Option<T> | string | number)[];
@@ -25,32 +26,14 @@ export interface SelectDerivedModel<T> {
 export function useSelectDerived<T>(params: UseSelectDerivedParams<T>): SelectDerivedModel<T> {
   const { options, optionGroups, keyPath, isTypeAhead, value, typeaheadQuery } = params;
 
-  const normalizedFlat = useMemo(() => {
-    if (!options) return undefined;
-    return options.map((o) => normalizeOption(o, keyPath));
-  }, [options, keyPath]);
-
-  const normalizedGroups = useMemo(() => {
-    if (!optionGroups) return undefined;
-    return optionGroups.map((g) => ({
-      label: g.label,
-      options: (g.options ?? []).map((o: Option<T> | string | number) =>
-        normalizeOption(o, keyPath)
-      ),
-    }));
-  }, [optionGroups, keyPath]);
-
-  const flatForLookup = useMemo(() => {
-    if (normalizedGroups?.length) return normalizedGroups.flatMap((g) => g.options);
-    return normalizedFlat ?? [];
-  }, [normalizedFlat, normalizedGroups]);
+  const { normalizedFlat, normalizedGroups, flatForLookup, hasGroups } = useNormalizedSelectOptions(
+    { options, optionGroups, keyPath }
+  );
 
   const selectedOption = useMemo(
     () => findOptionByValue(flatForLookup.length ? flatForLookup : undefined, value, keyPath),
     [flatForLookup, value, keyPath]
   );
-
-  const hasGroups = normalizedGroups != null && normalizedGroups.length > 0;
 
   const filterLower = typeaheadQuery.toLowerCase();
 

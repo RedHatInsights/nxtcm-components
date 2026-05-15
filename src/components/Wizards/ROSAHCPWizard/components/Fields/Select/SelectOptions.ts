@@ -1,3 +1,4 @@
+import { isSyntheticOptionId } from './selectFieldUtils';
 import type { Option, OptionType } from './SelectTypes';
 
 /** Dot-separated path lookup on plain objects (e.g. `metadata.name`). */
@@ -73,6 +74,7 @@ export function normalizeOption<T>(
     value: option.value,
     keyedValue: keyedValueFromRawValue(option.value, keyPath),
     description: option.description,
+    title: option.title,
     disabled: option.disabled,
     ariaDisabled: option.ariaDisabled,
     tooltipProps: option.tooltipProps,
@@ -96,4 +98,49 @@ export function findOptionByValue<T>(
     }
     return false;
   });
+}
+
+export function optionContainsValue<T>(
+  opt: OptionType<T>,
+  selected: T[],
+  keyPath: string
+): boolean {
+  return selected.some((v) => findOptionByValue([opt], v, keyPath) !== undefined);
+}
+
+export function toggleOptionInValues<T>(current: T[], opt: OptionType<T>, keyPath: string): T[] {
+  if (optionContainsValue(opt, current, keyPath)) {
+    return current.filter((v) => findOptionByValue([opt], v, keyPath) === undefined);
+  }
+  return [...current, opt.value as T];
+}
+
+export function findOptionByMenuId<T>(
+  flatForLookup: OptionType<T>[],
+  optionId: string
+): OptionType<T> | undefined {
+  return flatForLookup.find((o) => String(o.id) === optionId);
+}
+
+/**
+ * Applies a PF menu selection id to a multiselect value array.
+ * Returns `null` when the id is synthetic, missing, or does not match an option.
+ */
+export function toggleValuesFromPfSelectId<T>(
+  current: T[],
+  optionId: string | undefined,
+  flatForLookup: OptionType<T>[],
+  keyPath: string
+): T[] | null {
+  if (isSyntheticOptionId(optionId)) {
+    return null;
+  }
+  if (optionId == null) {
+    return null;
+  }
+  const opt = findOptionByMenuId(flatForLookup, optionId);
+  if (!opt) {
+    return null;
+  }
+  return toggleOptionInValues(current, opt, keyPath);
 }
