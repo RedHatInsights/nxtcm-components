@@ -7,7 +7,10 @@ export const useUpdateOperatorPrefix = () => {
   const { setValue } = useFormContext<ROSAHCPCluster>();
   const clusterName = useWatch({ name: 'name' });
 
-  const operatorRolesPrefix = createOperatorRolesPrefix(clusterName);
+  const operatorRolesPrefix = React.useMemo(
+    () => createOperatorRolesPrefix(clusterName),
+    [clusterName]
+  );
   React.useEffect(() => {
     setValue('custom_operator_roles_prefix', operatorRolesPrefix);
   }, [operatorRolesPrefix, setValue]);

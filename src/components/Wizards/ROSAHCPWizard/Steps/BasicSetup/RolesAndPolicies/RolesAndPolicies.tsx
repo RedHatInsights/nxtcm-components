@@ -21,6 +21,7 @@ import { clusterValidationSchema } from '../../../yupSchemas';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { useUpdateOperatorPrefix } from './useUpdateOperatorPrefix';
 import { useInstallerRoleOptions } from './useInstallerRoleOptions';
+import { useRosaCommand } from './useRosaCommand';
 
 type RolesAndPoliciesStepProps = Pick<ROSAHCPWizardData, 'roles' | 'oidcConfig'>;
 
@@ -36,7 +37,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   const { supportRoleOptions, workerRoleOptions } = useDependentRoles(roles);
   useUpdateOperatorPrefix();
 
-  const rosaCommand = `rosa create operator-roles --prefix "custom-operator-roles-prefix" --oidc-config-id "byo-oidc-config-id" --hosted-cp --installer-role-arn "installer-role-arn`;
+  const rosaCommand = useRosaCommand();
 
   return (
     <>
@@ -47,7 +48,9 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
               schema={clusterValidationSchema}
               apiError={roles.error}
               isLoading={roles.isFetching}
-              onRefresh={() => void roles.fetch(awsInfrastructureAccount ?? '')}
+              onRefresh={() =>
+                void (awsInfrastructureAccount && roles.fetch(awsInfrastructureAccount))
+              }
               labelHelp={
                 <>
                   {rp.installerHelpLead}{' '}
