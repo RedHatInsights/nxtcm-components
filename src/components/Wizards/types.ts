@@ -176,6 +176,8 @@ export type ClusterFormData = {
   max_replicas?: number;
   compute_root_volume?: number;
   imds?: string;
+  /** Additional worker security group IDs (optional). */
+  security_groups_worker?: string[];
 
   // networking
   cluster_privacy?: ClusterNetwork.external | ClusterNetwork.internal;

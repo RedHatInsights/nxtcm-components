@@ -11,14 +11,31 @@ export const selectedVpcSchema = yup
   .meta({
     id: 'selected_vpc',
     labelKey: 'machinePools.vpcLabel',
+    placeholderKey: 'machinePools.vpcPlaceholder',
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'select',
     noEditAfterSubmit: true,
     reviewLabel: 'Install to selected VPC',
   } satisfies WizardFieldMeta);
 
+/** One machine pool row; array shape is required for API / review even when the UI shows a single subnet. */
+export const machinePoolSubnetEntrySchema = yup.object({
+  machine_pool_subnet: yup
+    .string()
+    .required()
+    .meta({
+      id: 'machine_pool_subnet',
+      labelKey: 'machinePools.subnetLabel',
+      placeholderKey: 'machinePools.subnetPlaceholder',
+      stepId: STEP_IDS.MACHINE_POOLS,
+      fieldType: 'select',
+      showInReview: true,
+    } satisfies WizardFieldMeta),
+});
+
 export const machinePoolsSubnetsSchema = yup
   .array()
+  .of(machinePoolSubnetEntrySchema)
   .default([])
   .test(rosaCommonRequiredNonEmptyTest)
   .required()
@@ -75,6 +92,7 @@ export const nodesComputeSchema = yup
 
 export const minReplicasSchema = yup
   .number()
+  .default(2)
   .optional()
   .meta({
     id: 'min_replicas',
@@ -106,6 +124,7 @@ export const minReplicasSchema = yup
 
 export const maxReplicasSchema = yup
   .number()
+  .default(4)
   .optional()
   .meta({
     id: 'max_replicas',
@@ -173,6 +192,19 @@ export const imdsSchema = yup
     advanced: true,
   } satisfies WizardFieldMeta);
 
+export const securityGroupsWorkerSchema = yup
+  .array()
+  .of(yup.string())
+  .default([])
+  .optional()
+  .meta({
+    id: 'security_groups_worker',
+    labelKey: 'securityGroups.formLabel',
+    stepId: STEP_IDS.MACHINE_POOLS,
+    fieldType: 'select',
+    showInReview: true,
+  } satisfies WizardFieldMeta);
+
 export const machinePoolsFields = {
   selected_vpc: selectedVpcSchema,
   machine_pools_subnets: machinePoolsSubnetsSchema,
@@ -183,4 +215,5 @@ export const machinePoolsFields = {
   max_replicas: maxReplicasSchema,
   compute_root_volume: computeRootVolumeSchema,
   imds: imdsSchema,
+  security_groups_worker: securityGroupsWorkerSchema,
 };

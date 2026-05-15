@@ -4,6 +4,8 @@ import { checkAccessibility } from '../../../../../../test-helpers';
 import type { Resource } from '../../../types';
 import type { Role } from '../../../../types';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import rosaWizardFixtures from '../../../../RosaWizard/RosaWizard.fixtures';
+import { makeVpcListResource } from '../../../rosaHcpWizardCtSpecHelpers';
 import { DetailsMount } from './Details.spec-helpers';
 import {
   INSTALLER_ARN_412,
@@ -382,6 +384,42 @@ test.describe('Details (ROSA HCP)', () => {
           .locator('#region-form-group')
           .getByRole('combobox', { name: d.regionPlaceholder, exact: true })
       ).toHaveValue('US East (N. Virginia)');
+    });
+
+    test('should refetch VPCs when region changes from Details', async ({ mount, page }) => {
+      const vpcFetchCalls: number[] = [];
+      const vpcList = makeVpcListResource({
+        fetch: async () => {
+          vpcFetchCalls.push(Date.now());
+        },
+      });
+
+      const component = await mount(
+        <DetailsMount
+          vpcList={vpcList}
+          defaultValues={{
+            region: 'us-east-1',
+            selected_vpc: rosaWizardFixtures.mockVPCs[0].id,
+          }}
+        />
+      );
+
+      await expect.poll(() => vpcFetchCalls.length >= 1).toBe(true);
+      const callsAfterMount = vpcFetchCalls.length;
+
+      await component
+        .locator('#region-form-group')
+        .getByRole('combobox', { name: d.regionPlaceholder, exact: true })
+        .click();
+      // Typeahead: filter control lives in a child input (id is on the PF wrapper).
+      await component
+        .locator('#region-form-group')
+        .locator('#region-typeahead-input')
+        .locator('input')
+        .fill('Oregon');
+      await page.getByRole('option', { name: 'US West (Oregon)', exact: true }).click();
+
+      await expect.poll(() => vpcFetchCalls.length > callsAfterMount).toBe(true);
     });
   });
 

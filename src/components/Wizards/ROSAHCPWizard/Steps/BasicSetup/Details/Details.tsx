@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Button, Stack } from '@patternfly/react-core';
 import semver from 'semver';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 import { clusterValidationSchema } from '../../../yupSchemas';
 import { buildOpenShiftVersionGroups } from '../../../buildOpenShiftVersionGroups';
@@ -15,9 +15,11 @@ import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { FieldWrapper } from '../../../components/FieldWrapper';
 
+import type { ClusterFormData } from '../../../../types';
+
 type DetailsStepProps = Pick<
   ROSAHCPWizardData,
-  'awsInfrastructureAccounts' | 'awsBillingAccounts' | 'regions' | 'versions' | 'roles'
+  'awsInfrastructureAccounts' | 'awsBillingAccounts' | 'regions' | 'versions' | 'roles' | 'vpcList'
 >;
 
 type AssociateNewAccountLinkProps = {
@@ -51,14 +53,49 @@ export const Details = ({
   regions,
   versions,
   roles,
+  vpcList,
 }: DetailsStepProps) => {
   const d = useRosaHcpWizardStrings().details;
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const drawerRef = React.useRef<HTMLSpanElement>(null);
   const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
 
-  const installerRoleArn = useWatch<ROSAHCPCluster>({ name: 'installer_role_arn' });
-  const associatedAwsIdRaw = useWatch<ROSAHCPCluster>({ name: 'associated_aws_id' });
+  const { control, setValue } = useFormContext<Partial<ClusterFormData>>();
+  const region = useWatch({ control, name: 'region' });
+  const prevRegionRef = useRef<string | undefined>(undefined);
+
+  /** Region lives on this step; when it changes, machine-pool VPC data must reload and prior VPC/subnet choices are invalid. */
+  useEffect(() => {
+    const prev = prevRegionRef.current;
+
+    if (region && (prev === undefined || prev !== region)) {
+      void vpcList.fetch?.();
+    }
+
+    if (prev !== undefined && prev !== region) {
+      setValue('selected_vpc', undefined, {
+        shouldDirty: true,
+        shouldTouch: false,
+        shouldValidate: false,
+      });
+      setValue('machine_pools_subnets', [{ machine_pool_subnet: '' }], {
+        shouldDirty: true,
+        shouldTouch: false,
+        shouldValidate: false,
+      });
+      setValue('security_groups_worker', [], {
+        shouldDirty: true,
+        shouldTouch: false,
+        shouldValidate: false,
+      });
+    }
+
+    prevRegionRef.current = region;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [region, setValue, vpcList.fetch]);
+
+  const installerRoleArn = useWatch({ control, name: 'installer_role_arn' });
+  const associatedAwsIdRaw = useWatch({ control, name: 'associated_aws_id' });
   const associatedAwsIdForRegions =
     typeof associatedAwsIdRaw === 'string' && associatedAwsIdRaw !== ''
       ? associatedAwsIdRaw

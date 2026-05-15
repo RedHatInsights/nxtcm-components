@@ -3,6 +3,7 @@ import React from 'react';
 import ROSAHCPWizard from './ROSAHCPWizard';
 import {
   createMockRosaHcpWizardData,
+  getMockStoryPrivateSubnets,
   rosaHcpWizardDetailsFieldsAllApiErrorsData,
 } from './ROSAHCPWizard.stories.helpers';
 import { MachineTypesDropdownType, Region, Role, ROSAHCPWizardData } from './types';
@@ -41,8 +42,8 @@ const mockWizardData: ROSAHCPWizardData = {
   },
   oidcConfig: fixtures.mockResource(fixtures.mockOicdConfig),
   vpcList: fixtures.mockResource(fixtures.mockVPCs),
-  subnets: fixtures.mockResource([]),
-  securityGroups: fixtures.mockResource([]),
+  subnets: fixtures.mockResource(getMockStoryPrivateSubnets()),
+  securityGroups: fixtures.mockResource(fixtures.mockSecurityGroups),
   clusterNameValidation: fixtures.mockValidationResource(),
 };
 
@@ -113,7 +114,8 @@ type Story = StoryObj<typeof ROSAHCPWizard>;
 /**
  * Default story with all required `wizardData` resources populated (aligned with Details step fixtures).
  * AWS infrastructure account, billing account, region, and OpenShift version start in a loading state,
- * then finish loading after 1 second.
+ * then finish loading after 1 second. VPC list, subnets, and compute instance types use HCP wizard
+ * Storybook fixtures (`mockVPCs`, `mockMachineTypes` from `ROSAHCPWizard.fixtures`).
  */
 export const Default: Story = {
   render: (args) => <DefaultWithInitialLoading {...args} />,

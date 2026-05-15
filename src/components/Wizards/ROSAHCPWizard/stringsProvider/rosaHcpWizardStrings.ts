@@ -8,7 +8,6 @@
  * are filled from {@link defaultRosaHcpWizardStrings} and {@link defaultRosaHcpWizardValidatorStrings}.
  */
 
-import { defaultStrings, type WizardStrings } from '@patternfly-labs/react-form-wizard';
 import type {
   DeepPartial,
   RosaHcpWizardStrings,
@@ -59,22 +58,9 @@ export function buildRosaHcpWizardStringBundles(input?: RosaHcpWizardStringsInpu
   strings: RosaHcpWizardStrings;
   validators: RosaHcpWizardValidatorStrings;
 } {
-  const { validators: vPartial, formWizard: _formWizard, ...rest } = input ?? {};
+  const { validators: vPartial, ...rest } = input ?? {};
   return {
     strings: mergeRosaHcpWizardStrings(rest),
     validators: mergeRosaHcpWizardValidatorStrings(vPartial),
   };
-}
-
-/**
- * Merged strings for the `wizardStrings` prop on `WizardPage` / `Wizard` from
- * `@patternfly-labs/react-form-wizard`. Aligns `reviewLabel` with Rosa’s review step nav label, after
- * optional `strings.formWizard` overrides (so nav and form-wizard review label stay consistent).
- */
-export function buildWizardStringsForRosa(
-  rosa: RosaHcpWizardStrings,
-  formWizardPartial?: DeepPartial<WizardStrings>
-): WizardStrings {
-  const base = mergeDeep(defaultStrings, formWizardPartial);
-  return mergeDeep(base, { reviewLabel: rosa.wizard.stepLabels.review });
 }

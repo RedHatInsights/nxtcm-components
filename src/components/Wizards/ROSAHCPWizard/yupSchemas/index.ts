@@ -33,7 +33,10 @@ export const clusterValidationSchema = yup.object({
 }) as yup.ObjectSchema<Partial<ROSAHCPCluster>>;
 
 export function getClusterValidationSchemaDefaultValues(): Partial<ROSAHCPCluster> {
-  return clusterValidationSchema.getDefault() as Partial<ROSAHCPCluster>;
+  const defaults = clusterValidationSchema.getDefault() as Partial<ROSAHCPCluster>;
+  // Replica defaults exist on the Yup fields for toggling autoscaling UX; keep them unset until the user enables autoscaling.
+  const { min_replicas: _min, max_replicas: _max, ...rest } = defaults;
+  return rest;
 }
 
 /**
@@ -83,6 +86,7 @@ export {
 } from './rolesAndPoliciesFields';
 export {
   selectedVpcSchema,
+  machinePoolSubnetEntrySchema,
   machinePoolsSubnetsSchema,
   machineTypeSchema,
   autoscalingSchema,
@@ -91,6 +95,7 @@ export {
   maxReplicasSchema,
   computeRootVolumeSchema,
   imdsSchema,
+  securityGroupsWorkerSchema,
 } from './machinePoolsFields';
 export {
   clusterPrivacySchema,

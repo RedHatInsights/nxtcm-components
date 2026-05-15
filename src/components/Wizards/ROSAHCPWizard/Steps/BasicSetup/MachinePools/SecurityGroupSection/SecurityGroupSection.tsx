@@ -1,13 +1,13 @@
-import React, { useEffect, useRef } from 'react';
-import { ExpandableSection } from '@patternfly/react-core';
+import React from 'react';
+import { ExpandableSection, Form } from '@patternfly/react-core';
 
+import type { CloudVpc, VpcListResource } from '../../../../types';
 import EditSecurityGroups from './EditSecurityGroups';
 import SecurityGroupsEmptyAlert from './SecurityGroupsEmptyAlert';
 import SecurityGroupsNoEditAlert from './SecurityGroupsNoEditAlert';
 import { showSecurityGroupsSection } from '../../../../helpers';
 import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWizardStringsContext';
 import { FieldWithAPIErrorAlert } from '../../../../components/FieldWithAPIErrorAlert';
-import { CloudVpc } from '../../../../types';
 
 export const SecurityGroupsSection = ({
   selectedVPC,
@@ -17,27 +17,13 @@ export const SecurityGroupsSection = ({
 }: {
   selectedVPC: CloudVpc | undefined;
   clusterVersion: string;
-  vpcList: any;
-  //vpcList: VpcListResource;
+  vpcList: VpcListResource;
   refreshVPCs?: () => void;
 }) => {
   const { machinePools, securityGroups } = useRosaHcpWizardStrings();
-  //Has to be replaced with react-hook-form
-  // const [selectedGroupIds, setSelectedGroupIds] = useValue(
-  //   { path: 'cluster.security_groups_worker' },
-  //   []
-  // );
 
   const [isExpanded, setIsExpanded] = React.useState(false);
   const incompatibleClusterVersion = !showSecurityGroupsSection(clusterVersion);
-
-  const prevVpcId = useRef(selectedVPC?.id);
-  useEffect(() => {
-    if (prevVpcId.current !== undefined && prevVpcId.current !== selectedVPC?.id) {
-      //setSelectedGroupIds([]);
-    }
-    prevVpcId.current = selectedVPC?.id;
-  }, [selectedVPC?.id]);
 
   if (!selectedVPC?.id) {
     return null;
@@ -55,32 +41,30 @@ export const SecurityGroupsSection = ({
     >
       {incompatibleClusterVersion && <div>{incompatibleClusterVersionMessage}</div>}
       {!incompatibleClusterVersion && (
-        <>
-          <FieldWithAPIErrorAlert
-            error={vpcList.error}
-            isFetching={vpcList.isFetching}
-            fieldName={securityGroups.formLabel}
-            retry={vpcList.fetch ? () => void vpcList.fetch?.() : undefined}
-          >
-            {showEmptyAlert && !vpcList.error && (
-              <SecurityGroupsEmptyAlert refreshVPCCallback={refreshVPCs} />
-            )}
-            {!showEmptyAlert && (
-              <>
-                <EditSecurityGroups
-                  selectedVPC={selectedVPC}
-                  selectedGroupIds={[]}
-                  onChange={() => {}}
-                  isReadOnly={false}
-                  refreshVPCCallback={refreshVPCs}
-                  isVPCLoading={vpcList.isFetching}
-                />
-              </>
-            )}
-          </FieldWithAPIErrorAlert>
+        <Form onSubmit={(e) => e.preventDefault()}>
+          {showEmptyAlert && !vpcList.error && (
+            <SecurityGroupsEmptyAlert refreshVPCCallback={refreshVPCs} />
+          )}
+          {showEmptyAlert && !!vpcList.error && (
+            <FieldWithAPIErrorAlert
+              error={vpcList.error}
+              isFetching={vpcList.isFetching}
+              fieldName={securityGroups.formLabel}
+              retry={vpcList.fetch ? () => void vpcList.fetch?.() : undefined}
+            />
+          )}
+          {!showEmptyAlert && (
+            <EditSecurityGroups
+              selectedVPC={selectedVPC}
+              isReadOnly={false}
+              apiError={vpcList.error}
+              refreshVPCCallback={refreshVPCs}
+              isVPCLoading={vpcList.isFetching}
+            />
+          )}
 
           {!showEmptyAlert && <SecurityGroupsNoEditAlert />}
-        </>
+        </Form>
       )}
     </ExpandableSection>
   );

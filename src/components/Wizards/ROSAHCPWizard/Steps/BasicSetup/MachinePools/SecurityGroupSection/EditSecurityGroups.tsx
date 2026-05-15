@@ -1,22 +1,6 @@
-import React from 'react';
+import React, { type ReactNode } from 'react';
 
-import {
-  Badge,
-  Button,
-  FormGroup,
-  MenuToggle,
-  MenuToggleElement,
-  Select,
-  SelectList,
-  SelectOption,
-  SelectProps,
-  Split,
-  SplitItem,
-  Stack,
-  StackItem,
-  Tooltip,
-} from '@patternfly/react-core';
-import RedoIcon from '@patternfly/react-icons/dist/esm/icons/redo-icon';
+import { Stack, StackItem } from '@patternfly/react-core';
 
 import SecurityGroupsViewList from './SecurityGroupsViewList';
 
@@ -24,21 +8,25 @@ import { securityGroupsSort } from './helpers';
 import { validateSecurityGroups } from '../../../../validators';
 import { truncateTextWithEllipsis } from '../../../../helpers';
 import { FormGroupHelperText } from '../../../../components/FormGroupHelperText';
-import { CloudVpc } from '../../../../../types';
+import { WizMultiSelect } from '../../../../components/WizFields';
+import { clusterValidationSchema } from '../../../../yupSchemas';
+import type { ClusterFormData, CloudVpc } from '../../../../../types';
 import {
   useRosaHcpWizardStrings,
   useRosaHcpWizardValidators,
 } from '../../../../stringsProvider/RosaHcpWizardStringsContext';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 export interface EditSecurityGroupsProps {
   label?: string;
-  selectedGroupIds: string[];
   selectedVPC: CloudVpc;
   isReadOnly: boolean;
-  onChange: (securityGroupIds: string[]) => void;
+  apiError?: ReactNode;
   refreshVPCCallback?: () => void;
   isVPCLoading?: boolean;
 }
+
+const EMPTY_GROUP_IDS: string[] = [];
 
 const getDisplayName = (securityGroupName: string) => {
   if (securityGroupName) {
@@ -52,147 +40,101 @@ const getDisplayName = (securityGroupName: string) => {
 const EditSecurityGroups = ({
   label: labelProp,
   selectedVPC,
-  selectedGroupIds = [],
-  onChange,
   isReadOnly,
+  apiError,
   refreshVPCCallback,
   isVPCLoading,
 }: EditSecurityGroupsProps) => {
   const sg = useRosaHcpWizardStrings().securityGroups;
   const v = useRosaHcpWizardValidators();
   const label = labelProp ?? sg.formLabel;
-  const [isOpen, setIsOpen] = React.useState<boolean>(false);
-
-  const vpcSecurityGroups = React.useMemo(
-    () => selectedVPC?.aws_security_groups || [],
-    [selectedVPC?.aws_security_groups]
+  const { setValue } = useFormContext<Partial<ClusterFormData>>();
+  const watchedGroups = useWatch({ name: 'security_groups_worker' });
+  const selectedGroupIds = React.useMemo(
+    () => (Array.isArray(watchedGroups) ? (watchedGroups as string[]) : EMPTY_GROUP_IDS),
+    [watchedGroups]
   );
-  const selectedOptions = vpcSecurityGroups.filter((sg) => selectedGroupIds?.includes(sg.id || ''));
-  selectedOptions.sort(securityGroupsSort);
+
+  const vpcSecurityGroupsSorted = React.useMemo(() => {
+    const list = [...(selectedVPC?.aws_security_groups || [])];
+    list.sort(securityGroupsSort);
+    return list;
+  }, [selectedVPC?.aws_security_groups]);
+
+  const options = React.useMemo(
+    () =>
+      vpcSecurityGroupsSorted.map(({ id = '', name = '' }) => {
+        const { displayName, isCut } = getDisplayName(name);
+        return {
+          id,
+          label: displayName,
+          description: id,
+          value: id,
+          ...(isCut ? { title: name } : {}),
+        };
+      }),
+    [vpcSecurityGroupsSorted]
+  );
+
+  const selectedOptions = vpcSecurityGroupsSorted.filter((s) =>
+    selectedGroupIds?.includes(s.id || '')
+  );
 
   React.useEffect(() => {
-    if (vpcSecurityGroups.length > 0) {
-      const newGroupIds = vpcSecurityGroups.map((sg) => sg.id || '') || [];
-      const newSelectedGroupIds = selectedGroupIds.filter((sg) => newGroupIds.includes(sg));
+    if (vpcSecurityGroupsSorted.length > 0) {
+      const newGroupIds = vpcSecurityGroupsSorted.map((g) => g.id || '');
+      const newSelectedGroupIds = selectedGroupIds.filter((gId) => newGroupIds.includes(gId));
 
       if (newSelectedGroupIds.length !== selectedGroupIds.length) {
-        onChange(newSelectedGroupIds);
+        setValue('security_groups_worker', newSelectedGroupIds, {
+          shouldDirty: true,
+          shouldTouch: true,
+          shouldValidate: true,
+        });
       }
     }
-  }, [vpcSecurityGroups, selectedGroupIds, onChange]);
+  }, [vpcSecurityGroupsSorted, selectedGroupIds, setValue]);
 
   if (isReadOnly) {
-    // Shows read-only label, or an empty message if no SGs are selected
     return (
       <SecurityGroupsViewList securityGroups={selectedOptions} emptyMessage={sg.readOnlyEmpty} />
     );
   }
 
   const onDeleteGroup = (deleteGroupId: string) => {
-    const newGroupIdsValue = selectedGroupIds.filter((sgId) => sgId !== deleteGroupId);
-    onChange(newGroupIdsValue);
-  };
-
-  const onToggle = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <MenuToggle
-      ref={toggleRef}
-      onClick={onToggle}
-      isExpanded={isOpen}
-      isFullWidth
-      badge={
-        selectedGroupIds.length > 0 && (
-          <Badge screenReaderText={sg.badgeSrText}>{selectedGroupIds.length}</Badge>
-        )
-      }
-      aria-label={sg.optionsMenuAria}
-    >
-      {sg.selectToggle}
-    </MenuToggle>
-  );
-
-  const onSelect: SelectProps['onSelect'] = (_event, value) => {
-    const selectedGroupId = value as string;
-    const wasPreviouslySelected = selectedGroupIds.includes(selectedGroupId);
-    if (wasPreviouslySelected) {
-      // The SG has been unselected
-      onDeleteGroup(selectedGroupId);
-    } else {
-      // The SG has been selected
-      const newGroupIds = selectedGroupIds.concat(selectedGroupId);
-      const selectedGroups = vpcSecurityGroups.filter((sg) => newGroupIds.includes(sg.id || ''));
-      selectedGroups.sort(securityGroupsSort);
-
-      onChange(selectedGroups.map((group) => group.id || ''));
-    }
+    const next = selectedGroupIds.filter((sgId) => sgId !== deleteGroupId);
+    setValue('security_groups_worker', next, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
   };
 
   const validationError = validateSecurityGroups(selectedGroupIds, v.securityGroups);
 
   return (
     <>
-      <FormGroup fieldId="securityGroupIds" label={label} className="pf-v6-u-mt-md">
-        <Split hasGutter>
-          <SplitItem isFilled>
-            <Stack hasGutter>
-              <StackItem>
-                <Select
-                  role="menu"
-                  isOpen={isOpen}
-                  selected={selectedGroupIds}
-                  toggle={toggle}
-                  onSelect={onSelect}
-                  onOpenChange={(isOpen) => setIsOpen(isOpen)}
-                  data-testid="securitygroups-id"
-                  aria-label={sg.selectAriaLabelledBy}
-                  maxMenuHeight="300px"
-                >
-                  <SelectList>
-                    {vpcSecurityGroups.map(({ id = '', name = '' }) => {
-                      const { displayName, isCut } = getDisplayName(name);
-                      return (
-                        <SelectOption
-                          key={id}
-                          value={id}
-                          description={id}
-                          title={isCut ? name : ''}
-                          hasCheckbox
-                          isSelected={selectedGroupIds.includes(id)}
-                        >
-                          {displayName}
-                        </SelectOption>
-                      );
-                    })}
-                  </SelectList>
-                </Select>
-              </StackItem>
-              <StackItem>
-                <SecurityGroupsViewList
-                  securityGroups={selectedOptions}
-                  onCloseItem={onDeleteGroup}
-                />
-              </StackItem>
-            </Stack>
-          </SplitItem>
-          {refreshVPCCallback && (
-            <SplitItem>
-              <Tooltip content={sg.refreshTooltip}>
-                <Button
-                  id="refreshSecurityGroupsButton"
-                  aria-label={sg.refreshTooltip}
-                  isDisabled={isVPCLoading}
-                  variant="plain"
-                  onClick={refreshVPCCallback}
-                  icon={<RedoIcon />}
-                />
-              </Tooltip>
-            </SplitItem>
-          )}
-        </Split>
-      </FormGroup>
+      <Stack hasGutter className="pf-v6-u-mt-md">
+        <StackItem>
+          <WizMultiSelect<Partial<ClusterFormData>>
+            name="security_groups_worker"
+            schema={clusterValidationSchema}
+            label={label}
+            placeholder={sg.selectToggle}
+            menuToggleAriaLabel={sg.optionsMenuAria}
+            badgeScreenReaderText={sg.badgeSrText}
+            options={options}
+            maxMenuHeight="300px"
+            data-testid="securitygroups-id"
+            apiError={apiError}
+            isLoading={isVPCLoading}
+            onRefresh={refreshVPCCallback}
+          />
+        </StackItem>
+        <StackItem>
+          <SecurityGroupsViewList securityGroups={selectedOptions} onCloseItem={onDeleteGroup} />
+        </StackItem>
+      </Stack>
       <FormGroupHelperText touched error={validationError} />
     </>
   );

@@ -1,6 +1,17 @@
 import { STORY_API_ERROR_MESSAGE } from '../RosaWizard/RosaWizard.fixtures';
 import fixtures from './ROSAHCPWizard.fixtures';
-import type { OpenShiftVersionsData, ROSAHCPWizardData } from './types';
+import type { OpenShiftVersionsData, ROSAHCPWizardData, Subnet } from './types';
+
+/** Private subnets from the first HCP wizard fixture VPC (names include `private`, matching `subnetsFilter`). */
+export function getMockStoryPrivateSubnets(): Subnet[] {
+  return fixtures.mockVPCs[0].aws_subnets
+    .filter((s) => s.name.includes('private'))
+    .map(({ subnet_id, name, availability_zone }) => ({
+      subnet_id,
+      name,
+      availability_zone,
+    }));
+}
 
 const noopFetch = async (): Promise<void> => {
   /* story stub */
@@ -46,7 +57,7 @@ export function createMockRosaHcpWizardData(
       fetch: noopFetch,
     },
     machineTypes: {
-      data: [],
+      data: fixtures.mockMachineTypes,
       error: null,
       isFetching: false,
       fetch: noopFetch,
@@ -72,13 +83,13 @@ export function createMockRosaHcpWizardData(
       fetch: noopFetch,
     },
     subnets: {
-      data: [],
+      data: getMockStoryPrivateSubnets(),
       error: null,
       isFetching: false,
       fetch: noopFetch,
     },
     securityGroups: {
-      data: [],
+      data: fixtures.mockSecurityGroups,
       error: null,
       isFetching: false,
       fetch: noopFetch,

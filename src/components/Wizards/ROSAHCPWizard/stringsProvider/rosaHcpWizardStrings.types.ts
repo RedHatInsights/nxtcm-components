@@ -3,8 +3,6 @@
  * Default English values live in {@link ./rosaHcpWizardStrings.defaults}.
  */
 
-import type { WizardStrings } from '@patternfly-labs/react-form-wizard';
-
 export type DeepPartial<T> = {
   [K in keyof T]?: T[K] extends (...args: any[]) => unknown
     ? T[K]
@@ -323,7 +321,7 @@ export type RosaHcpWizardStrings = {
     addPoolButton: string;
     subnetPlaceholder: string;
     settingsSectionLabel: string;
-    settingsIntro: string;
+    // settingsIntro: string;
     instanceTypeLabel: string;
     instanceTypeHelpLead: string;
     instanceTypeLearnMore: string;
@@ -474,10 +472,4 @@ export type RosaHcpWizardStrings = {
 /** Partial overrides for {@link RosaHCPWizard}; omitted keys use defaults from {@link ./rosaHcpWizardStrings.defaults}. */
 export type RosaHcpWizardStringsInput = DeepPartial<RosaHcpWizardStrings> & {
   validators?: DeepPartial<RosaHcpWizardValidatorStrings>;
-  /**
-   * Overrides for `@patternfly-labs/react-form-wizard` chrome (footer buttons, aria labels, required
-   * message, typeahead strings, etc.). Omitted keys use that package’s English defaults.
-   * `reviewLabel` is always aligned with {@link RosaHcpWizardStrings.wizard.stepLabels.review} after merges.
-   */
-  formWizard?: DeepPartial<WizardStrings>;
 };

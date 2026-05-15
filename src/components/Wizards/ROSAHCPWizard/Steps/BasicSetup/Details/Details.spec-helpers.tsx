@@ -20,12 +20,14 @@ import { clusterValidationSchema } from '../../../yupSchemas';
 import type { ValidationSchemaContext } from '../../../yupSchemas/types';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
+import { makeVpcListResource } from '../../../rosaHcpWizardCtSpecHelpers';
 import type {
   AwsBillingAccountsResource,
   AwsInfrastructureAccountsResource,
   RegionsResource,
   RolesResource,
   VersionsResource,
+  VpcListResource,
 } from '../../../types';
 
 /** Defaults aligned with {@link ROSAHCPWizardBody} so the composed Yup schema resolves consistently in CT. */
@@ -61,6 +63,7 @@ export type DetailsMountProps = {
   awsBillingAccounts?: AwsBillingAccountsResource;
   regions?: RegionsResource;
   roles?: RolesResource;
+  vpcList?: VpcListResource;
   defaultValues?: Partial<ClusterFormData>;
   checkClusterNameUniqueness?: ValidationSchemaContext['checkClusterNameUniqueness'];
 };
@@ -71,6 +74,7 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
   awsBillingAccounts,
   regions,
   roles,
+  vpcList,
   defaultValues = {},
   checkClusterNameUniqueness,
 }) => {
@@ -127,6 +131,8 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
     error: roles?.error ?? null,
   };
 
+  const vpcListProps = makeVpcListResource(vpcList);
+
   return withRosaCt(
     <FormProvider {...methods}>
       <Form>
@@ -136,6 +142,7 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
           regions={regionsProps}
           versions={versionsProps}
           roles={rolesProps}
+          vpcList={vpcListProps}
         />
       </Form>
     </FormProvider>
