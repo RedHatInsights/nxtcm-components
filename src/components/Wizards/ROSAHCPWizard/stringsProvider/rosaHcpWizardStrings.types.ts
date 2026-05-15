@@ -1,5 +1,5 @@
 /**
- * Type definitions for RosaWizard UI copy and validation messages.
+ * Type definitions for ROSA HCP wizard UI copy and validation messages.
  * Default English values live in {@link ./rosaHcpWizardStrings.defaults}.
  */
 

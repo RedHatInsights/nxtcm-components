@@ -114,7 +114,7 @@ type Story = StoryObj<typeof ROSAHCPWizard>;
 /**
  * Default story with all required `wizardData` resources populated (aligned with Details step fixtures).
  * AWS infrastructure account, billing account, region, and OpenShift version start in a loading state,
- * then finish loading after 1 second. VPC list, subnets, and compute instance types use HCP wizard
+ * then finish loading after 1 second. VPC list, subnets, and compute instance types use ROSA HCP wizard
  * Storybook fixtures (`mockVPCs`, `mockMachineTypes` from `ROSAHCPWizard.fixtures`).
  */
 export const Default: Story = {

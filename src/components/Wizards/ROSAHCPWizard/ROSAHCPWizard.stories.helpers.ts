@@ -1,5 +1,4 @@
-import { STORY_API_ERROR_MESSAGE } from '../RosaWizard/RosaWizard.fixtures';
-import fixtures from './ROSAHCPWizard.fixtures';
+import fixtures, { STORY_API_ERROR_MESSAGE } from './ROSAHCPWizard.fixtures';
 import type { OpenShiftVersionsData, ROSAHCPWizardData, Subnet } from './types';
 
 /** Private subnets from the first HCP wizard fixture VPC (names include `private`, matching `subnetsFilter`). */

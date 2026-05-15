@@ -1335,7 +1335,6 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
       expect(meta!.id).toBe('name');
       expect(meta!.labelKey).toBe('details.clusterNameLabel');
       expect(meta!.fieldType).toBe('text');
-      expect(meta!.noEditAfterSubmit).toBe(true);
     });
 
     it('returns meta for region field', () => {
@@ -1344,6 +1343,7 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
       expect(meta!.id).toBe('region');
       expect(meta!.labelKey).toBe('details.regionLabel');
       expect(meta!.fieldType).toBe('select');
+      expect(meta!.noEditAfterSubmit).toBe(true);
     });
 
     it('returns meta for compute_root_volume field', () => {

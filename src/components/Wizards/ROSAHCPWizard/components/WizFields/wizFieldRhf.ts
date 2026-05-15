@@ -14,7 +14,7 @@ import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardSt
 import { getRosaHcpWizardStringByLabelKey } from '../../stringsProvider/getRosaHcpWizardStringByLabelKey';
 
 /**
- * Shared react-hook-form + Yup wiring for RosaWizard `Wiz*` fields.
+ * Shared react-hook-form + Yup wiring for ROSA HCP wizard `Wiz*` fields.
  *
  * - **control**: pass from `useForm()` when the tree is not wrapped with react-hook-form `FormProvider`; otherwise omit and the widget resolves context via {@link useFormContext}.
  * - **schema**: when set, reads presentation from Yup `.meta({ ... })` (see `yupFieldPresentationMeta.ts`) and, together with `name`, derives **`isRequired`** via `requiredFromYup` (see `yupFieldRequired.ts`) unless you pass **`isRequired`** on the widget props.

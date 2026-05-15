@@ -11,6 +11,11 @@ import {
   useRosaWizardStrings,
   useRosaWizardValidators,
 } from '../../../../RosaWizardStringsContext';
+import {
+  getAutoscalingMaxNodes,
+  MAX_NODES_HCP_DEFAULT,
+  MAX_NODES_HCP_INSUFFICIENT_VERSION,
+} from '../../../../../ROSAHCPWizard/getAutoscalingMaxNodes';
 
 type AutoscalingFieldProps = {
   autoscaling?: boolean;
@@ -18,36 +23,10 @@ type AutoscalingFieldProps = {
   openshiftVersion?: string;
 };
 
-export const MAX_NODES_HCP_DEFAULT = 500;
-export const MAX_NODES_HCP_INSUFFICIENT_VERSION = 90;
-
 const scaleMinNodesOnMachinePoolNumber = (machinePoolsNumber?: number) =>
   machinePoolsNumber && machinePoolsNumber > 1 ? 1 : 2;
 
-const scaleMaxNodesBasedOnOpenshiftVersion = (openshiftVersion: string) => {
-  const majorMinor = parseFloat(openshiftVersion.toString());
-  const versionPatch = Number(openshiftVersion.toString().split('.')[2]);
-  if (majorMinor >= 4.16) {
-    return true;
-  }
-  if (majorMinor <= 4.13) {
-    return false;
-  }
-  if (majorMinor === 4.14) {
-    return versionPatch >= 28;
-  }
-  if (majorMinor === 4.15) {
-    return versionPatch >= 15;
-  }
-  return true;
-};
-
-export const getAutoscalingMaxNodes = (openshiftVersion?: string) => {
-  if (openshiftVersion && !scaleMaxNodesBasedOnOpenshiftVersion(openshiftVersion)) {
-    return MAX_NODES_HCP_INSUFFICIENT_VERSION;
-  }
-  return MAX_NODES_HCP_DEFAULT;
-};
+export { MAX_NODES_HCP_DEFAULT, MAX_NODES_HCP_INSUFFICIENT_VERSION, getAutoscalingMaxNodes };
 
 export const AutoscalingField = (props: AutoscalingFieldProps) => {
   const a = useRosaWizardStrings().autoscaling;
