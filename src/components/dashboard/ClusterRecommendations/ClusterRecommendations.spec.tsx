@@ -170,4 +170,17 @@ test.describe('ClusterRecommendations', () => {
     expect(clickCount).toBe(2);
     expect(categories).toEqual(['serviceAvailability', 'security']);
   });
+
+  test('should render skeleton when isLoading is true', async ({ mount }) => {
+    const component = await mount(<ClusterRecommendations isLoading {...defaultProps} />);
+    await expect(component.getByTestId('cluster-recommendations-skeleton')).toBeVisible();
+    await expect(
+      component.getByRole('heading', { name: 'Critical recommendations' })
+    ).not.toBeVisible();
+  });
+
+  test('should render skeleton when count is undefined', async ({ mount }) => {
+    const component = await mount(<ClusterRecommendations />);
+    await expect(component.getByTestId('cluster-recommendations-skeleton')).toBeVisible();
+  });
 });

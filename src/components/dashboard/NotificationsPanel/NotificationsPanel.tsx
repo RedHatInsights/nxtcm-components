@@ -2,10 +2,13 @@ import {
   Button,
   EmptyState,
   EmptyStateBody,
+  Flex,
+  FlexItem,
   Panel,
   PanelHeader,
   PanelMain,
   PanelMainBody,
+  Skeleton,
   Title,
 } from '@patternfly/react-core';
 import BellIcon from '@patternfly/react-icons/dist/esm/icons/bell-icon';
@@ -24,29 +27,34 @@ export type NotificationItem = {
 };
 
 export type NotificationsPanelProps = {
-  notifications: NotificationItem[];
+  notifications?: NotificationItem[];
   onNotificationClick?: (notification: NotificationItem) => void;
   enablePagination?: boolean;
   itemsPerPage?: number;
+  isLoading?: boolean;
 };
+
+const SKELETON_ROWS = 5;
 
 export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
   notifications,
   onNotificationClick,
   enablePagination = true,
   itemsPerPage = 6,
+  isLoading,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalItems = notifications.length;
+  const showSkeleton = isLoading || !notifications;
+
+  const totalItems = notifications?.length ?? 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   // Calculate items for current page
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-  const currentNotifications = enablePagination
-    ? notifications.slice(startIndex, endIndex)
-    : notifications;
+  const currentNotifications =
+    notifications && (enablePagination ? notifications.slice(startIndex, endIndex) : notifications);
 
   const handleNotificationClick = (notification: NotificationItem) => {
     if (notification.onClick) {
@@ -81,12 +89,49 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
         <div className={styles.headerBadge}>
           <BellIcon />
           &nbsp;
-          <span data-testid="notification-count">{totalItems}</span>
+          {showSkeleton ? (
+            <Skeleton width="24px" height="16px" />
+          ) : (
+            <span data-testid="notification-count">{totalItems}</span>
+          )}
         </div>
       </PanelHeader>
       <PanelMain>
         <PanelMainBody>
-          {currentNotifications.length > 0 ? (
+          {showSkeleton ? (
+            <Flex direction={{ default: 'column' }}>
+              <FlexItem data-testid="notifications-skeleton">
+                <Table variant="compact" borders={false} aria-label="Loading notifications">
+                  <Thead>
+                    <Tr>
+                      <Th>Notification</Th>
+                      <Th>Type</Th>
+                      <Th>Time</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {Array.from({ length: SKELETON_ROWS }, (_, i) => (
+                      <Tr key={i}>
+                        <Td dataLabel="Notification">
+                          <Skeleton
+                            width="140px"
+                            height="14px"
+                            screenreaderText={i === 0 ? 'Loading notifications' : undefined}
+                          />
+                        </Td>
+                        <Td dataLabel="Type">
+                          <Skeleton width="80px" height="14px" />
+                        </Td>
+                        <Td dataLabel="Time">
+                          <Skeleton width="60px" height="14px" />
+                        </Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </FlexItem>
+            </Flex>
+          ) : currentNotifications && currentNotifications.length > 0 ? (
             <Table variant="compact" borders={false}>
               <Thead>
                 <Tr>
@@ -131,7 +176,7 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
               </EmptyStateBody>
             </EmptyState>
           )}
-          {enablePagination && totalPages > 1 && (
+          {!showSkeleton && enablePagination && totalPages > 1 && (
             <div className={styles.paginationContainer}>
               <span className={styles.paginationText}>
                 {startIndex + 1} - {endIndex} of {totalItems}

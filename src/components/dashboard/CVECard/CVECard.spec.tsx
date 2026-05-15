@@ -182,6 +182,17 @@ test.describe('CVECard', () => {
     await viewLink.click();
     expect(onViewClickCalled).toBe(true);
   });
+
+  test('should render skeleton when isLoading is true', async ({ mount }) => {
+    const component = await mount(<CVECard isLoading cveData={mockCVEData} />);
+    await expect(component.getByTestId('cve-card-skeleton')).toBeVisible();
+    await expect(component.getByRole('button', { name: 'View critical CVEs' })).not.toBeVisible();
+  });
+
+  test('should render skeleton when cveData is undefined', async ({ mount }) => {
+    const component = await mount(<CVECard />);
+    await expect(component.getByTestId('cve-card-skeleton')).toBeVisible();
+  });
 });
 
 test('should render with single CVE severity', async ({ mount }) => {

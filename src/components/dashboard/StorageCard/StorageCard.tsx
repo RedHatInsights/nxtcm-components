@@ -1,4 +1,5 @@
 import React from 'react';
+import { Flex, FlexItem, Skeleton } from '@patternfly/react-core';
 import styles from './StorageCard.module.scss';
 
 export interface StorageData {
@@ -14,16 +15,49 @@ export interface StorageData {
 
 export interface StorageCardProps {
   /** storage data for different cluster types */
-  storageData: StorageData;
+  storageData?: StorageData;
   /** callback when "view more" is clicked */
   onViewMore?: () => void;
+  isLoading?: boolean;
 }
 
 /**
  * storage card displays storage usage statistics across different cluster types
  * with a visual percentage indicator
  */
-export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMore }) => {
+export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMore, isLoading }) => {
+  const showSkeleton = isLoading || !storageData;
+
+  if (showSkeleton) {
+    return (
+      <Flex className={styles.content}>
+        <FlexItem data-testid="storage-card-skeleton">
+          <Flex
+            spaceItems={{ default: 'spaceItemsLg' }}
+            alignItems={{ default: 'alignItemsCenter' }}
+          >
+            <FlexItem>
+              <Skeleton
+                shape="circle"
+                width="200px"
+                height="200px"
+                screenreaderText="Loading storage data"
+              />
+            </FlexItem>
+            <FlexItem>
+              <Flex direction={{ default: 'column' }} spaceItems={{ default: 'spaceItemsSm' }}>
+                <Skeleton width="150px" height="14px" />
+                <Skeleton width="130px" height="14px" />
+                <Skeleton width="120px" height="14px" />
+                <Skeleton width="100px" height="14px" />
+              </Flex>
+            </FlexItem>
+          </Flex>
+        </FlexItem>
+      </Flex>
+    );
+  }
+
   const { rosaClusters, aroClusters, osdClusters, available } = storageData;
 
   // calculate totals

@@ -85,3 +85,9 @@ export const HighCount: Story = {
     faultTolerance: 150,
   },
 };
+
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+  },
+};

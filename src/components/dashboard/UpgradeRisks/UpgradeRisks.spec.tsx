@@ -127,4 +127,15 @@ test.describe('UpgradeRisks', () => {
     const infoSection = component.getByText('Info', { exact: true }).locator('..');
     await expect(infoSection.getByText('5')).toBeVisible();
   });
+
+  test('should render skeleton when isLoading is true', async ({ mount }) => {
+    const component = await mount(<UpgradeRisks isLoading {...defaultProps} />);
+    await expect(component.getByTestId('upgrade-risks-skeleton')).toBeVisible();
+    await expect(component.getByTestId('total-risks')).not.toBeVisible();
+  });
+
+  test('should render skeleton when totalRisks is undefined', async ({ mount }) => {
+    const component = await mount(<UpgradeRisks />);
+    await expect(component.getByTestId('upgrade-risks-skeleton')).toBeVisible();
+  });
 });

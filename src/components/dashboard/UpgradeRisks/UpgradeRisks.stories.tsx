@@ -61,3 +61,9 @@ export const NoRisks: Story = {
     onViewRisks: () => console.log('View upgrade risks clicked'),
   },
 };
+
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+  },
+};

@@ -111,3 +111,9 @@ export const InteractiveNotifications: Story = {
     })),
   },
 };
+
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+  },
+};
