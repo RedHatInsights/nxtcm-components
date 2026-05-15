@@ -19,8 +19,8 @@ export type WizardFieldMeta = {
   stepId: string;
   /** If true, field is read-only after the cluster is created / submitted. */
   noEditAfterSubmit?: boolean;
-  /** If true, field appears in the review summary. */
-  showInReview?: boolean;
+  /** If true, field does not appear in the review summary. */
+  hideInReview?: boolean;
   /** Override label for the review step (when different from form label). */
   reviewLabel?: string;
   /** Hint for which component type to render. */

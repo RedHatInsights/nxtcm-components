@@ -13,7 +13,6 @@ export const selectedVpcSchema = yup
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'select',
     noEditAfterSubmit: true,
-    showInReview: true,
     reviewLabel: 'Install to selected VPC',
   } satisfies WizardFieldMeta);
 
@@ -25,7 +24,6 @@ export const machinePoolsSubnetsSchema = yup
     id: 'machine_pools_subnets',
     labelKey: 'machinePools.subnetLabel',
     stepId: STEP_IDS.MACHINE_POOLS,
-    showInReview: true,
     reviewLabel: 'Machine pools',
   } satisfies WizardFieldMeta);
 
@@ -37,7 +35,6 @@ export const machineTypeSchema = yup
     labelKey: 'machinePools.instanceTypeLabel',
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'select',
-    showInReview: true,
   } satisfies WizardFieldMeta);
 
 export const autoscalingSchema = yup
@@ -60,7 +57,6 @@ export const nodesComputeSchema = yup
     labelKey: 'autoscaling.computeCountLabel',
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'number',
-    showInReview: true,
   } satisfies WizardFieldMeta)
   .test('compute-nodes', '', function (value) {
     if (value === undefined || value === null) return true;
@@ -82,7 +78,6 @@ export const minReplicasSchema = yup
     labelKey: 'autoscaling.minLabel',
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'number',
-    showInReview: true,
   } satisfies WizardFieldMeta)
   .test('min-replicas', '', function (value) {
     if (value === undefined || value === null) return true;
@@ -114,7 +109,6 @@ export const maxReplicasSchema = yup
     labelKey: 'autoscaling.maxLabel',
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'number',
-    showInReview: true,
   } satisfies WizardFieldMeta)
   .test('max-replicas', '', function (value) {
     if (value === undefined || value === null) return true;
@@ -146,7 +140,6 @@ export const computeRootVolumeSchema = yup
     fieldType: 'number',
     unit: 'GiB',
     advanced: true,
-    showInReview: true,
   } satisfies WizardFieldMeta)
   .test('root-disk-size', '', function (value) {
     if (value === undefined || value === null) return true;

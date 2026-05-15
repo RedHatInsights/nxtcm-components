@@ -45,7 +45,6 @@ export const clusterPrivacyPublicSubnetIdSchema = yup
     labelKey: 'networking.publicSubnetLabel',
     stepId: STEP_IDS.NETWORKING,
     fieldType: 'select',
-    showInReview: true,
   } satisfies WizardFieldMeta);
 
 export const cidrDefaultSchema = yup
@@ -71,7 +70,6 @@ export const networkMachineCidrSchema = yup
     fieldType: 'text',
     advanced: true,
     noEditAfterSubmit: true,
-    showInReview: true,
   } satisfies WizardFieldMeta)
   .test('machine-cidr', '', function (value) {
     if (!value) return true;
@@ -152,7 +150,6 @@ export const networkServiceCidrSchema = yup
     fieldType: 'text',
     advanced: true,
     noEditAfterSubmit: true,
-    showInReview: true,
   } satisfies WizardFieldMeta)
   .test('service-cidr', '', function (value) {
     if (!value) return true;
@@ -230,7 +227,6 @@ export const networkPodCidrSchema = yup
     fieldType: 'text',
     advanced: true,
     noEditAfterSubmit: true,
-    showInReview: true,
   } satisfies WizardFieldMeta)
   .test('pod-cidr', '', function (value) {
     if (!value) return true;
@@ -306,7 +302,6 @@ export const networkHostPrefixSchema = yup
     fieldType: 'text',
     advanced: true,
     noEditAfterSubmit: true,
-    showInReview: true,
   } satisfies WizardFieldMeta)
   .test('host-prefix', '', function (value) {
     if (!value) return true;

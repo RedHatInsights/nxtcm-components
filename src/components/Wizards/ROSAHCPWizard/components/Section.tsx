@@ -6,12 +6,9 @@ type SectionProps = {
   id?: string;
   label: string;
   description?: ReactNode;
-  prompt?: string;
   children?: ReactNode;
-  defaultExpanded?: boolean;
   labelHelpTitle?: string;
   labelHelp?: string;
-  autohide?: boolean;
 };
 
 export const Section: React.FunctionComponent<SectionProps> = (props) => {

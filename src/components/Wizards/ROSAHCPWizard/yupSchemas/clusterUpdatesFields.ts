@@ -13,7 +13,6 @@ export const upgradePolicySchema = yup
     labelKey: 'clusterUpdates.upgradePolicyLabel',
     stepId: STEP_IDS.CLUSTER_UPDATES,
     fieldType: 'radio',
-    showInReview: true,
   } satisfies WizardFieldMeta);
 
 export const upgradeScheduleSchema = yup

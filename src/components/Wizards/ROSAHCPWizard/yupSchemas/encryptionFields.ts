@@ -42,7 +42,6 @@ export const encryptionKeysSchema = yup
     labelKey: 'encryption.keysLabel',
     stepId: STEP_IDS.ENCRYPTION,
     fieldType: 'radio',
-    showInReview: true,
   } satisfies WizardFieldMeta);
 
 export const kmsKeyArnSchema = yup
@@ -53,7 +52,6 @@ export const kmsKeyArnSchema = yup
     labelKey: 'encryption.kmsKeyArnLabel',
     stepId: STEP_IDS.ENCRYPTION,
     fieldType: 'text',
-    showInReview: true,
   } satisfies WizardFieldMeta)
   .test('kms-key-arn', '', validateKmsArn);
 
@@ -66,7 +64,6 @@ export const etcdEncryptionSchema = yup
     labelKey: 'encryption.etcdEncryptionLabel',
     stepId: STEP_IDS.ENCRYPTION,
     fieldType: 'checkbox',
-    showInReview: true,
     reviewLabel: 'Additional etcd encryption',
   } satisfies WizardFieldMeta);
 

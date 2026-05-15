@@ -13,7 +13,6 @@ export const installerRoleArnSchema = yup
     labelKey: 'rolesAndPolicies.installerRoleLabel',
     stepId: STEP_IDS.ROLES_AND_POLICIES,
     fieldType: 'select',
-    showInReview: true,
   } satisfies WizardFieldMeta);
 
 export const supportRoleArnSchema = yup
@@ -47,7 +46,6 @@ export const byoOidcConfigIdSchema = yup
     labelKey: 'rolesAndPolicies.oidcLabel',
     stepId: STEP_IDS.ROLES_AND_POLICIES,
     fieldType: 'select',
-    showInReview: true,
   } satisfies WizardFieldMeta);
 
 export const customOperatorRolesPrefixSchema = yup
@@ -59,7 +57,6 @@ export const customOperatorRolesPrefixSchema = yup
     labelKey: 'rolesAndPolicies.operatorPrefixLabel',
     stepId: STEP_IDS.ROLES_AND_POLICIES,
     fieldType: 'text',
-    showInReview: true,
   } satisfies WizardFieldMeta)
   .test('operator-roles-prefix', '', function (value) {
     if (!value) return true;

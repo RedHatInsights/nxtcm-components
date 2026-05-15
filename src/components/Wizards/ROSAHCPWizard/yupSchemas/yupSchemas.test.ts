@@ -1296,7 +1296,6 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
       expect(meta!.labelKey).toBe('details.clusterNameLabel');
       expect(meta!.fieldType).toBe('text');
       expect(meta!.noEditAfterSubmit).toBe(true);
-      expect(meta!.showInReview).toBe(true);
     });
 
     it('returns meta for region field', () => {
