@@ -93,7 +93,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
           ]}
         />
         <WizardStep name={sl.review} id={STEP_IDS.REVIEW} key={STEP_IDS.REVIEW}>
-          <Review />
+          <Review vpcList={wizardData.vpcList} />
         </WizardStep>
       </Wizard>
     </div>

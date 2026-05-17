@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   Alert,
   AlertVariant,
@@ -16,37 +17,28 @@ import { useWatch } from 'react-hook-form';
 
 import type { ClusterFormData } from '@/components/Wizards/types';
 
+import {
+  buildMachinePoolsReviewSelectOptions,
+  getNestedValue,
+  resolveSelectedVpc,
+} from '../../helpers';
 import { Section } from '../../components/Section';
 import { STEP_IDS } from '../../constants';
 import { useRosaHcpWizardReviewSections } from '../../ROSAHCPWizardReviewSections';
 import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
+import type { ROSAHCPWizardData } from '../../types';
 import { getClusterValidationSchemaDefaultValues, wizardFieldMetaByPath } from '../../yupSchemas';
 import { ReviewExpandSection } from './ReviewExpandSection';
+import { formatReviewFieldValue, normalizeEmptyFormValue } from './formatReviewValueDisplay';
+import { shouldHideReviewRow } from './shouldHideReviewRow';
 
-/**
- * Dot-separated path lookup on plain form objects.
- * Only scalar leaves are formatted for display; objects and arrays become '' until review supports them.
- */
-function readValueAtPath(source: unknown, path: string): string {
-  if (source == null || path === '') return '';
-  let current: unknown = source;
-  for (const key of path.split('.')) {
-    if (current == null || typeof current !== 'object') return '';
-    current = (current as Record<string, unknown>)[key];
-  }
-  return formatScalarForReview(normalizeEmptyFormValue(current));
-}
-
-function normalizeEmptyFormValue(value: unknown): unknown {
-  if (value === '' || value === null || value === undefined) return '';
-  return value;
-}
-
-function formatScalarForReview(value: unknown): string {
-  if (value === '' || value === null || value === undefined) return '';
-  if (typeof value === 'object') return '';
-  return String(value);
+/** Stable string for comparing a field to defaults (includes arrays/objects). */
+function serializeValueForSectionDiff(value: unknown): string {
+  const normalized = normalizeEmptyFormValue(value);
+  if (normalized === '') return '';
+  if (typeof normalized === 'object') return JSON.stringify(normalized);
+  return String(normalized);
 }
 
 function sectionDiffersFromDefaults(
@@ -55,7 +47,9 @@ function sectionDiffersFromDefaults(
   defaults: Partial<ClusterFormData>
 ): boolean {
   return fieldPaths.some(
-    (path) => readValueAtPath(currentForm, path) !== readValueAtPath(defaults, path)
+    (path) =>
+      serializeValueForSectionDiff(getNestedValue(currentForm, path)) !==
+      serializeValueForSectionDiff(getNestedValue(defaults, path))
   );
 }
 
@@ -112,7 +106,9 @@ const ReviewFieldRow = ({
   );
 };
 
-export const Review = () => {
+type ReviewProps = Pick<ROSAHCPWizardData, 'vpcList'>;
+
+export const Review = ({ vpcList }: ReviewProps) => {
   const { goToStepById } = useWizardContext();
   const watchedFormValues = useWatch();
   const defaultWizardFormValues = getClusterValidationSchemaDefaultValues();
@@ -122,6 +118,16 @@ export const Review = () => {
       ? watchedFormValues
       : {}),
   } as Partial<ClusterFormData>;
+
+  const selectedVPC = useMemo(
+    () => resolveSelectedVpc(formValues.selected_vpc, vpcList.data),
+    [formValues.selected_vpc, vpcList.data]
+  );
+
+  const reviewSelectOptions = useMemo(
+    () => buildMachinePoolsReviewSelectOptions(selectedVPC, vpcList.data),
+    [selectedVPC, vpcList.data]
+  );
   const reviewSections = useRosaHcpWizardReviewSections();
   const rosaStrings = useRosaHcpWizardStrings();
   const { review } = rosaStrings;
@@ -162,12 +168,22 @@ export const Review = () => {
                           labelKey,
                           meta?.reviewLabel
                         );
+                        const hideInReview = shouldHideReviewRow({
+                          path,
+                          formValues,
+                          metaShouldHideInReview: meta?.hideInReview ?? false,
+                        });
                         return (
                           <ReviewFieldRow
                             key={path}
                             labelText={labelText}
-                            hideInReview={meta?.hideInReview ?? false}
-                            value={readValueAtPath(formValues, path)}
+                            hideInReview={hideInReview}
+                            value={formatReviewFieldValue(
+                              path,
+                              formValues,
+                              rosaStrings,
+                              reviewSelectOptions
+                            )}
                             noEditAfterStep={meta?.noEditAfterSubmit ?? false}
                             lockedSettingsScreenReaderText={review.lockedSettings}
                           />

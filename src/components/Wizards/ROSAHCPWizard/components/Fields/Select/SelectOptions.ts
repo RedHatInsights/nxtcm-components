@@ -1,16 +1,6 @@
+import { getNestedValue } from '../../../helpers';
 import { isSyntheticOptionId } from './selectFieldUtils';
 import type { Option, OptionType } from './SelectTypes';
-
-/** Dot-separated path lookup on plain objects (e.g. `metadata.name`). */
-function getNestedValue(source: unknown, path: string): unknown {
-  if (source == null || path === '') return undefined;
-  let current: unknown = source;
-  for (const key of path.split('.')) {
-    if (current == null || typeof current !== 'object') return undefined;
-    current = (current as Record<string, unknown>)[key];
-  }
-  return current;
-}
 
 function isPrimitiveOption<T>(option: Option<T> | string | number): option is string | number {
   return typeof option === 'string' || typeof option === 'number';

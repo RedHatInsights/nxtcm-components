@@ -2,9 +2,14 @@ import { useEffect, useMemo } from 'react';
 import { Content, ContentVariants, Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
 import { useFormContext, useWatch } from 'react-hook-form';
 
-import type { ClusterFormData, Subnet, VPC } from '../../../../types';
+import type { ClusterFormData } from '../../../../types';
 import type { ROSAHCPWizardData } from '../../../types';
-import { subnetsFilter, canSelectImds, getWorkerNodeVolumeSizeMaxGiB } from '../../../helpers';
+import {
+  buildMachinePoolsReviewSelectOptions,
+  canSelectImds,
+  getWorkerNodeVolumeSizeMaxGiB,
+  resolveSelectedVpc,
+} from '../../../helpers';
 import { Section } from '../../../components/Section';
 import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../links';
@@ -39,14 +44,15 @@ export const MachinePools = (props: MachinePoolsProps) => {
   const wrongVersionForIMDS = !canSelectImds(clusterVersion);
   const maxAutoscalingNodes = getAutoscalingMaxNodes(clusterVersion);
 
-  const selectedVPC = useMemo((): VPC | undefined => {
-    if (typeof selectedVpcRaw === 'string') {
-      return vpcList.data.find((vpc: VPC) => vpc.id === selectedVpcRaw);
-    }
-    return selectedVpcRaw;
-  }, [selectedVpcRaw, vpcList.data]);
+  const selectedVPC = useMemo(
+    () => resolveSelectedVpc(selectedVpcRaw, vpcList.data),
+    [selectedVpcRaw, vpcList.data]
+  );
 
-  const { privateSubnets } = subnetsFilter(selectedVPC);
+  const machinePoolsSelectOptions = useMemo(
+    () => buildMachinePoolsReviewSelectOptions(selectedVPC, vpcList.data),
+    [selectedVPC, vpcList.data]
+  );
 
   const vpcId = typeof selectedVpcRaw === 'string' ? selectedVpcRaw : selectedVpcRaw?.id;
 
@@ -58,18 +64,10 @@ export const MachinePools = (props: MachinePoolsProps) => {
     if (region) {
       void machineTypes.fetch(region);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [region, machineTypes.fetch]);
 
-  const vpcOptions = vpcList.data.map((vpc: VPC) => ({
-    label: vpc.name,
-    value: vpc.id,
-  }));
-
-  const subnetOptions =
-    privateSubnets?.map((subnet: Subnet) => ({
-      label: subnet.name,
-      value: subnet.subnet_id,
-    })) ?? [];
+  const { vpc: vpcOptions, subnet: subnetOptions } = machinePoolsSelectOptions;
 
   const onRefreshVpc = vpcList.fetch
     ? () => {

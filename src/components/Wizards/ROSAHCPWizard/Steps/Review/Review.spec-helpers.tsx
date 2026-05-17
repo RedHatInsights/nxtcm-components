@@ -4,29 +4,33 @@ import { FormProvider, useForm } from 'react-hook-form';
 
 import type { ClusterFormData } from '@/components/Wizards/types';
 import { STEP_IDS } from '../../constants';
+import { makeVpcListResource } from '../../rosaHcpWizardCtSpecHelpers';
 import { RosaHcpWizardStringsProvider } from '../../stringsProvider/RosaHcpWizardStringsContext';
+import type { VpcListResource } from '../../types';
 import { getClusterValidationSchemaDefaultValues } from '../../yupSchemas';
 import { Review } from './Review';
 
 export interface ReviewHarnessProps {
   formOverrides?: Partial<ClusterFormData>;
+  vpcList?: VpcListResource;
 }
 
 /**
  * Minimal wizard + form context so `Review` can call `useWizardContext` and `useWatch`.
  * Lives outside the spec file so Playwright CT can mount it.
  */
-export function ReviewHarness({ formOverrides = {} }: ReviewHarnessProps) {
+export function ReviewHarness({ formOverrides = {}, vpcList }: ReviewHarnessProps) {
   const methods = useForm<Partial<ClusterFormData>>({
     defaultValues: { ...getClusterValidationSchemaDefaultValues(), ...formOverrides },
   });
+  const vpcListProps = makeVpcListResource(vpcList);
 
   return (
     <RosaHcpWizardStringsProvider>
       <FormProvider {...methods}>
         <Wizard height={720}>
           <WizardStep name="Review" id={STEP_IDS.REVIEW} key="review">
-            <Review />
+            <Review vpcList={vpcListProps} />
           </WizardStep>
         </Wizard>
       </FormProvider>

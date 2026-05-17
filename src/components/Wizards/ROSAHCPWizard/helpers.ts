@@ -1,5 +1,60 @@
 import { MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH } from './constants';
+import { securityGroupsSort } from './Steps/BasicSetup/MachinePools/SecurityGroupSection/helpers';
+import type { ClusterFormData } from '../types';
 import { CIDRSubnet, MachinePoolSubnetEntry, ROSAHCPCluster, Subnet, VPC } from './types';
+
+export type LabelValueOption = { label: string; value: string };
+
+export type MachinePoolsReviewSelectOptions = {
+  vpc: LabelValueOption[];
+  subnet: LabelValueOption[];
+  securityGroup: LabelValueOption[];
+};
+
+/** Dot-separated path lookup on plain objects (e.g. `metadata.name`). */
+export function getNestedValue(source: unknown, path: string): unknown {
+  if (source == null || path === '') return undefined;
+  let current: unknown = source;
+  for (const key of path.split('.')) {
+    if (current == null || typeof current !== 'object') return undefined;
+    current = (current as Record<string, unknown>)[key];
+  }
+  return current;
+}
+
+export function resolveSelectedVpc(
+  selectedVpcRaw: ClusterFormData['selected_vpc'] | undefined,
+  vpcListData: VPC[]
+): VPC | undefined {
+  if (typeof selectedVpcRaw === 'string') {
+    return vpcListData.find((vpc) => vpc.id === selectedVpcRaw);
+  }
+  return selectedVpcRaw;
+}
+
+export function buildMachinePoolsReviewSelectOptions(
+  selectedVPC: VPC | undefined,
+  vpcListData: VPC[]
+): MachinePoolsReviewSelectOptions {
+  const { privateSubnets } = subnetsFilter(selectedVPC);
+  const securityGroups = [...(selectedVPC?.aws_security_groups ?? [])];
+  securityGroups.sort(securityGroupsSort);
+
+  return {
+    vpc: vpcListData.map((vpc) => ({
+      label: vpc.name,
+      value: vpc.id,
+    })),
+    subnet: (privateSubnets ?? []).map((subnet) => ({
+      label: subnet.name,
+      value: subnet.subnet_id,
+    })),
+    securityGroup: securityGroups.map(({ id = '', name = '' }) => ({
+      label: name ? truncateTextWithEllipsis(name, 50) : '--',
+      value: id,
+    })),
+  };
+}
 
 const OPERATOR_ROLES_HASH_LENGTH = 4;
 

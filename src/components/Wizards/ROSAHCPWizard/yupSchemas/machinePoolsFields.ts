@@ -29,7 +29,6 @@ export const machinePoolSubnetEntrySchema = yup.object({
       placeholderKey: 'machinePools.subnetPlaceholder',
       stepId: STEP_IDS.MACHINE_POOLS,
       fieldType: 'select',
-      showInReview: true,
     } satisfies WizardFieldMeta),
 });
 
@@ -43,7 +42,6 @@ export const machinePoolsSubnetsSchema = yup
     id: 'machine_pools_subnets',
     labelKey: 'machinePools.subnetLabel',
     stepId: STEP_IDS.MACHINE_POOLS,
-    reviewLabel: 'Machine pools',
   } satisfies WizardFieldMeta);
 
 export const machineTypeSchema = yup
@@ -66,6 +64,7 @@ export const autoscalingSchema = yup
     labelKey: 'autoscaling.enableLabel',
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'checkbox',
+    hideInReview: true,
   } satisfies WizardFieldMeta);
 
 export const nodesComputeSchema = yup
@@ -202,7 +201,6 @@ export const securityGroupsWorkerSchema = yup
     labelKey: 'securityGroups.formLabel',
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'select',
-    showInReview: true,
   } satisfies WizardFieldMeta);
 
 export const machinePoolsFields = {
