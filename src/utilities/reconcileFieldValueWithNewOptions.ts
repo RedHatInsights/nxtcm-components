@@ -1,13 +1,13 @@
 import type { DropdownType } from '../components/Wizards/ROSAHCPWizard/types';
 
-export function getFieldOptionIdentity(option: Pick<DropdownType, 'value'>): string {
-  return option.value;
-}
+export type ReconcileFieldOption = Omit<DropdownType, 'value'> & {
+  value: string | number;
+};
 
 export type ReconcileFieldValueWithNewOptionsParams = {
   currentValue: string | undefined | null;
   currentLabel?: string | undefined | null;
-  newOptions: readonly DropdownType[];
+  newOptions: readonly ReconcileFieldOption[];
   defaultValue?: string;
 };
 
@@ -24,7 +24,7 @@ export function reconcileFieldValueWithNewOptions(
   const labelProvided = currentLabel != null && currentLabel !== '';
 
   const stillValid = newOptions.some((opt) => {
-    if (getFieldOptionIdentity(opt) !== value) {
+    if (String(opt.value) !== value) {
       return false;
     }
     if (labelProvided) {

@@ -1,8 +1,8 @@
 import type { DropdownType } from '../components/Wizards/ROSAHCPWizard/types';
 
 import {
-  getFieldOptionIdentity,
   reconcileFieldValueWithNewOptions,
+  type ReconcileFieldOption,
 } from './reconcileFieldValueWithNewOptions';
 
 const regionOptions: DropdownType[] = [
@@ -10,16 +10,15 @@ const regionOptions: DropdownType[] = [
   { label: 'West', value: 'us-west-2' },
 ];
 
+const numericOptions: ReconcileFieldOption[] = [
+  { label: 'Two', value: 2 },
+  { label: 'Three', value: 3 },
+];
+
 const optionsWithPatternFlyExtras: DropdownType[] = [
   { label: 'East', value: 'us-east-1', description: 'US East' },
   { label: 'West', value: 'us-west-2', disabled: true },
 ];
-
-describe('getFieldOptionIdentity', () => {
-  it('returns the option value', () => {
-    expect(getFieldOptionIdentity({ value: 'x' })).toBe('x');
-  });
-});
 
 describe('reconcileFieldValueWithNewOptions', () => {
   it('returns current value when value matches an option', () => {
@@ -30,6 +29,27 @@ describe('reconcileFieldValueWithNewOptions', () => {
         defaultValue: '',
       })
     ).toBe('us-west-2');
+  });
+
+  it('returns current value when value matches a numeric option', () => {
+    expect(
+      reconcileFieldValueWithNewOptions({
+        currentValue: '2',
+        newOptions: numericOptions,
+        defaultValue: '',
+      })
+    ).toBe('2');
+  });
+
+  it('accepts DropdownType rows without extra mapping', () => {
+    const fromApi: DropdownType[] = [{ label: 'East', value: 'us-east-1' }];
+    expect(
+      reconcileFieldValueWithNewOptions({
+        currentValue: 'us-east-1',
+        newOptions: fromApi,
+        defaultValue: '',
+      })
+    ).toBe('us-east-1');
   });
 
   it('returns current value when option includes optional PatternFly fields', () => {
