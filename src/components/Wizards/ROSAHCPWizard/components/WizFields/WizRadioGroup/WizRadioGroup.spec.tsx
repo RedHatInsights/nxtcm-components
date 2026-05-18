@@ -5,6 +5,7 @@ import {
   WizRadioGroupExplicitControlOnlyHarness,
   WizRadioGroupExplicitHarness,
   WizRadioGroupExplicitPropsOverrideMetaHarness,
+  WizRadioGroupHideLabelHarness,
   WizRadioGroupNestedFallbackHarness,
   WizRadioGroupNumericMetaLabelHarness,
   WizRadioGroupSubmitValidationHarness,
@@ -14,6 +15,7 @@ import {
   WIZ_RADIO_GROUP_CONTROL_ONLY_STATUS,
   WIZ_RADIO_GROUP_EXPLICIT_HELPER,
   WIZ_RADIO_GROUP_EXPLICIT_LABEL,
+  WIZ_RADIO_GROUP_HIDE_LABEL_YUP_LABEL,
   WIZ_RADIO_GROUP_META_HELPER_LOSS,
   WIZ_RADIO_GROUP_META_LABEL_LOSS,
   WIZ_RADIO_GROUP_NESTED_STATUS_LABEL,
@@ -115,6 +117,16 @@ test.describe('WizRadioGroup', () => {
   test('coerces Yup numeric meta labels into string group captions', async ({ mount }) => {
     const mounted = await mount(<WizRadioGroupNumericMetaLabelHarness />);
     await expect(mounted.getByText(String(909), { exact: true })).toBeVisible();
+  });
+
+  test('omits the group label when hideLabel is set even if Yup meta defines one', async ({
+    mount,
+  }) => {
+    const mounted = await mount(<WizRadioGroupHideLabelHarness />);
+    await expect(
+      mounted.getByText(WIZ_RADIO_GROUP_HIDE_LABEL_YUP_LABEL, { exact: true })
+    ).toHaveCount(0);
+    await expect(mounted.getByRole('radio', { name: /hidden label option a/i })).toBeVisible();
   });
 
   test('binds through the control prop without a FormProvider wrapper', async ({ mount }) => {

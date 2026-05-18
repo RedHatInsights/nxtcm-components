@@ -43,7 +43,7 @@ export const ClusterUpdates = () => {
       <WizRadioGroup<ROSAHCPCluster>
         name="upgrade_policy"
         schema={clusterValidationSchema}
-        label=""
+        hideLabel
       >
         <Radio
           id="cluster-upgrade-strategy-individual-radio-btn"
