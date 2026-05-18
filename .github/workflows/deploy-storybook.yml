@@ -16,11 +16,11 @@ jobs:
 
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: 'package.json'
           cache: 'npm'
 
-      - name: Enable Corepack for npm
-        run: corepack enable npm
+      - name: Upgrade npm
+        run: npm install -g npm@^11.10.0
 
       # install main dependencies and subpackage dependencies
       - name: Install dependencies

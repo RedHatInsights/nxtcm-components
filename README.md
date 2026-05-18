@@ -25,7 +25,7 @@ The documentation site is automatically updated when changes are merged to the m
 
 ## Prerequisites
 
-- Node.js (version 24 recommended - see `.nvmrc`)
+- Node.js 24+ (see `engines.node` in `package.json`)
 - npm (comes with Node.js)
 
 ## Quick Start
@@ -301,7 +301,6 @@ The repository includes the following configuration files:
 | `.prettierrc` | Prettier code formatting rules |
 | `.prettierignore` | Files to exclude from Prettier formatting |
 | `.npmignore` | Files to exclude from npm package |
-| `.nvmrc` | Node.js version specification (v24) |
 | `.husky/pre-commit` | Pre-commit Git hook (runs lint-staged) |
 | `package.json` → `lint-staged` | Configuration for running linters on staged files |
 | `tsconfig.json` | TypeScript compiler configuration |

@@ -90,7 +90,7 @@ configured in: tsconfig.json, vite config, playwright-ct.config.ts, storybook ma
 | lint | ESLint 8 | typescript-eslint |
 | format | Prettier | 3 |
 | git hooks | Husky + lint-staged | — |
-| node | 24 | (via .nvmrc) |
+| node | 24+ | (via `package.json` `engines.node`) |
 
 ---
 
@@ -261,7 +261,7 @@ non-obvious rules worth knowing upfront:
 | Playwright CT config | `playwright-ct.config.ts` |
 | Playwright E2E config | `playwright.config.ts` |
 | Jest config | `jest.config.js` |
-| Node version | `.nvmrc` |
+| Node version | `package.json` → `engines.node` |
 
 ---
 
