@@ -4,7 +4,7 @@ import { checkAccessibility } from '../../../../../../test-helpers';
 import type { Resource } from '../../../types';
 import type { Role } from '../../../../types';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import rosaWizardFixtures from '../../../../RosaWizard/RosaWizard.fixtures';
+import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
 import { makeVpcListResource } from '../../../rosaHcpWizardCtSpecHelpers';
 import { DetailsMount } from './Details.spec-helpers';
 import {
@@ -387,10 +387,11 @@ test.describe('Details (ROSA HCP)', () => {
     });
 
     test('should refetch VPCs when region changes from Details', async ({ mount, page }) => {
-      const vpcFetchCalls: number[] = [];
+      let vpcFetchCount = 0;
       const vpcList = makeVpcListResource({
+        // eslint-disable-next-line @typescript-eslint/require-await
         fetch: async () => {
-          vpcFetchCalls.push(Date.now());
+          vpcFetchCount += 1;
         },
       });
 
@@ -399,13 +400,17 @@ test.describe('Details (ROSA HCP)', () => {
           vpcList={vpcList}
           defaultValues={{
             region: 'us-east-1',
-            selected_vpc: rosaWizardFixtures.mockVPCs[0].id,
+            selected_vpc: rosaHcpWizardFixtures.mockVPCs[0].id,
           }}
         />
       );
 
-      await expect.poll(() => vpcFetchCalls.length >= 1).toBe(true);
-      const callsAfterMount = vpcFetchCalls.length;
+      await expect.poll(() => vpcFetchCount >= 1).toBe(true);
+      const callsAfterMount = vpcFetchCount;
+
+      await expect(component.getByTestId('ct-selected-vpc')).toHaveText(
+        rosaHcpWizardFixtures.mockVPCs[0].id
+      );
 
       await component
         .locator('#region-form-group')
@@ -419,7 +424,8 @@ test.describe('Details (ROSA HCP)', () => {
         .fill('Oregon');
       await page.getByRole('option', { name: 'US West (Oregon)', exact: true }).click();
 
-      await expect.poll(() => vpcFetchCalls.length > callsAfterMount).toBe(true);
+      await expect.poll(() => vpcFetchCount > callsAfterMount).toBe(true);
+      await expect(component.getByTestId('ct-selected-vpc')).toHaveText('');
     });
   });
 

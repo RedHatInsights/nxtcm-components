@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Content, ContentVariants, Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
 import { useFormContext, useWatch } from 'react-hook-form';
 
@@ -10,20 +10,16 @@ import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../links';
 import { WizCheckbox, WizNumberInput, WizSelect } from '../../../components/WizFields';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
-import {
-  clusterValidationSchema,
-  minReplicasSchema,
-  maxReplicasSchema,
-  nodesComputeSchema,
-} from '../../../yupSchemas';
-import { getAutoscalingMaxNodes } from '../../../../RosaWizard/Steps/BasicSetupStep/MachinePoolsSubstep/Autoscaling/AutoscalingField';
+import { clusterValidationSchema } from '../../../yupSchemas';
+import { getAutoscalingMaxNodes } from '../../../getAutoscalingMaxNodes';
 import { MachinePoolsAdvancedSection } from './MachinePoolsAdvancedSection';
 import { MachinePoolsAutoscalingReplicas } from './MachinePoolsAutoscalingReplicas';
 import { SecurityGroupsSection } from './SecurityGroupSection/SecurityGroupSection';
-
-const defaultMinReplicas = minReplicasSchema.getDefault() as number;
-const defaultMaxReplicas = maxReplicasSchema.getDefault() as number;
-const defaultNodesCompute = nodesComputeSchema.getDefault() as number;
+import {
+  useAutoscalingFieldDefaults,
+  useEnsureMachinePoolSubnetRow,
+  useResetOnVpcChange,
+} from './useMachinePoolsFormEffects';
 
 type MachinePoolsProps = Pick<ROSAHCPWizardData, 'vpcList' | 'machineTypes'>;
 
@@ -32,13 +28,12 @@ export const MachinePools = (props: MachinePoolsProps) => {
   const mp = useRosaHcpWizardStrings().machinePools;
   const a = useRosaHcpWizardStrings().autoscaling;
 
-  const { control, setValue } = useFormContext<Partial<ClusterFormData>>();
+  const { control } = useFormContext<Partial<ClusterFormData>>();
 
   const region = useWatch({ control, name: 'region' });
   const clusterVersion = useWatch({ control, name: 'cluster_version' }) ?? '';
   const selectedVpcRaw = useWatch({ control, name: 'selected_vpc' });
   const autoscaling = useWatch({ control, name: 'autoscaling' });
-  const machinePoolsSubnets = useWatch({ control, name: 'machine_pools_subnets' });
 
   const maxRootDiskSize = getWorkerNodeVolumeSizeMaxGiB(clusterVersion);
   const wrongVersionForIMDS = !canSelectImds(clusterVersion);
@@ -55,55 +50,15 @@ export const MachinePools = (props: MachinePoolsProps) => {
 
   const vpcId = typeof selectedVpcRaw === 'string' ? selectedVpcRaw : selectedVpcRaw?.id;
 
-  const prevVpcIdRef = useRef<string | undefined>(undefined);
-  useEffect(() => {
-    if (vpcId === undefined) {
-      prevVpcIdRef.current = undefined;
-      return;
-    }
-    if (prevVpcIdRef.current !== undefined && prevVpcIdRef.current !== vpcId) {
-      setValue('machine_pools_subnets', [{ machine_pool_subnet: '' }]);
-      setValue('security_groups_worker', [], {
-        shouldDirty: true,
-        shouldTouch: true,
-        shouldValidate: true,
-      });
-    }
-    prevVpcIdRef.current = vpcId;
-  }, [vpcId, setValue]);
-
-  useLayoutEffect(() => {
-    const arr = machinePoolsSubnets;
-    if (!arr?.length) {
-      setValue('machine_pools_subnets', [{ machine_pool_subnet: '' }]);
-    }
-  }, [machinePoolsSubnets, setValue]);
+  useResetOnVpcChange(vpcId);
+  useEnsureMachinePoolSubnetRow();
+  useAutoscalingFieldDefaults(autoscaling);
 
   useEffect(() => {
     if (region) {
       void machineTypes.fetch(region);
     }
   }, [region, machineTypes.fetch]);
-
-  const prevAutoscalingRef = useRef<boolean | undefined>(undefined);
-  useEffect(() => {
-    const prev = prevAutoscalingRef.current;
-    prevAutoscalingRef.current = autoscaling;
-    if (prev === undefined) {
-      return;
-    }
-    if (prev !== autoscaling) {
-      if (autoscaling) {
-        setValue('nodes_compute', undefined);
-        setValue('min_replicas', defaultMinReplicas);
-        setValue('max_replicas', defaultMaxReplicas);
-      } else {
-        setValue('min_replicas', undefined);
-        setValue('max_replicas', undefined);
-        setValue('nodes_compute', defaultNodesCompute);
-      }
-    }
-  }, [autoscaling, setValue]);
 
   const vpcOptions = vpcList.data.map((vpc: VPC) => ({
     label: vpc.name,

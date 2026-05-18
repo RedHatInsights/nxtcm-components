@@ -4,7 +4,7 @@
 import React, { useMemo } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Form } from '@patternfly/react-core';
-import { FormProvider, useForm, type Resolver } from 'react-hook-form';
+import { FormProvider, useForm, useWatch, type Resolver } from 'react-hook-form';
 
 import type { ClusterFormData } from '../../../../types';
 import { ClusterEncryptionKeys, ClusterNetwork, ClusterUpgrade } from '../../../../types';
@@ -66,6 +66,16 @@ export type DetailsMountProps = {
   vpcList?: VpcListResource;
   defaultValues?: Partial<ClusterFormData>;
   checkClusterNameUniqueness?: ValidationSchemaContext['checkClusterNameUniqueness'];
+};
+
+/** Hidden probe for Playwright CT assertions on cross-step form fields. */
+const DetailsFormValuesProbe: React.FC = () => {
+  const selectedVpc = useWatch({ name: 'selected_vpc' });
+  return (
+    <span data-testid="ct-selected-vpc" hidden aria-hidden>
+      {typeof selectedVpc === 'string' ? selectedVpc : (selectedVpc?.id ?? '')}
+    </span>
+  );
 };
 
 export const DetailsMount: React.FC<DetailsMountProps> = ({
@@ -144,6 +154,7 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
           roles={rolesProps}
           vpcList={vpcListProps}
         />
+        <DetailsFormValuesProbe />
       </Form>
     </FormProvider>
   );

@@ -321,7 +321,6 @@ export type RosaHcpWizardStrings = {
     addPoolButton: string;
     subnetPlaceholder: string;
     settingsSectionLabel: string;
-    // settingsIntro: string;
     instanceTypeLabel: string;
     instanceTypeHelpLead: string;
     instanceTypeLearnMore: string;

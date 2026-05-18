@@ -234,8 +234,6 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     addPoolButton: 'Add machine pool',
     subnetPlaceholder: 'Select private subnet',
     settingsSectionLabel: 'Machine pool settings',
-    // settingsIntro:
-    //   'The following settings apply to all machine pools created during cluster install. Additional machine pools can be created after cluster creation.',
     instanceTypeLabel: 'Compute node instance type',
     instanceTypeHelpLead:
       'Instance types are made from varying combinations of CPU, memory, storage, and networking capacity. Instance type availability depends on regional availability and your AWS account configuration.',

@@ -16,6 +16,7 @@ import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { FieldWrapper } from '../../../components/FieldWrapper';
 
 import type { ClusterFormData } from '../../../../types';
+import { resetMachinePoolVpcDependentFields } from '../../../resetMachinePoolVpcDependentFields';
 
 type DetailsStepProps = Pick<
   ROSAHCPWizardData,
@@ -73,21 +74,7 @@ export const Details = ({
     }
 
     if (prev !== undefined && prev !== region) {
-      setValue('selected_vpc', undefined, {
-        shouldDirty: true,
-        shouldTouch: false,
-        shouldValidate: false,
-      });
-      setValue('machine_pools_subnets', [{ machine_pool_subnet: '' }], {
-        shouldDirty: true,
-        shouldTouch: false,
-        shouldValidate: false,
-      });
-      setValue('security_groups_worker', [], {
-        shouldDirty: true,
-        shouldTouch: false,
-        shouldValidate: false,
-      });
+      resetMachinePoolVpcDependentFields(setValue);
     }
 
     prevRegionRef.current = region;

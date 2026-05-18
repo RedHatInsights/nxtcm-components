@@ -7,9 +7,8 @@ import { Form } from '@patternfly/react-core';
 import { FormProvider, useForm, type Resolver } from 'react-hook-form';
 
 import type { ClusterFormData } from '../../../../types';
-import rosaWizardFixtures from '../../../../RosaWizard/RosaWizard.fixtures';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
-import { makeVpcListResource } from '../../../rosaHcpWizardCtSpecHelpers';
+import { makeMachineTypesResource, makeVpcListResource } from '../../../rosaHcpWizardCtSpecHelpers';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import type { MachineTypesResource, VpcListResource } from '../../../types';
 import {
@@ -56,13 +55,7 @@ export const MachinePoolsMount: React.FC<MachinePoolsMountProps> = ({
   });
 
   const vpcListProps = makeVpcListResource(vpcList);
-
-  const machineTypesProps: MachineTypesResource = {
-    data: machineTypes?.data ?? rosaWizardFixtures.mockMachineTypes,
-    isFetching: machineTypes?.isFetching ?? false,
-    error: machineTypes?.error ?? null,
-    fetch: machineTypes?.fetch ?? (async (_region: string) => {}),
-  };
+  const machineTypesProps = makeMachineTypesResource(machineTypes);
 
   return withRosaCt(
     <FormProvider {...methods}>

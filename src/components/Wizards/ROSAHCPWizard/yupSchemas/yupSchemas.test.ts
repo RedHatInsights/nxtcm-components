@@ -44,7 +44,11 @@ jest.mock('ip-cidr', () => {
   };
 });
 
-import { clusterValidationSchema, wizardFieldMetaByPath } from './index';
+import {
+  clusterValidationSchema,
+  getClusterValidationSchemaDefaultValues,
+  wizardFieldMetaByPath,
+} from './index';
 import type { ValidationSchemaContext } from './types';
 import { defaultRosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
@@ -1358,6 +1362,18 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
     it('returns undefined for non-existent path', () => {
       const meta = wizardFieldMetaByPath('does_not_exist');
       expect(meta).toBeUndefined();
+    });
+  });
+
+  describe('getClusterValidationSchemaDefaultValues', () => {
+    it('omits min_replicas and max_replicas but keeps other schema defaults', () => {
+      const defaults = getClusterValidationSchemaDefaultValues();
+
+      expect(defaults).not.toHaveProperty('min_replicas');
+      expect(defaults).not.toHaveProperty('max_replicas');
+      expect(defaults.autoscaling).toBe(false);
+      expect(defaults.nodes_compute).toBe(2);
+      expect(defaults.compute_root_volume).toBe(300);
     });
   });
 });

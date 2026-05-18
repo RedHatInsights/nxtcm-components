@@ -1,19 +1,41 @@
-import { test, expect } from '@playwright/experimental-ct-react';
+import { test, expect, type MountResult } from '@playwright/experimental-ct-react';
+import type { Page } from '@playwright/test';
 
 import { checkAccessibility } from '../../../../../../test-helpers';
-import type { MachineTypesResource } from '../../../types';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import rosaWizardFixtures from '../../../../RosaWizard/RosaWizard.fixtures';
-import { makeVpcListResource } from '../../../rosaHcpWizardCtSpecHelpers';
+import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
+import { makeMachineTypesResource, makeVpcListResource } from '../../../rosaHcpWizardCtSpecHelpers';
+import { maxReplicasSchema, minReplicasSchema, nodesComputeSchema } from '../../../yupSchemas';
 import { MachinePoolsMount } from './MachinePools.spec-helpers';
 
 const mp = defaultRosaHcpWizardStrings.machinePools;
 const a = defaultRosaHcpWizardStrings.autoscaling;
 const sg = defaultRosaHcpWizardStrings.securityGroups;
 
+const [fixtureVpc1, fixtureVpc2] = rosaHcpWizardFixtures.mockVPCs;
+const fixtureVpc1PrivateSubnet = fixtureVpc1.aws_subnets.find((subnet) =>
+  subnet.name.includes('private')
+)!;
+const defaultMinReplicas = String(minReplicasSchema.getDefault());
+const defaultMaxReplicas = String(maxReplicasSchema.getDefault());
+const defaultNodesCompute = String(nodesComputeSchema.getDefault());
+
 /** Plain (non-typeahead) Select: toggle shows explicit {@link MachinePools} `placeholder` (not derived from label). */
 const ctRegion = 'us-east-1';
 const vpcSelectMenuName = `${mp.vpcPlaceholder} ${ctRegion}`;
+
+/**
+ * Opens the VPC select. Toggle shows {@link vpcSelectMenuName} when empty, or the selected VPC label when set.
+ */
+async function selectVpc(
+  component: MountResult,
+  page: Page,
+  vpcName: string,
+  toggleName: string = vpcSelectMenuName
+) {
+  await component.getByRole('button', { name: toggleName, exact: true }).click();
+  await page.getByRole('option', { name: vpcName, exact: true }).click();
+}
 
 test.describe('MachinePools (ROSA HCP)', () => {
   test('should pass accessibility tests', async ({ mount }) => {
@@ -47,34 +69,51 @@ test.describe('MachinePools (ROSA HCP)', () => {
   }) => {
     const component = await mount(<MachinePoolsMount />);
 
-    await component.getByRole('button', { name: vpcSelectMenuName, exact: true }).click();
-    await page.getByText('test-vpc-1', { exact: true }).click();
+    await selectVpc(component, page, fixtureVpc1.name);
 
     const subnetToggle = component.getByRole('button', { name: mp.subnetPlaceholder, exact: true });
     await expect(subnetToggle).toBeEnabled();
 
     await subnetToggle.click();
     await expect(
-      page.getByText('test-1-subnet-private1-us-east-1a', { exact: true })
+      page.getByRole('option', { name: fixtureVpc1PrivateSubnet.name, exact: true })
     ).toBeVisible();
   });
 
+  test('should reset subnet and security groups when VPC changes', async ({ mount, page }) => {
+    const component = await mount(
+      <MachinePoolsMount
+        defaultValues={{
+          selected_vpc: fixtureVpc1.id,
+          machine_pools_subnets: [{ machine_pool_subnet: fixtureVpc1PrivateSubnet.subnet_id }],
+          security_groups_worker: [rosaHcpWizardFixtures.mockSecurityGroups[0].id],
+        }}
+      />
+    );
+
+    await component.getByRole('button', { name: mp.securityGroupsToggle, exact: true }).click();
+    await expect(component.getByText('default', { exact: true })).toBeVisible();
+
+    await selectVpc(component, page, fixtureVpc2.name, fixtureVpc1.name);
+
+    const subnetToggle = component.getByRole('button', { name: mp.subnetPlaceholder, exact: true });
+    await expect(subnetToggle).toHaveText(mp.subnetPlaceholder);
+    await expect(component.getByText('default', { exact: true })).not.toBeVisible();
+  });
+
   test('should fetch machine types when region is present', async ({ mount }) => {
-    const regions: string[] = [];
-    const machineTypes: MachineTypesResource = {
-      data: rosaWizardFixtures.mockMachineTypes,
-      error: null,
-      isFetching: false,
+    const fetchedRegions: string[] = [];
+    const machineTypes = makeMachineTypesResource({
       fetch: (region: string) => {
-        regions.push(region);
+        fetchedRegions.push(region);
         return Promise.resolve();
       },
-    };
+    });
 
     await mount(<MachinePoolsMount machineTypes={machineTypes} />);
 
     await expect
-      .poll(() => regions.length > 0 && regions.every((r) => r === 'us-east-1'))
+      .poll(() => fetchedRegions.length > 0 && fetchedRegions.every((r) => r === 'us-east-1'))
       .toBe(true);
   });
 
@@ -103,6 +142,30 @@ test.describe('MachinePools (ROSA HCP)', () => {
     ).not.toBeVisible();
   });
 
+  test('should set replica defaults when autoscaling is enabled and restore compute count when disabled', async ({
+    mount,
+  }) => {
+    const component = await mount(<MachinePoolsMount />);
+
+    await component.getByRole('checkbox', { name: a.enableLabel, exact: true }).click();
+
+    await expect(component.getByRole('spinbutton', { name: a.minLabel, exact: true })).toHaveValue(
+      defaultMinReplicas
+    );
+    await expect(component.getByRole('spinbutton', { name: a.maxLabel, exact: true })).toHaveValue(
+      defaultMaxReplicas
+    );
+
+    await component.getByRole('checkbox', { name: a.enableLabel, exact: true }).click();
+
+    await expect(
+      component.getByRole('spinbutton', { name: a.computeCountLabel, exact: true })
+    ).toHaveValue(defaultNodesCompute);
+    await expect(
+      component.getByRole('spinbutton', { name: a.minLabel, exact: true })
+    ).not.toBeVisible();
+  });
+
   test('should show advanced machine pool controls inside expandable section', async ({
     mount,
   }) => {
@@ -122,7 +185,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
     mount,
   }) => {
     const component = await mount(
-      <MachinePoolsMount defaultValues={{ selected_vpc: rosaWizardFixtures.mockVPCs[0].id }} />
+      <MachinePoolsMount defaultValues={{ selected_vpc: fixtureVpc1.id }} />
     );
 
     await expect(
@@ -136,7 +199,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
     const component = await mount(
       <MachinePoolsMount
         defaultValues={{
-          selected_vpc: rosaWizardFixtures.mockVPCs[0].id,
+          selected_vpc: fixtureVpc1.id,
           cluster_version: '4.13.0',
         }}
       />

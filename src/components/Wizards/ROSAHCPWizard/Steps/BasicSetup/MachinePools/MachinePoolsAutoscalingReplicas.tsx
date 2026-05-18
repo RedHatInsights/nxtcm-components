@@ -9,6 +9,16 @@ import { clusterValidationSchema, minReplicasSchema } from '../../../yupSchemas'
 
 const minReplicasUiMin = minReplicasSchema.getDefault() as number;
 
+function AutoscalingReplicasLabelHelp({ helpText }: { helpText: string }) {
+  const a = useRosaHcpWizardStrings().autoscaling;
+  return (
+    <>
+      {helpText}
+      <ExternalLink href={links.ROSA_WORKER_NODE_COUNT}>{a.learnMoreNodeCount}</ExternalLink>
+    </>
+  );
+}
+
 export interface MachinePoolsAutoscalingReplicasProps {
   /** Upper bound for min/max replica inputs from the selected OpenShift version. */
   maxAutoscalingNodes: number;
@@ -26,14 +36,7 @@ export const MachinePoolsAutoscalingReplicas = (props: MachinePoolsAutoscalingRe
           schema={clusterValidationSchema}
           min={minReplicasUiMin}
           max={maxAutoscalingNodes}
-          labelHelp={
-            <>
-              {a.minHelp}
-              <ExternalLink href={links.ROSA_WORKER_NODE_COUNT}>
-                {a.learnMoreNodeCount}
-              </ExternalLink>
-            </>
-          }
+          labelHelp={<AutoscalingReplicasLabelHelp helpText={a.minHelp} />}
         />
       </FlexItem>
       <FlexItem>
@@ -42,14 +45,7 @@ export const MachinePoolsAutoscalingReplicas = (props: MachinePoolsAutoscalingRe
           schema={clusterValidationSchema}
           min={1}
           max={maxAutoscalingNodes}
-          labelHelp={
-            <>
-              {a.maxHelp}
-              <ExternalLink href={links.ROSA_WORKER_NODE_COUNT}>
-                {a.learnMoreNodeCount}
-              </ExternalLink>
-            </>
-          }
+          labelHelp={<AutoscalingReplicasLabelHelp helpText={a.maxHelp} />}
         />
       </FlexItem>
     </Flex>
