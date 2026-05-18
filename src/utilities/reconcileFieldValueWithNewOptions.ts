@@ -1,24 +1,18 @@
-export type FieldOptionLike =
-  | { value: string; label?: string | null | undefined }
-  | { key: string; label?: string | null | undefined };
+import type { DropdownType } from '../components/Wizards/ROSAHCPWizard/types';
 
-export function getFieldOptionIdentity(option: FieldOptionLike): string {
-  return 'value' in option ? option.value : option.key;
+export function getFieldOptionIdentity(option: Pick<DropdownType, 'value'>): string {
+  return option.value;
 }
 
-function optionLabel(option: FieldOptionLike): string | null | undefined {
-  return option.label;
-}
-
-export type ReconcileFieldValueWithNewOptionsParams<TOption extends FieldOptionLike> = {
+export type ReconcileFieldValueWithNewOptionsParams = {
   currentValue: string | undefined | null;
   currentLabel?: string | undefined | null;
-  newOptions: readonly TOption[];
+  newOptions: readonly DropdownType[];
   defaultValue?: string;
 };
 
-export function reconcileFieldValueWithNewOptions<TOption extends FieldOptionLike>(
-  params: ReconcileFieldValueWithNewOptionsParams<TOption>
+export function reconcileFieldValueWithNewOptions(
+  params: ReconcileFieldValueWithNewOptionsParams
 ): string {
   const { currentValue, currentLabel, newOptions, defaultValue = '' } = params;
   const value = currentValue ?? '';
@@ -34,7 +28,7 @@ export function reconcileFieldValueWithNewOptions<TOption extends FieldOptionLik
       return false;
     }
     if (labelProvided) {
-      return (optionLabel(opt) ?? '') === currentLabel;
+      return opt.label === currentLabel;
     }
     return true;
   });
