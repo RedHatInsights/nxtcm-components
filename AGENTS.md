@@ -261,7 +261,7 @@ non-obvious rules worth knowing upfront:
 | Playwright CT config | `playwright-ct.config.ts` |
 | Playwright E2E config | `playwright.config.ts` |
 | Jest config | `jest.config.js` |
-| Node version | `package.json` → `engines.node` |
+| Node version | via `package.json` `engines.node` |
 
 ---
 

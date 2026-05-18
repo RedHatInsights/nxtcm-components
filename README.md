@@ -26,7 +26,7 @@ The documentation site is automatically updated when changes are merged to the m
 ## Prerequisites
 
 - Node.js 24+ (see `engines.node` in `package.json`)
-- npm (comes with Node.js)
+- npm >= 11.10.0 (see `engines.npm` in `package.json`)
 
 ## Quick Start
 
