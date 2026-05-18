@@ -3,9 +3,9 @@ import { overlapCidr } from 'cidr-tools';
 import IPCIDR from 'ip-cidr';
 
 import { CIDR_REGEXP } from '../constants';
-import type { ClusterFormData } from '../../types';
 import type { RosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings';
 import type { ValidationSchemaContext } from './types';
+import { ROSAHCPCluster } from '../types';
 
 export const LOWERCASE_ALPHANUMERIC = 'abcdefghijklmnopqrstuvwxyz1234567890';
 
@@ -53,7 +53,7 @@ export function validateClusterNameSync(
 export function findOverlappingCidrFields(
   value: string,
   fieldName: string,
-  formData: Partial<ClusterFormData>,
+  formData: Partial<ROSAHCPCluster>,
   msgs: RosaHcpWizardValidatorStrings['disjointSubnets']
 ): string[] {
   const fieldLabels: Record<string, string> = {

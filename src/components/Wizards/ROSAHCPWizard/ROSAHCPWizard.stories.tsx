@@ -1,150 +1,70 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 import ROSAHCPWizard from './ROSAHCPWizard';
-import type { OpenShiftVersionsData, ROSAHCPWizardData } from './types';
-import { STORY_API_ERROR_MESSAGE } from '../RosaWizard/RosaWizard.fixtures';
 import {
-  mockAwsBillingAccounts,
-  mockAwsInfrastructureAccounts,
-  mockOpenShiftVersionsData,
-  mockRegions,
-  mockRoles,
-} from './Steps/BasicSetup/Details/Details.fixtures';
+  createMockRosaHcpWizardData,
+  rosaHcpWizardDetailsFieldsAllApiErrorsData,
+} from './ROSAHCPWizard.stories.helpers';
+import { MachineTypesDropdownType, Region, Role, ROSAHCPWizardData } from './types';
+import fixtures from './ROSAHCPWizard.fixtures';
+import { defaultRosaWizardStrings } from '../RosaWizard/rosaWizardStrings.defaults';
 
-const emptyVersionsOnApiFailure: OpenShiftVersionsData = { releases: [] };
+const onWizardSubmit = async (data: unknown) => {
+  console.log('Wizard submitted with data:', data);
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+};
+const onWizardCancel = () => {
+  console.log('Wizard was cancelled');
+  alert('Wizard cancelled');
+};
 
-const rosaHcpWizardStoryData: ROSAHCPWizardData = {
-  awsInfrastructureAccounts: {
-    data: mockAwsInfrastructureAccounts,
-    error: null,
-    isFetching: false,
-    fetch: async () => {},
-  },
-  awsBillingAccounts: {
-    data: mockAwsBillingAccounts,
-    error: null,
-    isFetching: false,
-    fetch: async () => {},
-  },
+const mockWizardData: ROSAHCPWizardData = {
+  awsInfrastructureAccounts: fixtures.mockResource(fixtures.mockAwsInfrastructureAccounts),
+  awsBillingAccounts: fixtures.mockResource(fixtures.mockAwsBillingAccounts),
   regions: {
-    data: mockRegions,
-    error: null,
-    isFetching: false,
+    ...fixtures.mockFetchResource<Region[], [awsAccount: string]>(fixtures.mockRegions),
     fetch: async () => {},
   },
   versions: {
-    data: mockOpenShiftVersionsData,
-    error: null,
-    isFetching: false,
+    ...fixtures.mockFetchResource(fixtures.mockVersionsData),
     fetch: async () => {},
   },
   machineTypes: {
-    data: [],
-    error: null,
-    isFetching: false,
+    ...fixtures.mockFetchResource<MachineTypesDropdownType[], [region: string]>(
+      fixtures.mockMachineTypes
+    ),
     fetch: async () => {},
   },
   roles: {
-    data: mockRoles,
-    error: null,
-    isFetching: false,
+    ...fixtures.mockFetchResource<Role[], [awsAccount: string]>(fixtures.mockRoles),
     fetch: async () => {},
   },
-  oidcConfig: {
-    data: [],
-    error: null,
-    isFetching: false,
-  },
-  vpcList: {
-    data: [],
-    error: null,
-    isFetching: false,
-  },
-  subnets: {
-    data: [],
-    error: null,
-    isFetching: false,
-  },
-  securityGroups: {
-    data: [],
-    error: null,
-    isFetching: false,
-  },
-  clusterNameValidation: {
-    error: null,
-    isFetching: false,
-  },
+  oidcConfig: fixtures.mockResource(fixtures.mockOicdConfig),
+  vpcList: fixtures.mockResource(fixtures.mockVPCs),
+  subnets: fixtures.mockResource([]),
+  securityGroups: fixtures.mockResource([]),
+  clusterNameValidation: fixtures.mockValidationResource(),
 };
 
-/** Details step: AWS account, billing account, region, and OpenShift version all failed — errors shown, no options. */
-const rosaHcpWizardDetailsFieldsAllApiErrorsData: ROSAHCPWizardData = {
-  ...rosaHcpWizardStoryData,
-  awsInfrastructureAccounts: {
-    data: [],
-    error: STORY_API_ERROR_MESSAGE,
-    isFetching: false,
-    fetch: async () => {},
-  },
-  awsBillingAccounts: {
-    data: [],
-    error: STORY_API_ERROR_MESSAGE,
-    isFetching: false,
-    fetch: async () => {},
-  },
-  regions: {
-    data: [],
-    error: STORY_API_ERROR_MESSAGE,
-    isFetching: false,
-    fetch: async () => {},
-  },
-  versions: {
-    data: emptyVersionsOnApiFailure,
-    error: STORY_API_ERROR_MESSAGE,
-    isFetching: false,
-    fetch: async () => {},
-  },
-};
-
-/** Default story: AWS account, billing account, region, and OpenShift version start loading, then resolve after 1 second. */
-function DefaultWithInitialResourceLoading(props: React.ComponentProps<typeof ROSAHCPWizard>) {
-  const [versionsFetching, setVersionsFetching] = React.useState(true);
-  const [awsInfraFetching, setAwsInfraFetching] = React.useState(true);
-  const [awsBillingFetching, setAwsBillingFetching] = React.useState(true);
-  const [regionsFetching, setRegionsFetching] = React.useState(true);
-
+function DefaultWithInitialLoading(props: React.ComponentProps<typeof ROSAHCPWizard>) {
+  const [isFetching, setIsFetching] = React.useState(true);
   React.useEffect(() => {
-    const t = setTimeout(() => {
-      setVersionsFetching(false);
-      setAwsInfraFetching(false);
-      setAwsBillingFetching(false);
-      setRegionsFetching(false);
-    }, 1500);
+    const t = setTimeout(() => setIsFetching(false), 3000);
     return () => clearTimeout(t);
   }, []);
-
-  const wizardData = React.useMemo(
+  const wizardData = React.useMemo<ROSAHCPWizardData>(
     () => ({
       ...props.wizardData,
-      awsInfrastructureAccounts: {
-        ...props.wizardData.awsInfrastructureAccounts,
-        isFetching: awsInfraFetching,
-      },
-      awsBillingAccounts: {
-        ...props.wizardData.awsBillingAccounts,
-        isFetching: awsBillingFetching,
-      },
-      regions: {
-        ...props.wizardData.regions,
-        isFetching: regionsFetching,
-      },
-      versions: {
-        ...props.wizardData.versions,
-        isFetching: versionsFetching,
-      },
+      versions: { ...props.wizardData.versions, isFetching },
+      awsInfrastructureAccounts: { ...props.wizardData.awsInfrastructureAccounts, isFetching },
+      awsBillingAccounts: { ...props.wizardData.awsBillingAccounts, isFetching },
+      regions: { ...props.wizardData.regions, isFetching },
+      oidcConfig: { ...props.wizardData.oidcConfig, isFetching },
+      vpcList: { ...props.wizardData.vpcList, isFetching },
+      machineTypes: { ...props.wizardData.machineTypes, isFetching },
     }),
-    [props.wizardData, versionsFetching, awsBillingFetching, awsInfraFetching, regionsFetching]
+    [props.wizardData, isFetching]
   );
-
   return <ROSAHCPWizard {...props} wizardData={wizardData} />;
 }
 
@@ -196,11 +116,11 @@ type Story = StoryObj<typeof ROSAHCPWizard>;
  * then finish loading after 1 second.
  */
 export const Default: Story = {
-  render: (args) => <DefaultWithInitialResourceLoading {...args} />,
+  render: (args) => <DefaultWithInitialLoading {...args} />,
   args: {
     title: 'Create ROSA Cluster',
     yaml: true,
-    wizardData: rosaHcpWizardStoryData,
+    wizardData: createMockRosaHcpWizardData(),
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       //await sleep(2000);
@@ -210,33 +130,30 @@ export const Default: Story = {
       console.log('Wizard cancelled');
       alert('Wizard cancelled');
     },
+    strings: defaultRosaWizardStrings,
   },
 };
 
-/**
- * Details step only: the AWS infrastructure account, billing account, region, and OpenShift version
- * API calls all fail with no dropdown options (empty lists), so `FieldWithAPIErrorAlert` can be reviewed.
- * Other wizard resources match the default story fixtures.
- */
-export const DetailsFieldsAllApiErrors: Story = {
-  render: (args) => <ROSAHCPWizard {...args} />,
+/** Wizard with initially loading state for fetched data */
+export const WizardWithLoadingState: Story = {
+  render: (args) => <DefaultWithInitialLoading {...args} />,
   args: {
-    title: 'Create ROSA Cluster — API errors',
+    title: 'Create ROSA Cluster',
     yaml: true,
-    wizardData: rosaHcpWizardDetailsFieldsAllApiErrorsData,
-    onSubmit: async (data: unknown) => {
-      console.log('Wizard submitted with data:', data);
-    },
-    onCancel: () => {
-      console.log('Wizard cancelled');
-    },
+    strings: defaultRosaWizardStrings,
+    wizardData: mockWizardData,
+    onSubmit: onWizardSubmit,
+    onCancel: onWizardCancel,
   },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Simulates failed fetches for the four Details dropdowns only. Each field shows the API error alert and has no selectable options.',
-      },
-    },
+};
+
+export const AllApiErrors: Story = {
+  args: {
+    title: 'Create ROSA HCP Cluster — all API errors',
+    yaml: true,
+    strings: defaultRosaWizardStrings,
+    onSubmit: onWizardSubmit,
+    onCancel: onWizardCancel,
+    wizardData: rosaHcpWizardDetailsFieldsAllApiErrorsData,
   },
 };

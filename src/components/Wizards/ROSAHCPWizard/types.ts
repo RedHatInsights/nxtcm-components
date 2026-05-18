@@ -196,18 +196,18 @@ export type WizardNavigationContext = ReturnType<typeof useWizardContext>;
 
 export type ROSAHCPCluster = {
   // details
-  name: string | undefined;
-  cluster_version: string | undefined;
-  associated_aws_id: string;
-  billing_account_id: string | undefined;
-  region: string | undefined;
+  name?: string | undefined;
+  cluster_version?: string | undefined;
+  associated_aws_id?: string;
+  billing_account_id?: string | undefined;
+  region?: string | undefined;
 
   // roles & policies
-  installer_role_arn: string | undefined;
-  support_role_arn: string | undefined;
-  worker_role_arn: string | undefined;
-  byo_oidc_config_id: string;
-  custom_operator_roles_prefix: string;
+  installer_role_arn?: string | undefined;
+  support_role_arn?: string | undefined;
+  worker_role_arn?: string | undefined;
+  byo_oidc_config_id?: string;
+  custom_operator_roles_prefix?: string;
 
   // machine pools
   selected_vpc?: string | VPC;

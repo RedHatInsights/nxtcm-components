@@ -1,5 +1,5 @@
-import { CIDRSubnet, ClusterFormData, MachinePoolSubnetEntry, Subnet, VPC } from '../types';
 import { MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH } from './constants';
+import { CIDRSubnet, MachinePoolSubnetEntry, ROSAHCPCluster, Subnet, VPC } from './types';
 
 const OPERATOR_ROLES_HASH_LENGTH = 4;
 
@@ -50,7 +50,7 @@ const parseCIDRSubnetLength = (value?: string): number | undefined => {
   return parseInt(value.split('/').pop() ?? '', 10);
 };
 
-const constructSelectedSubnets = (formValues?: ClusterFormData): CIDRSubnet[] => {
+const constructSelectedSubnets = (formValues?: ROSAHCPCluster): CIDRSubnet[] => {
   if (!formValues?.selected_vpc) {
     return [];
   }

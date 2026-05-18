@@ -12,6 +12,8 @@ export const installerRoleArnSchema = yup
   .meta({
     id: 'installer_role_arn',
     labelKey: 'rolesAndPolicies.installerRoleLabel',
+    labelHelpKey: 'rolesAndPolicies.installerRoleHelp',
+    placeholderKey: 'rolesAndPolicies.installerRolePlaceholder',
     stepId: STEP_IDS.ROLES_AND_POLICIES,
     fieldType: 'select',
   } satisfies WizardFieldMeta);
@@ -24,6 +26,8 @@ export const supportRoleArnSchema = yup
   .meta({
     id: 'support_role_arn',
     labelKey: 'rolesAndPolicies.supportRoleLabel',
+    labelHelpKey: 'rolesAndPolicies.supportHelp',
+    placeholderKey: 'rolesAndPolicies.supportPlaceholder',
     stepId: STEP_IDS.ROLES_AND_POLICIES,
     fieldType: 'select',
   } satisfies WizardFieldMeta);
@@ -36,6 +40,8 @@ export const workerRoleArnSchema = yup
   .meta({
     id: 'worker_role_arn',
     labelKey: 'rolesAndPolicies.workerRoleLabel',
+    labelHelpKey: 'rolesAndPolicies.workerHelp',
+    placeholderKey: 'rolesAndPolicies.workerPlaceholder',
     stepId: STEP_IDS.ROLES_AND_POLICIES,
     fieldType: 'select',
   } satisfies WizardFieldMeta);
@@ -48,6 +54,9 @@ export const byoOidcConfigIdSchema = yup
   .meta({
     id: 'byo_oidc_config_id',
     labelKey: 'rolesAndPolicies.oidcLabel',
+    labelHelpKey: 'rolesAndPolicies.oidcHelp',
+    placeholderKey: 'rolesAndPolicies.oidcPlaceholder',
+    labelHelpTitleKey: 'rolesAndPolicies.oidcPopoverTitle',
     stepId: STEP_IDS.ROLES_AND_POLICIES,
     fieldType: 'select',
   } satisfies WizardFieldMeta);

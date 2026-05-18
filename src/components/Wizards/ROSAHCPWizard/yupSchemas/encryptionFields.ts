@@ -5,9 +5,10 @@ import {
   AWS_KMS_SERVICE_ACCOUNT_REGEX,
   STEP_IDS,
 } from '../constants';
-import { ClusterEncryptionKeys, type ClusterFormData } from '../../types';
+import { ClusterEncryptionKeys } from '../../types';
 import type { WizardFieldMeta } from './types';
 import { ctx } from './helpers';
+import { ROSAHCPCluster } from '../types';
 
 function validateKmsArn(
   this: yup.TestContext,
@@ -25,7 +26,7 @@ function validateKmsArn(
   ) {
     return this.createError({ message: msgs.kmsKeyArn.invalidArn });
   }
-  const region = (this.parent as Partial<ClusterFormData>).region;
+  const region = (this.parent as Partial<ROSAHCPCluster>).region;
   const kmsRegion = value.split('kms:')?.pop()?.split(':')[0];
   if (kmsRegion !== region) {
     return this.createError({ message: msgs.kmsKeyArn.wrongRegion });
