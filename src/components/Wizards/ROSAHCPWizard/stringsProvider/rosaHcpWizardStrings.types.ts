@@ -430,6 +430,9 @@ export type RosaHcpWizardStrings = {
     recurringDescriptionAfterZStream: string;
     dayTimeLabel: string;
     selectDayPlaceholder: string;
+    selectTimePlaceholder: string;
+    upgradePolicyLabel: string;
+    upgradeScheduleLabel: string;
     daysOfWeek: [string, string, string, string, string, string, string];
   };
   review: {

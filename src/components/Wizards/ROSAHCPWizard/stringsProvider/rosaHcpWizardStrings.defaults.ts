@@ -351,6 +351,9 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
       " are available. When a new minor version is available, you'll be notified and must manually allow the cluster to update the next minor version. The compute nodes will need to be manually updated.",
     dayTimeLabel: 'Select a day and start time',
     selectDayPlaceholder: 'Select day',
+    selectTimePlaceholder: 'Select time',
+    upgradePolicyLabel: 'Cluster update strategy',
+    upgradeScheduleLabel: 'Preferred day and start time',
     daysOfWeek: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
   },
   review: {

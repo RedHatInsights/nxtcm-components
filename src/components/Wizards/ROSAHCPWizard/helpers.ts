@@ -211,6 +211,41 @@ const parseUpdateSchedule = (cronString: string): [string, string] => {
   return [hour, day];
 };
 
+const formatUpgradeScheduleForReview = (
+  cronString: string,
+  daysOfWeek: readonly string[]
+): string => {
+  const [hour, day] = parseUpdateSchedule(cronString);
+  if (hour === '' && day === '') {
+    return '';
+  }
+
+  const dayIndex = Number(day);
+  const dayName =
+    day !== '' && !Number.isNaN(dayIndex) && daysOfWeek[dayIndex] ? daysOfWeek[dayIndex] : '';
+  const hourNum = Number(hour);
+  const hourLabel =
+    hour !== '' && !Number.isNaN(hourNum) ? `${hourNum.toString().padStart(2, '0')}:00 UTC` : '';
+
+  if (dayName && hourLabel) {
+    return `${dayName}, ${hourLabel}`;
+  }
+  return dayName || hourLabel || cronString;
+};
+
+const formatUpgradePolicyForReview = (
+  policy: string,
+  labels: { individualLabel: string; recurringLabel: string }
+): string => {
+  if (policy === 'manual') {
+    return labels.individualLabel;
+  }
+  if (policy === 'automatic') {
+    return labels.recurringLabel;
+  }
+  return policy;
+};
+
 export {
   createOperatorRolesPrefix,
   stringToArray,
@@ -224,4 +259,6 @@ export {
   getWorkerNodeVolumeSizeMaxGiB,
   showSecurityGroupsSection,
   parseUpdateSchedule,
+  formatUpgradeScheduleForReview,
+  formatUpgradePolicyForReview,
 };
