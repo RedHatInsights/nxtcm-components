@@ -81,17 +81,19 @@ const EditSecurityGroups = ({
   );
 
   React.useEffect(() => {
-    if (vpcSecurityGroupsSorted.length > 0) {
-      const newGroupIds = vpcSecurityGroupsSorted.map((g) => g.id || '');
-      const newSelectedGroupIds = selectedGroupIds.filter((gId) => newGroupIds.includes(gId));
+    const newGroupIds = vpcSecurityGroupsSorted.map((g) => g.id || '');
+    const newSelectedGroupIds = selectedGroupIds.filter((gId) => newGroupIds.includes(gId));
 
-      if (newSelectedGroupIds.length !== selectedGroupIds.length) {
-        setValue('security_groups_worker', newSelectedGroupIds, {
-          shouldDirty: true,
-          shouldTouch: true,
-          shouldValidate: true,
-        });
-      }
+    const selectionChanged =
+      newSelectedGroupIds.length !== selectedGroupIds.length ||
+      newSelectedGroupIds.some((id, index) => id !== selectedGroupIds[index]);
+
+    if (selectionChanged) {
+      setValue('security_groups_worker', newSelectedGroupIds, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
     }
   }, [vpcSecurityGroupsSorted, selectedGroupIds, setValue]);
 

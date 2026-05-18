@@ -24,7 +24,13 @@ export function shouldHideReviewRow({
   }
   if (path === 'security_groups_worker') {
     const groups = formValues.security_groups_worker;
-    if (!groups || !Array.isArray(groups) || groups.length === 0) {
+    if (!groups || !Array.isArray(groups)) {
+      return true;
+    }
+    const validGroupIds = groups
+      .map((id) => (typeof id === 'string' ? id.trim() : ''))
+      .filter((id) => id !== '');
+    if (validGroupIds.length === 0) {
       return true;
     }
   }

@@ -3,7 +3,7 @@ import type { OpenShiftVersionsData, ROSAHCPWizardData, Subnet } from './types';
 
 /** Private subnets from the first HCP wizard fixture VPC (names include `private`, matching `subnetsFilter`). */
 export function getMockStoryPrivateSubnets(): Subnet[] {
-  return fixtures.mockVPCs[0].aws_subnets
+  return (fixtures.mockVPCs?.[0]?.aws_subnets ?? [])
     .filter((s) => s.name.includes('private'))
     .map(({ subnet_id, name, availability_zone }) => ({
       subnet_id,

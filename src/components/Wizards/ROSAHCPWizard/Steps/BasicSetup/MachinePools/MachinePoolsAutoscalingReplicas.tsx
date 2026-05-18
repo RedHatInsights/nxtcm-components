@@ -13,7 +13,7 @@ function AutoscalingReplicasLabelHelp({ helpText }: { helpText: string }) {
   const a = useRosaHcpWizardStrings().autoscaling;
   return (
     <>
-      {helpText}
+      {helpText}{' '}
       <ExternalLink href={links.ROSA_WORKER_NODE_COUNT}>{a.learnMoreNodeCount}</ExternalLink>
     </>
   );

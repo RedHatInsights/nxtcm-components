@@ -94,7 +94,7 @@ describe('shouldHideReviewRow', () => {
     ).toBe(true);
   });
 
-  it('hides security_groups_worker when missing or empty', () => {
+  it('hides security_groups_worker when missing, empty, or blank ids only', () => {
     expect(
       shouldHideReviewRow({
         path: 'security_groups_worker',
@@ -106,6 +106,20 @@ describe('shouldHideReviewRow', () => {
       shouldHideReviewRow({
         path: 'security_groups_worker',
         formValues: { ...baseFormValues, security_groups_worker: undefined },
+        metaShouldHideInReview: false,
+      })
+    ).toBe(true);
+    expect(
+      shouldHideReviewRow({
+        path: 'security_groups_worker',
+        formValues: { ...baseFormValues, security_groups_worker: [''] },
+        metaShouldHideInReview: false,
+      })
+    ).toBe(true);
+    expect(
+      shouldHideReviewRow({
+        path: 'security_groups_worker',
+        formValues: { ...baseFormValues, security_groups_worker: ['  '] },
         metaShouldHideInReview: false,
       })
     ).toBe(true);
