@@ -30,7 +30,7 @@ export type ResourceUtilizationProps = {
   title?: string;
   /** callback when "View more" is clicked; omit to hide the link */
   onViewMore?: () => void;
-  /** renders skeleton placeholders when true or when data is undefined */
+  /** renders skeleton placeholders when true */
   isLoading?: boolean;
 };
 

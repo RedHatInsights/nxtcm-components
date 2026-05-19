@@ -22,7 +22,7 @@ export type AdvisorSeverityProps = {
   onViewMore?: () => void;
   /** show the "Powered by Red Hat Lightspeed" badge; defaults to true */
   showLightspeedBadge?: boolean;
-  /** renders skeleton placeholders when true or when severity is undefined */
+  /** renders skeleton placeholders when true */
   isLoading?: boolean;
 };
 

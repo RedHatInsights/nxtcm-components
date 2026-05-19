@@ -32,7 +32,7 @@ export type ExpiredTrialsProps = {
   onPageSizeChange?: (size: number) => void;
   /** builds the kebab actions per row; if omitted the kebab column is hidden */
   rowActions?: (trial: ExpiredTrial) => IAction[];
-  /** renders skeleton placeholders when true or when data is undefined */
+  /** renders skeleton placeholders when true */
   isLoading?: boolean;
 };
 

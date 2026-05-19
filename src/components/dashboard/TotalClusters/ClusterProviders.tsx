@@ -15,7 +15,7 @@ export type ClusterProvidersProps = {
   providers?: ProviderBreakdown[];
   /** card title — defaults to "Clusters by provider" */
   title?: string;
-  /** renders skeleton placeholders when true or when providers is undefined */
+  /** renders skeleton placeholders when true */
   isLoading?: boolean;
 };
 

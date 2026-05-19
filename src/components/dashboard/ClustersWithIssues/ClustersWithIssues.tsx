@@ -50,7 +50,7 @@ export type ClustersWithIssuesProps = {
   titleTooltip?: string;
   /** rows per page — defaults to 5 */
   perPage?: number;
-  /** renders skeleton placeholders when true or when data is undefined */
+  /** renders skeleton placeholders when true */
   isLoading?: boolean;
 };
 

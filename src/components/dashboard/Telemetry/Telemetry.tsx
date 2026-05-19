@@ -14,7 +14,7 @@ export type TelemetryData = {
 export type TelemetryProps = {
   /** telemetry status counts */
   data?: TelemetryData;
-  /** renders skeleton placeholders when true or when data is undefined */
+  /** renders skeleton placeholders when true */
   isLoading?: boolean;
 };
 

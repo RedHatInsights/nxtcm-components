@@ -15,7 +15,7 @@ export type AdvisorCategoriesProps = {
   categories?: CategoryCounts;
   /** card title — defaults to "Advisor recommendations by category" */
   title?: string;
-  /** renders skeleton placeholders when true or when categories is undefined */
+  /** renders skeleton placeholders when true */
   isLoading?: boolean;
 };
 

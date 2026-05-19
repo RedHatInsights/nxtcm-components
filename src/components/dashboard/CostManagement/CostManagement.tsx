@@ -33,7 +33,7 @@ export interface CostManagementProps {
   onClusterClick?: (cluster: ClusterCost) => void;
   /** fired when "View more in Cost Management" is clicked */
   onViewMore?: () => void;
-  /** renders skeleton placeholders when true or when totalCost is undefined */
+  /** renders skeleton placeholders when true */
   isLoading?: boolean;
 }
 

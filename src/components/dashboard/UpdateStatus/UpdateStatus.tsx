@@ -17,7 +17,7 @@ export type UpdateStatusData = {
 export type UpdateStatusProps = {
   /** update status counts */
   data?: UpdateStatusData;
-  /** renders skeleton placeholders when true or when data is undefined */
+  /** renders skeleton placeholders when true */
   isLoading?: boolean;
 };
 

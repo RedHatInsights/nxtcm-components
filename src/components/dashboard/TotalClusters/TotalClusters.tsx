@@ -14,7 +14,7 @@ export type TotalClustersProps = {
   title?: string;
   /** callback when the cluster count is clicked (navigates to clusters page) */
   onViewMore?: () => void;
-  /** renders skeleton placeholders when true or when data is undefined */
+  /** renders skeleton placeholders when true */
   isLoading?: boolean;
 };
 
