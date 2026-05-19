@@ -22,12 +22,12 @@ export const UpgradeRisks = ({
   onViewRisks,
   isLoading,
 }: UpgradeRisksProps) => {
-  const showSkeleton = isLoading || totalRisks === undefined;
+  const showSkeleton = !!isLoading;
 
   if (showSkeleton) {
     return (
       <Flex direction={{ default: 'column' }} spaceItems={{ default: 'spaceItemsLg' }}>
-        <FlexItem data-testid="upgrade-risks-skeleton">
+        <FlexItem>
           <Flex direction={{ default: 'column' }} spaceItems={{ default: 'spaceItemsLg' }}>
             <Flex
               direction={{ default: 'column' }}
@@ -38,7 +38,7 @@ export const UpgradeRisks = ({
                 <Skeleton width="60px" height="38px" screenreaderText="Loading upgrade risks" />
               </FlexItem>
               <FlexItem>
-                <Skeleton width="120px" height="14px" />
+                <Skeleton width="120px" fontSize="sm" />
               </FlexItem>
             </Flex>
 
@@ -67,7 +67,7 @@ export const UpgradeRisks = ({
                     </FlexItem>
                   </Flex>
                   <FlexItem>
-                    <Skeleton width="60px" height="14px" />
+                    <Skeleton width="60px" fontSize="sm" />
                   </FlexItem>
                 </Flex>
               ))}

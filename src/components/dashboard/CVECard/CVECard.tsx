@@ -42,7 +42,7 @@ export const CVECard: React.FC<CVECardProps> = ({
   className,
   isLoading,
 }) => {
-  const showSkeleton = isLoading || !cveData;
+  const showSkeleton = !!isLoading;
 
   return (
     <Flex
@@ -54,9 +54,9 @@ export const CVECard: React.FC<CVECardProps> = ({
       <FlexItem>{title}</FlexItem>
       <FlexItem flex={{ default: 'flex_1' }}>
         {showSkeleton ? (
-          <FlexItem data-testid="cve-card-skeleton">
+          <FlexItem>
             <Flex direction={{ default: 'column' }} spaceItems={{ default: 'spaceItemsSm' }}>
-              <Skeleton width="80%" height="14px" />
+              <Skeleton width="80%" fontSize="sm" />
               <Flex
                 justifyContent={{ default: 'justifyContentSpaceBetween' }}
                 className={styles.content}
@@ -83,7 +83,7 @@ export const CVECard: React.FC<CVECardProps> = ({
                         </Flex>
                       </FlexItem>
                       <FlexItem>
-                        <Skeleton width="100px" height="14px" />
+                        <Skeleton width="100px" fontSize="sm" />
                       </FlexItem>
                     </Flex>
                   </FlexItem>
@@ -98,7 +98,7 @@ export const CVECard: React.FC<CVECardProps> = ({
               justifyContent={{ default: 'justifyContentSpaceBetween' }}
               className={styles.content}
             >
-              {cveData.map((data) => {
+              {(cveData ?? []).map((data) => {
                 const config = severityConfig[data.severity];
                 const Icon = config.icon;
                 const countClassName =

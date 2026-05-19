@@ -257,12 +257,20 @@ test.describe('ClustersWithIssues — pagination', () => {
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
     const component = await mount(<ClustersWithIssues isLoading />);
-    await expect(component.getByTestId('clusters-with-issues-skeleton')).toBeVisible();
+    await expect(component.getByText('Loading clusters with issues')).toBeVisible();
     await expect(component.getByTestId('unhealthy-count')).not.toBeVisible();
   });
 
-  test('should render skeleton when data is undefined', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues />);
-    await expect(component.getByTestId('clusters-with-issues-skeleton')).toBeVisible();
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(<ClustersWithIssues isLoading />);
+    await expect(component.getByText('Loading clusters with issues')).toBeVisible();
+  });
+
+  test('should render skeleton when isLoading is true even if data is provided', async ({
+    mount,
+  }) => {
+    const component = await mount(<ClustersWithIssues data={defaultData} isLoading />);
+    await expect(component.getByText('Loading clusters with issues')).toBeVisible();
+    await expect(component.getByTestId('unhealthy-count')).not.toBeVisible();
   });
 });

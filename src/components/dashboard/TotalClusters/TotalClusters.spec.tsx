@@ -62,13 +62,13 @@ test.describe('TotalClusters', () => {
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
     const component = await mount(<TotalClusters isLoading />);
-    await expect(component.getByTestId('total-clusters-skeleton')).toBeVisible();
+    await expect(component.getByText('Loading cluster count')).toBeVisible();
     await expect(component.getByTestId('total-clusters')).not.toBeVisible();
   });
 
-  test('should render skeleton when data is undefined', async ({ mount }) => {
-    const component = await mount(<TotalClusters />);
-    await expect(component.getByTestId('total-clusters-skeleton')).toBeVisible();
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(<TotalClusters isLoading />);
+    await expect(component.getByText('Loading cluster count')).toBeVisible();
   });
 
   test('should still show title when loading', async ({ mount }) => {

@@ -47,7 +47,7 @@ export const AdvisorSeverity: React.FC<AdvisorSeverityProps> = ({
   showLightspeedBadge = true,
   isLoading,
 }) => {
-  const showSkeleton = isLoading || !severity;
+  const showSkeleton = !!isLoading;
 
   return (
     <Flex direction={{ default: 'column' }} className={styles.container}>
@@ -76,7 +76,7 @@ export const AdvisorSeverity: React.FC<AdvisorSeverityProps> = ({
       )}
 
       {showSkeleton ? (
-        <FlexItem data-testid="advisor-severity-skeleton">
+        <FlexItem>
           <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
             {severityConfig.map(({ key }, index) => (
               <FlexItem key={key} className={styles.severityItem}>
@@ -104,14 +104,14 @@ export const AdvisorSeverity: React.FC<AdvisorSeverityProps> = ({
                     </Flex>
                   </FlexItem>
                   <FlexItem>
-                    <Skeleton width="60px" height="14px" />
+                    <Skeleton width="60px" fontSize="sm" />
                   </FlexItem>
                 </Flex>
               </FlexItem>
             ))}
           </Flex>
         </FlexItem>
-      ) : (
+      ) : severity ? (
         <FlexItem>
           <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
             {severityConfig.map(({ key, label, Icon, style }) => (
@@ -147,7 +147,7 @@ export const AdvisorSeverity: React.FC<AdvisorSeverityProps> = ({
             ))}
           </Flex>
         </FlexItem>
-      )}
+      ) : null}
 
       {onViewMore && !showSkeleton && (
         <FlexItem>

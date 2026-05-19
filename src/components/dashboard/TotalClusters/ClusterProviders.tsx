@@ -36,9 +36,9 @@ export const ClusterProviders: React.FC<ClusterProvidersProps> = ({
   title = DEFAULT_TITLE,
   isLoading,
 }) => {
-  const showSkeleton = isLoading || !providers;
+  const showSkeleton = !!isLoading;
 
-  if (!showSkeleton && providers.length === 0) return null;
+  if (!showSkeleton && (!providers || providers.length === 0)) return null;
 
   return (
     <Flex direction={{ default: 'column' }} className={styles.container}>
@@ -51,7 +51,7 @@ export const ClusterProviders: React.FC<ClusterProvidersProps> = ({
       )}
 
       {showSkeleton ? (
-        <FlexItem data-testid="cluster-providers-skeleton">
+        <FlexItem>
           <Flex alignItems={{ default: 'alignItemsCenter' }}>
             <FlexItem>
               <Skeleton
@@ -65,7 +65,7 @@ export const ClusterProviders: React.FC<ClusterProvidersProps> = ({
               <div className={styles.legendGrid}>
                 {[1, 2, 3, 4].map((i) => (
                   <div key={i} className={styles.legendItem}>
-                    <Skeleton width="100%" height="14px" />
+                    <Skeleton width="100%" fontSize="sm" />
                   </div>
                 ))}
               </div>

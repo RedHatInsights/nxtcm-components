@@ -279,7 +279,7 @@ test.describe('Subscriptions', () => {
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
     const component = await mount(<Subscriptions isLoading {...defaultProps} />);
-    await expect(component.getByTestId('subscriptions-skeleton')).toBeVisible();
+    await expect(component.getByText('Loading subscriptions')).toBeVisible();
     await expect(
       component.getByText(
         'Monitor your OpenShift usage for both Annual and On-Demand subscriptions.'
@@ -287,8 +287,8 @@ test.describe('Subscriptions', () => {
     ).not.toBeVisible();
   });
 
-  test('should render skeleton when subscriptionCount is undefined', async ({ mount }) => {
-    const component = await mount(<Subscriptions />);
-    await expect(component.getByTestId('subscriptions-skeleton')).toBeVisible();
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(<Subscriptions isLoading />);
+    await expect(component.getByText('Loading subscriptions')).toBeVisible();
   });
 });

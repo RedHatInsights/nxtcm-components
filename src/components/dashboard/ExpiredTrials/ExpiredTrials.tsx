@@ -46,12 +46,12 @@ export const ExpiredTrials: React.FC<ExpiredTrialsProps> = ({
   rowActions,
   isLoading,
 }) => {
-  const showSkeleton = isLoading || !data;
+  const showSkeleton = !!isLoading;
 
   if (showSkeleton) {
     return (
       <Flex direction={{ default: 'column' }} className={styles.container}>
-        <FlexItem data-testid="expired-trials-skeleton" className={styles.tableWrapper}>
+        <FlexItem className={styles.tableWrapper}>
           <Table aria-label="Loading expired trials" variant="compact">
             <Thead>
               <Tr>
@@ -64,7 +64,7 @@ export const ExpiredTrials: React.FC<ExpiredTrialsProps> = ({
                   <Td dataLabel="Cluster name">
                     <Skeleton
                       width="160px"
-                      height="14px"
+                      fontSize="sm"
                       screenreaderText={i === 0 ? 'Loading expired trials' : undefined}
                     />
                   </Td>
@@ -77,6 +77,7 @@ export const ExpiredTrials: React.FC<ExpiredTrialsProps> = ({
     );
   }
 
+  if (!data) return null;
   const { trials, totalCount, currentPage, pageSize } = data;
   const hasActions = typeof rowActions === 'function';
   const hasPagination =

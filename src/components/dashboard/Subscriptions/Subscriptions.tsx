@@ -20,14 +20,14 @@ export const Subscriptions = ({
   onInstancesClick,
   isLoading,
 }: SubscriptionsProps) => {
-  const showSkeleton = isLoading || subscriptionCount === undefined;
+  const showSkeleton = !!isLoading;
 
   if (showSkeleton) {
     return (
       <Flex direction={{ default: 'column' }} className={styles.subscriptions}>
-        <FlexItem data-testid="subscriptions-skeleton">
+        <FlexItem>
           <Flex direction={{ default: 'column' }} spaceItems={{ default: 'spaceItemsLg' }}>
-            <Skeleton width="80%" height="14px" screenreaderText="Loading subscriptions" />
+            <Skeleton width="80%" fontSize="sm" screenreaderText="Loading subscriptions" />
             <Flex
               justifyContent={{ default: 'justifyContentSpaceBetween' }}
               spaceItems={{ default: 'spaceItemsLg' }}
@@ -45,7 +45,7 @@ export const Subscriptions = ({
                     <Skeleton width="40px" height="28px" />
                   </FlexItem>
                   <FlexItem>
-                    <Skeleton width="80px" height="14px" />
+                    <Skeleton width="80px" fontSize="sm" />
                   </FlexItem>
                 </Flex>
               ))}

@@ -35,18 +35,18 @@ const SkeletonSection: React.FC<{ screenreaderText?: string }> = ({ screenreader
       <Skeleton width="40px" height="28px" />
     </FlexItem>
     <FlexItem>
-      <Skeleton width="130px" height="14px" />
+      <Skeleton width="130px" fontSize="sm" />
     </FlexItem>
   </Flex>
 );
 
 export const UpdateStatus: React.FC<UpdateStatusProps> = ({ data, isLoading }) => {
-  const showSkeleton = isLoading || !data;
+  const showSkeleton = !!isLoading;
 
   if (showSkeleton) {
     return (
       <Flex className={styles.container}>
-        <FlexItem data-testid="update-status-skeleton" flex={{ default: 'flex_1' }}>
+        <FlexItem flex={{ default: 'flex_1' }}>
           <SkeletonSection screenreaderText="Loading update status" />
         </FlexItem>
         <Divider orientation={{ default: 'vertical' }} />
@@ -61,6 +61,7 @@ export const UpdateStatus: React.FC<UpdateStatusProps> = ({ data, isLoading }) =
     );
   }
 
+  if (!data) return null;
   const { upToDate, updateAvailable, currentlyUpdating } = data;
   const showUpdating = currentlyUpdating !== undefined;
 

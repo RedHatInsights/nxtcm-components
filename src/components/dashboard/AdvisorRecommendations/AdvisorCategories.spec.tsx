@@ -72,12 +72,12 @@ test.describe('AdvisorCategories', () => {
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
     const component = await mount(<AdvisorCategories isLoading />);
-    await expect(component.getByTestId('advisor-categories-skeleton')).toBeVisible();
+    await expect(component.getByText('Loading category data')).toBeVisible();
     await expect(component.getByTestId('category-chart')).not.toBeVisible();
   });
 
-  test('should render skeleton when categories is undefined', async ({ mount }) => {
-    const component = await mount(<AdvisorCategories />);
-    await expect(component.getByTestId('advisor-categories-skeleton')).toBeVisible();
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(<AdvisorCategories isLoading />);
+    await expect(component.getByText('Loading category data')).toBeVisible();
   });
 });

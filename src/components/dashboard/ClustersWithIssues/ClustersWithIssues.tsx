@@ -68,10 +68,10 @@ const SkeletonTable: React.FC = () => (
       {Array.from({ length: SKELETON_ROWS }, (_, i) => (
         <Tr key={i}>
           <Td dataLabel="Cluster name">
-            <Skeleton width="140px" height="14px" />
+            <Skeleton width="140px" fontSize="sm" />
           </Td>
           <Td dataLabel="Issues">
-            <Skeleton width="30px" height="14px" />
+            <Skeleton width="30px" fontSize="sm" />
           </Td>
         </Tr>
       ))}
@@ -87,7 +87,7 @@ export const ClustersWithIssues: React.FC<ClustersWithIssuesProps> = ({
   perPage: initialPerPage = DEFAULT_PER_PAGE,
   isLoading,
 }) => {
-  const showSkeleton = isLoading || !data;
+  const showSkeleton = !!isLoading;
 
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(Math.max(1, initialPerPage));
@@ -146,7 +146,7 @@ export const ClustersWithIssues: React.FC<ClustersWithIssuesProps> = ({
 
       {showSkeleton ? (
         <>
-          <FlexItem className={styles.countSection} data-testid="clusters-with-issues-skeleton">
+          <FlexItem className={styles.countSection}>
             <Flex
               alignItems={{ default: 'alignItemsCenter' }}
               spaceItems={{ default: 'spaceItemsSm' }}

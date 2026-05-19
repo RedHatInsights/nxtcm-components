@@ -9,6 +9,10 @@ const meta: Meta<typeof CostManagement> = {
   },
   tags: ['autodocs'],
   argTypes: {
+    isLoading: {
+      control: 'boolean',
+      description: 'Renders skeleton placeholders while loading',
+    },
     totalCost: {
       control: 'number',
       description: 'Total month-to-date cost',

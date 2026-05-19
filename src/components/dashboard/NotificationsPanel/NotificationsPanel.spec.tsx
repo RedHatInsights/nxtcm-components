@@ -474,12 +474,12 @@ test.describe('NotificationsPanel', () => {
     const component = await mount(
       <NotificationsPanel isLoading notifications={mockNotifications} />
     );
-    await expect(component.getByTestId('notifications-skeleton')).toBeVisible();
+    await expect(component.getByText('Loading notifications')).toBeVisible();
     await expect(component.getByTestId('notification-1')).not.toBeVisible();
   });
 
-  test('should render skeleton when notifications is undefined', async ({ mount }) => {
-    const component = await mount(<NotificationsPanel />);
-    await expect(component.getByTestId('notifications-skeleton')).toBeVisible();
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(<NotificationsPanel isLoading />);
+    await expect(component.getByText('Loading notifications')).toBeVisible();
   });
 });

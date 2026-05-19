@@ -173,14 +173,24 @@ test.describe('ClusterRecommendations', () => {
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
     const component = await mount(<ClusterRecommendations isLoading {...defaultProps} />);
-    await expect(component.getByTestId('cluster-recommendations-skeleton')).toBeVisible();
+    await expect(component.getByText('Loading cluster recommendations')).toBeVisible();
     await expect(
       component.getByRole('heading', { name: 'Critical recommendations' })
     ).not.toBeVisible();
   });
 
-  test('should render skeleton when count is undefined', async ({ mount }) => {
-    const component = await mount(<ClusterRecommendations />);
-    await expect(component.getByTestId('cluster-recommendations-skeleton')).toBeVisible();
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(
+      <ClusterRecommendations
+        isLoading
+        onViewRecommendations={() => {}}
+        serviceAvailability={0}
+        performance={0}
+        security={0}
+        faultTolerance={0}
+        onCategoryClick={() => {}}
+      />
+    );
+    await expect(component.getByText('Loading cluster recommendations')).toBeVisible();
   });
 });

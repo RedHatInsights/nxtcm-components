@@ -32,18 +32,18 @@ const SkeletonSection: React.FC<{ screenreaderText?: string }> = ({ screenreader
       <Skeleton width="40px" height="28px" />
     </FlexItem>
     <FlexItem>
-      <Skeleton width="110px" height="14px" />
+      <Skeleton width="110px" fontSize="sm" />
     </FlexItem>
   </Flex>
 );
 
 export const Telemetry: React.FC<TelemetryProps> = ({ data, isLoading }) => {
-  const showSkeleton = isLoading || !data;
+  const showSkeleton = !!isLoading;
 
   if (showSkeleton) {
     return (
       <Flex className={styles.container}>
-        <FlexItem data-testid="telemetry-skeleton" flex={{ default: 'flex_1' }}>
+        <FlexItem flex={{ default: 'flex_1' }}>
           <SkeletonSection screenreaderText="Loading telemetry data" />
         </FlexItem>
         <Divider orientation={{ default: 'vertical' }} />
@@ -54,6 +54,7 @@ export const Telemetry: React.FC<TelemetryProps> = ({ data, isLoading }) => {
     );
   }
 
+  if (!data) return null;
   const { connected, disconnected } = data;
 
   return (

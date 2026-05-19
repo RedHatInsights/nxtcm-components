@@ -74,12 +74,12 @@ test.describe('ClusterProviders', () => {
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
     const component = await mount(<ClusterProviders isLoading />);
-    await expect(component.getByTestId('cluster-providers-skeleton')).toBeVisible();
+    await expect(component.getByText('Loading cluster providers')).toBeVisible();
     await expect(component.getByTestId('providers-chart')).not.toBeVisible();
   });
 
-  test('should render skeleton when providers is undefined', async ({ mount }) => {
-    const component = await mount(<ClusterProviders />);
-    await expect(component.getByTestId('cluster-providers-skeleton')).toBeVisible();
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(<ClusterProviders isLoading />);
+    await expect(component.getByText('Loading cluster providers')).toBeVisible();
   });
 });

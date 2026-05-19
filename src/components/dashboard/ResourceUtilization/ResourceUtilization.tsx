@@ -103,7 +103,7 @@ export const ResourceUtilization: React.FC<ResourceUtilizationProps> = ({
   onViewMore,
   isLoading,
 }) => {
-  const showSkeleton = isLoading || !data;
+  const showSkeleton = !!isLoading;
 
   return (
     <Flex direction={{ default: 'column' }} className={styles.container}>
@@ -116,7 +116,7 @@ export const ResourceUtilization: React.FC<ResourceUtilizationProps> = ({
       )}
 
       {showSkeleton ? (
-        <FlexItem data-testid="resource-utilization-skeleton">
+        <FlexItem>
           <Flex
             justifyContent={{ default: 'justifyContentSpaceEvenly' }}
             alignItems={{ default: 'alignItemsFlexStart' }}
@@ -130,7 +130,7 @@ export const ResourceUtilization: React.FC<ResourceUtilizationProps> = ({
             </FlexItem>
           </Flex>
         </FlexItem>
-      ) : (
+      ) : data ? (
         <>
           <FlexItem>
             <Flex
@@ -160,7 +160,7 @@ export const ResourceUtilization: React.FC<ResourceUtilizationProps> = ({
             </FlexItem>
           )}
         </>
-      )}
+      ) : null}
     </Flex>
   );
 };

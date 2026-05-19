@@ -1,38 +1,37 @@
-
-  .bar {
-    padding-top: var(--pf-t--global--spacer--xl);
-    div {
-      display: inline-block;
-    }
-    width: 100%;
+.bar {
+  padding-top: var(--pf-t--global--spacer--xl);
+  div {
+    display: inline-block;
   }
+  width: 100%;
+}
 
-  .legend {
-    svg {
-      margin-right: 0.2em;
-    }
+.legend {
+  svg {
+    margin-right: 0.2em;
   }
+}
 
-  .serviceAvailability {
-    //background-color: var(--pf-v6-chart-color-blue-300);
-    background-color: #92C5F9;
-    color: #92C5F9;
-  } 
+.serviceAvailability {
+  //background-color: var(--pf-v6-chart-color-blue-300);
+  background-color: #92c5f9;
+  color: #92c5f9;
+}
 
-  .performance {
-    // background-color: var(--pf-v6-chart-color-blue-100);
-    background-color: #0066CC;
-    color: #0066CC;
-  }
+.performance {
+  // background-color: var(--pf-v6-chart-color-blue-100);
+  background-color: #0066cc;
+  color: #0066cc;
+}
 
-  .security {
-    // background-color: var(--pf-v6-chart-color-yellow-300);
-    background-color: #FFCC17;
-    color: #FFCC17;
-  }
+.security {
+  // background-color: var(--pf-v6-chart-color-yellow-300);
+  background-color: #ffcc17;
+  color: #ffcc17;
+}
 
-  .faultTolerance {
-    // background-color: var(--pf-v6-chart-color-yellow-100);
-    background-color: #B98412;
-    color: #B98412;
-  }
+.faultTolerance {
+  // background-color: var(--pf-v6-chart-color-yellow-100);
+  background-color: #b98412;
+  color: #b98412;
+}

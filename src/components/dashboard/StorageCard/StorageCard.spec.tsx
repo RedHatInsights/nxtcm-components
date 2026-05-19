@@ -160,12 +160,12 @@ test.describe('StorageCard', () => {
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
     const component = await mount(<StorageCard isLoading storageData={mockStorageData} />);
-    await expect(component.getByTestId('storage-card-skeleton')).toBeVisible();
+    await expect(component.getByText('Loading storage data')).toBeVisible();
     await expect(component.getByTestId('percentage')).not.toBeVisible();
   });
 
-  test('should render skeleton when storageData is undefined', async ({ mount }) => {
-    const component = await mount(<StorageCard />);
-    await expect(component.getByTestId('storage-card-skeleton')).toBeVisible();
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(<StorageCard isLoading />);
+    await expect(component.getByText('Loading storage data')).toBeVisible();
   });
 });

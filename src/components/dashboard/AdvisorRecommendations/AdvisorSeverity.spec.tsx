@@ -117,12 +117,12 @@ test.describe('AdvisorSeverity', () => {
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
     const component = await mount(<AdvisorSeverity isLoading />);
-    await expect(component.getByTestId('advisor-severity-skeleton')).toBeVisible();
+    await expect(component.getByText('Loading severity data')).toBeVisible();
     await expect(component.getByTestId('severity-count-critical')).not.toBeVisible();
   });
 
-  test('should render skeleton when severity is undefined', async ({ mount }) => {
-    const component = await mount(<AdvisorSeverity />);
-    await expect(component.getByTestId('advisor-severity-skeleton')).toBeVisible();
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(<AdvisorSeverity isLoading />);
+    await expect(component.getByText('Loading severity data')).toBeVisible();
   });
 });

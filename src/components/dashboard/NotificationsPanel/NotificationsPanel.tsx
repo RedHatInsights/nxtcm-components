@@ -45,7 +45,7 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  const showSkeleton = isLoading || !notifications;
+  const showSkeleton = !!isLoading;
 
   const totalItems = notifications?.length ?? 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -100,7 +100,7 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
         <PanelMainBody>
           {showSkeleton ? (
             <Flex direction={{ default: 'column' }}>
-              <FlexItem data-testid="notifications-skeleton">
+              <FlexItem>
                 <Table variant="compact" borders={false} aria-label="Loading notifications">
                   <Thead>
                     <Tr>
@@ -115,15 +115,15 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
                         <Td dataLabel="Notification">
                           <Skeleton
                             width="140px"
-                            height="14px"
+                            fontSize="sm"
                             screenreaderText={i === 0 ? 'Loading notifications' : undefined}
                           />
                         </Td>
                         <Td dataLabel="Type">
-                          <Skeleton width="80px" height="14px" />
+                          <Skeleton width="80px" fontSize="sm" />
                         </Td>
                         <Td dataLabel="Time">
-                          <Skeleton width="60px" height="14px" />
+                          <Skeleton width="60px" fontSize="sm" />
                         </Td>
                       </Tr>
                     ))}

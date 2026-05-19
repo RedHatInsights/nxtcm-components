@@ -26,12 +26,12 @@ export interface StorageCardProps {
  * with a visual percentage indicator
  */
 export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMore, isLoading }) => {
-  const showSkeleton = isLoading || !storageData;
+  const showSkeleton = !!isLoading;
 
   if (showSkeleton) {
     return (
       <Flex className={styles.content}>
-        <FlexItem data-testid="storage-card-skeleton">
+        <FlexItem>
           <Flex
             spaceItems={{ default: 'spaceItemsLg' }}
             alignItems={{ default: 'alignItemsCenter' }}
@@ -46,10 +46,10 @@ export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMor
             </FlexItem>
             <FlexItem>
               <Flex direction={{ default: 'column' }} spaceItems={{ default: 'spaceItemsSm' }}>
-                <Skeleton width="150px" height="14px" />
-                <Skeleton width="130px" height="14px" />
-                <Skeleton width="120px" height="14px" />
-                <Skeleton width="100px" height="14px" />
+                <Skeleton width="150px" fontSize="sm" />
+                <Skeleton width="130px" fontSize="sm" />
+                <Skeleton width="120px" fontSize="sm" />
+                <Skeleton width="100px" fontSize="sm" />
               </Flex>
             </FlexItem>
           </Flex>
@@ -58,6 +58,7 @@ export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMor
     );
   }
 
+  if (!storageData) return null;
   const { rosaClusters, aroClusters, osdClusters, available } = storageData;
 
   // calculate totals

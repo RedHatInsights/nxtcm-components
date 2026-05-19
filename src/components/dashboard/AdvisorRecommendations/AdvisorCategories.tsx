@@ -42,7 +42,7 @@ export const AdvisorCategories: React.FC<AdvisorCategoriesProps> = ({
   title = DEFAULT_TITLE,
   isLoading,
 }) => {
-  const showSkeleton = isLoading || !categories;
+  const showSkeleton = !!isLoading;
 
   return (
     <Flex direction={{ default: 'column' }} className={styles.container}>
@@ -60,7 +60,7 @@ export const AdvisorCategories: React.FC<AdvisorCategoriesProps> = ({
       )}
 
       {showSkeleton ? (
-        <FlexItem data-testid="advisor-categories-skeleton">
+        <FlexItem>
           <Flex alignItems={{ default: 'alignItemsCenter' }}>
             <FlexItem>
               <Skeleton
@@ -74,14 +74,14 @@ export const AdvisorCategories: React.FC<AdvisorCategoriesProps> = ({
               <div className={styles.legendGrid}>
                 {Object.keys(categoryLabels).map((key) => (
                   <div key={key} className={styles.legendItem}>
-                    <Skeleton width="100%" height="14px" />
+                    <Skeleton width="100%" fontSize="sm" />
                   </div>
                 ))}
               </div>
             </FlexItem>
           </Flex>
         </FlexItem>
-      ) : (
+      ) : categories ? (
         <FlexItem>
           <Flex alignItems={{ default: 'alignItemsCenter' }}>
             <FlexItem>
@@ -125,7 +125,7 @@ export const AdvisorCategories: React.FC<AdvisorCategoriesProps> = ({
             </FlexItem>
           </Flex>
         </FlexItem>
-      )}
+      ) : null}
     </Flex>
   );
 };

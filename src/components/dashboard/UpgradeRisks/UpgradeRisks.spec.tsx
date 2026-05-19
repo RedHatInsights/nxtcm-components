@@ -130,12 +130,12 @@ test.describe('UpgradeRisks', () => {
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
     const component = await mount(<UpgradeRisks isLoading {...defaultProps} />);
-    await expect(component.getByTestId('upgrade-risks-skeleton')).toBeVisible();
+    await expect(component.getByText('Loading upgrade risks')).toBeVisible();
     await expect(component.getByTestId('total-risks')).not.toBeVisible();
   });
 
-  test('should render skeleton when totalRisks is undefined', async ({ mount }) => {
-    const component = await mount(<UpgradeRisks />);
-    await expect(component.getByTestId('upgrade-risks-skeleton')).toBeVisible();
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(<UpgradeRisks isLoading />);
+    await expect(component.getByText('Loading upgrade risks')).toBeVisible();
   });
 });

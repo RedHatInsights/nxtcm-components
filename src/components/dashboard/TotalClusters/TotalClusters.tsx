@@ -26,7 +26,7 @@ export const TotalClusters: React.FC<TotalClustersProps> = ({
   onViewMore,
   isLoading,
 }) => {
-  const showSkeleton = isLoading || !data;
+  const showSkeleton = !!isLoading;
 
   return (
     <Flex direction={{ default: 'column' }} className={styles.container}>
@@ -45,14 +45,14 @@ export const TotalClusters: React.FC<TotalClustersProps> = ({
       >
         {showSkeleton ? (
           <>
-            <FlexItem data-testid="total-clusters-skeleton">
+            <FlexItem>
               <Skeleton width="60px" height="38px" screenreaderText="Loading cluster count" />
             </FlexItem>
             <FlexItem>
-              <Skeleton width="120px" height="14px" />
+              <Skeleton width="120px" fontSize="sm" />
             </FlexItem>
           </>
-        ) : (
+        ) : data ? (
           <>
             <FlexItem data-testid="total-clusters">
               {onViewMore ? (
@@ -70,7 +70,7 @@ export const TotalClusters: React.FC<TotalClustersProps> = ({
             </FlexItem>
             <FlexItem className={styles.totalLabel}>managed clusters</FlexItem>
           </>
-        )}
+        ) : null}
       </Flex>
     </Flex>
   );

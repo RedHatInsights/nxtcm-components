@@ -60,12 +60,12 @@ export const CostManagement: React.FC<CostManagementProps> = ({
   onViewMore,
   isLoading,
 }) => {
-  const showSkeleton = isLoading || totalCost === undefined;
+  const showSkeleton = !!isLoading;
 
   if (showSkeleton) {
     return (
       <Flex direction={{ default: 'column' }} spaceItems={{ default: 'spaceItemsNone' }}>
-        <FlexItem data-testid="cost-management-skeleton" className={styles.section}>
+        <FlexItem className={styles.section}>
           <Flex direction={{ default: 'column' }} spaceItems={{ default: 'spaceItemsSm' }}>
             <FlexItem>
               <Title headingLevel="h3" size="md">
@@ -76,7 +76,7 @@ export const CostManagement: React.FC<CostManagementProps> = ({
               <Skeleton width="120px" height="32px" screenreaderText="Loading cost data" />
             </FlexItem>
             <FlexItem>
-              <Skeleton width="140px" height="14px" />
+              <Skeleton width="140px" fontSize="sm" />
             </FlexItem>
           </Flex>
         </FlexItem>
@@ -93,10 +93,10 @@ export const CostManagement: React.FC<CostManagementProps> = ({
                 {[1, 2, 3].map((i) => (
                   <DescriptionListGroup key={i}>
                     <DescriptionListTerm>
-                      <Skeleton width="100px" height="14px" />
+                      <Skeleton width="100px" fontSize="sm" />
                     </DescriptionListTerm>
                     <DescriptionListDescription>
-                      <Skeleton width="130px" height="14px" />
+                      <Skeleton width="130px" fontSize="sm" />
                     </DescriptionListDescription>
                   </DescriptionListGroup>
                 ))}
@@ -108,6 +108,7 @@ export const CostManagement: React.FC<CostManagementProps> = ({
     );
   }
 
+  if (totalCost === undefined) return null;
   const clusterList = clusters ?? [];
 
   return (
