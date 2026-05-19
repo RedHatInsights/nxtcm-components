@@ -19,7 +19,6 @@ import { clusterValidationSchema } from '../../../yupSchemas';
 import { getAutoscalingMaxNodes } from '../../../getAutoscalingMaxNodes';
 import { MachinePoolsAdvancedSection } from './MachinePoolsAdvancedSection';
 import { MachinePoolsAutoscalingReplicas } from './MachinePoolsAutoscalingReplicas';
-import { SecurityGroupsSection } from './SecurityGroupSection/SecurityGroupSection';
 import {
   useAutoscalingFieldDefaults,
   useEnsureMachinePoolSubnetRow,
@@ -190,21 +189,17 @@ export const MachinePools = (props: MachinePoolsProps) => {
             )}
           </StackItem>
         </Stack>
+        <Stack hasGutter>
+          <MachinePoolsAdvancedSection
+            wrongVersionForIMDS={wrongVersionForIMDS}
+            maxRootDiskSize={maxRootDiskSize}
+            clusterVersion={clusterVersion}
+            selectedVPC={selectedVPC}
+            vpcList={vpcList}
+            refreshVPCs={onRefreshVpc}
+          />
+        </Stack>
       </Section>
-
-      <Stack hasGutter className="pf-v6-u-mt-md">
-        <MachinePoolsAdvancedSection
-          wrongVersionForIMDS={wrongVersionForIMDS}
-          maxRootDiskSize={maxRootDiskSize}
-        />
-
-        <SecurityGroupsSection
-          clusterVersion={clusterVersion}
-          selectedVPC={selectedVPC}
-          vpcList={vpcList}
-          refreshVPCs={onRefreshVpc}
-        />
-      </Stack>
     </>
   );
 };

@@ -5,25 +5,23 @@ import { Stack, StackItem } from '@patternfly/react-core';
 import SecurityGroupsViewList from './SecurityGroupsViewList';
 
 import { securityGroupsSort } from './helpers';
-import { validateSecurityGroups } from '../../../../validators';
-import { truncateTextWithEllipsis } from '../../../../helpers';
-import { FormGroupHelperText } from '../../../../components/FormGroupHelperText';
+import { showSecurityGroupsSection, truncateTextWithEllipsis } from '../../../../helpers';
 import { WizMultiSelect } from '../../../../components/WizFields';
 import { clusterValidationSchema } from '../../../../yupSchemas';
 import type { ClusterFormData, CloudVpc } from '../../../../../types';
-import {
-  useRosaHcpWizardStrings,
-  useRosaHcpWizardValidators,
-} from '../../../../stringsProvider/RosaHcpWizardStringsContext';
+import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWizardStringsContext';
 import { useFormContext, useWatch } from 'react-hook-form';
+import SecurityGroupsNoEditAlert from './SecurityGroupsNoEditAlert';
+import SecurityGroupsEmptyAlert from './SecurityGroupsEmptyAlert';
 
 export interface EditSecurityGroupsProps {
   label?: string;
-  selectedVPC: CloudVpc;
+  selectedVPC: CloudVpc | undefined;
   isReadOnly: boolean;
   apiError?: ReactNode;
   refreshVPCCallback?: () => void;
   isVPCLoading?: boolean;
+  clusterVersion: string;
 }
 
 const EMPTY_GROUP_IDS: string[] = [];
@@ -44,9 +42,10 @@ const EditSecurityGroups = ({
   apiError,
   refreshVPCCallback,
   isVPCLoading,
+  clusterVersion,
 }: EditSecurityGroupsProps) => {
   const sg = useRosaHcpWizardStrings().securityGroups;
-  const v = useRosaHcpWizardValidators();
+
   const label = labelProp ?? sg.formLabel;
   const { setValue } = useFormContext<Partial<ClusterFormData>>();
   const watchedGroups = useWatch({ name: 'security_groups_worker' });
@@ -54,6 +53,9 @@ const EditSecurityGroups = ({
     () => (Array.isArray(watchedGroups) ? (watchedGroups as string[]) : EMPTY_GROUP_IDS),
     [watchedGroups]
   );
+
+  const showEmptyAlert = (selectedVPC?.aws_security_groups || []).length === 0;
+  const incompatibleClusterVersionMessage = sg.incompatibleVersion;
 
   const vpcSecurityGroupsSorted = React.useMemo(() => {
     const list = [...(selectedVPC?.aws_security_groups || [])];
@@ -102,6 +104,10 @@ const EditSecurityGroups = ({
       <SecurityGroupsViewList securityGroups={selectedOptions} emptyMessage={sg.readOnlyEmpty} />
     );
   }
+  const incompatibleClusterVersion = !showSecurityGroupsSection(clusterVersion);
+  if (!selectedVPC?.id) {
+    return null;
+  }
 
   const onDeleteGroup = (deleteGroupId: string) => {
     const next = selectedGroupIds.filter((sgId) => sgId !== deleteGroupId);
@@ -112,32 +118,38 @@ const EditSecurityGroups = ({
     });
   };
 
-  const validationError = validateSecurityGroups(selectedGroupIds, v.securityGroups);
+  if (showEmptyAlert && !apiError) {
+    return <SecurityGroupsEmptyAlert refreshVPCCallback={refreshVPCCallback} />;
+  }
 
   return (
     <>
       <Stack hasGutter className="pf-v6-u-mt-md">
         <StackItem>
-          <WizMultiSelect<Partial<ClusterFormData>>
-            name="security_groups_worker"
-            schema={clusterValidationSchema}
-            label={label}
-            placeholder={sg.selectToggle}
-            menuToggleAriaLabel={sg.optionsMenuAria}
-            badgeScreenReaderText={sg.badgeSrText}
-            options={options}
-            maxMenuHeight="300px"
-            data-testid="securitygroups-id"
-            apiError={apiError}
-            isLoading={isVPCLoading}
-            onRefresh={refreshVPCCallback}
-          />
+          {incompatibleClusterVersion ? (
+            <div>{incompatibleClusterVersionMessage}</div>
+          ) : (
+            <WizMultiSelect<Partial<ClusterFormData>>
+              name="security_groups_worker"
+              schema={clusterValidationSchema}
+              label={label}
+              placeholder={sg.selectToggle}
+              menuToggleAriaLabel={sg.optionsMenuAria}
+              badgeScreenReaderText={sg.badgeSrText}
+              options={options}
+              maxMenuHeight="300px"
+              data-testid="securitygroups-id"
+              apiError={apiError}
+              isLoading={isVPCLoading}
+              onRefresh={refreshVPCCallback}
+            />
+          )}
         </StackItem>
         <StackItem>
           <SecurityGroupsViewList securityGroups={selectedOptions} onCloseItem={onDeleteGroup} />
         </StackItem>
+        {!incompatibleClusterVersion ? <SecurityGroupsNoEditAlert /> : null}
       </Stack>
-      <FormGroupHelperText touched error={validationError} />
     </>
   );
 };

@@ -3,6 +3,7 @@ import * as yup from 'yup';
 import { STEP_IDS } from '../constants';
 import type { WizardFieldMeta } from './types';
 import { ctx, rosaCommonRequiredNonEmptyTest } from './helpers';
+import { validateSecurityGroups } from '../validators';
 
 export const selectedVpcSchema = yup
   .mixed()
@@ -196,6 +197,15 @@ export const securityGroupsWorkerSchema = yup
   .of(yup.string())
   .default([])
   .optional()
+  .test('security-groups-worker', '', function (value) {
+    if (value === undefined || value === null) return true;
+    const { msgs } = ctx(this);
+    const error = validateSecurityGroups(value as string[], msgs.securityGroups);
+    if (error) {
+      return this.createError({ message: error });
+    }
+    return true;
+  })
   .meta({
     id: 'security_groups_worker',
     labelKey: 'securityGroups.formLabel',

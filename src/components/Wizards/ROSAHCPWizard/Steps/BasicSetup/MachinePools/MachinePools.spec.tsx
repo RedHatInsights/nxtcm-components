@@ -91,7 +91,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
       />
     );
 
-    await component.getByRole('button', { name: mp.securityGroupsToggle, exact: true }).click();
+    await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
     await expect(component.getByText('default', { exact: true })).toBeVisible();
 
     await selectVpc(component, page, fixtureVpc2.name, fixtureVpc1.name);
@@ -181,15 +181,18 @@ test.describe('MachinePools (ROSA HCP)', () => {
     ).toBeVisible();
   });
 
-  test('should show security groups expandable section when a VPC is selected on a compatible version', async ({
+  test('should show security groups inside advanced section when a VPC is selected on a compatible version', async ({
     mount,
   }) => {
     const component = await mount(
       <MachinePoolsMount defaultValues={{ selected_vpc: fixtureVpc1.id }} />
     );
 
+    await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
+
+    await expect(component.getByText(sg.formLabel, { exact: true })).toBeVisible();
     await expect(
-      component.getByRole('button', { name: mp.securityGroupsToggle, exact: true })
+      component.getByRole('button', { name: sg.optionsMenuAria, exact: true })
     ).toBeVisible();
   });
 
@@ -205,7 +208,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
       />
     );
 
-    await component.getByRole('button', { name: mp.securityGroupsToggle, exact: true }).click();
+    await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
 
     await expect(component.getByText(sg.incompatibleVersion, { exact: true })).toBeVisible();
   });

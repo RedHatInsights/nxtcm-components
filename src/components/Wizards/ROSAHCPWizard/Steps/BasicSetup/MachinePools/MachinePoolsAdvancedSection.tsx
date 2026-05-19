@@ -1,20 +1,33 @@
 import { Content, ContentVariants, ExpandableSection } from '@patternfly/react-core';
 
-import type { ClusterFormData } from '../../../../types';
+import type { CloudVpc, ClusterFormData } from '../../../../types';
 import { Radio } from '../../../components/Fields/RadioGroup';
 import { WizNumberInput, WizRadioGroup } from '../../../components/WizFields';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { clusterValidationSchema } from '../../../yupSchemas';
+import EditSecurityGroups from './SecurityGroupSection/EditSecurityGroups';
+import { VpcListResource } from '../../../types';
 
 export interface MachinePoolsAdvancedSectionProps {
   /** When true, IMDS options are disabled (unsupported cluster version). */
   wrongVersionForIMDS: boolean;
   /** Max root volume size (GiB) from the selected OpenShift version. */
   maxRootDiskSize: number;
+  clusterVersion: string;
+  selectedVPC: CloudVpc | undefined;
+  vpcList: VpcListResource;
+  refreshVPCs?: () => void;
 }
 
 export const MachinePoolsAdvancedSection = (props: MachinePoolsAdvancedSectionProps) => {
-  const { wrongVersionForIMDS, maxRootDiskSize } = props;
+  const {
+    wrongVersionForIMDS,
+    maxRootDiskSize,
+    clusterVersion,
+    selectedVPC,
+    vpcList,
+    refreshVPCs,
+  } = props;
   const mp = useRosaHcpWizardStrings().machinePools;
 
   return (
@@ -47,6 +60,16 @@ export const MachinePoolsAdvancedSection = (props: MachinePoolsAdvancedSectionPr
           schema={clusterValidationSchema}
           min={75}
           max={maxRootDiskSize}
+        />
+      </div>
+      <div className="pf-v6-u-mt-md">
+        <EditSecurityGroups
+          selectedVPC={selectedVPC}
+          isReadOnly={false}
+          apiError={vpcList?.error}
+          refreshVPCCallback={refreshVPCs}
+          isVPCLoading={vpcList?.isFetching}
+          clusterVersion={clusterVersion}
         />
       </div>
     </ExpandableSection>
