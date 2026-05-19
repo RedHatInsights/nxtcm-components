@@ -377,10 +377,13 @@ export type RosaHcpWizardStrings = {
     alertConfigureFields: string;
     httpLabel: string;
     httpHelp: string;
+    httpPlaceholder: string;
     httpsLabel: string;
     httpsHelp: string;
+    httpsPlaceholder: string;
     noProxyLabel: string;
     noProxyHelp: string;
+    noProxyPlaceholder: string;
     trustBundleLabel: string;
   };
   encryption: {

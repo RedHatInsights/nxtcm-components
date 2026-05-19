@@ -1,8 +1,8 @@
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
+import { Wizard, WizardStep } from '@patternfly/react-core';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 import type { ClusterFormData } from '../types';
-import { Wizard, WizardStep } from '@patternfly/react-core';
 import { Details } from './Steps/BasicSetup/Details/Details';
 import { RolesAndPolicies } from './Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies';
 import { MachinePools } from './Steps/BasicSetup/MachinePools/MachinePools';
@@ -18,8 +18,8 @@ import type { RosaHCPWizardProps } from './types';
 export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
   const { wizardData } = props;
   const { getValues } = useFormContext<Partial<ClusterFormData>>();
-  //setShowClusterWideProxy is needed to be passed into Networking step
-  const [showClusterWideProxy, _] = React.useState<boolean>(false);
+
+  const clusterWideProxySelected = useWatch({ name: 'configure_proxy' });
 
   // eslint-disable-next-line no-console -- intentional step-change debug logging
   const onStepChange = () => console.log('ROSA HCP wizard data', getValues());
@@ -51,12 +51,22 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
               id={STEP_IDS.MACHINE_POOLS}
               key={STEP_IDS.MACHINE_POOLS}
             >
-              {' '}
               <MachinePools {...wizardData} />
             </WizardStep>,
             <WizardStep name={sl.networking} id={STEP_IDS.NETWORKING} key={STEP_IDS.NETWORKING}>
               <Networking {...wizardData} />
             </WizardStep>,
+            ...(clusterWideProxySelected
+              ? [
+                  <WizardStep
+                    name={sl.clusterWideProxy}
+                    id={STEP_IDS.CLUSTER_WIDE_PROXY}
+                    key={STEP_IDS.CLUSTER_WIDE_PROXY}
+                  >
+                    <ClusterWideProxy />
+                  </WizardStep>,
+                ]
+              : []),
           ]}
         />
 
@@ -80,17 +90,6 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
             >
               <ClusterUpdates />
             </WizardStep>,
-            ...(showClusterWideProxy
-              ? [
-                  <WizardStep
-                    name={sl.clusterWideProxy}
-                    id={STEP_IDS.CLUSTER_WIDE_PROXY}
-                    key={STEP_IDS.CLUSTER_WIDE_PROXY}
-                  >
-                    <ClusterWideProxy />
-                  </WizardStep>,
-                ]
-              : []),
           ]}
         />
         <WizardStep name={sl.review} id={STEP_IDS.REVIEW} key={STEP_IDS.REVIEW}>
