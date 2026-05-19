@@ -32,8 +32,7 @@
   },
   "homepage": "https://github.com/RedHatInsights/nxtcm-components#readme",
   "engines": {
-    "node": ">=24",
-    "npm": ">=11.10.0"
+    "node": ">=24.15"
   },
   "peerDependencies": {
     "@patternfly/react-core": "^6.0.0",
