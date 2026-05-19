@@ -6,11 +6,10 @@ import { RadioGroupContext } from '../RadioGroup/RadioGroupContext';
 
 type RadioComponentProps = ComponentProps<typeof PfRadio>;
 
-export interface RadioProps
-  extends Omit<
-    RadioComponentProps,
-    'id' | 'isChecked' | 'onChange' | 'isDisabled' | 'name' | 'label' | 'readOnly' | 'value' | 'ref'
-  > {
+export interface RadioProps extends Omit<
+  RadioComponentProps,
+  'id' | 'isChecked' | 'onChange' | 'isDisabled' | 'name' | 'label' | 'readOnly' | 'value' | 'ref'
+> {
   id: string;
   label: string;
   value: string | number | boolean | undefined;

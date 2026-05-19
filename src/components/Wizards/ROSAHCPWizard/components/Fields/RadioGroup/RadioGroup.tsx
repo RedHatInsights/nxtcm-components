@@ -7,8 +7,10 @@ import { RadioGroupContext, type RadioGroupContextState } from './RadioGroupCont
 
 type FormGroupComponentProps = ComponentProps<typeof FormGroup>;
 
-export interface RadioGroupProps
-  extends Omit<FormGroupComponentProps, 'label' | 'labelHelp' | 'children' | 'value'> {
+export interface RadioGroupProps extends Omit<
+  FormGroupComponentProps,
+  'label' | 'labelHelp' | 'children' | 'value'
+> {
   id: string;
   label?: string;
   labelHelp?: ReactNode;
