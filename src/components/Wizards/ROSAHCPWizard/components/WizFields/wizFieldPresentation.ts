@@ -38,7 +38,7 @@ type WizFieldPresentationBase = {
   labelHelpTitle: string | undefined;
   /** Only when {@link UseWizFieldPresentationArgs.includePlaceholder} is true; otherwise `undefined`. */
   placeholder: string | undefined;
-  displayLabel: boolean | undefined;
+  fieldSetLegend: boolean | undefined;
 };
 
 export type StringFieldPresentation = WizFieldPresentationBase & { label: string };
@@ -87,7 +87,7 @@ export function useWizFieldPresentation<TFieldValues extends FieldValues>(
     const fallbackLabel = wizFallbackLabelFromFieldPath(name);
     const id = idProp ?? fromYup?.id ?? wizFallbackFieldId(name);
 
-    const displayLabel = fromYup?.displayLabel;
+    const fieldSetLegend = fromYup?.fieldSetLegend;
 
     const helperText = wizResolvePresentationReactNode(
       helperTextProp,
@@ -149,7 +149,7 @@ export function useWizFieldPresentation<TFieldValues extends FieldValues>(
         labelHelp,
         labelHelpTitle,
         placeholder,
-        displayLabel,
+        fieldSetLegend,
       };
     }
 
@@ -160,7 +160,7 @@ export function useWizFieldPresentation<TFieldValues extends FieldValues>(
       labelHelp,
       labelHelpTitle,
       placeholder,
-      displayLabel,
+      fieldSetLegend,
     };
   }, [
     name,

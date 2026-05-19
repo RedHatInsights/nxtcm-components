@@ -59,7 +59,7 @@ export function WizRadioGroup<TFieldValues extends FieldValues = FieldValues>(
   } = props;
 
   const control = useWizRhfControl<TFieldValues>('WizRadioGroup', controlProp);
-  const { id, label, displayLabel, helperText, labelHelp, labelHelpTitle } =
+  const { id, label, fieldSetLegend, helperText, labelHelp, labelHelpTitle } =
     useWizFieldPresentation({
       name,
       schema,
@@ -86,7 +86,7 @@ export function WizRadioGroup<TFieldValues extends FieldValues = FieldValues>(
     <RadioGroup
       {...rest}
       id={id}
-      label={displayLabel === false ? undefined : label}
+      label={fieldSetLegend === false ? undefined : label}
       helperText={helperText}
       labelHelp={labelHelp}
       labelHelpTitle={labelHelpTitle}

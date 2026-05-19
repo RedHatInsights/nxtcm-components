@@ -35,7 +35,7 @@ export const clusterPrivacySchema = yup
   .meta({
     id: 'cluster_privacy',
     stepId: STEP_IDS.NETWORKING,
-    displayLabel: false,
+    fieldSetLegend: false,
     fieldType: 'radio',
     noEditAfterSubmit: true,
   } satisfies WizardFieldMeta);

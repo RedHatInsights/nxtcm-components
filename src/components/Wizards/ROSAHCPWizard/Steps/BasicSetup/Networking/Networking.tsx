@@ -26,7 +26,6 @@ type NetworkingStepProps = Pick<ROSAHCPWizardData, 'vpcList' | 'subnets'>;
 export const Networking = (props: NetworkingStepProps) => {
   const { networking: n } = useRosaHcpWizardStrings();
 
-  const publicSelected = useWatch({ name: 'cluster_privacy' });
   const cidrDefaultChecked = useWatch({ name: 'cidr_default' });
 
   return (
@@ -38,11 +37,9 @@ export const Networking = (props: NetworkingStepProps) => {
             id="external"
             value={ClusterNetwork.external}
             label={n.publicLabel}
-          />
-
-          {publicSelected === ClusterNetwork.external ? (
+          >
             <WizSelect name="cluster_privacy_public_subnet_id" schema={clusterValidationSchema} />
-          ) : null}
+          </Radio>
 
           <Radio
             labelHelp={n.privatePopover}

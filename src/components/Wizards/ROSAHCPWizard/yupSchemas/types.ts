@@ -31,8 +31,8 @@ export type WizardFieldMeta = {
   unit?: string;
   /** Display checkbox title */
   title?: string;
-  /** Display or hide label */
-  displayLabel?: boolean;
+  /** Display or hide fieldset legend example: Label on radio buttons group */
+  fieldSetLegend?: boolean;
 };
 
 /**
