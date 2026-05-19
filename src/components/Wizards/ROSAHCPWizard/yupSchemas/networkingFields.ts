@@ -34,8 +34,8 @@ export const clusterPrivacySchema = yup
   .required()
   .meta({
     id: 'cluster_privacy',
-    labelKey: 'networking.sectionLabel',
     stepId: STEP_IDS.NETWORKING,
+    fieldSetLegend: false,
     fieldType: 'radio',
     noEditAfterSubmit: true,
   } satisfies WizardFieldMeta);
@@ -57,6 +57,7 @@ export const cidrDefaultSchema = yup
   .meta({
     id: 'cidr_default',
     labelKey: 'networking.useDefaultsLabel',
+    helperTextKey: 'networking.useDefaultsHelp',
     stepId: STEP_IDS.NETWORKING,
     fieldType: 'checkbox',
     advanced: true,
@@ -69,6 +70,7 @@ export const networkMachineCidrSchema = yup
   .meta({
     id: 'network_machine_cidr',
     labelKey: 'networking.machineCidrLabel',
+    helperTextKey: 'networking.machineCidrHelp',
     stepId: STEP_IDS.NETWORKING,
     fieldType: 'text',
     advanced: true,
@@ -149,6 +151,7 @@ export const networkServiceCidrSchema = yup
   .meta({
     id: 'network_service_cidr',
     labelKey: 'networking.serviceCidrLabel',
+    helperTextKey: 'networking.serviceCidrHelp',
     stepId: STEP_IDS.NETWORKING,
     fieldType: 'text',
     advanced: true,
@@ -226,6 +229,7 @@ export const networkPodCidrSchema = yup
   .meta({
     id: 'network_pod_cidr',
     labelKey: 'networking.podCidrLabel',
+    helperTextKey: 'networking.podCidrHelp',
     stepId: STEP_IDS.NETWORKING,
     fieldType: 'text',
     advanced: true,
@@ -301,6 +305,7 @@ export const networkHostPrefixSchema = yup
   .meta({
     id: 'network_host_prefix',
     labelKey: 'networking.hostPrefixLabel',
+    helperTextKey: 'networking.hostPrefixHelp',
     stepId: STEP_IDS.NETWORKING,
     fieldType: 'text',
     advanced: true,
@@ -339,6 +344,7 @@ export const configureProxySchema = yup
   .meta({
     id: 'configure_proxy',
     labelKey: 'networking.proxyCheckboxLabel',
+    helperTextKey: 'networking.proxyCheckboxHelp',
     stepId: STEP_IDS.NETWORKING,
     fieldType: 'checkbox',
     advanced: true,

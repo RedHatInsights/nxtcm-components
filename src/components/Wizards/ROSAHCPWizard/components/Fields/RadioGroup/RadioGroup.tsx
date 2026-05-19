@@ -93,7 +93,7 @@ export function RadioGroup(props: RadioGroupProps) {
 
           <Flex
             direction={{ default: isInline ? 'row' : 'column' }}
-            spaceItems={{ default: 'spaceItemsSm' }}
+            spaceItems={{ default: 'spaceItemsMd' }}
             className="pf-v6-u-pt-xs"
           >
             {children}

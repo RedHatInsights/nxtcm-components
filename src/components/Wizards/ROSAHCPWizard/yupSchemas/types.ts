@@ -6,7 +6,7 @@ export type WizardFieldMeta = {
   /** Unique field identifier (matches the schema path). */
   id: string;
   /** Dot-path key into the strings provider for resolving label, placeholder, and helper text at runtime. */
-  labelKey: string;
+  labelKey?: string;
   /** Dot-path for `helperText` when not inlined in `.meta()`. */
   helperTextKey?: string;
   /** Dot-path for `labelHelp` when not inlined in `.meta()`. */
@@ -31,6 +31,8 @@ export type WizardFieldMeta = {
   unit?: string;
   /** Display checkbox title */
   title?: string;
+  /** Display or hide fieldset legend example: Label on radio buttons group */
+  fieldSetLegend?: boolean;
 };
 
 /**

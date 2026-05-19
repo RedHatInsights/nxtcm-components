@@ -59,17 +59,18 @@ export function WizRadioGroup<TFieldValues extends FieldValues = FieldValues>(
   } = props;
 
   const control = useWizRhfControl<TFieldValues>('WizRadioGroup', controlProp);
-  const { id, label, helperText, labelHelp, labelHelpTitle } = useWizFieldPresentation({
-    name,
-    schema,
-    yupDescribeOptions,
-    idProp,
-    labelProp,
-    helperTextProp,
-    labelHelpProp,
-    labelHelpTitleProp,
-    labelMode: 'stringField',
-  });
+  const { id, label, fieldSetLegend, helperText, labelHelp, labelHelpTitle } =
+    useWizFieldPresentation({
+      name,
+      schema,
+      yupDescribeOptions,
+      idProp,
+      labelProp,
+      helperTextProp,
+      labelHelpProp,
+      labelHelpTitleProp,
+      labelMode: 'stringField',
+    });
 
   const isRequired = isRequiredProp ?? requiredFromYup(schema, name, yupDescribeOptions);
 
@@ -85,7 +86,7 @@ export function WizRadioGroup<TFieldValues extends FieldValues = FieldValues>(
     <RadioGroup
       {...rest}
       id={id}
-      label={label}
+      label={fieldSetLegend === false ? undefined : label}
       helperText={helperText}
       labelHelp={labelHelp}
       labelHelpTitle={labelHelpTitle}
