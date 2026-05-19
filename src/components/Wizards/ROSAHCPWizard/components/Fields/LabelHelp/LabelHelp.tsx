@@ -4,8 +4,10 @@ import { HelpIcon } from '@patternfly/react-icons';
 
 type PopoverComponentProps = ComponentProps<typeof Popover>;
 
-export interface LabelHelpProps
-  extends Omit<PopoverComponentProps, 'headerContent' | 'bodyContent' | 'children'> {
+export interface LabelHelpProps extends Omit<
+  PopoverComponentProps,
+  'headerContent' | 'bodyContent' | 'children'
+> {
   id: string;
   labelHelp?: ReactNode;
   labelHelpTitle?: string;

@@ -20,8 +20,10 @@ function lowercaseFirst(label: string) {
   return label;
 }
 
-export interface NumberInputProps
-  extends Omit<NumberInputComponentProps, 'onChange' | 'onMinus' | 'onPlus' | 'validated'> {
+export interface NumberInputProps extends Omit<
+  NumberInputComponentProps,
+  'onChange' | 'onMinus' | 'onPlus' | 'validated'
+> {
   id: string;
   label: string;
   labelHelp?: ReactNode;
