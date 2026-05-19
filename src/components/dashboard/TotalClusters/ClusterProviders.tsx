@@ -72,7 +72,7 @@ export const ClusterProviders: React.FC<ClusterProvidersProps> = ({
             </FlexItem>
           </Flex>
         </FlexItem>
-      ) : (
+      ) : providers ? (
         <FlexItem>
           <Flex alignItems={{ default: 'alignItemsCenter' }}>
             <FlexItem>
@@ -115,7 +115,7 @@ export const ClusterProviders: React.FC<ClusterProvidersProps> = ({
             </FlexItem>
           </Flex>
         </FlexItem>
-      )}
+      ) : null}
     </Flex>
   );
 };

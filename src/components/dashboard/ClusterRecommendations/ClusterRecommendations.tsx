@@ -61,6 +61,8 @@ export const ClusterRecommendations = ({
     );
   }
 
+  if (count === undefined) return null;
+
   return (
     <>
       <Critical count={count} onViewRecommendations={onViewRecommendations} />
