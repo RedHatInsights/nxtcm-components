@@ -60,7 +60,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
   useAutoscalingFieldDefaults(autoscaling);
 
   useEffect(() => {
-    if (region) {
+    if (region && typeof machineTypes.fetch === 'function') {
       void machineTypes.fetch(region);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

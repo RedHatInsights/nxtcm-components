@@ -83,6 +83,10 @@ const EditSecurityGroups = ({
   );
 
   React.useEffect(() => {
+    if (!selectedVPC?.id) {
+      return;
+    }
+
     const newGroupIds = vpcSecurityGroupsSorted.map((g) => g.id || '');
     const newSelectedGroupIds = selectedGroupIds.filter((gId) => newGroupIds.includes(gId));
 
@@ -97,7 +101,7 @@ const EditSecurityGroups = ({
         shouldValidate: true,
       });
     }
-  }, [vpcSecurityGroupsSorted, selectedGroupIds, setValue]);
+  }, [selectedVPC?.id, vpcSecurityGroupsSorted, selectedGroupIds, setValue]);
 
   if (isReadOnly) {
     return (
