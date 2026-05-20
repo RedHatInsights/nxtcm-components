@@ -47,35 +47,34 @@ export const AdvisorSeverity: React.FC<AdvisorSeverityProps> = ({
   showLightspeedBadge = true,
   isLoading,
 }) => {
-  const showSkeleton = !!isLoading;
+  const header = (title || showLightspeedBadge) && (
+    <FlexItem>
+      <Flex
+        alignItems={{ default: 'alignItemsCenter' }}
+        justifyContent={{ default: 'justifyContentSpaceBetween' }}
+      >
+        {title && (
+          <FlexItem>
+            <Title headingLevel="h3" size="md" data-testid="card-title">
+              {title}
+            </Title>
+          </FlexItem>
+        )}
+        {showLightspeedBadge && (
+          <FlexItem>
+            <Label color="orange" isCompact data-testid="lightspeed-badge">
+              Powered by Red Hat Lightspeed
+            </Label>
+          </FlexItem>
+        )}
+      </Flex>
+    </FlexItem>
+  );
 
-  return (
-    <Flex direction={{ default: 'column' }} className={styles.container}>
-      {(title || showLightspeedBadge) && (
-        <FlexItem>
-          <Flex
-            alignItems={{ default: 'alignItemsCenter' }}
-            justifyContent={{ default: 'justifyContentSpaceBetween' }}
-          >
-            {title && (
-              <FlexItem>
-                <Title headingLevel="h3" size="md" data-testid="card-title">
-                  {title}
-                </Title>
-              </FlexItem>
-            )}
-            {showLightspeedBadge && (
-              <FlexItem>
-                <Label color="orange" isCompact data-testid="lightspeed-badge">
-                  Powered by Red Hat Lightspeed
-                </Label>
-              </FlexItem>
-            )}
-          </Flex>
-        </FlexItem>
-      )}
-
-      {showSkeleton ? (
+  if (isLoading) {
+    return (
+      <Flex direction={{ default: 'column' }} className={styles.container}>
+        {header}
         <FlexItem>
           <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
             {severityConfig.map(({ key }, index) => (
@@ -111,45 +110,51 @@ export const AdvisorSeverity: React.FC<AdvisorSeverityProps> = ({
             ))}
           </Flex>
         </FlexItem>
-      ) : severity ? (
-        <FlexItem>
-          <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
-            {severityConfig.map(({ key, label, Icon, style }) => (
-              <FlexItem key={key} className={styles.severityItem}>
-                <Flex
-                  direction={{ default: 'column' }}
-                  alignItems={{ default: 'alignItemsCenter' }}
-                  spaceItems={{ default: 'spaceItemsXs' }}
-                >
-                  <FlexItem>
-                    <Flex
-                      alignItems={{ default: 'alignItemsCenter' }}
-                      spaceItems={{ default: 'spaceItemsXs' }}
-                    >
-                      <FlexItem>
-                        <Icon
-                          className={styles[style]}
-                          aria-hidden="true"
-                          data-testid={`severity-icon-${key}`}
-                        />
-                      </FlexItem>
-                      <FlexItem
-                        className={styles.severityCount}
-                        data-testid={`severity-count-${key}`}
-                      >
-                        {severity[key]}
-                      </FlexItem>
-                    </Flex>
-                  </FlexItem>
-                  <FlexItem className={styles.severityLabel}>{label}</FlexItem>
-                </Flex>
-              </FlexItem>
-            ))}
-          </Flex>
-        </FlexItem>
-      ) : null}
+      </Flex>
+    );
+  }
 
-      {onViewMore && !showSkeleton && (
+  if (!severity) return null;
+
+  return (
+    <Flex direction={{ default: 'column' }} className={styles.container}>
+      {header}
+      <FlexItem>
+        <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
+          {severityConfig.map(({ key, label, Icon, style }) => (
+            <FlexItem key={key} className={styles.severityItem}>
+              <Flex
+                direction={{ default: 'column' }}
+                alignItems={{ default: 'alignItemsCenter' }}
+                spaceItems={{ default: 'spaceItemsXs' }}
+              >
+                <FlexItem>
+                  <Flex
+                    alignItems={{ default: 'alignItemsCenter' }}
+                    spaceItems={{ default: 'spaceItemsXs' }}
+                  >
+                    <FlexItem>
+                      <Icon
+                        className={styles[style]}
+                        aria-hidden="true"
+                        data-testid={`severity-icon-${key}`}
+                      />
+                    </FlexItem>
+                    <FlexItem
+                      className={styles.severityCount}
+                      data-testid={`severity-count-${key}`}
+                    >
+                      {severity[key]}
+                    </FlexItem>
+                  </Flex>
+                </FlexItem>
+                <FlexItem className={styles.severityLabel}>{label}</FlexItem>
+              </Flex>
+            </FlexItem>
+          ))}
+        </Flex>
+      </FlexItem>
+      {onViewMore && (
         <FlexItem>
           <Button variant="link" isInline onClick={onViewMore} data-testid="view-more-link">
             View more in Red Hat Advisor

@@ -86,7 +86,7 @@ export const UpgradeRisks = ({
         className={styles.totalSection}
       >
         <FlexItem className={styles.totalNumber} data-testid="total-risks">
-          {totalRisks}
+          {totalRisks ?? 0}
         </FlexItem>
         <FlexItem className={styles.totalLabel}>total number of upgrade risks</FlexItem>
       </Flex>
