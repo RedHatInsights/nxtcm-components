@@ -103,19 +103,18 @@ export const ResourceUtilization: React.FC<ResourceUtilizationProps> = ({
   onViewMore,
   isLoading,
 }) => {
-  const showSkeleton = !!isLoading;
+  const header = title && (
+    <FlexItem>
+      <Title headingLevel="h3" size="md" data-testid="card-title">
+        {title}
+      </Title>
+    </FlexItem>
+  );
 
-  return (
-    <Flex direction={{ default: 'column' }} className={styles.container}>
-      {title && (
-        <FlexItem>
-          <Title headingLevel="h3" size="md" data-testid="card-title">
-            {title}
-          </Title>
-        </FlexItem>
-      )}
-
-      {showSkeleton ? (
+  if (isLoading) {
+    return (
+      <Flex direction={{ default: 'column' }} className={styles.container}>
+        {header}
         <FlexItem>
           <Flex
             justifyContent={{ default: 'justifyContentSpaceEvenly' }}
@@ -130,37 +129,41 @@ export const ResourceUtilization: React.FC<ResourceUtilizationProps> = ({
             </FlexItem>
           </Flex>
         </FlexItem>
-      ) : data ? (
-        <>
-          <FlexItem>
-            <Flex
-              justifyContent={{ default: 'justifyContentSpaceEvenly' }}
-              alignItems={{ default: 'alignItemsFlexStart' }}
-              className={styles.chartsRow}
-            >
-              <FlexItem>
-                <MetricChart label="vCPU" metric={data.vCPU} chartId="vcpu-donut" />
-              </FlexItem>
-              <FlexItem>
-                <MetricChart label="Memory" metric={data.memory} chartId="memory-donut" />
-              </FlexItem>
-              {data.storage && (
-                <FlexItem>
-                  <MetricChart label="Storage" metric={data.storage} chartId="storage-donut" />
-                </FlexItem>
-              )}
-            </Flex>
-          </FlexItem>
+      </Flex>
+    );
+  }
 
-          {onViewMore && (
-            <FlexItem className={styles.viewLink}>
-              <Button variant="link" onClick={onViewMore} className={styles.viewMoreBtn}>
-                View more
-              </Button>
+  if (!data) return null;
+
+  return (
+    <Flex direction={{ default: 'column' }} className={styles.container}>
+      {header}
+      <FlexItem>
+        <Flex
+          justifyContent={{ default: 'justifyContentSpaceEvenly' }}
+          alignItems={{ default: 'alignItemsFlexStart' }}
+          className={styles.chartsRow}
+        >
+          <FlexItem>
+            <MetricChart label="vCPU" metric={data.vCPU} chartId="vcpu-donut" />
+          </FlexItem>
+          <FlexItem>
+            <MetricChart label="Memory" metric={data.memory} chartId="memory-donut" />
+          </FlexItem>
+          {data.storage && (
+            <FlexItem>
+              <MetricChart label="Storage" metric={data.storage} chartId="storage-donut" />
             </FlexItem>
           )}
-        </>
-      ) : null}
+        </Flex>
+      </FlexItem>
+      {onViewMore && (
+        <FlexItem className={styles.viewLink}>
+          <Button variant="link" onClick={onViewMore} className={styles.viewMoreBtn}>
+            View more
+          </Button>
+        </FlexItem>
+      )}
     </Flex>
   );
 };

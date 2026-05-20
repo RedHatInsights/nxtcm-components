@@ -26,51 +26,54 @@ export const TotalClusters: React.FC<TotalClustersProps> = ({
   onViewMore,
   isLoading,
 }) => {
-  const showSkeleton = !!isLoading;
+  const header = title && (
+    <FlexItem>
+      <Title headingLevel="h3" size="md" data-testid="total-clusters-title">
+        {title}
+      </Title>
+    </FlexItem>
+  );
+
+  if (isLoading) {
+    return (
+      <Flex direction={{ default: 'column' }} className={styles.container}>
+        {header}
+        <Flex
+          direction={{ default: 'column' }}
+          spaceItems={{ default: 'spaceItemsXs' }}
+          className={styles.totalSection}
+        >
+          <FlexItem>
+            <Skeleton width="60px" height="38px" screenreaderText="Loading cluster count" />
+          </FlexItem>
+          <FlexItem>
+            <Skeleton width="120px" fontSize="sm" />
+          </FlexItem>
+        </Flex>
+      </Flex>
+    );
+  }
+
+  if (!data) return null;
 
   return (
     <Flex direction={{ default: 'column' }} className={styles.container}>
-      {title && (
-        <FlexItem>
-          <Title headingLevel="h3" size="md" data-testid="total-clusters-title">
-            {title}
-          </Title>
-        </FlexItem>
-      )}
-
+      {header}
       <Flex
         direction={{ default: 'column' }}
         spaceItems={{ default: 'spaceItemsXs' }}
         className={styles.totalSection}
       >
-        {showSkeleton ? (
-          <>
-            <FlexItem>
-              <Skeleton width="60px" height="38px" screenreaderText="Loading cluster count" />
-            </FlexItem>
-            <FlexItem>
-              <Skeleton width="120px" fontSize="sm" />
-            </FlexItem>
-          </>
-        ) : data ? (
-          <>
-            <FlexItem data-testid="total-clusters">
-              {onViewMore ? (
-                <Button
-                  variant="link"
-                  isInline
-                  onClick={onViewMore}
-                  className={styles.totalNumberLink}
-                >
-                  {data.total}
-                </Button>
-              ) : (
-                <span className={styles.totalNumber}>{data.total}</span>
-              )}
-            </FlexItem>
-            <FlexItem className={styles.totalLabel}>managed clusters</FlexItem>
-          </>
-        ) : null}
+        <FlexItem data-testid="total-clusters">
+          {onViewMore ? (
+            <Button variant="link" isInline onClick={onViewMore} className={styles.totalNumberLink}>
+              {data.total}
+            </Button>
+          ) : (
+            <span className={styles.totalNumber}>{data.total}</span>
+          )}
+        </FlexItem>
+        <FlexItem className={styles.totalLabel}>managed clusters</FlexItem>
       </Flex>
     </Flex>
   );

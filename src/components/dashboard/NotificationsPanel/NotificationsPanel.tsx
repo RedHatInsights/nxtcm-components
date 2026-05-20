@@ -45,12 +45,9 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  const showSkeleton = !!isLoading;
-
   const totalItems = notifications?.length ?? 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  // Calculate items for current page
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
   const currentNotifications =
@@ -77,28 +74,23 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
     }
   };
 
-  return (
-    <Panel variant="secondary">
-      <PanelHeader>
-        <div className={styles.header}>
-          <span className={styles.headerTitle} data-testid="header">
-            {/* TODO: consider making this a heading */}
-            New notifications
-          </span>
-        </div>
-        <div className={styles.headerBadge}>
-          <BellIcon />
-          &nbsp;
-          {showSkeleton ? (
+  if (isLoading) {
+    return (
+      <Panel variant="secondary">
+        <PanelHeader>
+          <div className={styles.header}>
+            <span className={styles.headerTitle} data-testid="header">
+              New notifications
+            </span>
+          </div>
+          <div className={styles.headerBadge}>
+            <BellIcon />
+            &nbsp;
             <Skeleton width="24px" height="16px" />
-          ) : (
-            <span data-testid="notification-count">{totalItems}</span>
-          )}
-        </div>
-      </PanelHeader>
-      <PanelMain>
-        <PanelMainBody>
-          {showSkeleton ? (
+          </div>
+        </PanelHeader>
+        <PanelMain>
+          <PanelMainBody>
             <Flex direction={{ default: 'column' }}>
               <FlexItem>
                 <Table variant="compact" borders={false} aria-label="Loading notifications">
@@ -131,52 +123,82 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
                 </Table>
               </FlexItem>
             </Flex>
-          ) : currentNotifications && currentNotifications.length > 0 ? (
-            <Table variant="compact" borders={false}>
-              <Thead>
-                <Tr>
-                  <Th>Notification</Th>
-                  <Th>Type</Th>
-                  <Th>Time</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {currentNotifications.map((notification) => (
-                  <Tr
-                    key={notification.id}
-                    data-testid={`notification-${notification.id}`}
-                    isClickable
-                    onClick={() => handleNotificationClick(notification)}
-                    className={styles.clickableRow}
+          </PanelMainBody>
+        </PanelMain>
+      </Panel>
+    );
+  }
+
+  const renderBody = () => {
+    if (currentNotifications && currentNotifications.length > 0) {
+      return (
+        <Table variant="compact" borders={false}>
+          <Thead>
+            <Tr>
+              <Th>Notification</Th>
+              <Th>Type</Th>
+              <Th>Time</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {currentNotifications.map((notification) => (
+              <Tr
+                key={notification.id}
+                data-testid={`notification-${notification.id}`}
+                isClickable
+                onClick={() => handleNotificationClick(notification)}
+                className={styles.clickableRow}
+              >
+                <Td dataLabel="Notification">
+                  <span
+                    className={styles.notificationTitle}
+                    data-testid={`notification-title-${notification.id}`}
                   >
-                    <Td dataLabel="Notification">
-                      <span
-                        className={styles.notificationTitle}
-                        data-testid={`notification-title-${notification.id}`}
-                      >
-                        {notification.title}
-                      </span>
-                    </Td>
-                    <Td dataLabel="Type" data-testid={`notification-type-${notification.id}`}>
-                      {notification.type}
-                    </Td>
-                    <Td dataLabel="Time" data-testid={`notification-time-${notification.id}`}>
-                      {notification.time}
-                    </Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          ) : (
-            <EmptyState variant="full">
-              <EmptyStateBody>
-                <Title headingLevel="h2" size="lg">
-                  No notifications found
-                </Title>
-              </EmptyStateBody>
-            </EmptyState>
-          )}
-          {!showSkeleton && enablePagination && totalPages > 1 && (
+                    {notification.title}
+                  </span>
+                </Td>
+                <Td dataLabel="Type" data-testid={`notification-type-${notification.id}`}>
+                  {notification.type}
+                </Td>
+                <Td dataLabel="Time" data-testid={`notification-time-${notification.id}`}>
+                  {notification.time}
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      );
+    }
+
+    return (
+      <EmptyState variant="full">
+        <EmptyStateBody>
+          <Title headingLevel="h2" size="lg">
+            No notifications found
+          </Title>
+        </EmptyStateBody>
+      </EmptyState>
+    );
+  };
+
+  return (
+    <Panel variant="secondary">
+      <PanelHeader>
+        <div className={styles.header}>
+          <span className={styles.headerTitle} data-testid="header">
+            New notifications
+          </span>
+        </div>
+        <div className={styles.headerBadge}>
+          <BellIcon />
+          &nbsp;
+          <span data-testid="notification-count">{totalItems}</span>
+        </div>
+      </PanelHeader>
+      <PanelMain>
+        <PanelMainBody>
+          {renderBody()}
+          {enablePagination && totalPages > 1 && (
             <div className={styles.paginationContainer}>
               <span className={styles.paginationText}>
                 {startIndex + 1} - {endIndex} of {totalItems}
