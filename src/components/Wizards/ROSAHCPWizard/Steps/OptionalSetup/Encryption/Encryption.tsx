@@ -11,13 +11,22 @@ import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../links';
 import { FieldWrapper } from '../../../components/FieldWrapper';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
+import { useClearFieldWhenHidden } from './useClearFieldWhenHidden';
+import { useEncryptionYupDescribeOptions } from './useEncryptionYupDescribeOptions';
 
 export const Encryption = () => {
   const e = useRosaHcpWizardStrings().encryption;
+  const yupDescribeOptions = useEncryptionYupDescribeOptions();
   const customKmsSelected = useWatch<ROSAHCPCluster>({ name: 'encryption_keys' });
   const etcdIsChecked = useWatch<Pick<ROSAHCPCluster, 'etcd_encryption'>>({
     name: 'etcd_encryption',
   });
+
+  useClearFieldWhenHidden<ROSAHCPCluster>(
+    'kms_key_arn',
+    customKmsSelected !== ClusterEncryptionKeys.custom
+  );
+  useClearFieldWhenHidden<ROSAHCPCluster>('etcd_key_arn', !etcdIsChecked);
 
   return (
     <Section label={e.sectionLabel}>
@@ -43,9 +52,9 @@ export const Encryption = () => {
 
       {customKmsSelected === 'custom' ? (
         <WizTextInput<ROSAHCPCluster>
-          isRequired={customKmsSelected === 'custom'}
           name="kms_key_arn"
           schema={clusterValidationSchema}
+          yupDescribeOptions={yupDescribeOptions}
         />
       ) : null}
       <FieldWrapper span={6}>
@@ -64,9 +73,9 @@ export const Encryption = () => {
       </FieldWrapper>
       {etcdIsChecked ? (
         <WizTextInput<ROSAHCPCluster>
-          isRequired={etcdIsChecked}
           name="etcd_key_arn"
           schema={clusterValidationSchema}
+          yupDescribeOptions={yupDescribeOptions}
         />
       ) : null}
       <FieldWrapper span={6}>
