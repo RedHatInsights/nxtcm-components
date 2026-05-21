@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, FlexItem, Title } from '@patternfly/react-core';
+import { Flex, FlexItem, Skeleton, Title } from '@patternfly/react-core';
 import { ChartDonut } from '@patternfly/react-charts/victory';
 import styles from './ClusterProviders.module.scss';
 
@@ -12,9 +12,11 @@ export type ProviderBreakdown = {
 
 export type ClusterProvidersProps = {
   /** per-provider cluster breakdown */
-  providers: ProviderBreakdown[];
+  providers?: ProviderBreakdown[];
   /** card title — defaults to "Clusters by provider" */
   title?: string;
+  /** renders skeleton placeholders when true */
+  isLoading?: boolean;
 };
 
 const DEFAULT_TITLE = 'Clusters by provider';
@@ -32,23 +34,50 @@ const providerColors = [
 export const ClusterProviders: React.FC<ClusterProvidersProps> = ({
   providers,
   title = DEFAULT_TITLE,
+  isLoading,
 }) => {
-  if (providers.length === 0) return null;
+  const header = title && (
+    <FlexItem>
+      <Title headingLevel="h3" size="md" data-testid="providers-title">
+        {title}
+      </Title>
+    </FlexItem>
+  );
 
-  const total = providers.reduce((sum, p) => sum + p.count, 0);
-  const chartData = providers.map((p) => ({ x: p.label, y: p.count }));
-  const colorScale = providerColors.slice(0, providers.length);
+  if (isLoading) {
+    return (
+      <Flex direction={{ default: 'column' }} className={styles.container}>
+        {header}
+        <FlexItem>
+          <Flex alignItems={{ default: 'alignItemsCenter' }}>
+            <FlexItem>
+              <Skeleton
+                shape="circle"
+                width="160px"
+                height="160px"
+                screenreaderText="Loading cluster providers"
+              />
+            </FlexItem>
+            <FlexItem flex={{ default: 'flex_1' }}>
+              <div className={styles.legendGrid}>
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className={styles.legendItem}>
+                    <Skeleton width="100%" fontSize="sm" />
+                  </div>
+                ))}
+              </div>
+            </FlexItem>
+          </Flex>
+        </FlexItem>
+      </Flex>
+    );
+  }
+
+  if (!providers || providers.length === 0) return null;
 
   return (
     <Flex direction={{ default: 'column' }} className={styles.container}>
-      {title && (
-        <FlexItem>
-          <Title headingLevel="h3" size="md" data-testid="providers-title">
-            {title}
-          </Title>
-        </FlexItem>
-      )}
-
+      {header}
       <FlexItem>
         <Flex alignItems={{ default: 'alignItemsCenter' }}>
           <FlexItem>
@@ -57,12 +86,12 @@ export const ClusterProviders: React.FC<ClusterProvidersProps> = ({
                 ariaDesc="Donut chart showing cluster counts per provider"
                 ariaTitle="Clusters by provider"
                 constrainToVisibleArea
-                data={chartData}
-                colorScale={colorScale}
+                data={providers.map((p) => ({ x: p.label, y: p.count }))}
+                colorScale={providerColors.slice(0, providers.length)}
                 labels={({ datum }) => `${datum.x}: ${datum.y}`}
                 padAngle={1}
                 subTitle="clusters"
-                title={String(total)}
+                title={String(providers.reduce((sum, p) => sum + p.count, 0))}
                 width={160}
                 height={160}
                 innerRadius={45}

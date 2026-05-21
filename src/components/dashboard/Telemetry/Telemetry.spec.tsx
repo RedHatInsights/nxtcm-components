@@ -75,4 +75,15 @@ test.describe('Telemetry', () => {
     await expect(component.getByTestId('connected-count')).toHaveText('9999');
     await expect(component.getByTestId('disconnected-count')).toHaveText('1234');
   });
+
+  test('should render skeleton when isLoading is true', async ({ mount }) => {
+    const component = await mount(<Telemetry isLoading />);
+    await expect(component.getByText('Loading telemetry data')).toBeVisible();
+    await expect(component.getByTestId('connected-count')).not.toBeVisible();
+  });
+
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(<Telemetry isLoading />);
+    await expect(component.getByText('Loading telemetry data')).toBeVisible();
+  });
 });

@@ -1,4 +1,4 @@
-import { Divider, Flex, FlexItem } from '@patternfly/react-core';
+import { Divider, Flex, FlexItem, Skeleton } from '@patternfly/react-core';
 import CheckCircleIcon from '@patternfly/react-icons/dist/esm/icons/check-circle-icon';
 import InProgressIcon from '@patternfly/react-icons/dist/esm/icons/in-progress-icon';
 import SyncAltIcon from '@patternfly/react-icons/dist/esm/icons/sync-alt-icon';
@@ -16,10 +16,52 @@ export type UpdateStatusData = {
 
 export type UpdateStatusProps = {
   /** update status counts */
-  data: UpdateStatusData;
+  data?: UpdateStatusData;
+  /** renders skeleton placeholders when true */
+  isLoading?: boolean;
 };
 
-export const UpdateStatus: React.FC<UpdateStatusProps> = ({ data }) => {
+const SkeletonSection: React.FC<{ screenreaderText?: string }> = ({ screenreaderText }) => (
+  <Flex
+    direction={{ default: 'column' }}
+    alignItems={{ default: 'alignItemsCenter' }}
+    spaceItems={{ default: 'spaceItemsSm' }}
+    className={styles.section}
+  >
+    <FlexItem>
+      <Skeleton shape="circle" width="24px" height="24px" screenreaderText={screenreaderText} />
+    </FlexItem>
+    <FlexItem>
+      <Skeleton width="40px" height="28px" />
+    </FlexItem>
+    <FlexItem>
+      <Skeleton width="130px" fontSize="sm" />
+    </FlexItem>
+  </Flex>
+);
+
+export const UpdateStatus: React.FC<UpdateStatusProps> = ({ data, isLoading }) => {
+  const showSkeleton = !!isLoading;
+
+  if (showSkeleton) {
+    return (
+      <Flex className={styles.container}>
+        <FlexItem flex={{ default: 'flex_1' }}>
+          <SkeletonSection screenreaderText="Loading update status" />
+        </FlexItem>
+        <Divider orientation={{ default: 'vertical' }} />
+        <FlexItem flex={{ default: 'flex_1' }}>
+          <SkeletonSection />
+        </FlexItem>
+        <Divider orientation={{ default: 'vertical' }} />
+        <FlexItem flex={{ default: 'flex_1' }}>
+          <SkeletonSection />
+        </FlexItem>
+      </Flex>
+    );
+  }
+
+  if (!data) return null;
   const { upToDate, updateAvailable, currentlyUpdating } = data;
   const showUpdating = currentlyUpdating !== undefined;
 

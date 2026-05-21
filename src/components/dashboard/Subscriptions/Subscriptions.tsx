@@ -1,14 +1,15 @@
-import { Button, Flex, FlexItem } from '@patternfly/react-core';
+import { Button, Flex, FlexItem, Skeleton } from '@patternfly/react-core';
 import FolderIcon from '@patternfly/react-icons/dist/esm/icons/folder-icon';
 import ServerIcon from '@patternfly/react-icons/dist/esm/icons/server-icon';
 import styles from './Subscriptions.module.scss';
 
 export type SubscriptionsProps = {
-  subscriptionCount: number;
-  instanceCount: number;
+  subscriptionCount?: number;
+  instanceCount?: number;
   onViewSubscriptions?: () => void;
   onSubscriptionsClick?: () => void;
   onInstancesClick?: () => void;
+  isLoading?: boolean;
 };
 
 export const Subscriptions = ({
@@ -17,7 +18,44 @@ export const Subscriptions = ({
   onViewSubscriptions,
   onSubscriptionsClick,
   onInstancesClick,
+  isLoading,
 }: SubscriptionsProps) => {
+  const showSkeleton = !!isLoading;
+
+  if (showSkeleton) {
+    return (
+      <Flex direction={{ default: 'column' }} className={styles.subscriptions}>
+        <FlexItem>
+          <Flex direction={{ default: 'column' }} spaceItems={{ default: 'spaceItemsLg' }}>
+            <Skeleton width="80%" fontSize="sm" screenreaderText="Loading subscriptions" />
+            <Flex
+              justifyContent={{ default: 'justifyContentSpaceBetween' }}
+              spaceItems={{ default: 'spaceItemsLg' }}
+              className={styles.metrics}
+            >
+              {[0, 1].map((col) => (
+                <Flex
+                  key={col}
+                  direction={{ default: 'column' }}
+                  alignItems={{ default: 'alignItemsCenter' }}
+                  spaceItems={{ default: 'spaceItemsXs' }}
+                  flex={{ default: 'flex_1' }}
+                >
+                  <FlexItem>
+                    <Skeleton width="40px" height="28px" />
+                  </FlexItem>
+                  <FlexItem>
+                    <Skeleton width="80px" fontSize="sm" />
+                  </FlexItem>
+                </Flex>
+              ))}
+            </Flex>
+          </Flex>
+        </FlexItem>
+      </Flex>
+    );
+  }
+
   return (
     <Flex direction={{ default: 'column' }} className={styles.subscriptions}>
       <FlexItem className={styles.description}>
@@ -72,10 +110,10 @@ export const Subscriptions = ({
                 className={`${styles.count} ${styles.clickableCount}`}
                 onClick={onInstancesClick}
               >
-                {instanceCount}
+                {instanceCount ?? 0}
               </Button>
             ) : (
-              <span className={styles.count}>{instanceCount}</span>
+              <span className={styles.count}>{instanceCount ?? 0}</span>
             )}
           </FlexItem>
           <FlexItem>

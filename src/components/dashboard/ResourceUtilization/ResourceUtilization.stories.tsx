@@ -98,3 +98,9 @@ export const NoTitle: Story = {
     title: '',
   },
 };
+
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+  },
+};

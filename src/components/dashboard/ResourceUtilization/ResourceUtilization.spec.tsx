@@ -156,4 +156,15 @@ test.describe('ResourceUtilization', () => {
     const vcpuSection = component.getByTestId('metric-vcpu-donut');
     await expect(vcpuSection).toContainText('10,000');
   });
+
+  test('should render skeleton when isLoading is true', async ({ mount }) => {
+    const component = await mount(<ResourceUtilization isLoading />);
+    await expect(component.getByText('Loading resource utilization')).toBeVisible();
+    await expect(component.getByTestId('metric-vcpu-donut')).not.toBeVisible();
+  });
+
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(<ResourceUtilization isLoading />);
+    await expect(component.getByText('Loading resource utilization')).toBeVisible();
+  });
 });

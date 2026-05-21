@@ -84,3 +84,9 @@ export const NoTitle: Story = {
     onViewMore: () => {},
   },
 };
+
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+  },
+};

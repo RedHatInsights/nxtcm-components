@@ -1,4 +1,4 @@
-import { Flex, FlexItem, Pagination, PaginationVariant } from '@patternfly/react-core';
+import { Flex, FlexItem, Pagination, PaginationVariant, Skeleton } from '@patternfly/react-core';
 import { ActionsColumn, IAction, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import React from 'react';
 import styles from './ExpiredTrials.module.scss';
@@ -23,7 +23,7 @@ export type ExpiredTrialsData = {
 
 export type ExpiredTrialsProps = {
   /** expired trials data */
-  data: ExpiredTrialsData;
+  data?: ExpiredTrialsData;
   /** fired when a cluster name is clicked */
   onTrialClick?: (trial: ExpiredTrial) => void;
   /** fired when the user changes page */
@@ -32,7 +32,11 @@ export type ExpiredTrialsProps = {
   onPageSizeChange?: (size: number) => void;
   /** builds the kebab actions per row; if omitted the kebab column is hidden */
   rowActions?: (trial: ExpiredTrial) => IAction[];
+  /** renders skeleton placeholders when true */
+  isLoading?: boolean;
 };
+
+const SKELETON_ROWS = 5;
 
 export const ExpiredTrials: React.FC<ExpiredTrialsProps> = ({
   data,
@@ -40,7 +44,40 @@ export const ExpiredTrials: React.FC<ExpiredTrialsProps> = ({
   onPageChange,
   onPageSizeChange,
   rowActions,
+  isLoading,
 }) => {
+  const showSkeleton = !!isLoading;
+
+  if (showSkeleton) {
+    return (
+      <Flex direction={{ default: 'column' }} className={styles.container}>
+        <FlexItem className={styles.tableWrapper}>
+          <Table aria-label="Loading expired trials" variant="compact">
+            <Thead>
+              <Tr>
+                <Th>Cluster name</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {Array.from({ length: SKELETON_ROWS }, (_, i) => (
+                <Tr key={i}>
+                  <Td dataLabel="Cluster name">
+                    <Skeleton
+                      width="160px"
+                      fontSize="sm"
+                      screenreaderText={i === 0 ? 'Loading expired trials' : undefined}
+                    />
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </FlexItem>
+      </Flex>
+    );
+  }
+
+  if (!data) return null;
   const { trials, totalCount, currentPage, pageSize } = data;
   const hasActions = typeof rowActions === 'function';
   const hasPagination =

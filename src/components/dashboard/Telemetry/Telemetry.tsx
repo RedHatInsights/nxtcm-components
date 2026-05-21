@@ -1,4 +1,4 @@
-import { Divider, Flex, FlexItem } from '@patternfly/react-core';
+import { Divider, Flex, FlexItem, Skeleton } from '@patternfly/react-core';
 import ConnectedIcon from '@patternfly/react-icons/dist/esm/icons/connected-icon';
 import DisconnectedIcon from '@patternfly/react-icons/dist/esm/icons/disconnected-icon';
 import React from 'react';
@@ -13,10 +13,48 @@ export type TelemetryData = {
 
 export type TelemetryProps = {
   /** telemetry status counts */
-  data: TelemetryData;
+  data?: TelemetryData;
+  /** renders skeleton placeholders when true */
+  isLoading?: boolean;
 };
 
-export const Telemetry: React.FC<TelemetryProps> = ({ data }) => {
+const SkeletonSection: React.FC<{ screenreaderText?: string }> = ({ screenreaderText }) => (
+  <Flex
+    direction={{ default: 'column' }}
+    alignItems={{ default: 'alignItemsCenter' }}
+    spaceItems={{ default: 'spaceItemsSm' }}
+    className={styles.section}
+  >
+    <FlexItem>
+      <Skeleton shape="circle" width="24px" height="24px" screenreaderText={screenreaderText} />
+    </FlexItem>
+    <FlexItem>
+      <Skeleton width="40px" height="28px" />
+    </FlexItem>
+    <FlexItem>
+      <Skeleton width="110px" fontSize="sm" />
+    </FlexItem>
+  </Flex>
+);
+
+export const Telemetry: React.FC<TelemetryProps> = ({ data, isLoading }) => {
+  const showSkeleton = !!isLoading;
+
+  if (showSkeleton) {
+    return (
+      <Flex className={styles.container}>
+        <FlexItem flex={{ default: 'flex_1' }}>
+          <SkeletonSection screenreaderText="Loading telemetry data" />
+        </FlexItem>
+        <Divider orientation={{ default: 'vertical' }} />
+        <FlexItem flex={{ default: 'flex_1' }}>
+          <SkeletonSection />
+        </FlexItem>
+      </Flex>
+    );
+  }
+
+  if (!data) return null;
   const { connected, disconnected } = data;
 
   return (

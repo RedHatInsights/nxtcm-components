@@ -170,4 +170,27 @@ test.describe('ClusterRecommendations', () => {
     expect(clickCount).toBe(2);
     expect(categories).toEqual(['serviceAvailability', 'security']);
   });
+
+  test('should render skeleton when isLoading is true', async ({ mount }) => {
+    const component = await mount(<ClusterRecommendations isLoading {...defaultProps} />);
+    await expect(component.getByText('Loading cluster recommendations')).toBeVisible();
+    await expect(
+      component.getByRole('heading', { name: 'Critical recommendations' })
+    ).not.toBeVisible();
+  });
+
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(
+      <ClusterRecommendations
+        isLoading
+        onViewRecommendations={() => {}}
+        serviceAvailability={0}
+        performance={0}
+        security={0}
+        faultTolerance={0}
+        onCategoryClick={() => {}}
+      />
+    );
+    await expect(component.getByText('Loading cluster recommendations')).toBeVisible();
+  });
 });

@@ -100,3 +100,9 @@ export const SingleTrial: Story = {
     onPageChange: fn(),
   },
 };
+
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+  },
+};

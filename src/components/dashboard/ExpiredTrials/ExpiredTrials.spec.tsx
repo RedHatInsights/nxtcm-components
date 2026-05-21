@@ -144,4 +144,15 @@ test.describe('ExpiredTrials', () => {
 
     await expect(component.getByTestId('trial-link-s1')).toContainText('my-expired-cluster');
   });
+
+  test('should render skeleton when isLoading is true', async ({ mount }) => {
+    const component = await mount(<ExpiredTrials isLoading />);
+    await expect(component.getByText('Loading expired trials')).toBeVisible();
+    await expect(component.getByTestId('empty-state')).not.toBeVisible();
+  });
+
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(<ExpiredTrials isLoading />);
+    await expect(component.getByText('Loading expired trials')).toBeVisible();
+  });
 });

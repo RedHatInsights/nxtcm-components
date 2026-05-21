@@ -36,26 +36,21 @@ function MyDashboard() {
 
 ## Props
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `totalRisks` | `number` | Yes | Total number of upgrade risks |
-| `criticalCount` | `number` | Yes | Number of critical severity risks |
-| `warningCount` | `number` | Yes | Number of warning severity risks |
-| `infoCount` | `number` | Yes | Number of informational risks |
-| `onViewRisks` | `() => void` | No | Callback when "View upgrade risks" is clicked |
-| `className` | `string` | No | Additional CSS class name |
+| Prop            | Type         | Required | Description                                   |
+| --------------- | ------------ | -------- | --------------------------------------------- |
+| `totalRisks`    | `number`     | Yes      | Total number of upgrade risks                 |
+| `criticalCount` | `number`     | Yes      | Number of critical severity risks             |
+| `warningCount`  | `number`     | Yes      | Number of warning severity risks              |
+| `infoCount`     | `number`     | Yes      | Number of informational risks                 |
+| `onViewRisks`   | `() => void` | No       | Callback when "View upgrade risks" is clicked |
+| `className`     | `string`     | No       | Additional CSS class name                     |
 
 ## Examples
 
 ### Basic Usage (No Link)
 
 ```tsx
-<UpgradeRisks
-  totalRisks={45}
-  criticalCount={15}
-  warningCount={15}
-  infoCount={15}
-/>
+<UpgradeRisks totalRisks={45} criticalCount={15} warningCount={15} infoCount={15} />
 ```
 
 ### With View Link
@@ -85,12 +80,7 @@ function MyDashboard() {
 ### No Risks
 
 ```tsx
-<UpgradeRisks
-  totalRisks={0}
-  criticalCount={0}
-  warningCount={0}
-  infoCount={0}
-/>
+<UpgradeRisks totalRisks={0} criticalCount={0} warningCount={0} infoCount={0} />
 ```
 
 ## Styling
@@ -107,6 +97,7 @@ The component uses SCSS modules for styling. To customize:
 ## Testing
 
 The component includes comprehensive tests covering:
+
 - Rendering with all props
 - Correct display of counts
 - View link visibility and interaction
@@ -114,6 +105,7 @@ The component includes comprehensive tests covering:
 - Edge cases (zero counts, different values)
 
 Run tests:
+
 ```bash
 npm test -- UpgradeRisks
 ```
@@ -129,9 +121,9 @@ npm run storybook
 Navigate to: **Components/Dashboard/UpgradeRisks**
 
 Available stories:
+
 - Default
 - WithViewLink
 - HighCritical
 - LowRisks
 - NoRisks
-

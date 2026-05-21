@@ -61,3 +61,9 @@ export const MockupValues: Story = {
     categories: { serviceAvailability: 25, performance: 0, security: 12, faultTolerance: 4 },
   },
 };
+
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+  },
+};

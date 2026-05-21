@@ -276,4 +276,19 @@ test.describe('Subscriptions', () => {
     await expect(component.getByText('1')).toBeVisible();
     await expect(component.getByText('2')).toBeVisible();
   });
+
+  test('should render skeleton when isLoading is true', async ({ mount }) => {
+    const component = await mount(<Subscriptions isLoading {...defaultProps} />);
+    await expect(component.getByText('Loading subscriptions')).toBeVisible();
+    await expect(
+      component.getByText(
+        'Monitor your OpenShift usage for both Annual and On-Demand subscriptions.'
+      )
+    ).not.toBeVisible();
+  });
+
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(<Subscriptions isLoading />);
+    await expect(component.getByText('Loading subscriptions')).toBeVisible();
+  });
 });

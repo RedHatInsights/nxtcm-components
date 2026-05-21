@@ -69,4 +69,15 @@ test.describe('AdvisorCategories', () => {
     await expect(component.getByText('Service availability: 5000')).toBeVisible();
     await expect(component.getByText('Performance: 3000')).toBeVisible();
   });
+
+  test('should render skeleton when isLoading is true', async ({ mount }) => {
+    const component = await mount(<AdvisorCategories isLoading />);
+    await expect(component.getByText('Loading category data')).toBeVisible();
+    await expect(component.getByTestId('category-chart')).not.toBeVisible();
+  });
+
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(<AdvisorCategories isLoading />);
+    await expect(component.getByText('Loading category data')).toBeVisible();
+  });
 });

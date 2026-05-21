@@ -9,6 +9,10 @@ const meta: Meta<typeof CostManagement> = {
   },
   tags: ['autodocs'],
   argTypes: {
+    isLoading: {
+      control: 'boolean',
+      description: 'Renders skeleton placeholders while loading',
+    },
     totalCost: {
       control: 'number',
       description: 'Total month-to-date cost',
@@ -108,5 +112,11 @@ export const MockupValues: Story = {
       { id: 'cluster-b', name: 'another cluster name', cost: 2300 },
     ],
     onViewMore: () => console.log('View more clicked'),
+  },
+};
+
+export const Loading: Story = {
+  args: {
+    isLoading: true,
   },
 };

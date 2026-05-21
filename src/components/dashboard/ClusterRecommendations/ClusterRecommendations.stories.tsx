@@ -5,6 +5,10 @@ const meta: Meta<typeof ClusterRecommendations> = {
   title: 'Components/Dashboard/ClusterRecommendations',
   component: ClusterRecommendations,
   tags: ['autodocs'],
+  args: {
+    onViewRecommendations: () => {},
+    onCategoryClick: () => {},
+  },
   argTypes: {
     count: {
       control: { type: 'number', min: 0 },
@@ -29,6 +33,10 @@ const meta: Meta<typeof ClusterRecommendations> = {
     faultTolerance: {
       control: { type: 'number', min: 0 },
       description: 'Number of fault tolerance recommendations',
+    },
+    onCategoryClick: {
+      action: 'category clicked',
+      description: 'Callback when a category row is clicked',
     },
   },
 };
@@ -83,5 +91,15 @@ export const HighCount: Story = {
     performance: 300,
     security: 200,
     faultTolerance: 150,
+  },
+};
+
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+    serviceAvailability: 0,
+    performance: 0,
+    security: 0,
+    faultTolerance: 0,
   },
 };

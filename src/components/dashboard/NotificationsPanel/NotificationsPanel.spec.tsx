@@ -469,4 +469,17 @@ test.describe('NotificationsPanel', () => {
     await expect(component.getByText('5 minutes ago')).toBeVisible();
     await expect(component.getByText('2024-01-15 10:30 UTC')).toBeVisible();
   });
+
+  test('should render skeleton when isLoading is true', async ({ mount }) => {
+    const component = await mount(
+      <NotificationsPanel isLoading notifications={mockNotifications} />
+    );
+    await expect(component.getByText('Loading notifications')).toBeVisible();
+    await expect(component.getByTestId('notification-1')).not.toBeVisible();
+  });
+
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(<NotificationsPanel isLoading />);
+    await expect(component.getByText('Loading notifications')).toBeVisible();
+  });
 });

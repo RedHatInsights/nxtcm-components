@@ -39,3 +39,9 @@ export const HighCount: Story = {
     onViewMore: fn(),
   },
 };
+
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+  },
+};

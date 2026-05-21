@@ -153,3 +153,9 @@ export const WithoutLinks: Story = {
     ],
   },
 };
+
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+  },
+};

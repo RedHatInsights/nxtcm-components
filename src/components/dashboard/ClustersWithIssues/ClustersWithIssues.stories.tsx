@@ -131,3 +131,9 @@ export const NoTooltip: Story = {
     titleTooltip: '',
   },
 };
+
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+  },
+};

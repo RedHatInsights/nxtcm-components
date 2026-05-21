@@ -114,4 +114,15 @@ test.describe('AdvisorSeverity', () => {
     );
     await expect(component.getByTestId('lightspeed-badge')).toHaveCount(0);
   });
+
+  test('should render skeleton when isLoading is true', async ({ mount }) => {
+    const component = await mount(<AdvisorSeverity isLoading />);
+    await expect(component.getByText('Loading severity data')).toBeVisible();
+    await expect(component.getByTestId('severity-count-critical')).not.toBeVisible();
+  });
+
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(<AdvisorSeverity isLoading />);
+    await expect(component.getByText('Loading severity data')).toBeVisible();
+  });
 });

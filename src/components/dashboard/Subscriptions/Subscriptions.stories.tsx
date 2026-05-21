@@ -79,3 +79,9 @@ export const OnlyInstancesClickable: Story = {
     onInstancesClick: () => console.log('Instances count clicked'),
   },
 };
+
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+  },
+};

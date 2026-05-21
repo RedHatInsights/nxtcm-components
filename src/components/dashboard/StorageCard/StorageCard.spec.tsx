@@ -157,4 +157,15 @@ test.describe('StorageCard', () => {
     const component = await mount(<StorageCard storageData={mockStorageData} />);
     await expect(component.getByText('Total storage used')).toBeVisible();
   });
+
+  test('should render skeleton when isLoading is true', async ({ mount }) => {
+    const component = await mount(<StorageCard isLoading storageData={mockStorageData} />);
+    await expect(component.getByText('Loading storage data')).toBeVisible();
+    await expect(component.getByTestId('percentage')).not.toBeVisible();
+  });
+
+  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
+    const component = await mount(<StorageCard isLoading />);
+    await expect(component.getByText('Loading storage data')).toBeVisible();
+  });
 });
