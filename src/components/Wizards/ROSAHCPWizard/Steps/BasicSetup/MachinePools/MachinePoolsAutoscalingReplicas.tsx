@@ -1,6 +1,6 @@
 import { Flex, FlexItem } from '@patternfly/react-core';
 
-import type { ClusterFormData } from '../../../../types';
+import type { ROSAHCPCluster } from '../../../types';
 import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../links';
 import { WizNumberInput } from '../../../components/WizFields';
@@ -31,7 +31,7 @@ export const MachinePoolsAutoscalingReplicas = (props: MachinePoolsAutoscalingRe
   return (
     <Flex>
       <FlexItem>
-        <WizNumberInput<Partial<ClusterFormData>>
+        <WizNumberInput<ROSAHCPCluster>
           name="min_replicas"
           schema={clusterValidationSchema}
           min={minReplicasUiMin}
@@ -40,7 +40,7 @@ export const MachinePoolsAutoscalingReplicas = (props: MachinePoolsAutoscalingRe
         />
       </FlexItem>
       <FlexItem>
-        <WizNumberInput<Partial<ClusterFormData>>
+        <WizNumberInput<ROSAHCPCluster>
           name="max_replicas"
           schema={clusterValidationSchema}
           min={1}

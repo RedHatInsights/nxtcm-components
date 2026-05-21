@@ -3,7 +3,7 @@ import { Content, ContentVariants, Grid, GridItem, Stack, StackItem } from '@pat
 import { useFormContext, useWatch } from 'react-hook-form';
 
 import type { ClusterFormData } from '../../../../types';
-import type { ROSAHCPWizardData } from '../../../types';
+import type { ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
 import {
   buildMachinePoolsReviewSelectOptions,
   canSelectImds,
@@ -91,7 +91,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
           <StackItem>
             <Grid>
               <GridItem span={5}>
-                <WizSelect<Partial<ClusterFormData>>
+                <WizSelect<ROSAHCPCluster>
                   name="selected_vpc"
                   schema={clusterValidationSchema}
                   label={`${mp.vpcLabelPrefix} ${region ?? ''}`}
@@ -116,7 +116,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
           <StackItem>
             <Grid>
               <GridItem span={5}>
-                <WizSelect<Partial<ClusterFormData>>
+                <WizSelect<ROSAHCPCluster>
                   name="machine_pools_subnets.0.machine_pool_subnet"
                   schema={clusterValidationSchema}
                   label={mp.subnetLabel}
@@ -133,7 +133,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
           <StackItem>
             <Grid>
               <GridItem span={5}>
-                <WizSelect<Partial<ClusterFormData>>
+                <WizSelect<ROSAHCPCluster>
                   name="machine_type"
                   schema={clusterValidationSchema}
                   isLoading={machineTypes.isFetching}
@@ -154,7 +154,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
             </Grid>
           </StackItem>
           <StackItem>
-            <WizCheckbox<Partial<ClusterFormData>>
+            <WizCheckbox<ROSAHCPCluster>
               id="autoscaling-checkbox"
               name="autoscaling"
               schema={clusterValidationSchema}
@@ -173,7 +173,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
             {autoscaling ? (
               <MachinePoolsAutoscalingReplicas maxAutoscalingNodes={maxAutoscalingNodes} />
             ) : (
-              <WizNumberInput<Partial<ClusterFormData>>
+              <WizNumberInput<ROSAHCPCluster>
                 name="nodes_compute"
                 schema={clusterValidationSchema}
                 min={1}

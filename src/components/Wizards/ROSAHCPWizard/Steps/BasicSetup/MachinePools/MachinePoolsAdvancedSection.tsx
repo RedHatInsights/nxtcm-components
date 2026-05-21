@@ -1,6 +1,7 @@
 import { Content, ContentVariants, ExpandableSection } from '@patternfly/react-core';
 
-import type { CloudVpc, ClusterFormData } from '../../../../types';
+import type { CloudVpc } from '../../../../types';
+import type { ROSAHCPCluster } from '../../../types';
 import { Radio } from '../../../components/Fields/RadioGroup';
 import { WizNumberInput, WizRadioGroup } from '../../../components/WizFields';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
@@ -32,7 +33,7 @@ export const MachinePoolsAdvancedSection = (props: MachinePoolsAdvancedSectionPr
 
   return (
     <ExpandableSection toggleText={mp.advancedToggle} isIndented>
-      <WizRadioGroup<Partial<ClusterFormData>>
+      <WizRadioGroup<ROSAHCPCluster>
         name="imds"
         schema={clusterValidationSchema}
         label={mp.imdsLabel}
@@ -55,7 +56,7 @@ export const MachinePoolsAdvancedSection = (props: MachinePoolsAdvancedSectionPr
       </WizRadioGroup>
 
       <div className="pf-v6-u-mt-md">
-        <WizNumberInput<Partial<ClusterFormData>>
+        <WizNumberInput<ROSAHCPCluster>
           name="compute_root_volume"
           schema={clusterValidationSchema}
           min={75}

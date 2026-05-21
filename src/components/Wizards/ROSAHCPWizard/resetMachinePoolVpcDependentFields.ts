@@ -10,9 +10,9 @@ export type ResetMachinePoolVpcDependentFieldsOptions = {
   shouldValidate?: boolean;
 };
 
-const EMPTY_MACHINE_POOL_SUBNETS: ClusterFormData['machine_pools_subnets'] = [
-  { machine_pool_subnet: '' },
-];
+function createEmptyMachinePoolSubnets(): ClusterFormData['machine_pools_subnets'] {
+  return [{ machine_pool_subnet: '' }];
+}
 
 /** Clears VPC-dependent machine pool fields with aligned react-hook-form flags. */
 export function resetMachinePoolVpcDependentFields(
@@ -31,6 +31,6 @@ export function resetMachinePoolVpcDependentFields(
   if (clearSelectedVpc) {
     setValue('selected_vpc', undefined, setOpts);
   }
-  setValue('machine_pools_subnets', EMPTY_MACHINE_POOL_SUBNETS, setOpts);
+  setValue('machine_pools_subnets', createEmptyMachinePoolSubnets(), setOpts);
   setValue('security_groups_worker', [], setOpts);
 }

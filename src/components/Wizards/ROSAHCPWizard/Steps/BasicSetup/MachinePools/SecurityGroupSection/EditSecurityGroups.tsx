@@ -8,7 +8,8 @@ import { securityGroupsSort } from './helpers';
 import { showSecurityGroupsSection, truncateTextWithEllipsis } from '../../../../helpers';
 import { WizMultiSelect } from '../../../../components/WizFields';
 import { clusterValidationSchema } from '../../../../yupSchemas';
-import type { ClusterFormData, CloudVpc } from '../../../../../types';
+import type { CloudVpc, ClusterFormData } from '../../../../../types';
+import type { ROSAHCPCluster } from '../../../../types';
 import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWizardStringsContext';
 import { useFormContext, useWatch } from 'react-hook-form';
 import SecurityGroupsNoEditAlert from './SecurityGroupsNoEditAlert';
@@ -133,7 +134,7 @@ const EditSecurityGroups = ({
           {incompatibleClusterVersion ? (
             <div>{incompatibleClusterVersionMessage}</div>
           ) : (
-            <WizMultiSelect<Partial<ClusterFormData>>
+            <WizMultiSelect<ROSAHCPCluster>
               name="security_groups_worker"
               schema={clusterValidationSchema}
               label={label}
