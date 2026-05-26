@@ -6,6 +6,7 @@ import { requiredFromYup } from '../../../../../../utilities/yupFieldRequired';
 import { FieldWithAPIErrorAlert } from '../../FieldWithAPIErrorAlert';
 import { Select, type SelectProps } from '../../Fields/Select';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
+import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizSelectControlledKeys = 'value' | 'onChange' | 'onBlur' | 'errorMessage' | 'isError';
@@ -94,7 +95,8 @@ export function WizSelect<TFieldValues extends FieldValues = FieldValues, TOptio
     formState: { isSubmitted },
   } = useController({ name, control });
 
-  const showError = wizFieldShowsError(invalid, isTouched, isSubmitted);
+  const stepValidationRevealed = useWizStepValidationRevealed(String(name));
+  const showError = wizFieldShowsError(invalid, isTouched, isSubmitted || stepValidationRevealed);
 
   const select = (
     <Select<TOption>
