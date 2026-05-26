@@ -24,7 +24,7 @@ import {
 } from '../../helpers';
 import { Section } from '../../components/Section';
 import { STEP_IDS } from '../../constants';
-import { useRosaHcpWizardReviewSections } from '../../ROSAHCPWizardReviewSections';
+import { useRosaHcpWizardReviewSections } from './ROSAHCPWizardReviewSections';
 import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPWizardData } from '../../types';
