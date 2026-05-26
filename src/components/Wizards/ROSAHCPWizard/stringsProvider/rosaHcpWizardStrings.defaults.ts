@@ -47,6 +47,12 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
       yamlEditor: 'YAML Editor',
       review: 'Review',
     },
+    fixValidationErrors: 'Please fix validation errors',
+    skipToReview: 'Skip to review',
+    back: 'Back',
+    next: 'Next',
+    submit: 'Submit',
+    cancel: 'Cancel',
   },
   submitError: {
     title: 'Error creating cluster',

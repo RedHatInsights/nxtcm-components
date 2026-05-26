@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Wizard, WizardStep } from '@patternfly/react-core';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 
-import type { ClusterFormData } from '../types';
 import { Details } from './Steps/BasicSetup/Details/Details';
 import { RolesAndPolicies } from './Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies';
 import { MachinePools } from './Steps/BasicSetup/MachinePools/MachinePools';
@@ -11,18 +10,16 @@ import { Encryption } from './Steps/OptionalSetup/Encryption/Encryption';
 import { ClusterUpdates } from './Steps/OptionalSetup/ClusterUpdates/ClusterUpdates';
 import { ClusterWideProxy } from './Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy';
 import { Review } from './Steps/Review/Review';
+import { createRosaHcpWizardFooter } from './Footer/RosaHcpWizardFooter';
 import { useRosaHcpWizardStrings } from './stringsProvider/RosaHcpWizardStringsContext';
 import { STEP_IDS } from './constants';
 import type { RosaHCPWizardProps } from './types';
 
 export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
-  const { wizardData } = props;
-  const { getValues } = useFormContext<Partial<ClusterFormData>>();
+  const { wizardData, onSubmit } = props;
+  const footer = useMemo(() => createRosaHcpWizardFooter(onSubmit), [onSubmit]);
 
   const clusterWideProxySelected = useWatch({ name: 'configure_proxy' });
-
-  // eslint-disable-next-line no-console -- intentional step-change debug logging
-  const onStepChange = () => console.log('ROSA HCP wizard data', getValues());
 
   const rosaStrings = useRosaHcpWizardStrings();
   const { wizard } = rosaStrings;
@@ -30,7 +27,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
 
   return (
     <div>
-      <Wizard height="100vh" onStepChange={onStepChange}>
+      <Wizard height="100vh" footer={footer}>
         <WizardStep
           isExpandable
           name={sl.basicSetup}

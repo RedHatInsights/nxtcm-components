@@ -168,6 +168,18 @@ export type RosaHcpWizardStrings = {
       yamlEditor: string;
       review: string;
     };
+    /** Shown above the footer when Next is pressed and the current step has validation errors. */
+    fixValidationErrors: string;
+    /** Footer button on Additional setup steps that jumps to Review after validating the current step. */
+    skipToReview: string;
+    /** Footer Back button label. */
+    back: string;
+    /** Footer Next button label. */
+    next: string;
+    /** Footer Submit button label on the Review step. */
+    submit: string;
+    /** Footer Cancel button label. */
+    cancel: string;
   };
   submitError: {
     title: string;
