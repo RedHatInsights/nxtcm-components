@@ -15,5 +15,6 @@ export function useEncryptionYupDescribeOptions(): YupFieldDescribeOptions {
     name: 'etcd_encryption',
   });
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(() => ({ value: getValues() }), [encryptionKeys, etcdEncryption, getValues]);
 }
