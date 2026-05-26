@@ -3,7 +3,7 @@ import React from 'react';
 import { FieldWithAPIErrorAlert } from './FieldWithAPIErrorAlert';
 import { RosaHcpWizardStringsProvider } from '../stringsProvider/RosaHcpWizardStringsContext';
 
-/** `FieldWithAPIErrorAlert` uses `useRosaWizardStrings`, which requires this provider. */
+/** `FieldWithAPIErrorAlert` uses `useRosaWizardStrings` (ROSA HCP strings context), which requires this provider. */
 function withRosaStrings(ui: React.ReactElement) {
   return <RosaHcpWizardStringsProvider>{ui}</RosaHcpWizardStringsProvider>;
 }

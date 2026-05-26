@@ -50,12 +50,16 @@ export const useRosaHcpWizardReviewSections = (): RosaHcpWizardReviewSection[] =
         id: STEP_IDS.MACHINE_POOLS,
         label: stepLabels.machinePools,
         fieldPaths: [
+          'selected_vpc',
+          'machine_pools_subnets',
           'machine_type',
           'autoscaling',
           'nodes_compute',
           'min_replicas',
           'max_replicas',
           'compute_root_volume',
+          'imds',
+          'security_groups_worker',
         ],
       },
       {

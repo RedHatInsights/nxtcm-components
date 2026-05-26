@@ -274,12 +274,12 @@ const mockVPCs = [
       },
       {
         name: 'test-subnet-private1-us-east-1b',
-        availability_zone: 'us-east-1a',
+        availability_zone: 'us-east-1b',
         subnet_id: 'subnet-0b5b5611aser12236d',
       },
       {
         name: 'test-subnet-public1-us-east-1b',
-        availability_zone: 'us-east-1a',
+        availability_zone: 'us-east-1b',
         subnet_id: 'subnet-0b776hbdfdfdv12236d',
       },
     ],

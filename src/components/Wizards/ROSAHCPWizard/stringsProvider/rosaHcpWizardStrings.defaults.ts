@@ -38,7 +38,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
       basicSetup: 'Basic setup',
       details: 'Details',
       rolesAndPolicies: 'Roles and policies',
-      machinePools: 'Machine pools',
+      machinePools: 'Machine pool',
       networking: 'Networking',
       clusterWideProxy: 'Cluster-wide proxy',
       additionalSetup: 'Additional setup',
@@ -220,12 +220,12 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     hostPrefixHelp: 'Must be between /23 and /26',
   },
   machinePools: {
-    sectionLabel: 'Machine pools',
+    sectionLabel: 'Machine pool',
     intro:
-      'Create machine pools and specify the private subnet for each machine pool. To allow high availability for your workloads, add machine pools on different availablity zones.',
+      'Create a machine pool.  Additional machine pools can be created after cluster creation.',
     vpcLabel: 'VPC',
-    vpcLabelPrefix: 'Select a VPC to install your machine pools into your selected regions:',
-    vpcPlaceholder: 'Select a VPC to install your machine pools into',
+    vpcLabelPrefix: 'Select a VPC to install your machine pool into your selected region:',
+    vpcPlaceholder: 'Select a VPC to install your machine pool into',
     vpcHelpLead:
       'To create a cluster hosted by Red Hat, you must have a Virtual Private Cloud (VPC) available to create clusters on.',
     vpcLearnMoreLink: 'Learn more about VPCs.',
@@ -233,9 +233,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     subnetLabel: 'Private subnet name',
     addPoolButton: 'Add machine pool',
     subnetPlaceholder: 'Select private subnet',
-    settingsSectionLabel: 'Machine pools settings',
-    settingsIntro:
-      'The following settings apply to all machine pools created during cluster install. Additional machine pools can be created after cluster creation.',
+    settingsSectionLabel: 'Machine pool settings',
     instanceTypeLabel: 'Compute node instance type',
     instanceTypeHelpLead:
       'Instance types are made from varying combinations of CPU, memory, storage, and networking capacity. Instance type availability depends on regional availability and your AWS account configuration.',

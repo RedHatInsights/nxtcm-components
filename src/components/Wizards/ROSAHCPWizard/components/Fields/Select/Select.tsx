@@ -32,22 +32,10 @@ import { RedoIcon, TimesIcon } from '@patternfly/react-icons';
 import { toDisplayString } from './SelectOptions';
 import type { Option, OptionGroup, OptionType } from './SelectTypes';
 import { extractOptionValue } from './SelectTypes';
+import { getStatus, isSyntheticOptionId, lowercaseFirst } from './selectFieldUtils';
 import { useSelectDerived } from './useSelectDerived';
 import { HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
-
-const getStatus = (isError: boolean, isSuccess: boolean) => {
-  if (isError) return 'danger';
-  if (isSuccess) return 'success';
-  return undefined;
-};
-
-/** Synthetic menu rows — must not commit as a real selection. */
-const SYNTHETIC_OPTION_IDS = new Set(['no-results', 'loading', 'empty']);
-
-function lowercaseFirst(label: string) {
-  return label ? label[0].toLowerCase() + label.substring(1) : label;
-}
 
 export interface SelectProps<T = unknown> {
   /** Stable field id (toggle and listbox wiring). */
@@ -159,7 +147,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
 
   const handleSelectById = useCallback(
     (optionId: string | undefined) => {
-      if (optionId != null && SYNTHETIC_OPTION_IDS.has(optionId)) {
+      if (isSyntheticOptionId(optionId)) {
         return;
       }
       if (optionId == null || optionId === '') {
@@ -203,6 +191,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
         id={optId}
         key={optId}
         value={optId}
+        title={typeof opt.title === 'string' && opt.title ? opt.title : undefined}
         description={
           !isAriaDisabled && typeof opt.description === 'string' ? opt.description : undefined
         }

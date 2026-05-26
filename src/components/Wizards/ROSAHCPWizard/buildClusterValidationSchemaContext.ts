@@ -1,5 +1,5 @@
 import type { ClusterFormData } from '../types';
-import { getAutoscalingMaxNodes } from '../RosaWizard/Steps/BasicSetupStep/MachinePoolsSubstep/Autoscaling/AutoscalingField';
+import { getAutoscalingMaxNodes } from './getAutoscalingMaxNodes';
 import { constructSelectedSubnets, getWorkerNodeVolumeSizeMaxGiB } from './helpers';
 import type { RosaHcpWizardValidatorStrings } from './stringsProvider/rosaHcpWizardStrings';
 import type { ValidationSchemaContext } from './yupSchemas/types';
