@@ -2,7 +2,11 @@ import { isValidElement, useMemo } from 'react';
 import { Content, Grid, GridItem, Stack } from '@patternfly/react-core';
 import * as yup from 'yup';
 
-import { type YupFieldDescribeOptions } from '../../../../../utilities/yupFieldRequired';
+import {
+  getYupFieldDescriptionAtPath,
+  testsFromDescription,
+  type YupFieldDescribeOptions,
+} from '../../../../../utilities/yupFieldDescribe';
 
 /** Yup's public `Test` type hides `OPTIONS`; `describe()` uses this internally. */
 type YupInternalTest = yup.AnySchema['tests'][number] & {
@@ -49,9 +53,9 @@ export function yupDescribeJson(
   describeOptions?: YupFieldDescribeOptions
 ): string {
   const leaf = yup.reach(schema, path) as yup.AnySchema;
-  const description = leaf.describe(describeOptions);
+  const description = getYupFieldDescriptionAtPath(schema, path, describeOptions);
   const filteredTests = schemaTestsMatchingYupDescribe(leaf, describeOptions);
-  const tests = description.tests.map((t, i) => {
+  const tests = testsFromDescription(description).map((t, i) => {
     const message = filteredTests[i]?.OPTIONS?.message;
     return message !== undefined ? { ...t, message } : { ...t };
   });

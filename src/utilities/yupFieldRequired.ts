@@ -1,24 +1,19 @@
 import * as yup from 'yup';
 
-/** Options forwarded to {@link yup.Schema.describe} (e.g. `value` when the field uses `.when()`). */
-export type YupFieldDescribeOptions = NonNullable<Parameters<yup.AnySchema['describe']>[0]>;
+import {
+  getYupFieldDescriptionAtPath,
+  metaFromDescription,
+  testsFromDescription,
+  type YupFieldDescribeOptions,
+} from './yupFieldDescribe';
+
+export type { YupFieldDescribeOptions } from './yupFieldDescribe';
 
 /** {@link rosaCommonRequiredNonEmptyTest} / {@link rosaCommonRequiredNonEmptyIncludingAbsentTest} name. */
 export const ROSA_COMMON_REQUIRED_NONEMPTY_TEST_NAME = 'rosa-common-required-nonempty';
 
 /** Set on Yup `.when()` `then` branches so {@link isYupFieldRequired} can show required UI without `.required()`. */
 export const YUP_FIELD_REQUIRED_UI_META_KEY = 'fieldRequiredUi';
-
-function metaFromDescription(description: unknown): Record<string, unknown> {
-  if (description === null || typeof description !== 'object' || !('meta' in description)) {
-    return {};
-  }
-  const { meta } = description as { meta?: unknown };
-  if (meta !== undefined && meta !== null && typeof meta === 'object' && !Array.isArray(meta)) {
-    return meta as Record<string, unknown>;
-  }
-  return {};
-}
 
 /**
  * Whether Yup treats the value at `path` as non-optional (i.e. `undefined` is invalid),
@@ -28,8 +23,8 @@ function metaFromDescription(description: unknown): Record<string, unknown> {
  * {@link YUP_FIELD_REQUIRED_UI_META_KEY} as required for UI (conditional `.when()` branches
  * that use the shared non-empty test without `.required()`).
  *
- * Uses {@link yup.reach} + {@link yup.Schema.describe}. For conditional schemas, pass the
- * same shape of `value` you rely on at validation time so `describe` resolves `.when()` branches.
+ * Uses {@link getYupFieldDescriptionAtPath} so sibling `.when()` branches resolve.
+ * Pass the same `value` shape you use at validation time in `describeOptions`.
  */
 function descriptionIsRequired(description: yup.SchemaFieldDescription): boolean {
   if ('optional' in description && description.optional === false) {
@@ -39,9 +34,9 @@ function descriptionIsRequired(description: yup.SchemaFieldDescription): boolean
     return true;
   }
   if (
-    'tests' in description &&
-    Array.isArray(description.tests) &&
-    description.tests.some((test) => test.name === ROSA_COMMON_REQUIRED_NONEMPTY_TEST_NAME)
+    testsFromDescription(description).some(
+      (test) => test.name === ROSA_COMMON_REQUIRED_NONEMPTY_TEST_NAME
+    )
   ) {
     return true;
   }
@@ -53,8 +48,7 @@ export function isYupFieldRequired(
   path: string,
   describeOptions?: YupFieldDescribeOptions
 ): boolean {
-  const fieldSchema = yup.reach(schema, path);
-  return descriptionIsRequired(fieldSchema.describe(describeOptions));
+  return descriptionIsRequired(getYupFieldDescriptionAtPath(schema, path, describeOptions));
 }
 
 /**

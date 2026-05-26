@@ -1,7 +1,11 @@
 import { isValidElement, type ReactNode } from 'react';
 import * as yup from 'yup';
 
-import { type YupFieldDescribeOptions } from './yupFieldRequired';
+import {
+  getYupFieldDescriptionAtPath,
+  metaFromDescription,
+  type YupFieldDescribeOptions,
+} from './yupFieldDescribe';
 
 /**
  * Optional UI fields stored on a Yup schema via {@link yup.BaseSchema.meta}.
@@ -26,17 +30,6 @@ export interface YupFieldPresentationMeta {
   /** Dot-path into bundled UI strings when `placeholder` is resolved at runtime. */
   placeholderKey?: string;
   fieldSetLegend?: boolean;
-}
-
-function metaFromDescription(description: unknown): Record<string, unknown> {
-  if (description === null || typeof description !== 'object' || !('meta' in description)) {
-    return {};
-  }
-  const { meta } = description as { meta?: unknown };
-  if (meta !== undefined && meta !== null && typeof meta === 'object' && !Array.isArray(meta)) {
-    return meta as Record<string, unknown>;
-  }
-  return {};
 }
 
 function stringFromMeta(
@@ -80,7 +73,7 @@ function reactNodeFromMeta(
 
 /**
  * Reads presentation-related values from `.meta({ ... })` on the schema at `path`
- * (via {@link yup.reach} + {@link yup.Schema.describe}).
+ * (via {@link getYupFieldDescriptionAtPath}).
  *
  * For conditional schemas, pass the same `describeOptions` / `value` shape you use with
  * {@link isYupFieldRequired} so `.when()` branches resolve consistently.
@@ -90,8 +83,7 @@ export function getYupFieldPresentationMeta(
   path: string,
   describeOptions?: YupFieldDescribeOptions
 ): YupFieldPresentationMeta {
-  const fieldSchema = yup.reach(schema, path);
-  const meta = metaFromDescription(fieldSchema.describe(describeOptions));
+  const meta = metaFromDescription(getYupFieldDescriptionAtPath(schema, path, describeOptions));
 
   const out: YupFieldPresentationMeta = {
     id: stringFromMeta(meta, 'id'),

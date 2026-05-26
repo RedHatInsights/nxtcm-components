@@ -32,7 +32,7 @@ describe('getYupFieldPresentationMeta', () => {
     expect(getYupFieldPresentationMeta(schema, 'optIn')).toEqual({});
   });
 
-  it('reads nested paths via yup.reach', () => {
+  it('reads nested paths via object describe', () => {
     const schema = yup.object({
       user: yup.object({
         name: yup.string().required().meta({ id: 'user-name', label: 'Name' }),
