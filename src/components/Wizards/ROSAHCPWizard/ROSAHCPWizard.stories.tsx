@@ -8,8 +8,6 @@ import {
 } from './ROSAHCPWizard.stories.helpers';
 import { MachineTypesDropdownType, Region, Role, ROSAHCPWizardData } from './types';
 import fixtures from './ROSAHCPWizard.fixtures';
-import { defaultRosaWizardStrings } from '../RosaWizard/rosaWizardStrings.defaults';
-
 const onWizardSubmit = async (data: unknown) => {
   console.log('Wizard submitted with data:', data);
   await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -132,7 +130,6 @@ export const Default: Story = {
       console.log('Wizard cancelled');
       alert('Wizard cancelled');
     },
-    strings: defaultRosaWizardStrings,
   },
 };
 
@@ -142,7 +139,6 @@ export const WizardWithLoadingState: Story = {
   args: {
     title: 'Create ROSA Cluster',
     yaml: true,
-    strings: defaultRosaWizardStrings,
     wizardData: mockWizardData,
     onSubmit: onWizardSubmit,
     onCancel: onWizardCancel,
@@ -153,7 +149,6 @@ export const AllApiErrors: Story = {
   args: {
     title: 'Create ROSA HCP Cluster — all API errors',
     yaml: true,
-    strings: defaultRosaWizardStrings,
     onSubmit: onWizardSubmit,
     onCancel: onWizardCancel,
     wizardData: rosaHcpWizardDetailsFieldsAllApiErrorsData,

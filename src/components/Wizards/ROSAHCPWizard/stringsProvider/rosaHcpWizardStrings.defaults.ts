@@ -339,11 +339,11 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     criticalConcernsLink: 'Critical security concerns',
     cveTail:
       '(CVEs) that significantly impact the security or stability of the cluster, updates may be automatically scheduled by Red Hat SRE to the latest z-stream version not impacted by the CVE within 2 business days after customer notifications.',
-    individualLabel: 'Individual updates',
+    individualLabel: 'Manual updates',
     individualDescriptionLead:
       'Schedule each update individually. When planning updates, make sure to consider the end of life dates from the',
     lifecycleLink: 'lifecycle policy',
-    recurringLabel: 'Recurring updates',
+    recurringLabel: 'Automatic updates',
     recurringDescriptionBeforeZStream:
       'The cluster control plan will be automatically updated based on your preferred day and start time when new patch updates ',
     zStreamLinkText: 'z-stream',

@@ -77,6 +77,10 @@ export interface SelectProps<T = unknown> {
   successMessage?: ReactNode | string;
   /** Fires when the dropdown menu opens or closes (after internal `open` updates). */
   onMenuOpenChange?: (isOpen: boolean) => void;
+  /** Optional max height for the dropdown list (passed to PatternFly `Select`). */
+  maxMenuHeight?: string;
+  /** When `true`, constrains the menu height and scrolls overflow (requires `maxMenuHeight`). */
+  isScrollable?: boolean;
 }
 
 export function Select<T = unknown>(props: SelectProps<T>) {
@@ -105,6 +109,8 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     isSuccess,
     successMessage,
     onMenuOpenChange,
+    maxMenuHeight,
+    isScrollable,
   } = props;
 
   const disabled = isDisabled;
@@ -377,6 +383,8 @@ export function Select<T = unknown>(props: SelectProps<T>) {
           toggle={isTypeAhead ? typeaheadToggle : plainToggle}
           variant={isTypeAhead ? 'typeahead' : undefined}
           shouldFocusToggleOnSelect={!isTypeAhead}
+          maxMenuHeight={maxMenuHeight}
+          isScrollable={isScrollable}
         >
           {renderMenuBody()}
         </PfSelect>
