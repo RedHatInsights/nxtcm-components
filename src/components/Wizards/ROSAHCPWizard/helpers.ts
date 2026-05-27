@@ -1,7 +1,14 @@
 import { MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH } from './constants';
 import { securityGroupsSort } from './Steps/BasicSetup/MachinePools/SecurityGroupSection/helpers';
 import type { ClusterFormData } from '../types';
-import { CIDRSubnet, MachinePoolSubnetEntry, ROSAHCPCluster, Subnet, VPC } from './types';
+import {
+  ClusterUpgrade,
+  CIDRSubnet,
+  MachinePoolSubnetEntry,
+  ROSAHCPCluster,
+  Subnet,
+  VPC,
+} from './types';
 
 export type LabelValueOption = { label: string; value: string };
 
@@ -234,16 +241,13 @@ const formatUpgradeScheduleForReview = (
 };
 
 const formatUpgradePolicyForReview = (
-  policy: string,
+  policy: ClusterUpgrade,
   labels: { individualLabel: string; recurringLabel: string }
 ): string => {
-  if (policy === 'manual') {
+  if (policy === ClusterUpgrade.manual) {
     return labels.individualLabel;
   }
-  if (policy === 'automatic') {
-    return labels.recurringLabel;
-  }
-  return policy;
+  return labels.recurringLabel;
 };
 
 export {

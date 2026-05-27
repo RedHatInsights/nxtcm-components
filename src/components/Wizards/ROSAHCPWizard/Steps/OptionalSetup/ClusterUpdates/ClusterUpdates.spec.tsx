@@ -32,15 +32,13 @@ test.describe('ClusterUpdates (ROSA HCP)', () => {
     await expect(component.getByRole('button', { name: cu.selectDayPlaceholder })).toBeVisible();
   });
 
-  test('should hide day and time selectors when individual updates is selected', async ({
+  test('should hide day and time selectors when individual updates is selected by default', async ({
     mount,
     page,
   }) => {
-    const component = await mount(
-      <ClusterUpdatesMount defaultValues={{ upgrade_policy: ClusterUpgrade.automatic }} />
-    );
+    const component = await mount(<ClusterUpdatesMount />);
 
-    await component.getByRole('radio', { name: cu.individualLabel }).click();
+    await expect(component.getByRole('radio', { name: cu.individualLabel })).toBeChecked();
     await expect(component.getByText(cu.dayTimeLabel, { exact: true })).not.toBeVisible();
     await expect(page.getByRole('button', { name: cu.selectDayPlaceholder })).not.toBeVisible();
   });
@@ -48,9 +46,7 @@ test.describe('ClusterUpdates (ROSA HCP)', () => {
   test('should show day and time selectors after selecting recurring updates', async ({
     mount,
   }) => {
-    const component = await mount(
-      <ClusterUpdatesMount defaultValues={{ upgrade_policy: ClusterUpgrade.manual }} />
-    );
+    const component = await mount(<ClusterUpdatesMount />);
 
     await component.getByRole('radio', { name: cu.recurringLabel }).click();
 

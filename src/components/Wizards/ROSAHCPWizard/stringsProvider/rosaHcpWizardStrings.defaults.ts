@@ -387,7 +387,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     podCidr: 'Pod CIDR',
     hostPrefix: 'Host prefix',
     updateStrategy: 'Cluster update strategy',
-    strategyIndividual: 'Individual updates',
+    strategyIndividual: 'Manual updates',
     strategyAutomatic: 'Automatic updates',
     autoscalingMinPrefix: 'Min:',
     autoscalingMaxPrefix: 'Max:',

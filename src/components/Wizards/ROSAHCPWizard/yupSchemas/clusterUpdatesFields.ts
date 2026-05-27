@@ -6,7 +6,7 @@ import type { WizardFieldMeta } from './types';
 
 export const upgradePolicySchema = yup
   .string()
-  .default(ClusterUpgrade.automatic)
+  .default(ClusterUpgrade.manual)
   .optional()
   .meta({
     id: 'upgrade_policy',
