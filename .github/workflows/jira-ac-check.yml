@@ -65,6 +65,8 @@ jobs:
 
             1. Wait 10-15 seconds for the Jira MCP to initialize, then use the Atlassian MCP to read the Jira ticket ${{ steps.jira.outputs.key }} and extract the acceptance criteria.
 
+            1b. If the ticket has no acceptance criteria field or it is empty, note this in your comment and review the PR against its own stated goals in the PR description instead. Do not fail or block -- just note the limitation transparently.
+
             2. Use gh pr view ${{ github.event.pull_request.number || github.event.inputs.pr-number }} --repo ${{ github.repository }} and gh pr diff ${{ github.event.pull_request.number || github.event.inputs.pr-number }} --repo ${{ github.repository }} to read the PR description and code changes.
 
             3. For each acceptance criterion, check whether the PR addresses it. Be specific -- reference actual code changes, file names, and line ranges.
