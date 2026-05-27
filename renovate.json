@@ -8,7 +8,7 @@
       "enabled": false
     }
   ],
-  "reviewers": ["nitin-dhevar", "kdoberst", "davidaznaur", "jloss-redhat", "vishsanghishetty"],
+  "reviewers": ["nitin-dhevar", "kdoberst", "davidaznaur", "jloss-redhat", "vishsanghishetty", "brandonthanhnguyen"],
   "reviewersSampleSize": 2,
   "dependencyDashboard": true,
   "minimumReleaseAge": "4 days",
