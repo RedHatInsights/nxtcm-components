@@ -37,6 +37,7 @@ export const clusterPrivacySchema = yup
     fieldSetLegend: false,
     fieldType: 'radio',
     noEditAfterSubmit: true,
+    resetsFieldsToDefaultOnChange: ['cluster_privacy_public_subnet_id'],
   } satisfies WizardFieldMeta);
 
 export const clusterPrivacyPublicSubnetIdSchema = yup
@@ -347,6 +348,12 @@ export const configureProxySchema = yup
     stepId: STEP_IDS.NETWORKING,
     fieldType: 'checkbox',
     advanced: true,
+    resetsFieldsToDefaultOnChange: [
+      'http_proxy_url',
+      'https_proxy_url',
+      'no_proxy_domains',
+      'additional_trust_bundle',
+    ],
   } satisfies WizardFieldMeta);
 
 export const multiAzSchema = yup

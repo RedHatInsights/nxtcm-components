@@ -58,7 +58,7 @@ export function wizardFieldMetaByPath(path: string): WizardFieldMeta | undefined
 }
 
 // Re-export types
-export type { WizardFieldMeta, ValidationSchemaContext } from './types';
+export type { WizardFieldMeta, ValidationSchemaContext, WizardFormFieldName } from './types';
 
 // Re-export individual field schemas for standalone use
 export { detailsFields } from './detailsFields';

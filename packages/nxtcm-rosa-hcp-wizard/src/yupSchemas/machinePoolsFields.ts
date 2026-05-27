@@ -17,6 +17,7 @@ export const selectedVpcSchema = yup
     fieldType: 'select',
     noEditAfterSubmit: true,
     reviewLabel: 'Install to selected VPC',
+    resetsFieldsToDefaultOnChange: ['machine_pools_subnets', 'security_groups_worker'],
   } satisfies WizardFieldMeta);
 
 /** One machine pool row; array shape is required for API / review even when the UI shows a single subnet. */

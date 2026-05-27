@@ -47,6 +47,7 @@ export const clusterVersionSchema = yup
     labelHelpKey: 'details.openShiftVersionHelp',
     stepId: STEP_IDS.DETAILS,
     fieldType: 'select',
+    resetsFieldsToDefaultOnChange: ['security_groups_worker'],
   } satisfies WizardFieldMeta);
 
 export const associatedAwsIdSchema = yup
@@ -62,6 +63,14 @@ export const associatedAwsIdSchema = yup
     stepId: STEP_IDS.DETAILS,
     fieldType: 'select',
     noEditAfterSubmit: true,
+    resetsFieldsToDefaultOnChange: [
+      'installer_role_arn',
+      'support_role_arn',
+      'worker_role_arn',
+      'selected_vpc',
+      'machine_pools_subnets',
+      'cluster_privacy_public_subnet_id',
+    ],
   } satisfies WizardFieldMeta);
 
 export const billingAccountIdSchema = yup
@@ -93,6 +102,12 @@ export const regionSchema = yup
     stepId: STEP_IDS.DETAILS,
     fieldType: 'select',
     noEditAfterSubmit: true,
+    resetsFieldsToDefaultOnChange: [
+      'selected_vpc',
+      'machine_pools_subnets',
+      'security_groups_worker',
+      'cluster_privacy_public_subnet_id',
+    ],
   } satisfies WizardFieldMeta);
 
 export const detailsFields = {

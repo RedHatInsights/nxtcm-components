@@ -1,7 +1,15 @@
-import type { CIDRSubnet } from '../types';
+import type { CIDRSubnet, ROSAHCPCluster } from '../types';
 import type { RosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings';
 
-/** Static metadata attached to each field via `.meta()`. */
+/** Top-level {@link ROSAHCPCluster} keys used in form reset metadata. */
+export type WizardFormFieldName = keyof ROSAHCPCluster;
+
+/**
+ * Static metadata attached to each field via `.meta()`.
+ *
+ * When `resetsFieldsToDefaultOnChange` is set, changing this field's value should reset the
+ * listed fields to their Yup schema defaults (see {@link resetFieldsToDefaultValues}).
+ */
 export type WizardFieldMeta = {
   /** Unique field identifier (matches the schema path). */
   id: string;
@@ -35,6 +43,7 @@ export type WizardFieldMeta = {
   fieldSetLegend?: boolean;
   /** Whether the field should be collapsed when required. */
   collapseOnRequired?: boolean;
+  resetsFieldsToDefaultOnChange?: readonly WizardFormFieldName[];
 };
 
 /**

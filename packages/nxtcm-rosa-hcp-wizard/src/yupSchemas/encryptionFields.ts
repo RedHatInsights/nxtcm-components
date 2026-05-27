@@ -31,6 +31,7 @@ export const encryptionKeysSchema = yup
     labelKey: 'encryption.keysGroupLabel',
     stepId: STEP_IDS.ENCRYPTION,
     fieldType: 'radio',
+    resetsFieldsToDefaultOnChange: ['kms_key_arn'],
   } satisfies WizardFieldMeta);
 
 export const kmsKeyArnSchema = yup
@@ -63,6 +64,7 @@ export const etcdEncryptionSchema = yup
     stepId: STEP_IDS.ENCRYPTION,
     fieldType: 'checkbox',
     reviewLabel: 'Additional etcd encryption',
+    resetsFieldsToDefaultOnChange: ['etcd_key_arn'],
   } satisfies WizardFieldMeta);
 
 export const etcdKeyArnSchema = yup

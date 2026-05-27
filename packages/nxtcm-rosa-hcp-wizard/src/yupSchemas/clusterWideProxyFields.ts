@@ -15,6 +15,7 @@ export const httpProxyUrlSchema = yup
     placeholderKey: 'clusterWideProxy.httpPlaceholder',
     stepId: STEP_IDS.CLUSTER_WIDE_PROXY,
     fieldType: 'text',
+    resetsFieldsToDefaultOnChange: ['no_proxy_domains'],
   } satisfies WizardFieldMeta)
   .test('http-proxy-url', '', function (value) {
     if (!value) return true;
@@ -42,6 +43,7 @@ export const httpsProxyUrlSchema = yup
     placeholderKey: 'clusterWideProxy.httpsPlaceholder',
     stepId: STEP_IDS.CLUSTER_WIDE_PROXY,
     fieldType: 'text',
+    resetsFieldsToDefaultOnChange: ['no_proxy_domains'],
   } satisfies WizardFieldMeta)
   .test('https-proxy-url', '', function (value) {
     if (!value) return true;
