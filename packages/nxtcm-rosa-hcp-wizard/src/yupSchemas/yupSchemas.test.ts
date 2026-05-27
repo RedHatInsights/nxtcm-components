@@ -1404,6 +1404,19 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
       expect(meta!.labelKey).toBe('details.regionLabel');
       expect(meta!.fieldType).toBe('select');
       expect(meta!.noEditAfterSubmit).toBe(true);
+      expect(meta!.refetchesResourcesOnChange).toEqual([
+        { resource: 'vpcList' },
+        { resource: 'machineTypes', argFromField: 'region' },
+      ]);
+    });
+
+    it('returns refetch metadata for associated_aws_id field', () => {
+      const meta = wizardFieldMetaByPath('associated_aws_id');
+      expect(meta).toBeDefined();
+      expect(meta!.refetchesResourcesOnChange).toEqual([
+        { resource: 'regions', argFromField: 'associated_aws_id' },
+        { resource: 'roles', argFromField: 'associated_aws_id' },
+      ]);
     });
 
     it('returns meta for compute_root_volume field', () => {

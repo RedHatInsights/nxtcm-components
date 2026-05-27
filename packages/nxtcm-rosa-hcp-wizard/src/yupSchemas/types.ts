@@ -1,8 +1,47 @@
-import type { CIDRSubnet, ROSAHCPCluster } from '../types';
+import type { CIDRSubnet, ROSAHCPCluster, ROSAHCPWizardData } from '../types';
 import type { RosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings';
 
 /** Top-level {@link ROSAHCPCluster} keys used in form reset metadata. */
 export type WizardFormFieldName = keyof ROSAHCPCluster;
+
+/** {@link ROSAHCPWizardData} entries that expose an optional `fetch` callback. */
+export type WizardDataResourceKey = {
+  [K in keyof ROSAHCPWizardData]: 'fetch' extends keyof NonNullable<ROSAHCPWizardData[K]>
+    ? NonNullable<NonNullable<ROSAHCPWizardData[K]>['fetch']> extends (...args: never[]) => unknown
+      ? K
+      : never
+    : never;
+}[keyof ROSAHCPWizardData];
+
+type WizardResourceFetchArgs<K extends WizardDataResourceKey> = K extends keyof ROSAHCPWizardData
+  ? NonNullable<ROSAHCPWizardData[K]> extends {
+      fetch?: (...args: infer Args) => unknown;
+    }
+    ? Args extends unknown[]
+      ? Args
+      : never
+    : never
+  : never;
+
+type WizardFormFieldNameMatchingValue<V> = {
+  [F in WizardFormFieldName]: NonNullable<ROSAHCPCluster[F]> extends V ? F : never;
+}[WizardFormFieldName];
+
+type WizardResourceRefetchOnChangeForResource<K extends WizardDataResourceKey> =
+  K extends keyof ROSAHCPWizardData
+    ? WizardResourceFetchArgs<K> extends readonly []
+      ? { readonly resource: K; readonly argFromField?: undefined }
+      : WizardResourceFetchArgs<K> extends readonly [infer Arg, ...unknown[]]
+        ? {
+            readonly resource: K;
+            readonly argFromField: WizardFormFieldNameMatchingValue<Arg>;
+          }
+        : never
+    : never;
+
+/** Describes a {@link ROSAHCPWizardData} resource reload when a form field changes. */
+export type WizardResourceRefetchOnChange =
+  WizardResourceRefetchOnChangeForResource<WizardDataResourceKey>;
 
 /**
  * Static metadata attached to each field via `.meta()`.
@@ -44,6 +83,7 @@ export type WizardFieldMeta = {
   /** Whether the field should be collapsed when required. */
   collapseOnRequired?: boolean;
   resetsFieldsToDefaultOnChange?: readonly WizardFormFieldName[];
+  refetchesResourcesOnChange?: readonly WizardResourceRefetchOnChange[];
 };
 
 /**

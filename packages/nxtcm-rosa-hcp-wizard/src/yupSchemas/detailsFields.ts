@@ -71,6 +71,10 @@ export const associatedAwsIdSchema = yup
       'machine_pools_subnets',
       'cluster_privacy_public_subnet_id',
     ],
+    refetchesResourcesOnChange: [
+      { resource: 'regions', argFromField: 'associated_aws_id' },
+      { resource: 'roles', argFromField: 'associated_aws_id' },
+    ],
   } satisfies WizardFieldMeta);
 
 export const billingAccountIdSchema = yup
@@ -107,6 +111,10 @@ export const regionSchema = yup
       'machine_pools_subnets',
       'security_groups_worker',
       'cluster_privacy_public_subnet_id',
+    ],
+    refetchesResourcesOnChange: [
+      { resource: 'vpcList' },
+      { resource: 'machineTypes', argFromField: 'region' },
     ],
   } satisfies WizardFieldMeta);
 
