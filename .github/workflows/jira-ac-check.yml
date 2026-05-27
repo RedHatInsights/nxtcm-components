@@ -1,5 +1,10 @@
 name: Jira AC Check
 
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 on:
   pull_request_target:
     branches: [main]
@@ -50,7 +55,7 @@ jobs:
 
       - name: Run ACP Jira AC review
         if: steps.jira.outputs.key != ''
-        uses: ambient-code/ambient-action@v2
+        uses: ambient-code/ambient-action@3f01516d00ba5628f210f9390a98970b5567c835 # v0.0.5
         with:
           api-url: ${{ secrets.AMBIENT_API_URL }}
           api-token: ${{ secrets.AMBIENT_BOT_TOKEN }}
