@@ -128,3 +128,19 @@ export {
   etcdKeyArnSchema,
 } from './encryptionFields';
 export { upgradePolicySchema, upgradeScheduleSchema } from './clusterUpdatesFields';
+
+export {
+  buildWizardFieldResetRegistry,
+  getWizardFieldResetsForSourceField,
+  listWizardFieldResetEntries,
+} from './wizardFieldResetRegistry';
+export type { WizardFieldResetEntry } from './wizardFieldResetRegistry';
+
+export {
+  buildWizardFieldRefetchRegistry,
+  getWizardResourceRefetchesForSourceField,
+  listWizardFieldRefetchEntries,
+} from './wizardFieldRefetchRegistry';
+export type { WizardFieldRefetchEntry } from './wizardFieldRefetchRegistry';
+
+export { listWizardFieldMetaChangeSourceFields } from './listWizardFieldMetaChangeSourceFields';

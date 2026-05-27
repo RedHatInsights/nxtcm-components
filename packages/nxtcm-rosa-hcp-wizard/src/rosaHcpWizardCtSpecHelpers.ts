@@ -1,9 +1,34 @@
 import rosaHcpWizardFixtures from './ROSAHCPWizard.fixtures';
 
-import type { MachineTypesResource, VpcListResource } from './types';
+import type { MachineTypesResource, ROSAHCPWizardData, VpcListResource } from './types';
 
-const defaultVpcListFetch = async (): Promise<void> => {};
+const noopFetch = async (): Promise<void> => {};
 const defaultMachineTypesFetch = async (_region: string): Promise<void> => {};
+
+/** Minimal {@link ROSAHCPWizardData} for step-isolated Playwright CT mounts using meta change effects. */
+export function makeDefaultRosaHcpCtWizardData(
+  overrides: Partial<ROSAHCPWizardData> = {}
+): ROSAHCPWizardData {
+  return {
+    awsInfrastructureAccounts: { data: [], error: null, isFetching: false },
+    awsBillingAccounts: { data: [], error: null, isFetching: false },
+    regions: { data: [], error: null, isFetching: false, fetch: noopFetch },
+    versions: { data: { releases: [] }, error: null, isFetching: false, fetch: noopFetch },
+    machineTypes: {
+      data: [],
+      error: null,
+      isFetching: false,
+      fetch: defaultMachineTypesFetch,
+    },
+    roles: { data: [], error: null, isFetching: false, fetch: noopFetch },
+    oidcConfig: { data: [], error: null, isFetching: false },
+    vpcList: { data: [], error: null, isFetching: false, fetch: noopFetch },
+    subnets: { data: [], error: null, isFetching: false },
+    securityGroups: { data: [], error: null, isFetching: false },
+    clusterNameValidation: { error: null, isFetching: false },
+    ...overrides,
+  };
+}
 
 /** Playwright CT: VPC list resource with fixture data and a no-op fetch unless overridden. */
 export function makeVpcListResource(overrides?: Partial<VpcListResource>): VpcListResource {
@@ -11,7 +36,7 @@ export function makeVpcListResource(overrides?: Partial<VpcListResource>): VpcLi
     data: overrides?.data ?? rosaHcpWizardFixtures.mockVPCs,
     isFetching: overrides?.isFetching ?? false,
     error: overrides?.error ?? null,
-    fetch: overrides?.fetch ?? defaultVpcListFetch,
+    fetch: overrides?.fetch ?? noopFetch,
   };
 }
 

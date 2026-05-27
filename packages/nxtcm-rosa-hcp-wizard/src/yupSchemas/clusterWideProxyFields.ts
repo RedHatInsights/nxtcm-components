@@ -64,6 +64,7 @@ export const httpsProxyUrlSchema = yup
 export const noProxyDomainsSchema = yup
   .string()
   .optional()
+  .default('')
   .meta({
     id: 'no_proxy_domains',
     labelKey: 'clusterWideProxy.noProxyLabel',

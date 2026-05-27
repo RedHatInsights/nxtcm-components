@@ -82,7 +82,15 @@ export type WizardFieldMeta = {
   fieldSetLegend?: boolean;
   /** Whether the field should be collapsed when required. */
   collapseOnRequired?: boolean;
+  /**
+   * Other form fields reset to schema defaults when this field's value changes.
+   * Wired by {@link useWizardFieldMetaChangeEffects} via {@link getWizardFieldResetsForSourceField}.
+   */
   resetsFieldsToDefaultOnChange?: readonly WizardFormFieldName[];
+  /**
+   * {@link ROSAHCPWizardData} resources whose `fetch` should run when this field changes.
+   * Wired by {@link useWizardFieldMetaChangeEffects} via {@link getWizardResourceRefetchesForSourceField}.
+   */
   refetchesResourcesOnChange?: readonly WizardResourceRefetchOnChange[];
 };
 

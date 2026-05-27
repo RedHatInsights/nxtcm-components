@@ -202,10 +202,8 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     });
   });
 
-  test.describe('ClusterWideProxy — No Proxy domains clear on disable', () => {
-    test('should clear No Proxy domains value when both proxy fields become empty', async ({
-      mount,
-    }) => {
+  test.describe('ClusterWideProxy — No Proxy domains reset on proxy change', () => {
+    test('should reset No Proxy domains when HTTP proxy URL changes', async ({ mount }) => {
       const component = await mount(
         <ClusterWideProxyMount
           defaultValues={{

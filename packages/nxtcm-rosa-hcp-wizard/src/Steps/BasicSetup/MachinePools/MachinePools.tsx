@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Content, ContentVariants, Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
@@ -20,7 +20,6 @@ import { MachinePoolsAutoscalingReplicas } from './MachinePoolsAutoscalingReplic
 import {
   useAutoscalingFieldDefaults,
   useEnsureMachinePoolSubnetRow,
-  useResetOnVpcChange,
 } from './useMachinePoolsFormEffects';
 
 type MachinePoolsProps = Pick<ROSAHCPWizardData, 'vpcList' | 'machineTypes'>;
@@ -36,7 +35,6 @@ export const MachinePools = (props: MachinePoolsProps) => {
   const clusterVersion = useWatch({ control, name: 'cluster_version' }) ?? '';
   const selectedVpcRaw = useWatch({ control, name: 'selected_vpc' });
   const autoscaling = useWatch({ control, name: 'autoscaling' });
-
   const maxRootDiskSize = getWorkerNodeVolumeSizeMaxGiB(clusterVersion);
   const wrongVersionForIMDS = !canSelectImds(clusterVersion);
   const maxAutoscalingNodes = getAutoscalingMaxNodes(clusterVersion);
@@ -51,18 +49,8 @@ export const MachinePools = (props: MachinePoolsProps) => {
     [selectedVPC, vpcList.data]
   );
 
-  const vpcId = typeof selectedVpcRaw === 'string' ? selectedVpcRaw : selectedVpcRaw?.id;
-
-  useResetOnVpcChange(vpcId);
   useEnsureMachinePoolSubnetRow();
   useAutoscalingFieldDefaults(autoscaling);
-
-  useEffect(() => {
-    if (region && typeof machineTypes.fetch === 'function') {
-      void machineTypes.fetch(region);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [region, machineTypes.fetch]);
 
   const { vpc: vpcOptions, subnet: subnetOptions } = machinePoolsSelectOptions;
 
