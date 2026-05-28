@@ -26,7 +26,7 @@ const testExclude = new TestExclude({
   excludeNodeModules: true,
 });
 
-const coverageEnabled = process.env.COVERAGE === 'true' || !!process.env.CI;
+const coverageEnabled = process.env.COVERAGE === 'true';
 
 module.exports = {
   name: 'vite:istanbul',
