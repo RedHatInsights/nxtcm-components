@@ -1,4 +1,4 @@
-import type { DropdownType } from '../components/Wizards/ROSAHCPWizard/types';
+import type { DropdownType } from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard/types';
 
 export type ReconcileFieldOption = Omit<DropdownType, 'value'> & {
   value: string | number;

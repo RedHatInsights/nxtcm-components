@@ -13,6 +13,10 @@
         "paths": {
             "@patternfly-labs/react-form-wizard": ["./packages/react-form-wizard/src"],
             "@patternfly-labs/react-form-wizard/*": ["./packages/react-form-wizard/src/*"],
+            "@redhat-cloud-services/nxtcm-dashboard": ["./packages/nxtcm-dashboard/src"],
+            "@redhat-cloud-services/nxtcm-dashboard/*": ["./packages/nxtcm-dashboard/src/*"],
+            "@redhat-cloud-services/nxtcm-rosa-hcp-wizard": ["./packages/nxtcm-rosa-hcp-wizard/src"],
+            "@redhat-cloud-services/nxtcm-rosa-hcp-wizard/*": ["./packages/nxtcm-rosa-hcp-wizard/src/*"],
             "@/*": ["./src/*"]
         },
         "lib": [
@@ -24,11 +28,13 @@
     },
     "include": [
         "src/**/*",
-        ".storybook/**/*"
+        ".storybook/**/*",
+        "packages/nxtcm-dashboard/src/**/*",
+        "packages/nxtcm-rosa-hcp-wizard/src/**/*"
     ],
     "exclude": [
         "node_modules",
         "dist",
-        "packages/**/*"
+        "packages/react-form-wizard/**/*"
     ]
 }

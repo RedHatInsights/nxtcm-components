@@ -5,9 +5,13 @@ import path from 'path';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: './src',
-  /* Match only component test files (.spec.tsx) */
-  testMatch: '**/*.spec.tsx',
+  testDir: '.',
+  /* Match only component test files (.spec.tsx), includes packages directory */
+  testMatch: [
+    'src/**/*.spec.tsx',
+    'packages/nxtcm-dashboard/src/**/*.spec.tsx',
+    'packages/nxtcm-rosa-hcp-wizard/src/**/*.spec.tsx',
+  ],
   /* The base directory, relative to the config file, for snapshot files created with toMatchSnapshot and toHaveScreenshot. */
   snapshotDir: './__snapshots__',
   /* Maximum time one test can run for. */
@@ -35,6 +39,14 @@ export default defineConfig({
           '@patternfly-labs/react-form-wizard': path.resolve(
             __dirname,
             './packages/react-form-wizard/src'
+          ),
+          '@redhat-cloud-services/nxtcm-dashboard': path.resolve(
+            __dirname,
+            './packages/nxtcm-dashboard/src'
+          ),
+          '@redhat-cloud-services/nxtcm-rosa-hcp-wizard': path.resolve(
+            __dirname,
+            './packages/nxtcm-rosa-hcp-wizard/src'
           ),
           '@': path.resolve(__dirname, './src'),
           // Playwright CT resolves component path from playwright/index.tsx; alias old .story to .ct

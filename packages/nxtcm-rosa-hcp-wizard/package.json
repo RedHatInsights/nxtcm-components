@@ -1,0 +1,39 @@
+{
+  "name": "@redhat-cloud-services/nxtcm-rosa-hcp-wizard",
+  "version": "6.0.0",
+  "description": "PatternFly wizard component for ROSA HCP cluster creation in ACM and OCM",
+  "author": "Red Hat",
+  "license": "Apache-2.0",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "react",
+    "components",
+    "patternfly",
+    "acm",
+    "ocm",
+    "red-hat",
+    "insights",
+    "typescript",
+    "ui"
+  ],
+  "private": true,
+  "scripts": {
+    "prepack": "cp ../../LICENSE LICENSE",
+    "postpack": "rm -f LICENSE",
+    "build": "tsc && NXTCM_LIB_NAME=NXTCM-ROSA-HCP-WIZARD vite build --config ../../vite.config.ts",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint --config ../../.eslintrc.json 'src/**/*.{ts,tsx}'",
+    "lint:fix": "eslint --config ../../.eslintrc.json 'src/**/*.{ts,tsx}' --fix",
+    "prettier:check": "prettier --check 'src/**/*.{js,ts,mjs,jsx,tsx}'",
+    "prettier:fix": "prettier --write 'src/**/*.{js,ts,mjs,jsx,tsx}'",
+    "test": "jest --config ../../jest.config.js packages/nxtcm-rosa-hcp-wizard",
+    "test:ct": "playwright test -c ../../playwright-ct.config.ts packages/nxtcm-rosa-hcp-wizard"
+  }
+}
