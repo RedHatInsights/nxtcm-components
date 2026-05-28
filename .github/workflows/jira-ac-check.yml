@@ -57,8 +57,8 @@ jobs:
         if: steps.jira.outputs.key != ''
         uses: ambient-code/ambient-action@3f01516d00ba5628f210f9390a98970b5567c835 # v0.0.5
         with:
-          api-url: ${{ secrets.AMBIENT_API_URL }}
-          api-token: ${{ secrets.AMBIENT_BOT_TOKEN }}
+          api-url: ${{ secrets.ACP_API_URL }}
+          api-token: ${{ secrets.ACP_TOKEN }}
           project: ${{ secrets.ACP_PROJECT }}
           prompt: |
             You are a PR reviewer checking whether a pull request satisfies the acceptance criteria from its linked Jira ticket.
