@@ -2,8 +2,13 @@ import { useEffect, useMemo, useRef } from 'react';
 import { type FieldPath, useFormContext, useWatch } from 'react-hook-form';
 
 import { applyWizardFieldMetaChangeEffects } from '../applyWizardFieldMetaChangeEffects';
+import {
+  collectWizardFieldDerivedSyncWizardDataDeps,
+  reapplyWizardFieldDerivedSyncs,
+} from '../wizardFieldDerivedSyncs';
 import type { ClusterFormData } from '../../types';
 import type { ROSAHCPWizardData } from '../types';
+import { listWizardFieldDerivedSyncEntries } from '../yupSchemas';
 import { listWizardFieldMetaChangeSourceFields } from '../yupSchemas/listWizardFieldMetaChangeSourceFields';
 import type { WizardFormFieldName } from '../yupSchemas/types';
 
@@ -29,11 +34,17 @@ function buildFormValuesForMetaEffects(
 
 /**
  * Subscribes to react-hook-form values for every Yup field that declares
- * `resetsFieldsToDefaultOnChange`, `refetchesResourcesOnChange`, or `syncsFieldsOnChange` in `.meta()`.
+ * `resetsFieldsToDefaultOnChange`, `refetchesResourcesOnChange`, `syncsFieldsOnChange`, or
+ * `derivedFieldsSyncOnChange` in `.meta()`.
  */
 export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): void {
   const { setValue, getValues, control } = useFormContext<Partial<ClusterFormData>>();
   const sourceFields = useMemo(() => listWizardFieldMetaChangeSourceFields(), []);
+  const derivedSyncEntries = useMemo(() => listWizardFieldDerivedSyncEntries(), []);
+  const derivedSyncWizardDataDepValues = collectWizardFieldDerivedSyncWizardDataDeps(
+    derivedSyncEntries,
+    wizardData
+  );
   const watchedValues = useWatch({
     control,
     name: sourceFields as FieldPath<Partial<ClusterFormData>>[],
@@ -64,4 +75,17 @@ export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): 
 
     hasInitializedRef.current = true;
   }, [getValues, setValue, sourceFields, watchedValues]);
+
+  useEffect(() => {
+    if (!hasInitializedRef.current) {
+      return;
+    }
+
+    reapplyWizardFieldDerivedSyncs({
+      entries: derivedSyncEntries,
+      formValues: getValues(),
+      wizardData: wizardDataRef.current,
+      setValue,
+    });
+  }, [derivedSyncEntries, getValues, setValue, ...derivedSyncWizardDataDepValues]);
 }

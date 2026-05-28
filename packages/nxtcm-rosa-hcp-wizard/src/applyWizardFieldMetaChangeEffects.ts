@@ -1,9 +1,12 @@
 import type { UseFormSetValue } from 'react-hook-form';
 
+import { hasRefetchableStringValue } from './hasRefetchableStringValue';
 import { resetFieldsToDefaultValues } from './resetFieldsToDefaultValues';
 import { syncFieldsOnSourceChange } from './syncFieldsOnSourceChange';
+import { applyWizardFieldDerivedSync } from './wizardFieldDerivedSyncs';
 import type { ROSAHCPCluster, ROSAHCPWizardData } from './types';
 import {
+  getWizardFieldDerivedSyncKeyForSourceField,
   getWizardFieldResetsForSourceField,
   getWizardFieldSyncsForSourceField,
   getWizardResourceRefetchesForSourceField,
@@ -19,10 +22,6 @@ export type ApplyWizardFieldMetaChangeEffectsArgs = {
   setValue: UseFormSetValue<Partial<ROSAHCPCluster>>;
 };
 
-function hasRefetchableValue(value: unknown): value is string {
-  return typeof value === 'string' && value !== '';
-}
-
 function refetchWizardResource(
   wizardData: ROSAHCPWizardData,
   refetch: WizardResourceRefetchOnChange,
@@ -36,7 +35,7 @@ function refetchWizardResource(
 
   if (refetch.argFromField) {
     const arg = formValues[refetch.argFromField];
-    if (!hasRefetchableValue(arg)) {
+    if (!hasRefetchableStringValue(arg)) {
       return;
     }
     void fetch(arg);
@@ -46,7 +45,7 @@ function refetchWizardResource(
   void (fetch as () => Promise<void>)();
 }
 
-/** Applies Yup `.meta()` reset and resource refetch rules for a single source field change. */
+/** Applies Yup `.meta()` reset, sync, derived sync, and resource refetch rules for a source field change. */
 export function applyWizardFieldMetaChangeEffects({
   sourceField,
   formValues,
@@ -62,7 +61,7 @@ export function applyWizardFieldMetaChangeEffects({
   const refetches = getWizardResourceRefetchesForSourceField(sourceField);
   const shouldRefetch =
     refetches.length > 0 &&
-    (previousValue === undefined ? hasRefetchableValue(currentValue) : true);
+    (previousValue === undefined ? hasRefetchableStringValue(currentValue) : true);
 
   if (shouldRefetch) {
     for (const refetch of refetches) {
@@ -86,5 +85,19 @@ export function applyWizardFieldMetaChangeEffects({
       currentValue,
       previousValue === undefined ? { clearOnly: true, shouldDirty: false } : undefined
     );
+  }
+
+  const derivedSyncKey = getWizardFieldDerivedSyncKeyForSourceField(sourceField);
+  if (derivedSyncKey) {
+    const shouldApplyDerived =
+      previousValue !== undefined || hasRefetchableStringValue(currentValue);
+    if (shouldApplyDerived) {
+      applyWizardFieldDerivedSync({
+        syncKey: derivedSyncKey,
+        currentValue,
+        wizardData,
+        setValue,
+      });
+    }
   }
 }

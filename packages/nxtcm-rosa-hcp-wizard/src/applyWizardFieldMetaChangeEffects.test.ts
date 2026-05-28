@@ -3,7 +3,9 @@ import type { UseFormSetValue } from 'react-hook-form';
 import { applyWizardFieldMetaChangeEffects } from './applyWizardFieldMetaChangeEffects';
 import { resetFieldsToDefaultValues } from './resetFieldsToDefaultValues';
 import { syncFieldsOnSourceChange } from './syncFieldsOnSourceChange';
+import { applyWizardFieldDerivedSync } from './wizardFieldDerivedSyncs';
 import type { ROSAHCPCluster, ROSAHCPWizardData } from './types';
+import fixtures from './ROSAHCPWizard.fixtures';
 import { getWizardFieldSyncsForSourceField } from './yupSchemas';
 
 const autoscalingSyncRules = getWizardFieldSyncsForSourceField('autoscaling');
@@ -16,11 +18,18 @@ jest.mock('./syncFieldsOnSourceChange', () => ({
   syncFieldsOnSourceChange: jest.fn(),
 }));
 
+jest.mock('./wizardFieldDerivedSyncs', () => ({
+  applyWizardFieldDerivedSync: jest.fn(),
+}));
+
 const resetFieldsToDefaultValuesMock = resetFieldsToDefaultValues as jest.MockedFunction<
   typeof resetFieldsToDefaultValues
 >;
 const syncFieldsOnSourceChangeMock = syncFieldsOnSourceChange as jest.MockedFunction<
   typeof syncFieldsOnSourceChange
+>;
+const applyWizardFieldDerivedSyncMock = applyWizardFieldDerivedSync as jest.MockedFunction<
+  typeof applyWizardFieldDerivedSync
 >;
 
 function makeWizardData(
@@ -46,7 +55,7 @@ function makeWizardData(
       isFetching: false,
       fetch: overrides.machineTypesFetch ?? jest.fn(),
     },
-    roles: { data: [], error: null, isFetching: false, fetch: jest.fn() },
+    roles: { data: fixtures.mockRoles, error: null, isFetching: false, fetch: jest.fn() },
     oidcConfig: { data: [], error: null, isFetching: false },
     vpcList: {
       data: [],
@@ -187,6 +196,51 @@ describe('applyWizardFieldMetaChangeEffects', () => {
       autoscalingSyncRules,
       false,
       { clearOnly: true, shouldDirty: false }
+    );
+  });
+
+  it('applies derived sync when installer role changes', () => {
+    const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
+    const installerArn = fixtures.mockRoles[0].installerRole.value;
+    const wizardData = makeWizardData();
+
+    applyWizardFieldMetaChangeEffects({
+      sourceField: 'installer_role_arn',
+      formValues: { installer_role_arn: installerArn },
+      previousValue: '',
+      currentValue: installerArn,
+      wizardData,
+      setValue,
+    });
+
+    expect(applyWizardFieldDerivedSyncMock).toHaveBeenCalledWith({
+      syncKey: 'installerRoleDependentRoles',
+      currentValue: installerArn,
+      wizardData,
+      setValue,
+    });
+  });
+
+  it('applies derived sync on initial mount when installer role is prefilled', () => {
+    const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
+    const installerArn = fixtures.mockRoles[0].installerRole.value;
+    const wizardData = makeWizardData();
+
+    applyWizardFieldMetaChangeEffects({
+      sourceField: 'installer_role_arn',
+      formValues: { installer_role_arn: installerArn },
+      previousValue: undefined,
+      currentValue: installerArn,
+      wizardData,
+      setValue,
+    });
+
+    expect(applyWizardFieldDerivedSyncMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        syncKey: 'installerRoleDependentRoles',
+        currentValue: installerArn,
+        wizardData,
+      })
     );
   });
 

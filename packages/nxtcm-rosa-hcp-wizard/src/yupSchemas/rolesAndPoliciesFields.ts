@@ -16,6 +16,7 @@ export const installerRoleArnSchema = yup
     placeholderKey: 'rolesAndPolicies.installerRolePlaceholder',
     stepId: STEP_IDS.ROLES_AND_POLICIES,
     fieldType: 'select',
+    derivedFieldsSyncOnChange: 'installerRoleDependentRoles',
   } satisfies WizardFieldMeta);
 
 export const supportRoleArnSchema = yup

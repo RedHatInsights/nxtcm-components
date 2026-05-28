@@ -1,0 +1,99 @@
+import type { UseFormSetValue } from 'react-hook-form';
+
+import { hasRefetchableStringValue } from './hasRefetchableStringValue';
+import type { ROSAHCPCluster, ROSAHCPWizardData, Role } from './types';
+import type { WizardFieldDerivedSyncKey } from './yupSchemas/types';
+import type { WizardFieldDerivedSyncEntry } from './yupSchemas/wizardFieldDerivedSyncRegistry';
+
+export type ApplyWizardFieldDerivedSyncArgs = {
+  syncKey: WizardFieldDerivedSyncKey;
+  currentValue: unknown;
+  wizardData: ROSAHCPWizardData;
+  setValue: UseFormSetValue<Partial<ROSAHCPCluster>>;
+};
+
+const SET_VALUE_OPTS = {
+  shouldDirty: true,
+  shouldTouch: false,
+  shouldValidate: false,
+};
+
+/** Wizard-data slices that should re-run a derived sync when they change while the source field is set. */
+export const wizardFieldDerivedSyncWizardDataDeps: Record<
+  WizardFieldDerivedSyncKey,
+  (wizardData: ROSAHCPWizardData) => readonly unknown[]
+> = {
+  installerRoleDependentRoles: (wizardData) => [wizardData.roles.data],
+};
+
+/** Collects wizard-data dependency values for all derived sync handlers in `entries`. */
+export function collectWizardFieldDerivedSyncWizardDataDeps(
+  entries: readonly Pick<WizardFieldDerivedSyncEntry, 'syncKey'>[],
+  wizardData: ROSAHCPWizardData
+): readonly unknown[] {
+  const deps: unknown[] = [];
+  const seenSyncKeys = new Set<WizardFieldDerivedSyncKey>();
+
+  for (const { syncKey } of entries) {
+    if (seenSyncKeys.has(syncKey)) {
+      continue;
+    }
+    seenSyncKeys.add(syncKey);
+    deps.push(...wizardFieldDerivedSyncWizardDataDeps[syncKey](wizardData));
+  }
+
+  return deps;
+}
+
+/** Sets support/worker role ARNs from the first options on the matching installer role entry. */
+export function syncInstallerRoleDependentRoles(
+  installerRoleArn: string | undefined,
+  roles: readonly Role[],
+  setValue: UseFormSetValue<Partial<ROSAHCPCluster>>
+): void {
+  const selectedRole = roles.find((role) => role.installerRole.value === installerRoleArn);
+  setValue('support_role_arn', selectedRole?.supportRole[0]?.value ?? '', SET_VALUE_OPTS);
+  setValue('worker_role_arn', selectedRole?.workerRole[0]?.value ?? '', SET_VALUE_OPTS);
+}
+
+export const wizardFieldDerivedSyncHandlers: Record<
+  WizardFieldDerivedSyncKey,
+  (args: ApplyWizardFieldDerivedSyncArgs) => void
+> = {
+  installerRoleDependentRoles: ({ currentValue, wizardData, setValue }) => {
+    syncInstallerRoleDependentRoles(
+      typeof currentValue === 'string' ? currentValue : undefined,
+      wizardData.roles.data,
+      setValue
+    );
+  },
+};
+
+/** Runs the derived sync handler registered for `syncKey`. */
+export function applyWizardFieldDerivedSync(args: ApplyWizardFieldDerivedSyncArgs): void {
+  wizardFieldDerivedSyncHandlers[args.syncKey](args);
+}
+
+/** Re-applies derived syncs when wizard data changes but source field values are unchanged. */
+export function reapplyWizardFieldDerivedSyncs(params: {
+  entries: readonly WizardFieldDerivedSyncEntry[];
+  formValues: Partial<ROSAHCPCluster>;
+  wizardData: ROSAHCPWizardData;
+  setValue: UseFormSetValue<Partial<ROSAHCPCluster>>;
+}): void {
+  const { entries, formValues, wizardData, setValue } = params;
+
+  for (const { sourceField, syncKey } of entries) {
+    const currentValue = formValues[sourceField];
+    if (!hasRefetchableStringValue(currentValue)) {
+      continue;
+    }
+
+    applyWizardFieldDerivedSync({
+      syncKey,
+      currentValue,
+      wizardData,
+      setValue,
+    });
+  }
+}

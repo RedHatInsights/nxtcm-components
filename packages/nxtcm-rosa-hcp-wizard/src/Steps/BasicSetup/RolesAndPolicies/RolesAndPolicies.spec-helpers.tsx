@@ -12,8 +12,10 @@ import {
   ClusterUpgrade,
   type OidcConfigResource,
   type ROSAHCPCluster,
+  type ROSAHCPWizardData,
   type RolesResource,
 } from '../../../types';
+import { WizardFieldMetaChangeEffects } from '../../../hooks/WizardFieldMetaChangeEffects';
 import { RolesAndPolicies } from './RolesAndPolicies';
 import fixtures from '../../../ROSAHCPWizard.fixtures';
 import { clusterValidationSchema } from '../../../yupSchemas';
@@ -76,23 +78,47 @@ export const RolesAndPoliciesMount: React.FC<RolesAndPoliciesMountProps> = ({
     mode: 'onTouched',
   });
 
-  const rolesProps: RolesResource = {
-    data: roles?.data ?? fixtures.mockRoles,
-    isFetching: roles?.isFetching ?? false,
-    fetch: roles?.fetch ?? (async (_awsAccount: string) => {}),
-    error: roles?.error ?? null,
-  };
+  const rolesProps = useMemo<RolesResource>(
+    () => ({
+      data: roles?.data ?? fixtures.mockRoles,
+      isFetching: roles?.isFetching ?? false,
+      fetch: roles?.fetch ?? (async (_awsAccount: string) => {}),
+      error: roles?.error ?? null,
+    }),
+    [roles]
+  );
 
-  const oidcProps: OidcConfigResource = {
-    data: oidcConfig?.data ?? fixtures.mockOicdConfig,
-    isFetching: oidcConfig?.isFetching ?? false,
-    fetch: oidcConfig?.fetch ?? (async () => {}),
-    error: oidcConfig?.error ?? null,
-  };
+  const oidcProps = useMemo<OidcConfigResource>(
+    () => ({
+      data: oidcConfig?.data ?? fixtures.mockOicdConfig,
+      isFetching: oidcConfig?.isFetching ?? false,
+      fetch: oidcConfig?.fetch ?? (async () => {}),
+      error: oidcConfig?.error ?? null,
+    }),
+    [oidcConfig]
+  );
+
+  const wizardData = useMemo<ROSAHCPWizardData>(
+    () => ({
+      awsInfrastructureAccounts: { data: [], error: null, isFetching: false },
+      awsBillingAccounts: { data: [], error: null, isFetching: false },
+      regions: { data: [], error: null, isFetching: false, fetch: async () => {} },
+      versions: { data: { releases: [] }, error: null, isFetching: false, fetch: async () => {} },
+      machineTypes: { data: [], error: null, isFetching: false, fetch: async () => {} },
+      roles: rolesProps,
+      oidcConfig: oidcProps,
+      vpcList: { data: [], error: null, isFetching: false, fetch: async () => {} },
+      subnets: { data: [], error: null, isFetching: false },
+      securityGroups: { data: [], error: null, isFetching: false },
+      clusterNameValidation: { error: null, isFetching: false },
+    }),
+    [oidcProps, rolesProps]
+  );
 
   return withRosaCt(
     <FormProvider {...methods}>
       <Form>
+        <WizardFieldMetaChangeEffects wizardData={wizardData} />
         <RolesAndPolicies roles={rolesProps} oidcConfig={oidcProps} />
       </Form>
     </FormProvider>

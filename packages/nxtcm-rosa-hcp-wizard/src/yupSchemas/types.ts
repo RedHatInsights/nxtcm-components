@@ -57,6 +57,12 @@ export type WizardFieldSyncOnChange = {
 };
 
 /**
+ * Identifies a handler in {@link wizardFieldDerivedSyncHandlers} for resource-driven dependent fields.
+ * Declared on the source field's Yup `.meta()` via `derivedFieldsSyncOnChange`.
+ */
+export type WizardFieldDerivedSyncKey = 'installerRoleDependentRoles';
+
+/**
  * Static metadata attached to each field via `.meta()`.
  *
  * When `resetsFieldsToDefaultOnChange` is set, changing this field's value should reset the
@@ -110,6 +116,11 @@ export type WizardFieldMeta = {
    * Wired by {@link useWizardFieldMetaChangeEffects} via {@link getWizardFieldSyncsForSourceField}.
    */
   syncsFieldsOnChange?: readonly WizardFieldSyncOnChange[];
+  /**
+   * Custom dependent-field updates using wizard data (see {@link wizardFieldDerivedSyncHandlers}).
+   * Wired by {@link useWizardFieldMetaChangeEffects} via {@link getWizardFieldDerivedSyncKeyForSourceField}.
+   */
+  derivedFieldsSyncOnChange?: WizardFieldDerivedSyncKey;
 };
 
 /**

@@ -65,6 +65,7 @@ export type {
   WizardDataResourceKey,
   WizardResourceRefetchOnChange,
   WizardFieldSyncOnChange,
+  WizardFieldDerivedSyncKey,
 } from './types';
 
 // Re-export individual field schemas for standalone use
@@ -152,3 +153,10 @@ export {
   listWizardFieldSyncEntries,
 } from './wizardFieldSyncRegistry';
 export type { WizardFieldSyncEntry } from './wizardFieldSyncRegistry';
+
+export {
+  buildWizardFieldDerivedSyncRegistry,
+  getWizardFieldDerivedSyncKeyForSourceField,
+  listWizardFieldDerivedSyncEntries,
+} from './wizardFieldDerivedSyncRegistry';
+export type { WizardFieldDerivedSyncEntry } from './wizardFieldDerivedSyncRegistry';
