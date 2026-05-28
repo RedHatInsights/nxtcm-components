@@ -14,16 +14,13 @@ const clusterYupResolver = yupResolver(clusterValidationSchema) as Resolver<
 
 export function RosaHcpWizardFormProvider(props: RosaHCPWizardProps) {
   const msgs = useRosaHcpWizardValidators();
-  const checkClusterNameUniqueness = props.wizardData?.checkClusterNameUniqueness;
 
   const resolver = useCallback<Resolver<Partial<ROSAHCPCluster>>>(
     async (values, _rhfContext, options) => {
-      const yupContext = buildClusterValidationSchemaContext(values, msgs, {
-        checkClusterNameUniqueness,
-      });
+      const yupContext = buildClusterValidationSchemaContext(values, msgs);
       return clusterYupResolver(values, yupContext, options);
     },
-    [msgs, checkClusterNameUniqueness]
+    [msgs]
   );
 
   const methods = useForm<Partial<ROSAHCPCluster>>({

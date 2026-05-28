@@ -6,6 +6,7 @@ import {
   wizFallbackFieldId,
   wizFallbackLabelFromFieldPath,
   wizFieldShowsError,
+  wizFieldShowsErrorMessage,
 } from './wizFieldRhf';
 
 describe('stringLabelFromYupMeta', () => {
@@ -56,6 +57,23 @@ describe('wizFieldShowsError', () => {
 
   it('returns true when the field is invalid and the form was submitted', () => {
     expect(wizFieldShowsError(true, false, true)).toBe(true);
+  });
+});
+
+describe('wizFieldShowsErrorMessage', () => {
+  it('returns false when there is no error message', () => {
+    expect(wizFieldShowsErrorMessage(undefined, true, true)).toBe(false);
+    expect(wizFieldShowsErrorMessage('', true, true)).toBe(false);
+  });
+
+  it('returns true when showWithoutTouch is set', () => {
+    expect(wizFieldShowsErrorMessage('Taken', false, false, { showWithoutTouch: true })).toBe(true);
+  });
+
+  it('returns true when touched or submitted, matching resolver-driven errors', () => {
+    expect(wizFieldShowsErrorMessage('Required', true, false)).toBe(true);
+    expect(wizFieldShowsErrorMessage('Required', false, true)).toBe(true);
+    expect(wizFieldShowsErrorMessage('Required', false, false)).toBe(false);
   });
 });
 

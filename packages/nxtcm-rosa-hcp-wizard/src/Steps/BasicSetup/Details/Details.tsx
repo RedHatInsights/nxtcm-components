@@ -13,10 +13,16 @@ import { type ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { FieldWrapper } from '../../../components/FieldWrapper';
+import { useClusterNameUniquenessValidation } from '../../../hooks/useClusterNameUniquenessValidation';
 
 type DetailsStepProps = Pick<
   ROSAHCPWizardData,
-  'awsInfrastructureAccounts' | 'awsBillingAccounts' | 'regions' | 'versions' | 'roles'
+  | 'awsInfrastructureAccounts'
+  | 'awsBillingAccounts'
+  | 'regions'
+  | 'versions'
+  | 'roles'
+  | 'checkClusterNameUniqueness'
 >;
 
 type AssociateNewAccountLinkProps = {
@@ -50,6 +56,7 @@ export const Details = ({
   regions,
   versions,
   roles,
+  checkClusterNameUniqueness,
 }: DetailsStepProps) => {
   const d = useRosaHcpWizardStrings().details;
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
@@ -57,6 +64,9 @@ export const Details = ({
   const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
 
   const { control } = useFormContext<Partial<ROSAHCPCluster>>();
+  const { checkOnNameBlur } = useClusterNameUniquenessValidation({
+    checkClusterNameUniqueness,
+  });
 
   const installerRoleArn = useWatch({ control, name: 'installer_role_arn' });
   const associatedAwsIdRaw = useWatch({ control, name: 'associated_aws_id' });
@@ -177,7 +187,13 @@ export const Details = ({
             />
           </FieldWrapper>
           <FieldWrapper>
-            <WizTextInput<ROSAHCPCluster> name="name" schema={clusterValidationSchema} />
+            <WizTextInput<ROSAHCPCluster>
+              name="name"
+              schema={clusterValidationSchema}
+              onBlur={() => {
+                void checkOnNameBlur();
+              }}
+            />
           </FieldWrapper>
 
           <FieldWrapper>

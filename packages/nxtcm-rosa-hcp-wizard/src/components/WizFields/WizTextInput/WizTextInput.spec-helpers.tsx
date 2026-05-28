@@ -189,7 +189,7 @@ export function WizTextInputBlurValidationHarness() {
   const methods = useForm<{ alias: string }>({
     resolver: yupResolver(blurAliasSchema),
     defaultValues: { alias: '' },
-    mode: 'onBlur',
+    mode: 'onTouched',
   });
 
   return withRosaCt(
@@ -199,6 +199,7 @@ export function WizTextInputBlurValidationHarness() {
           name="alias"
           schema={blurAliasSchema}
           label={WIZ_TEXT_INPUT_ALIAS_BLUR_LABEL}
+          validateOnBlur
         />
       </Form>
     </FormProvider>

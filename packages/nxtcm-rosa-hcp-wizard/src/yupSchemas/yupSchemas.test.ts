@@ -184,37 +184,6 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
       const error = await validate(buildContext(), buildFormData({ name: 'my-cluster.v1' }), field);
       expect(error).toBeNull();
     });
-
-    it('calls async uniqueness check when provided', async () => {
-      const checkClusterNameUniqueness = jest.fn().mockResolvedValue('Name is taken');
-      const error = await validate(
-        buildContext({ checkClusterNameUniqueness }),
-        buildFormData({ name: 'mycluster', region: 'us-east-1' }),
-        field
-      );
-      expect(checkClusterNameUniqueness).toHaveBeenCalledWith('mycluster', 'us-east-1');
-      expect(error).toBe('Name is taken');
-    });
-
-    it('passes when async uniqueness check returns null', async () => {
-      const checkClusterNameUniqueness = jest.fn().mockResolvedValue(null);
-      const error = await validate(
-        buildContext({ checkClusterNameUniqueness }),
-        buildFormData({ name: 'mycluster' }),
-        field
-      );
-      expect(error).toBeNull();
-    });
-
-    it('skips async check when sync validation fails', async () => {
-      const checkClusterNameUniqueness = jest.fn().mockResolvedValue('taken');
-      await validate(
-        buildContext({ checkClusterNameUniqueness }),
-        buildFormData({ name: 'MY_BAD' }),
-        field
-      );
-      expect(checkClusterNameUniqueness).not.toHaveBeenCalled();
-    });
   });
 
   // -----------------------------------------------------------------------

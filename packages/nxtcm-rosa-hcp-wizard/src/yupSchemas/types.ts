@@ -91,6 +91,11 @@ export type WizardFieldMeta = {
   reviewLabel?: string;
   /** Hint for which component type to render. */
   fieldType?: 'text' | 'select' | 'radio' | 'checkbox' | 'number' | 'textarea' | 'typeahead';
+  /**
+   * When true, {@link WizTextInput} validates only on blur (not on each keystroke after touch).
+   * Useful for fields with async validation such as cluster name uniqueness.
+   */
+  validateOnBlur?: boolean;
   /** Whether the field lives behind an "Advanced" toggle. */
   advanced?: boolean;
   /** Display unit for the review step. */
@@ -138,10 +143,4 @@ export type ValidationSchemaContext = {
   machinePoolsNumber: number;
   /** VPC subnets currently selected (for CIDR containment checks). */
   selectedSubnets?: CIDRSubnet[];
-  /**
-   * Async callback that checks whether a cluster name is already in use.
-   * Returns `null` when the name is available, or an error message string
-   * when it is taken / the check fails.
-   */
-  checkClusterNameUniqueness?: (name: string, region?: string) => Promise<string | null>;
 };

@@ -22,7 +22,7 @@ import {
   mockRoles,
 } from './Details.fixtures';
 import { clusterValidationSchema } from '../../../yupSchemas';
-import type { ValidationSchemaContext } from '../../../yupSchemas/types';
+import type { CheckClusterNameUniqueness } from '../../../types';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
 import {
@@ -73,7 +73,14 @@ export type DetailsMountProps = {
   roles?: RolesResource;
   vpcList?: VpcListResource;
   defaultValues?: Partial<ROSAHCPCluster>;
-  checkClusterNameUniqueness?: ValidationSchemaContext['checkClusterNameUniqueness'];
+  checkClusterNameUniqueness?: CheckClusterNameUniqueness;
+  /**
+   * CT-only: when set, DetailsMount wires a stable async check that returns this value.
+   * Prefer over inline JSX callbacks — Playwright CT may not forward callback return values.
+   */
+  clusterNameUniquenessError?: string | null;
+  /** CT-only: invoked when the resolved uniqueness check runs (for call-count assertions). */
+  onClusterNameUniquenessCheck?: (name: string, region?: string) => void;
 };
 
 /** Hidden probe for Playwright CT assertions on cross-step form fields. */
@@ -95,22 +102,36 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
   vpcList,
   defaultValues = {},
   checkClusterNameUniqueness,
+  clusterNameUniquenessError,
+  onClusterNameUniquenessCheck,
 }) => {
-  const validationContext = useMemo<ValidationSchemaContext>(
-    () => ({
-      msgs: defaultRosaHcpWizardValidatorStrings,
-      maxRootDiskSize: 16384,
-      maxAutoscalingNodes: 500,
-      machinePoolsNumber: 1,
-      checkClusterNameUniqueness,
-    }),
-    [checkClusterNameUniqueness]
-  );
+  const resolvedCheckClusterNameUniqueness = useMemo((): CheckClusterNameUniqueness | undefined => {
+    if (checkClusterNameUniqueness) {
+      return async (name, region) => {
+        onClusterNameUniquenessCheck?.(name, region);
+        return checkClusterNameUniqueness(name, region);
+      };
+    }
+
+    if (clusterNameUniquenessError !== undefined) {
+      return (name, region) => {
+        onClusterNameUniquenessCheck?.(name, region);
+        return Promise.resolve(clusterNameUniquenessError);
+      };
+    }
+
+    return undefined;
+  }, [checkClusterNameUniqueness, clusterNameUniquenessError, onClusterNameUniquenessCheck]);
 
   const methods = useForm<ROSAHCPCluster>({
     defaultValues: { ...DEFAULT_ROSA_HCP_CT_FORM_VALUES, ...defaultValues },
     resolver: yupResolver(clusterValidationSchema) as Resolver<ROSAHCPCluster>,
-    context: validationContext,
+    context: {
+      msgs: defaultRosaHcpWizardValidatorStrings,
+      maxRootDiskSize: 16384,
+      maxAutoscalingNodes: 500,
+      machinePoolsNumber: 1,
+    },
     mode: 'onTouched',
   });
 
@@ -189,6 +210,7 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
           regions={regionsProps}
           versions={versionsProps}
           roles={rolesProps}
+          checkClusterNameUniqueness={resolvedCheckClusterNameUniqueness}
         />
         <DetailsFormValuesProbe />
       </Form>
