@@ -166,7 +166,7 @@ export type VpcListResource = Resource<VPC[]>;
 export type SubnetsResource = Resource<Subnet[]>;
 export type SecurityGroupsResource = Resource<SecurityGroup[]>;
 
-export type CheckClusterNameUniqueness = (name: string, region?: string) => void;
+export type CheckClusterNameUniqueness = (name: string, region?: string) => Promise<string | null>;
 
 export type ROSAHCPWizardData = {
   awsInfrastructureAccounts: AwsInfrastructureAccountsResource;

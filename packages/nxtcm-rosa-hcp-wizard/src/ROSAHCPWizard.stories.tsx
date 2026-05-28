@@ -2,9 +2,10 @@ import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 import ROSAHCPWizard from './ROSAHCPWizard';
 import {
-  createMockRosaHcpWizardData,
+  createMockRosaHcpWizardDataWithFetchLogging,
   getMockStoryPrivateSubnets,
   rosaHcpWizardDetailsFieldsAllApiErrorsData,
+  useStoryClusterNameValidation,
 } from './ROSAHCPWizard.stories.helpers';
 import { MachineTypesDropdownType, Region, Role, ROSAHCPWizardData } from './types';
 import fixtures from './ROSAHCPWizard.fixtures';
@@ -67,6 +68,32 @@ function DefaultWithInitialLoading(props: React.ComponentProps<typeof ROSAHCPWiz
   return <ROSAHCPWizard {...props} wizardData={wizardData} />;
 }
 
+/** Default story wrapper: initial resource loading plus logged cluster name validation. */
+function DefaultStoryWrapper(props: React.ComponentProps<typeof ROSAHCPWizard>) {
+  const { clusterNameValidation, checkClusterNameUniqueness } = useStoryClusterNameValidation();
+  const [isFetching, setIsFetching] = React.useState(true);
+  React.useEffect(() => {
+    const t = setTimeout(() => setIsFetching(false), 3000);
+    return () => clearTimeout(t);
+  }, []);
+  const wizardData = React.useMemo<ROSAHCPWizardData>(
+    () => ({
+      ...props.wizardData,
+      clusterNameValidation,
+      checkClusterNameUniqueness,
+      versions: { ...props.wizardData.versions, isFetching },
+      awsInfrastructureAccounts: { ...props.wizardData.awsInfrastructureAccounts, isFetching },
+      awsBillingAccounts: { ...props.wizardData.awsBillingAccounts, isFetching },
+      regions: { ...props.wizardData.regions, isFetching },
+      oidcConfig: { ...props.wizardData.oidcConfig, isFetching },
+      vpcList: { ...props.wizardData.vpcList, isFetching },
+      machineTypes: { ...props.wizardData.machineTypes, isFetching },
+    }),
+    [props.wizardData, isFetching, clusterNameValidation, checkClusterNameUniqueness]
+  );
+  return <ROSAHCPWizard {...props} wizardData={wizardData} />;
+}
+
 const meta: Meta<typeof ROSAHCPWizard> = {
   title: 'Wizards/RosaHCPWizard',
   component: ROSAHCPWizard,
@@ -114,13 +141,15 @@ type Story = StoryObj<typeof ROSAHCPWizard>;
  * AWS infrastructure account, billing account, region, and OpenShift version start in a loading state,
  * then finish loading after 1 second. VPC list, subnets, and compute instance types use ROSA HCP wizard
  * Storybook fixtures (`mockVPCs`, `mockMachineTypes` from `ROSAHCPWizard.fixtures`).
+ * Cluster name uniqueness is mocked asynchronously — type `taken`, `existing`, or `my-cluster` to
+ * see a duplicate-name error after ~800 ms (check the browser console for validation logs).
  */
 export const Default: Story = {
-  render: (args) => <DefaultWithInitialLoading {...args} />,
+  render: (args) => <DefaultStoryWrapper {...args} />,
   args: {
     title: 'Create ROSA Cluster',
     yaml: true,
-    wizardData: createMockRosaHcpWizardData(),
+    wizardData: createMockRosaHcpWizardDataWithFetchLogging(),
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 2000));

@@ -6,7 +6,6 @@ import { buildClusterValidationSchemaContext } from './buildClusterValidationSch
 import { ROSAHCPWizardBody } from './ROSAHCPWizardBody';
 import { RosaHcpWizardValidationProvider } from './rosaHcpWizardValidationContext';
 import { useRosaHcpWizardValidators } from './stringsProvider/RosaHcpWizardStringsContext';
-import type { ValidationSchemaContext } from './yupSchemas/types';
 import { clusterValidationSchema, getClusterValidationSchemaDefaultValues } from './yupSchemas';
 
 const clusterYupResolver = yupResolver(clusterValidationSchema) as Resolver<
@@ -20,9 +19,7 @@ export function RosaHcpWizardFormProvider(props: RosaHCPWizardProps) {
   const resolver = useCallback<Resolver<Partial<ROSAHCPCluster>>>(
     async (values, _rhfContext, options) => {
       const yupContext = buildClusterValidationSchemaContext(values, msgs, {
-        checkClusterNameUniqueness: checkClusterNameUniqueness as
-          | ValidationSchemaContext['checkClusterNameUniqueness']
-          | undefined,
+        checkClusterNameUniqueness,
       });
       return clusterYupResolver(values, yupContext, options);
     },
