@@ -67,6 +67,18 @@ export const autoscalingSchema = yup
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'checkbox',
     hideInReview: true,
+    syncsFieldsOnChange: [
+      {
+        when: true,
+        setDefaults: ['min_replicas', 'max_replicas'],
+        clear: ['nodes_compute'],
+      },
+      {
+        when: false,
+        setDefaults: ['nodes_compute'],
+        clear: ['min_replicas', 'max_replicas'],
+      },
+    ],
   } satisfies WizardFieldMeta);
 
 export const nodesComputeSchema = yup

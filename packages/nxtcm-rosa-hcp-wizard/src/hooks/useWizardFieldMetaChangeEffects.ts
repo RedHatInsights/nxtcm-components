@@ -29,7 +29,7 @@ function buildFormValuesForMetaEffects(
 
 /**
  * Subscribes to react-hook-form values for every Yup field that declares
- * `resetsFieldsToDefaultOnChange` or `refetchesResourcesOnChange` in `.meta()`.
+ * `resetsFieldsToDefaultOnChange`, `refetchesResourcesOnChange`, or `syncsFieldsOnChange` in `.meta()`.
  */
 export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): void {
   const { setValue, getValues, control } = useFormContext<Partial<ClusterFormData>>();

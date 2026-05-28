@@ -1,12 +1,7 @@
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 import type { ROSAHCPCluster } from '../../../types';
-import { minReplicasSchema, maxReplicasSchema, nodesComputeSchema } from '../../../yupSchemas';
-
-const defaultMinReplicas = minReplicasSchema.getDefault() as number;
-const defaultMaxReplicas = maxReplicasSchema.getDefault() as number;
-const defaultNodesCompute = nodesComputeSchema.getDefault() as number;
 
 /** Ensures at least one machine pool subnet row exists for the single-subnet UI. */
 export function useEnsureMachinePoolSubnetRow(): void {
@@ -18,27 +13,4 @@ export function useEnsureMachinePoolSubnetRow(): void {
       setValue('machine_pools_subnets', [{ machine_pool_subnet: '' }]);
     }
   }, [machinePoolsSubnets, setValue]);
-}
-
-/** Applies default replica / compute values when autoscaling is toggled. */
-export function useAutoscalingFieldDefaults(autoscaling: boolean | undefined): void {
-  const { setValue } = useFormContext<Partial<ROSAHCPCluster>>();
-  const prevAutoscalingRef = useRef<boolean | undefined>(undefined);
-
-  useEffect(() => {
-    const prev = prevAutoscalingRef.current;
-    prevAutoscalingRef.current = autoscaling;
-    if (prev === undefined || prev === autoscaling) {
-      return;
-    }
-    if (autoscaling) {
-      setValue('nodes_compute', undefined);
-      setValue('min_replicas', defaultMinReplicas);
-      setValue('max_replicas', defaultMaxReplicas);
-    } else {
-      setValue('min_replicas', undefined);
-      setValue('max_replicas', undefined);
-      setValue('nodes_compute', defaultNodesCompute);
-    }
-  }, [autoscaling, setValue]);
 }

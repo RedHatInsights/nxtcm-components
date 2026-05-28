@@ -1,9 +1,11 @@
 import type { UseFormSetValue } from 'react-hook-form';
 
 import { resetFieldsToDefaultValues } from './resetFieldsToDefaultValues';
+import { syncFieldsOnSourceChange } from './syncFieldsOnSourceChange';
 import type { ROSAHCPCluster, ROSAHCPWizardData } from './types';
 import {
   getWizardFieldResetsForSourceField,
+  getWizardFieldSyncsForSourceField,
   getWizardResourceRefetchesForSourceField,
 } from './yupSchemas';
 import type { WizardFormFieldName, WizardResourceRefetchOnChange } from './yupSchemas/types';
@@ -73,5 +75,16 @@ export function applyWizardFieldMetaChangeEffects({
     if (resets.length > 0) {
       resetFieldsToDefaultValues(setValue, resets);
     }
+  }
+
+  const syncs = getWizardFieldSyncsForSourceField(sourceField);
+  if (syncs.length > 0) {
+    // Resets run before sync when both are declared; sync may also run on initial mount (clear-only).
+    syncFieldsOnSourceChange(
+      setValue,
+      syncs,
+      currentValue,
+      previousValue === undefined ? { clearOnly: true, shouldDirty: false } : undefined
+    );
   }
 }

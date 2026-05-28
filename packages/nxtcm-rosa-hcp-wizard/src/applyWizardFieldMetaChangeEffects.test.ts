@@ -2,14 +2,25 @@ import type { UseFormSetValue } from 'react-hook-form';
 
 import { applyWizardFieldMetaChangeEffects } from './applyWizardFieldMetaChangeEffects';
 import { resetFieldsToDefaultValues } from './resetFieldsToDefaultValues';
+import { syncFieldsOnSourceChange } from './syncFieldsOnSourceChange';
 import type { ROSAHCPCluster, ROSAHCPWizardData } from './types';
+import { getWizardFieldSyncsForSourceField } from './yupSchemas';
+
+const autoscalingSyncRules = getWizardFieldSyncsForSourceField('autoscaling');
 
 jest.mock('./resetFieldsToDefaultValues', () => ({
   resetFieldsToDefaultValues: jest.fn(),
 }));
 
+jest.mock('./syncFieldsOnSourceChange', () => ({
+  syncFieldsOnSourceChange: jest.fn(),
+}));
+
 const resetFieldsToDefaultValuesMock = resetFieldsToDefaultValues as jest.MockedFunction<
   typeof resetFieldsToDefaultValues
+>;
+const syncFieldsOnSourceChangeMock = syncFieldsOnSourceChange as jest.MockedFunction<
+  typeof syncFieldsOnSourceChange
 >;
 
 function makeWizardData(
@@ -112,6 +123,71 @@ describe('applyWizardFieldMetaChangeEffects', () => {
     });
 
     expect(resetFieldsToDefaultValuesMock).toHaveBeenCalledWith(setValue, ['no_proxy_domains']);
+  });
+
+  it('syncs autoscaling dependent fields when autoscaling toggles', () => {
+    const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
+
+    applyWizardFieldMetaChangeEffects({
+      sourceField: 'autoscaling',
+      formValues: { autoscaling: true },
+      previousValue: false,
+      currentValue: true,
+      wizardData: makeWizardData(),
+      setValue,
+    });
+
+    expect(syncFieldsOnSourceChangeMock).toHaveBeenCalledWith(
+      setValue,
+      autoscalingSyncRules,
+      true,
+      undefined
+    );
+    expect(resetFieldsToDefaultValuesMock).not.toHaveBeenCalled();
+  });
+
+  it('clears inactive autoscaling fields on initial mount without applying setDefaults', () => {
+    const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
+
+    applyWizardFieldMetaChangeEffects({
+      sourceField: 'autoscaling',
+      formValues: { autoscaling: true },
+      previousValue: undefined,
+      currentValue: true,
+      wizardData: makeWizardData(),
+      setValue,
+    });
+
+    expect(syncFieldsOnSourceChangeMock).toHaveBeenCalledWith(
+      setValue,
+      autoscalingSyncRules,
+      true,
+      {
+        clearOnly: true,
+        shouldDirty: false,
+      }
+    );
+    expect(resetFieldsToDefaultValuesMock).not.toHaveBeenCalled();
+  });
+
+  it('does not sync autoscaling setDefaults on initial mount when autoscaling is disabled', () => {
+    const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
+
+    applyWizardFieldMetaChangeEffects({
+      sourceField: 'autoscaling',
+      formValues: { autoscaling: false },
+      previousValue: undefined,
+      currentValue: false,
+      wizardData: makeWizardData(),
+      setValue,
+    });
+
+    expect(syncFieldsOnSourceChangeMock).toHaveBeenCalledWith(
+      setValue,
+      autoscalingSyncRules,
+      false,
+      { clearOnly: true, shouldDirty: false }
+    );
   });
 
   it('passes argFromField to fetch and skips empty args', () => {

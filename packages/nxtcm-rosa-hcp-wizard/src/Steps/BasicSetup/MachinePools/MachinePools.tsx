@@ -17,10 +17,7 @@ import { clusterValidationSchema } from '../../../yupSchemas';
 import { getAutoscalingMaxNodes } from '../../../getAutoscalingMaxNodes';
 import { MachinePoolsAdvancedSection } from './MachinePoolsAdvancedSection';
 import { MachinePoolsAutoscalingReplicas } from './MachinePoolsAutoscalingReplicas';
-import {
-  useAutoscalingFieldDefaults,
-  useEnsureMachinePoolSubnetRow,
-} from './useMachinePoolsFormEffects';
+import { useEnsureMachinePoolSubnetRow } from './useMachinePoolsFormEffects';
 
 type MachinePoolsProps = Pick<ROSAHCPWizardData, 'vpcList' | 'machineTypes'>;
 
@@ -50,7 +47,6 @@ export const MachinePools = (props: MachinePoolsProps) => {
   );
 
   useEnsureMachinePoolSubnetRow();
-  useAutoscalingFieldDefaults(autoscaling);
 
   const { vpc: vpcOptions, subnet: subnetOptions } = machinePoolsSelectOptions;
 

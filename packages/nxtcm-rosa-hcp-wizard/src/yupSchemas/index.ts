@@ -64,6 +64,7 @@ export type {
   WizardFormFieldName,
   WizardDataResourceKey,
   WizardResourceRefetchOnChange,
+  WizardFieldSyncOnChange,
 } from './types';
 
 // Re-export individual field schemas for standalone use
@@ -144,3 +145,10 @@ export {
 export type { WizardFieldRefetchEntry } from './wizardFieldRefetchRegistry';
 
 export { listWizardFieldMetaChangeSourceFields } from './listWizardFieldMetaChangeSourceFields';
+
+export {
+  buildWizardFieldSyncRegistry,
+  getWizardFieldSyncsForSourceField,
+  listWizardFieldSyncEntries,
+} from './wizardFieldSyncRegistry';
+export type { WizardFieldSyncEntry } from './wizardFieldSyncRegistry';

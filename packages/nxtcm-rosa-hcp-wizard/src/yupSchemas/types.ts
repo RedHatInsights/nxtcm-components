@@ -44,6 +44,19 @@ export type WizardResourceRefetchOnChange =
   WizardResourceRefetchOnChangeForResource<WizardDataResourceKey>;
 
 /**
+ * When a source field changes to `when`, apply `setDefaults` and/or `clear` on dependent fields.
+ * Used for mode toggles (e.g. autoscaling) where some fields should be cleared, not reset globally.
+ */
+export type WizardFieldSyncOnChange = {
+  /** Source-field value that selects this branch (boolean mode toggles today). */
+  when: boolean;
+  /** Fields set to their individual Yup schema defaults. */
+  setDefaults?: readonly WizardFormFieldName[];
+  /** Fields set to `undefined` (hidden / inactive in the current mode). */
+  clear?: readonly WizardFormFieldName[];
+};
+
+/**
  * Static metadata attached to each field via `.meta()`.
  *
  * When `resetsFieldsToDefaultOnChange` is set, changing this field's value should reset the
@@ -92,6 +105,11 @@ export type WizardFieldMeta = {
    * Wired by {@link useWizardFieldMetaChangeEffects} via {@link getWizardResourceRefetchesForSourceField}.
    */
   refetchesResourcesOnChange?: readonly WizardResourceRefetchOnChange[];
+  /**
+   * Conditional dependent-field updates when this field changes to a matching `when` value.
+   * Wired by {@link useWizardFieldMetaChangeEffects} via {@link getWizardFieldSyncsForSourceField}.
+   */
+  syncsFieldsOnChange?: readonly WizardFieldSyncOnChange[];
 };
 
 /**
