@@ -4,7 +4,13 @@ repo context for AI coding agents. this file is tool-agnostic — read by Cursor
 
 ## what is this repo?
 
-shared React component library for Red Hat ACM (Advanced Cluster Management) and OCM (OpenShift Cluster Manager) console UIs. built with PatternFly 6, TypeScript, React 18. published as UMD + ESM + types from `dist/`.
+npm workspaces monorepo of shared React component libraries for Red Hat ACM (Advanced Cluster Management) and OCM (OpenShift Cluster Manager) console UIs. built with PatternFly 6, TypeScript, React 18. each publishable package outputs UMD + ESM + types from its own `dist/`.
+
+| package | npm name | purpose |
+|---------|----------|---------|
+| root `src/` | `nxtcm-components` | shared console UI (breadcrumbs, page header, non-HCP wizards, etc.) |
+| `packages/nxtcm-dashboard` | `@redhat-cloud-services/nxtcm-dashboard` | ACM/OCM home dashboard widgets |
+| `packages/nxtcm-rosa-hcp-wizard` | `@redhat-cloud-services/nxtcm-rosa-hcp-wizard` | ROSA HCP cluster creation wizard |
 
 this repo provides UI components, types, and integration shapes. consuming apps supply data and wire navigation.
 
@@ -32,30 +38,48 @@ these are hard constraints. violating them will break builds, fail reviews, or p
 ## project layout
 
 ```text
-src/
-  components/               # UI components consumed by other apps
-                             # subdirectories organized by feature area
-                             # each component is independent of the others
-  context/                   # shared React context providers (e.g. i18n)
-  types/                     # shared TypeScript types and interfaces
-  utilities/                 # shared helper functions and utilities
-  examples/                  # usage examples
-  test-helpers.ts            # shared playwright CT helpers
-  index.ts                   # main entry — all public exports
+src/                                    # main library (nxtcm-components)
+  components/                           # shared UI consumed by other apps
+                                        # ConsoleBreadcrumbs, PageHeader, Wizards/RosaWizard, etc.
+                                        # dashboard + ROSA HCP wizard moved to packages/ (see below)
+  context/                              # shared React context providers (e.g. i18n)
+  types/                                # shared TypeScript types and interfaces
+  utilities/                            # shared helper functions and utilities
+  examples/                             # usage examples
+  test-helpers.ts                       # shared playwright CT helpers
+  index.ts                              # main entry — all public exports
 
 packages/
+  nxtcm-dashboard/                      # @redhat-cloud-services/nxtcm-dashboard (npm workspace)
+    src/                                # Dashboard, CVECard, TotalClusters, Telemetry, etc.
+    package.json                        # build: NXTCM_LIB_NAME=NXTCM-DASHBOARD + root vite.config.ts
+    tsconfig.json                       # extends root; rootDir src, outDir dist
+  nxtcm-rosa-hcp-wizard/                # @redhat-cloud-services/nxtcm-rosa-hcp-wizard (npm workspace)
+    src/                                # ROSAHCPWizard, steps, WizFields, yup schemas
+    package.json                        # build: NXTCM_LIB_NAME=NXTCM-ROSA-HCP-WIZARD + root vite.config.ts
+    tsconfig.json
   react-form-wizard/         # separate package, own tsconfig, NOT in main build
 
 playwright/
-  e2e/                       # E2E tests (vite dev server)
+  e2e/                                  # E2E tests (vite dev server)
 
-.storybook/                  # storybook 9 config (react-vite)
-.github/workflows/           # CI pipeline definitions
+.storybook/                             # storybook 9 config (react-vite)
+                                        # includes stories from src/ and packages/nxtcm-*/
+.github/workflows/                      # CI pipeline definitions
+vite.config.ts                          # shared Vite lib build; NXTCM_LIB_NAME selects output package
 ```
+
+### where to put new code
+
+- **dashboard home widgets** → `packages/nxtcm-dashboard/src/`
+- **ROSA HCP wizard** (steps, fields, validation) → `packages/nxtcm-rosa-hcp-wizard/src/`
+- **shared console UI** used across features → `src/components/` or `src/utilities/`
+
+workspace packages share root lint, prettier, jest, playwright CT, and vite config. run package builds from the package directory (e.g. `npm run build -w @redhat-cloud-services/nxtcm-dashboard`) or via each package's `package.json` scripts.
 
 ## file conventions
 
-components follow a co-location pattern:
+components follow a co-location pattern under `src/` or `packages/*/src/`:
 
 ```text
 ComponentName/
@@ -70,8 +94,10 @@ ComponentName/
 
 - `@/` → `src/`
 - `@patternfly-labs/react-form-wizard` → `packages/react-form-wizard/src`
+- `@redhat-cloud-services/nxtcm-dashboard` → `packages/nxtcm-dashboard/src`
+- `@redhat-cloud-services/nxtcm-rosa-hcp-wizard` → `packages/nxtcm-rosa-hcp-wizard/src`
 
-configured in: tsconfig.json, vite config, playwright-ct.config.ts, storybook main.ts, jest.config.js
+configured in: `tsconfig.json`, `vite.config.ts`, `playwright-ct.config.ts`, `.storybook/main.ts`, `jest.config.js` (`@/` only)
 
 ---
 
@@ -96,12 +122,12 @@ configured in: tsconfig.json, vite config, playwright-ct.config.ts, storybook ma
 
 ## verifying changes
 
-after making code changes, run these commands:
+after making code changes, run these commands from the repo root:
 
-1. `npm run lint` — check for lint errors (see `.eslintrc.json` for rules)
-2. `npm run type-check` — verify TypeScript compiles
-3. `npm run test:all` — run jest + playwright CT tests
-4. `npm run build` — verify the build succeeds
+1. `npm run lint` — lint `src/` and all `packages/**/*.{ts,tsx}`
+2. `npm run type-check` — verify root + workspace package TypeScript (`tsconfig.json` includes `packages/nxtcm-dashboard` and `packages/nxtcm-rosa-hcp-wizard`)
+3. `npm run test:all` — jest + playwright CT (CT matches `src/**/*.spec.tsx` and `packages/nxtcm-*/src/**/*.spec.tsx`)
+4. `npm run build` — build main `nxtcm-components` library; also run `npm run build -w <package>` when changing a workspace package
 
 ### test commands
 
@@ -165,7 +191,8 @@ other react best practices (dependency arrays, key props, memoization) are enfor
 - `*.stories.tsx` naming convention
 - co-locate stories next to their component
 - include `tags: ['autodocs']` for auto-generated docs
-- title convention: `Components/<Category>/<ComponentName>`
+- title convention: `Components/<Category>/<ComponentName>` (root `src/`); package stories use the same pattern under their package tree
+- dashboard and ROSA HCP stories live in `packages/nxtcm-dashboard/src/` and `packages/nxtcm-rosa-hcp-wizard/src/` (legacy paths under `src/components/dashboard` and `src/components/Wizards/ROSAHCPWizard` are excluded from Storybook)
 
 ### testing
 
@@ -254,7 +281,9 @@ non-obvious rules worth knowing upfront:
 | what | where |
 |------|-------|
 | lint rules | `.eslintrc.json` |
-| TypeScript config | `tsconfig.json` |
+| TypeScript config (root + packages) | `tsconfig.json`, `packages/nxtcm-dashboard/tsconfig.json`, `packages/nxtcm-rosa-hcp-wizard/tsconfig.json` |
+| npm workspaces | `package.json` → `workspaces` |
+| shared Vite lib build | `vite.config.ts` (`NXTCM_LIB_NAME` env var) |
 | CI pipeline | `.github/workflows/ci.yml` |
 | PR template | `.github/pull_request_template.md` |
 | Storybook config | `.storybook/main.ts` |
