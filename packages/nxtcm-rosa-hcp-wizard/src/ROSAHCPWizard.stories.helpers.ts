@@ -1,11 +1,119 @@
 import React from 'react';
 
 import fixtures, { sleep, STORY_API_ERROR_MESSAGE } from './ROSAHCPWizard.fixtures';
-import type { OpenShiftVersionsData, ROSAHCPWizardData, Subnet, ValidationResource } from './types';
+import type {
+  AWSInfrastructureAccounts,
+  OpenShiftVersionsData,
+  Region,
+  ROSAHCPWizardData,
+  Subnet,
+  ValidationResource,
+} from './types';
+/** Storybook refetch delay (matches {@link fixtures} `REFETCH_ALL_DELAY_MS`). */
+export const STORY_REFETCH_DELAY_MS = 2000;
 /** Simulated async cluster name validation delay for Storybook demos. */
 export const STORY_CLUSTER_NAME_VALIDATION_DELAY_MS = 800;
 
 const storyTakenClusterNames = new Set(fixtures.mockClusterNonUniqueNames.map(({ name }) => name));
+
+/** AWS infrastructure account option sets cycled on each refresh in the reconcile demo story. */
+export const storyAwsInfrastructureAccountRefetchCycle: readonly AWSInfrastructureAccounts[][] = [
+  fixtures.mockAwsInfrastructureAccounts,
+  fixtures.mockUpdatedAwsInfrastructureAccounts,
+  [
+    {
+      label: 'AWS Account — Demo East (111111111111)',
+      value: 'aws-demo-east-111111111111',
+    },
+    {
+      label: 'AWS Account — Demo West (222222222222)',
+      value: 'aws-demo-west-222222222222',
+    },
+  ],
+];
+
+/** Region list returned after each region refresh in the reconcile demo story. */
+export const storyRegionsAfterRefetch: Region[] = [
+  { label: 'US East 1 (us-east-1)', value: 'us-east-1' },
+];
+
+type RefetchResourceState<T> = {
+  data: T;
+  isFetching: boolean;
+  error: string | null;
+};
+
+/**
+ * Simulates an async refetch that replaces `data` with `refetchData` after a delay.
+ * Used by Storybook to demo WizSelect option reconciliation on refetch.
+ */
+export function useRefetchReplacingData<T>(
+  initialData: T,
+  refetchData: T,
+  delayMs: number = STORY_REFETCH_DELAY_MS
+): RefetchResourceState<T> & { fetch: () => Promise<void> } {
+  const [state, setState] = React.useState<RefetchResourceState<T>>({
+    data: initialData,
+    isFetching: false,
+    error: null,
+  });
+
+  const fetch = React.useCallback(async () => {
+    setState((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(delayMs);
+    setState({
+      data: refetchData,
+      isFetching: false,
+      error: null,
+    });
+  }, [delayMs, refetchData]);
+
+  return { ...state, fetch };
+}
+
+/**
+ * Simulates an async refetch that cycles through `dataSets` on each refresh.
+ */
+export function useCyclingRefetchResource<T>(
+  dataSets: readonly T[],
+  delayMs: number = STORY_REFETCH_DELAY_MS
+): RefetchResourceState<T> & { fetch: () => Promise<void> } {
+  const cycleIndexRef = React.useRef(0);
+  const [state, setState] = React.useState<RefetchResourceState<T>>({
+    data: dataSets[0],
+    isFetching: false,
+    error: null,
+  });
+
+  const fetch = React.useCallback(async () => {
+    setState((prev) => ({ ...prev, isFetching: true, error: null }));
+    await sleep(delayMs);
+    cycleIndexRef.current = (cycleIndexRef.current + 1) % dataSets.length;
+    setState({
+      data: dataSets[cycleIndexRef.current],
+      isFetching: false,
+      error: null,
+    });
+  }, [dataSets, delayMs]);
+
+  return { ...state, fetch };
+}
+
+/** {@link ROSAHCPWizardData} for the select-options reconcile Storybook demo. */
+export function createSelectOptionsReconcileDemoWizardData(): ROSAHCPWizardData {
+  const base = createMockRosaHcpWizardDataWithFetchLogging();
+  return {
+    ...base,
+    awsInfrastructureAccounts: {
+      ...base.awsInfrastructureAccounts,
+      data: storyAwsInfrastructureAccountRefetchCycle[0],
+    },
+    regions: {
+      ...base.regions,
+      data: fixtures.mockRegions,
+    },
+  };
+}
 
 /** Private subnets from the first HCP wizard fixture VPC (names include `private`, matching `subnetsFilter`). */
 export function getMockStoryPrivateSubnets(): Subnet[] {
@@ -74,7 +182,8 @@ export function useStoryClusterNameValidation(): Pick<
 
 /** Storybook-only: logs which resource was refreshed and fetch arguments. */
 export function storyFetchWithLogging<TArgs extends unknown[]>(
-  resource: string
+  resource: string,
+  fetchFn?: (...args: TArgs) => Promise<void>
 ): (...args: TArgs) => Promise<void> {
   return async (...args: TArgs) => {
     // eslint-disable-next-line no-console
@@ -82,7 +191,11 @@ export function storyFetchWithLogging<TArgs extends unknown[]>(
       resource,
       attributes: args.length > 0 ? args.toString() : undefined,
     });
-    await noopFetch();
+    if (fetchFn) {
+      await fetchFn(...args);
+    } else {
+      await noopFetch();
+    }
   };
 }
 
@@ -155,7 +268,7 @@ export function createMockRosaHcpWizardData(
     },
     regions: {
       data: [
-        { label: 'US East (N. Virginia) us-east-1', value: 'us-east-1' },
+        { label: 'US East 1 (us-east-1)', value: 'us-east-1' },
         { label: 'US East (Ohio) us-east-2', value: 'us-east-2' },
       ],
       error: null,
