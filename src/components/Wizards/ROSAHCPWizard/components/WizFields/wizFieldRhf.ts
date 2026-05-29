@@ -113,12 +113,13 @@ export function wizResolvePresentationLabelString(
   );
 }
 
+/** Third argument is true when the form was submitted or the field's step failed Next / Skip to review. */
 export function wizFieldShowsError(
   invalid: boolean,
   isTouched: boolean,
-  isSubmitted: boolean
+  validationRevealed: boolean
 ): boolean {
-  return invalid && (isTouched || isSubmitted);
+  return invalid && (isTouched || validationRevealed);
 }
 
 /**

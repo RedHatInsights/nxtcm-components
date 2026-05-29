@@ -62,7 +62,7 @@ import {
   POD_CIDR_MAX,
   MAX_CA_SIZE_BYTES,
 } from '../constants';
-import { CIDRSubnet, ROSAHCPCluster } from '../types';
+import { CIDRSubnet, ClusterEncryptionKeys, ROSAHCPCluster } from '../types';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -1179,9 +1179,37 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
       expect(error).toBeNull();
     });
 
-    it('accepts empty string', async () => {
-      const error = await validate(buildContext(), buildFormData({ kms_key_arn: '' }), field);
+    it('accepts empty string when default KMS is selected', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({ encryption_keys: ClusterEncryptionKeys.default, kms_key_arn: '' }),
+        field
+      );
       expect(error).toBeNull();
+    });
+
+    it('rejects undefined when custom KMS is selected', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({
+          encryption_keys: ClusterEncryptionKeys.custom,
+          kms_key_arn: undefined,
+        }),
+        field
+      );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
+    it('rejects empty string when custom KMS is selected', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({
+          encryption_keys: ClusterEncryptionKeys.custom,
+          kms_key_arn: '',
+        }),
+        field
+      );
+      expect(error).toBe(msgs.commonRequired);
     });
 
     it('accepts valid KMS ARN in matching region', async () => {
@@ -1248,19 +1276,46 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
     const field = 'etcd_key_arn' as const;
     const validArn = 'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-5678-abcd-123456789012';
 
-    it('accepts undefined (optional)', async () => {
+    it('accepts undefined when etcd encryption is off', async () => {
       const error = await validate(
         buildContext(),
-        buildFormData({ etcd_key_arn: undefined }),
+        buildFormData({ etcd_encryption: false, etcd_key_arn: undefined }),
         field
       );
       expect(error).toBeNull();
     });
 
+    it('accepts empty string when etcd encryption is off', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({ etcd_encryption: false, etcd_key_arn: '' }),
+        field
+      );
+      expect(error).toBeNull();
+    });
+
+    it('rejects undefined when etcd encryption is on', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({ etcd_encryption: true, etcd_key_arn: undefined }),
+        field
+      );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
+    it('rejects empty string when etcd encryption is on', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({ etcd_encryption: true, etcd_key_arn: '' }),
+        field
+      );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
     it('accepts valid etcd key ARN in matching region', async () => {
       const error = await validate(
         buildContext(),
-        buildFormData({ etcd_key_arn: validArn, region: 'us-east-1' }),
+        buildFormData({ etcd_encryption: true, etcd_key_arn: validArn, region: 'us-east-1' }),
         field
       );
       expect(error).toBeNull();

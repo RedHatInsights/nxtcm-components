@@ -4,6 +4,7 @@ import { requiredFromYup } from '../../../../../../utilities/yupFieldRequired';
 
 import { RadioGroup, type RadioGroupProps } from '../../Fields/RadioGroup';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
+import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizRadioGroupControlledKeys =
@@ -80,7 +81,8 @@ export function WizRadioGroup<TFieldValues extends FieldValues = FieldValues>(
     formState: { isSubmitted },
   } = useController({ name, control });
 
-  const showError = wizFieldShowsError(invalid, isTouched, isSubmitted);
+  const stepValidationRevealed = useWizStepValidationRevealed(String(name));
+  const showError = wizFieldShowsError(invalid, isTouched, isSubmitted || stepValidationRevealed);
 
   return (
     <RadioGroup

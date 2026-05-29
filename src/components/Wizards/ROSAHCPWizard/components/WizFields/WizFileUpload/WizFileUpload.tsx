@@ -5,6 +5,7 @@ import { requiredFromYup } from '../../../../../../utilities/yupFieldRequired';
 
 import { FileUpload, type FileUploadProps } from '../../Fields/FileUpload';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
+import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizFileUploadControlledKeys =
@@ -84,7 +85,8 @@ export function WizFileUpload<TFieldValues extends FieldValues = FieldValues>(
     formState: { isSubmitted },
   } = useController({ name, control });
 
-  const showError = wizFieldShowsError(invalid, isTouched, isSubmitted);
+  const stepValidationRevealed = useWizStepValidationRevealed(String(name));
+  const showError = wizFieldShowsError(invalid, isTouched, isSubmitted || stepValidationRevealed);
 
   const onDataChange = (_event: DropEvent, data: string) => {
     field.onChange(data);

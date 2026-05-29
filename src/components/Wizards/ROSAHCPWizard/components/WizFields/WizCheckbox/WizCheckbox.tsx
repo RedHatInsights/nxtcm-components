@@ -4,6 +4,7 @@ import { type FieldValues, useController } from 'react-hook-form';
 import { requiredFromYup } from '../../../../../../utilities/yupFieldRequired';
 import { Checkbox, type CheckboxProps } from '../../Fields/Checkbox';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
+import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizCheckboxControlledKeys =
@@ -81,7 +82,8 @@ export function WizCheckbox<TFieldValues extends FieldValues = FieldValues>(
     formState: { isSubmitted },
   } = useController({ name, control });
 
-  const showError = wizFieldShowsError(invalid, isTouched, isSubmitted);
+  const stepValidationRevealed = useWizStepValidationRevealed(String(name));
+  const showError = wizFieldShowsError(invalid, isTouched, isSubmitted || stepValidationRevealed);
 
   const onChange = (_event: FormEvent<HTMLInputElement>, checked: boolean) => {
     field.onChange(checked);

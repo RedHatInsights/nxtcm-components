@@ -110,3 +110,13 @@ export const rosaCommonRequiredNonEmptyTest = {
   skipAbsent: true,
   test: rosaRequiredPresentValue,
 };
+
+/**
+ * Like {@link rosaCommonRequiredNonEmptyTest} but still runs when the value is `undefined`.
+ * Use on conditionally required fields that may be untouched (e.g. Key ARN shown only when a toggle is on).
+ */
+export const rosaCommonRequiredNonEmptyIncludingAbsentTest = {
+  name: 'rosa-common-required-nonempty',
+  exclusive: true,
+  test: rosaRequiredPresentValue,
+};

@@ -5,6 +5,7 @@ import { requiredFromYup } from '../../../../../../utilities/yupFieldRequired';
 
 import { NumberInput, type NumberInputProps } from '../../Fields/NumberInput';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
+import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizNumberInputControlledKeys =
@@ -85,7 +86,8 @@ export function WizNumberInput<TFieldValues extends FieldValues = FieldValues>(
     formState: { isSubmitted },
   } = useController({ name, control });
 
-  const showError = wizFieldShowsError(invalid, isTouched, isSubmitted);
+  const stepValidationRevealed = useWizStepValidationRevealed(String(name));
+  const showError = wizFieldShowsError(invalid, isTouched, isSubmitted || stepValidationRevealed);
 
   const value =
     typeof field.value === 'number' && !Number.isNaN(field.value) ? field.value : undefined;

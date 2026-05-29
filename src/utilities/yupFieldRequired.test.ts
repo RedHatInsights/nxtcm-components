@@ -1,5 +1,7 @@
 import * as yup from 'yup';
 
+import { ClusterEncryptionKeys } from '../components/Wizards/ROSAHCPWizard/types';
+import { clusterValidationSchema } from '../components/Wizards/ROSAHCPWizard/yupSchemas';
 import { isYupFieldRequired, requiredFromYup } from './yupFieldRequired';
 
 describe('isYupFieldRequired', () => {
@@ -24,6 +26,29 @@ describe('isYupFieldRequired', () => {
       }),
     });
     expect(isYupFieldRequired(schema, 'user.name')).toBe(true);
+  });
+
+  it('resolves conditionally required encryption Key ARN fields via describe value', () => {
+    expect(
+      isYupFieldRequired(clusterValidationSchema, 'kms_key_arn', {
+        value: { encryption_keys: ClusterEncryptionKeys.default },
+      })
+    ).toBe(false);
+    expect(
+      isYupFieldRequired(clusterValidationSchema, 'kms_key_arn', {
+        value: { encryption_keys: ClusterEncryptionKeys.custom },
+      })
+    ).toBe(true);
+    expect(
+      isYupFieldRequired(clusterValidationSchema, 'etcd_key_arn', {
+        value: { etcd_encryption: false },
+      })
+    ).toBe(false);
+    expect(
+      isYupFieldRequired(clusterValidationSchema, 'etcd_key_arn', {
+        value: { etcd_encryption: true },
+      })
+    ).toBe(true);
   });
 });
 

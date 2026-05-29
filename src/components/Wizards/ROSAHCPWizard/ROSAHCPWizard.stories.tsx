@@ -125,7 +125,7 @@ export const Default: Story = {
     wizardData: createMockRosaHcpWizardData(),
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
-      //await sleep(2000);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       alert('Cluster creation initiated successfully!');
     },
     onCancel: () => {

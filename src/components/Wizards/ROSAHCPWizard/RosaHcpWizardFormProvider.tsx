@@ -6,6 +6,7 @@ import type { ClusterFormData } from '../types';
 
 import { buildClusterValidationSchemaContext } from './buildClusterValidationSchemaContext';
 import { ROSAHCPWizardBody } from './ROSAHCPWizardBody';
+import { RosaHcpWizardValidationProvider } from './rosaHcpWizardValidationContext';
 import { useRosaHcpWizardValidators } from './stringsProvider/RosaHcpWizardStringsContext';
 import type { RosaHCPWizardProps } from './types';
 import type { ValidationSchemaContext } from './yupSchemas/types';
@@ -39,7 +40,9 @@ export function RosaHcpWizardFormProvider(props: RosaHCPWizardProps) {
 
   return (
     <FormProvider {...methods}>
-      <ROSAHCPWizardBody {...props} />
+      <RosaHcpWizardValidationProvider>
+        <ROSAHCPWizardBody {...props} />
+      </RosaHcpWizardValidationProvider>
     </FormProvider>
   );
 }

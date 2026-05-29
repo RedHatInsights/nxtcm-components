@@ -12,6 +12,6 @@ export const useUpdateOperatorPrefix = () => {
     [clusterName]
   );
   React.useEffect(() => {
-    setValue('custom_operator_roles_prefix', operatorRolesPrefix);
+    setValue('custom_operator_roles_prefix', operatorRolesPrefix, { shouldValidate: true });
   }, [operatorRolesPrefix, setValue]);
 };

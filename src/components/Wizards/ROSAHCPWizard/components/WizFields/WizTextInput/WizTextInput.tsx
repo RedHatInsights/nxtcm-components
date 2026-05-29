@@ -5,6 +5,7 @@ import { requiredFromYup } from '../../../../../../utilities/yupFieldRequired';
 
 import { TextInput, type TextInputProps } from '../../Fields/TextInput';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
+import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 import { FieldWithAPIErrorAlert } from '../../FieldWithAPIErrorAlert';
 
@@ -105,7 +106,8 @@ export function WizTextInput<TFieldValues extends FieldValues = FieldValues>(
     formState: { isSubmitted },
   } = useController({ name, control });
 
-  const showError = wizFieldShowsError(invalid, isTouched, isSubmitted);
+  const stepValidationRevealed = useWizStepValidationRevealed(String(name));
+  const showError = wizFieldShowsError(invalid, isTouched, isSubmitted || stepValidationRevealed);
 
   const onChange = (_event: FormEvent<HTMLInputElement>, value: string) => {
     field.onChange(value);

@@ -1,38 +1,27 @@
 import * as yup from 'yup';
 
-import {
-  AWS_KMS_MULTI_REGION_SERVICE_ACCOUNT_REGEX,
-  AWS_KMS_SERVICE_ACCOUNT_REGEX,
-  STEP_IDS,
-} from '../constants';
+import { STEP_IDS } from '../constants';
 import { ClusterEncryptionKeys } from '../../types';
 import type { WizardFieldMeta } from './types';
-import { ctx } from './helpers';
+import { ctx, rosaCommonRequiredNonEmptyIncludingAbsentTest } from './helpers';
 import { ROSAHCPCluster } from '../types';
+import { validateAWSKMSKeyARN } from '../validators';
+import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../../../../utilities/yupFieldRequired';
 
+/** ARN format/region checks (required when shown is enforced via `.when()` on the field schema). */
 function validateKmsArn(
   this: yup.TestContext,
   value: string | undefined
 ): boolean | yup.ValidationError {
   if (!value) return true;
   const { msgs } = ctx(this);
-  if (/\s/.test(value)) {
-    return this.createError({ message: msgs.kmsKeyArn.noWhitespace });
-  }
-  if (
-    value.includes(':key/mrk-')
-      ? !AWS_KMS_MULTI_REGION_SERVICE_ACCOUNT_REGEX.test(value)
-      : !AWS_KMS_SERVICE_ACCOUNT_REGEX.test(value)
-  ) {
-    return this.createError({ message: msgs.kmsKeyArn.invalidArn });
-  }
   const region = (this.parent as Partial<ROSAHCPCluster>).region;
-  const kmsRegion = value.split('kms:')?.pop()?.split(':')[0];
-  if (kmsRegion !== region) {
-    return this.createError({ message: msgs.kmsKeyArn.wrongRegion });
-  }
-  return true;
+  const error = validateAWSKMSKeyARN(value, region, msgs.kmsKeyArn);
+  return error ? this.createError({ message: error }) : true;
 }
+
+const kmsKeyArnFormatTest = { name: 'kms-key-arn', message: '', test: validateKmsArn };
+const etcdKeyArnFormatTest = { name: 'etcd-key-arn', message: '', test: validateKmsArn };
 
 export const encryptionKeysSchema = yup
   .string()
@@ -47,7 +36,6 @@ export const encryptionKeysSchema = yup
 
 export const kmsKeyArnSchema = yup
   .string()
-  .optional()
   .meta({
     id: 'kms_key_arn',
     labelKey: 'encryption.keyArnLabel',
@@ -55,7 +43,15 @@ export const kmsKeyArnSchema = yup
     stepId: STEP_IDS.ENCRYPTION,
     fieldType: 'text',
   } satisfies WizardFieldMeta)
-  .test('kms-key-arn', '', validateKmsArn);
+  .when('encryption_keys', {
+    is: ClusterEncryptionKeys.custom,
+    then: (schema) =>
+      schema
+        .test(rosaCommonRequiredNonEmptyIncludingAbsentTest)
+        .meta({ [YUP_FIELD_REQUIRED_UI_META_KEY]: true })
+        .test(kmsKeyArnFormatTest),
+    otherwise: (schema) => schema.optional().test(kmsKeyArnFormatTest),
+  });
 
 export const etcdEncryptionSchema = yup
   .boolean()
@@ -72,7 +68,6 @@ export const etcdEncryptionSchema = yup
 
 export const etcdKeyArnSchema = yup
   .string()
-  .optional()
   .meta({
     id: 'etcd_key_arn',
     labelKey: 'encryption.keyArnLabel',
@@ -80,7 +75,15 @@ export const etcdKeyArnSchema = yup
     stepId: STEP_IDS.ENCRYPTION,
     fieldType: 'text',
   } satisfies WizardFieldMeta)
-  .test('etcd-key-arn', '', validateKmsArn);
+  .when('etcd_encryption', {
+    is: true,
+    then: (schema) =>
+      schema
+        .test(rosaCommonRequiredNonEmptyIncludingAbsentTest)
+        .meta({ [YUP_FIELD_REQUIRED_UI_META_KEY]: true })
+        .test(etcdKeyArnFormatTest),
+    otherwise: (schema) => schema.optional().test(etcdKeyArnFormatTest),
+  });
 
 export const encryptionFields = {
   encryption_keys: encryptionKeysSchema,
