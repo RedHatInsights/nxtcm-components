@@ -23,12 +23,12 @@ Even after approval, untrusted inputs are validated:
 - Only the sanitized key is used in the AI prompt
 
 #### 3. **Limited Permissions**
-The GitHub token is scoped to:
+The `GITHUB_TOKEN` is scoped to:
 - `contents: read` - can't modify code
 - `pull-requests: write` - can only comment on PRs
 - `issues: write` - can only comment on issues
 
-No access to secrets, workflows, or push permissions.
+The `GITHUB_TOKEN` has no access to repository secrets, workflows, or push permissions. However, three repository secrets (`ACP_API_URL`, `ACP_TOKEN`, `ACP_PROJECT`) are passed as inputs to `ambient-code/ambient-action`. These are used by the action to authenticate the AI agent session — they are not exposed as shell environment variables within the workflow steps themselves.
 
 ## Usage
 

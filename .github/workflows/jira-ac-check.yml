@@ -64,11 +64,18 @@ jobs:
         env:
           PR_TITLE: ${{ github.event.pull_request.title || '' }}
           MANUAL_KEY: ${{ github.event.inputs.jira-key || '' }}
+          PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr-number || '' }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           if [ -n "$MANUAL_KEY" ]; then
             KEY="$MANUAL_KEY"
           else
-            KEY=$(echo "$PR_TITLE" | grep -oE 'FCN-[0-9]+' | head -1)
+            TITLE="$PR_TITLE"
+            # workflow_dispatch doesn't have pull_request.title — fetch it
+            if [ -z "$TITLE" ] && [ -n "$PR_NUMBER" ]; then
+              TITLE=$(gh pr view "$PR_NUMBER" --repo "${{ github.repository }}" --json title --jq .title 2>/dev/null || echo "")
+            fi
+            KEY=$(printf '%s\n' "$TITLE" | grep -oE 'FCN-[0-9]+' | head -1)
           fi
 
           # Validate that the key strictly matches the expected format
