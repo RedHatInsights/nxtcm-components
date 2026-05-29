@@ -2,10 +2,15 @@ import React from 'react';
 import { FormGroup, Grid, GridItem, Split, SplitItem } from '@patternfly/react-core';
 import { useFormContext, useWatch } from 'react-hook-form';
 
+import { HelperText } from '../../../components/Fields/HelperText';
 import { Select } from '../../../components/Fields/Select';
+import { wizFieldShowsError } from '../../../components/WizFields/wizFieldRhf';
 import { parseUpdateSchedule } from '../../../helpers';
+import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster } from '../../../types';
+
+const UPGRADE_SCHEDULE_FIELDS_ID = 'upgrade-schedule-fields';
 
 const hoursOptions = Array.from(Array(24).keys());
 
@@ -16,50 +21,84 @@ const hourSelectOptions = hoursOptions.map((hour) => ({
   value: hour.toString(),
 }));
 
+const buildUpgradeScheduleCron = (day: string, hour: string): string => `00 ${hour} * * ${day}`;
+
+const parseScheduleParts = (cron: string): [hour: string, day: string] => {
+  if (!cron) {
+    return ['', ''];
+  }
+  return parseUpdateSchedule(cron);
+};
+
 export const UpgradeScheduleFields = () => {
   const cu = useRosaHcpWizardStrings().clusterUpdates;
-  const { setValue } = useFormContext<ROSAHCPCluster>();
+  const { setValue, formState, getFieldState } = useFormContext<ROSAHCPCluster>();
   const upgradeSchedule =
     useWatch<ROSAHCPCluster, 'upgrade_schedule'>({ name: 'upgrade_schedule' }) ?? '';
+  const scheduleFieldState = getFieldState('upgrade_schedule', formState);
+  const stepValidationRevealed = useWizStepValidationRevealed('upgrade_schedule');
+  const showError = wizFieldShowsError(
+    scheduleFieldState.invalid,
+    scheduleFieldState.isTouched,
+    formState.isSubmitted || stepValidationRevealed
+  );
 
   const dayOptions = React.useMemo(
     () => cu.daysOfWeek.map((day, idx) => ({ label: day, value: idx.toString() })),
     [cu.daysOfWeek]
   );
 
-  const parseCurrentValue = (): [string, string] => {
-    if (!upgradeSchedule) {
-      return ['', ''];
-    }
-    return parseUpdateSchedule(upgradeSchedule);
-  };
+  const [selectedHour, setSelectedHour] = React.useState(
+    () => parseScheduleParts(upgradeSchedule)[0]
+  );
+  const [selectedDay, setSelectedDay] = React.useState(
+    () => parseScheduleParts(upgradeSchedule)[1]
+  );
 
-  const [selectedHour, selectedDay] = parseCurrentValue();
-
-  const onDayChange = (selection: string | number | undefined) => {
-    if (selection === undefined) {
+  const syncUpgradeSchedule = (day: string, hour: string) => {
+    if (day !== '' && hour !== '') {
+      setValue('upgrade_schedule', buildUpgradeScheduleCron(day, hour), {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
       return;
     }
-    const hour = parseCurrentValue()[0] || '0';
-    setValue('upgrade_schedule', `00 ${hour} * * ${String(selection)}`, {
-      shouldDirty: true,
-      shouldTouch: true,
+
+    if (upgradeSchedule) {
+      setValue('upgrade_schedule', undefined, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
+    }
+  };
+
+  const onDayChange = (selection: string | number | undefined) => {
+    const day = selection === undefined ? '' : String(selection);
+    setSelectedDay(day);
+    setSelectedHour((hour) => {
+      syncUpgradeSchedule(day, hour);
+      return hour;
     });
   };
 
   const onHourChange = (selection: string | number | undefined) => {
-    if (selection === undefined) {
-      return;
-    }
-    const day = parseCurrentValue()[1] || '0';
-    setValue('upgrade_schedule', `00 ${String(selection)} * * ${day}`, {
-      shouldDirty: true,
-      shouldTouch: true,
+    const hour = selection === undefined ? '' : String(selection);
+    setSelectedHour(hour);
+    setSelectedDay((day) => {
+      syncUpgradeSchedule(day, hour);
+      return day;
     });
   };
 
   return (
-    <FormGroup label={cu.dayTimeLabel} className="pf-v6-u-ml-xl">
+    <FormGroup
+      label={cu.dayTimeLabel}
+      className="pf-v6-u-ml-xl"
+      fieldId={UPGRADE_SCHEDULE_FIELDS_ID}
+      isRequired
+    >
       <Grid>
         <GridItem span={7}>
           <Split hasGutter isWrappable>
@@ -71,6 +110,7 @@ export const UpgradeScheduleFields = () => {
                 onChange={onDayChange}
                 options={dayOptions}
                 isFill
+                isError={showError}
               />
             </SplitItem>
             <SplitItem>
@@ -83,11 +123,17 @@ export const UpgradeScheduleFields = () => {
                 isFill
                 maxMenuHeight="20em"
                 isScrollable
+                isError={showError}
               />
             </SplitItem>
           </Split>
         </GridItem>
       </Grid>
+      <HelperText
+        id={UPGRADE_SCHEDULE_FIELDS_ID}
+        errorMessage={scheduleFieldState.error?.message}
+        isError={showError}
+      />
     </FormGroup>
   );
 };

@@ -1,12 +1,19 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Form } from '@patternfly/react-core';
-import { FormProvider, useForm, type Resolver } from 'react-hook-form';
+import { Button, Form } from '@patternfly/react-core';
+import { FormProvider, useForm, type Resolver, useFormContext } from 'react-hook-form';
 
 import type { ClusterFormData } from '@/components/Wizards/types';
 import { ClusterEncryptionKeys, ClusterNetwork, ClusterUpgrade } from '@/components/Wizards/types';
 
+import { STEP_IDS } from '../../../constants';
 import { clusterValidationSchema } from '../../../yupSchemas';
+import type { ValidationSchemaContext } from '../../../yupSchemas/types';
+import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import {
+  RosaHcpWizardValidationProvider,
+  useRosaHcpWizardValidation,
+} from '../../../rosaHcpWizardValidationContext';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
 import { ClusterUpdates } from './ClusterUpdates';
 
@@ -24,7 +31,7 @@ const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ClusterFormData> = {
   network_host_prefix: '/23',
   autoscaling: false,
   nodes_compute: 2,
-  upgrade_policy: ClusterUpgrade.manual,
+  upgrade_policy: ClusterUpgrade.automatic,
   cluster_privacy: ClusterNetwork.external,
   compute_root_volume: 300,
   billing_account_id: '',
@@ -40,18 +47,49 @@ export type ClusterUpdatesMountProps = {
   defaultValues?: Partial<ClusterFormData>;
 };
 
+function ClusterUpdatesValidateButton() {
+  const { trigger } = useFormContext<ClusterFormData>();
+  const { markValidationAttempted } = useRosaHcpWizardValidation();
+
+  return (
+    <Button
+      type="button"
+      onClick={() => {
+        markValidationAttempted(STEP_IDS.CLUSTER_UPDATES);
+        void trigger(['upgrade_policy', 'upgrade_schedule']);
+      }}
+    >
+      Validate
+    </Button>
+  );
+}
+
 export const ClusterUpdatesMount: React.FC<ClusterUpdatesMountProps> = ({ defaultValues = {} }) => {
+  const validationContext = useMemo<ValidationSchemaContext>(
+    () => ({
+      msgs: defaultRosaHcpWizardValidatorStrings,
+      maxRootDiskSize: 16384,
+      maxAutoscalingNodes: 500,
+      machinePoolsNumber: 1,
+    }),
+    []
+  );
+
   const methods = useForm<ClusterFormData>({
     defaultValues: { ...DEFAULT_ROSA_HCP_CT_FORM_VALUES, ...defaultValues },
     resolver: yupResolver(clusterValidationSchema) as Resolver<ClusterFormData>,
+    context: validationContext,
     mode: 'onTouched',
   });
 
   return withRosaCt(
-    <FormProvider {...methods}>
-      <Form>
-        <ClusterUpdates />
-      </Form>
-    </FormProvider>
+    <RosaHcpWizardValidationProvider>
+      <FormProvider {...methods}>
+        <Form>
+          <ClusterUpdates />
+          <ClusterUpdatesValidateButton />
+        </Form>
+      </FormProvider>
+    </RosaHcpWizardValidationProvider>
   );
 };

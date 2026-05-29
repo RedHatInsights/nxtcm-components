@@ -62,7 +62,7 @@ import {
   POD_CIDR_MAX,
   MAX_CA_SIZE_BYTES,
 } from '../constants';
-import { CIDRSubnet, ClusterEncryptionKeys, ROSAHCPCluster } from '../types';
+import { CIDRSubnet, ClusterEncryptionKeys, ClusterUpgrade, ROSAHCPCluster } from '../types';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -100,6 +100,8 @@ function buildFormData(overrides: Partial<ROSAHCPCluster> = {}): Partial<ROSAHCP
     network_service_cidr: '172.30.0.0/16',
     network_pod_cidr: '10.128.0.0/14',
     network_host_prefix: '/23',
+    upgrade_policy: ClusterUpgrade.automatic,
+    upgrade_schedule: '00 9 * * 1',
     ...overrides,
   };
 }
@@ -1429,7 +1431,7 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
       expect(defaults.autoscaling).toBe(false);
       expect(defaults.nodes_compute).toBe(2);
       expect(defaults.compute_root_volume).toBe(300);
-      expect(defaults.upgrade_policy).toBe('manual');
+      expect(defaults.upgrade_policy).toBe('automatic');
     });
   });
 });

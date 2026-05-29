@@ -17,7 +17,6 @@ export const ClusterUpdates = () => {
   const { goToStepById } = useWizardContext();
 
   const clusterVersion = useWatch<ROSAHCPCluster, 'cluster_version'>({ name: 'cluster_version' });
-  const upgradePolicy = useWatch<ROSAHCPCluster, 'upgrade_policy'>({ name: 'upgrade_policy' });
 
   return (
     <Section label={cu.sectionLabel}>
@@ -67,10 +66,10 @@ export const ClusterUpdates = () => {
               {cu.recurringDescriptionAfterZStream}
             </>
           }
-        />
+        >
+          <UpgradeScheduleFields />
+        </Radio>
       </WizRadioGroup>
-
-      {upgradePolicy === ClusterUpgrade.automatic && <UpgradeScheduleFields />}
     </Section>
   );
 };

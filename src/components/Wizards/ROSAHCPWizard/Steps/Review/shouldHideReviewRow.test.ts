@@ -1,4 +1,5 @@
 import type { ClusterFormData } from '@/components/Wizards/types';
+import { ClusterUpgrade } from '@/components/Wizards/types';
 
 import { shouldHideReviewRow } from './shouldHideReviewRow';
 
@@ -130,6 +131,42 @@ describe('shouldHideReviewRow', () => {
       shouldHideReviewRow({
         path: 'security_groups_worker',
         formValues: baseFormValues,
+        metaShouldHideInReview: false,
+      })
+    ).toBe(false);
+  });
+
+  it('hides upgrade_schedule when policy is manual or schedule is empty', () => {
+    expect(
+      shouldHideReviewRow({
+        path: 'upgrade_schedule',
+        formValues: {
+          upgrade_policy: ClusterUpgrade.manual,
+          upgrade_schedule: '00 4 * * 0',
+        },
+        metaShouldHideInReview: false,
+      })
+    ).toBe(true);
+    expect(
+      shouldHideReviewRow({
+        path: 'upgrade_schedule',
+        formValues: {
+          upgrade_policy: ClusterUpgrade.automatic,
+          upgrade_schedule: '',
+        },
+        metaShouldHideInReview: false,
+      })
+    ).toBe(true);
+  });
+
+  it('shows upgrade_schedule when automatic policy has a cron value', () => {
+    expect(
+      shouldHideReviewRow({
+        path: 'upgrade_schedule',
+        formValues: {
+          upgrade_policy: ClusterUpgrade.automatic,
+          upgrade_schedule: '00 4 * * 0',
+        },
         metaShouldHideInReview: false,
       })
     ).toBe(false);

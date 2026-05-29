@@ -1,7 +1,11 @@
 import { ClusterFormData, MachinePoolSubnetEntry, VPC } from '@/components/Wizards/types';
 import type { ClusterUpgrade } from '@/components/Wizards/types';
 import type { LabelValueOption } from '../../helpers';
-import { formatUpgradePolicyForReview, getNestedValue } from '../../helpers';
+import {
+  formatUpgradePolicyForReview,
+  formatUpgradeScheduleForReview,
+  getNestedValue,
+} from '../../helpers';
 import { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.types';
 import { wizardFieldMetaByPath } from '../../yupSchemas';
 
@@ -113,6 +117,10 @@ export function formatReviewFieldValue(
       individualLabel: review.strategyIndividual,
       recurringLabel: review.strategyAutomatic,
     });
+  }
+
+  if (path === 'upgrade_schedule' && typeof raw === 'string' && raw !== '') {
+    return formatUpgradeScheduleForReview(raw, strings.clusterUpdates.daysOfWeek);
   }
 
   const meta = wizardFieldMetaByPath(path);

@@ -353,7 +353,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     selectDayPlaceholder: 'Select day',
     selectTimePlaceholder: 'Select time',
     upgradePolicyLabel: 'Cluster update strategy',
-    upgradeScheduleLabel: 'Preferred day and start time',
+    upgradeScheduleLabel: 'Scheduled day and start time',
     daysOfWeek: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
   },
   review: {
