@@ -81,27 +81,6 @@ const EditSecurityGroups = ({
     selectedGroupIds?.includes(s.id || '')
   );
 
-  React.useEffect(() => {
-    if (!selectedVPC?.id) {
-      return;
-    }
-
-    const newGroupIds = vpcSecurityGroupsSorted.map((g) => g.id || '');
-    const newSelectedGroupIds = selectedGroupIds.filter((gId) => newGroupIds.includes(gId));
-
-    const selectionChanged =
-      newSelectedGroupIds.length !== selectedGroupIds.length ||
-      newSelectedGroupIds.some((id, index) => id !== selectedGroupIds[index]);
-
-    if (selectionChanged) {
-      setValue('security_groups_worker', newSelectedGroupIds, {
-        shouldDirty: true,
-        shouldTouch: true,
-        shouldValidate: true,
-      });
-    }
-  }, [selectedVPC?.id, vpcSecurityGroupsSorted, selectedGroupIds, setValue]);
-
   if (isReadOnly) {
     return (
       <SecurityGroupsViewList securityGroups={selectedOptions} emptyMessage={sg.readOnlyEmpty} />

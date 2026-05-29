@@ -1,13 +1,15 @@
 import type { UseFormSetValue } from 'react-hook-form';
 
 import { hasRefetchableStringValue } from './hasRefetchableStringValue';
-import type { ROSAHCPCluster, ROSAHCPWizardData, Role } from './types';
+import { resolveSelectedVpc } from './helpers';
+import type { ROSAHCPCluster, ROSAHCPWizardData, Role, VPC } from './types';
 import type { WizardFieldDerivedSyncKey } from './yupSchemas/types';
 import type { WizardFieldDerivedSyncEntry } from './yupSchemas/wizardFieldDerivedSyncRegistry';
 
 export type ApplyWizardFieldDerivedSyncArgs = {
   syncKey: WizardFieldDerivedSyncKey;
   currentValue: unknown;
+  formValues: Partial<ROSAHCPCluster>;
   wizardData: ROSAHCPWizardData;
   setValue: UseFormSetValue<Partial<ROSAHCPCluster>>;
 };
@@ -18,12 +20,45 @@ const SET_VALUE_OPTS = {
   shouldValidate: false,
 };
 
+const PRUNE_SET_VALUE_OPTS = {
+  shouldDirty: true,
+  shouldTouch: false,
+  shouldValidate: true,
+};
+
+function hasSelectedVpcValue(value: unknown): value is string | VPC {
+  if (hasRefetchableStringValue(value)) {
+    return true;
+  }
+  if (value != null && typeof value === 'object' && 'id' in value) {
+    const id = (value as VPC).id;
+    return typeof id === 'string' && id !== '';
+  }
+  return false;
+}
+
+/** Whether a derived sync should run/re-run for the current source-field value. */
+export function hasDerivedSyncSourceValue(
+  syncKey: WizardFieldDerivedSyncKey,
+  value: unknown
+): boolean {
+  switch (syncKey) {
+    case 'installerRoleDependentRoles':
+      return hasRefetchableStringValue(value);
+    case 'vpcSecurityGroupsWorkerSelection':
+      return hasSelectedVpcValue(value);
+    default:
+      return false;
+  }
+}
+
 /** Wizard-data slices that should re-run a derived sync when they change while the source field is set. */
 export const wizardFieldDerivedSyncWizardDataDeps: Record<
   WizardFieldDerivedSyncKey,
   (wizardData: ROSAHCPWizardData) => readonly unknown[]
 > = {
   installerRoleDependentRoles: (wizardData) => [wizardData.roles.data],
+  vpcSecurityGroupsWorkerSelection: (wizardData) => [wizardData.vpcList.data],
 };
 
 /** Collects wizard-data dependency values for all derived sync handlers in `entries`. */
@@ -43,6 +78,40 @@ export function collectWizardFieldDerivedSyncWizardDataDeps(
   }
 
   return deps;
+}
+
+function securityGroupSelectionsEqual(
+  current: readonly string[],
+  next: readonly string[]
+): boolean {
+  return current.length === next.length && current.every((id, index) => id === next[index]);
+}
+
+/** Drops worker security group IDs that are no longer available on the resolved selected VPC. */
+export function syncSecurityGroupsWorkerWithVpc(
+  selectedVpcRaw: unknown,
+  currentSelection: string[] | undefined,
+  vpcListData: readonly VPC[],
+  setValue: UseFormSetValue<Partial<ROSAHCPCluster>>
+): void {
+  const vpc = resolveSelectedVpc(selectedVpcRaw as ROSAHCPCluster['selected_vpc'], [
+    ...vpcListData,
+  ]);
+  if (!vpc?.id) {
+    return;
+  }
+
+  const availableIds = new Set(
+    (vpc.aws_security_groups ?? [])
+      .map((group) => group.id)
+      .filter((id): id is string => typeof id === 'string' && id !== '')
+  );
+  const current = Array.isArray(currentSelection) ? currentSelection : [];
+  const pruned = current.filter((id) => availableIds.has(id));
+
+  if (!securityGroupSelectionsEqual(current, pruned)) {
+    setValue('security_groups_worker', pruned, PRUNE_SET_VALUE_OPTS);
+  }
 }
 
 /** Sets support/worker role ARNs from the first options on the matching installer role entry. */
@@ -67,6 +136,14 @@ export const wizardFieldDerivedSyncHandlers: Record<
       setValue
     );
   },
+  vpcSecurityGroupsWorkerSelection: ({ currentValue, formValues, wizardData, setValue }) => {
+    syncSecurityGroupsWorkerWithVpc(
+      currentValue,
+      formValues.security_groups_worker,
+      wizardData.vpcList.data,
+      setValue
+    );
+  },
 };
 
 /** Runs the derived sync handler registered for `syncKey`. */
@@ -85,13 +162,14 @@ export function reapplyWizardFieldDerivedSyncs(params: {
 
   for (const { sourceField, syncKey } of entries) {
     const currentValue = formValues[sourceField];
-    if (!hasRefetchableStringValue(currentValue)) {
+    if (!hasDerivedSyncSourceValue(syncKey, currentValue)) {
       continue;
     }
 
     applyWizardFieldDerivedSync({
       syncKey,
       currentValue,
+      formValues,
       wizardData,
       setValue,
     });

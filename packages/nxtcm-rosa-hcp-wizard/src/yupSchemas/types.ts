@@ -60,7 +60,9 @@ export type WizardFieldSyncOnChange = {
  * Identifies a handler in {@link wizardFieldDerivedSyncHandlers} for resource-driven dependent fields.
  * Declared on the source field's Yup `.meta()` via `derivedFieldsSyncOnChange`.
  */
-export type WizardFieldDerivedSyncKey = 'installerRoleDependentRoles';
+export type WizardFieldDerivedSyncKey =
+  | 'installerRoleDependentRoles'
+  | 'vpcSecurityGroupsWorkerSelection';
 
 /**
  * Static metadata attached to each field via `.meta()`.

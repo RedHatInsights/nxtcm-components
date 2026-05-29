@@ -18,6 +18,7 @@ export const selectedVpcSchema = yup
     noEditAfterSubmit: true,
     reviewLabel: 'Install to selected VPC',
     resetsFieldsToDefaultOnChange: ['machine_pools_subnets', 'security_groups_worker'],
+    derivedFieldsSyncOnChange: 'vpcSecurityGroupsWorkerSelection',
   } satisfies WizardFieldMeta);
 
 /** One machine pool row; array shape is required for API / review even when the UI shows a single subnet. */
@@ -224,6 +225,7 @@ export const securityGroupsWorkerSchema = yup
     labelKey: 'securityGroups.formLabel',
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'select',
+    /** Pruned to IDs still present on the resolved selected VPC when VPC list data changes. */
   } satisfies WizardFieldMeta);
 
 export const machinePoolsFields = {

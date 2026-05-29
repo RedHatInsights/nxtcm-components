@@ -18,9 +18,15 @@ jest.mock('./syncFieldsOnSourceChange', () => ({
   syncFieldsOnSourceChange: jest.fn(),
 }));
 
-jest.mock('./wizardFieldDerivedSyncs', () => ({
-  applyWizardFieldDerivedSync: jest.fn(),
-}));
+jest.mock('./wizardFieldDerivedSyncs', () => {
+  const actual = jest.requireActual<typeof import('./wizardFieldDerivedSyncs')>(
+    './wizardFieldDerivedSyncs'
+  );
+  return {
+    ...actual,
+    applyWizardFieldDerivedSync: jest.fn(),
+  };
+});
 
 const resetFieldsToDefaultValuesMock = resetFieldsToDefaultValues as jest.MockedFunction<
   typeof resetFieldsToDefaultValues
@@ -216,6 +222,7 @@ describe('applyWizardFieldMetaChangeEffects', () => {
     expect(applyWizardFieldDerivedSyncMock).toHaveBeenCalledWith({
       syncKey: 'installerRoleDependentRoles',
       currentValue: installerArn,
+      formValues: { installer_role_arn: installerArn },
       wizardData,
       setValue,
     });

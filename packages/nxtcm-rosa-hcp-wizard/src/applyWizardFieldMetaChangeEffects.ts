@@ -1,6 +1,7 @@
 import type { UseFormSetValue } from 'react-hook-form';
 
 import { hasRefetchableStringValue } from './hasRefetchableStringValue';
+import { hasDerivedSyncSourceValue } from './wizardFieldDerivedSyncs';
 import { resetFieldsToDefaultValues } from './resetFieldsToDefaultValues';
 import { syncFieldsOnSourceChange } from './syncFieldsOnSourceChange';
 import { applyWizardFieldDerivedSync } from './wizardFieldDerivedSyncs';
@@ -90,11 +91,12 @@ export function applyWizardFieldMetaChangeEffects({
   const derivedSyncKey = getWizardFieldDerivedSyncKeyForSourceField(sourceField);
   if (derivedSyncKey) {
     const shouldApplyDerived =
-      previousValue !== undefined || hasRefetchableStringValue(currentValue);
+      previousValue !== undefined || hasDerivedSyncSourceValue(derivedSyncKey, currentValue);
     if (shouldApplyDerived) {
       applyWizardFieldDerivedSync({
         syncKey: derivedSyncKey,
         currentValue,
+        formValues,
         wizardData,
         setValue,
       });

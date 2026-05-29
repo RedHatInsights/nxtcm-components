@@ -8,11 +8,15 @@ describe('wizardFieldDerivedSyncRegistry', () => {
     expect(getWizardFieldDerivedSyncKeyForSourceField('installer_role_arn')).toBe(
       'installerRoleDependentRoles'
     );
+    expect(getWizardFieldDerivedSyncKeyForSourceField('selected_vpc')).toBe(
+      'vpcSecurityGroupsWorkerSelection'
+    );
   });
 
   it('returns an entry per source field with derived sync metadata', () => {
     const entries = listWizardFieldDerivedSyncEntries();
     expect(entries.some((entry) => entry.sourceField === 'installer_role_arn')).toBe(true);
+    expect(entries.some((entry) => entry.sourceField === 'selected_vpc')).toBe(true);
     expect(entries.every((entry) => entry.syncKey.length > 0)).toBe(true);
   });
 });
