@@ -19,7 +19,10 @@ test.describe('ClusterUpdates (ROSA HCP)', () => {
 
   test('should not render a duplicate upgrade policy field label', async ({ mount }) => {
     const component = await mount(<ClusterUpdatesMount />);
-    await expect(component.getByText(cu.upgradePolicyLabel, { exact: true })).toHaveCount(0);
+    await expect(component.getByText(cu.upgradePolicyLabel, { exact: true })).toHaveCount(1);
+    const radiogroup = component.getByRole('radiogroup');
+    await expect(radiogroup).toBeVisible();
+    await expect(radiogroup).toHaveAccessibleName('');
   });
 
   test('should show day and time selectors when recurring updates is selected', async ({

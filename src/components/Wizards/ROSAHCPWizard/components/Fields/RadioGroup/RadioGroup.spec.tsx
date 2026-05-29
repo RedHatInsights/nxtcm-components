@@ -45,9 +45,9 @@ test.describe('RadioGroup', () => {
 
   test('renders radios without a FormGroup label when label is omitted', async ({ mount }) => {
     const mounted = await mount(<RadioGroupWithoutLabelHarness />);
-    await expect(
-      mounted.getByRole('radiogroup', { name: RADIO_GROUP_HARNESS_MACHINE_TYPE_LABEL })
-    ).toHaveCount(0);
+    const radiogroup = mounted.getByRole('radiogroup');
+    await expect(radiogroup).toBeVisible();
+    await expect(radiogroup).toHaveAccessibleName('');
     await expect(
       mounted.getByRole('radio', { name: RADIO_GROUP_HARNESS_SMALL_LABEL })
     ).toBeVisible();

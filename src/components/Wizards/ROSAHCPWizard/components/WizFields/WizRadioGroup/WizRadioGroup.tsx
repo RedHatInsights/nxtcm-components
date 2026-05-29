@@ -92,7 +92,7 @@ export function WizRadioGroup<TFieldValues extends FieldValues = FieldValues>(
     <RadioGroup
       {...rest}
       id={id}
-      label={fieldSetLegend === false ? undefined : label}
+      label={fieldSetLegend === false || hideLabel ? undefined : label}
       helperText={helperText}
       labelHelp={labelHelp}
       labelHelpTitle={labelHelpTitle}

@@ -37,16 +37,22 @@ export const UpgradeScheduleFields = () => {
   const [selectedHour, selectedDay] = parseCurrentValue();
 
   const onDayChange = (selection: string | number | undefined) => {
+    if (selection === undefined) {
+      return;
+    }
     const hour = parseCurrentValue()[0] || '0';
-    setValue('upgrade_schedule', `00 ${hour} * * ${selection}`, {
+    setValue('upgrade_schedule', `00 ${hour} * * ${String(selection)}`, {
       shouldDirty: true,
       shouldTouch: true,
     });
   };
 
   const onHourChange = (selection: string | number | undefined) => {
+    if (selection === undefined) {
+      return;
+    }
     const day = parseCurrentValue()[1] || '0';
-    setValue('upgrade_schedule', `00 ${selection} * * ${day}`, {
+    setValue('upgrade_schedule', `00 ${String(selection)} * * ${day}`, {
       shouldDirty: true,
       shouldTouch: true,
     });
