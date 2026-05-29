@@ -114,7 +114,7 @@ test.describe('ROSA Wizard', () => {
 
     await page.getByRole('button', { name: 'Next' }).click();
 
-    await expect(page.getByRole('radio', { name: 'Manual updates' })).toBeVisible();
+    await expect(page.getByRole('radio', { name: 'Individual updates' })).toBeVisible();
 
     await page.getByRole('button', { name: 'Next' }).click();
 
