@@ -14,6 +14,7 @@ export type UseReconcileWizSelectValueWithOptionsParams<T> = {
   optionGroups?: OptionGroup<T>[];
   keyPath?: string;
   isLoading?: boolean;
+  enabled?: boolean;
   value: unknown;
   onChange: (value: unknown) => void;
 };
@@ -25,11 +26,24 @@ export type UseReconcileWizSelectValueWithOptionsParams<T> = {
 export function useReconcileWizSelectValueWithOptions<T>(
   params: UseReconcileWizSelectValueWithOptionsParams<T>
 ): void {
-  const { name, schema, options, optionGroups, keyPath, isLoading, value, onChange } = params;
+  const {
+    name,
+    schema,
+    options,
+    optionGroups,
+    keyPath,
+    isLoading,
+    enabled = true,
+    value,
+    onChange,
+  } = params;
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
     if (isLoading) {
       return;
     }
@@ -49,5 +63,5 @@ export function useReconcileWizSelectValueWithOptions<T>(
     if (!Object.is(nextValue, value)) {
       onChangeRef.current(nextValue);
     }
-  }, [isLoading, keyPath, name, optionGroups, options, schema, value]);
+  }, [enabled, isLoading, keyPath, name, optionGroups, options, schema, value]);
 }

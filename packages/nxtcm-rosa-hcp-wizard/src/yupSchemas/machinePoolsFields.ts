@@ -17,6 +17,8 @@ export const selectedVpcSchema = yup
     fieldType: 'select',
     noEditAfterSubmit: true,
     reviewLabel: 'Install to selected VPC',
+    optionsWizardDataResource: 'vpcList',
+    reconcileValueWithOptions: true,
     resetsFieldsToDefaultOnChange: ['machine_pools_subnets', 'security_groups_worker'],
     derivedFieldsSyncOnChange: 'vpcSecurityGroupsWorkerSelection',
   } satisfies WizardFieldMeta);
@@ -32,6 +34,8 @@ export const machinePoolSubnetEntrySchema = yup.object({
       placeholderKey: 'machinePools.subnetPlaceholder',
       stepId: STEP_IDS.MACHINE_POOLS,
       fieldType: 'select',
+      optionsWizardDataResource: 'vpcList',
+      reconcileValueWithOptions: true,
     } satisfies WizardFieldMeta),
 });
 
@@ -59,6 +63,8 @@ export const machineTypeSchema = yup
     labelKey: 'machinePools.instanceTypeLabel',
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'select',
+    optionsWizardDataResource: 'machineTypes',
+    reconcileValueWithOptions: true,
   } satisfies WizardFieldMeta);
 
 export const autoscalingSchema = yup
@@ -228,7 +234,8 @@ export const securityGroupsWorkerSchema = yup
     labelKey: 'securityGroups.formLabel',
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'select',
-    /** Pruned to IDs still present on the resolved selected VPC when VPC list data changes. */
+    /** Reconciled via {@link WizMultiSelect} derived sync, not {@link WizSelect}. */
+    reconcileValueWithOptions: false,
   } satisfies WizardFieldMeta);
 
 export const machinePoolsFields = {

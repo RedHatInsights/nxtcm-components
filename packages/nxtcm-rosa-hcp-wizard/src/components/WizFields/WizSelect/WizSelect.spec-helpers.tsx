@@ -277,7 +277,12 @@ export function WizSelectExplicitControlOnlyHarness() {
 }
 
 const optionsReconcileSchema = yup.object({
-  region: yup.string().default(''),
+  region: yup.string().default('').meta({
+    id: 'region',
+    stepId: 'wiz-select-reconcile-ct',
+    fieldType: 'select',
+    reconcileValueWithOptions: true,
+  }),
 });
 
 type OptionsReconcileFormValues = yup.InferType<typeof optionsReconcileSchema>;

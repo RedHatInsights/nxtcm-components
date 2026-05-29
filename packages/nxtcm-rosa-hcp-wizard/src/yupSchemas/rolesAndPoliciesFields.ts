@@ -16,6 +16,8 @@ export const installerRoleArnSchema = yup
     placeholderKey: 'rolesAndPolicies.installerRolePlaceholder',
     stepId: STEP_IDS.ROLES_AND_POLICIES,
     fieldType: 'select',
+    optionsWizardDataResource: 'roles',
+    reconcileValueWithOptions: true,
     derivedFieldsSyncOnChange: 'installerRoleDependentRoles',
   } satisfies WizardFieldMeta);
 
@@ -31,6 +33,8 @@ export const supportRoleArnSchema = yup
     placeholderKey: 'rolesAndPolicies.supportPlaceholder',
     stepId: STEP_IDS.ROLES_AND_POLICIES,
     fieldType: 'select',
+    optionsWizardDataResource: 'roles',
+    reconcileValueWithOptions: true,
   } satisfies WizardFieldMeta);
 
 export const workerRoleArnSchema = yup
@@ -45,6 +49,8 @@ export const workerRoleArnSchema = yup
     placeholderKey: 'rolesAndPolicies.workerPlaceholder',
     stepId: STEP_IDS.ROLES_AND_POLICIES,
     fieldType: 'select',
+    optionsWizardDataResource: 'roles',
+    reconcileValueWithOptions: true,
   } satisfies WizardFieldMeta);
 
 export const byoOidcConfigIdSchema = yup
@@ -60,6 +66,8 @@ export const byoOidcConfigIdSchema = yup
     labelHelpTitleKey: 'rolesAndPolicies.oidcPopoverTitle',
     stepId: STEP_IDS.ROLES_AND_POLICIES,
     fieldType: 'select',
+    optionsWizardDataResource: 'oidcConfig',
+    reconcileValueWithOptions: true,
   } satisfies WizardFieldMeta);
 
 export const customOperatorRolesPrefixSchema = yup

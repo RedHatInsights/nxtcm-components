@@ -160,3 +160,9 @@ export {
   listWizardFieldDerivedSyncEntries,
 } from './wizardFieldDerivedSyncRegistry';
 export type { WizardFieldDerivedSyncEntry } from './wizardFieldDerivedSyncRegistry';
+
+export {
+  isWizardSelectReconcileEnabled,
+  listWizardFieldSelectReconcileEntries,
+} from './wizardFieldSelectReconcileRegistry';
+export type { WizardFieldSelectReconcileEntry } from './wizardFieldSelectReconcileRegistry';

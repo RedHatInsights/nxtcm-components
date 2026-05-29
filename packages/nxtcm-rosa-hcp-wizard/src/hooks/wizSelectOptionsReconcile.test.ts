@@ -5,10 +5,27 @@ import { clusterValidationSchema } from '../yupSchemas';
 import {
   flattenWizSelectOptionsForReconcile,
   reconcileWizSelectFormValue,
+  shouldReconcileWizSelectValue,
   wizSelectValueToReconcileString,
 } from './wizSelectOptionsReconcile';
 
 describe('wizSelectOptionsReconcile', () => {
+  describe('shouldReconcileWizSelectValue', () => {
+    it('defaults to true for select fields in the cluster schema', () => {
+      expect(shouldReconcileWizSelectValue(clusterValidationSchema, 'region')).toBe(true);
+    });
+
+    it('returns false when reconcileValueWithOptions is false', () => {
+      expect(shouldReconcileWizSelectValue(clusterValidationSchema, 'security_groups_worker')).toBe(
+        false
+      );
+    });
+
+    it('returns false for non-select fields', () => {
+      expect(shouldReconcileWizSelectValue(clusterValidationSchema, 'name')).toBe(false);
+    });
+  });
+
   describe('flattenWizSelectOptionsForReconcile', () => {
     it('flattens primitive and object options', () => {
       expect(

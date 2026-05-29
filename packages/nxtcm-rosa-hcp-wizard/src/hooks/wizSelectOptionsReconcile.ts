@@ -6,6 +6,8 @@ import type { ReconcileFieldOption } from '@/utilities/reconcileFieldValueWithNe
 import { getNestedValue } from '../helpers';
 import { normalizeOption } from '../components/Fields/Select/SelectOptions';
 import type { Option, OptionGroup } from '../components/Fields/Select/SelectTypes';
+import { readWizardFieldMeta } from '../yupSchemas/readWizardFieldMeta';
+import type { WizardFieldMeta } from '../yupSchemas/types';
 
 export function flattenWizSelectOptionsForReconcile<T>(params: {
   options?: (Option<T> | string | number)[];
@@ -32,6 +34,35 @@ export function flattenWizSelectOptionsForReconcile<T>(params: {
   }
 
   return flat;
+}
+
+export function readWizSelectFieldMeta(
+  schema: yup.AnySchema | undefined,
+  name: string
+): WizardFieldMeta | undefined {
+  if (!schema) {
+    return undefined;
+  }
+  try {
+    return readWizardFieldMeta(yup.reach(schema, name));
+  } catch {
+    return undefined;
+  }
+}
+
+/** Whether {@link WizSelect} should reconcile this field when its options list changes. */
+export function shouldReconcileWizSelectValue(
+  schema: yup.AnySchema | undefined,
+  name: string
+): boolean {
+  const meta = readWizSelectFieldMeta(schema, name);
+  if (meta?.reconcileValueWithOptions === false) {
+    return false;
+  }
+  if (meta?.reconcileValueWithOptions === true) {
+    return true;
+  }
+  return meta?.fieldType === 'select';
 }
 
 export function getWizSelectFieldDefaultValue(

@@ -128,6 +128,20 @@ export type WizardFieldMeta = {
    * Wired by {@link useWizardFieldMetaChangeEffects} via {@link getWizardFieldDerivedSyncKeyForSourceField}.
    */
   derivedFieldsSyncOnChange?: WizardFieldDerivedSyncKey;
+  /**
+   * When true (default for `fieldType: 'select'`), {@link WizSelect} clears this field if the
+   * current value is absent from the rendered options list (e.g. after a resource refetch).
+   * Set to `false` for selects with static options or fields reconciled elsewhere (e.g. derived sync).
+   */
+  reconcileValueWithOptions?: boolean;
+  /**
+   * Primary {@link ROSAHCPWizardData} entry feeding this select's options. Documents the
+   * refetch → invalidate chain for reviewers; execution stays in {@link WizSelect}.
+   */
+  optionsWizardDataResource?: Exclude<
+    keyof ROSAHCPWizardData,
+    'clusterNameValidation' | 'checkClusterNameUniqueness'
+  >;
 };
 
 /**

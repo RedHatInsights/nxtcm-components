@@ -4,6 +4,7 @@ import { requiredFromYup } from '../../../utilities/yupFieldRequired';
 import { useReconcileWizSelectValueWithOptions } from '../../../hooks/useReconcileWizSelectValueWithOptions';
 import {
   getWizSelectFieldDefaultValue,
+  shouldReconcileWizSelectValue,
   toWizSelectFormValueFromSchemaDefault,
 } from '../../../hooks/wizSelectOptionsReconcile';
 import { FieldWithAPIErrorAlert } from '../../FieldWithAPIErrorAlert';
@@ -110,6 +111,7 @@ export function WizSelect<TFieldValues extends FieldValues = FieldValues, TOptio
     optionGroups,
     keyPath,
     isLoading,
+    enabled: shouldReconcileWizSelectValue(schema, name),
     value,
     onChange,
   });

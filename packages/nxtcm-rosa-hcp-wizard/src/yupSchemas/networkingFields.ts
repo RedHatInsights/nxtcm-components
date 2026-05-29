@@ -48,6 +48,8 @@ export const clusterPrivacyPublicSubnetIdSchema = yup
     labelKey: 'networking.publicSubnetLabel',
     stepId: STEP_IDS.NETWORKING,
     fieldType: 'select',
+    optionsWizardDataResource: 'vpcList',
+    reconcileValueWithOptions: true,
   } satisfies WizardFieldMeta);
 
 export const cidrDefaultSchema = yup

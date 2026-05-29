@@ -37,6 +37,8 @@ export const clusterVersionSchema = yup
     labelHelpKey: 'details.openShiftVersionHelp',
     stepId: STEP_IDS.DETAILS,
     fieldType: 'select',
+    optionsWizardDataResource: 'versions',
+    reconcileValueWithOptions: true,
     resetsFieldsToDefaultOnChange: ['security_groups_worker'],
   } satisfies WizardFieldMeta);
 
@@ -53,6 +55,8 @@ export const associatedAwsIdSchema = yup
     stepId: STEP_IDS.DETAILS,
     fieldType: 'select',
     noEditAfterSubmit: true,
+    optionsWizardDataResource: 'awsInfrastructureAccounts',
+    reconcileValueWithOptions: true,
     resetsFieldsToDefaultOnChange: [
       'installer_role_arn',
       'support_role_arn',
@@ -80,6 +84,8 @@ export const billingAccountIdSchema = yup
     stepId: STEP_IDS.DETAILS,
     fieldType: 'select',
     noEditAfterSubmit: true,
+    optionsWizardDataResource: 'awsBillingAccounts',
+    reconcileValueWithOptions: true,
     reviewLabel: 'AWS billing account',
   } satisfies WizardFieldMeta);
 
@@ -96,6 +102,8 @@ export const regionSchema = yup
     stepId: STEP_IDS.DETAILS,
     fieldType: 'select',
     noEditAfterSubmit: true,
+    optionsWizardDataResource: 'regions',
+    reconcileValueWithOptions: true,
     resetsFieldsToDefaultOnChange: [
       'selected_vpc',
       'machine_pools_subnets',
