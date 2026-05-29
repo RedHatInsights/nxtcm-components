@@ -8,7 +8,7 @@ permissions:
 on:
   pull_request_target:
     branches: [main]
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, labeled]
   workflow_dispatch:
     inputs:
       pr-number:
@@ -25,10 +25,40 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Post a notice if the workflow is waiting for approval
+  approval-notice:
+    name: Post Approval Notice
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'pull_request_target' &&
+      github.event.action == 'opened' &&
+      github.event.pull_request.author_association != 'MEMBER' &&
+      github.event.pull_request.author_association != 'OWNER' &&
+      github.event.pull_request.author_association != 'COLLABORATOR' &&
+      !contains(github.event.pull_request.labels.*.name, 'safe-to-review')
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Post notice
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --body "👋 Thanks for your contribution! A maintainer will add the \`safe-to-review\` label to trigger the automated Jira AC check once the PR has been reviewed for safety."
+        env:
+          GH_TOKEN: ${{ github.token }}
+
   jira-ac-check:
     name: Jira Acceptance Criteria Check
     runs-on: ubuntu-latest
+    # Security: Only run on PRs from trusted contributors or when manually approved
+    # Fork PRs require a maintainer to add the 'safe-to-review' label first
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      github.event.pull_request.author_association == 'MEMBER' ||
+      github.event.pull_request.author_association == 'OWNER' ||
+      github.event.pull_request.author_association == 'COLLABORATOR' ||
+      contains(github.event.pull_request.labels.*.name, 'safe-to-review')
     steps:
+      # Security: Extract and validate Jira key from untrusted PR title
+      # This runs in pull_request_target context, so PR title is untrusted input
       - name: Extract Jira key from PR title
         id: jira
         env:
@@ -36,15 +66,17 @@ jobs:
           MANUAL_KEY: ${{ github.event.inputs.jira-key || '' }}
         run: |
           if [ -n "$MANUAL_KEY" ]; then
-            echo "key=$MANUAL_KEY" >> "$GITHUB_OUTPUT"
+            KEY="$MANUAL_KEY"
           else
             KEY=$(echo "$PR_TITLE" | grep -oE 'FCN-[0-9]+' | head -1)
-            if [ -z "$KEY" ]; then
-              echo "No Jira key found in PR title: $PR_TITLE"
-              echo "key=" >> "$GITHUB_OUTPUT"
-            else
-              echo "key=$KEY" >> "$GITHUB_OUTPUT"
-            fi
+          fi
+
+          # Validate that the key strictly matches the expected format
+          if [[ "$KEY" =~ ^FCN-[0-9]+$ ]]; then
+            echo "key=$KEY" >> "$GITHUB_OUTPUT"
+          else
+            echo "No valid Jira key found (expected format: FCN-####)"
+            echo "key=" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Skip if no Jira key
@@ -52,6 +84,16 @@ jobs:
         run: |
           echo "No Jira ticket key found in PR title. Skipping AC check."
           echo "To run manually, use workflow_dispatch with the jira-key input."
+
+      # Security: Defense-in-depth sanitization before using in AI prompt
+      # Prevents prompt injection even if regex validation is bypassed
+      - name: Sanitize Jira key for prompt
+        if: steps.jira.outputs.key != ''
+        id: sanitize
+        run: |
+          # Additional safety: ensure no newlines or special chars in the key
+          SANITIZED=$(echo "${{ steps.jira.outputs.key }}" | tr -cd 'A-Z0-9-')
+          echo "safe_key=$SANITIZED" >> "$GITHUB_OUTPUT"
 
       - name: Run ACP Jira AC review
         if: steps.jira.outputs.key != ''
@@ -63,12 +105,12 @@ jobs:
           prompt: |
             You are a PR reviewer checking whether a pull request satisfies the acceptance criteria from its linked Jira ticket.
 
-            Jira ticket: ${{ steps.jira.outputs.key }}
+            Jira ticket: ${{ steps.sanitize.outputs.safe_key }}
             PR: https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number || github.event.inputs.pr-number }}
 
             Steps:
 
-            1. Wait 10-15 seconds for the Jira MCP to initialize, then use the Atlassian MCP to read the Jira ticket ${{ steps.jira.outputs.key }} and extract the acceptance criteria.
+            1. Wait 10-15 seconds for the Jira MCP to initialize, then use the Atlassian MCP to read the Jira ticket ${{ steps.sanitize.outputs.safe_key }} and extract the acceptance criteria.
 
             1b. If the ticket has no acceptance criteria field or it is empty, note this in your comment and review the PR against its own stated goals in the PR description instead. Do not fail or block -- just note the limitation transparently.
 
@@ -81,9 +123,9 @@ jobs:
 
                Format the comment as:
 
-               ## PR Review: ${{ steps.jira.outputs.key }} — <PR title>
+               ## PR Review: ${{ steps.sanitize.outputs.safe_key }} — <PR title>
 
-               Reviewed against the acceptance criteria in ${{ steps.jira.outputs.key }}.
+               Reviewed against the acceptance criteria in ${{ steps.sanitize.outputs.safe_key }}.
 
                ### Acceptance Criteria Checklist
 
