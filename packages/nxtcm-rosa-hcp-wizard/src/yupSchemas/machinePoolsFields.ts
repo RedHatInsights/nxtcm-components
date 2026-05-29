@@ -35,10 +35,13 @@ export const machinePoolSubnetEntrySchema = yup.object({
     } satisfies WizardFieldMeta),
 });
 
+/** Default single-subnet row for the machine pools UI (`machine_pools_subnets.0`). */
+export const DEFAULT_MACHINE_POOL_SUBNETS = [{ machine_pool_subnet: '' }] as const;
+
 export const machinePoolsSubnetsSchema = yup
   .array()
   .of(machinePoolSubnetEntrySchema)
-  .default([])
+  .default([...DEFAULT_MACHINE_POOL_SUBNETS])
   .test(rosaCommonRequiredNonEmptyTest)
   .required()
   .meta({

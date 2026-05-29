@@ -33,4 +33,17 @@ describe('resetFieldsToDefaultValues', () => {
       shouldValidate: false,
     });
   });
+
+  it('resets machine_pools_subnets to one empty subnet row', () => {
+    const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
+    const defaults = getClusterValidationSchemaDefaultValues();
+
+    resetFieldsToDefaultValues(setValue, ['machine_pools_subnets']);
+
+    expect(setValue).toHaveBeenCalledWith(
+      'machine_pools_subnets',
+      defaults.machine_pools_subnets,
+      expect.any(Object)
+    );
+  });
 });

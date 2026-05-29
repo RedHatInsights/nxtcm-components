@@ -1425,6 +1425,7 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
       expect(defaults.compute_root_volume).toBe(300);
       expect(defaults.upgrade_policy).toBe('automatic');
       expect(defaults.upgrade_schedule).toBe('00 0 * * 0');
+      expect(defaults.machine_pools_subnets).toEqual([{ machine_pool_subnet: '' }]);
     });
   });
 });
