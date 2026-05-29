@@ -1,0 +1,4 @@
+reviews:
+  path_filters:
+    - "!packages/nxtcm-dashboard/src/**"
+    - "!packages/nxtcm-rosa-hcp-wizard/src/**"
