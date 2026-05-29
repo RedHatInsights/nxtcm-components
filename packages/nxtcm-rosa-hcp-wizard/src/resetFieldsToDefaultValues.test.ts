@@ -12,8 +12,16 @@ describe('resetFieldsToDefaultValues', () => {
 
     resetFieldsToDefaultValues(setValue, ['name', 'autoscaling']);
 
-    expect(setValue).toHaveBeenCalledWith('name', defaults.name, expect.any(Object));
-    expect(setValue).toHaveBeenCalledWith('autoscaling', defaults.autoscaling, expect.any(Object));
+    expect(setValue).toHaveBeenCalledWith('name', defaults.name, {
+      shouldDirty: true,
+      shouldTouch: false,
+      shouldValidate: false,
+    });
+    expect(setValue).toHaveBeenCalledWith('autoscaling', defaults.autoscaling, {
+      shouldDirty: true,
+      shouldTouch: false,
+      shouldValidate: false,
+    });
   });
 
   it('clears selected_vpc when it is omitted from form defaults', () => {
@@ -21,6 +29,10 @@ describe('resetFieldsToDefaultValues', () => {
 
     resetFieldsToDefaultValues(setValue, ['selected_vpc']);
 
-    expect(setValue).toHaveBeenCalledWith('selected_vpc', undefined, expect.any(Object));
+    expect(setValue).toHaveBeenCalledWith('selected_vpc', undefined, {
+      shouldDirty: true,
+      shouldTouch: false,
+      shouldValidate: false,
+    });
   });
 });
