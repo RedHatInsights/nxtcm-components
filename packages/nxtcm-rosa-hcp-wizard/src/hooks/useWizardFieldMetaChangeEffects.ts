@@ -8,8 +8,10 @@ import {
 } from '../wizardFieldDerivedSyncs';
 import type { ClusterFormData } from '../../types';
 import type { ROSAHCPWizardData } from '../types';
-import { listWizardFieldDerivedSyncEntries } from '../yupSchemas';
-import { listWizardFieldMetaChangeSourceFields } from '../yupSchemas/listWizardFieldMetaChangeSourceFields';
+import {
+  listWizardFieldDerivedSyncEntries,
+  listWizardFieldMetaChangeSourceFields,
+} from '../yupSchemas';
 import type { WizardFormFieldName } from '../yupSchemas/types';
 
 function readWatchedFieldValue(watchedValues: unknown, fieldIndex: number): unknown {

@@ -4,10 +4,26 @@ import { clusterValidationSchema } from '../yupSchemas';
 
 import {
   flattenWizSelectOptionsForReconcile,
+  readWizSelectFieldMeta,
   reconcileWizSelectFormValue,
   shouldReconcileWizSelectValue,
   wizSelectValueToReconcileString,
 } from './wizSelectOptionsReconcile';
+
+const RECONCILE_ENABLED_SELECT_PATHS = [
+  'cluster_version',
+  'associated_aws_id',
+  'billing_account_id',
+  'region',
+  'installer_role_arn',
+  'support_role_arn',
+  'worker_role_arn',
+  'byo_oidc_config_id',
+  'selected_vpc',
+  'machine_pools_subnets.0.machine_pool_subnet',
+  'machine_type',
+  'cluster_privacy_public_subnet_id',
+] as const;
 
 describe('wizSelectOptionsReconcile', () => {
   describe('shouldReconcileWizSelectValue', () => {
@@ -23,6 +39,15 @@ describe('wizSelectOptionsReconcile', () => {
 
     it('returns false for non-select fields', () => {
       expect(shouldReconcileWizSelectValue(clusterValidationSchema, 'name')).toBe(false);
+    });
+
+    it('requires optionsWizardDataResource when reconcile is enabled', () => {
+      for (const path of RECONCILE_ENABLED_SELECT_PATHS) {
+        expect(shouldReconcileWizSelectValue(clusterValidationSchema, path)).toBe(true);
+        expect(
+          readWizSelectFieldMeta(clusterValidationSchema, path)?.optionsWizardDataResource
+        ).toBeDefined();
+      }
     });
   });
 

@@ -157,7 +157,6 @@ export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMount
                   awsBillingAccounts={awsBilling}
                   regions={regionsProps}
                   roles={rolesProps}
-                  vpcList={vpcListProps}
                 />
               </WizardStep>,
               <WizardStep

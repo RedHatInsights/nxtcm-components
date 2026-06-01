@@ -1,7 +1,6 @@
 import type { UseFormSetValue } from 'react-hook-form';
 
-import { hasRefetchableStringValue } from './hasRefetchableStringValue';
-import { hasDerivedSyncSourceValue } from './wizardFieldDerivedSyncs';
+import { hasDerivedSyncSourceValue, hasRefetchableStringValue } from './wizardFieldDerivedSyncs';
 import { resetFieldsToDefaultValues } from './resetFieldsToDefaultValues';
 import { syncFieldsOnSourceChange } from './syncFieldsOnSourceChange';
 import { applyWizardFieldDerivedSync } from './wizardFieldDerivedSyncs';

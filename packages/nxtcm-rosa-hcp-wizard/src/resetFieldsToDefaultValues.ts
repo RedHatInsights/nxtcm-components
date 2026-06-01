@@ -1,12 +1,15 @@
 import type { FieldPathValue, UseFormSetValue } from 'react-hook-form';
 
-import { buildFormSetValueOptions, type FormSetValueOptions } from './formSetValueOptions';
 import type { ROSAHCPCluster } from './types';
 import { getClusterValidationSchemaDefaultValues } from './yupSchemas';
 
 type FormPath = Extract<keyof ROSAHCPCluster, string>;
 
-export type ResetFieldsToDefaultValuesOptions = FormSetValueOptions;
+export type ResetFieldsToDefaultValuesOptions = {
+  shouldDirty?: boolean;
+  shouldTouch?: boolean;
+  shouldValidate?: boolean;
+};
 
 /** Sets form fields back to {@link getClusterValidationSchemaDefaultValues} (or `undefined` when omitted). */
 export function resetFieldsToDefaultValues(
@@ -15,7 +18,11 @@ export function resetFieldsToDefaultValues(
   options: ResetFieldsToDefaultValuesOptions = {}
 ): void {
   const defaults = getClusterValidationSchemaDefaultValues();
-  const setOpts = buildFormSetValueOptions(options);
+  const setOpts = {
+    shouldDirty: options.shouldDirty ?? true,
+    shouldTouch: options.shouldTouch ?? false,
+    shouldValidate: options.shouldValidate ?? false,
+  };
 
   for (const name of fieldNames) {
     const value = (defaults as Record<string, unknown>)[name];

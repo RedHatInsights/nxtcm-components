@@ -1,10 +1,14 @@
 import type { UseFormSetValue } from 'react-hook-form';
 
-import { hasRefetchableStringValue } from './hasRefetchableStringValue';
 import { resolveSelectedVpc } from './helpers';
 import type { ROSAHCPCluster, ROSAHCPWizardData, Role, VPC } from './types';
 import type { WizardFieldDerivedSyncKey } from './yupSchemas/types';
-import type { WizardFieldDerivedSyncEntry } from './yupSchemas/wizardFieldDerivedSyncRegistry';
+import type { WizardFieldDerivedSyncEntry } from './yupSchemas/wizardFieldMetaChangeRegistry';
+
+/** Non-empty string suitable for resource refetch args and string-backed derived sync sources. */
+export function hasRefetchableStringValue(value: unknown): value is string {
+  return typeof value === 'string' && value !== '';
+}
 
 export type ApplyWizardFieldDerivedSyncArgs = {
   syncKey: WizardFieldDerivedSyncKey;

@@ -132,37 +132,19 @@ export {
 export { upgradePolicySchema, upgradeScheduleSchema } from './clusterUpdatesFields';
 
 export {
-  buildWizardFieldResetRegistry,
-  getWizardFieldResetsForSourceField,
-  listWizardFieldResetEntries,
-} from './wizardFieldResetRegistry';
-export type { WizardFieldResetEntry } from './wizardFieldResetRegistry';
-
-export {
-  buildWizardFieldRefetchRegistry,
-  getWizardResourceRefetchesForSourceField,
-  listWizardFieldRefetchEntries,
-} from './wizardFieldRefetchRegistry';
-export type { WizardFieldRefetchEntry } from './wizardFieldRefetchRegistry';
-
-export { listWizardFieldMetaChangeSourceFields } from './listWizardFieldMetaChangeSourceFields';
-
-export {
-  buildWizardFieldSyncRegistry,
-  getWizardFieldSyncsForSourceField,
-  listWizardFieldSyncEntries,
-} from './wizardFieldSyncRegistry';
-export type { WizardFieldSyncEntry } from './wizardFieldSyncRegistry';
-
-export {
-  buildWizardFieldDerivedSyncRegistry,
   getWizardFieldDerivedSyncKeyForSourceField,
+  getWizardFieldResetsForSourceField,
+  getWizardFieldSyncsForSourceField,
+  getWizardResourceRefetchesForSourceField,
   listWizardFieldDerivedSyncEntries,
-} from './wizardFieldDerivedSyncRegistry';
-export type { WizardFieldDerivedSyncEntry } from './wizardFieldDerivedSyncRegistry';
-
-export {
-  isWizardSelectReconcileEnabled,
-  listWizardFieldSelectReconcileEntries,
-} from './wizardFieldSelectReconcileRegistry';
-export type { WizardFieldSelectReconcileEntry } from './wizardFieldSelectReconcileRegistry';
+  listWizardFieldMetaChangeSourceFields,
+  listWizardFieldRefetchEntries,
+  listWizardFieldResetEntries,
+  listWizardFieldSyncEntries,
+} from './wizardFieldMetaChangeRegistry';
+export type {
+  WizardFieldDerivedSyncEntry,
+  WizardFieldRefetchEntry,
+  WizardFieldResetEntry,
+  WizardFieldSyncEntry,
+} from './wizardFieldMetaChangeRegistry';
