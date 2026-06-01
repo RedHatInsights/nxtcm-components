@@ -22,10 +22,15 @@ this repo provides UI components, types, and integration shapes. consuming apps 
 these are hard constraints. violating them will break builds, fail reviews, or produce incorrect output.
 
 1. **never make HTTP calls from components** — use injected callbacks. consuming apps supply data via the `Resource<T>` pattern (data + loading + error + optional fetch).
-2. **never override PatternFly styles with custom CSS** — use PF variants, modifiers, and design tokens. follow PF design patterns, accessibility guidelines, and established CSS class naming conventions. import icons from `@patternfly/react-icons`. prefer PF utility classes and spacing tokens.
-3. **always co-locate component files** — component, stories, spec, and tests live together in one directory (see [file conventions](#file-conventions)).
-4. **always run verification before committing** — see [verifying changes](#verifying-changes).
-5. **jest does NOT run in CI** — a green CI doesn't mean jest tests passed. always run `npm run test:all` locally.
+2. **always co-locate component files** — component, stories, spec, and tests live together in one directory (see [file conventions](#file-conventions)).
+3. **always run verification before committing** — see [verifying changes](#verifying-changes).
+4. **jest does NOT run in CI** — a green CI doesn't mean jest tests passed. always run `npm run test:all` locally.
+
+---
+
+## PatternFly
+
+this repo uses PatternFly for UI. for design system rules, styling, accessibility, and implementation workflow, read [.agents/skills/patternfly/SKILL.md](.agents/skills/patternfly/SKILL.md).
 
 ---
 
@@ -182,18 +187,6 @@ other react best practices (dependency arrays, key props, memoization) are enfor
 
 ## common mistakes to avoid
 
-### PatternFly
-
-```tsx
-// don't — custom CSS overriding PF styles
-<Button style={{ backgroundColor: '#c00' }}>Save</Button>
-<div className="custom-spacing">...</div>
-
-// do — use PF variants and tokens
-<Button variant="danger">Save</Button>
-<div className="pf-v6-u-mt-md">...</div>
-```
-
 ### TypeScript
 
 ```tsx
@@ -253,6 +246,7 @@ non-obvious rules worth knowing upfront:
 
 | what | where |
 |------|-------|
+| PatternFly | [.agents/skills/patternfly/SKILL.md](.agents/skills/patternfly/SKILL.md) |
 | lint rules | `.eslintrc.json` |
 | TypeScript config | `tsconfig.json` |
 | CI pipeline | `.github/workflows/ci.yml` |
