@@ -1,22 +1,22 @@
-/**
- * Playwright CT mount target. Components from *.story.tsx cannot be mounted (see playwright.dev/test-components#test-stories).
- */
 import React, { useMemo } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Form } from '@patternfly/react-core';
-import { FormProvider, useForm, type Resolver } from 'react-hook-form';
+import { Button, Form } from '@patternfly/react-core';
+import { FormProvider, useForm, type Resolver, useFormContext } from 'react-hook-form';
 
-import type { ClusterFormData } from '../../../../types';
-import { ClusterEncryptionKeys, ClusterNetwork, ClusterUpgrade } from '../../../../types';
-import { RolesAndPolicies } from './RolesAndPolicies';
-import fixtures from '../../../ROSAHCPWizard.fixtures';
+import type { ClusterFormData } from '@/components/Wizards/types';
+import { ClusterEncryptionKeys, ClusterNetwork, ClusterUpgrade } from '@/components/Wizards/types';
+
+import { STEP_IDS } from '../../../constants';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import type { ValidationSchemaContext } from '../../../yupSchemas/types';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import {
+  RosaHcpWizardValidationProvider,
+  useRosaHcpWizardValidation,
+} from '../../../rosaHcpWizardValidationContext';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
-import type { OidcConfigResource, RolesResource } from '../../../types';
+import { ClusterUpdates } from './ClusterUpdates';
 
-/** Defaults aligned with {@link ROSAHCPWizardBody} so the composed Yup schema resolves consistently in CT. */
 const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ClusterFormData> = {
   associated_aws_id: '',
   byo_oidc_config_id: '',
@@ -31,29 +31,40 @@ const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ClusterFormData> = {
   network_host_prefix: '/23',
   autoscaling: false,
   nodes_compute: 2,
-  upgrade_policy: ClusterUpgrade.manual,
+  upgrade_policy: ClusterUpgrade.automatic,
   cluster_privacy: ClusterNetwork.external,
   compute_root_volume: 300,
   billing_account_id: '',
   region: '',
   name: '',
-  cluster_version: '',
+  cluster_version: '4.16.2',
   installer_role_arn: '',
   support_role_arn: '',
   worker_role_arn: '',
 };
 
-export type RolesAndPoliciesMountProps = {
-  roles?: RolesResource;
-  oidcConfig?: OidcConfigResource;
+export type ClusterUpdatesMountProps = {
   defaultValues?: Partial<ClusterFormData>;
 };
 
-export const RolesAndPoliciesMount: React.FC<RolesAndPoliciesMountProps> = ({
-  roles,
-  oidcConfig,
-  defaultValues = {},
-}) => {
+function ClusterUpdatesValidateButton() {
+  const { trigger } = useFormContext<ClusterFormData>();
+  const { markValidationAttempted } = useRosaHcpWizardValidation();
+
+  return (
+    <Button
+      type="button"
+      onClick={() => {
+        markValidationAttempted(STEP_IDS.CLUSTER_UPDATES);
+        void trigger(['upgrade_policy', 'upgrade_schedule']);
+      }}
+    >
+      Validate
+    </Button>
+  );
+}
+
+export const ClusterUpdatesMount: React.FC<ClusterUpdatesMountProps> = ({ defaultValues = {} }) => {
   const validationContext = useMemo<ValidationSchemaContext>(
     () => ({
       msgs: defaultRosaHcpWizardValidatorStrings,
@@ -71,25 +82,14 @@ export const RolesAndPoliciesMount: React.FC<RolesAndPoliciesMountProps> = ({
     mode: 'onTouched',
   });
 
-  const rolesProps: RolesResource = {
-    data: roles?.data ?? fixtures.mockRoles,
-    isFetching: roles?.isFetching ?? false,
-    fetch: roles?.fetch ?? (async (_awsAccount: string) => {}),
-    error: roles?.error ?? null,
-  };
-
-  const oidcProps: OidcConfigResource = {
-    data: oidcConfig?.data ?? fixtures.mockOicdConfig,
-    isFetching: oidcConfig?.isFetching ?? false,
-    fetch: oidcConfig?.fetch ?? (async () => {}),
-    error: oidcConfig?.error ?? null,
-  };
-
   return withRosaCt(
-    <FormProvider {...methods}>
-      <Form>
-        <RolesAndPolicies roles={rolesProps} oidcConfig={oidcProps} />
-      </Form>
-    </FormProvider>
+    <RosaHcpWizardValidationProvider>
+      <FormProvider {...methods}>
+        <Form>
+          <ClusterUpdates />
+          <ClusterUpdatesValidateButton />
+        </Form>
+      </FormProvider>
+    </RosaHcpWizardValidationProvider>
   );
 };

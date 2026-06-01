@@ -1,6 +1,7 @@
 import React from 'react';
 import { test, expect } from '@playwright/experimental-ct-react';
 
+import { ClusterUpgrade } from '@/components/Wizards/types';
 import rosaHcpWizardFixtures from '../../ROSAHCPWizard.fixtures';
 import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { ReviewHarness } from './Review.spec-helpers';
@@ -8,6 +9,7 @@ import { ReviewHarness } from './Review.spec-helpers';
 const mp = defaultRosaHcpWizardStrings.machinePools;
 const sg = defaultRosaHcpWizardStrings.securityGroups;
 const a = defaultRosaHcpWizardStrings.autoscaling;
+const cu = defaultRosaHcpWizardStrings.clusterUpdates;
 
 test.describe('Review', () => {
   test('renders review guidance and section summaries', async ({ mount }) => {
@@ -124,5 +126,23 @@ test.describe('Review', () => {
     await expect(c.getByText('400 GiB')).toBeVisible();
     await expect(c.getByText('default, web-server-sg')).toBeVisible();
     await expect(c.getByText(sg.formLabel)).toBeVisible();
+  });
+
+  test('cluster updates review shows human-readable schedule for automatic updates', async ({
+    mount,
+  }) => {
+    const c = await mount(
+      <ReviewHarness
+        formOverrides={{
+          upgrade_policy: ClusterUpgrade.automatic,
+          upgrade_schedule: '00 4 * * 0',
+        }}
+      />
+    );
+
+    const clusterUpdatesToggle = c.getByRole('button', { name: /cluster updates \(optional\)/i });
+    await expect(clusterUpdatesToggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(c.getByText(cu.upgradeScheduleLabel, { exact: true })).toBeVisible();
+    await expect(c.getByText('Sunday, 04:00 UTC')).toBeVisible();
   });
 });

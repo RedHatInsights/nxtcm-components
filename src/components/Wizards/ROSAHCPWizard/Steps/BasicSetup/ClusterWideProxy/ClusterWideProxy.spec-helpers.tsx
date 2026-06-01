@@ -30,7 +30,7 @@ const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ClusterFormData> = {
   network_host_prefix: '/23',
   autoscaling: false,
   nodes_compute: 2,
-  upgrade_policy: ClusterUpgrade.automatic,
+  upgrade_policy: ClusterUpgrade.manual,
   cluster_privacy: ClusterNetwork.external,
   compute_root_volume: 300,
   billing_account_id: '',

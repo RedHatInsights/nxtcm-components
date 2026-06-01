@@ -1,7 +1,11 @@
 import { test, expect } from '@playwright/experimental-ct-react';
 
 // CT transform only turns an import into importRefs if every specifier is JSX; keep harness imports separate from consts.
-import { RadioGroupHarness, RadioWithChildHarness } from './RadioGroup.spec-helpers';
+import {
+  RadioGroupHarness,
+  RadioGroupWithoutLabelHarness,
+  RadioWithChildHarness,
+} from './RadioGroup.spec-helpers';
 import {
   RADIO_GROUP_HARNESS_HELPER_TEXT,
   RADIO_GROUP_HARNESS_LARGE_LABEL,
@@ -37,6 +41,17 @@ test.describe('RadioGroup', () => {
     await expect(
       mounted.getByRole('radio', { name: RADIO_GROUP_HARNESS_LARGE_LABEL })
     ).toBeChecked();
+  });
+
+  test('renders radios without a FormGroup label when label is omitted', async ({ mount }) => {
+    const mounted = await mount(<RadioGroupWithoutLabelHarness />);
+    const radiogroup = mounted.getByRole('radiogroup');
+    await expect(radiogroup).toBeVisible();
+    await expect(radiogroup).toHaveAccessibleName('');
+    await expect(
+      mounted.getByRole('radio', { name: RADIO_GROUP_HARNESS_SMALL_LABEL })
+    ).toBeVisible();
+    await expect(mounted.getByText(RADIO_GROUP_HARNESS_HELPER_TEXT)).toBeVisible();
   });
 
   test('shows radio body content only for the selected option', async ({ mount }) => {

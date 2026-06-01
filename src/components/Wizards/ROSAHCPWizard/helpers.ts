@@ -1,7 +1,14 @@
 import { MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH } from './constants';
 import { securityGroupsSort } from './Steps/BasicSetup/MachinePools/SecurityGroupSection/helpers';
 import type { ClusterFormData } from '../types';
-import { CIDRSubnet, MachinePoolSubnetEntry, ROSAHCPCluster, Subnet, VPC } from './types';
+import {
+  ClusterUpgrade,
+  CIDRSubnet,
+  MachinePoolSubnetEntry,
+  ROSAHCPCluster,
+  Subnet,
+  VPC,
+} from './types';
 
 export type LabelValueOption = { label: string; value: string };
 
@@ -211,6 +218,38 @@ const parseUpdateSchedule = (cronString: string): [string, string] => {
   return [hour, day];
 };
 
+const formatUpgradeScheduleForReview = (
+  cronString: string,
+  daysOfWeek: readonly string[]
+): string => {
+  const [hour, day] = parseUpdateSchedule(cronString);
+  if (hour === '' && day === '') {
+    return '';
+  }
+
+  const dayIndex = Number(day);
+  const dayName =
+    day !== '' && !Number.isNaN(dayIndex) && daysOfWeek[dayIndex] ? daysOfWeek[dayIndex] : '';
+  const hourNum = Number(hour);
+  const hourLabel =
+    hour !== '' && !Number.isNaN(hourNum) ? `${hourNum.toString().padStart(2, '0')}:00 UTC` : '';
+
+  if (dayName && hourLabel) {
+    return `${dayName}, ${hourLabel}`;
+  }
+  return dayName || hourLabel || cronString;
+};
+
+const formatUpgradePolicyForReview = (
+  policy: ClusterUpgrade,
+  labels: { individualLabel: string; recurringLabel: string }
+): string => {
+  if (policy === ClusterUpgrade.manual) {
+    return labels.individualLabel;
+  }
+  return labels.recurringLabel;
+};
+
 export {
   createOperatorRolesPrefix,
   stringToArray,
@@ -224,4 +263,6 @@ export {
   getWorkerNodeVolumeSizeMaxGiB,
   showSecurityGroupsSection,
   parseUpdateSchedule,
+  formatUpgradeScheduleForReview,
+  formatUpgradePolicyForReview,
 };

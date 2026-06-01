@@ -126,3 +126,15 @@ describe('formatReviewFieldValue security_groups_worker', () => {
     ).toBe('sg-unknown');
   });
 });
+
+describe('formatReviewFieldValue upgrade_schedule', () => {
+  it('returns a human-readable day and time from the cron string', () => {
+    expect(
+      formatReviewFieldValue('upgrade_schedule', { upgrade_schedule: '00 4 * * 0' }, strings)
+    ).toBe('Sunday, 04:00 UTC');
+  });
+
+  it('returns empty when schedule is missing', () => {
+    expect(formatReviewFieldValue('upgrade_schedule', {}, strings)).toBe('');
+  });
+});

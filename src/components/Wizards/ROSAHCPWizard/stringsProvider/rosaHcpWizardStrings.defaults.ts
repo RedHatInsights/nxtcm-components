@@ -339,11 +339,11 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     criticalConcernsLink: 'Critical security concerns',
     cveTail:
       '(CVEs) that significantly impact the security or stability of the cluster, updates may be automatically scheduled by Red Hat SRE to the latest z-stream version not impacted by the CVE within 2 business days after customer notifications.',
-    individualLabel: 'Individual updates',
+    individualLabel: 'Manual updates',
     individualDescriptionLead:
       'Schedule each update individually. When planning updates, make sure to consider the end of life dates from the',
     lifecycleLink: 'lifecycle policy',
-    recurringLabel: 'Recurring updates',
+    recurringLabel: 'Automatic updates',
     recurringDescriptionBeforeZStream:
       'The cluster control plan will be automatically updated based on your preferred day and start time when new patch updates ',
     zStreamLinkText: 'z-stream',
@@ -351,6 +351,9 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
       " are available. When a new minor version is available, you'll be notified and must manually allow the cluster to update the next minor version. The compute nodes will need to be manually updated.",
     dayTimeLabel: 'Select a day and start time',
     selectDayPlaceholder: 'Select day',
+    selectTimePlaceholder: 'Select time',
+    upgradePolicyLabel: 'Cluster update strategy',
+    upgradeScheduleLabel: 'Scheduled day and start time',
     daysOfWeek: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
   },
   review: {
@@ -384,7 +387,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     podCidr: 'Pod CIDR',
     hostPrefix: 'Host prefix',
     updateStrategy: 'Cluster update strategy',
-    strategyIndividual: 'Individual updates',
+    strategyIndividual: 'Manual updates',
     strategyAutomatic: 'Automatic updates',
     autoscalingMinPrefix: 'Min:',
     autoscalingMaxPrefix: 'Max:',

@@ -46,6 +46,31 @@ export function RadioGroupHarness() {
   );
 }
 
+export function RadioGroupWithoutLabelHarness() {
+  const [value, setValue] = useState<string | undefined>(RADIO_GROUP_HARNESS_VALUE_SMALL);
+  return (
+    <Form>
+      <RadioGroup
+        id="ct-rg-no-label"
+        value={value}
+        onChange={(v) => setValue(v as string | undefined)}
+        helperText={RADIO_GROUP_HARNESS_HELPER_TEXT}
+      >
+        <Radio
+          id="opt-s"
+          label={RADIO_GROUP_HARNESS_SMALL_LABEL}
+          value={RADIO_GROUP_HARNESS_VALUE_SMALL}
+        />
+        <Radio
+          id="opt-l"
+          label={RADIO_GROUP_HARNESS_LARGE_LABEL}
+          value={RADIO_GROUP_HARNESS_VALUE_LARGE}
+        />
+      </RadioGroup>
+    </Form>
+  );
+}
+
 export function RadioWithChildHarness() {
   const [value, setValue] = useState<string | undefined>('a');
   return (

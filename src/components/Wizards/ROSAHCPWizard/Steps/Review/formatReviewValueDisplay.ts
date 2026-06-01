@@ -1,6 +1,11 @@
 import { ClusterFormData, MachinePoolSubnetEntry, VPC } from '@/components/Wizards/types';
+import type { ClusterUpgrade } from '@/components/Wizards/types';
 import type { LabelValueOption } from '../../helpers';
-import { getNestedValue } from '../../helpers';
+import {
+  formatUpgradePolicyForReview,
+  formatUpgradeScheduleForReview,
+  getNestedValue,
+} from '../../helpers';
 import { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.types';
 import { wizardFieldMetaByPath } from '../../yupSchemas';
 
@@ -11,6 +16,10 @@ export type ReviewSelectOptions = {
   subnet?: ReviewSelectOption[];
   securityGroup?: ReviewSelectOption[];
 };
+
+function isClusterUpgradePolicy(value: string): value is ClusterUpgrade {
+  return value === 'manual' || value === 'automatic';
+}
 
 function labelForOptionValue(value: string, options?: ReviewSelectOption[]): string {
   if (!value) {
@@ -100,6 +109,18 @@ export function formatReviewFieldValue(
       .map((entry) => entry?.machine_pool_subnet?.trim() ?? '')
       .filter((id) => id !== '');
     return formatIdsAsOptionLabels(subnetIds, reviewOptions?.subnet);
+  }
+
+  if (path === 'upgrade_policy' && typeof raw === 'string' && isClusterUpgradePolicy(raw)) {
+    const { review } = strings;
+    return formatUpgradePolicyForReview(raw, {
+      individualLabel: review.strategyIndividual,
+      recurringLabel: review.strategyAutomatic,
+    });
+  }
+
+  if (path === 'upgrade_schedule' && typeof raw === 'string' && raw !== '') {
+    return formatUpgradeScheduleForReview(raw, strings.clusterUpdates.daysOfWeek);
   }
 
   const meta = wizardFieldMetaByPath(path);

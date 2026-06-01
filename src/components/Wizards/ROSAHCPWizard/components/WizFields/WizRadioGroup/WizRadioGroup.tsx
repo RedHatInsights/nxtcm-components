@@ -33,12 +33,15 @@ type WizRadioGroupSpreadProps = Omit<
   >;
 
 export type WizRadioGroupProps<TFieldValues extends FieldValues = FieldValues> =
-  WizRadioGroupSpreadProps & WizRhfBoundFieldProps<TFieldValues>;
+  WizRadioGroupSpreadProps &
+    WizRhfBoundFieldProps<TFieldValues> & {
+      hideLabel?: boolean;
+    };
 
 /**
  * Prefer wrapping the form with `FormProvider` so you can omit `control`.
  * Optional `schema` pulls UI defaults and required state from Yup `.meta()` / optionality.
- * You may set `id`, `label`, `helperText`, `labelHelp`, and `labelHelpTitle` via props. When omitted, Yup `.meta()` may supply inline copy or `*Key` paths resolved from `RosaHcpWizardStringsProvider`.
+ * You may set `id`, `label`, `helperText`, `labelHelp`, and `labelHelpTitle` via props. When omitted, Yup `.meta()` may supply inline copy or `*Key` paths resolved from `RosaHcpWizardStringsProvider`. Use `hideLabel` when the surrounding step already provides a heading.
  * Pass `isRequired` to override; when omitted and `schema` is set, required UI follows Yup for this path.
  * Use `yup.string()` / `yup.mixed()` with `.oneOf([...])` / `.required()` as needed for the bound field.
  */
@@ -56,6 +59,7 @@ export function WizRadioGroup<TFieldValues extends FieldValues = FieldValues>(
     helperText: helperTextProp,
     labelHelp: labelHelpProp,
     labelHelpTitle: labelHelpTitleProp,
+    hideLabel,
     ...rest
   } = props;
 
@@ -88,7 +92,7 @@ export function WizRadioGroup<TFieldValues extends FieldValues = FieldValues>(
     <RadioGroup
       {...rest}
       id={id}
-      label={fieldSetLegend === false ? undefined : label}
+      label={fieldSetLegend === false || hideLabel ? undefined : label}
       helperText={helperText}
       labelHelp={labelHelp}
       labelHelpTitle={labelHelpTitle}

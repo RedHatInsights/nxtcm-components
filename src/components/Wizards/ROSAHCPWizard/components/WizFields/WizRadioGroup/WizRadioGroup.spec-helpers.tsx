@@ -219,6 +219,33 @@ type SoloRadioValues = {
   tier?: string;
 };
 
+export const WIZ_RADIO_GROUP_HIDE_LABEL_YUP_LABEL = 'Yup label hidden on form';
+
+const hideLabelYupSchema = yup.object({
+  mode: yup.string().meta({
+    label: WIZ_RADIO_GROUP_HIDE_LABEL_YUP_LABEL,
+  }),
+});
+
+type HideLabelFormValues = yup.InferType<typeof hideLabelYupSchema>;
+
+export function WizRadioGroupHideLabelHarness() {
+  const methods = useForm<HideLabelFormValues>({
+    defaultValues: { mode: undefined },
+  });
+
+  return withRosaCt(
+    <FormProvider {...methods}>
+      <Form>
+        <WizRadioGroup<HideLabelFormValues> name="mode" schema={hideLabelYupSchema} hideLabel>
+          <Radio id="wiz-radio-hide-a" label="Hidden label option A" value="a" />
+          <Radio id="wiz-radio-hide-b" label="Hidden label option B" value="b" />
+        </WizRadioGroup>
+      </Form>
+    </FormProvider>
+  );
+}
+
 export function WizRadioGroupExplicitControlOnlyHarness() {
   const methods = useForm<SoloRadioValues>({
     defaultValues: { tier: undefined },
