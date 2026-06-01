@@ -77,19 +77,13 @@ export const UpgradeScheduleFields = () => {
   const onDayChange = (selection: string | number | undefined) => {
     const day = selection === undefined ? '' : String(selection);
     setSelectedDay(day);
-    setSelectedHour((hour) => {
-      syncUpgradeSchedule(day, hour);
-      return hour;
-    });
+    syncUpgradeSchedule(day, selectedHour);
   };
 
   const onHourChange = (selection: string | number | undefined) => {
     const hour = selection === undefined ? '' : String(selection);
     setSelectedHour(hour);
-    setSelectedDay((day) => {
-      syncUpgradeSchedule(day, hour);
-      return day;
-    });
+    syncUpgradeSchedule(selectedDay, hour);
   };
 
   return (
