@@ -13,7 +13,6 @@ import {
   type ROSAHCPCluster,
 } from '../../../types';
 import { Details } from './Details';
-import { WizardFieldMetaChangeEffects } from '../../../hooks/WizardFieldMetaChangeEffects';
 import {
   mockAwsBillingAccounts,
   mockAwsInfrastructureAccounts,
@@ -28,6 +27,7 @@ import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers'
 import {
   makeDefaultRosaHcpCtWizardData,
   makeVpcListResource,
+  WizardFieldMetaChangeEffectsCtHarness,
 } from '../../../rosaHcpWizardCtSpecHelpers';
 import type {
   AwsBillingAccountsResource,
@@ -203,7 +203,7 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
   return withRosaCt(
     <FormProvider {...methods}>
       <Form>
-        <WizardFieldMetaChangeEffects wizardData={wizardData} />
+        <WizardFieldMetaChangeEffectsCtHarness wizardData={wizardData} />
         <Details
           awsInfrastructureAccounts={awsInfra}
           awsBillingAccounts={awsBilling}

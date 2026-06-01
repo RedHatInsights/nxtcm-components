@@ -1,4 +1,5 @@
 import rosaHcpWizardFixtures from './ROSAHCPWizard.fixtures';
+import { useWizardFieldMetaChangeEffects } from './fieldMetaChangeEffects/useWizardFieldMetaChangeEffects';
 
 import type { MachineTypesResource, ROSAHCPWizardData, VpcListResource } from './types';
 
@@ -50,4 +51,19 @@ export function makeMachineTypesResource(
     error: overrides?.error ?? null,
     fetch: overrides?.fetch ?? defaultMachineTypesFetch,
   };
+}
+
+type WizardFieldMetaChangeEffectsCtHarnessProps = {
+  wizardData: ROSAHCPWizardData;
+};
+
+/**
+ * Playwright CT only: mounts {@link useWizardFieldMetaChangeEffects} for step-isolated tests.
+ * Production uses the hook directly in {@link ROSAHCPWizardBody}.
+ */
+export function WizardFieldMetaChangeEffectsCtHarness({
+  wizardData,
+}: WizardFieldMetaChangeEffectsCtHarnessProps): null {
+  useWizardFieldMetaChangeEffects(wizardData);
+  return null;
 }

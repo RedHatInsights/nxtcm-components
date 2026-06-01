@@ -1,7 +1,7 @@
 import type { FieldPathValue, UseFormSetValue } from 'react-hook-form';
 
-import type { ROSAHCPCluster } from './types';
-import { getClusterValidationSchemaDefaultValues } from './yupSchemas';
+import type { ROSAHCPCluster } from '../types';
+import { getClusterValidationSchemaDefaultValues } from '../yupSchemas';
 
 type FormPath = Extract<keyof ROSAHCPCluster, string>;
 

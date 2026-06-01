@@ -1,12 +1,12 @@
 import type { UseFormSetValue } from 'react-hook-form';
 
-import fixtures from './ROSAHCPWizard.fixtures';
+import fixtures from '../ROSAHCPWizard.fixtures';
 import {
   reapplyWizardFieldDerivedSyncs,
   syncInstallerRoleDependentRoles,
   syncSecurityGroupsWorkerWithVpc,
 } from './wizardFieldDerivedSyncs';
-import type { ROSAHCPCluster, ROSAHCPWizardData } from './types';
+import type { ROSAHCPCluster, ROSAHCPWizardData } from '../types';
 
 describe('syncInstallerRoleDependentRoles', () => {
   it('sets support and worker ARNs from the matching installer role entry', () => {

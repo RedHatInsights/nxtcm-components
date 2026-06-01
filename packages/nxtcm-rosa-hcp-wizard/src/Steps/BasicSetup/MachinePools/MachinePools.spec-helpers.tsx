@@ -12,9 +12,9 @@ import {
   makeDefaultRosaHcpCtWizardData,
   makeMachineTypesResource,
   makeVpcListResource,
+  WizardFieldMetaChangeEffectsCtHarness,
 } from '../../../rosaHcpWizardCtSpecHelpers';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import { WizardFieldMetaChangeEffects } from '../../../hooks/WizardFieldMetaChangeEffects';
 import {
   clusterValidationSchema,
   getClusterValidationSchemaDefaultValues,
@@ -73,7 +73,7 @@ export const MachinePoolsMount: React.FC<MachinePoolsMountProps> = ({
   return withRosaCt(
     <FormProvider {...methods}>
       <Form>
-        <WizardFieldMetaChangeEffects wizardData={wizardData} />
+        <WizardFieldMetaChangeEffectsCtHarness wizardData={wizardData} />
         <MachinePools vpcList={vpcListProps} machineTypes={machineTypesProps} />
       </Form>
     </FormProvider>

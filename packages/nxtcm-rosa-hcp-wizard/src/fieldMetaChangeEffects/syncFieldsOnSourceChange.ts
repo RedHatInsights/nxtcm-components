@@ -1,9 +1,9 @@
 import * as yup from 'yup';
 import type { FieldPath, FieldPathValue, UseFormSetValue } from 'react-hook-form';
 
-import type { ROSAHCPCluster } from './types';
-import { clusterValidationSchema } from './yupSchemas';
-import type { WizardFieldSyncOnChange, WizardFormFieldName } from './yupSchemas/types';
+import type { ROSAHCPCluster } from '../types';
+import { clusterValidationSchema } from '../yupSchemas';
+import type { WizardFieldSyncOnChange, WizardFormFieldName } from '../yupSchemas/types';
 
 type FormPath = FieldPath<Partial<ROSAHCPCluster>>;
 

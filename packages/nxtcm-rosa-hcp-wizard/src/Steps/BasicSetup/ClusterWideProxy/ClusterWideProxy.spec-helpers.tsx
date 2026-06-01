@@ -13,13 +13,15 @@ import {
   ClusterUpgrade,
   type ROSAHCPCluster,
 } from '../../../types';
-import { WizardFieldMetaChangeEffects } from '../../../hooks/WizardFieldMetaChangeEffects';
 import { ClusterWideProxy } from './ClusterWideProxy';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import type { ValidationSchemaContext } from '../../../yupSchemas/types';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
-import { makeDefaultRosaHcpCtWizardData } from '../../../rosaHcpWizardCtSpecHelpers';
+import {
+  makeDefaultRosaHcpCtWizardData,
+  WizardFieldMetaChangeEffectsCtHarness,
+} from '../../../rosaHcpWizardCtSpecHelpers';
 
 /** Defaults aligned with {@link ROSAHCPWizardBody} so the composed Yup schema resolves consistently in CT. */
 const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ROSAHCPCluster> = {
@@ -81,7 +83,7 @@ export const ClusterWideProxyMount: React.FC<ClusterWideProxyMountProps> = ({
   return withRosaCt(
     <FormProvider {...methods}>
       <Form>
-        <WizardFieldMetaChangeEffects wizardData={CT_WIZARD_DATA} />
+        <WizardFieldMetaChangeEffectsCtHarness wizardData={CT_WIZARD_DATA} />
         <ClusterWideProxy />
       </Form>
     </FormProvider>

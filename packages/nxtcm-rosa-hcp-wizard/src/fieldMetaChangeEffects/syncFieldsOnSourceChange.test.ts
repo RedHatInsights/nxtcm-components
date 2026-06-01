@@ -1,13 +1,13 @@
 import type { UseFormSetValue } from 'react-hook-form';
 
 import { syncFieldsOnSourceChange } from './syncFieldsOnSourceChange';
-import type { ROSAHCPCluster } from './types';
+import type { ROSAHCPCluster } from '../types';
 import {
   getWizardFieldSyncsForSourceField,
   maxReplicasSchema,
   minReplicasSchema,
   nodesComputeSchema,
-} from './yupSchemas';
+} from '../yupSchemas';
 
 const autoscalingSyncRules = getWizardFieldSyncsForSourceField('autoscaling');
 const defaultMinReplicas = minReplicasSchema.getDefault() as number;

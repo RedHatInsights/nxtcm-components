@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { type FieldPath, useFormContext, useWatch } from 'react-hook-form';
 
-import { applyWizardFieldMetaChangeEffects } from '../applyWizardFieldMetaChangeEffects';
+import { applyWizardFieldMetaChangeEffects } from './applyWizardFieldMetaChangeEffects';
 import {
   collectWizardFieldDerivedSyncWizardDataDeps,
   reapplyWizardFieldDerivedSyncs,
-} from '../wizardFieldDerivedSyncs';
+} from './wizardFieldDerivedSyncs';
 import type { ClusterFormData } from '../../types';
 import type { ROSAHCPWizardData } from '../types';
 import {
