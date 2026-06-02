@@ -47,7 +47,8 @@ function readJson(filePath) {
   if (!filePath || !fs.existsSync(filePath)) return null;
   try {
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  } catch {
+  } catch (err) {
+    console.warn(`warning: failed to parse ${filePath}: ${err.message}`);
     return null;
   }
 }
@@ -152,50 +153,38 @@ function buildE2eSection(playwrightData) {
   let failed = 0;
   let skipped = 0;
   let durationMs = 0;
-  const files = [];
+  const byFile = new Map();
 
   function walkSuites(suites, parentFile) {
     for (const suite of suites) {
       const fileName = suite.file || parentFile || 'unknown';
 
       if (Array.isArray(suite.specs)) {
-        let fileTests = 0;
-        let filePassed = 0;
-        let fileFailed = 0;
-        let fileSkipped = 0;
-        let fileDuration = 0;
+        if (!byFile.has(fileName)) {
+          byFile.set(fileName, { tests: 0, passed: 0, failed: 0, skipped: 0, duration_ms: 0 });
+        }
+        const entry = byFile.get(fileName);
 
         for (const spec of suite.specs) {
           for (const test of spec.tests || []) {
-            fileTests += 1;
+            entry.tests += 1;
             total += 1;
             const status = test.status || test.expectedStatus;
             if (status === 'expected' || status === 'passed' || status === 'flaky') {
-              filePassed += 1;
+              entry.passed += 1;
               passed += 1;
             } else if (status === 'unexpected' || status === 'failed') {
-              fileFailed += 1;
+              entry.failed += 1;
               failed += 1;
             } else if (status === 'skipped') {
-              fileSkipped += 1;
+              entry.skipped += 1;
               skipped += 1;
             }
             for (const result of test.results || []) {
-              fileDuration += result.duration || 0;
+              entry.duration_ms += result.duration || 0;
               durationMs += result.duration || 0;
             }
           }
-        }
-
-        if (fileTests > 0 && fileName !== parentFile) {
-          files.push({
-            name: fileName,
-            tests: fileTests,
-            passed: filePassed,
-            failed: fileFailed,
-            skipped: fileSkipped,
-            duration_ms: fileDuration,
-          });
         }
       }
 
@@ -206,6 +195,11 @@ function buildE2eSection(playwrightData) {
   }
 
   walkSuites(playwrightData.suites, null);
+
+  const files = [];
+  for (const [name, data] of byFile) {
+    if (data.tests > 0) files.push({ name, ...data });
+  }
 
   return {
     framework: 'playwright',
