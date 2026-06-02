@@ -98,12 +98,19 @@ export function WizSelect<TFieldValues extends FieldValues = FieldValues, TOptio
   const stepValidationRevealed = useWizStepValidationRevealed(String(name));
   const showError = wizFieldShowsError(invalid, isTouched, isSubmitted || stepValidationRevealed);
 
-  /** Select clears with `undefined`; RHF keeps the prior value for Yup string fields (default `''`). */
+  /** Select clears with `undefined`; map to `''` only for string-backed RHF values (Yup string fields). */
   const handleChange = useCallback(
     (next: TOption | string | number | undefined) => {
-      field.onChange(next === undefined ? '' : next);
+      if (next !== undefined) {
+        field.onChange(next);
+        return;
+      }
+      const isStringBacked =
+        typeof field.value === 'string' ||
+        (Array.isArray(field.value) && typeof field.value[0] === 'string');
+      field.onChange(isStringBacked ? '' : undefined);
     },
-    [field.onChange]
+    [field.onChange, field.value]
   );
 
   const select = (
