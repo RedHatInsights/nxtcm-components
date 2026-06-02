@@ -1,19 +1,12 @@
 import * as yup from 'yup';
 
 import type { WizardFieldMeta } from './types';
-import { detailsFields } from './detailsFields';
-import { rolesAndPoliciesFields } from './rolesAndPoliciesFields';
-import { machinePoolsFields } from './machinePoolsFields';
-import { networkingFields } from './networkingFields';
-import { clusterWideProxyFields } from './clusterWideProxyFields';
-import { encryptionFields } from './encryptionFields';
-import { clusterUpdatesFields } from './clusterUpdatesFields';
-import { ROSAHCPCluster } from '../types';
+import { clusterValidationSchema } from './clusterValidationSchema';
+import type { ROSAHCPCluster } from '../types';
+
+export { clusterValidationSchema } from './clusterValidationSchema';
 
 /**
- * Composed Yup schema for `ROSAHCPCluster` — built from individual
- * per-field schemas grouped by wizard step.
- *
  * Each field carries its own `.meta()` with a {@link WizardFieldMeta} payload,
  * and runtime validation values come from `this.options.context`
  * ({@link ValidationSchemaContext}).
@@ -22,15 +15,6 @@ import { ROSAHCPCluster } from '../types';
  * clusterValidationSchema.validate(formData, { context });
  * ```
  */
-export const clusterValidationSchema = yup.object({
-  ...detailsFields,
-  ...rolesAndPoliciesFields,
-  ...machinePoolsFields,
-  ...networkingFields,
-  ...clusterWideProxyFields,
-  ...encryptionFields,
-  ...clusterUpdatesFields,
-}) as yup.ObjectSchema<Partial<ROSAHCPCluster>>;
 
 export function getClusterValidationSchemaDefaultValues(): Partial<ROSAHCPCluster> {
   const defaults = clusterValidationSchema.getDefault() as Partial<ROSAHCPCluster>;
@@ -132,6 +116,7 @@ export {
 export { upgradePolicySchema, upgradeScheduleSchema } from './clusterUpdatesFields';
 
 export {
+  getFieldPathsByStepId,
   getWizardFieldDerivedSyncKeyForSourceField,
   getWizardFieldResetsForSourceField,
   getWizardFieldSyncsForSourceField,

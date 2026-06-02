@@ -1,4 +1,10 @@
-import { type ClusterUpgrade, MachinePoolSubnetEntry, ROSAHCPCluster, VPC } from '../../types';
+import {
+  ClusterNetwork,
+  ClusterUpgrade,
+  MachinePoolSubnetEntry,
+  ROSAHCPCluster,
+  VPC,
+} from '../../types';
 import type { LabelValueOption } from '../../helpers';
 import {
   formatUpgradePolicyForReview,
@@ -108,6 +114,17 @@ export function formatReviewFieldValue(
       .map((entry) => entry?.machine_pool_subnet?.trim() ?? '')
       .filter((id) => id !== '');
     return formatIdsAsOptionLabels(subnetIds, reviewOptions?.subnet);
+  }
+
+  if (path === 'cluster_privacy') {
+    const privacy = raw as ROSAHCPCluster['cluster_privacy'];
+    if (privacy === ClusterNetwork.external) {
+      return strings.networking.publicLabel;
+    }
+    if (privacy === ClusterNetwork.internal) {
+      return strings.networking.privateLabel;
+    }
+    return formatScalarForReview(raw);
   }
 
   if (path === 'upgrade_policy' && typeof raw === 'string' && isClusterUpgradePolicy(raw)) {

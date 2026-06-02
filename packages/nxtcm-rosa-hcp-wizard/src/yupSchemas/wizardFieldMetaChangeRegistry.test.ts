@@ -1,4 +1,6 @@
+import { STEP_IDS } from '../constants';
 import {
+  getFieldPathsByStepId,
   getWizardFieldDerivedSyncKeyForSourceField,
   getWizardFieldResetsForSourceField,
   getWizardFieldSyncsForSourceField,
@@ -11,6 +13,29 @@ import {
 } from './wizardFieldMetaChangeRegistry';
 
 describe('wizardFieldMetaChangeRegistry', () => {
+  describe('getFieldPathsByStepId', () => {
+    it('assigns each schema field to exactly one step', () => {
+      const fieldPathsByStepId = getFieldPathsByStepId();
+      const allPaths = Object.values(fieldPathsByStepId).flat();
+      const unique = new Set(allPaths);
+      expect(unique.size).toBe(allPaths.length);
+      expect(allPaths.length).toBeGreaterThan(0);
+    });
+
+    it('does not include parent or review step ids', () => {
+      const fieldPathsByStepId = getFieldPathsByStepId();
+      expect(fieldPathsByStepId[STEP_IDS.BASIC_SETUP]).toBeUndefined();
+      expect(fieldPathsByStepId[STEP_IDS.REVIEW]).toBeUndefined();
+      expect(fieldPathsByStepId[STEP_IDS.OPTIONAL_SETUP]).toBeUndefined();
+    });
+
+    it('groups networking fields including configure_proxy', () => {
+      expect(getFieldPathsByStepId()[STEP_IDS.NETWORKING]).toEqual(
+        expect.arrayContaining(['configure_proxy', 'multi_az', 'hypershift'])
+      );
+    });
+  });
+
   describe('listWizardFieldMetaChangeSourceFields', () => {
     it('includes fields that declare derivedFieldsSyncOnChange in Yup meta', () => {
       expect(listWizardFieldMetaChangeSourceFields()).toContain('installer_role_arn');

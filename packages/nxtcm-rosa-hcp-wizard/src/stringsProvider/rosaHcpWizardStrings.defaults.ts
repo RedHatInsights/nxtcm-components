@@ -207,6 +207,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     sectionLabel: 'Networking',
     privacyHelper:
       'Install your cluster with all public or private API endpoints and application routes.',
+    clusterPrivacyLabel: 'Cluster privacy',
     publicLabel: 'Public',
     publicPopover: 'Access Kubernetes API endpoint and application routes from the internet.',
     publicSubnetLabel: 'Public subnet name',

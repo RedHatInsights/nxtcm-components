@@ -33,6 +33,7 @@ export const clusterPrivacySchema = yup
   .required()
   .meta({
     id: 'cluster_privacy',
+    labelKey: 'networking.clusterPrivacyLabel',
     stepId: STEP_IDS.NETWORKING,
     fieldSetLegend: false,
     fieldType: 'radio',
@@ -63,6 +64,7 @@ export const cidrDefaultSchema = yup
     stepId: STEP_IDS.NETWORKING,
     fieldType: 'checkbox',
     advanced: true,
+    hideInReview: true,
   } satisfies WizardFieldMeta);
 
 export const networkMachineCidrSchema = yup
@@ -350,6 +352,7 @@ export const configureProxySchema = yup
     stepId: STEP_IDS.NETWORKING,
     fieldType: 'checkbox',
     advanced: true,
+    hideInReview: true,
     resetsFieldsToDefaultOnChange: [
       'http_proxy_url',
       'https_proxy_url',
@@ -365,6 +368,7 @@ export const multiAzSchema = yup
     id: 'multi_az',
     labelKey: 'networking.multiAzLabel',
     stepId: STEP_IDS.NETWORKING,
+    hideInReview: true,
   } satisfies WizardFieldMeta);
 
 export const hypershiftSchema = yup
@@ -374,6 +378,7 @@ export const hypershiftSchema = yup
     id: 'hypershift',
     labelKey: 'networking.hypershiftLabel',
     stepId: STEP_IDS.NETWORKING,
+    hideInReview: true,
   } satisfies WizardFieldMeta);
 
 export const networkingFields = {

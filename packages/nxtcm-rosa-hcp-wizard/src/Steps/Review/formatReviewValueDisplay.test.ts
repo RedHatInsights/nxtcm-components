@@ -7,6 +7,8 @@ jest.mock('../../yupSchemas', () => ({
   }),
 }));
 
+import { ClusterNetwork, ClusterUpgrade } from '@/components/Wizards/types';
+
 import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { formatReviewFieldValue } from './formatReviewValueDisplay';
 
@@ -101,6 +103,52 @@ describe('formatReviewFieldValue compute_root_volume', () => {
     expect(
       formatReviewFieldValue('compute_root_volume', { compute_root_volume: 400 }, strings)
     ).toBe('400 GiB');
+  });
+});
+
+describe('formatReviewFieldValue cluster_privacy', () => {
+  it('maps external to the public networking label', () => {
+    expect(
+      formatReviewFieldValue(
+        'cluster_privacy',
+        { cluster_privacy: ClusterNetwork.external },
+        strings
+      )
+    ).toBe(strings.networking.publicLabel);
+  });
+
+  it('maps internal to the private networking label', () => {
+    expect(
+      formatReviewFieldValue(
+        'cluster_privacy',
+        { cluster_privacy: ClusterNetwork.internal },
+        strings
+      )
+    ).toBe(strings.networking.privateLabel);
+  });
+});
+
+describe('formatReviewFieldValue cluster updates', () => {
+  it('maps upgrade_policy manual to individual updates label', () => {
+    expect(
+      formatReviewFieldValue('upgrade_policy', { upgrade_policy: ClusterUpgrade.manual }, strings)
+    ).toBe(strings.review.strategyIndividual);
+  });
+
+  it('maps upgrade_policy automatic to recurring updates label', () => {
+    expect(
+      formatReviewFieldValue(
+        'upgrade_policy',
+        { upgrade_policy: ClusterUpgrade.automatic },
+        strings
+      )
+    ).toBe(strings.review.strategyAutomatic);
+  });
+
+  it('formats upgrade_schedule cron as day and hour', () => {
+    expect(
+      formatReviewFieldValue('upgrade_schedule', { upgrade_schedule: '00 14 * * 2' }, strings)
+    ).toBe('Tuesday, 14:00 UTC');
   });
 });
 

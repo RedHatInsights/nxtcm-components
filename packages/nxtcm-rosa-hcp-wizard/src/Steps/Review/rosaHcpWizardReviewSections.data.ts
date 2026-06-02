@@ -1,8 +1,14 @@
 /**
  * Review-step sections and per-step field paths (no React). Shared by Review and Next validation.
+ * Field paths are derived from Yup `.meta({ stepId })` via {@link getFieldPathsByStepId}
+ * in {@link wizardFieldMetaChangeRegistry}.
+ *
+ * Named `.data.ts` so imports of `ROSAHCPWizardReviewSections` resolve to the React hook module
+ * on case-insensitive filesystems (macOS).
  */
 
 import { STEP_IDS } from '../../constants';
+import { getFieldPathsByStepId } from '../../yupSchemas/wizardFieldMetaChangeRegistry';
 
 export interface RosaHcpWizardReviewSection {
   /** PatternFly `WizardStep` id (e.g. `expand-steps-sub-a`) */
@@ -10,7 +16,7 @@ export interface RosaHcpWizardReviewSection {
   label: string;
   /** When true, omit the review section if every listed field matches defaults */
   hideIfUnchanged?: boolean;
-  fieldPaths: string[];
+  fieldPaths: readonly string[];
 }
 
 export type RosaHcpWizardReviewStepLabels = {
@@ -26,72 +32,44 @@ export type RosaHcpWizardReviewStepLabels = {
 export function buildRosaHcpWizardReviewSections(
   stepLabels: RosaHcpWizardReviewStepLabels
 ): RosaHcpWizardReviewSection[] {
+  const fieldPathsByStepId = getFieldPathsByStepId();
+
   return [
     {
       id: STEP_IDS.DETAILS,
       label: stepLabels.details,
-      fieldPaths: ['name', 'cluster_version', 'associated_aws_id', 'billing_account_id', 'region'],
+      fieldPaths: fieldPathsByStepId[STEP_IDS.DETAILS] ?? [],
     },
     {
       id: STEP_IDS.ROLES_AND_POLICIES,
       label: stepLabels.rolesAndPolicies,
-      fieldPaths: [
-        'installer_role_arn',
-        'support_role_arn',
-        'worker_role_arn',
-        'byo_oidc_config_id',
-        'custom_operator_roles_prefix',
-      ],
+      fieldPaths: fieldPathsByStepId[STEP_IDS.ROLES_AND_POLICIES] ?? [],
     },
     {
       id: STEP_IDS.MACHINE_POOLS,
       label: stepLabels.machinePools,
-      fieldPaths: [
-        'selected_vpc',
-        'machine_pools_subnets',
-        'machine_type',
-        'autoscaling',
-        'nodes_compute',
-        'min_replicas',
-        'max_replicas',
-        'compute_root_volume',
-        'imds',
-        'security_groups_worker',
-      ],
+      fieldPaths: fieldPathsByStepId[STEP_IDS.MACHINE_POOLS] ?? [],
     },
     {
       id: STEP_IDS.NETWORKING,
       label: stepLabels.networking,
-      fieldPaths: [
-        'cluster_privacy',
-        'cluster_privacy_public_subnet_id',
-        'cidr_default',
-        'network_machine_cidr',
-        'network_service_cidr',
-        'network_pod_cidr',
-        'network_host_prefix',
-      ],
+      fieldPaths: fieldPathsByStepId[STEP_IDS.NETWORKING] ?? [],
     },
     {
       id: STEP_IDS.CLUSTER_WIDE_PROXY,
       label: stepLabels.clusterWideProxy,
       hideIfUnchanged: true,
-      fieldPaths: [
-        'http_proxy_url',
-        'https_proxy_url',
-        'no_proxy_domains',
-        'additional_trust_bundle',
-      ],
+      fieldPaths: fieldPathsByStepId[STEP_IDS.CLUSTER_WIDE_PROXY] ?? [],
     },
     {
       id: STEP_IDS.ENCRYPTION,
       label: stepLabels.encryptionOptional,
-      fieldPaths: ['encryption_keys', 'kms_key_arn', 'etcd_encryption', 'etcd_key_arn'],
+      fieldPaths: fieldPathsByStepId[STEP_IDS.ENCRYPTION] ?? [],
     },
     {
       id: STEP_IDS.CLUSTER_UPDATES,
       label: stepLabels.clusterUpdatesOptional,
-      fieldPaths: ['upgrade_policy', 'upgrade_schedule'],
+      fieldPaths: fieldPathsByStepId[STEP_IDS.CLUSTER_UPDATES] ?? [],
     },
   ];
 }

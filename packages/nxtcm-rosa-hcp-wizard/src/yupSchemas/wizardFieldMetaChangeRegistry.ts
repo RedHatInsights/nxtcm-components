@@ -1,4 +1,4 @@
-import { clusterValidationSchema } from './index';
+import { clusterValidationSchema } from './clusterValidationSchema';
 import { readWizardFieldMeta } from './readWizardFieldMeta';
 import type {
   WizardFieldDerivedSyncKey,
@@ -28,6 +28,8 @@ export type WizardFieldDerivedSyncEntry = {
 };
 
 type WizardFieldMetaChangeRegistry = {
+  /** Top-level form field paths grouped by {@link WizardFieldMeta.stepId}. */
+  fieldPathsByStepId: Readonly<Record<string, readonly string[]>>;
   sourceFields: WizardFormFieldName[];
   resets: Map<WizardFormFieldName, readonly WizardFormFieldName[]>;
   refetches: Map<WizardFormFieldName, readonly WizardResourceRefetchOnChange[]>;
@@ -40,6 +42,7 @@ type WizardFieldMetaChangeRegistry = {
 };
 
 function buildWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
+  const fieldPathsByStep: Record<string, string[]> = {};
   const resets = new Map<WizardFormFieldName, readonly WizardFormFieldName[]>();
   const refetches = new Map<WizardFormFieldName, readonly WizardResourceRefetchOnChange[]>();
   const syncs = new Map<WizardFormFieldName, readonly WizardFieldSyncOnChange[]>();
@@ -54,6 +57,13 @@ function buildWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
     const meta = readWizardFieldMeta(fieldSchema);
     if (!meta) {
       continue;
+    }
+
+    if (meta.stepId !== undefined) {
+      if (fieldPathsByStep[meta.stepId] === undefined) {
+        fieldPathsByStep[meta.stepId] = [];
+      }
+      fieldPathsByStep[meta.stepId].push(fieldName);
     }
 
     const sourceField = fieldName as WizardFormFieldName;
@@ -84,6 +94,9 @@ function buildWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
   }
 
   return {
+    fieldPathsByStepId: Object.fromEntries(
+      Object.entries(fieldPathsByStep).map(([stepId, paths]) => [stepId, paths] as const)
+    ),
     sourceFields: [...sourceFieldSet].sort((a, b) => a.localeCompare(b)),
     resets,
     refetches,
@@ -101,6 +114,14 @@ let registryCache: WizardFieldMetaChangeRegistry | undefined;
 function getWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
   registryCache ??= buildWizardFieldMetaChangeRegistry();
   return registryCache;
+}
+
+/**
+ * Top-level form field paths per wizard step id, from Yup `.meta({ stepId })`.
+ * Built in the same schema scan as {@link listWizardFieldMetaChangeSourceFields}.
+ */
+export function getFieldPathsByStepId(): Readonly<Record<string, readonly string[]>> {
+  return getWizardFieldMetaChangeRegistry().fieldPathsByStepId;
 }
 
 /** Sorted form fields that declare reset, refetch, sync, or derived-sync metadata in Yup `.meta()`. */

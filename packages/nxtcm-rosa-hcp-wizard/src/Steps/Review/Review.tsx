@@ -13,7 +13,6 @@ import {
 } from '@patternfly/react-core';
 import LockIcon from '@patternfly/react-icons/dist/esm/icons/lock-icon';
 import PencilAltIcon from '@patternfly/react-icons/dist/esm/icons/pencil-alt-icon';
-import get from 'get-value';
 import { useWatch } from 'react-hook-form';
 
 import type { ROSAHCPCluster, ROSAHCPWizardData } from '../../types';
@@ -27,6 +26,7 @@ import { Section } from '../../components/Section';
 import { STEP_IDS } from '../../constants';
 import { useRosaHcpWizardReviewSections } from './ROSAHCPWizardReviewSections';
 import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings';
+import { getRosaHcpWizardStringByLabelKey } from '../../stringsProvider/getRosaHcpWizardStringByLabelKey';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { getClusterValidationSchemaDefaultValues, wizardFieldMetaByPath } from '../../yupSchemas';
 import { ReviewExpandSection } from './ReviewExpandSection';
@@ -54,21 +54,13 @@ function sectionDiffersFromDefaults(
   );
 }
 
-/** Resolves a dot path (e.g. `details.clusterNameLabel`) on the wizard strings root. */
-function resolveStringByDotPath(strings: RosaHcpWizardStrings, path: string): string {
-  if (path === '') return '';
-  const resolved = get(strings, path);
-  return typeof resolved === 'string' ? resolved : path;
-}
-
 function resolveReviewFieldLabelText(
   strings: RosaHcpWizardStrings,
   labelKey: string,
   reviewLabelKeyOrLiteral?: string
 ): string {
-  return reviewLabelKeyOrLiteral
-    ? resolveStringByDotPath(strings, reviewLabelKeyOrLiteral)
-    : resolveStringByDotPath(strings, labelKey);
+  const key = reviewLabelKeyOrLiteral ?? labelKey;
+  return getRosaHcpWizardStringByLabelKey(strings, key) ?? key;
 }
 
 export type ReviewProps = Pick<ROSAHCPWizardData, 'vpcList'> & {
