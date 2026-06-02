@@ -78,7 +78,9 @@ jobs:
         run: cd packages/react-form-wizard && npm ci
 
       - name: Run Jest unit tests
-        run: npm test -- --coverage --json --outputFile=test-results/jest-results.json
+        run: |
+          mkdir -p test-results
+          npm test -- --coverage --json --outputFile=test-results/jest-results.json
 
       - name: Upload coverage artifact
         if: always()
@@ -198,7 +200,9 @@ jobs:
       - name: Run Playwright tests
         env:
           PLAYWRIGHT_JSON_OUTPUT_NAME: test-results/playwright-e2e-results.json
-        run: npx playwright test --reporter=list,html,json
+        run: |
+          mkdir -p test-results
+          npx playwright test --reporter=list,html,json
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
