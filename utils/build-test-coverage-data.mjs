@@ -72,8 +72,9 @@ function buildUnitSection(jestData) {
     const filePassed = suite.assertionResults?.filter((t) => t.status === 'passed').length || 0;
     const fileFailed = suite.assertionResults?.filter((t) => t.status === 'failed').length || 0;
     const fileSkipped =
-      suite.assertionResults?.filter((t) => t.status === 'pending' || t.status === 'skipped')
-        .length || 0;
+      suite.assertionResults?.filter((t) =>
+        ['pending', 'skipped', 'todo', 'disabled'].includes(t.status)
+      ).length || 0;
     const fileDuration = (suite.endTime || 0) - (suite.startTime || 0);
 
     total += fileTests;
