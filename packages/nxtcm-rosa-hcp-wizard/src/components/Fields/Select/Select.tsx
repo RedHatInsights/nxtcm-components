@@ -32,6 +32,8 @@ import { toDisplayString } from './SelectOptions';
 import { extractOptionValue, type Option, type OptionGroup, type OptionType } from './SelectTypes';
 import { getStatus, isSyntheticOptionId, lowercaseFirst } from './selectFieldUtils';
 import { useSelectDerived } from './useSelectDerived';
+import { useSelectMenuOpen } from './useSelectMenuOpen';
+import { useSelectMenuToggleBlur } from './useSelectMenuToggleBlur';
 import { HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
 
@@ -73,7 +75,7 @@ export interface SelectProps<T = unknown> {
   noResultsText?: string;
   isSuccess?: boolean;
   successMessage?: ReactNode | string;
-  /** Fires when the dropdown menu opens or closes (after internal `open` updates). */
+  /** Fires when the dropdown menu opens or closes. Close is deferred until after selection. */
   onMenuOpenChange?: (isOpen: boolean) => void;
   /** Optional max height for the dropdown list (passed to PatternFly `Select`). */
   maxMenuHeight?: string;
@@ -117,13 +119,10 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     throw new Error('Select: use either `options` or `optionGroups`, not both.');
   }
 
-  const [open, setOpen] = useState(false);
+  const { open, handleOpenChange } = useSelectMenuOpen(onMenuOpenChange);
   const [typeaheadQuery, setTypeaheadQuery] = useState('');
   const textInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    onMenuOpenChange?.(open);
-  }, [open, onMenuOpenChange]);
+  const handleToggleBlur = useSelectMenuToggleBlur(open, onBlur);
 
   const {
     normalizedFlat,
@@ -164,16 +163,16 @@ export function Select<T = unknown>(props: SelectProps<T>) {
         if (isTypeAhead) {
           onChange(undefined as T | string | number | undefined);
         }
-        setOpen(false);
+        handleOpenChange(false);
         return;
       }
       const opt = flatForLookup.find((o) => o.id === optionId);
       if (opt) {
         onChange(opt.value as T | string | number | undefined);
       }
-      setOpen(false);
+      handleOpenChange(false);
     },
-    [flatForLookup, isTypeAhead, onChange]
+    [flatForLookup, handleOpenChange, isTypeAhead, onChange]
   );
 
   const onPfSelect = useCallback(
@@ -297,7 +296,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     [onChange]
   );
 
-  const toggleOpen = useCallback(() => setOpen((o) => !o), []);
+  const toggleOpen = useCallback(() => handleOpenChange((current) => !current), [handleOpenChange]);
 
   const describedBy = helperTextId({
     id,
@@ -314,7 +313,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     <MenuToggle
       ref={toggleRef}
       onClick={toggleOpen}
-      onBlur={onBlur}
+      onBlur={handleToggleBlur}
       isExpanded={open}
       isDisabled={!!disabled}
       isFullWidth
@@ -331,7 +330,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
       variant="typeahead"
       ref={toggleRef}
       onClick={toggleOpen}
-      onBlur={onBlur}
+      onBlur={handleToggleBlur}
       isExpanded={open}
       isDisabled={!!disabled}
       isFullWidth
@@ -382,7 +381,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
           isOpen={open}
           selected={selectedForMenu}
           onSelect={onPfSelect}
-          onOpenChange={setOpen}
+          onOpenChange={handleOpenChange}
           toggle={isTypeAhead ? typeaheadToggle : plainToggle}
           variant={isTypeAhead ? 'typeahead' : undefined}
           shouldFocusToggleOnSelect={!isTypeAhead}

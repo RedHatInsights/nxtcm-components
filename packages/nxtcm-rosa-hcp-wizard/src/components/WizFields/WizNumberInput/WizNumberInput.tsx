@@ -1,5 +1,13 @@
 import type { SyntheticEvent } from 'react';
-import { type FieldValues, useController } from 'react-hook-form';
+import {
+  type FieldPath,
+  type FieldPathValue,
+  type FieldValues,
+  type UseFormReturn,
+  useController,
+  useFormContext,
+} from 'react-hook-form';
+
 import { requiredFromYup } from '../../../utilities/yupFieldRequired';
 import { NumberInput, type NumberInputProps } from '../../Fields/NumberInput';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
@@ -33,7 +41,11 @@ type WizNumberInputSpreadProps = Omit<
   >;
 
 export type WizNumberInputProps<TFieldValues extends FieldValues = FieldValues> =
-  WizNumberInputSpreadProps & WizRhfBoundFieldProps<TFieldValues>;
+  WizNumberInputSpreadProps &
+    WizRhfBoundFieldProps<TFieldValues> & {
+      /** Re-run validation on these paths after each value change (cross-field Yup rules). */
+      revalidateFieldPaths?: readonly FieldPath<TFieldValues>[];
+    };
 
 /**
  * Prefer wrapping the form with `FormProvider` so you can omit `control`.
@@ -56,10 +68,12 @@ export function WizNumberInput<TFieldValues extends FieldValues = FieldValues>(
     labelHelp: labelHelpProp,
     labelHelpTitle: labelHelpTitleProp,
     placeholder: placeholderProp,
+    revalidateFieldPaths,
     ...rest
   } = props;
 
   const control = useWizRhfControl<TFieldValues>('WizNumberInput', controlProp);
+  const formContext = useFormContext<TFieldValues>() as UseFormReturn<TFieldValues> | null;
   const { id, label, helperText, labelHelp, labelHelpTitle, placeholder } = useWizFieldPresentation(
     {
       name,
@@ -91,6 +105,20 @@ export function WizNumberInput<TFieldValues extends FieldValues = FieldValues>(
     typeof field.value === 'number' && !Number.isNaN(field.value) ? field.value : undefined;
 
   const onChange = (_event: SyntheticEvent, next: number | undefined) => {
+    const nextValue = next as FieldPathValue<TFieldValues, typeof name>;
+
+    if (formContext?.setValue) {
+      formContext.setValue(name, nextValue, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
+      if (revalidateFieldPaths?.length) {
+        void formContext.trigger(revalidateFieldPaths);
+      }
+      return;
+    }
+
     field.onChange(next);
   };
 

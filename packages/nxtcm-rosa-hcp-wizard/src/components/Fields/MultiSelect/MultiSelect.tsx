@@ -4,9 +4,7 @@ import {
   type MouseEvent,
   type ReactNode,
   useCallback,
-  useEffect,
   useMemo,
-  useState,
 } from 'react';
 import {
   Badge,
@@ -41,6 +39,8 @@ import {
   type OptionType,
 } from '../Select/SelectTypes';
 import { useMultiSelectDerived } from './useMultiSelectDerived';
+import { useSelectMenuOpen } from '../Select/useSelectMenuOpen';
+import { useSelectMenuToggleBlur } from '../Select/useSelectMenuToggleBlur';
 
 /** Stable fallback when `value` is null/undefined so hook deps stay referentially stable. */
 const EMPTY_MULTISELECT_VALUE: never[] = [];
@@ -78,7 +78,7 @@ export interface MultiSelectProps<T = unknown> {
   noResultsText?: string;
   isSuccess?: boolean;
   successMessage?: ReactNode | string;
-  /** Fires when the dropdown menu opens or closes (after internal `open` updates). */
+  /** Fires when the dropdown menu opens or closes. Close is deferred until after selection. */
   onMenuOpenChange?: (isOpen: boolean) => void;
   /** Optional max height for the dropdown list. */
   maxMenuHeight?: string;
@@ -143,11 +143,8 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
     keyPath,
   });
 
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    onMenuOpenChange?.(open);
-  }, [open, onMenuOpenChange]);
+  const { open, handleOpenChange } = useSelectMenuOpen(onMenuOpenChange);
+  const handleToggleBlur = useSelectMenuToggleBlur(open, onBlur);
 
   const selectedMenuIds = useMemo(() => {
     const ids: string[] = [];
@@ -190,7 +187,10 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
     <Badge screenReaderText={badgeScreenReaderText}>{value.length}</Badge>
   ) : undefined;
 
-  const handleToggle = useCallback(() => setOpen((o) => !o), []);
+  const handleToggle = useCallback(
+    () => handleOpenChange((current) => !current),
+    [handleOpenChange]
+  );
 
   const onPfSelect = useCallback(
     (_event: MouseEvent<Element> | undefined, val: unknown) => {
@@ -316,7 +316,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
     <MenuToggle
       ref={toggleRef}
       onClick={handleToggle}
-      onBlur={onBlur}
+      onBlur={handleToggleBlur}
       isExpanded={open}
       isDisabled={!!disabled}
       isFullWidth
@@ -338,7 +338,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
           isOpen={open}
           selected={selectedMenuIds}
           onSelect={onPfSelect}
-          onOpenChange={setOpen}
+          onOpenChange={handleOpenChange}
           shouldFocusToggleOnSelect={false}
           toggle={plainToggle}
           maxMenuHeight={maxMenuHeight}

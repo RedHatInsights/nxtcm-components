@@ -10,7 +10,10 @@ import {
 import { FieldWithAPIErrorAlert } from '../../FieldWithAPIErrorAlert';
 import { Select, type SelectProps } from '../../Fields/Select';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
-import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
+import {
+  useWizardFieldNavErrorSuppression,
+  useWizStepValidationRevealed,
+} from '../../../rosaHcpWizardValidationContext';
 import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizSelectControlledKeys = 'value' | 'onChange' | 'onBlur' | 'errorMessage' | 'isError';
@@ -104,6 +107,7 @@ export function WizSelect<TFieldValues extends FieldValues = FieldValues, TOptio
 
   const stepValidationRevealed = useWizStepValidationRevealed(String(name));
   const showError = wizFieldShowsError(invalid, isTouched, isSubmitted || stepValidationRevealed);
+  useWizardFieldNavErrorSuppression(String(name), isMenuOpen);
   useReconcileWizSelectValueWithOptions({
     name,
     schema,

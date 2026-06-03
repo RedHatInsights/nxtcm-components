@@ -60,6 +60,14 @@ describe('wizardFieldMetaChangeRegistry', () => {
       expect(entries.some((entry) => entry.sourceField === 'region')).toBe(true);
       expect(entries.every((entry) => entry.targetFields.length > 0)).toBe(true);
     });
+
+    it('lists only fields that declare resetsFieldsToDefaultOnChange as reset source fields', () => {
+      const resetSources = listWizardFieldResetEntries().map((entry) => entry.sourceField);
+      expect(resetSources).toContain('region');
+      expect(resetSources).toContain('associated_aws_id');
+      expect(resetSources).not.toContain('name');
+      expect(resetSources).not.toContain('installer_role_arn');
+    });
   });
 
   describe('refetches', () => {

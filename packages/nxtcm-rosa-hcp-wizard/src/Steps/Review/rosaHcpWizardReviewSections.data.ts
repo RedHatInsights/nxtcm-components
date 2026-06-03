@@ -1,13 +1,13 @@
 /**
  * Review-step sections and per-step field paths (no React). Shared by Review and Next validation.
- * Field paths are derived from Yup `.meta({ stepId })` via {@link getFieldPathsByStepId}
- * in {@link wizardFieldMetaChangeRegistry}.
+ * Leaf step ids and review metadata come from {@link buildRosaHcpWizardStepLayout}; field paths
+ * come from Yup `.meta({ stepId })` via {@link getFieldPathsByStepId}.
  *
  * Named `.data.ts` so imports of `ROSAHCPWizardReviewSections` resolve to the React hook module
  * on case-insensitive filesystems (macOS).
  */
 
-import { STEP_IDS } from '../../constants';
+import { buildRosaHcpWizardStepLayout } from '../../rosaHcpWizardStepLayout';
 import { getFieldPathsByStepId } from '../../yupSchemas/wizardFieldMetaChangeRegistry';
 
 export interface RosaHcpWizardReviewSection {
@@ -29,49 +29,25 @@ export type RosaHcpWizardReviewStepLabels = {
   clusterUpdatesOptional: string;
 };
 
+export type BuildRosaHcpWizardReviewSectionsOptions = {
+  includeClusterWideProxy?: boolean;
+};
+
 export function buildRosaHcpWizardReviewSections(
-  stepLabels: RosaHcpWizardReviewStepLabels
+  stepLabels: RosaHcpWizardReviewStepLabels,
+  options: BuildRosaHcpWizardReviewSectionsOptions = {}
 ): RosaHcpWizardReviewSection[] {
   const fieldPathsByStepId = getFieldPathsByStepId();
+  const { leafSteps } = buildRosaHcpWizardStepLayout({
+    includeClusterWideProxy: options.includeClusterWideProxy ?? true,
+  });
 
-  return [
-    {
-      id: STEP_IDS.DETAILS,
-      label: stepLabels.details,
-      fieldPaths: fieldPathsByStepId[STEP_IDS.DETAILS] ?? [],
-    },
-    {
-      id: STEP_IDS.ROLES_AND_POLICIES,
-      label: stepLabels.rolesAndPolicies,
-      fieldPaths: fieldPathsByStepId[STEP_IDS.ROLES_AND_POLICIES] ?? [],
-    },
-    {
-      id: STEP_IDS.MACHINE_POOLS,
-      label: stepLabels.machinePools,
-      fieldPaths: fieldPathsByStepId[STEP_IDS.MACHINE_POOLS] ?? [],
-    },
-    {
-      id: STEP_IDS.NETWORKING,
-      label: stepLabels.networking,
-      fieldPaths: fieldPathsByStepId[STEP_IDS.NETWORKING] ?? [],
-    },
-    {
-      id: STEP_IDS.CLUSTER_WIDE_PROXY,
-      label: stepLabels.clusterWideProxy,
-      hideIfUnchanged: true,
-      fieldPaths: fieldPathsByStepId[STEP_IDS.CLUSTER_WIDE_PROXY] ?? [],
-    },
-    {
-      id: STEP_IDS.ENCRYPTION,
-      label: stepLabels.encryptionOptional,
-      fieldPaths: fieldPathsByStepId[STEP_IDS.ENCRYPTION] ?? [],
-    },
-    {
-      id: STEP_IDS.CLUSTER_UPDATES,
-      label: stepLabels.clusterUpdatesOptional,
-      fieldPaths: fieldPathsByStepId[STEP_IDS.CLUSTER_UPDATES] ?? [],
-    },
-  ];
+  return leafSteps.map((step) => ({
+    id: step.id,
+    label: stepLabels[step.labelKey],
+    ...(step.hideInReviewIfUnchanged ? { hideIfUnchanged: true } : {}),
+    fieldPaths: fieldPathsByStepId[step.id] ?? [],
+  }));
 }
 
 /** Field paths for a wizard step, used when validating on Next. */

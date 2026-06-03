@@ -1,8 +1,15 @@
 import * as yup from 'yup';
-import type { FieldPathValue, UseFormSetValue } from 'react-hook-form';
+import type {
+  FieldPath,
+  FieldPathValue,
+  UseFormClearErrors,
+  UseFormSetValue,
+} from 'react-hook-form';
 
 import {
   buildFormSetValueOptions,
+  DEFAULT_FORM_SET_VALUE_OPTS,
+  DEFAULT_FORM_SET_VALUE_OPTS_WITH_VALIDATE,
   type FormSetValueOptions,
 } from '../utilities/formSetValueOptions';
 import type { ROSAHCPCluster } from '../types';
@@ -24,25 +31,38 @@ export function syncFieldsOnSourceChange(
   setValue: UseFormSetValue<Partial<ROSAHCPCluster>>,
   syncRules: readonly WizardFieldSyncOnChange[],
   currentValue: unknown,
-  options: SyncFieldsOnSourceChangeOptions = {}
+  options: SyncFieldsOnSourceChangeOptions = {},
+  clearErrors?: UseFormClearErrors<Partial<ROSAHCPCluster>>
 ): void {
   const branch = syncRules.find((rule) => rule.when === currentValue);
   if (!branch) {
     return;
   }
 
-  const setOpts = buildFormSetValueOptions(options);
+  const { clearOnly, ...setValueOptions } = options;
+  const setOpts = buildFormSetValueOptions(
+    setValueOptions,
+    clearOnly ? DEFAULT_FORM_SET_VALUE_OPTS : DEFAULT_FORM_SET_VALUE_OPTS_WITH_VALIDATE
+  );
+
+  const syncedFieldNames: WizardFormFieldName[] = [];
 
   for (const name of branch.clear ?? []) {
+    syncedFieldNames.push(name);
     setValue(name, undefined as FieldPathValue<Partial<ROSAHCPCluster>, typeof name>, setOpts);
   }
 
-  if (options.clearOnly) {
+  if (clearOnly) {
     return;
   }
 
   for (const name of branch.setDefaults ?? []) {
+    syncedFieldNames.push(name);
     const value = getWizardFieldSchemaDefault(name);
     setValue(name, value as FieldPathValue<Partial<ROSAHCPCluster>, typeof name>, setOpts);
+  }
+
+  if (clearErrors && syncedFieldNames.length > 0) {
+    clearErrors(syncedFieldNames as FieldPath<Partial<ROSAHCPCluster>>[]);
   }
 }

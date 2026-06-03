@@ -4,6 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import type { ROSAHCPCluster, VpcListResource } from '../../types';
 import { STEP_IDS } from '../../constants';
 import { makeVpcListResource } from '../../test/rosaHcpWizardCtSpecHelpers';
+import { RosaHcpWizardValidationProvider } from '../../rosaHcpWizardValidationContext';
 import { RosaHcpWizardStringsProvider } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { getClusterValidationSchemaDefaultValues } from '../../yupSchemas';
 import { Review } from './Review';
@@ -26,11 +27,16 @@ export function ReviewHarness({ formOverrides = {}, vpcList }: ReviewHarnessProp
   return (
     <RosaHcpWizardStringsProvider>
       <FormProvider {...methods}>
-        <Wizard height={720}>
-          <WizardStep name="Review" id={STEP_IDS.REVIEW} key="review">
-            <Review vpcList={vpcListProps} />
-          </WizardStep>
-        </Wizard>
+        <RosaHcpWizardValidationProvider
+          initialActiveStepId={STEP_IDS.REVIEW}
+          initialVisitedStepIds={[STEP_IDS.REVIEW]}
+        >
+          <Wizard height={720}>
+            <WizardStep name="Review" id={STEP_IDS.REVIEW} key="review">
+              <Review vpcList={vpcListProps} />
+            </WizardStep>
+          </Wizard>
+        </RosaHcpWizardValidationProvider>
       </FormProvider>
     </RosaHcpWizardStringsProvider>
   );

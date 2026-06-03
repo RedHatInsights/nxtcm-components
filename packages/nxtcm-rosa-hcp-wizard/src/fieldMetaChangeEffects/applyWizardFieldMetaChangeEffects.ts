@@ -1,4 +1,4 @@
-import type { UseFormSetValue } from 'react-hook-form';
+import type { UseFormClearErrors, UseFormSetValue } from 'react-hook-form';
 
 import { hasDerivedSyncSourceValue, hasRefetchableStringValue } from './wizardFieldDerivedSyncs';
 import { resetFieldsToDefaultValues } from './resetFieldsToDefaultValues';
@@ -21,6 +21,7 @@ export type ApplyWizardFieldMetaChangeEffectsArgs = {
   currentValue: unknown;
   wizardData: ROSAHCPWizardData;
   setValue: UseFormSetValue<Partial<ROSAHCPCluster>>;
+  clearErrors?: UseFormClearErrors<Partial<ROSAHCPCluster>>;
 };
 
 function refetchWizardResource(
@@ -54,6 +55,7 @@ export function applyWizardFieldMetaChangeEffects({
   currentValue,
   wizardData,
   setValue,
+  clearErrors,
 }: ApplyWizardFieldMetaChangeEffectsArgs): void {
   const isInitialChange = previousValue === undefined;
   if (!isInitialChange && wizardFormFieldValuesEqual(previousValue, currentValue)) {
@@ -83,7 +85,8 @@ export function applyWizardFieldMetaChangeEffects({
       setValue,
       syncs,
       currentValue,
-      isInitialChange ? { clearOnly: true, shouldDirty: false } : undefined
+      isInitialChange ? { clearOnly: true, shouldDirty: false } : undefined,
+      clearErrors
     );
   }
 

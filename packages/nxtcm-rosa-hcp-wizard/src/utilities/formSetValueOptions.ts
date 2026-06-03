@@ -19,11 +19,12 @@ export const DEFAULT_FORM_SET_VALUE_OPTS_WITH_VALIDATE: Required<FormSetValueOpt
 };
 
 export function buildFormSetValueOptions(
-  options: FormSetValueOptions = {}
+  options: FormSetValueOptions = {},
+  defaults: Required<FormSetValueOptions> = DEFAULT_FORM_SET_VALUE_OPTS
 ): Required<FormSetValueOptions> {
   return {
-    shouldDirty: options.shouldDirty ?? DEFAULT_FORM_SET_VALUE_OPTS.shouldDirty,
-    shouldTouch: options.shouldTouch ?? DEFAULT_FORM_SET_VALUE_OPTS.shouldTouch,
-    shouldValidate: options.shouldValidate ?? DEFAULT_FORM_SET_VALUE_OPTS.shouldValidate,
+    shouldDirty: options.shouldDirty ?? defaults.shouldDirty,
+    shouldTouch: options.shouldTouch ?? defaults.shouldTouch,
+    shouldValidate: options.shouldValidate ?? defaults.shouldValidate,
   };
 }

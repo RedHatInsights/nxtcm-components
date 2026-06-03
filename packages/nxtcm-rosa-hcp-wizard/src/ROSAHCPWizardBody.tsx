@@ -13,6 +13,12 @@ import type { YamlEditorHandle } from './Steps/YamlEditor/RosaHcpYamlEditorStep'
 import { createRosaHcpWizardFooter } from './Footer/RosaHcpWizardFooter';
 import { RosaHcpYamlEditorFooter } from './Footer/RosaHcpYamlEditorFooter';
 import { useWizardFieldMetaChangeEffects } from './fieldMetaChangeEffects/useWizardFieldMetaChangeEffects';
+import { buildRosaHcpWizardStepLayout } from './rosaHcpWizardStepLayout';
+import { useRosaHcpWizardStepNavDisabledLookup } from './useRosaHcpWizardStepNavDisabledLookup';
+import {
+  useRosaHcpWizardStepStatusLookup,
+  useRosaHcpWizardValidation,
+} from './rosaHcpWizardValidationContext';
 import { useRosaHcpWizardStrings } from './stringsProvider/RosaHcpWizardStringsContext';
 import { STEP_IDS } from './constants';
 import type { RosaHCPWizardProps } from './types';
@@ -43,16 +49,20 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
 
   const handleCloseYamlEditor = useCallback(() => setIsYamlEditorOpen(false), []);
   const openYamlEditor = useCallback(() => setIsYamlEditorOpen(true), []);
+  const { onWizardStepChange } = useRosaHcpWizardValidation();
 
   const handleWizardStepChange = useCallback<
     NonNullable<React.ComponentProps<typeof Wizard>['onStepChange']>
   >(
     (_event, newStep) => {
+      if (newStep?.id !== undefined) {
+        onWizardStepChange(String(newStep.id));
+      }
       if (isYamlEditorOpen && newStep?.id !== STEP_IDS.REVIEW) {
         setIsYamlEditorOpen(false);
       }
     },
-    [isYamlEditorOpen]
+    [isYamlEditorOpen, onWizardStepChange]
   );
 
   const footer = useMemo(() => createRosaHcpWizardFooter(onSubmit), [onSubmit]);
@@ -60,6 +70,17 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
   useWizardFieldMetaChangeEffects(wizardData);
 
   const clusterWideProxySelected = useWatch({ name: 'configure_proxy' });
+  const childStepIdsByParent = useMemo(
+    () =>
+      buildRosaHcpWizardStepLayout({ includeClusterWideProxy: !!clusterWideProxySelected })
+        .childStepIdsByParent,
+    [clusterWideProxySelected]
+  );
+  const statusForStep = useRosaHcpWizardStepStatusLookup(childStepIdsByParent);
+  const isNavDisabledForStep = useRosaHcpWizardStepNavDisabledLookup({
+    includeClusterWideProxy: !!clusterWideProxySelected,
+    childStepIdsByParent,
+  });
 
   const rosaStrings = useRosaHcpWizardStrings();
   const { wizard, yamlEditor: yamlStrings } = rosaStrings;
@@ -97,18 +118,29 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
         onClose={onCancel}
         onStepChange={handleWizardStepChange}
       >
+        {/* Leaf step order matches {@link ROSA_HCP_LEAF_STEP_DEFS} in rosaHcpWizardStepLayout.ts */}
         <WizardStep
           isExpandable
           name={sl.basicSetup}
           id={STEP_IDS.BASIC_SETUP}
+          status={statusForStep(STEP_IDS.BASIC_SETUP)}
+          isDisabled={isNavDisabledForStep(STEP_IDS.BASIC_SETUP)}
           steps={[
-            <WizardStep name={sl.details} id={STEP_IDS.DETAILS} key={STEP_IDS.DETAILS}>
+            <WizardStep
+              name={sl.details}
+              id={STEP_IDS.DETAILS}
+              key={STEP_IDS.DETAILS}
+              status={statusForStep(STEP_IDS.DETAILS)}
+              isDisabled={isNavDisabledForStep(STEP_IDS.DETAILS)}
+            >
               <Details {...wizardData} />
             </WizardStep>,
             <WizardStep
               name={sl.rolesAndPolicies}
               id={STEP_IDS.ROLES_AND_POLICIES}
               key={STEP_IDS.ROLES_AND_POLICIES}
+              status={statusForStep(STEP_IDS.ROLES_AND_POLICIES)}
+              isDisabled={isNavDisabledForStep(STEP_IDS.ROLES_AND_POLICIES)}
             >
               <RolesAndPolicies {...wizardData} />
             </WizardStep>,
@@ -116,10 +148,18 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
               name={sl.machinePools}
               id={STEP_IDS.MACHINE_POOLS}
               key={STEP_IDS.MACHINE_POOLS}
+              status={statusForStep(STEP_IDS.MACHINE_POOLS)}
+              isDisabled={isNavDisabledForStep(STEP_IDS.MACHINE_POOLS)}
             >
               <MachinePools {...wizardData} />
             </WizardStep>,
-            <WizardStep name={sl.networking} id={STEP_IDS.NETWORKING} key={STEP_IDS.NETWORKING}>
+            <WizardStep
+              name={sl.networking}
+              id={STEP_IDS.NETWORKING}
+              key={STEP_IDS.NETWORKING}
+              status={statusForStep(STEP_IDS.NETWORKING)}
+              isDisabled={isNavDisabledForStep(STEP_IDS.NETWORKING)}
+            >
               <Networking {...wizardData} />
             </WizardStep>,
             ...(clusterWideProxySelected
@@ -128,6 +168,8 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
                     name={sl.clusterWideProxy}
                     id={STEP_IDS.CLUSTER_WIDE_PROXY}
                     key={STEP_IDS.CLUSTER_WIDE_PROXY}
+                    status={statusForStep(STEP_IDS.CLUSTER_WIDE_PROXY)}
+                    isDisabled={isNavDisabledForStep(STEP_IDS.CLUSTER_WIDE_PROXY)}
                   >
                     <ClusterWideProxy />
                   </WizardStep>,
@@ -141,11 +183,15 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
           name={sl.additionalSetup}
           id={STEP_IDS.OPTIONAL_SETUP}
           key={STEP_IDS.OPTIONAL_SETUP}
+          status={statusForStep(STEP_IDS.OPTIONAL_SETUP)}
+          isDisabled={isNavDisabledForStep(STEP_IDS.OPTIONAL_SETUP)}
           steps={[
             <WizardStep
               name={sl.encryptionOptional}
               id={STEP_IDS.ENCRYPTION}
               key={STEP_IDS.ENCRYPTION}
+              status={statusForStep(STEP_IDS.ENCRYPTION)}
+              isDisabled={isNavDisabledForStep(STEP_IDS.ENCRYPTION)}
             >
               <Encryption />
             </WizardStep>,
@@ -153,16 +199,19 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
               name={sl.clusterUpdatesOptional}
               id={STEP_IDS.CLUSTER_UPDATES}
               key={STEP_IDS.CLUSTER_UPDATES}
+              status={statusForStep(STEP_IDS.CLUSTER_UPDATES)}
+              isDisabled={isNavDisabledForStep(STEP_IDS.CLUSTER_UPDATES)}
             >
               <ClusterUpdates />
             </WizardStep>,
           ]}
         />
-
         <WizardStep
           name={sl.review}
           id={STEP_IDS.REVIEW}
           key={STEP_IDS.REVIEW}
+          status={statusForStep(STEP_IDS.REVIEW)}
+          isDisabled={isNavDisabledForStep(STEP_IDS.REVIEW)}
           footer={isYamlEditorOpen ? yamlEditorFooter : undefined}
         >
           {isYamlEditorOpen ? (

@@ -17,22 +17,50 @@ const defaultNodesCompute = nodesComputeSchema.getDefault() as number;
 describe('syncFieldsOnSourceChange', () => {
   it('sets replica defaults and clears compute count when autoscaling is enabled', () => {
     const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
+    const clearErrors = jest.fn();
 
-    syncFieldsOnSourceChange(setValue, autoscalingSyncRules, true);
+    syncFieldsOnSourceChange(setValue, autoscalingSyncRules, true, {}, clearErrors);
 
-    expect(setValue).toHaveBeenCalledWith('nodes_compute', undefined, expect.any(Object));
-    expect(setValue).toHaveBeenCalledWith('min_replicas', defaultMinReplicas, expect.any(Object));
-    expect(setValue).toHaveBeenCalledWith('max_replicas', defaultMaxReplicas, expect.any(Object));
+    expect(setValue).toHaveBeenCalledWith('nodes_compute', undefined, {
+      shouldDirty: true,
+      shouldTouch: false,
+      shouldValidate: true,
+    });
+    expect(setValue).toHaveBeenCalledWith('min_replicas', defaultMinReplicas, {
+      shouldDirty: true,
+      shouldTouch: false,
+      shouldValidate: true,
+    });
+    expect(setValue).toHaveBeenCalledWith('max_replicas', defaultMaxReplicas, {
+      shouldDirty: true,
+      shouldTouch: false,
+      shouldValidate: true,
+    });
+    expect(clearErrors).toHaveBeenCalledWith(['nodes_compute', 'min_replicas', 'max_replicas']);
   });
 
   it('restores compute count and clears replicas when autoscaling is disabled', () => {
     const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
+    const clearErrors = jest.fn();
 
-    syncFieldsOnSourceChange(setValue, autoscalingSyncRules, false);
+    syncFieldsOnSourceChange(setValue, autoscalingSyncRules, false, {}, clearErrors);
 
-    expect(setValue).toHaveBeenCalledWith('min_replicas', undefined, expect.any(Object));
-    expect(setValue).toHaveBeenCalledWith('max_replicas', undefined, expect.any(Object));
-    expect(setValue).toHaveBeenCalledWith('nodes_compute', defaultNodesCompute, expect.any(Object));
+    expect(setValue).toHaveBeenCalledWith('min_replicas', undefined, {
+      shouldDirty: true,
+      shouldTouch: false,
+      shouldValidate: true,
+    });
+    expect(setValue).toHaveBeenCalledWith('max_replicas', undefined, {
+      shouldDirty: true,
+      shouldTouch: false,
+      shouldValidate: true,
+    });
+    expect(setValue).toHaveBeenCalledWith('nodes_compute', defaultNodesCompute, {
+      shouldDirty: true,
+      shouldTouch: false,
+      shouldValidate: true,
+    });
+    expect(clearErrors).toHaveBeenCalledWith(['min_replicas', 'max_replicas', 'nodes_compute']);
   });
 
   it('clears inactive fields without applying setDefaults when clearOnly is set', () => {

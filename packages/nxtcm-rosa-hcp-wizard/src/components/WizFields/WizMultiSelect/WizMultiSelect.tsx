@@ -4,6 +4,7 @@ import { requiredFromYup } from '../../../utilities/yupFieldRequired';
 import { FieldWithAPIErrorAlert } from '../../FieldWithAPIErrorAlert';
 import { MultiSelect, type MultiSelectProps } from '../../Fields/MultiSelect';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
+import { useWizardFieldNavErrorSuppression } from '../../../rosaHcpWizardValidationContext';
 import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizMultiSelectControlledKeys = 'value' | 'onChange' | 'onBlur' | 'errorMessage' | 'isError';
@@ -93,6 +94,7 @@ export function WizMultiSelect<TFieldValues extends FieldValues = FieldValues, T
   } = useController({ name, control });
 
   const showError = wizFieldShowsError(invalid, isTouched, isSubmitted);
+  useWizardFieldNavErrorSuppression(String(name), isMenuOpen);
 
   const raw = field.value;
   const value = Array.isArray(raw) ? (raw as TOption[]) : [];

@@ -8,6 +8,10 @@ import { clusterValidationSchema, minReplicasSchema } from '../../../yupSchemas'
 
 const minReplicasUiMin = minReplicasSchema.getDefault() as number;
 
+const autoscalingReplicaFieldPaths = ['min_replicas', 'max_replicas'] as const satisfies Readonly<
+  (keyof ROSAHCPCluster)[]
+>;
+
 function AutoscalingReplicasLabelHelp({ helpText }: { helpText: string }) {
   const a = useRosaHcpWizardStrings().autoscaling;
   return (
@@ -35,6 +39,7 @@ export const MachinePoolsAutoscalingReplicas = (props: MachinePoolsAutoscalingRe
           schema={clusterValidationSchema}
           min={minReplicasUiMin}
           max={maxAutoscalingNodes}
+          revalidateFieldPaths={autoscalingReplicaFieldPaths}
           labelHelp={<AutoscalingReplicasLabelHelp helpText={a.minHelp} />}
         />
       </FlexItem>
@@ -44,6 +49,7 @@ export const MachinePoolsAutoscalingReplicas = (props: MachinePoolsAutoscalingRe
           schema={clusterValidationSchema}
           min={1}
           max={maxAutoscalingNodes}
+          revalidateFieldPaths={autoscalingReplicaFieldPaths}
           labelHelp={<AutoscalingReplicasLabelHelp helpText={a.maxHelp} />}
         />
       </FlexItem>

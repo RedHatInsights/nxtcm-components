@@ -15,6 +15,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { ROSAHCPCluster } from '../types';
 import { STEP_IDS } from '../constants';
+import { buildOrderedNavigableStepIds, getNextOrderedStepId } from '../rosaHcpWizardNav';
 import { useRosaHcpWizardReviewSections } from '../Steps/Review/ROSAHCPWizardReviewSections';
 import {
   isRosaHcpWizardBackDisabled,
@@ -42,12 +43,17 @@ type RosaHcpWizardFooterProps = Pick<
  */
 export function RosaHcpWizardFooter({
   activeStep,
-  onNext,
+  onNext: _onNext,
   onBack,
   onClose,
   onSubmit,
 }: RosaHcpWizardFooterProps) {
-  const { goToStepById } = useWizardContext();
+  const { steps, goToStepByIndex } = useWizardContext();
+  const clusterWideProxySelected = useWatch({ name: 'configure_proxy' });
+  const orderedStepIds = useMemo(
+    () => buildOrderedNavigableStepIds(!!clusterWideProxySelected),
+    [clusterWideProxySelected]
+  );
   const reviewSections = useRosaHcpWizardReviewSections();
   const { wizard } = useRosaHcpWizardStrings();
   const {
@@ -188,15 +194,29 @@ export function RosaHcpWizardFooter({
     trigger,
   ]);
 
+  const advanceToStepId = useCallback(
+    (stepId: string) => {
+      const step = steps.find((candidate) => String(candidate.id) === stepId);
+      if (step?.index !== undefined) {
+        goToStepByIndex(step.index);
+      }
+    },
+    [goToStepByIndex, steps]
+  );
+
   const handleNext = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
+    (_event: React.MouseEvent<HTMLButtonElement>) => {
       void (async () => {
-        if (await validateActiveStep()) {
-          await onNext(event);
+        if (!(await validateActiveStep())) {
+          return;
+        }
+        const nextStepId = getNextOrderedStepId(activeStepId, orderedStepIds);
+        if (nextStepId !== undefined) {
+          advanceToStepId(nextStepId);
         }
       })();
     },
-    [onNext, validateActiveStep]
+    [activeStepId, advanceToStepId, orderedStepIds, validateActiveStep]
   );
 
   const handleSubmit = useCallback(() => {
@@ -215,10 +235,10 @@ export function RosaHcpWizardFooter({
   const handleSkipToReview = useCallback(() => {
     void (async () => {
       if (await validateActiveStep()) {
-        goToStepById(STEP_IDS.REVIEW);
+        advanceToStepId(STEP_IDS.REVIEW);
       }
     })();
-  }, [goToStepById, validateActiveStep]);
+  }, [advanceToStepId, validateActiveStep]);
 
   return (
     <WizardFooterWrapper>

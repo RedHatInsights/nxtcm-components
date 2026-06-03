@@ -41,7 +41,7 @@ function buildFormValuesForMetaEffects(
  * re-run effects; resets skip `setValue` when the form already matches schema defaults.
  */
 export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): void {
-  const { setValue, getValues, control } = useFormContext<Partial<ROSAHCPCluster>>();
+  const { setValue, getValues, control, clearErrors } = useFormContext<Partial<ROSAHCPCluster>>();
   const sourceFields = useMemo(() => listWizardFieldMetaChangeSourceFields(), []);
   const derivedSyncEntries = useMemo(() => listWizardFieldDerivedSyncEntries(), []);
   const watchedValues = useWatch({
@@ -72,12 +72,13 @@ export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): 
         currentValue,
         wizardData: wizardDataRef.current,
         setValue,
+        clearErrors,
       });
       previousByFieldRef.current[field] = currentValue;
     }
 
     hasInitializedRef.current = true;
-  }, [getValues, setValue, sourceFields, watchedValues]);
+  }, [clearErrors, getValues, setValue, sourceFields, watchedValues]);
 
   useEffect(() => {
     if (!hasInitializedRef.current) {

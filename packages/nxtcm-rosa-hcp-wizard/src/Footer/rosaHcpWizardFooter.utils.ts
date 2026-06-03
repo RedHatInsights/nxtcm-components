@@ -1,4 +1,6 @@
 import type { FieldErrors, FieldPath, FieldValues, UseFormGetFieldState } from 'react-hook-form';
+
+import type { ROSAHCPCluster } from '../types';
 import { STEP_IDS } from '../constants';
 
 function hasErrorAtPath(errors: FieldErrors, path: string): boolean {
@@ -47,6 +49,65 @@ export function pathsHaveValidationIssues<TFieldValues extends FieldValues>(
     }
     return hasErrorAtPath(errors, path);
   });
+}
+
+export type PathsHaveRevealedValidationIssuesOptions = {
+  validationAttemptedStepIds?: ReadonlySet<string>;
+  fieldPathToStepId?: Readonly<Record<string, string>>;
+  isSubmitted?: boolean;
+  suppressedFieldPaths?: ReadonlySet<string>;
+  formValues?: Partial<ROSAHCPCluster>;
+  isFieldActive?: (path: string, formValues: Partial<ROSAHCPCluster>) => boolean;
+};
+
+/** Whether a field error is user-visible (touched, step validation attempted, or submitted). */
+export function pathHasRevealedValidationIssue<TFieldValues extends FieldValues>(
+  path: string,
+  getFieldState: UseFormGetFieldState<TFieldValues>,
+  errors: FieldErrors<TFieldValues>,
+  options: PathsHaveRevealedValidationIssuesOptions = {}
+): boolean {
+  if (options.suppressedFieldPaths?.has(path)) {
+    return false;
+  }
+
+  if (
+    options.formValues &&
+    options.isFieldActive &&
+    !options.isFieldActive(path, options.formValues)
+  ) {
+    return false;
+  }
+
+  const fieldPath = path as FieldPath<TFieldValues>;
+  const fieldState = getFieldState(fieldPath);
+  const stepId = options.fieldPathToStepId?.[path];
+  const stepValidationRevealed =
+    stepId !== undefined && (options.validationAttemptedStepIds?.has(stepId) ?? false);
+  const validationRevealed =
+    fieldState.isTouched || stepValidationRevealed || !!options.isSubmitted;
+
+  if (!validationRevealed) {
+    return false;
+  }
+
+  if (fieldState.invalid) {
+    return true;
+  }
+
+  return hasErrorAtPath(errors, path);
+}
+
+/** Like {@link pathsHaveValidationIssues}, but only counts errors the user can see in the form. */
+export function pathsHaveRevealedValidationIssues<TFieldValues extends FieldValues>(
+  fieldPaths: readonly string[],
+  getFieldState: UseFormGetFieldState<TFieldValues>,
+  errors: FieldErrors<TFieldValues>,
+  options: PathsHaveRevealedValidationIssuesOptions = {}
+): boolean {
+  return fieldPaths.some((path) =>
+    pathHasRevealedValidationIssue(path, getFieldState, errors, options)
+  );
 }
 
 /** Steps under Additional setup that show Skip to review in the footer. */

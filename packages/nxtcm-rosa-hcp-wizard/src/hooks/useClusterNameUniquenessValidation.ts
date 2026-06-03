@@ -3,6 +3,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 
 import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
 import type { CheckClusterNameUniqueness, ROSAHCPCluster } from '../types';
+import { useRosaHcpWizardFieldAsyncValidationReporter } from '../rosaHcpWizardValidationContext';
 import { useRosaHcpWizardValidators } from '../stringsProvider/RosaHcpWizardStringsContext';
 import { validateClusterNameSync } from '../yupSchemas/helpers';
 
@@ -24,6 +25,7 @@ export function useClusterNameUniquenessValidation({
   checkOnNameBlur: () => Promise<void>;
 } {
   const msgs = useRosaHcpWizardValidators();
+  const reportAsyncValidationInProgress = useRosaHcpWizardFieldAsyncValidationReporter();
   const { control, getValues, setError, clearErrors, getFieldState } =
     useFormContext<Partial<ROSAHCPCluster>>();
   const region = useWatch({ control, name: 'region' });
@@ -84,10 +86,13 @@ export function useClusterNameUniquenessValidation({
 
     const requestId = ++uniquenessRequestIdRef.current;
     let error: string | null | undefined;
+    reportAsyncValidationInProgress?.('name', true);
     try {
       error = await check(name, currentRegion);
     } catch {
       return;
+    } finally {
+      reportAsyncValidationInProgress?.('name', false);
     }
     if (requestId !== uniquenessRequestIdRef.current) {
       return;
@@ -95,7 +100,7 @@ export function useClusterNameUniquenessValidation({
 
     lastCheckedRef.current = { name, region: currentRegion };
     applyUniqueErrorToForm(error ?? null);
-  }, [applyUniqueErrorToForm, getValues, msgs.clusterName]);
+  }, [applyUniqueErrorToForm, getValues, msgs.clusterName, reportAsyncValidationInProgress]);
 
   const scheduleUniquenessCheck = useCallback(() => {
     clearPendingDebounce();

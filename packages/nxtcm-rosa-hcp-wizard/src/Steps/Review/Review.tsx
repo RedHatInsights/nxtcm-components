@@ -24,6 +24,7 @@ import {
 } from '../../utilities/helpers';
 import { Section } from '../../components/Section';
 import { STEP_IDS } from '../../constants';
+import { useRosaHcpWizardValidation } from '../../rosaHcpWizardValidationContext';
 import { useRosaHcpWizardReviewSections } from './ROSAHCPWizardReviewSections';
 import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings';
 import { getRosaHcpWizardStringByLabelKey } from '../../stringsProvider/getRosaHcpWizardStringByLabelKey';
@@ -69,6 +70,7 @@ export type ReviewProps = Pick<ROSAHCPWizardData, 'vpcList'> & {
 
 export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
   const { goToStepById } = useWizardContext();
+  const { onWizardStepChange } = useRosaHcpWizardValidation();
   const watchedFormValues = useWatch();
   const defaultWizardFormValues = getClusterValidationSchemaDefaultValues();
   const formValues = {
@@ -163,7 +165,14 @@ export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
                   </ReviewExpandSection>
                 </SplitItem>
                 <SplitItem>
-                  <Button isInline variant="link" onClick={() => goToStepById?.(section.id)}>
+                  <Button
+                    isInline
+                    variant="link"
+                    onClick={() => {
+                      goToStepById?.(section.id);
+                      onWizardStepChange(section.id);
+                    }}
+                  >
                     {review.editStep}
                   </Button>
                 </SplitItem>

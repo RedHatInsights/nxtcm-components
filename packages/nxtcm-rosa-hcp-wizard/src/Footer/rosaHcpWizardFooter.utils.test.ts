@@ -3,6 +3,7 @@ import { STEP_IDS } from '../constants';
 import {
   isRosaHcpWizardBackDisabled,
   isRosaHcpWizardSkipToReviewVisible,
+  pathsHaveRevealedValidationIssues,
   pathsHaveValidationIssues,
 } from './rosaHcpWizardFooter.utils';
 
@@ -56,6 +57,55 @@ describe('pathsHaveValidationIssues', () => {
         getFieldState,
         { name: { type: 'required', message: 'Required' } },
         { ignoreResolverErrors: true }
+      )
+    ).toBe(false);
+  });
+});
+
+describe('pathsHaveRevealedValidationIssues', () => {
+  it('returns true only when invalid fields are touched or validation was attempted', () => {
+    const getFieldState = jest.fn((path: string) => ({
+      invalid: path === 'name',
+      isTouched: path === 'name',
+      isDirty: true,
+      isValidating: false,
+      error: path === 'name' ? { type: 'required', message: 'Required' } : undefined,
+    })) as UseFormGetFieldState<FieldValues>;
+
+    expect(pathsHaveRevealedValidationIssues(['name'], getFieldState, {})).toBe(true);
+    expect(
+      pathsHaveRevealedValidationIssues(
+        ['name'],
+        jest.fn(() => ({
+          invalid: true,
+          isTouched: false,
+          isDirty: false,
+          isValidating: false,
+          error: { type: 'required', message: 'Required' },
+        })) as UseFormGetFieldState<FieldValues>,
+        {},
+        {}
+      )
+    ).toBe(false);
+  });
+
+  it('ignores suppressed field paths', () => {
+    const getFieldState = jest.fn(() => ({
+      invalid: true,
+      isTouched: true,
+      isDirty: true,
+      isValidating: false,
+      error: { type: 'required', message: 'Required' },
+    })) as UseFormGetFieldState<FieldValues>;
+
+    expect(
+      pathsHaveRevealedValidationIssues(
+        ['selected_vpc'],
+        getFieldState,
+        {},
+        {
+          suppressedFieldPaths: new Set(['selected_vpc']),
+        }
       )
     ).toBe(false);
   });

@@ -1,18 +1,29 @@
 import { expect, type MountResult, test } from '@playwright/experimental-ct-react';
 import type { Page } from '@playwright/test';
 import { checkAccessibility } from '../../../test-helpers';
-import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import {
+  defaultRosaHcpWizardStrings,
+  defaultRosaHcpWizardValidatorStrings,
+} from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
 import {
   makeMachineTypesResource,
   makeVpcListResource,
 } from '../../../test/rosaHcpWizardCtSpecHelpers';
 import { maxReplicasSchema, minReplicasSchema, nodesComputeSchema } from '../../../yupSchemas';
-import { MachinePoolsMount } from './MachinePools.spec-helpers';
+import {
+  MachinePoolsMount,
+  MachinePoolsForwardNavMount,
+  MachinePoolsWizardNavMount,
+} from './MachinePools.spec-helpers';
 
 const mp = defaultRosaHcpWizardStrings.machinePools;
 const a = defaultRosaHcpWizardStrings.autoscaling;
 const sg = defaultRosaHcpWizardStrings.securityGroups;
+const w = defaultRosaHcpWizardStrings.wizard;
+
+const wizardNavStepErrorButtonName = (stepLabel: string): RegExp =>
+  new RegExp(`, error ${stepLabel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'i');
 
 const [fixtureVpc1, fixtureVpc2] = rosaHcpWizardFixtures.mockVPCs;
 const fixtureVpc1PrivateSubnet = fixtureVpc1.aws_subnets.find((subnet) =>
@@ -142,6 +153,152 @@ test.describe('MachinePools (ROSA HCP)', () => {
     await expect(
       component.getByRole('spinbutton', { name: a.computeCountLabel, exact: true })
     ).not.toBeVisible();
+  });
+
+  test('should clear machine pools nav error when autoscaling is disabled', async ({ mount }) => {
+    const component = await mount(<MachinePoolsWizardNavMount />);
+    const autoscalingCheckbox = component.getByRole('checkbox', {
+      name: a.enableLabel,
+      exact: true,
+    });
+
+    await autoscalingCheckbox.click();
+
+    for (let click = 0; click < 3; click += 1) {
+      await component.getByRole('button', { name: 'Minus' }).nth(1).click();
+    }
+
+    await expect(
+      component.getByRole('button', {
+        name: wizardNavStepErrorButtonName(w.stepLabels.machinePools),
+      })
+    ).toBeVisible();
+
+    await autoscalingCheckbox.click();
+
+    await expect(
+      component.getByRole('button', {
+        name: wizardNavStepErrorButtonName(w.stepLabels.machinePools),
+      })
+    ).not.toBeVisible();
+  });
+
+  test('should show machine pools nav error when max is less than min', async ({ mount }) => {
+    const component = await mount(<MachinePoolsWizardNavMount />);
+
+    await component.getByRole('checkbox', { name: a.enableLabel, exact: true }).click();
+
+    for (let click = 0; click < 3; click += 1) {
+      await component.getByRole('button', { name: 'Minus' }).nth(1).click();
+    }
+
+    await expect(
+      component.getByRole('button', {
+        name: wizardNavStepErrorButtonName(w.stepLabels.machinePools),
+      })
+    ).toBeVisible();
+    await expect(
+      component.getByRole('button', {
+        name: wizardNavStepErrorButtonName(w.stepLabels.basicSetup),
+      })
+    ).toBeVisible();
+  });
+
+  test('should hide machine pools nav error while the VPC select menu is open', async ({
+    mount,
+  }) => {
+    const component = await mount(<MachinePoolsWizardNavMount />);
+    const vpcToggle = component.getByRole('button', { name: vpcSelectMenuName, exact: true });
+    const machinePoolsNavError = component.getByRole('button', {
+      name: wizardNavStepErrorButtonName(w.stepLabels.machinePools),
+    });
+    const sectionTitle = component
+      .locator('#machine-pools-section')
+      .getByText(mp.sectionLabel, { exact: true });
+
+    await vpcToggle.click();
+    await sectionTitle.click();
+
+    await expect(machinePoolsNavError).toBeVisible();
+
+    await vpcToggle.click();
+    await expect(machinePoolsNavError).not.toBeVisible();
+
+    await sectionTitle.click();
+    await expect(machinePoolsNavError).toBeVisible();
+  });
+
+  test('should disable forward visited steps after the VPC reset-source field changes', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount(
+      <MachinePoolsForwardNavMount
+        defaultValues={{
+          selected_vpc: fixtureVpc1.id,
+          machine_pools_subnets: [{ machine_pool_subnet: fixtureVpc1PrivateSubnet.subnet_id }],
+        }}
+      />
+    );
+
+    const networkingNav = component.getByRole('button', {
+      name: w.stepLabels.networking,
+      exact: true,
+    });
+    await expect(networkingNav).toBeEnabled();
+
+    await selectVpc(component, page, fixtureVpc2.name, fixtureVpc1.name);
+
+    await expect(networkingNav).toBeDisabled();
+  });
+
+  test('should show max less than min validation when max is decremented with the minus button', async ({
+    mount,
+  }) => {
+    const component = await mount(<MachinePoolsMount />);
+    const maxReplicasError = defaultRosaHcpWizardValidatorStrings.replicas.maxLessThanMin;
+
+    await component.getByRole('checkbox', { name: a.enableLabel, exact: true }).click();
+
+    const maxInput = component.getByRole('spinbutton', { name: a.maxLabel, exact: true });
+    await expect(maxInput).toHaveValue(defaultMaxReplicas);
+
+    for (let click = 0; click < 3; click += 1) {
+      await component.getByRole('button', { name: 'Minus' }).nth(1).click();
+    }
+
+    await expect(maxInput).toHaveValue('1');
+    await expect(component.getByText(maxReplicasError, { exact: true })).toBeVisible();
+  });
+
+  test('should clear replica validation when autoscaling is toggled off and back on', async ({
+    mount,
+  }) => {
+    const component = await mount(<MachinePoolsMount />);
+    const maxReplicasError = defaultRosaHcpWizardValidatorStrings.replicas.maxLessThanMin;
+    const autoscalingCheckbox = component.getByRole('checkbox', {
+      name: a.enableLabel,
+      exact: true,
+    });
+
+    await autoscalingCheckbox.click();
+
+    for (let click = 0; click < 3; click += 1) {
+      await component.getByRole('button', { name: 'Minus' }).nth(1).click();
+    }
+
+    await expect(component.getByText(maxReplicasError, { exact: true })).toBeVisible();
+
+    await autoscalingCheckbox.click();
+    await autoscalingCheckbox.click();
+
+    await expect(component.getByRole('spinbutton', { name: a.minLabel, exact: true })).toHaveValue(
+      defaultMinReplicas
+    );
+    await expect(component.getByRole('spinbutton', { name: a.maxLabel, exact: true })).toHaveValue(
+      defaultMaxReplicas
+    );
+    await expect(component.getByText(maxReplicasError, { exact: true })).not.toBeVisible();
   });
 
   test('should set replica defaults when autoscaling is enabled and restore compute count when disabled', async ({

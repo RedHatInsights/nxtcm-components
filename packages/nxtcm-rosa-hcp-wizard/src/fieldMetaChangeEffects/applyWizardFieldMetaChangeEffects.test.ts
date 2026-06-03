@@ -166,6 +166,7 @@ describe('applyWizardFieldMetaChangeEffects', () => {
       setValue,
       autoscalingSyncRules,
       true,
+      undefined,
       undefined
     );
     expect(resetFieldsToDefaultValuesMock).not.toHaveBeenCalled();
@@ -190,7 +191,8 @@ describe('applyWizardFieldMetaChangeEffects', () => {
       {
         clearOnly: true,
         shouldDirty: false,
-      }
+      },
+      undefined
     );
     expect(resetFieldsToDefaultValuesMock).not.toHaveBeenCalled();
   });
@@ -211,7 +213,8 @@ describe('applyWizardFieldMetaChangeEffects', () => {
       setValue,
       autoscalingSyncRules,
       false,
-      { clearOnly: true, shouldDirty: false }
+      { clearOnly: true, shouldDirty: false },
+      undefined
     );
   });
 
