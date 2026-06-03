@@ -14,9 +14,10 @@ import { createRosaHcpWizardFooter } from './Footer/RosaHcpWizardFooter';
 import { useRosaHcpWizardStrings } from './stringsProvider/RosaHcpWizardStringsContext';
 import { STEP_IDS } from './constants';
 import type { RosaHCPWizardProps } from './types';
+import { RosaWizardSubmitError } from './RosaWizardSubmitError';
 
 export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
-  const { wizardData, onSubmit } = props;
+  const { wizardData, onSubmit, onSubmitError, onBackToReviewStep, onCancel } = props;
   const footer = useMemo(() => createRosaHcpWizardFooter(onSubmit), [onSubmit]);
 
   const clusterWideProxySelected = useWatch({ name: 'configure_proxy' });
@@ -25,9 +26,33 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
   const { wizard } = rosaStrings;
   const sl = wizard.stepLabels;
 
+  const hasSubmitError = !!onSubmitError;
+  const [isNavigatingToReview, setIsNavigatingToReview] = React.useState(false);
+
+  const onBackToReviewClick = React.useCallback(async () => {
+    setIsNavigatingToReview(true);
+    if (onBackToReviewStep) {
+      await onBackToReviewStep();
+    }
+
+    setIsNavigatingToReview(false);
+  }, [onBackToReviewStep]);
+
   return (
     <div>
-      <Wizard height="100vh" footer={footer}>
+      {hasSubmitError && (
+        <RosaWizardSubmitError
+          onSubmitError={onSubmitError}
+          onBackToReviewStep={onBackToReviewStep ? onBackToReviewClick : undefined}
+          isNavigatingToReview={isNavigatingToReview}
+          onCancel={() => onCancel()}
+        />
+      )}
+      <Wizard
+        height="100vh"
+        footer={footer}
+        style={{ display: hasSubmitError ? 'none' : undefined }}
+      >
         <WizardStep
           isExpandable
           name={sl.basicSetup}
