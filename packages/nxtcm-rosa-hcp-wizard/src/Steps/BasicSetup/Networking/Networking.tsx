@@ -15,7 +15,7 @@ import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
 import { Radio } from '../../../components/Fields/RadioGroup';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import { FieldWrapper } from '../../../components/FieldWrapper';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
@@ -23,7 +23,8 @@ import {
   buildMachinePoolsReviewSelectOptions,
   resolveSelectedVpc,
 } from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard/helpers';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import { useClearFieldWhenHidden } from '../../OptionalSetup/Encryption/useClearFieldWhenHidden';
 
 type NetworkingStepProps = Pick<ROSAHCPWizardData, 'vpcList' | 'subnets'>;
 
@@ -39,6 +40,26 @@ export const Networking = (props: NetworkingStepProps) => {
     () => buildMachinePoolsReviewSelectOptions(selectedVPC, props.vpcList.data),
     [selectedVPC, props.vpcList.data]
   );
+
+  const clusterPrivacy = useWatch({ name: 'cluster_privacy' });
+  useClearFieldWhenHidden<ROSAHCPCluster>(
+    'cluster_privacy_public_subnet_id',
+    clusterPrivacy === ClusterNetwork.internal
+  );
+
+  const { setValue } = useFormContext<ROSAHCPCluster>();
+  const previousVpcRef = useRef<string | undefined>(selectedVPC?.id);
+  useEffect(() => {
+    const currentVpcId = selectedVPC?.id;
+    if (previousVpcRef.current === null || previousVpcRef.current === undefined) {
+      previousVpcRef.current = currentVpcId;
+      return;
+    }
+    if (currentVpcId !== previousVpcRef.current) {
+      setValue('cluster_privacy_public_subnet_id', undefined as never, { shouldValidate: true });
+    }
+    previousVpcRef.current = currentVpcId;
+  }, [selectedVPC?.id, setValue]);
 
   return (
     <Section label={n.sectionLabel} description={n.privacyHelper}>
