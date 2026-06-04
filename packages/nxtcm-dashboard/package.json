@@ -1,0 +1,38 @@
+{
+  "name": "@redhat-cloud-services/nxtcm-dashboard",
+  "version": "6.0.0",
+  "description": "PatternFly dashboard widget components for ACM and OCM console home views",
+  "author": "Red Hat",
+  "license": "Apache-2.0",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "react",
+    "components",
+    "patternfly",
+    "acm",
+    "ocm",
+    "red-hat",
+    "insights",
+    "typescript",
+    "ui"
+  ],
+  "scripts": {
+    "prepack": "cp ../../LICENSE LICENSE",
+    "postpack": "rm -f LICENSE",
+    "build": "tsc && NXTCM_LIB_NAME=NXTCM-DASHBOARD vite build --config ../../vite.config.ts",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint --config ../../.eslintrc.json 'src/**/*.{ts,tsx}'",
+    "lint:fix": "eslint --config ../../.eslintrc.json 'src/**/*.{ts,tsx}' --fix",
+    "prettier:check": "prettier --check 'src/**/*.{js,ts,mjs,jsx,tsx}'",
+    "prettier:fix": "prettier --write 'src/**/*.{js,ts,mjs,jsx,tsx}'",
+    "test": "jest --config ../../jest.config.js packages/nxtcm-dashboard --passWithNoTests",
+    "test:ct": "playwright test -c ../../playwright-ct.config.ts packages/nxtcm-dashboard"
+  }
+}

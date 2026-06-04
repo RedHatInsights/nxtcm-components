@@ -15,7 +15,7 @@ import {
   getAutoscalingMaxNodes,
   MAX_NODES_HCP_DEFAULT,
   MAX_NODES_HCP_INSUFFICIENT_VERSION,
-} from '../../../../../ROSAHCPWizard/getAutoscalingMaxNodes';
+} from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard/getAutoscalingMaxNodes';
 
 type AutoscalingFieldProps = {
   autoscaling?: boolean;

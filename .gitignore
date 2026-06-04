@@ -17,6 +17,8 @@ test-report.xml
 /dist
 /plugins/**/package.json
 /packages/rect-form-wizard
+/packages/nxtcm-dashboard/dist
+/packages/nxtcm-rosa-hcp-wizard/dist
 
 # misc
 .DS_Store

@@ -4,4 +4,4 @@ export {
   STORY_API_ERROR_MESSAGE,
   useSetMockState,
   useFetchNeededData,
-} from '../ROSAHCPWizard/ROSAHCPWizard.fixtures';
+} from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard/ROSAHCPWizard.fixtures';

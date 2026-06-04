@@ -11,6 +11,14 @@ export default defineConfig({
         __dirname,
         './packages/react-form-wizard/src'
       ),
+      '@redhat-cloud-services/nxtcm-dashboard': path.resolve(
+        __dirname,
+        './packages/nxtcm-dashboard/src'
+      ),
+      '@redhat-cloud-services/nxtcm-rosa-hcp-wizard': path.resolve(
+        __dirname,
+        './packages/nxtcm-rosa-hcp-wizard/src'
+      ),
     },
     dedupe: ['react', 'react-dom'],
   },

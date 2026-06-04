@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 
-import { ClusterEncryptionKeys } from '../components/Wizards/ROSAHCPWizard/types';
-import { clusterValidationSchema } from '../components/Wizards/ROSAHCPWizard/yupSchemas';
+import { ClusterEncryptionKeys } from '../../packages/nxtcm-rosa-hcp-wizard/src/types';
+import { clusterValidationSchema } from '../../packages/nxtcm-rosa-hcp-wizard/src/yupSchemas';
 import { isYupFieldRequired, requiredFromYup } from './yupFieldRequired';
 
 describe('isYupFieldRequired', () => {

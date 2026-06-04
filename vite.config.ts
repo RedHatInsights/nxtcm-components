@@ -2,16 +2,38 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { resolve } from 'path';
-
+const repoRoot = __dirname;
+const libRoot = process.cwd() === repoRoot ? repoRoot : process.cwd();
+const libEntry = resolve(libRoot, 'src/index.ts');
+const libName = process.env.NXTCM_LIB_NAME ?? 'NXTCM-COMPONENTS';
+const libOutDir = resolve(libRoot, 'dist');
+const libRollupExternal = [
+  'react',
+  'react-dom',
+  /^@patternfly\/.*/,
+  'js-yaml',
+  'yaml',
+  /^monaco-editor/,
+  /^monaco-yaml/,
+];
 // https://vitejs.dev/config/
 export default defineConfig({
+  root: libRoot,
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(repoRoot, './src'),
       '@patternfly-labs/react-form-wizard': path.resolve(
-        __dirname,
+        repoRoot,
         './packages/react-form-wizard/src'
+      ),
+      '@redhat-cloud-services/nxtcm-dashboard': path.resolve(
+        repoRoot,
+        './packages/nxtcm-dashboard/src'
+      ),
+      '@redhat-cloud-services/nxtcm-rosa-hcp-wizard': path.resolve(
+        repoRoot,
+        './packages/nxtcm-rosa-hcp-wizard/src'
       ),
     },
   },
@@ -31,24 +53,15 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
-      name: 'NXTCM-COMPONENTS',
+      entry: libEntry,
+      name: libName,
       formats: ['umd', 'es'],
       fileName: (format) => `index.${format === 'es' ? 'js' : format + '.js'}`,
     },
+    outDir: libOutDir,
     rollupOptions: {
-      // Externalize deps that shouldn't be bundled into the library
-      external: [
-        'react',
-        'react-dom',
-        /^@patternfly\/.*/,
-        'js-yaml',
-        'yaml',
-        /^monaco-editor/,
-        /^monaco-yaml/,
-      ],
+      external: libRollupExternal,
       output: {
-        // Provide global variables to use in the UMD build for externalized deps
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
@@ -60,7 +73,6 @@ export default defineConfig({
       },
     },
     sourcemap: true,
-    // Keep declaration files
     emptyOutDir: false,
   },
 });
