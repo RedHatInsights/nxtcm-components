@@ -15,7 +15,7 @@ import {
 } from './ROSAHCPWizard.stories.helpers';
 import fixtures from './ROSAHCPWizard.fixtures';
 import { MachineTypesDropdownType, Region, Role, ROSAHCPWizardData } from './types';
-import { defaultRosaWizardStrings } from '../RosaWizard/rosaWizardStrings.defaults';
+import { defaultRosaHcpWizardStrings } from './stringsProvider/rosaHcpWizardStrings.defaults';
 
 const onWizardSubmit = async (data: unknown) => {
   console.log('Wizard submitted with data:', data);
@@ -219,7 +219,7 @@ export const SelectOptionsReconcileOnRefetch: Story = {
       console.log('Wizard cancelled');
       alert('Wizard cancelled');
     },
-    strings: defaultRosaWizardStrings,
+    strings: defaultRosaHcpWizardStrings,
   },
   parameters: {
     docs: {

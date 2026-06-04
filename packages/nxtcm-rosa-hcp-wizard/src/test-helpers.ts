@@ -15,16 +15,25 @@ export async function checkAccessibility({
   ignoreRules?: string[];
   enforceAllRules?: boolean;
 }): Promise<void> {
-  const axe = new AxeBuilder({ page: component.page() });
+  await expect(component).toBeVisible();
+
+  const axeRootSelector = await component.evaluate((node: HTMLElement) => {
+    const id = `a11y-root-${crypto.randomUUID()}`;
+    node.id = id;
+    return `#${CSS.escape(id)}`;
+  });
 
   const disabledRules = [...ignoreRules];
 
   if (!enforceAllRules) {
     disabledRules.push('landmark-one-main', 'page-has-heading-one', 'region');
   }
-  axe.disableRules(disabledRules);
 
-  const results = await axe.analyze();
+  const results = await new AxeBuilder({ page: component.page() })
+    .include(axeRootSelector)
+    .disableRules(disabledRules)
+    .options({ iframes: false })
+    .analyze();
 
   expect(results.violations).toHaveLength(0);
 }

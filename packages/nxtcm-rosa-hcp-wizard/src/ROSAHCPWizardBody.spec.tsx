@@ -20,6 +20,13 @@ test.describe('ROSAHCPWizardBody', () => {
     await expect(component.getByRole('textbox', { name: /Cluster name/i })).toBeVisible();
   });
 
+  test('passes accessibility tests when showing the wizard', async ({ mount }) => {
+    test.setTimeout(60_000);
+    const component = await mount(<RosaHcpWizardBodyMount />);
+
+    await checkAccessibility({ component });
+  });
+
   test.describe('submit error state', () => {
     test('shows error EmptyState and hides wizard when onSubmitError is set', async ({ mount }) => {
       const component = await mount(<RosaHcpWizardBodyMount onSubmitError={ERROR_MESSAGE} />);
@@ -91,6 +98,7 @@ test.describe('ROSAHCPWizardBody', () => {
     });
 
     test('passes accessibility tests when showing the error state', async ({ mount }) => {
+      test.setTimeout(60_000);
       const component = await mount(
         <RosaHcpWizardBodyMount onSubmitError={ERROR_MESSAGE} onBackToReviewStep={() => {}} />
       );

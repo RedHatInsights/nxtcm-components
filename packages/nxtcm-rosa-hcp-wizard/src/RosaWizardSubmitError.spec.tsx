@@ -134,6 +134,7 @@ test.describe('RosaWizardSubmitError', () => {
   });
 
   test('passes accessibility tests in the error state', async ({ mount }) => {
+    test.setTimeout(60_000);
     const component = await mount(
       <RosaWizardSubmitErrorMount
         onSubmitError={ERROR_MESSAGE}

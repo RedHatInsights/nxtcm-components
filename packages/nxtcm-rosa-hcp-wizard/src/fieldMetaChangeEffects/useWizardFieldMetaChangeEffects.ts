@@ -6,7 +6,7 @@ import {
   collectWizardFieldDerivedSyncWizardDataDeps,
   reapplyWizardFieldDerivedSyncs,
 } from './wizardFieldDerivedSyncs';
-import type { ClusterFormData } from '../../types';
+import type { ClusterFormData } from '@/components/Wizards/types';
 import type { ROSAHCPWizardData } from '../types';
 import {
   listWizardFieldDerivedSyncEntries,

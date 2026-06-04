@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
-import type { ClusterFormData } from '../../types';
+import type { ClusterFormData } from '@/components/Wizards/types';
 import type { CheckClusterNameUniqueness } from '../types';
 import { useRosaHcpWizardValidators } from '../stringsProvider/RosaHcpWizardStringsContext';
 import { validateClusterNameSync } from '../yupSchemas/helpers';
