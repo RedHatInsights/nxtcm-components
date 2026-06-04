@@ -19,14 +19,26 @@ import { useWatch } from 'react-hook-form';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
+import {
+  buildMachinePoolsReviewSelectOptions,
+  resolveSelectedVpc,
+} from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard/helpers';
+import { useMemo } from 'react';
 
 type NetworkingStepProps = Pick<ROSAHCPWizardData, 'vpcList' | 'subnets'>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Networking = (props: NetworkingStepProps) => {
   const { networking: n } = useRosaHcpWizardStrings();
 
   const cidrDefaultChecked = useWatch({ name: 'cidr_default' });
+  const selectedVPCRaw = useWatch({ name: 'selected_vpc' });
+
+  const selectedVPC = resolveSelectedVpc(selectedVPCRaw, props.vpcList.data);
+
+  const { publicSubnet } = useMemo(
+    () => buildMachinePoolsReviewSelectOptions(selectedVPC, props.vpcList.data),
+    [selectedVPC, props.vpcList.data]
+  );
 
   return (
     <Section label={n.sectionLabel} description={n.privacyHelper}>
@@ -38,7 +50,11 @@ export const Networking = (props: NetworkingStepProps) => {
             value={ClusterNetwork.external}
             label={n.publicLabel}
           >
-            <WizSelect name="cluster_privacy_public_subnet_id" schema={clusterValidationSchema} />
+            <WizSelect
+              name="cluster_privacy_public_subnet_id"
+              schema={clusterValidationSchema}
+              options={publicSubnet}
+            />
           </Radio>
 
           <Radio
