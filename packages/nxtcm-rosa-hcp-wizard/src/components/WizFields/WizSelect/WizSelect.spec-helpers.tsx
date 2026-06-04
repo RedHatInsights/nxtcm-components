@@ -25,6 +25,9 @@ export const WIZ_SELECT_EXPLICIT_TOGGLE_NAME = /select the explicit region label
 
 export const WIZ_SELECT_SUBMIT_TOGGLE_NAME = /select the region \(submit demo\)/i;
 
+export const WIZ_SELECT_TYPEAHEAD_CLEAR_TOGGLE = /select the region/i;
+export const WIZ_SELECT_TYPEAHEAD_CLEAR_STATUS = 'region value after typeahead clear';
+
 type ExplicitFormValues = { region?: string };
 
 export function WizSelectExplicitHarness() {
@@ -217,6 +220,35 @@ type ControlOnlyVpcValues = {
 
 export const WIZ_SELECT_ONLY_CONTROL_TOGGLE = /select the vpc identifier/i;
 export const WIZ_SELECT_CONTROL_ONLY_STATUS = 'vpcId control prop status';
+
+type TypeaheadClearFormValues = { region: string };
+
+/** Mirrors Details step typeahead selects: Yup default `''`, clear via toggle X. */
+export function WizSelectTypeaheadClearHarness() {
+  const methods = useForm<TypeaheadClearFormValues>({
+    defaultValues: { region: '' },
+    mode: 'onTouched',
+  });
+
+  return withRosaCt(
+    <FormProvider {...methods}>
+      <Form>
+        <WizSelect<TypeaheadClearFormValues>
+          name="region"
+          label="Region"
+          options={['us-east-1', 'eu-west-1']}
+          isTypeAhead
+        />
+        <WizCtWatchStatus
+          control={methods.control}
+          name="region"
+          ariaLabel={WIZ_SELECT_TYPEAHEAD_CLEAR_STATUS}
+          format={(v) => (v === undefined || v === '' ? '(empty)' : String(v))}
+        />
+      </Form>
+    </FormProvider>
+  );
+}
 
 /** No surrounding FormProvider — uses `control` from `useForm` via the prop. */
 export function WizSelectExplicitControlOnlyHarness() {

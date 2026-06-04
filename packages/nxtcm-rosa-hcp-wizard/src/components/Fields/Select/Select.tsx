@@ -288,11 +288,16 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     setTypeaheadQuery(v);
   }, []);
 
-  const onClearTypeahead = useCallback(() => {
-    onChange(undefined as T | string | number | undefined);
-    setTypeaheadQuery('');
-    textInputRef.current?.focus();
-  }, [onChange]);
+  const onClearTypeahead = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+      onChange(undefined as T | string | number | undefined);
+      setTypeaheadQuery('');
+      textInputRef.current?.focus();
+    },
+    [onChange]
+  );
 
   const toggleOpen = useCallback(() => setOpen((o) => !o), []);
 

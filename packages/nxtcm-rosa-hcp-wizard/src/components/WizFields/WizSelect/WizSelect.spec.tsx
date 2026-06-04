@@ -8,6 +8,7 @@ import {
   WizSelectNestedFallbackHarness,
   WizSelectNumericMetaLabelHarness,
   WizSelectSubmitValidationHarness,
+  WizSelectTypeaheadClearHarness,
   WizSelectYupMetaHarness,
 } from './WizSelect.spec-helpers';
 import {
@@ -28,6 +29,8 @@ import {
   WIZ_SELECT_VALUE_STATUS_LABEL,
   WIZ_SELECT_YUP_META_HELPER,
   WIZ_SELECT_YUP_META_LABEL,
+  WIZ_SELECT_TYPEAHEAD_CLEAR_STATUS,
+  WIZ_SELECT_TYPEAHEAD_CLEAR_TOGGLE,
 } from './WizSelect.spec-helpers';
 
 test.describe('WizSelect', () => {
@@ -107,6 +110,23 @@ test.describe('WizSelect', () => {
   }) => {
     await mount(<WizSelectNumericMetaLabelHarness />);
     await expect(page.getByRole('button', { name: WIZ_SELECT_NUMERIC_TOGGLE })).toBeVisible();
+  });
+
+  test('clears react-hook-form value when the typeahead clear control is pressed', async ({
+    mount,
+    page,
+  }) => {
+    await mount(<WizSelectTypeaheadClearHarness />);
+    const status = page.getByRole('status', { name: WIZ_SELECT_TYPEAHEAD_CLEAR_STATUS });
+    const combo = page.getByRole('combobox', { name: WIZ_SELECT_TYPEAHEAD_CLEAR_TOGGLE });
+
+    await combo.click();
+    await page.getByRole('option', { name: 'eu-west-1' }).click();
+    await expect(status).toHaveText('eu-west-1');
+
+    await page.getByRole('button', { name: 'Clear selection' }).click();
+    await expect(status).toHaveText('(empty)');
+    await expect(combo).toHaveValue('');
   });
 
   test('binds through the control prop without a FormProvider wrapper', async ({ mount, page }) => {

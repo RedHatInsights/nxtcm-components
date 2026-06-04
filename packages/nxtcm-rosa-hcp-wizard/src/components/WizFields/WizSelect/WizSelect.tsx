@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { type FieldValues, useController } from 'react-hook-form';
 
 import { requiredFromYup } from '@/utilities/yupFieldRequired';
@@ -98,6 +98,21 @@ export function WizSelect<TFieldValues extends FieldValues = FieldValues, TOptio
   const stepValidationRevealed = useWizStepValidationRevealed(String(name));
   const showError = wizFieldShowsError(invalid, isTouched, isSubmitted || stepValidationRevealed);
 
+  /** Select clears with `undefined`; map to `''` only for string-backed RHF values (Yup string fields). */
+  const handleChange = useCallback(
+    (next: TOption | string | number | undefined) => {
+      if (next !== undefined) {
+        field.onChange(next);
+        return;
+      }
+      const isStringBacked =
+        typeof field.value === 'string' ||
+        (Array.isArray(field.value) && typeof field.value[0] === 'string');
+      field.onChange(isStringBacked ? '' : undefined);
+    },
+    [field.onChange, field.value]
+  );
+
   const select = (
     <Select<TOption>
       {...rest}
@@ -110,7 +125,7 @@ export function WizSelect<TFieldValues extends FieldValues = FieldValues, TOptio
       isRequired={isRequired}
       value={field.value}
       onBlur={field.onBlur}
-      onChange={field.onChange}
+      onChange={handleChange}
       errorMessage={error?.message}
       isError={showError && !isMenuOpen}
       onMenuOpenChange={setIsMenuOpen}
