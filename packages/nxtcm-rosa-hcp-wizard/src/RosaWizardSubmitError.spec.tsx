@@ -5,7 +5,7 @@ import {
   RosaWizardSubmitErrorMount,
   RosaWizardSubmitErrorThenBackMount,
 } from './RosaWizardSubmitError.spec-helpers';
-import { checkAccessibility } from '../../../test-helpers';
+import { checkAccessibility } from '@/test-helpers';
 
 const { submitError: submitErrorStrings } = defaultRosaHcpWizardStrings;
 const ERROR_MESSAGE = 'There has been an error creating the cluster';
