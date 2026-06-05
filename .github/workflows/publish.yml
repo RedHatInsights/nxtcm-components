@@ -41,6 +41,7 @@ jobs:
     if: github.repository == 'RedHatInsights/nxtcm-components'
     runs-on: ubuntu-latest
     needs: quality-gates
+    environment: npm-publish
     permissions:
       contents: read
       id-token: write
