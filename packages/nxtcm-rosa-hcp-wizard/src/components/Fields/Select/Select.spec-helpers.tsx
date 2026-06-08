@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Form } from '@patternfly/react-core';
-
 import { Select } from './Select';
 
 export function PlainMenuHarness() {

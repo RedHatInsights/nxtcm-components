@@ -1,5 +1,4 @@
-import { ClusterFormData, MachinePoolSubnetEntry, VPC } from '@/components/Wizards/types';
-import type { ClusterUpgrade } from '@/components/Wizards/types';
+import { type ClusterUpgrade, MachinePoolSubnetEntry, ROSAHCPCluster, VPC } from '../../types';
 import type { LabelValueOption } from '../../helpers';
 import {
   formatUpgradePolicyForReview,
@@ -78,7 +77,7 @@ export function normalizeEmptyFormValue(value: unknown): unknown {
 
 export function formatReviewFieldValue(
   path: string,
-  formValues: Partial<ClusterFormData>,
+  formValues: Partial<ROSAHCPCluster>,
   strings: RosaHcpWizardStrings,
   reviewOptions?: ReviewSelectOptions
 ): string {

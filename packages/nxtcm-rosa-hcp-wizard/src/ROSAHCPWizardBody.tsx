@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { Wizard, WizardStep } from '@patternfly/react-core';
 import { useWatch } from 'react-hook-form';
-
 import { Details } from './Steps/BasicSetup/Details/Details';
 import { RolesAndPolicies } from './Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies';
 import { MachinePools } from './Steps/BasicSetup/MachinePools/MachinePools';

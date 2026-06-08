@@ -1,6 +1,5 @@
 import { type ComponentProps, type ReactNode, useCallback, useId } from 'react';
 import { Flex, FormGroup } from '@patternfly/react-core';
-
 import { HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
 import { RadioGroupContext, type RadioGroupContextState } from './RadioGroupContext';

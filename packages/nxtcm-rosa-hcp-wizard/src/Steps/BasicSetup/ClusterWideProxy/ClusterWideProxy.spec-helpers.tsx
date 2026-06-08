@@ -7,8 +7,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Form } from '@patternfly/react-core';
 import { FormProvider, useForm, type Resolver } from 'react-hook-form';
 
-import type { ClusterFormData } from '@/components/Wizards/types';
-import { ClusterEncryptionKeys, ClusterNetwork, ClusterUpgrade } from '@/components/Wizards/types';
+import {
+  ClusterEncryptionKeys,
+  ClusterNetwork,
+  ClusterUpgrade,
+  type ROSAHCPCluster,
+} from '../../../types';
 import { ClusterWideProxy } from './ClusterWideProxy';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import type { ValidationSchemaContext } from '../../../yupSchemas/types';
@@ -16,7 +20,7 @@ import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/r
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
 
 /** Defaults aligned with {@link ROSAHCPWizardBody} so the composed Yup schema resolves consistently in CT. */
-const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ClusterFormData> = {
+const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ROSAHCPCluster> = {
   associated_aws_id: '',
   byo_oidc_config_id: '',
   custom_operator_roles_prefix: '',
@@ -47,7 +51,7 @@ const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ClusterFormData> = {
 };
 
 export type ClusterWideProxyMountProps = {
-  defaultValues?: Partial<ClusterFormData>;
+  defaultValues?: Partial<ROSAHCPCluster>;
 };
 
 export const ClusterWideProxyMount: React.FC<ClusterWideProxyMountProps> = ({
@@ -63,9 +67,9 @@ export const ClusterWideProxyMount: React.FC<ClusterWideProxyMountProps> = ({
     []
   );
 
-  const methods = useForm<ClusterFormData>({
+  const methods = useForm<ROSAHCPCluster>({
     defaultValues: { ...DEFAULT_ROSA_HCP_CT_FORM_VALUES, ...defaultValues },
-    resolver: yupResolver(clusterValidationSchema) as Resolver<ClusterFormData>,
+    resolver: yupResolver(clusterValidationSchema) as Resolver<ROSAHCPCluster>,
     context: validationContext,
     mode: 'onTouched',
   });

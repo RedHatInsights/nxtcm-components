@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-
 import type { NormalizedOptionGroup, Option, OptionGroup, OptionType } from './SelectTypes';
 import { normalizeOption } from './SelectOptions';
 

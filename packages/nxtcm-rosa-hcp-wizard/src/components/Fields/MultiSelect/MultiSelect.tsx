@@ -1,12 +1,12 @@
 import {
+  type FocusEventHandler,
   Fragment,
+  type MouseEvent,
+  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
   useState,
-  type FocusEventHandler,
-  type MouseEvent,
-  type ReactNode,
 } from 'react';
 import {
   Badge,
@@ -25,7 +25,6 @@ import {
   Spinner,
 } from '@patternfly/react-core';
 import { RedoIcon } from '@patternfly/react-icons';
-
 import { HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
 import {
@@ -35,8 +34,12 @@ import {
   toggleValuesFromPfSelectId,
 } from '../Select/SelectOptions';
 import { getStatus, lowercaseFirst } from '../Select/selectFieldUtils';
-import type { Option, OptionGroup, OptionType } from '../Select/SelectTypes';
-import { extractOptionValue } from '../Select/SelectTypes';
+import {
+  extractOptionValue,
+  type Option,
+  type OptionGroup,
+  type OptionType,
+} from '../Select/SelectTypes';
 import { useMultiSelectDerived } from './useMultiSelectDerived';
 
 /** Stable fallback when `value` is null/undefined so hook deps stay referentially stable. */

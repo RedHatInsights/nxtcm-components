@@ -1,5 +1,4 @@
 import { Flex, FlexItem } from '@patternfly/react-core';
-
 import type { ROSAHCPCluster } from '../../../types';
 import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../links';

@@ -15,7 +15,7 @@ import LockIcon from '@patternfly/react-icons/dist/esm/icons/lock-icon';
 import get from 'get-value';
 import { useWatch } from 'react-hook-form';
 
-import type { ClusterFormData } from '@/components/Wizards/types';
+import type { ROSAHCPCluster, ROSAHCPWizardData } from '../../types';
 
 import {
   buildMachinePoolsReviewSelectOptions,
@@ -27,7 +27,6 @@ import { STEP_IDS } from '../../constants';
 import { useRosaHcpWizardReviewSections } from './ROSAHCPWizardReviewSections';
 import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
-import type { ROSAHCPWizardData } from '../../types';
 import { getClusterValidationSchemaDefaultValues, wizardFieldMetaByPath } from '../../yupSchemas';
 import { ReviewExpandSection } from './ReviewExpandSection';
 import { formatReviewFieldValue, normalizeEmptyFormValue } from './formatReviewValueDisplay';
@@ -43,8 +42,8 @@ function serializeValueForSectionDiff(value: unknown): string {
 
 function sectionDiffersFromDefaults(
   fieldPaths: readonly string[],
-  currentForm: Partial<ClusterFormData>,
-  defaults: Partial<ClusterFormData>
+  currentForm: Partial<ROSAHCPCluster>,
+  defaults: Partial<ROSAHCPCluster>
 ): boolean {
   return fieldPaths.some(
     (path) =>
@@ -117,7 +116,7 @@ export const Review = ({ vpcList }: ReviewProps) => {
     ...(typeof watchedFormValues === 'object' && watchedFormValues !== null
       ? watchedFormValues
       : {}),
-  } as Partial<ClusterFormData>;
+  } as Partial<ROSAHCPCluster>;
 
   const selectedVPC = useMemo(
     () => resolveSelectedVpc(formValues.selected_vpc, vpcList.data),

@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { Button, Stack } from '@patternfly/react-core';
 import semver from 'semver';
 import { useFormContext, useWatch } from 'react-hook-form';
-
 import { clusterValidationSchema } from '../../../yupSchemas';
 import { buildOpenShiftVersionGroups } from '../../../buildOpenShiftVersionGroups';
 import { DetailsStepDrawer } from '../../../components/DetailsStepDrawer/DetailsStepDrawer';
@@ -10,12 +9,10 @@ import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../links';
-import { ROSAHCPWizardData, type ROSAHCPCluster } from '../../../types';
+import { type ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { FieldWrapper } from '../../../components/FieldWrapper';
-
-import type { ClusterFormData } from '@/components/Wizards/types';
 import { resetMachinePoolVpcDependentFields } from '../../../resetMachinePoolVpcDependentFields';
 
 type DetailsStepProps = Pick<
@@ -61,7 +58,7 @@ export const Details = ({
   const drawerRef = React.useRef<HTMLSpanElement>(null);
   const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
 
-  const { control, setValue } = useFormContext<Partial<ClusterFormData>>();
+  const { control, setValue } = useFormContext<Partial<ROSAHCPCluster>>();
   const region = useWatch({ control, name: 'region' });
   const prevRegionRef = useRef<string | undefined>(undefined);
 

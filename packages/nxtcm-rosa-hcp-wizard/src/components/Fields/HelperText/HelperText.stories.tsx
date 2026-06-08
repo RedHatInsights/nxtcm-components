@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-
 import { HelperText } from './HelperText';
 
 const meta: Meta<typeof HelperText> = {

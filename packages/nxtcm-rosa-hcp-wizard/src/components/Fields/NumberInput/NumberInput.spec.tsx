@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/experimental-ct-react';
-
+import { expect, test } from '@playwright/experimental-ct-react';
 import { NumberHarness } from './NumberInput.spec-helpers';
 
 // Match NUMBER_HARNESS_FIELD_LABEL in spec-helpers (importing both breaks Playwright CT mount).

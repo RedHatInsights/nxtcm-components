@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Form } from '@patternfly/react-core';
-
 import { RadioGroup, Radio } from './RadioGroup';
 
 /** Strings shared by `RadioGroup.spec.tsx` and these harnesses */

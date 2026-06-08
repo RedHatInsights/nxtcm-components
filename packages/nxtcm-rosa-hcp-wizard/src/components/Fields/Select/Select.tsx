@@ -1,13 +1,13 @@
 import {
+  type FocusEventHandler,
+  type FormEvent,
   Fragment,
+  type MouseEvent,
+  type ReactNode,
   useCallback,
   useEffect,
   useRef,
   useState,
-  type FocusEventHandler,
-  type FormEvent,
-  type MouseEvent,
-  type ReactNode,
 } from 'react';
 import {
   Button,
@@ -28,10 +28,8 @@ import {
   TextInputGroupUtilities,
 } from '@patternfly/react-core';
 import { RedoIcon, TimesIcon } from '@patternfly/react-icons';
-
 import { toDisplayString } from './SelectOptions';
-import type { Option, OptionGroup, OptionType } from './SelectTypes';
-import { extractOptionValue } from './SelectTypes';
+import { extractOptionValue, type Option, type OptionGroup, type OptionType } from './SelectTypes';
 import { getStatus, isSyntheticOptionId, lowercaseFirst } from './selectFieldUtils';
 import { useSelectDerived } from './useSelectDerived';
 import { HelperText, helperTextId } from '../HelperText';

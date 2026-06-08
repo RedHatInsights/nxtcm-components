@@ -1,5 +1,4 @@
-import type { ClusterFormData } from '@/components/Wizards/types';
-import { ClusterUpgrade } from '@/components/Wizards/types';
+import { ClusterUpgrade, type ROSAHCPCluster } from '../../types';
 
 /** Whether a review summary row should be omitted for the current form state. */
 export function shouldHideReviewRow({
@@ -8,7 +7,7 @@ export function shouldHideReviewRow({
   metaShouldHideInReview,
 }: {
   path: string;
-  formValues: Partial<ClusterFormData>;
+  formValues: Partial<ROSAHCPCluster>;
   metaShouldHideInReview: boolean;
 }): boolean {
   if (metaShouldHideInReview) {

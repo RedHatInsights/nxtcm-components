@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Form } from '@patternfly/react-core';
-
 import { TextInput } from './TextInput';
 
 /** Strings shared by harness markup and Playwright assertions */

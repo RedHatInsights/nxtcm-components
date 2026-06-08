@@ -1,5 +1,4 @@
 import type { FieldErrors, FieldPath, FieldValues, UseFormGetFieldState } from 'react-hook-form';
-
 import { STEP_IDS } from '../constants';
 
 function hasErrorAtPath(errors: FieldErrors, path: string): boolean {

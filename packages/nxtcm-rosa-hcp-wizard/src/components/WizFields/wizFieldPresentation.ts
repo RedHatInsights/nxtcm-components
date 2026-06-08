@@ -1,10 +1,9 @@
-import { useMemo, type ReactNode } from 'react';
-import { type FieldPath, type FieldValues } from 'react-hook-form';
+import { type ReactNode, useMemo } from 'react';
+import type { FieldPath, FieldValues } from 'react-hook-form';
 import * as yup from 'yup';
 
-import { getYupFieldPresentationMeta } from '@/utilities/yupFieldPresentationMeta';
-import { type YupFieldDescribeOptions } from '@/utilities/yupFieldRequired';
-
+import { getYupFieldPresentationMeta } from '../../utilities/yupFieldPresentationMeta';
+import type { YupFieldDescribeOptions } from '../../utilities/yupFieldRequired';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import {
   wizFallbackFieldId,

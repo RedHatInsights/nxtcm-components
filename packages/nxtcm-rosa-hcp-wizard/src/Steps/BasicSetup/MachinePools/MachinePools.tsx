@@ -1,8 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { Content, ContentVariants, Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
 import { useFormContext, useWatch } from 'react-hook-form';
-
-import type { ClusterFormData } from '@/components/Wizards/types';
 import type { ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
 import {
   buildMachinePoolsReviewSelectOptions,
@@ -32,7 +30,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
   const mp = useRosaHcpWizardStrings().machinePools;
   const a = useRosaHcpWizardStrings().autoscaling;
 
-  const { control } = useFormContext<Partial<ClusterFormData>>();
+  const { control } = useFormContext<Partial<ROSAHCPCluster>>();
 
   const region = useWatch({ control, name: 'region' });
   const clusterVersion = useWatch({ control, name: 'cluster_version' }) ?? '';

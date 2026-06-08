@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useState, type ComponentProps, type ReactNode } from 'react';
-import { FileUpload as PfFileUpload, type DropEvent, FormGroup } from '@patternfly/react-core';
-
+import { type ComponentProps, type ReactNode, useCallback, useEffect, useState } from 'react';
+import { type DropEvent, FileUpload as PfFileUpload, FormGroup } from '@patternfly/react-core';
 import { getValidated, HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
 

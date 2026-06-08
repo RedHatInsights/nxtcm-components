@@ -1,8 +1,6 @@
 import type { UseFormSetValue } from 'react-hook-form';
-
 import type { ROSAHCPCluster } from './types';
 import { getClusterValidationSchemaDefaultValues } from './yupSchemas';
-
 import { resetFieldsToDefaultValues } from './resetFieldsToDefaultValues';
 
 describe('resetFieldsToDefaultValues', () => {

@@ -1,4 +1,4 @@
-import type { CIDRSubnet } from '@/components/Wizards/types';
+import type { CIDRSubnet } from '../types';
 import type { RosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings';
 
 /** Static metadata attached to each field via `.meta()`. */

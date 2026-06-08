@@ -1,6 +1,5 @@
 import React, { act, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
-
 import { WizTextInput } from './WizTextInput/WizTextInput';
 import {
   stringLabelFromYupMeta,

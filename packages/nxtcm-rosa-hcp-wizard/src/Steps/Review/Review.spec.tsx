@@ -1,7 +1,6 @@
 import React from 'react';
-import { test, expect } from '@playwright/experimental-ct-react';
-
-import { ClusterUpgrade } from '@/components/Wizards/types';
+import { expect, test } from '@playwright/experimental-ct-react';
+import { ClusterUpgrade } from '../../types';
 import rosaHcpWizardFixtures from '../../ROSAHCPWizard.fixtures';
 import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { ReviewHarness } from './Review.spec-helpers';

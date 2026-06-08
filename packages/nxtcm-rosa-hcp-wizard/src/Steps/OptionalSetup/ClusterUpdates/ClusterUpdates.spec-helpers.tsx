@@ -1,11 +1,13 @@
 import React, { useMemo } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Form } from '@patternfly/react-core';
-import { FormProvider, useForm, type Resolver, useFormContext } from 'react-hook-form';
-
-import type { ClusterFormData } from '@/components/Wizards/types';
-import { ClusterEncryptionKeys, ClusterNetwork, ClusterUpgrade } from '@/components/Wizards/types';
-
+import { FormProvider, type Resolver, useForm, useFormContext } from 'react-hook-form';
+import {
+  ClusterEncryptionKeys,
+  ClusterNetwork,
+  ClusterUpgrade,
+  type ROSAHCPCluster,
+} from '../../../types';
 import { STEP_IDS } from '../../../constants';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import type { ValidationSchemaContext } from '../../../yupSchemas/types';
@@ -17,7 +19,7 @@ import {
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
 import { ClusterUpdates } from './ClusterUpdates';
 
-const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ClusterFormData> = {
+const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ROSAHCPCluster> = {
   associated_aws_id: '',
   byo_oidc_config_id: '',
   custom_operator_roles_prefix: '',
@@ -44,11 +46,11 @@ const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ClusterFormData> = {
 };
 
 export type ClusterUpdatesMountProps = {
-  defaultValues?: Partial<ClusterFormData>;
+  defaultValues?: Partial<ROSAHCPCluster>;
 };
 
 function ClusterUpdatesValidateButton() {
-  const { trigger } = useFormContext<ClusterFormData>();
+  const { trigger } = useFormContext<ROSAHCPCluster>();
   const { markValidationAttempted } = useRosaHcpWizardValidation();
 
   return (
@@ -75,9 +77,9 @@ export const ClusterUpdatesMount: React.FC<ClusterUpdatesMountProps> = ({ defaul
     []
   );
 
-  const methods = useForm<ClusterFormData>({
+  const methods = useForm<ROSAHCPCluster>({
     defaultValues: { ...DEFAULT_ROSA_HCP_CT_FORM_VALUES, ...defaultValues },
-    resolver: yupResolver(clusterValidationSchema) as Resolver<ClusterFormData>,
+    resolver: yupResolver(clusterValidationSchema) as Resolver<ROSAHCPCluster>,
     context: validationContext,
     mode: 'onTouched',
   });

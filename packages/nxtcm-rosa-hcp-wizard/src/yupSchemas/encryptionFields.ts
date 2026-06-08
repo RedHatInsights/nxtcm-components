@@ -1,12 +1,11 @@
 import * as yup from 'yup';
 
 import { STEP_IDS } from '../constants';
-import { ClusterEncryptionKeys } from '@/components/Wizards/types';
+import { ClusterEncryptionKeys, ROSAHCPCluster } from '../types';
 import type { WizardFieldMeta } from './types';
 import { ctx, rosaCommonRequiredNonEmptyIncludingAbsentTest } from './helpers';
-import { ROSAHCPCluster } from '../types';
 import { validateAWSKMSKeyARN } from '../validators';
-import { YUP_FIELD_REQUIRED_UI_META_KEY } from '@/utilities/yupFieldRequired';
+import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
 
 /** ARN format/region checks (required when shown is enforced via `.when()` on the field schema). */
 function validateKmsArn(

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Form } from '@patternfly/react-core';
-
 import type { OptionGroup } from '../Select/SelectTypes';
 import { MultiSelect } from './MultiSelect';
 

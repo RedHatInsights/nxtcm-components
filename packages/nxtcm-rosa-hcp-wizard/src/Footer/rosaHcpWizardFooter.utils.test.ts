@@ -1,5 +1,4 @@
 import type { FieldValues, UseFormGetFieldState } from 'react-hook-form';
-
 import { STEP_IDS } from '../constants';
 import {
   isRosaHcpWizardBackDisabled,

@@ -1,7 +1,6 @@
-import { test, expect } from '@playwright/experimental-ct-react';
-
-import { checkAccessibility } from '@/test-helpers';
-import { ClusterEncryptionKeys } from '@/components/Wizards/types';
+import { expect, test } from '@playwright/experimental-ct-react';
+import { checkAccessibility } from '../../../test-helpers';
+import { ClusterEncryptionKeys } from '../../../types';
 import {
   defaultRosaHcpWizardStrings,
   defaultRosaHcpWizardValidatorStrings,

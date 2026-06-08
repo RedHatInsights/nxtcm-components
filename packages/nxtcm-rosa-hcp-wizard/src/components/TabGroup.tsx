@@ -1,9 +1,9 @@
 import {
-  ToggleGroupItemProps,
   Stack,
   StackItem,
   ToggleGroup,
   ToggleGroupItem,
+  ToggleGroupItemProps,
 } from '@patternfly/react-core';
 import { ReactElement, useState } from 'react';
 

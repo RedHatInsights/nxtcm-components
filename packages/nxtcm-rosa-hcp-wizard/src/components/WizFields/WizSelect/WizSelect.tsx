@@ -1,8 +1,6 @@
 import { type ReactNode, useCallback, useState } from 'react';
 import { type FieldValues, useController } from 'react-hook-form';
-
-import { requiredFromYup } from '@/utilities/yupFieldRequired';
-
+import { requiredFromYup } from '../../../utilities/yupFieldRequired';
 import { FieldWithAPIErrorAlert } from '../../FieldWithAPIErrorAlert';
 import { Select, type SelectProps } from '../../Fields/Select';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
@@ -110,7 +108,7 @@ export function WizSelect<TFieldValues extends FieldValues = FieldValues, TOptio
         (Array.isArray(field.value) && typeof field.value[0] === 'string');
       field.onChange(isStringBacked ? '' : undefined);
     },
-    [field.onChange, field.value]
+    [field]
   );
 
   const select = (
