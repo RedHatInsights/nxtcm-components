@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-const enableCoverage = process.env.COVERAGE === 'true' || !!process.env.CI;
+const enableCoverage = process.env.COVERAGE === 'true';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const istanbulPlugin = enableCoverage ? require('./playwright/istanbul-plugin.cjs') : null;
