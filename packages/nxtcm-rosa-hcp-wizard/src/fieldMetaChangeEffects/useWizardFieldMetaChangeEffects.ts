@@ -43,9 +43,10 @@ export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): 
   const { setValue, getValues, control } = useFormContext<Partial<ClusterFormData>>();
   const sourceFields = useMemo(() => listWizardFieldMetaChangeSourceFields(), []);
   const derivedSyncEntries = useMemo(() => listWizardFieldDerivedSyncEntries(), []);
-  const derivedSyncWizardDataDepValues = collectWizardFieldDerivedSyncWizardDataDeps(
-    derivedSyncEntries,
-    wizardData
+  const derivedSyncWizardDataDepValues = useMemo(
+    () => collectWizardFieldDerivedSyncWizardDataDeps(derivedSyncEntries, wizardData),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- wizard-data slices match wizardFieldDerivedSyncWizardDataDeps
+    [derivedSyncEntries, wizardData.roles.data, wizardData.vpcList.data]
   );
   const watchedValues = useWatch({
     control,
@@ -89,5 +90,5 @@ export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): 
       wizardData: wizardDataRef.current,
       setValue,
     });
-  }, [derivedSyncEntries, getValues, setValue, ...derivedSyncWizardDataDepValues]);
+  }, [derivedSyncEntries, getValues, setValue, derivedSyncWizardDataDepValues]);
 }
