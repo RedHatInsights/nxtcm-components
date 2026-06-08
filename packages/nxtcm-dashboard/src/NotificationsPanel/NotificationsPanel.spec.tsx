@@ -1,4 +1,4 @@
-import { test, expect } from '../../../ct-fixture';
+import { test, expect } from '@/ct-fixture';
 import React from 'react';
 import { NotificationsPanel, NotificationItem } from './NotificationsPanel';
 import { checkAccessibility } from '@/test-helpers';

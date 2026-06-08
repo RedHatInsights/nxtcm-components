@@ -1,4 +1,4 @@
-import { test, expect, MountResult } from '../../../ct-fixture';
+import { test, expect, MountResult } from '@/ct-fixture';
 import React from 'react';
 import { ClusterRecommendations } from './ClusterRecommendations';
 import { Category } from './RecommendationByCategory';

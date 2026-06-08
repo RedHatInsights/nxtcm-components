@@ -1,4 +1,4 @@
-import { test, expect } from '../../../ct-fixture';
+import { test, expect } from '@/ct-fixture';
 import React from 'react';
 import { StorageCard, StorageCardProps } from './StorageCard';
 import { checkAccessibility } from '@/test-helpers';
