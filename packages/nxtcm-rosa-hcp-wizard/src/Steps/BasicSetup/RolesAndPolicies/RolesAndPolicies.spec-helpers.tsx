@@ -21,7 +21,10 @@ import { clusterValidationSchema } from '../../../yupSchemas';
 import type { ValidationSchemaContext } from '../../../yupSchemas/types';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
-import { WizardFieldMetaChangeEffectsCtHarness } from '../../../rosaHcpWizardCtSpecHelpers';
+import {
+  WizardFieldMetaChangeEffectsCtHarness,
+  makeDefaultRosaHcpCtWizardData,
+} from '../../../rosaHcpWizardCtSpecHelpers';
 
 /** Defaults aligned with {@link ROSAHCPWizardBody} so the composed Yup schema resolves consistently in CT. */
 const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ROSAHCPCluster> = {
@@ -98,20 +101,12 @@ export const RolesAndPoliciesMount: React.FC<RolesAndPoliciesMountProps> = ({
     [oidcConfig]
   );
 
-  const wizardData = useMemo<ROSAHCPWizardData>(
-    () => ({
-      awsInfrastructureAccounts: { data: [], error: null, isFetching: false },
-      awsBillingAccounts: { data: [], error: null, isFetching: false },
-      regions: { data: [], error: null, isFetching: false, fetch: async () => {} },
-      versions: { data: { releases: [] }, error: null, isFetching: false, fetch: async () => {} },
-      machineTypes: { data: [], error: null, isFetching: false, fetch: async () => {} },
-      roles: rolesProps,
-      oidcConfig: oidcProps,
-      vpcList: { data: [], error: null, isFetching: false, fetch: async () => {} },
-      subnets: { data: [], error: null, isFetching: false },
-      securityGroups: { data: [], error: null, isFetching: false },
-      clusterNameValidation: { error: null, isFetching: false },
-    }),
+  const wizardData = useMemo(
+    () =>
+      makeDefaultRosaHcpCtWizardData({
+        roles: rolesProps,
+        oidcConfig: oidcProps,
+      }),
     [oidcProps, rolesProps]
   );
 

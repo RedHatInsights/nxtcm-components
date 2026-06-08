@@ -206,11 +206,16 @@ function WizTextInputStandard<TFieldValues extends FieldValues>(
   });
 }
 
+const WIZ_TEXT_INPUT_VALIDATE_ON_BLUR_CONTROL_ONLY_ERROR =
+  'WizTextInputBound: `validateOnBlur` requires FormProvider and cannot be used with control-only mounts (when only `control` is passed). Wrap the field with <FormProvider {...methods}> or omit `validateOnBlur`.';
+
 function WizTextInputValidateOnBlur<TFieldValues extends FieldValues>(
-  props: WizTextInputBoundFieldProps<TFieldValues>
+  props: WizTextInputBoundFieldProps<TFieldValues> & {
+    setValue: UseFormSetValue<TFieldValues>;
+    trigger: UseFormTrigger<TFieldValues>;
+  }
 ) {
-  const { name, onBlurProp } = props;
-  const { setValue, trigger } = useFormContext<TFieldValues>();
+  const { name, onBlurProp, setValue, trigger } = props;
 
   return renderWizTextInputField({
     ...props,
@@ -253,6 +258,11 @@ function WizTextInputBound<TFieldValues extends FieldValues>(
   const control = useWizRhfControl<TFieldValues>('WizTextInput', controlProp);
   /** RHF default context is `null` when `FormProvider` is not used (control-only harness). */
   const formContext = useFormContext<TFieldValues>() as UseFormReturn<TFieldValues> | null;
+
+  if (validateOnBlur && formContext == null) {
+    throw new Error(WIZ_TEXT_INPUT_VALIDATE_ON_BLUR_CONTROL_ONLY_ERROR);
+  }
+
   const formState = useFormState({ control });
   const subscribedFieldState =
     formContext?.getFieldState(name, formState) ?? EMPTY_SUBSCRIBED_FIELD_STATE;
@@ -290,7 +300,11 @@ function WizTextInputBound<TFieldValues extends FieldValues>(
   };
 
   const textInput = validateOnBlur ? (
-    <WizTextInputValidateOnBlur {...boundProps} />
+    <WizTextInputValidateOnBlur
+      {...boundProps}
+      setValue={formContext!.setValue}
+      trigger={formContext!.trigger}
+    />
   ) : (
     <WizTextInputStandard {...boundProps} />
   );

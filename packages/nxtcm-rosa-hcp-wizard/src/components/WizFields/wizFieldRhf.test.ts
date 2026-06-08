@@ -1,5 +1,6 @@
 import React, { act, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { useForm } from 'react-hook-form';
 import { WizTextInput } from './WizTextInput/WizTextInput';
 import {
   stringLabelFromYupMeta,
@@ -89,6 +90,32 @@ describe('useWizRhfControl', () => {
       });
     }).toThrow(
       'WizTextInput: pass `control` from useForm(), or wrap the form with <FormProvider {...methods}> from react-hook-form.'
+    );
+
+    root.unmount();
+    jest.restoreAllMocks();
+  });
+
+  it('throws at render when validateOnBlur is used with control-only mount (no FormProvider)', () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    function ControlOnlyValidateOnBlurHarness() {
+      const methods = useForm({ defaultValues: { notes: '' } });
+      return React.createElement(WizTextInput<{ notes: string }>, {
+        control: methods.control,
+        name: 'notes',
+        validateOnBlur: true,
+      });
+    }
+
+    const container = document.createElement('div');
+    const root = createRoot(container);
+    expect(() => {
+      act(() => {
+        root.render(React.createElement(ControlOnlyValidateOnBlurHarness));
+      });
+    }).toThrow(
+      'WizTextInputBound: `validateOnBlur` requires FormProvider and cannot be used with control-only mounts (when only `control` is passed). Wrap the field with <FormProvider {...methods}> or omit `validateOnBlur`.'
     );
 
     root.unmount();

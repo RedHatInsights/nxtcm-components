@@ -70,11 +70,13 @@ export function useClusterNameUniquenessValidation({
     const name = getValues('name');
     const currentRegion = getValues('region');
     if (!isNonEmptyString(name) || !isNonEmptyString(currentRegion)) {
+      ++uniquenessRequestIdRef.current;
       lastCheckedRef.current = null;
       applyUniqueErrorToForm(null);
       return;
     }
     if (validateClusterNameSync(name, msgs.clusterName)) {
+      ++uniquenessRequestIdRef.current;
       applyUniqueErrorToForm(null);
       return;
     }
@@ -85,7 +87,12 @@ export function useClusterNameUniquenessValidation({
     }
 
     const requestId = ++uniquenessRequestIdRef.current;
-    const error = await check(name, currentRegion);
+    let error: string | null | undefined;
+    try {
+      error = await check(name, currentRegion);
+    } catch {
+      return;
+    }
     if (requestId !== uniquenessRequestIdRef.current) {
       return;
     }
