@@ -11,7 +11,8 @@ import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardS
 import React from 'react';
 import PopoverHintWithTitle from '../../../components/PopoverHintWithTitle';
 import { OIDCConfigHint } from '../../../components/OIDCConfigHint';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
+import type { ClusterFormData } from '@/components/Wizards/types';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../links';
@@ -31,11 +32,27 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
   const rp = useRosaHcpWizardStrings().rolesAndPolicies;
 
+  const { setValue } = useFormContext<Partial<ClusterFormData>>();
   const awsInfrastructureAccount = useWatch({ name: 'associated_aws_id' });
+  const selectedClusterVersion = useWatch({ name: 'cluster_version' });
+  const installerRoleArn = useWatch({ name: 'installer_role_arn' });
 
   const installerRoleOptions = useInstallerRoleOptions(roles);
   const { supportRoleOptions, workerRoleOptions } = useDependentRoles(roles);
   useUpdateOperatorPrefix();
+
+  const selectedRoleIsDisabled = React.useMemo(() => {
+    if (!selectedClusterVersion || !installerRoleArn) return false;
+    const selected = installerRoleOptions.find((opt) => opt.value === installerRoleArn);
+    return Boolean(selected?.disabled || selected?.ariaDisabled);
+  }, [selectedClusterVersion, installerRoleArn, installerRoleOptions]);
+
+  React.useEffect(() => {
+    if (!selectedRoleIsDisabled) return;
+    setValue('installer_role_arn', '', { shouldDirty: true, shouldValidate: true });
+    setValue('support_role_arn', '', { shouldDirty: true, shouldValidate: true });
+    setValue('worker_role_arn', '', { shouldDirty: true, shouldValidate: true });
+  }, [selectedRoleIsDisabled, setValue]);
 
   const rosaCommand = useRosaCommand();
 

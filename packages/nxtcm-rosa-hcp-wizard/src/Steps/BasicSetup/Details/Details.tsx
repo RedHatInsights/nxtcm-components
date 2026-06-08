@@ -9,7 +9,7 @@ import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../links';
-import { type ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
+import { ROSAHCPWizardData, type DropdownType, type ROSAHCPCluster } from '../../../types';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { FieldWrapper } from '../../../components/FieldWrapper';
@@ -63,12 +63,13 @@ export const Details = ({
   const drawerRef = React.useRef<HTMLSpanElement>(null);
   const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
 
-  const { control } = useFormContext<Partial<ROSAHCPCluster>>();
+  const { control, setValue } = useFormContext<Partial<ROSAHCPCluster>>();
   const { checkOnNameBlur } = useClusterNameUniquenessValidation({
     checkClusterNameUniqueness,
   });
 
   const installerRoleArn = useWatch({ control, name: 'installer_role_arn' });
+  const clusterVersion = useWatch({ control, name: 'cluster_version' });
   const associatedAwsIdRaw = useWatch({ control, name: 'associated_aws_id' });
   const associatedAwsIdForRegions =
     typeof associatedAwsIdRaw === 'string' && associatedAwsIdRaw !== ''
@@ -111,6 +112,39 @@ export const Details = ({
     openShiftVersionGroups,
     selectedInstallerRoleVersion,
   ]);
+
+  /** Whether `cluster_version` appears in `versionGroupsWithDisabled` and, if so, whether that option is disabled. */
+  const selectedVersionIsDisabled = React.useMemo(() => {
+    if (!clusterVersion) {
+      return { exists: true, isDisabled: false };
+    }
+    if (versionGroupsWithDisabled.length === 0) {
+      return { exists: false, isDisabled: false };
+    }
+    const versionStr = String(clusterVersion);
+    let matching: DropdownType | undefined;
+    for (const group of versionGroupsWithDisabled) {
+      const opt = group.options.find((o) => String(o.value) === versionStr);
+      if (opt) {
+        matching = opt;
+        break;
+      }
+    }
+    if (!matching) {
+      return { exists: false, isDisabled: false };
+    }
+    return {
+      exists: true,
+      isDisabled: Boolean(matching.ariaDisabled || matching.disabled),
+    };
+  }, [clusterVersion, versionGroupsWithDisabled]);
+
+  React.useEffect(() => {
+    if (versions.isFetching || !clusterVersion) return;
+    if (!selectedVersionIsDisabled.exists || selectedVersionIsDisabled.isDisabled) {
+      setValue('cluster_version', '', { shouldDirty: true, shouldValidate: true });
+    }
+  }, [versions.isFetching, selectedVersionIsDisabled, clusterVersion, setValue]);
 
   return (
     <Section label={d.sectionLabel}>

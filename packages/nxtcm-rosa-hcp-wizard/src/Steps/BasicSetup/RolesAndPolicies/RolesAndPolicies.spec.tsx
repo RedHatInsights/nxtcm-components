@@ -105,6 +105,66 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
       await expect(refreshButton).toBeVisible();
       await expect(refreshButton).toBeDisabled();
     });
+
+    test('should mark installer role option aria-disabled when role version is below selected cluster version', async ({
+      mount,
+      page,
+    }) => {
+      const roles = {
+        data: [
+          {
+            installerRole: {
+              ...mockRoles[0].installerRole,
+              roleVersion: '4.11.0',
+            },
+            supportRole: mockRoles[0].supportRole,
+            workerRole: mockRoles[0].workerRole,
+          },
+        ],
+        isFetching: false,
+        error: null,
+        fetch: async () => {},
+      };
+      const component = await mount(
+        <RolesAndPoliciesMount roles={roles} defaultValues={{ cluster_version: '4.12.0' }} />
+      );
+
+      await component.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
+      await expect(
+        page.getByRole('option', { name: mockRoles[0].installerRole.label })
+      ).toBeDisabled();
+    });
+
+    test('should show tooltip on disabled installer role option when account role does not support selected OpenShift version', async ({
+      mount,
+      page,
+    }) => {
+      const installerRoleDisabledDescription = rp.installerRoleOptionDisabledDescription;
+      const roles = {
+        data: [
+          {
+            installerRole: {
+              ...mockRoles[0].installerRole,
+              roleVersion: '4.11.0',
+            },
+            supportRole: mockRoles[0].supportRole,
+            workerRole: mockRoles[0].workerRole,
+          },
+        ],
+        isFetching: false,
+        error: null,
+        fetch: async () => {},
+      };
+      await mount(
+        <RolesAndPoliciesMount roles={roles} defaultValues={{ cluster_version: '4.12.0' }} />
+      );
+
+      await page.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
+      await page.getByRole('option', { name: mockRoles[0].installerRole.label }).hover();
+      await expect(
+        page.getByRole('tooltip', { name: installerRoleDisabledDescription, exact: true })
+      ).toBeVisible();
+    });
   });
 
   test.describe('RolesAndPolicies — ARNs expandable section', () => {

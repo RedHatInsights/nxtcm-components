@@ -255,35 +255,25 @@ export function createMockRosaHcpWizardData(
 ): ROSAHCPWizardData {
   const base: ROSAHCPWizardData = {
     awsInfrastructureAccounts: {
-      data: [{ label: 'Example AWS account (123456789012)', value: '123456789012' }],
+      data: fixtures.mockAwsInfrastructureAccounts,
       error: null,
       isFetching: false,
       fetch: noopFetch,
     },
     awsBillingAccounts: {
-      data: [{ label: 'Example billing account', value: '123456789123' }],
+      data: fixtures.mockAwsBillingAccounts,
       error: null,
       isFetching: false,
       fetch: noopFetch,
     },
     regions: {
-      data: [
-        { label: 'US East 1 (us-east-1)', value: 'us-east-1' },
-        { label: 'US East (Ohio) us-east-2', value: 'us-east-2' },
-      ],
+      data: fixtures.mockRegions,
       error: null,
       isFetching: false,
       fetch: noopFetch,
     },
     versions: {
-      data: {
-        latest: { label: '4.15.5', value: '4.15.5' },
-        default: { label: '4.14.12', value: '4.14.12' },
-        releases: [
-          { label: '4.13.21', value: '4.13.21' },
-          { label: '4.12.40', value: '4.12.40' },
-        ],
-      },
+      data: fixtures.mockVersionsData,
       error: null,
       isFetching: false,
       fetch: noopFetch,

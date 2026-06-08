@@ -25,7 +25,7 @@ export const useInstallerRoleOptions = (roles: RolesResource) => {
           }
         : { ...role };
     });
-  }, [roles, selectedClusterVersion, rp.installerRoleOptionDisabledDescription]);
+  }, [roles.data, selectedClusterVersion, rp.installerRoleOptionDisabledDescription]);
 
   return installerRoleOptions;
 };
