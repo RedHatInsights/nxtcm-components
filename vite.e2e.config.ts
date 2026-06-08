@@ -22,13 +22,6 @@ export default defineConfig({
     },
     dedupe: ['react', 'react-dom'],
   },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: 'modern-compiler',
-      },
-    },
-  },
   server: {
     port: 3200,
     strictPort: true,
