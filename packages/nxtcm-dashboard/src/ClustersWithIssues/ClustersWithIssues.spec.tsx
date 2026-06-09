@@ -164,7 +164,7 @@ test.describe('ClustersWithIssues — open console link', () => {
     const component = await mount(<ClustersWithIssuesWithConsoleLink data={defaultData} />);
 
     const consoleCell = component.getByTestId('open-console-c1');
-    await expect(consoleCell.locator('svg')).toBeVisible();
+    await expect(consoleCell.locator('svg[role="img"]')).toBeVisible();
   });
 
   test('should not render console column when onOpenConsole is not provided', async ({ mount }) => {
