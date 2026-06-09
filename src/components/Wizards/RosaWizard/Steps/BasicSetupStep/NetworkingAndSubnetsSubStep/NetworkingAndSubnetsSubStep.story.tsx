@@ -22,22 +22,26 @@ const mockResource = <TData,>(data: TData): Resource<TData> => ({
 export const mockSubnets: Subnet[] = [
   {
     subnet_id: 'subnet-private-1',
+    public: false,
     name: 'my-vpc-private-us-east-1a',
     availability_zone: 'us-east-1a',
   },
   {
     subnet_id: 'subnet-private-2',
+    public: false,
     name: 'my-vpc-private-us-east-1b',
     availability_zone: 'us-east-1b',
   },
   {
     subnet_id: 'subnet-public-1',
     name: 'my-vpc-public-us-east-1a',
+    public: true,
     availability_zone: 'us-east-1a',
   },
   {
     subnet_id: 'subnet-public-2',
     name: 'my-vpc-public-us-east-1b',
+    public: true,
     availability_zone: 'us-east-1b',
   },
 ];
@@ -55,11 +59,13 @@ export const mockVpcList: VPC[] = [
       {
         subnet_id: 'subnet-staging-private',
         name: 'staging-private-subnet',
+        public: false,
         availability_zone: 'us-west-2a',
       },
       {
         subnet_id: 'subnet-staging-public',
         name: 'staging-public-subnet',
+        public: true,
         availability_zone: 'us-west-2a',
       },
     ],

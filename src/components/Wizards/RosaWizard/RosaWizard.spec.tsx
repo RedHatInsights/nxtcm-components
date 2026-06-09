@@ -103,6 +103,7 @@ const minimalWizardsStepsData: { basicSetupStep: BasicSetupStepProps } = {
             subnet_id: 'subnet-1',
             name: 'subnet-a',
             availability_zone: 'us-east-1a',
+            public: true,
             cidr_block: '10.0.0.0/24',
           },
         ],

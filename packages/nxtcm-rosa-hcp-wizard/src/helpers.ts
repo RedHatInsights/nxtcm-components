@@ -148,12 +148,12 @@ const constructSelectedSubnets = (formValues?: ROSAHCPCluster): CIDRSubnet[] => 
 };
 
 const subnetsFilter = (selectedVPC: VPC | undefined) => {
-  const privateSubnets = selectedVPC?.aws_subnets.filter((privateSubnet: Subnet) =>
-    privateSubnet.name.includes('private')
+  const privateSubnets = selectedVPC?.aws_subnets.filter(
+    (privateSubnet: Subnet) => privateSubnet.public === false
   );
 
-  const publicSubnets = selectedVPC?.aws_subnets.filter((publicSubnet: Subnet) =>
-    publicSubnet.name.includes('public')
+  const publicSubnets = selectedVPC?.aws_subnets.filter(
+    (publicSubnet: Subnet) => publicSubnet.public === true
   );
 
   return {

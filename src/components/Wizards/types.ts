@@ -74,12 +74,14 @@ export type Role = {
 export type Subnet = {
   subnet_id: string;
   name: string;
+  public: boolean;
   availability_zone: string;
 };
 
 export type CIDRSubnet = {
   cidr_block: string;
   name: string;
+  public: boolean;
   subnet_id: string;
   availability_zone: string;
 };

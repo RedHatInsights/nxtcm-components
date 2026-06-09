@@ -81,6 +81,7 @@ const mockVpcs: VPC[] = [
       {
         subnet_id: 'subnet-0cd89766e94deb008',
         name: 'test-1-subnet-public1-us-east-1b',
+        public: true,
         availability_zone: 'us-east-1b',
       },
     ],
