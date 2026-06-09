@@ -1,7 +1,7 @@
-import type { ClusterFormData } from '@/components/Wizards/types';
+import type { ROSAHCPCluster } from '../types';
 
 /** Values that pass Details-step validation in CT and unit tests. */
-export const VALID_DETAILS_FORM_VALUES: Partial<ClusterFormData> = {
+export const VALID_DETAILS_FORM_VALUES: Partial<ROSAHCPCluster> = {
   name: 'mycluster',
   cluster_version: '4.16.2',
   associated_aws_id: 'aws-prod-123456789012',
@@ -10,7 +10,7 @@ export const VALID_DETAILS_FORM_VALUES: Partial<ClusterFormData> = {
 };
 
 /** Values that pass full-form validation for footer Review Submit CT (wizard subset of fields). */
-export const VALID_REVIEW_SUBMIT_FORM_VALUES: Partial<ClusterFormData> = {
+export const VALID_REVIEW_SUBMIT_FORM_VALUES: Partial<ROSAHCPCluster> = {
   ...VALID_DETAILS_FORM_VALUES,
   installer_role_arn: 'arn:aws:iam::123456789012:role/installer',
   support_role_arn: 'arn:aws:iam::123456789012:role/support',

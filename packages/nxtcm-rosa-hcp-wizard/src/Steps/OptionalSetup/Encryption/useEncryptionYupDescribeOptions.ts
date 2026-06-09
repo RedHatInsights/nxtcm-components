@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-
-import type { YupFieldDescribeOptions } from '@/utilities/yupFieldRequired';
+import type { YupFieldDescribeOptions } from '../../../utilities/yupFieldRequired';
 import type { ROSAHCPCluster } from '../../../types';
 
 /**

@@ -1,15 +1,13 @@
 import React, { type ReactNode } from 'react';
 
 import { Stack, StackItem } from '@patternfly/react-core';
-
 import SecurityGroupsViewList from './SecurityGroupsViewList';
 
 import { securityGroupsSort } from './helpers';
 import { showSecurityGroupsSection, truncateTextWithEllipsis } from '../../../../helpers';
 import { WizMultiSelect } from '../../../../components/WizFields';
 import { clusterValidationSchema } from '../../../../yupSchemas';
-import type { CloudVpc, ClusterFormData } from '@/components/Wizards/types';
-import type { ROSAHCPCluster } from '../../../../types';
+import type { CloudVpc, ROSAHCPCluster } from '../../../../types';
 import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWizardStringsContext';
 import { useFormContext, useWatch } from 'react-hook-form';
 import SecurityGroupsNoEditAlert from './SecurityGroupsNoEditAlert';
@@ -48,7 +46,7 @@ const EditSecurityGroups = ({
   const sg = useRosaHcpWizardStrings().securityGroups;
 
   const label = labelProp ?? sg.formLabel;
-  const { setValue } = useFormContext<Partial<ClusterFormData>>();
+  const { setValue } = useFormContext<Partial<ROSAHCPCluster>>();
   const watchedGroups = useWatch({ name: 'security_groups_worker' });
   const selectedGroupIds = React.useMemo(
     () => (Array.isArray(watchedGroups) ? (watchedGroups as string[]) : EMPTY_GROUP_IDS),

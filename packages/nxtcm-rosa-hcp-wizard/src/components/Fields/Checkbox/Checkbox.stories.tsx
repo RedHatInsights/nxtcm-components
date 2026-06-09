@@ -1,7 +1,6 @@
 import React, { type FormEvent } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Form } from '@patternfly/react-core';
-
 import { Checkbox, type CheckboxProps } from './Checkbox';
 
 function CheckboxDemo(args: CheckboxProps) {

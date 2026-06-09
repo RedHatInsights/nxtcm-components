@@ -38,8 +38,7 @@ import {
   type RosaHcpWizardUrlValidatorStrings,
   type RosaHcpWizardValidateRangeValidatorStrings,
 } from './stringsProvider/rosaHcpWizardStrings';
-import { CIDRSubnet } from '@/components/Wizards/types';
-import { ROSAHCPCluster } from './types';
+import { CIDRSubnet, ROSAHCPCluster } from './types';
 
 const lowercaseAlphaNumericCharacters = 'abcdefghijklmnopqrstuvwxyz1234567890';
 

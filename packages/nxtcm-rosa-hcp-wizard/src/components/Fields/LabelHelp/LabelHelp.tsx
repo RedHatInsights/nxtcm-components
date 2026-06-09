@@ -1,4 +1,4 @@
-import { useRef, type ComponentProps, type ReactNode } from 'react';
+import { type ComponentProps, type ReactNode, useRef } from 'react';
 import { Button, ButtonVariant, FormGroupLabelHelp, Popover } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 

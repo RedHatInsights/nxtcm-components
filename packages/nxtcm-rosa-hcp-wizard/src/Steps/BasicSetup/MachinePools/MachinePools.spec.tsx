@@ -1,7 +1,6 @@
-import { test, expect, type MountResult } from '@playwright/experimental-ct-react';
+import { expect, type MountResult, test } from '@playwright/experimental-ct-react';
 import type { Page } from '@playwright/test';
-
-import { checkAccessibility } from '@/test-helpers';
+import { checkAccessibility } from '../../../test-helpers';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
 import { makeMachineTypesResource, makeVpcListResource } from '../../../rosaHcpWizardCtSpecHelpers';

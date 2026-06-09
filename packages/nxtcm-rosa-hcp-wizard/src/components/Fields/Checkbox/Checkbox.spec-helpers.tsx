@@ -1,6 +1,5 @@
 import React, { useState, type FormEvent } from 'react';
 import { Form } from '@patternfly/react-core';
-
 import { Checkbox } from './Checkbox';
 
 export const CHECKBOX_HARNESS_ID = 'ct-checkbox';

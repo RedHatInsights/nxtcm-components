@@ -6,17 +6,14 @@ import {
   AlertVariant,
   Button,
   ButtonVariant,
-  WizardFooterWrapper,
-  useWizardContext,
   type CustomWizardFooterFunction,
+  useWizardContext,
   type WizardFooterProps,
+  WizardFooterWrapper,
 } from '@patternfly/react-core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-
-import type { ClusterFormData } from '@/components/Wizards/types';
 import type { ROSAHCPCluster } from '../types';
-
 import { STEP_IDS } from '../constants';
 import { useRosaHcpWizardReviewSections } from '../Steps/Review/ROSAHCPWizardReviewSections';
 import {
@@ -61,7 +58,7 @@ export function RosaHcpWizardFooter({
     setValue,
     getFieldState,
     formState: { errors },
-  } = useFormContext<Partial<ClusterFormData>>();
+  } = useFormContext<Partial<ROSAHCPCluster>>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationAlertStepId, setValidationAlertStepId] = useState<string | null>(null);
 
@@ -83,7 +80,7 @@ export function RosaHcpWizardFooter({
   const validationWasAttemptedOnActiveStep = validationAttemptedStepIds.has(activeStepId);
 
   // onTouched forms often keep formState.errors until blur; watch values so we re-trigger after edits.
-  const watchedFormValues = useWatch<Partial<ClusterFormData>>({
+  const watchedFormValues = useWatch<Partial<ROSAHCPCluster>>({
     disabled: !validationWasAttemptedOnActiveStep,
   });
 

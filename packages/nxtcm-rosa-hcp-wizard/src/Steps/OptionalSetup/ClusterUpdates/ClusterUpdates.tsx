@@ -1,6 +1,5 @@
 import { Button, Content, ContentVariants, useWizardContext } from '@patternfly/react-core';
 import { useWatch } from 'react-hook-form';
-
 import { Section } from '../../../components/Section';
 import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../links';

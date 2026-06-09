@@ -1,17 +1,15 @@
 import React from 'react';
 import { Wizard, WizardStep } from '@patternfly/react-core';
 import { FormProvider, useForm } from 'react-hook-form';
-
-import type { ClusterFormData } from '@/components/Wizards/types';
+import type { ROSAHCPCluster, VpcListResource } from '../../types';
 import { STEP_IDS } from '../../constants';
 import { makeVpcListResource } from '../../rosaHcpWizardCtSpecHelpers';
 import { RosaHcpWizardStringsProvider } from '../../stringsProvider/RosaHcpWizardStringsContext';
-import type { VpcListResource } from '../../types';
 import { getClusterValidationSchemaDefaultValues } from '../../yupSchemas';
 import { Review } from './Review';
 
 export interface ReviewHarnessProps {
-  formOverrides?: Partial<ClusterFormData>;
+  formOverrides?: Partial<ROSAHCPCluster>;
   vpcList?: VpcListResource;
 }
 
@@ -20,7 +18,7 @@ export interface ReviewHarnessProps {
  * Lives outside the spec file so Playwright CT can mount it.
  */
 export function ReviewHarness({ formOverrides = {}, vpcList }: ReviewHarnessProps) {
-  const methods = useForm<Partial<ClusterFormData>>({
+  const methods = useForm<Partial<ROSAHCPCluster>>({
     defaultValues: { ...getClusterValidationSchemaDefaultValues(), ...formOverrides },
   });
   const vpcListProps = makeVpcListResource(vpcList);

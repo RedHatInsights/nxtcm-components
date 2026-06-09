@@ -15,7 +15,7 @@ import {
   STEP_IDS,
 } from '../constants';
 import { parseCIDRSubnetLength } from '../helpers';
-import { ClusterNetwork } from '@/components/Wizards/types';
+import { ClusterNetwork, ROSAHCPCluster } from '../types';
 import type { WizardFieldMeta } from './types';
 import {
   ctx,
@@ -25,7 +25,6 @@ import {
   isValidCidr,
   rosaCommonRequiredNonEmptyTest,
 } from './helpers';
-import { ROSAHCPCluster } from '../types';
 
 export const clusterPrivacySchema = yup
   .string()

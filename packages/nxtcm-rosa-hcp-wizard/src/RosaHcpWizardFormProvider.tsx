@@ -1,26 +1,23 @@
 import React, { useCallback } from 'react';
-import { FormProvider, useForm, type Resolver } from 'react-hook-form';
+import { FormProvider, type Resolver, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-
-import type { ClusterFormData } from '@/components/Wizards/types';
-
+import type { ROSAHCPCluster, RosaHCPWizardProps } from './types';
 import { buildClusterValidationSchemaContext } from './buildClusterValidationSchemaContext';
 import { ROSAHCPWizardBody } from './ROSAHCPWizardBody';
 import { RosaHcpWizardValidationProvider } from './rosaHcpWizardValidationContext';
 import { useRosaHcpWizardValidators } from './stringsProvider/RosaHcpWizardStringsContext';
-import type { RosaHCPWizardProps } from './types';
 import type { ValidationSchemaContext } from './yupSchemas/types';
 import { clusterValidationSchema, getClusterValidationSchemaDefaultValues } from './yupSchemas';
 
 const clusterYupResolver = yupResolver(clusterValidationSchema) as Resolver<
-  Partial<ClusterFormData>
+  Partial<ROSAHCPCluster>
 >;
 
 export function RosaHcpWizardFormProvider(props: RosaHCPWizardProps) {
   const msgs = useRosaHcpWizardValidators();
   const checkClusterNameUniqueness = props.wizardData?.checkClusterNameUniqueness;
 
-  const resolver = useCallback<Resolver<Partial<ClusterFormData>>>(
+  const resolver = useCallback<Resolver<Partial<ROSAHCPCluster>>>(
     async (values, _rhfContext, options) => {
       const yupContext = buildClusterValidationSchemaContext(values, msgs, {
         checkClusterNameUniqueness: checkClusterNameUniqueness as
@@ -32,7 +29,7 @@ export function RosaHcpWizardFormProvider(props: RosaHCPWizardProps) {
     [msgs, checkClusterNameUniqueness]
   );
 
-  const methods = useForm<Partial<ClusterFormData>>({
+  const methods = useForm<Partial<ROSAHCPCluster>>({
     defaultValues: getClusterValidationSchemaDefaultValues(),
     resolver,
     mode: 'onTouched',

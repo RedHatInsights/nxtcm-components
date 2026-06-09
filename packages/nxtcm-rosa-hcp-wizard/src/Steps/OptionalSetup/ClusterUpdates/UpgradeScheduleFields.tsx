@@ -1,7 +1,6 @@
 import React from 'react';
 import { FormGroup, Grid, GridItem, Split, SplitItem } from '@patternfly/react-core';
 import { useFormContext, useWatch } from 'react-hook-form';
-
 import { HelperText } from '../../../components/Fields/HelperText';
 import { Select } from '../../../components/Fields/Select';
 import { wizFieldShowsError } from '../../../components/WizFields/wizFieldRhf';

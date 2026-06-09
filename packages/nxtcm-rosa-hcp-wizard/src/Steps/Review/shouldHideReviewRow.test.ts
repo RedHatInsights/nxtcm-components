@@ -1,9 +1,7 @@
-import type { ClusterFormData } from '@/components/Wizards/types';
-import { ClusterUpgrade } from '@/components/Wizards/types';
-
+import { ClusterUpgrade, type ROSAHCPCluster } from '../../types';
 import { shouldHideReviewRow } from './shouldHideReviewRow';
 
-const baseFormValues: Partial<ClusterFormData> = {
+const baseFormValues: Partial<ROSAHCPCluster> = {
   autoscaling: false,
   nodes_compute: 2,
   min_replicas: 2,

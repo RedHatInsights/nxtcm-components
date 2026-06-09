@@ -1,7 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Form } from '@patternfly/react-core';
-
 import { Radio } from '../Radio';
 import { RadioGroup, type RadioGroupProps } from './RadioGroup';
 

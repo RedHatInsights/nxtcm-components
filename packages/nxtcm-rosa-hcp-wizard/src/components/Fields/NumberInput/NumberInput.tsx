@@ -1,13 +1,12 @@
 import {
-  useCallback,
   type ComponentProps,
   type FormEvent,
   type MouseEvent,
   type ReactNode,
   type SyntheticEvent,
+  useCallback,
 } from 'react';
 import { FormGroup, NumberInput as PfNumberInput } from '@patternfly/react-core';
-
 import { getValidated, HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
 

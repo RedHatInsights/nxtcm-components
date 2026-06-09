@@ -3,7 +3,6 @@ import {
   MAX_NODES_HCP_DEFAULT,
   MAX_NODES_HCP_INSUFFICIENT_VERSION,
 } from './getAutoscalingMaxNodes';
-
 describe('getAutoscalingMaxNodes', () => {
   it('returns default max when openshift version is not provided', () => {
     expect(getAutoscalingMaxNodes()).toBe(MAX_NODES_HCP_DEFAULT);

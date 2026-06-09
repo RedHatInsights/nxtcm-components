@@ -1,6 +1,5 @@
 import React, { useState, type SyntheticEvent } from 'react';
 import { Form } from '@patternfly/react-core';
-
 import { NumberInput } from './NumberInput';
 
 export const NUMBER_HARNESS_FIELD_LABEL = 'Worker count';

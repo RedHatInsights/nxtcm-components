@@ -8,7 +8,7 @@ import {
 } from 'react-hook-form';
 import * as yup from 'yup';
 
-import { type YupFieldDescribeOptions } from '@/utilities/yupFieldRequired';
+import { type YupFieldDescribeOptions } from '../../utilities/yupFieldRequired';
 
 import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.types';
 import { getRosaHcpWizardStringByLabelKey } from '../../stringsProvider/getRosaHcpWizardStringByLabelKey';

@@ -1,8 +1,7 @@
-import { test, expect } from '@playwright/experimental-ct-react';
-
-import { checkAccessibility } from '@/test-helpers';
+import { expect, test } from '@playwright/experimental-ct-react';
+import { checkAccessibility } from '../../../test-helpers';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import { ClusterNetwork } from '@/components/Wizards/types';
+import { ClusterNetwork } from '../../../types';
 import { NetworkingMount } from './Networking.spec-helpers';
 
 const n = defaultRosaHcpWizardStrings.networking;

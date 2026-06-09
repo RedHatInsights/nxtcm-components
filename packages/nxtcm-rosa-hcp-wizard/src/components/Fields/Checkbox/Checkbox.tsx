@@ -1,6 +1,5 @@
-import { type ComponentProps, type ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { Checkbox as PfCheckbox, FormGroup, Stack } from '@patternfly/react-core';
-
 import { HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
 

@@ -1,13 +1,11 @@
 import { Content, ContentVariants, ExpandableSection } from '@patternfly/react-core';
 
-import type { CloudVpc } from '@/components/Wizards/types';
-import type { ROSAHCPCluster } from '../../../types';
 import { Radio } from '../../../components/Fields/RadioGroup';
 import { WizNumberInput, WizRadioGroup } from '../../../components/WizFields';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+import { type CloudVpc, type ROSAHCPCluster, type VpcListResource } from '../../../types';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import EditSecurityGroups from './SecurityGroupSection/EditSecurityGroups';
-import { VpcListResource } from '../../../types';
 
 export interface MachinePoolsAdvancedSectionProps {
   /** When true, IMDS options are disabled (unsupported cluster version). */

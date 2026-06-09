@@ -6,11 +6,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Form } from '@patternfly/react-core';
 import { FormProvider, useForm, type Resolver } from 'react-hook-form';
 
-import type { ClusterFormData } from '@/components/Wizards/types';
+import type { MachineTypesResource, ROSAHCPCluster, VpcListResource } from '../../../types';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
 import { makeMachineTypesResource, makeVpcListResource } from '../../../rosaHcpWizardCtSpecHelpers';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import type { MachineTypesResource, VpcListResource } from '../../../types';
 import {
   clusterValidationSchema,
   getClusterValidationSchemaDefaultValues,
@@ -22,7 +21,7 @@ import { MachinePools } from './MachinePools';
 export type MachinePoolsMountProps = {
   vpcList?: VpcListResource;
   machineTypes?: MachineTypesResource;
-  defaultValues?: Partial<ClusterFormData>;
+  defaultValues?: Partial<ROSAHCPCluster>;
 };
 
 export const MachinePoolsMount: React.FC<MachinePoolsMountProps> = ({
@@ -42,14 +41,14 @@ export const MachinePoolsMount: React.FC<MachinePoolsMountProps> = ({
 
   const schemaDefaults = getClusterValidationSchemaDefaultValues();
 
-  const methods = useForm<Partial<ClusterFormData>>({
+  const methods = useForm<Partial<ROSAHCPCluster>>({
     defaultValues: {
       ...schemaDefaults,
       region: 'us-east-1',
       cluster_version: '4.16.2',
       ...defaultValues,
     },
-    resolver: yupResolver(clusterValidationSchema) as Resolver<Partial<ClusterFormData>>,
+    resolver: yupResolver(clusterValidationSchema) as Resolver<Partial<ROSAHCPCluster>>,
     context: validationContext,
     mode: 'onTouched',
   });

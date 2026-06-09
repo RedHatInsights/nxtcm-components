@@ -1,8 +1,6 @@
 import { type ReactNode, useState } from 'react';
 import { type FieldValues, useController } from 'react-hook-form';
-
-import { requiredFromYup } from '@/utilities/yupFieldRequired';
-
+import { requiredFromYup } from '../../../utilities/yupFieldRequired';
 import { FieldWithAPIErrorAlert } from '../../FieldWithAPIErrorAlert';
 import { MultiSelect, type MultiSelectProps } from '../../Fields/MultiSelect';
 import { useWizFieldPresentation } from '../wizFieldPresentation';

@@ -7,8 +7,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm, type Resolver } from 'react-hook-form';
 import { Wizard, WizardStep } from '@patternfly/react-core';
 
-import type { ClusterFormData } from '@/components/Wizards/types';
-import { ClusterEncryptionKeys, ClusterNetwork, ClusterUpgrade } from '@/components/Wizards/types';
+import {
+  ClusterEncryptionKeys,
+  ClusterNetwork,
+  ClusterUpgrade,
+  type ROSAHCPCluster,
+} from '../types';
 import { Details } from '../Steps/BasicSetup/Details/Details';
 import { RolesAndPolicies } from '../Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies';
 import { Encryption } from '../Steps/OptionalSetup/Encryption/Encryption';
@@ -41,7 +45,7 @@ import type {
   VersionsResource,
 } from '../types';
 
-const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ClusterFormData> = {
+const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ROSAHCPCluster> = {
   associated_aws_id: '',
   byo_oidc_config_id: '',
   custom_operator_roles_prefix: '',
@@ -68,7 +72,7 @@ const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ClusterFormData> = {
 };
 
 export type RosaHcpWizardValidationMountProps = {
-  defaultValues?: Partial<ClusterFormData>;
+  defaultValues?: Partial<ROSAHCPCluster>;
 };
 
 export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMountProps> = ({
@@ -84,9 +88,9 @@ export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMount
     []
   );
 
-  const methods = useForm<ClusterFormData>({
+  const methods = useForm<ROSAHCPCluster>({
     defaultValues: { ...DEFAULT_ROSA_HCP_CT_FORM_VALUES, ...defaultValues },
-    resolver: yupResolver(clusterValidationSchema) as Resolver<ClusterFormData>,
+    resolver: yupResolver(clusterValidationSchema) as Resolver<ROSAHCPCluster>,
     context: validationContext,
     mode: 'onTouched',
   });

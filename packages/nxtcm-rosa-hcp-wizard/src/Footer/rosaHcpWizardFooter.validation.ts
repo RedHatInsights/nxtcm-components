@@ -7,7 +7,6 @@ import type {
   UseFormSetValue,
   UseFormTrigger,
 } from 'react-hook-form';
-
 import type { RosaHcpWizardReviewSection } from '../Steps/Review/rosaHcpWizardReviewSections.data';
 import { pathsHaveValidationIssues } from './rosaHcpWizardFooter.utils';
 

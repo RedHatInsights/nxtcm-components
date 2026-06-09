@@ -1,5 +1,5 @@
 import React from 'react';
-import { Resource, ValidationResource, OpenShiftVersionsData } from '@/components/Wizards/types';
+import { Resource, ValidationResource, OpenShiftVersionsData } from './types';
 
 const REFETCH_ALL_DELAY_MS = 2000;
 /** Shared API error string for the `AllApiErrors` story (popover/detail body). */

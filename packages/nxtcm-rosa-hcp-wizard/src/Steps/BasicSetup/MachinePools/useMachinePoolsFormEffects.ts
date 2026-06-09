@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-
-import type { ClusterFormData } from '@/components/Wizards/types';
+import type { ROSAHCPCluster } from '../../../types';
 import { resetMachinePoolVpcDependentFields } from '../../../resetMachinePoolVpcDependentFields';
 import { minReplicasSchema, maxReplicasSchema, nodesComputeSchema } from '../../../yupSchemas';
 
@@ -11,7 +10,7 @@ const defaultNodesCompute = nodesComputeSchema.getDefault() as number;
 
 /** Resets subnet and security group selections when the selected VPC changes. */
 export function useResetOnVpcChange(vpcId: string | undefined): void {
-  const { setValue } = useFormContext<Partial<ClusterFormData>>();
+  const { setValue } = useFormContext<Partial<ROSAHCPCluster>>();
   const prevVpcIdRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
@@ -28,7 +27,7 @@ export function useResetOnVpcChange(vpcId: string | undefined): void {
 
 /** Ensures at least one machine pool subnet row exists for the single-subnet UI. */
 export function useEnsureMachinePoolSubnetRow(): void {
-  const { setValue } = useFormContext<Partial<ClusterFormData>>();
+  const { setValue } = useFormContext<Partial<ROSAHCPCluster>>();
   const machinePoolsSubnets = useWatch({ name: 'machine_pools_subnets' });
 
   useLayoutEffect(() => {
@@ -40,7 +39,7 @@ export function useEnsureMachinePoolSubnetRow(): void {
 
 /** Applies default replica / compute values when autoscaling is toggled. */
 export function useAutoscalingFieldDefaults(autoscaling: boolean | undefined): void {
-  const { setValue } = useFormContext<Partial<ClusterFormData>>();
+  const { setValue } = useFormContext<Partial<ROSAHCPCluster>>();
   const prevAutoscalingRef = useRef<boolean | undefined>(undefined);
 
   useEffect(() => {

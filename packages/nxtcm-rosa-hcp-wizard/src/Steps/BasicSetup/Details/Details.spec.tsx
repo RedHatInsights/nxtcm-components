@@ -1,8 +1,6 @@
-import { test, expect } from '@playwright/experimental-ct-react';
-
-import { checkAccessibility } from '@/test-helpers';
-import type { Resource } from '../../../types';
-import type { Role } from '@/components/Wizards/types';
+import { expect, test } from '@playwright/experimental-ct-react';
+import { checkAccessibility } from '../../../test-helpers';
+import type { Resource, Role } from '../../../types';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
 import { makeVpcListResource } from '../../../rosaHcpWizardCtSpecHelpers';

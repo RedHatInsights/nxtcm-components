@@ -1,21 +1,20 @@
 import {
   forwardRef,
-  useState,
   type ForwardRefExoticComponent,
   type PropsWithoutRef,
   type RefAttributes,
+  useState,
 } from 'react';
 import {
   Button,
   FormGroup,
   InputGroup,
   InputGroupItem,
+  Spinner,
   TextInput as PfTextInput,
   type TextInputProps as PfTextInputProps,
-  Spinner,
 } from '@patternfly/react-core';
 import { EyeIcon, EyeSlashIcon } from '@patternfly/react-icons';
-
 import { getValidated, HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
 

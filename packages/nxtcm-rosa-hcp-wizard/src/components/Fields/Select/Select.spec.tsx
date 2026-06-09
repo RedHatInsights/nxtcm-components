@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/experimental-ct-react';
-
+import { expect, test } from '@playwright/experimental-ct-react';
 import { PlainMenuHarness, RefreshHarness, TypeaheadHarness } from './Select.spec-helpers';
 
 test.describe('Select', () => {

@@ -1,6 +1,5 @@
 import { MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH } from './constants';
 import { securityGroupsSort } from './Steps/BasicSetup/MachinePools/SecurityGroupSection/helpers';
-import type { ClusterFormData } from '@/components/Wizards/types';
 import {
   ClusterUpgrade,
   CIDRSubnet,
@@ -30,7 +29,7 @@ export function getNestedValue(source: unknown, path: string): unknown {
 }
 
 export function resolveSelectedVpc(
-  selectedVpcRaw: ClusterFormData['selected_vpc'] | undefined,
+  selectedVpcRaw: ROSAHCPCluster['selected_vpc'] | undefined,
   vpcListData: VPC[]
 ): VPC | undefined {
   if (typeof selectedVpcRaw === 'string') {

@@ -1,8 +1,6 @@
 import type { DropEvent } from '@patternfly/react-core';
 import { type FieldValues, useController } from 'react-hook-form';
-
-import { requiredFromYup } from '@/utilities/yupFieldRequired';
-
+import { requiredFromYup } from '../../../utilities/yupFieldRequired';
 import { FileUpload, type FileUploadProps } from '../../Fields/FileUpload';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
 import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';

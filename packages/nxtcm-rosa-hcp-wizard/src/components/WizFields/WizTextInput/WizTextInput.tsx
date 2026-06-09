@@ -1,8 +1,6 @@
-import { type FormEvent, type ReactNode } from 'react';
+import type { FormEvent, ReactNode } from 'react';
 import { type FieldValues, useController } from 'react-hook-form';
-
-import { requiredFromYup } from '@/utilities/yupFieldRequired';
-
+import { requiredFromYup } from '../../../utilities/yupFieldRequired';
 import { TextInput, type TextInputProps } from '../../Fields/TextInput';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
 import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';

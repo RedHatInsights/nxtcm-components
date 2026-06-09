@@ -6,7 +6,7 @@ import {
   getYupFieldDescriptionAtPath,
   testsFromDescription,
   type YupFieldDescribeOptions,
-} from '@/utilities/yupFieldDescribe';
+} from '../../utilities/yupFieldDescribe';
 
 /** Yup's public `Test` type hides `OPTIONS`; `describe()` uses this internally. */
 type YupInternalTest = yup.AnySchema['tests'][number] & {
