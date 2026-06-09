@@ -98,28 +98,17 @@ export function isValidYaml(yamlString: string): boolean {
   }
 }
 
-export function parseMultiDocYaml(yamlStr: string): Record<string, unknown> | null {
+export function parseRosaControlPlaneYaml(yamlStr: string): Record<string, unknown> | null {
   try {
-    const docs = yamlStr.split(/^---$/m).filter((doc) => doc.trim());
-    if (docs.length === 0) return null;
-
-    let parsed: Record<string, unknown> | null = null;
-    for (const doc of docs) {
-      try {
-        const obj = yaml.load(doc);
-        if (
-          obj &&
-          typeof obj === 'object' &&
-          (obj as Record<string, unknown>).kind === 'ROSAControlPlane'
-        ) {
-          parsed = obj as Record<string, unknown>;
-          break;
-        }
-      } catch {
-        // skip unparseable docs
-      }
+    const obj = yaml.load(yamlStr);
+    if (
+      !obj ||
+      typeof obj !== 'object' ||
+      (obj as Record<string, unknown>).kind !== 'ROSAControlPlane'
+    ) {
+      return null;
     }
-    if (!parsed) return null;
+    const parsed = obj as Record<string, unknown>;
 
     const spec = parsed.spec as Record<string, unknown> | undefined;
     const metadata = parsed.metadata as Record<string, unknown> | undefined;

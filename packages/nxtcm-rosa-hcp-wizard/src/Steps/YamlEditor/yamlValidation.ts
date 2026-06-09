@@ -95,51 +95,34 @@ function formatAjvError(err: ErrorObject): string {
 }
 
 export function validateYaml(yamlStr: string): ValidationError[] {
-  const docs = yamlStr.split(/^---$/m).filter((doc) => doc.trim());
+  let parsed: unknown;
+  try {
+    parsed = yaml.load(yamlStr);
+  } catch (e) {
+    if (e instanceof yaml.YAMLException) {
+      return [
+        {
+          message: e.message.split('\n')[0],
+          line: (e.mark?.line ?? 0) + 1,
+          column: (e.mark?.column ?? 0) + 1,
+          severity: 'error',
+        },
+      ];
+    }
+    return [];
+  }
 
-  if (docs.length === 0) {
+  if (
+    parsed === null ||
+    typeof parsed !== 'object' ||
+    (parsed as Record<string, unknown>).kind !== 'ROSAControlPlane'
+  ) {
     return [
       { message: 'Missing ROSAControlPlane document', line: 1, column: 1, severity: 'error' },
     ];
   }
 
-  let rosaDoc: unknown;
-
-  for (const doc of docs) {
-    let parsed: unknown;
-    try {
-      parsed = yaml.load(doc);
-    } catch (e) {
-      if (e instanceof yaml.YAMLException) {
-        return [
-          {
-            message: e.message.split('\n')[0],
-            line: (e.mark?.line ?? 0) + 1,
-            column: (e.mark?.column ?? 0) + 1,
-            severity: 'error',
-          },
-        ];
-      }
-      return [];
-    }
-
-    if (
-      parsed !== null &&
-      typeof parsed === 'object' &&
-      (parsed as Record<string, unknown>).kind === 'ROSAControlPlane'
-    ) {
-      rosaDoc = parsed;
-      break;
-    }
-  }
-
-  if (rosaDoc === undefined) {
-    return [
-      { message: 'Missing ROSAControlPlane document', line: 1, column: 1, severity: 'error' },
-    ];
-  }
-
-  const valid = validateRosaControlPlane(rosaDoc);
+  const valid = validateRosaControlPlane(parsed);
   if (valid || !validateRosaControlPlane.errors) return [];
 
   return validateRosaControlPlane.errors.map((err) => ({

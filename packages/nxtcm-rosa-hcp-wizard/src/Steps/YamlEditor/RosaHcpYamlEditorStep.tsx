@@ -20,7 +20,7 @@ import { RosaHcpYamlMonacoLoader } from './RosaHcpYamlMonacoLoader';
 import { RosaHcpSchemaPanel } from './RosaHcpSchemaPanel';
 import { setupMonacoEnvironmentIfNeeded } from './monacoYamlSetup';
 import { validateYaml } from './yamlValidation';
-import { parseMultiDocYaml } from './yamlUtils';
+import { parseRosaControlPlaneYaml } from './yamlUtils';
 import rosaHcpTemplateRaw from './templates/rosa-hcp-template.hbs?raw';
 
 Handlebars.registerHelper(
@@ -201,7 +201,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
       ref,
       () => ({
         applyToForm() {
-          const parsed = parseMultiDocYaml(pendingYamlRef.current);
+          const parsed = parseRosaControlPlaneYaml(pendingYamlRef.current);
           if (parsed?.cluster) {
             Object.entries(parsed.cluster).forEach(([key, value]) => {
               setValue(key as keyof ROSAHCPCluster, value as ROSAHCPCluster[keyof ROSAHCPCluster]);
