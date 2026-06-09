@@ -43,6 +43,12 @@ export function shouldHideReviewRow({
       return true;
     }
   }
+  if (path === 'additional_trust_bundle') {
+    const bundle = formValues.additional_trust_bundle;
+    if (typeof bundle !== 'string' || bundle.trim() === '') {
+      return true;
+    }
+  }
 
   return false;
 }

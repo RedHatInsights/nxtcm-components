@@ -93,6 +93,7 @@ export const additionalTrustBundleSchema = yup
     labelKey: 'clusterWideProxy.trustBundleLabel',
     stepId: STEP_IDS.CLUSTER_WIDE_PROXY,
     fieldType: 'textarea',
+    collapseOnRequired: true,
   } satisfies WizardFieldMeta)
   .test('trust-bundle', '', function (value) {
     if (!value) return true;

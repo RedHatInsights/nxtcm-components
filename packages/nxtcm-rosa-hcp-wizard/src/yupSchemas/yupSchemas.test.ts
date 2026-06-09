@@ -1423,6 +1423,13 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
       const meta = wizardFieldMetaByPath('does_not_exist');
       expect(meta).toBeUndefined();
     });
+
+    it('returns collapseOnRequired for additional_trust_bundle', () => {
+      const meta = wizardFieldMetaByPath('additional_trust_bundle');
+      expect(meta).toBeDefined();
+      expect(meta!.collapseOnRequired).toBe(true);
+      expect(meta!.noEditAfterSubmit).toBeUndefined();
+    });
   });
 
   describe('getClusterValidationSchemaDefaultValues', () => {

@@ -33,6 +33,8 @@ export type WizardFieldMeta = {
   title?: string;
   /** Display or hide fieldset legend example: Label on radio buttons group */
   fieldSetLegend?: boolean;
+  /** Whether the field should be collapsed when required. */
+  collapseOnRequired?: boolean;
 };
 
 /**

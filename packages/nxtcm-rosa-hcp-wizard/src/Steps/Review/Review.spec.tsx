@@ -9,6 +9,14 @@ const mp = defaultRosaHcpWizardStrings.machinePools;
 const sg = defaultRosaHcpWizardStrings.securityGroups;
 const a = defaultRosaHcpWizardStrings.autoscaling;
 const cu = defaultRosaHcpWizardStrings.clusterUpdates;
+const cw = defaultRosaHcpWizardStrings.clusterWideProxy;
+const reviewStrings = defaultRosaHcpWizardStrings.review;
+
+const validTrustBundlePem = `-----BEGIN CERTIFICATE-----
+MIIBkTCB+wIJAKHBfpHYbpHTMA0GCSqGSIb3DQEBCwUAMBExDzANBgNVBAMMBnRl
+c3RjYTAeFw0yMzAxMDEwMDAwMDBaFw0yNDAxMDEwMDAwMDBaMBExDzANBgNVBAMM
+BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
+-----END CERTIFICATE-----`;
 
 test.describe('Review', () => {
   test('renders review guidance and section summaries', async ({ mount }) => {
@@ -34,6 +42,40 @@ test.describe('Review', () => {
     await expect(proxyToggle).toBeVisible();
     await expect(proxyToggle).toHaveAttribute('aria-expanded', 'true');
     await expect(c.getByText('http://proxy.example.com:8080')).toBeVisible();
+  });
+
+  test('hides additional trust bundle row when proxy section is visible but bundle is empty', async ({
+    mount,
+  }) => {
+    const c = await mount(
+      <ReviewHarness formOverrides={{ http_proxy_url: 'http://proxy.example.com:8080' }} />
+    );
+
+    await expect(c.getByText(cw.trustBundleLabel, { exact: true })).toHaveCount(0);
+    await expect(c.getByRole('button', { name: reviewStrings.showMore })).toHaveCount(0);
+  });
+
+  test('collapses additional trust bundle by default and expands on Show more', async ({
+    mount,
+  }) => {
+    const c = await mount(
+      <ReviewHarness
+        formOverrides={{
+          http_proxy_url: 'http://proxy.example.com:8080',
+          additional_trust_bundle: validTrustBundlePem,
+        }}
+      />
+    );
+
+    await expect(c.getByText(cw.trustBundleLabel, { exact: true })).toBeVisible();
+    const showMore = c.getByRole('button', { name: reviewStrings.showMore });
+    await expect(showMore).toBeVisible();
+    await expect(showMore).toHaveAttribute('aria-expanded', 'false');
+    await expect(c.getByText(/-----BEGIN CERTIFICATE-----/)).toHaveCount(0);
+
+    await showMore.click();
+    await expect(c.getByRole('button', { name: reviewStrings.showLess })).toBeVisible();
+    await expect(c.getByText(/-----BEGIN CERTIFICATE-----/)).toBeVisible();
   });
 
   test('renders one Edit Step control per visible review section', async ({ mount }) => {
