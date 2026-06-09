@@ -50,8 +50,13 @@ export function RosaHcpWizardFooter({
   const { goToStepById } = useWizardContext();
   const reviewSections = useRosaHcpWizardReviewSections();
   const { wizard } = useRosaHcpWizardStrings();
-  const { markValidationAttempted, clearValidationAttempted, validationAttemptedStepIds } =
-    useRosaHcpWizardValidation();
+  const {
+    markValidationAttempted,
+    clearValidationAttempted,
+    validationAttemptedStepIds,
+    validationAlertStepId,
+    setValidationAlertStepId,
+  } = useRosaHcpWizardValidation();
   const {
     trigger,
     getValues,
@@ -60,7 +65,6 @@ export function RosaHcpWizardFooter({
     formState: { errors },
   } = useFormContext<Partial<ROSAHCPCluster>>();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [validationAlertStepId, setValidationAlertStepId] = useState<string | null>(null);
 
   const activeStepId = String(activeStep.id);
   const getCurrentStepId = useCallback(() => String(activeStep.id), [activeStep.id]);
@@ -87,10 +91,16 @@ export function RosaHcpWizardFooter({
   const showValidationAlert = validationAlertStepId === activeStepId;
 
   useEffect(() => {
+    if (validationAlertStepId === activeStepId && !validationAttemptedStepIds.has(activeStepId)) {
+      setValidationAlertStepId(null);
+    }
+  }, [activeStepId, setValidationAlertStepId, validationAlertStepId, validationAttemptedStepIds]);
+
+  useEffect(() => {
     setValidationAlertStepId((current) =>
       current !== null && current !== activeStepId ? null : current
     );
-  }, [activeStepId]);
+  }, [activeStepId, setValidationAlertStepId]);
 
   const revealInvalidFields = useCallback(
     (fieldPaths: readonly string[]) => {
@@ -107,7 +117,7 @@ export function RosaHcpWizardFooter({
       }
       setValidationAlertStepId(activeStepId);
     },
-    [activeStepId, markValidationAttempted, revealInvalidFields]
+    [activeStepId, markValidationAttempted, revealInvalidFields, setValidationAlertStepId]
   );
 
   // Re-run Yup when the user edits after a failed Next/Submit so derived fields and the alert stay in sync.
@@ -140,10 +150,10 @@ export function RosaHcpWizardFooter({
     activeStepId,
     clearValidationAttempted,
     getCurrentStepId,
-    errors,
     getFieldState,
     isReviewStep,
     reviewSections,
+    setValidationAlertStepId,
     stepFieldPaths,
     trigger,
     watchedFormValues,
@@ -223,6 +233,7 @@ export function RosaHcpWizardFooter({
     markValidationAttempted,
     revealInvalidFields,
     reviewSections,
+    setValidationAlertStepId,
     trigger,
   ]);
 

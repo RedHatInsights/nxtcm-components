@@ -12,6 +12,7 @@ import {
   useWizardContext,
 } from '@patternfly/react-core';
 import LockIcon from '@patternfly/react-icons/dist/esm/icons/lock-icon';
+import PencilAltIcon from '@patternfly/react-icons/dist/esm/icons/pencil-alt-icon';
 import get from 'get-value';
 import { useWatch } from 'react-hook-form';
 
@@ -105,9 +106,11 @@ const ReviewFieldRow = ({
   );
 };
 
-type ReviewProps = Pick<ROSAHCPWizardData, 'vpcList'>;
+type ReviewProps = Pick<ROSAHCPWizardData, 'vpcList'> & {
+  onOpenYamlEditor?: () => void;
+};
 
-export const Review = ({ vpcList }: ReviewProps) => {
+export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
   const { goToStepById } = useWizardContext();
   const watchedFormValues = useWatch();
   const defaultWizardFormValues = getClusterValidationSchemaDefaultValues();
@@ -133,6 +136,15 @@ export const Review = ({ vpcList }: ReviewProps) => {
 
   return (
     <Section label={review.sectionLabel} id={STEP_IDS.REVIEW}>
+      {onOpenYamlEditor && (
+        <Flex justifyContent={{ default: 'justifyContentFlexEnd' }} className="pf-v6-u-mb-md">
+          <FlexItem>
+            <Button variant="secondary" icon={<PencilAltIcon />} onClick={onOpenYamlEditor}>
+              {review.editInYaml}
+            </Button>
+          </FlexItem>
+        </Flex>
+      )}
       <Alert
         variant={AlertVariant.info}
         title={

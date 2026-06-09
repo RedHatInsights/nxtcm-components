@@ -6,7 +6,8 @@
   },
   "include": [
     "src/**/*",
-    "src/types/typings.d.ts"
+    "../../src/types/typings.d.ts",
+    "../../src/vite-env.d.ts"
   ],
   "exclude": [
     "**/*.spec.tsx",

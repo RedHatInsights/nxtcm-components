@@ -139,6 +139,10 @@ const RosaWizardBody = (props: RosaWizardProps) => {
     WizardNavigationContext | undefined
   >();
 
+  const handleSetWizardContext = React.useCallback((context: WizardNavigationContext) => {
+    setUseWizardContext(context);
+  }, []);
+
   const { basicSetupStep } = wizardsStepsData;
 
   const hasSubmitError = !!onSubmitError;
@@ -188,7 +192,9 @@ const RosaWizardBody = (props: RosaWizardProps) => {
           title={title}
           skipToReviewStepIds={skipToReviewStepIds}
           defaultData={defaultClusterData}
-          setUseWizardContext={setUseWizardContext}
+          setUseWizardContext={
+            handleSetWizardContext as React.ComponentProps<typeof WizardPage>['setUseWizardContext']
+          }
           resumeAtStepId={resumeAtStepId}
           onResumedToStep={() => setResumeAtStepId(null)}
           yaml={yaml}

@@ -165,7 +165,6 @@ export type RosaHcpWizardStrings = {
       additionalSetup: string;
       encryptionOptional: string;
       clusterUpdatesOptional: string;
-      yamlEditor: string;
       review: string;
     };
     /** Shown above the footer when Next is pressed and the current step has validation errors. */
@@ -180,6 +179,7 @@ export type RosaHcpWizardStrings = {
     submit: string;
     /** Footer Cancel button label. */
     cancel: string;
+    applyChanges: string;
   };
   submitError: {
     title: string;
@@ -192,6 +192,16 @@ export type RosaHcpWizardStrings = {
     parseErrorTitle: string;
     convertError: string;
     invalidYaml: string;
+    discardChanges: string;
+    discardConfirmTitle: string;
+    discardConfirmBody: string;
+    discardConfirmYes: string;
+    cancelCreation: string;
+    schemaTitle: string;
+    schemaToggleAriaLabel: string;
+    schemaShowTooltip: string;
+    schemaHideTooltip: string;
+    schemaSearchPlaceholder: string;
   };
   associateAwsDrawer: {
     panelTitle: string;
@@ -446,6 +456,7 @@ export type RosaHcpWizardStrings = {
     optionalNetworkingToggle: string;
     clusterUpdatesToggle: string;
     editStep: string;
+    editInYaml: string;
     clusterName: string;
     openShiftVersion: string;
     awsInfra: string;

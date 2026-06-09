@@ -4,8 +4,12 @@ import { useRosaHcpWizardReviewSections } from './Steps/Review/ROSAHCPWizardRevi
 type RosaHcpWizardValidationContextValue = {
   fieldPathToStepId: Readonly<Record<string, string>>;
   validationAttemptedStepIds: ReadonlySet<string>;
+  validationAlertStepId: string | null;
   markValidationAttempted: (stepId: string) => void;
   clearValidationAttempted: (stepId: string) => void;
+  setValidationAlertStepId: (
+    stepId: string | null | ((prev: string | null) => string | null)
+  ) => void;
 };
 
 const RosaHcpWizardValidationContext = createContext<RosaHcpWizardValidationContextValue | null>(
@@ -28,6 +32,15 @@ export function RosaHcpWizardValidationProvider({ children }: { children: ReactN
 
   const [validationAttemptedStepIds, setValidationAttemptedStepIds] = useState(
     () => new Set<string>()
+  );
+  const [validationAlertStepId, setValidationAlertStepIdState] = useState<string | null>(null);
+  const setValidationAlertStepId = useCallback(
+    (stepIdOrFn: string | null | ((prev: string | null) => string | null)) => {
+      setValidationAlertStepIdState((prev) =>
+        typeof stepIdOrFn === 'function' ? stepIdOrFn(prev) : stepIdOrFn
+      );
+    },
+    []
   );
 
   const markValidationAttempted = useCallback((stepId: string) => {
@@ -56,13 +69,17 @@ export function RosaHcpWizardValidationProvider({ children }: { children: ReactN
     () => ({
       fieldPathToStepId,
       validationAttemptedStepIds,
+      validationAlertStepId,
       markValidationAttempted,
       clearValidationAttempted,
+      setValidationAlertStepId,
     }),
     [
       clearValidationAttempted,
       fieldPathToStepId,
       markValidationAttempted,
+      setValidationAlertStepId,
+      validationAlertStepId,
       validationAttemptedStepIds,
     ]
   );

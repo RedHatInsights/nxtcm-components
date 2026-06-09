@@ -137,7 +137,8 @@ export async function reconcileValidationAttemptedFlags<TFieldValues extends Fie
 
     let activeStepBecameValid = false;
     const allPaths = reviewSections.flatMap((section) => section.fieldPaths);
-    if (stepPathsAreValid(allPaths, getFieldState, errors)) {
+    const ignoreStaleResolverErrors = { ignoreResolverErrors: true } as const;
+    if (stepPathsAreValid(allPaths, getFieldState, errors, ignoreStaleResolverErrors)) {
       clearValidationAttempted(stepIdAtStart);
       activeStepBecameValid = true;
     }
@@ -146,7 +147,7 @@ export async function reconcileValidationAttemptedFlags<TFieldValues extends Fie
       if (sectionPaths.length === 0) {
         continue;
       }
-      if (stepPathsAreValid(sectionPaths, getFieldState, errors)) {
+      if (stepPathsAreValid(sectionPaths, getFieldState, errors, ignoreStaleResolverErrors)) {
         clearValidationAttempted(section.id);
       }
     }
@@ -158,7 +159,7 @@ export async function reconcileValidationAttemptedFlags<TFieldValues extends Fie
     return true;
   }
 
-  if (stepPathsAreValid(stepFieldPaths, getFieldState, errors)) {
+  if (stepPathsAreValid(stepFieldPaths, getFieldState, errors, { ignoreResolverErrors: true })) {
     clearValidationAttempted(stepIdAtStart);
     return true;
   }

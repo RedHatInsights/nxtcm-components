@@ -44,7 +44,7 @@ test.describe('Telemetry', () => {
 
   test('should render icons for both statuses', async ({ mount }) => {
     const component = await mount(<Telemetry data={defaultData} />);
-    const icons = component.locator('svg');
+    const icons = component.locator('svg[role="img"]');
     await expect(icons).toHaveCount(2);
   });
 
