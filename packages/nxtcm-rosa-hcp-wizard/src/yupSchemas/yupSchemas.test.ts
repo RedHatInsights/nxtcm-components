@@ -1432,6 +1432,7 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
       expect(defaults.nodes_compute).toBe(2);
       expect(defaults.compute_root_volume).toBe(300);
       expect(defaults.upgrade_policy).toBe('automatic');
+      expect(defaults.upgrade_schedule).toBe('00 0 * * 0');
     });
   });
 });

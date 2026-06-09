@@ -20,6 +20,7 @@ export const upgradePolicySchema = yup
 
 export const upgradeScheduleSchema = yup
   .string()
+  .default('00 0 * * 0')
   .meta({
     id: 'upgrade_schedule',
     labelKey: 'clusterUpdates.upgradeScheduleLabel',

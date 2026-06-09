@@ -6,7 +6,10 @@ import { LabelHelp } from '../LabelHelp';
 
 type CheckboxComponentProps = ComponentProps<typeof PfCheckbox>;
 
-export interface CheckboxProps extends Omit<CheckboxComponentProps, 'label' | 'body' | 'children'> {
+export interface CheckboxProps extends Omit<
+  CheckboxComponentProps,
+  'label' | 'body' | 'children' | 'ref'
+> {
   id: string;
   label: ReactNode | string;
   title?: string;
