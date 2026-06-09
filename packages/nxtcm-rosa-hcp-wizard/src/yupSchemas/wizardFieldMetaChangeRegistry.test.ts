@@ -95,9 +95,24 @@ describe('wizardFieldMetaChangeRegistry', () => {
       ]);
     });
 
+    it('lists cidr_default dependent sync rules from Yup meta', () => {
+      expect(getWizardFieldSyncsForSourceField('cidr_default')).toEqual([
+        {
+          when: true,
+          setDefaults: [
+            'network_machine_cidr',
+            'network_service_cidr',
+            'network_pod_cidr',
+            'network_host_prefix',
+          ],
+        },
+      ]);
+    });
+
     it('returns an entry per source field with sync metadata', () => {
       const entries = listWizardFieldSyncEntries();
       expect(entries.some((entry) => entry.sourceField === 'autoscaling')).toBe(true);
+      expect(entries.some((entry) => entry.sourceField === 'cidr_default')).toBe(true);
       expect(entries.every((entry) => entry.syncs.length > 0)).toBe(true);
     });
   });

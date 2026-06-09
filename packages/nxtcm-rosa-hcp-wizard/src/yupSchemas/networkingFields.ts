@@ -65,6 +65,17 @@ export const cidrDefaultSchema = yup
     fieldType: 'checkbox',
     advanced: true,
     hideInReview: true,
+    syncsFieldsOnChange: [
+      {
+        when: true,
+        setDefaults: [
+          'network_machine_cidr',
+          'network_service_cidr',
+          'network_pod_cidr',
+          'network_host_prefix',
+        ],
+      },
+    ],
   } satisfies WizardFieldMeta);
 
 export const networkMachineCidrSchema = yup

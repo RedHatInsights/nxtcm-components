@@ -9,6 +9,7 @@ import fixtures from '../ROSAHCPWizard.fixtures';
 import { getWizardFieldSyncsForSourceField } from '../yupSchemas';
 
 const autoscalingSyncRules = getWizardFieldSyncsForSourceField('autoscaling');
+const cidrDefaultSyncRules = getWizardFieldSyncsForSourceField('cidr_default');
 
 jest.mock('./resetFieldsToDefaultValues', () => ({
   resetFieldsToDefaultValues: jest.fn(),
@@ -148,6 +149,48 @@ describe('applyWizardFieldMetaChangeEffects', () => {
       {},
       { http_proxy_url: '' }
     );
+  });
+
+  it('syncs CIDR defaults when cidr_default is re-checked', () => {
+    const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
+
+    applyWizardFieldMetaChangeEffects({
+      sourceField: 'cidr_default',
+      formValues: { cidr_default: true },
+      previousValue: false,
+      currentValue: true,
+      wizardData: makeWizardData(),
+      setValue,
+    });
+
+    expect(syncFieldsOnSourceChangeMock).toHaveBeenCalledWith(
+      setValue,
+      cidrDefaultSyncRules,
+      true,
+      undefined
+    );
+    expect(resetFieldsToDefaultValuesMock).not.toHaveBeenCalled();
+  });
+
+  it('does not reset CIDR fields when cidr_default is unchecked', () => {
+    const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
+
+    applyWizardFieldMetaChangeEffects({
+      sourceField: 'cidr_default',
+      formValues: { cidr_default: false },
+      previousValue: true,
+      currentValue: false,
+      wizardData: makeWizardData(),
+      setValue,
+    });
+
+    expect(syncFieldsOnSourceChangeMock).toHaveBeenCalledWith(
+      setValue,
+      cidrDefaultSyncRules,
+      false,
+      undefined
+    );
+    expect(resetFieldsToDefaultValuesMock).not.toHaveBeenCalled();
   });
 
   it('syncs autoscaling dependent fields when autoscaling toggles', () => {
