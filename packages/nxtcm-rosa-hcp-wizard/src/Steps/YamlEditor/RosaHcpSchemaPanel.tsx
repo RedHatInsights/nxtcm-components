@@ -130,7 +130,7 @@ const SchemaField = ({ name, prop, depth = 0 }: SchemaFieldProps) => {
   );
 };
 
-type RosaHcpSchemaPanelProps = {
+export type RosaHcpSchemaPanelProps = {
   onClose: () => void;
 };
 

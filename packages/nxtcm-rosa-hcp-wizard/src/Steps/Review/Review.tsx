@@ -106,7 +106,7 @@ const ReviewFieldRow = ({
   );
 };
 
-type ReviewProps = Pick<ROSAHCPWizardData, 'vpcList'> & {
+export type ReviewProps = Pick<ROSAHCPWizardData, 'vpcList'> & {
   onOpenYamlEditor?: () => void;
 };
 

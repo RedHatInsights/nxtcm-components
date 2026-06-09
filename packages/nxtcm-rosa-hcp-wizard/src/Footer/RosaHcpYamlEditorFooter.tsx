@@ -35,7 +35,6 @@ export function RosaHcpYamlEditorFooter({
   onSubmit,
 }: RosaHcpYamlEditorFooterProps) {
   const { isSubmitting, showValidationAlert, submitWizard } = useRosaHcpWizardSubmit({ onSubmit });
-
   const { wizard, yamlEditor: yamlStrings } = useRosaHcpWizardStrings();
   const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
 
@@ -43,11 +42,14 @@ export function RosaHcpYamlEditorFooter({
     if (editorRef.current?.hasSchemaErrors()) return;
 
     void (async () => {
-      editorRef.current?.applyToForm();
-      await submitWizard();
-      onClose();
+      try {
+        editorRef.current?.applyToForm();
+        await submitWizard();
+      } catch {
+        // keep the editor open so the user can correct the issue
+      }
     })();
-  }, [editorRef, onClose, submitWizard]);
+  }, [editorRef, submitWizard]);
 
   const handleDiscardClick = useCallback(() => {
     setIsDiscardModalOpen(true);

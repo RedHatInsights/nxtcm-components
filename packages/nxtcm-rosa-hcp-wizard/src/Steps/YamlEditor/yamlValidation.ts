@@ -28,17 +28,47 @@ function findLineForPath(content: string, instancePath: string): number {
   const segments = instancePath.split('/').filter(Boolean);
   const lines = content.split('\n');
   let depth = 0;
-  let targetKey = segments[depth];
+  let minIndent = 0;
+  let arrayItemCount = 0;
 
   for (let i = 0; i < lines.length; i++) {
-    const trimmed = lines[i].trimStart();
-    const keyMatch = trimmed.match(/^["']?([^"':]+)["']?\s*:/);
-    if (keyMatch && keyMatch[1] === targetKey) {
-      depth++;
-      if (depth >= segments.length) {
-        return i + 1;
+    const line = lines[i];
+    const trimmed = line.trimStart();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+
+    const indent = line.length - trimmed.length;
+
+    if (depth > 0 && indent < minIndent) break;
+
+    const target = segments[depth];
+    const isArrayIndex = /^\d+$/.test(target);
+
+    if (isArrayIndex) {
+      // Match YAML list items ('- ') at the expected indentation
+      if ((trimmed.startsWith('- ') || trimmed === '-') && indent === minIndent) {
+        if (arrayItemCount === parseInt(target, 10)) {
+          depth++;
+          minIndent = indent + 2;
+          arrayItemCount = 0;
+          if (depth >= segments.length) return i + 1;
+        } else {
+          arrayItemCount++;
+        }
       }
-      targetKey = segments[depth];
+    } else {
+      // Match quoted or unquoted YAML keys at the expected indentation level
+      const keyMatch =
+        trimmed.match(/^'([^']*)'\s*:/) ??
+        trimmed.match(/^"([^"]*)"\s*:/) ??
+        trimmed.match(/^([^:'"#{[\s][^:]*?)\s*:/);
+      const matchedKey = (keyMatch?.[1] ?? '').trim();
+
+      if (matchedKey === target && indent === minIndent) {
+        depth++;
+        minIndent = indent + 2;
+        arrayItemCount = 0;
+        if (depth >= segments.length) return i + 1;
+      }
     }
   }
   return 1;
@@ -65,26 +95,51 @@ function formatAjvError(err: ErrorObject): string {
 }
 
 export function validateYaml(yamlStr: string): ValidationError[] {
-  let parsed: unknown;
-  try {
-    parsed = yaml.load(yamlStr);
-  } catch (e) {
-    if (e instanceof yaml.YAMLException) {
-      return [
-        {
-          message: e.message.split('\n')[0],
-          line: (e.mark?.line ?? 0) + 1,
-          column: (e.mark?.column ?? 0) + 1,
-          severity: 'error',
-        },
-      ];
-    }
-    return [];
+  const docs = yamlStr.split(/^---$/m).filter((doc) => doc.trim());
+
+  if (docs.length === 0) {
+    return [
+      { message: 'Missing ROSAControlPlane document', line: 1, column: 1, severity: 'error' },
+    ];
   }
 
-  if (!parsed || typeof parsed !== 'object') return [];
+  let rosaDoc: unknown;
 
-  const valid = validateRosaControlPlane(parsed);
+  for (const doc of docs) {
+    let parsed: unknown;
+    try {
+      parsed = yaml.load(doc);
+    } catch (e) {
+      if (e instanceof yaml.YAMLException) {
+        return [
+          {
+            message: e.message.split('\n')[0],
+            line: (e.mark?.line ?? 0) + 1,
+            column: (e.mark?.column ?? 0) + 1,
+            severity: 'error',
+          },
+        ];
+      }
+      return [];
+    }
+
+    if (
+      parsed !== null &&
+      typeof parsed === 'object' &&
+      (parsed as Record<string, unknown>).kind === 'ROSAControlPlane'
+    ) {
+      rosaDoc = parsed;
+      break;
+    }
+  }
+
+  if (rosaDoc === undefined) {
+    return [
+      { message: 'Missing ROSAControlPlane document', line: 1, column: 1, severity: 'error' },
+    ];
+  }
+
+  const valid = validateRosaControlPlane(rosaDoc);
   if (valid || !validateRosaControlPlane.errors) return [];
 
   return validateRosaControlPlane.errors.map((err) => ({

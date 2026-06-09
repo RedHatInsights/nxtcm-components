@@ -3,7 +3,7 @@ import * as yaml from 'js-yaml';
 
 export interface YamlParseResult {
   isValid: boolean;
-  data?: any;
+  data?: unknown;
   error?: string;
   errorLine?: number;
 }
@@ -44,18 +44,28 @@ export function prettifyYaml(yamlString: string, indent: number = 2): string {
   }
 }
 
-export function removeEmptyValues(obj: Record<string, any>): Record<string, any> | undefined {
-  const cleaned: Record<string, any> = {};
+export function removeEmptyValues(
+  obj: Record<string, unknown>
+): Record<string, unknown> | undefined {
+  const cleaned: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(obj)) {
     if (value === null || value === undefined || value === '') continue;
 
     if (Array.isArray(value)) {
-      const filteredArray = value.filter((item) => item !== null && item !== undefined);
+      const filteredArray = value
+        .map((item: unknown) => {
+          if (item === null || item === undefined) return undefined;
+          if (typeof item === 'object' && !Array.isArray(item)) {
+            return removeEmptyValues(item as Record<string, unknown>);
+          }
+          return item;
+        })
+        .filter((item) => item !== null && item !== undefined);
       if (filteredArray.length > 0) {
         cleaned[key] = filteredArray;
       }
-    } else if (typeof value === 'object') {
-      const nested = removeEmptyValues(value);
+    } else if (typeof value === 'object' && value !== null) {
+      const nested = removeEmptyValues(value as Record<string, unknown>);
       if (nested !== undefined) {
         cleaned[key] = nested;
       }
@@ -66,8 +76,11 @@ export function removeEmptyValues(obj: Record<string, any>): Record<string, any>
   return Object.keys(cleaned).length > 0 ? cleaned : undefined;
 }
 
-export function objectToYaml(obj: any, indent: number = 2): string {
-  const cleanedObj = removeEmptyValues(obj);
+export function objectToYaml(obj: unknown, indent: number = 2): string {
+  const cleanedObj =
+    obj !== null && typeof obj === 'object'
+      ? removeEmptyValues(obj as Record<string, unknown>)
+      : undefined;
   return yaml.dump(cleanedObj ?? {}, {
     indent,
     lineWidth: -1,

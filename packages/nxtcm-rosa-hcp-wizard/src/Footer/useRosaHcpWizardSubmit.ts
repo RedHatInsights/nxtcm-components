@@ -17,7 +17,15 @@ type UseRosaHcpWizardSubmitOptions = {
   onSubmit: (data: ROSAHCPCluster) => Promise<void>;
 };
 
-export function useRosaHcpWizardSubmit({ onSubmit }: UseRosaHcpWizardSubmitOptions) {
+type UseRosaHcpWizardSubmitResult = {
+  isSubmitting: boolean;
+  showValidationAlert: boolean;
+  submitWizard: () => Promise<boolean>;
+};
+
+export function useRosaHcpWizardSubmit({
+  onSubmit,
+}: UseRosaHcpWizardSubmitOptions): UseRosaHcpWizardSubmitResult {
   const reviewSections = useRosaHcpWizardReviewSections();
   const {
     markValidationAttempted,

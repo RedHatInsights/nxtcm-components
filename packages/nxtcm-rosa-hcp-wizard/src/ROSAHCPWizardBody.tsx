@@ -24,12 +24,24 @@ const RosaHcpYamlEditorStep = lazy(() =>
 );
 
 export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
-  const { wizardData, onSubmit, onCancel, yaml } = props;
+  const { wizardData, onSubmit, onCancel, yaml, onSubmitError, onBackToReviewStep } = props;
 
+  const [isNavigatingToReview, setIsNavigatingToReview] = useState(false);
   const [isYamlEditorOpen, setIsYamlEditorOpen] = useState(false);
   const yamlEditorRef = useRef<YamlEditorHandle>(null);
 
+  const handleBackToReviewStep = useCallback(async () => {
+    if (!onBackToReviewStep) return;
+    setIsNavigatingToReview(true);
+    try {
+      await onBackToReviewStep();
+    } finally {
+      setIsNavigatingToReview(false);
+    }
+  }, [onBackToReviewStep]);
+
   const handleCloseYamlEditor = useCallback(() => setIsYamlEditorOpen(false), []);
+  const openYamlEditor = useCallback(() => setIsYamlEditorOpen(true), []);
 
   const handleWizardStepChange = useCallback<
     NonNullable<React.ComponentProps<typeof Wizard>['onStepChange']>
@@ -62,6 +74,17 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [handleCloseYamlEditor, onCancel, onSubmit]
   );
+
+  if (onSubmitError) {
+    return (
+      <RosaWizardSubmitError
+        onSubmitError={onSubmitError}
+        onBackToReviewStep={onBackToReviewStep ? handleBackToReviewStep : undefined}
+        isNavigatingToReview={isNavigatingToReview}
+        onCancel={onCancel}
+      />
+    );
+  }
 
   return (
     <div>
@@ -156,7 +179,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
           ) : (
             <Review
               vpcList={wizardData.vpcList}
-              onOpenYamlEditor={yaml ? () => setIsYamlEditorOpen(true) : undefined}
+              onOpenYamlEditor={yaml ? openYamlEditor : undefined}
             />
           )}
         </WizardStep>

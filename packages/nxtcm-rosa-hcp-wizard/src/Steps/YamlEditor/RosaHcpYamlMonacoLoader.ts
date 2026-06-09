@@ -11,12 +11,6 @@ function isYamlWorkerConfigured(): boolean {
 export class RosaHcpYamlMonacoLoader {
   configure(monaco: MonacoEditor, options?: MonacoYamlOptions): () => void {
     if (!isYamlWorkerConfigured()) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        '[RosaHcpYamlMonacoLoader] MonacoEnvironment.getWorker is not configured. ' +
-          'YAML language features (hover, completion) are disabled. ' +
-          'See RosaHcpYamlMonacoLoader for setup instructions.'
-      );
       return () => undefined;
     }
 
