@@ -154,3 +154,46 @@ export const AllApiErrors: Story = {
     wizardData: rosaHcpWizardDetailsFieldsAllApiErrorsData,
   },
 };
+
+/**
+ * Default story that shows a submit error after the wizard is submitted.
+ * "Back to the wizard" clears the error after a one-second delay.
+ */
+function SubmitErrorWrapper(props: React.ComponentProps<typeof ROSAHCPWizard>) {
+  const [submitError, setSubmitError] = React.useState<string | boolean | undefined>(undefined);
+
+  return (
+    <DefaultWithInitialLoading
+      {...props}
+      onSubmitError={submitError}
+      onSubmit={async (data) => {
+        console.log('Wizard submitted with data:', data);
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        setSubmitError(
+          'There has been an error - any error message returned from the API will display here.'
+        );
+      }}
+      onCancel={() => {
+        setSubmitError(undefined);
+        props.onCancel();
+      }}
+      onBackToReviewStep={async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        setSubmitError(undefined);
+      }}
+    />
+  );
+}
+
+export const SubmitError: Story = {
+  render: (args) => <SubmitErrorWrapper {...args} />,
+  args: {
+    title: 'Create ROSA Cluster',
+    yaml: true,
+    wizardData: createMockRosaHcpWizardData(),
+    onCancel: () => {
+      console.log('Wizard cancelled');
+      alert('Wizard cancelled');
+    },
+  },
+};

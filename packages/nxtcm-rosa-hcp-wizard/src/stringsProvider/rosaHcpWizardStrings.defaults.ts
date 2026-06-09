@@ -56,7 +56,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
   },
   submitError: {
     title: 'Error creating cluster',
-    backToReviewStep: 'Back to review step',
+    backToReviewStep: 'Back to the wizard',
     exitWizard: 'Exit wizard',
   },
   yamlEditor: {
