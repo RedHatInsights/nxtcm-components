@@ -3,13 +3,15 @@ import '@patternfly/patternfly/patternfly-addons.css';
 import '@patternfly/patternfly/patternfly-charts.css';
 import type { Preview } from '@storybook/react';
 import { withThemeByClassName } from '@storybook/addon-themes';
+import editorWorkerUrl from 'monaco-editor/esm/vs/editor/editor.worker.js?url';
+import yamlWorkerUrl from 'monaco-yaml/yaml.worker.js?url';
 
 window.MonacoEnvironment = {
   getWorker(_moduleId: string, label: string): Worker {
     if (label === 'yaml') {
-      return new Worker(new URL('monaco-yaml/yaml.worker', import.meta.url), { type: 'module' });
+      return new Worker(yamlWorkerUrl, { type: 'module' });
     }
-    return new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker', import.meta.url));
+    return new Worker(editorWorkerUrl, { type: 'module' });
   },
 };
 
