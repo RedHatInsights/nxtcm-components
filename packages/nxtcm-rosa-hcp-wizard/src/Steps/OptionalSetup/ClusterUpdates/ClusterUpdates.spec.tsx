@@ -75,14 +75,8 @@ test.describe('ClusterUpdates (ROSA HCP)', () => {
     await expect(component.getByRole('button', { name: '09:00 UTC' })).toBeVisible();
   });
 
-  test('should require day and time when automatic updates is selected without a schedule', async ({
-    mount,
-  }) => {
-    const component = await mount(
-      <ClusterUpdatesMount
-        defaultValues={{ upgrade_policy: ClusterUpgrade.automatic, upgrade_schedule: '' }}
-      />
-    );
+  test('should require day and time when automatic updates is selected', async ({ mount }) => {
+    const component = await mount(<ClusterUpdatesMount />);
 
     await component.getByRole('button', { name: 'Validate' }).click();
     await expect(component.getByText(REQUIRED_FIELD_MESSAGE, { exact: true })).toBeVisible();

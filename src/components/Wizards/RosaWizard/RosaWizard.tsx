@@ -188,7 +188,7 @@ const RosaWizardBody = (props: RosaWizardProps) => {
           title={title}
           skipToReviewStepIds={skipToReviewStepIds}
           defaultData={defaultClusterData}
-          setUseWizardContext={(context) => setUseWizardContext(context as WizardNavigationContext)}
+          setUseWizardContext={setUseWizardContext}
           resumeAtStepId={resumeAtStepId}
           onResumedToStep={() => setResumeAtStepId(null)}
           yaml={yaml}
