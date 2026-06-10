@@ -16,6 +16,70 @@ const libRollupExternal = [
   /^monaco-editor/,
   /^monaco-yaml/,
 ];
+
+/** Convert kebab-case (e.g. lock-icon) to PascalCase (LockIcon) for UMD globals. */
+const kebabToPascalCase = (value: string): string =>
+  value
+    .replace(/\.js(\?url)?$/, '')
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('');
+
+/** Convert @patternfly package ids to Rollup-compatible UMD global names. */
+const patternflyPackageToGlobal = (id: string): string => {
+  const packagePath = id.replace(/^@patternfly\//, '');
+  const segments = packagePath.split('/');
+
+  if (segments.length > 1 && segments[0] === 'react-charts') {
+    return segments[segments.length - 1];
+  }
+
+  return segments[0]
+    .split('-')
+    .map((part, index) => (index === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)))
+    .join('');
+};
+
+const libUmdGlobals: Record<string, string> = {
+  react: 'React',
+  'react-dom': 'ReactDOM',
+  '@patternfly/react-core': 'reactCore',
+  '@patternfly/react-icons': 'reactIcons',
+  '@patternfly/react-table': 'reactTable',
+  '@patternfly/widgetized-dashboard': 'widgetizedDashboard',
+  '@patternfly/react-charts/victory': 'victory',
+  yaml: 'YAML',
+  'js-yaml': 'yaml',
+  'monaco-editor': 'monaco',
+  'monaco-yaml': 'monacoYaml',
+  'monaco-editor/esm/vs/editor/editor.worker.js?url': 'editorWorkerUrl',
+  'monaco-yaml/yaml.worker.js?url': 'yamlWorkerUrl',
+};
+
+const resolveUmdGlobal = (id: string): string => {
+  if (id in libUmdGlobals) {
+    return libUmdGlobals[id];
+  }
+
+  const iconMatch = id.match(/^@patternfly\/react-icons\/dist\/esm\/icons\/(.+)$/);
+  if (iconMatch) {
+    return kebabToPascalCase(iconMatch[1]);
+  }
+
+  if (id.startsWith('@patternfly/')) {
+    return patternflyPackageToGlobal(id);
+  }
+
+  if (id.startsWith('monaco-editor')) {
+    return 'monaco';
+  }
+
+  if (id.startsWith('monaco-yaml')) {
+    return 'monacoYaml';
+  }
+
+  return id;
+};
 // https://vitejs.dev/config/
 export default defineConfig({
   root: libRoot,
@@ -37,13 +101,6 @@ export default defineConfig({
       ),
     },
   },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: 'modern-compiler',
-      },
-    },
-  },
   optimizeDeps: {
     include: ['monaco-editor', 'monaco-yaml'],
   },
@@ -62,10 +119,7 @@ export default defineConfig({
     rollupOptions: {
       external: libRollupExternal,
       output: {
-        globals: {
-          react: 'React',
-          'react-dom': 'ReactDOM',
-        },
+        globals: resolveUmdGlobal,
         assetFileNames: (assetInfo) => {
           if (assetInfo.name === 'style.css') return 'index.css';
           return assetInfo.name || '';
