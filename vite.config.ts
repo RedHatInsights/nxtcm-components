@@ -86,7 +86,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(repoRoot, './src'),
+      '@': path.resolve(repoRoot, './'),
       '@redhat-cloud-services/nxtcm-dashboard': path.resolve(
         repoRoot,
         './packages/nxtcm-dashboard/src'

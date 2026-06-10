@@ -5,6 +5,7 @@
     "outDir": "dist"
   },
   "include": [
+   "src/**/*",
    "../../types/typings.d.ts"
   ],
   "exclude": [
