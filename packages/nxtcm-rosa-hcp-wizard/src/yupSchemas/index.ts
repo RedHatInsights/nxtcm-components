@@ -2,6 +2,7 @@ import * as yup from 'yup';
 
 import type { WizardFieldMeta } from './types';
 import { clusterValidationSchema } from './clusterValidationSchema';
+import { readWizardFieldMeta } from './readWizardFieldMeta';
 import type { ROSAHCPCluster } from '../types';
 
 export { clusterValidationSchema } from './clusterValidationSchema';
@@ -34,8 +35,7 @@ export function getClusterValidationSchemaDefaultValues(): Partial<ROSAHCPCluste
  */
 export function wizardFieldMetaByPath(path: string): WizardFieldMeta | undefined {
   try {
-    const fieldSchema = yup.reach(clusterValidationSchema, path) as yup.Schema;
-    return fieldSchema.describe().meta as WizardFieldMeta;
+    return readWizardFieldMeta(yup.reach(clusterValidationSchema, path));
   } catch {
     return undefined;
   }

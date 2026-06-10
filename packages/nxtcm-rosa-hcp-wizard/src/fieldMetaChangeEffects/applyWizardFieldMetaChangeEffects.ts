@@ -4,6 +4,7 @@ import { hasDerivedSyncSourceValue, hasRefetchableStringValue } from './wizardFi
 import { resetFieldsToDefaultValues } from './resetFieldsToDefaultValues';
 import { syncFieldsOnSourceChange } from './syncFieldsOnSourceChange';
 import { applyWizardFieldDerivedSync } from './wizardFieldDerivedSyncs';
+import { wizardFormFieldValuesEqual } from './wizardFormFieldValuesEqual';
 import type { ROSAHCPCluster, ROSAHCPWizardData } from '../types';
 import {
   getWizardFieldDerivedSyncKeyForSourceField,
@@ -54,14 +55,13 @@ export function applyWizardFieldMetaChangeEffects({
   wizardData,
   setValue,
 }: ApplyWizardFieldMetaChangeEffectsArgs): void {
-  if (Object.is(previousValue, currentValue)) {
+  const isInitialChange = previousValue === undefined;
+  if (!isInitialChange && wizardFormFieldValuesEqual(previousValue, currentValue)) {
     return;
   }
-
   const refetches = getWizardResourceRefetchesForSourceField(sourceField);
   const shouldRefetch =
-    refetches.length > 0 &&
-    (previousValue === undefined ? hasRefetchableStringValue(currentValue) : true);
+    refetches.length > 0 && (isInitialChange ? hasRefetchableStringValue(currentValue) : true);
 
   if (shouldRefetch) {
     for (const refetch of refetches) {
@@ -69,10 +69,10 @@ export function applyWizardFieldMetaChangeEffects({
     }
   }
 
-  if (previousValue !== undefined) {
+  if (!isInitialChange) {
     const resets = getWizardFieldResetsForSourceField(sourceField);
     if (resets.length > 0) {
-      resetFieldsToDefaultValues(setValue, resets);
+      resetFieldsToDefaultValues(setValue, resets, {}, formValues);
     }
   }
 
@@ -83,14 +83,14 @@ export function applyWizardFieldMetaChangeEffects({
       setValue,
       syncs,
       currentValue,
-      previousValue === undefined ? { clearOnly: true, shouldDirty: false } : undefined
+      isInitialChange ? { clearOnly: true, shouldDirty: false } : undefined
     );
   }
 
   const derivedSyncKey = getWizardFieldDerivedSyncKeyForSourceField(sourceField);
   if (derivedSyncKey) {
     const shouldApplyDerived =
-      previousValue !== undefined || hasDerivedSyncSourceValue(derivedSyncKey, currentValue);
+      !isInitialChange || hasDerivedSyncSourceValue(derivedSyncKey, currentValue);
     if (shouldApplyDerived) {
       applyWizardFieldDerivedSync({
         syncKey: derivedSyncKey,

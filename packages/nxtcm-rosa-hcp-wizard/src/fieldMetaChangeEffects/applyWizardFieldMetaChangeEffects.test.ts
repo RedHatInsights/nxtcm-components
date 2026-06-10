@@ -117,12 +117,17 @@ describe('applyWizardFieldMetaChangeEffects', () => {
     expect(vpcListFetch).toHaveBeenCalledTimes(1);
     expect(vpcListFetch).toHaveBeenCalledWith();
     expect(machineTypesFetch).toHaveBeenCalledWith('us-west-2');
-    expect(resetFieldsToDefaultValuesMock).toHaveBeenCalledWith(setValue, [
-      'selected_vpc',
-      'machine_pools_subnets',
-      'security_groups_worker',
-      'cluster_privacy_public_subnet_id',
-    ]);
+    expect(resetFieldsToDefaultValuesMock).toHaveBeenCalledWith(
+      setValue,
+      [
+        'selected_vpc',
+        'machine_pools_subnets',
+        'security_groups_worker',
+        'cluster_privacy_public_subnet_id',
+      ],
+      {},
+      { region: 'us-west-2' }
+    );
   });
 
   it('resets no_proxy_domains when http_proxy_url changes', () => {
@@ -137,7 +142,12 @@ describe('applyWizardFieldMetaChangeEffects', () => {
       setValue,
     });
 
-    expect(resetFieldsToDefaultValuesMock).toHaveBeenCalledWith(setValue, ['no_proxy_domains']);
+    expect(resetFieldsToDefaultValuesMock).toHaveBeenCalledWith(
+      setValue,
+      ['no_proxy_domains'],
+      {},
+      { http_proxy_url: '' }
+    );
   });
 
   it('syncs autoscaling dependent fields when autoscaling toggles', () => {
@@ -249,6 +259,28 @@ describe('applyWizardFieldMetaChangeEffects', () => {
         wizardData,
       })
     );
+  });
+
+  it('does not run effects when the source value is semantically unchanged', () => {
+    const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
+    const vpcListFetch = jest.fn();
+
+    applyWizardFieldMetaChangeEffects({
+      sourceField: 'selected_vpc',
+      formValues: {
+        selected_vpc: 'vpc-abc',
+        security_groups_worker: ['sg-1'],
+      },
+      previousValue: { id: 'vpc-abc', name: 'my-vpc', aws_subnets: [] },
+      currentValue: 'vpc-abc',
+      wizardData: makeWizardData({ vpcListFetch }),
+      setValue,
+    });
+
+    expect(vpcListFetch).not.toHaveBeenCalled();
+    expect(resetFieldsToDefaultValuesMock).not.toHaveBeenCalled();
+    expect(syncFieldsOnSourceChangeMock).not.toHaveBeenCalled();
+    expect(applyWizardFieldDerivedSyncMock).not.toHaveBeenCalled();
   });
 
   it('passes argFromField to fetch and skips empty args', () => {

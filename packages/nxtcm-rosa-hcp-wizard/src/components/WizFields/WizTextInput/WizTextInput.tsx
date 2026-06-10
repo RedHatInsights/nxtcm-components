@@ -1,4 +1,10 @@
-import { type FormEvent, type FocusEvent, type FocusEventHandler, type ReactNode } from 'react';
+import {
+  type FormEvent,
+  type FocusEvent,
+  type FocusEventHandler,
+  type ReactNode,
+  useMemo,
+} from 'react';
 import {
   type FieldPath,
   type FieldPathValue,
@@ -231,8 +237,14 @@ function WizTextInputValidateOnBlur<TFieldValues extends FieldValues>(
   });
 }
 
-function WizTextInputBound<TFieldValues extends FieldValues>(
-  props: WizTextInputProps<TFieldValues> & { validateOnBlur: boolean }
+/**
+ * Prefer wrapping the form with `FormProvider` so you can omit `control`.
+ * Optional `schema` pulls UI defaults and required state from Yup `.meta()` / optionality.
+ * You may set `id`, `label`, `placeholder`, `helperText`, `labelHelp`, and `labelHelpTitle` via props. When omitted, Yup `.meta()` may supply inline copy or `*Key` paths resolved from `RosaHcpWizardStringsProvider`.
+ * Pass `isRequired` (and optionally native `required`) to override; when `isRequired` is omitted and `schema` is set, required UI follows Yup for this path. `TextInput` applies `required={isRequired || required}` on the input.
+ */
+export function WizTextInput<TFieldValues extends FieldValues = FieldValues>(
+  props: WizTextInputProps<TFieldValues>
 ) {
   const {
     name,
@@ -249,11 +261,16 @@ function WizTextInputBound<TFieldValues extends FieldValues>(
     placeholder: placeholderProp,
     apiError,
     isFetching,
-    validateOnBlur,
+    validateOnBlur: validateOnBlurProp,
     supplementalErrorMessage,
     onBlur: onBlurProp,
     ...rest
   } = props;
+
+  const validateOnBlur = useMemo(
+    () => resolveValidateOnBlur({ ...props, validateOnBlur: validateOnBlurProp }, name),
+    [name, schema, validateOnBlurProp]
+  );
 
   const control = useWizRhfControl<TFieldValues>('WizTextInput', controlProp);
   /** RHF default context is `null` when `FormProvider` is not used (control-only harness). */
@@ -322,19 +339,4 @@ function WizTextInputBound<TFieldValues extends FieldValues>(
   }
 
   return textInput;
-}
-
-/**
- * Prefer wrapping the form with `FormProvider` so you can omit `control`.
- * Optional `schema` pulls UI defaults and required state from Yup `.meta()` / optionality.
- * You may set `id`, `label`, `placeholder`, `helperText`, `labelHelp`, and `labelHelpTitle` via props. When omitted, Yup `.meta()` may supply inline copy or `*Key` paths resolved from `RosaHcpWizardStringsProvider`.
- * Pass `isRequired` (and optionally native `required`) to override; when `isRequired` is omitted and `schema` is set, required UI follows Yup for this path. `TextInput` applies `required={isRequired || required}` on the input.
- */
-export function WizTextInput<TFieldValues extends FieldValues = FieldValues>(
-  props: WizTextInputProps<TFieldValues>
-) {
-  const { name } = props;
-  const validateOnBlur = resolveValidateOnBlur(props, name);
-
-  return <WizTextInputBound {...props} validateOnBlur={validateOnBlur} />;
 }

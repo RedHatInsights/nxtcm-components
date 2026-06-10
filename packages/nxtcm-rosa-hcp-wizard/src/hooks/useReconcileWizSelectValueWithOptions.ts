@@ -40,6 +40,9 @@ export function useReconcileWizSelectValueWithOptions<T>(
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 
+  const valueRef = useRef(value);
+  valueRef.current = value;
+
   useEffect(() => {
     if (!enabled) {
       return;
@@ -51,17 +54,18 @@ export function useReconcileWizSelectValueWithOptions<T>(
       return;
     }
 
+    const currentValue = valueRef.current;
     const newOptions = flattenWizSelectOptionsForReconcile({ options, optionGroups, keyPath });
     const nextValue = reconcileWizSelectFormValue({
-      currentValue: value,
+      currentValue,
       newOptions,
       schema,
       name,
       keyPath,
     });
 
-    if (!Object.is(nextValue, value)) {
+    if (!Object.is(nextValue, currentValue)) {
       onChangeRef.current(nextValue);
     }
-  }, [enabled, isLoading, keyPath, name, optionGroups, options, schema, value]);
+  }, [enabled, isLoading, keyPath, name, optionGroups, options, schema]);
 }

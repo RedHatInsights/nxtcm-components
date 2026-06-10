@@ -17,3 +17,4 @@ export {
 } from './wizardFieldDerivedSyncs';
 export type { ApplyWizardFieldDerivedSyncArgs } from './wizardFieldDerivedSyncs';
 export { useWizardFieldMetaChangeEffects } from './useWizardFieldMetaChangeEffects';
+export { wizardFormFieldValuesEqual } from './wizardFormFieldValuesEqual';

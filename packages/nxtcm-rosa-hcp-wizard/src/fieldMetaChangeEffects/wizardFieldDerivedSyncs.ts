@@ -1,14 +1,17 @@
 import type { UseFormSetValue } from 'react-hook-form';
 
+import {
+  DEFAULT_FORM_SET_VALUE_OPTS,
+  DEFAULT_FORM_SET_VALUE_OPTS_WITH_VALIDATE,
+} from '../formSetValueOptions';
 import { resolveSelectedVpc } from '../helpers';
 import type { ROSAHCPCluster, ROSAHCPWizardData, Role, VPC } from '../types';
 import type { WizardFieldDerivedSyncKey } from '../yupSchemas/types';
 import type { WizardFieldDerivedSyncEntry } from '../yupSchemas/wizardFieldMetaChangeRegistry';
 
-/** Non-empty string suitable for resource refetch args and string-backed derived sync sources. */
-export function hasRefetchableStringValue(value: unknown): value is string {
-  return typeof value === 'string' && value !== '';
-}
+import { hasRefetchableStringValue } from '../hasRefetchableStringValue';
+
+export { hasRefetchableStringValue };
 
 export type ApplyWizardFieldDerivedSyncArgs = {
   syncKey: WizardFieldDerivedSyncKey;
@@ -16,18 +19,6 @@ export type ApplyWizardFieldDerivedSyncArgs = {
   formValues: Partial<ROSAHCPCluster>;
   wizardData: ROSAHCPWizardData;
   setValue: UseFormSetValue<Partial<ROSAHCPCluster>>;
-};
-
-const SET_VALUE_OPTS = {
-  shouldDirty: true,
-  shouldTouch: false,
-  shouldValidate: false,
-};
-
-const PRUNE_SET_VALUE_OPTS = {
-  shouldDirty: true,
-  shouldTouch: false,
-  shouldValidate: true,
 };
 
 function hasSelectedVpcValue(value: unknown): value is string | VPC {
@@ -114,7 +105,7 @@ export function syncSecurityGroupsWorkerWithVpc(
   const pruned = current.filter((id) => availableIds.has(id));
 
   if (!securityGroupSelectionsEqual(current, pruned)) {
-    setValue('security_groups_worker', pruned, PRUNE_SET_VALUE_OPTS);
+    setValue('security_groups_worker', pruned, DEFAULT_FORM_SET_VALUE_OPTS_WITH_VALIDATE);
   }
 }
 
@@ -125,8 +116,16 @@ export function syncInstallerRoleDependentRoles(
   setValue: UseFormSetValue<Partial<ROSAHCPCluster>>
 ): void {
   const selectedRole = roles.find((role) => role.installerRole.value === installerRoleArn);
-  setValue('support_role_arn', selectedRole?.supportRole[0]?.value ?? '', SET_VALUE_OPTS);
-  setValue('worker_role_arn', selectedRole?.workerRole[0]?.value ?? '', SET_VALUE_OPTS);
+  setValue(
+    'support_role_arn',
+    selectedRole?.supportRole[0]?.value ?? '',
+    DEFAULT_FORM_SET_VALUE_OPTS
+  );
+  setValue(
+    'worker_role_arn',
+    selectedRole?.workerRole[0]?.value ?? '',
+    DEFAULT_FORM_SET_VALUE_OPTS
+  );
 }
 
 export const wizardFieldDerivedSyncHandlers: Record<

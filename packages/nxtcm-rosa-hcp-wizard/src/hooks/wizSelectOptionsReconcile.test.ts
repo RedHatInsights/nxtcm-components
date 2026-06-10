@@ -4,7 +4,7 @@ import { clusterValidationSchema } from '../yupSchemas';
 
 import {
   flattenWizSelectOptionsForReconcile,
-  readWizSelectFieldMeta,
+  readWizSelectFieldMetaByPath,
   reconcileWizSelectFormValue,
   shouldReconcileWizSelectValue,
   wizSelectValueToReconcileString,
@@ -45,7 +45,7 @@ describe('wizSelectOptionsReconcile', () => {
       for (const path of RECONCILE_ENABLED_SELECT_PATHS) {
         expect(shouldReconcileWizSelectValue(clusterValidationSchema, path)).toBe(true);
         expect(
-          readWizSelectFieldMeta(clusterValidationSchema, path)?.optionsWizardDataResource
+          readWizSelectFieldMetaByPath(clusterValidationSchema, path)?.optionsWizardDataResource
         ).toBeDefined();
       }
     });

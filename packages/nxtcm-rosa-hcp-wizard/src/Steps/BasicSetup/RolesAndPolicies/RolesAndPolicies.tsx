@@ -12,7 +12,6 @@ import React from 'react';
 import PopoverHintWithTitle from '../../../components/PopoverHintWithTitle';
 import { OIDCConfigHint } from '../../../components/OIDCConfigHint';
 import { useFormContext, useWatch } from 'react-hook-form';
-import type { ClusterFormData } from '@/components/Wizards/types';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../links';
@@ -32,7 +31,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
   const rp = useRosaHcpWizardStrings().rolesAndPolicies;
 
-  const { setValue } = useFormContext<Partial<ClusterFormData>>();
+  const { setValue } = useFormContext<Partial<ROSAHCPCluster>>();
   const awsInfrastructureAccount = useWatch({ name: 'associated_aws_id' });
   const selectedClusterVersion = useWatch({ name: 'cluster_version' });
   const installerRoleArn = useWatch({ name: 'installer_role_arn' });

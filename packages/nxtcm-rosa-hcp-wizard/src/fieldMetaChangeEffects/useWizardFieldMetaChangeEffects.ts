@@ -2,12 +2,9 @@ import { useEffect, useMemo, useRef } from 'react';
 import { type FieldPath, useFormContext, useWatch } from 'react-hook-form';
 
 import { applyWizardFieldMetaChangeEffects } from './applyWizardFieldMetaChangeEffects';
-import {
-  collectWizardFieldDerivedSyncWizardDataDeps,
-  reapplyWizardFieldDerivedSyncs,
-} from './wizardFieldDerivedSyncs';
-import type { ClusterFormData } from '@/components/Wizards/types';
-import type { ROSAHCPWizardData } from '../types';
+import { reapplyWizardFieldDerivedSyncs } from './wizardFieldDerivedSyncs';
+import { wizardFormFieldValuesEqual } from './wizardFormFieldValuesEqual';
+import type { ROSAHCPCluster, ROSAHCPWizardData } from '../types';
 import {
   listWizardFieldDerivedSyncEntries,
   listWizardFieldMetaChangeSourceFields,
@@ -22,8 +19,8 @@ function readWatchedFieldValue(watchedValues: unknown, fieldIndex: number): unkn
 function buildFormValuesForMetaEffects(
   sourceFields: readonly WizardFormFieldName[],
   watchedValues: unknown,
-  getValues: () => Partial<ClusterFormData>
-): Partial<ClusterFormData> {
+  getValues: () => Partial<ROSAHCPCluster>
+): Partial<ROSAHCPCluster> {
   const formValues: Record<string, unknown> = { ...getValues() };
   for (const [index, field] of sourceFields.entries()) {
     const currentValue = readWatchedFieldValue(watchedValues, index);
@@ -31,26 +28,25 @@ function buildFormValuesForMetaEffects(
       formValues[field] = currentValue;
     }
   }
-  return formValues as Partial<ClusterFormData>;
+  return formValues as Partial<ROSAHCPCluster>;
 }
 
 /**
  * Subscribes to react-hook-form values for every Yup field that declares
  * `resetsFieldsToDefaultOnChange`, `refetchesResourcesOnChange`, `syncsFieldsOnChange`, or
  * `derivedFieldsSyncOnChange` in `.meta()`.
+ *
+ * Loop safety: only **source** fields are watched. Change detection uses
+ * {@link wizardFormFieldValuesEqual} so array/object reference churn on dependents does not
+ * re-run effects; resets skip `setValue` when the form already matches schema defaults.
  */
 export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): void {
-  const { setValue, getValues, control } = useFormContext<Partial<ClusterFormData>>();
+  const { setValue, getValues, control } = useFormContext<Partial<ROSAHCPCluster>>();
   const sourceFields = useMemo(() => listWizardFieldMetaChangeSourceFields(), []);
   const derivedSyncEntries = useMemo(() => listWizardFieldDerivedSyncEntries(), []);
-  const derivedSyncWizardDataDepValues = useMemo(
-    () => collectWizardFieldDerivedSyncWizardDataDeps(derivedSyncEntries, wizardData),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- wizard-data slices match wizardFieldDerivedSyncWizardDataDeps
-    [derivedSyncEntries, wizardData.roles.data, wizardData.vpcList.data]
-  );
   const watchedValues = useWatch({
     control,
-    name: sourceFields as FieldPath<Partial<ClusterFormData>>[],
+    name: sourceFields as FieldPath<Partial<ROSAHCPCluster>>[],
   });
   const previousByFieldRef = useRef<Partial<Record<WizardFormFieldName, unknown>>>({});
   const hasInitializedRef = useRef(false);
@@ -64,6 +60,10 @@ export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): 
     for (const [index, field] of sourceFields.entries()) {
       const currentValue = readWatchedFieldValue(watchedValues, index);
       const previousValue = isInitialPass ? undefined : previousByFieldRef.current[field];
+
+      if (!isInitialPass && wizardFormFieldValuesEqual(previousValue, currentValue)) {
+        continue;
+      }
 
       applyWizardFieldMetaChangeEffects({
         sourceField: field,
@@ -90,5 +90,5 @@ export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): 
       wizardData: wizardDataRef.current,
       setValue,
     });
-  }, [derivedSyncEntries, getValues, setValue, derivedSyncWizardDataDepValues]);
+  }, [derivedSyncEntries, getValues, setValue, wizardData.roles.data, wizardData.vpcList.data]);
 }

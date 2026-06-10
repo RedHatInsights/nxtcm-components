@@ -47,4 +47,26 @@ describe('resetFieldsToDefaultValues', () => {
       expect.any(Object)
     );
   });
+
+  it('skips setValue when array dependents already match schema defaults', () => {
+    const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
+    const defaults = getClusterValidationSchemaDefaultValues();
+
+    resetFieldsToDefaultValues(
+      setValue,
+      ['machine_pools_subnets', 'security_groups_worker'],
+      {},
+      {
+        machine_pools_subnets: [{ machine_pool_subnet: '' }],
+        security_groups_worker: [],
+      }
+    );
+
+    expect(setValue).not.toHaveBeenCalledWith(
+      'machine_pools_subnets',
+      defaults.machine_pools_subnets,
+      expect.any(Object)
+    );
+    expect(setValue).not.toHaveBeenCalledWith('security_groups_worker', [], expect.any(Object));
+  });
 });

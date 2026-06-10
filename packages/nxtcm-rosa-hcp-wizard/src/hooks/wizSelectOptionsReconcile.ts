@@ -1,8 +1,11 @@
 import * as yup from 'yup';
 
-import { reconcileFieldValueWithNewOptions } from '@/utilities/reconcileFieldValueWithNewOptions';
-import type { ReconcileFieldOption } from '@/utilities/reconcileFieldValueWithNewOptions';
+import {
+  reconcileFieldValueWithNewOptions,
+  type ReconcileFieldOption,
+} from '../utilities/reconcileFieldValueWithNewOptions';
 
+import { hasRefetchableStringValue } from '../hasRefetchableStringValue';
 import { getNestedValue } from '../helpers';
 import { normalizeOption } from '../components/Fields/Select/SelectOptions';
 import type { Option, OptionGroup } from '../components/Fields/Select/SelectTypes';
@@ -36,7 +39,8 @@ export function flattenWizSelectOptionsForReconcile<T>(params: {
   return flat;
 }
 
-export function readWizSelectFieldMeta(
+/** Reads field meta for a dotted schema path (e.g. `cluster_version`), not a leaf schema node. */
+export function readWizSelectFieldMetaByPath(
   schema: yup.AnySchema | undefined,
   name: string
 ): WizardFieldMeta | undefined {
@@ -55,7 +59,7 @@ export function shouldReconcileWizSelectValue(
   schema: yup.AnySchema | undefined,
   name: string
 ): boolean {
-  const meta = readWizSelectFieldMeta(schema, name);
+  const meta = readWizSelectFieldMetaByPath(schema, name);
   if (meta?.reconcileValueWithOptions === false) {
     return false;
   }
@@ -80,10 +84,13 @@ export function getWizSelectFieldDefaultValue(
 }
 
 export function wizSelectValueToReconcileString(value: unknown, keyPath: string): string {
+  if (hasRefetchableStringValue(value)) {
+    return value;
+  }
   if (value == null || value === '') {
     return '';
   }
-  if (typeof value === 'string' || typeof value === 'number') {
+  if (typeof value === 'number') {
     return String(value);
   }
   if (typeof value === 'object') {
@@ -101,7 +108,7 @@ export function wizSelectValueToReconcileString(value: unknown, keyPath: string)
 
 /** Form value written when a select clears or reconciles back to the Yup default. */
 export function toWizSelectFormValueFromSchemaDefault(schemaDefault: unknown): unknown {
-  return schemaDefault === undefined || schemaDefault === null ? '' : schemaDefault;
+  return schemaDefault ?? '';
 }
 
 export function reconcileWizSelectFormValue(params: {

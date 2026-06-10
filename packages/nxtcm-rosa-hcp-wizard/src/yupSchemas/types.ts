@@ -159,4 +159,10 @@ export type ValidationSchemaContext = {
   machinePoolsNumber: number;
   /** VPC subnets currently selected (for CIDR containment checks). */
   selectedSubnets?: CIDRSubnet[];
+  /**
+   * Async callback that checks whether a cluster name is already in use.
+   * Returns `null` when the name is available, or an error message string
+   * when it is taken / the check fails.
+   */
+  checkClusterNameUniqueness?: (name: string, region?: string) => Promise<string | null>;
 };

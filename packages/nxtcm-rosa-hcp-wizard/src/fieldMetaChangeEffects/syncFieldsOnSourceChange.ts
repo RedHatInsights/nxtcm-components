@@ -1,17 +1,10 @@
 import * as yup from 'yup';
-import type { FieldPath, FieldPathValue, UseFormSetValue } from 'react-hook-form';
+import type { FieldPathValue, UseFormSetValue } from 'react-hook-form';
 
+import { buildFormSetValueOptions, type FormSetValueOptions } from '../formSetValueOptions';
 import type { ROSAHCPCluster } from '../types';
 import { clusterValidationSchema } from '../yupSchemas';
 import type { WizardFieldSyncOnChange, WizardFormFieldName } from '../yupSchemas/types';
-
-type FormPath = FieldPath<Partial<ROSAHCPCluster>>;
-
-type FormSetValueOptions = {
-  shouldDirty?: boolean;
-  shouldTouch?: boolean;
-  shouldValidate?: boolean;
-};
 
 export type SyncFieldsOnSourceChangeOptions = FormSetValueOptions & {
   /** When true, only `clear` runs — used on initial mount to drop stale inactive fields without overwriting hydrated values. */
@@ -35,18 +28,10 @@ export function syncFieldsOnSourceChange(
     return;
   }
 
-  const setOpts = {
-    shouldDirty: options.shouldDirty ?? true,
-    shouldTouch: options.shouldTouch ?? false,
-    shouldValidate: options.shouldValidate ?? false,
-  };
+  const setOpts = buildFormSetValueOptions(options);
 
   for (const name of branch.clear ?? []) {
-    setValue(
-      name as FormPath,
-      undefined as FieldPathValue<Partial<ROSAHCPCluster>, FormPath>,
-      setOpts
-    );
+    setValue(name, undefined as FieldPathValue<Partial<ROSAHCPCluster>, typeof name>, setOpts);
   }
 
   if (options.clearOnly) {
@@ -55,6 +40,6 @@ export function syncFieldsOnSourceChange(
 
   for (const name of branch.setDefaults ?? []) {
     const value = getWizardFieldSchemaDefault(name);
-    setValue(name as FormPath, value as FieldPathValue<Partial<ROSAHCPCluster>, FormPath>, setOpts);
+    setValue(name, value as FieldPathValue<Partial<ROSAHCPCluster>, typeof name>, setOpts);
   }
 }

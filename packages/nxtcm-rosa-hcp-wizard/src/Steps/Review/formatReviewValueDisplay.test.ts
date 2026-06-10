@@ -7,7 +7,7 @@ jest.mock('../../yupSchemas', () => ({
   }),
 }));
 
-import { ClusterNetwork, ClusterUpgrade } from '@/components/Wizards/types';
+import { ClusterNetwork, ClusterUpgrade } from '../../types';
 
 import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { formatReviewFieldValue } from './formatReviewValueDisplay';

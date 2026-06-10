@@ -149,6 +149,8 @@ Add new keys in [`types.ts`](./types.ts) and implement the handler in [`wizardFi
 
 **Effect order** when a source field changes: refetch → reset → sync → derived sync.
 
+**Loop safety:** `useWizardFieldMetaChangeEffects` watches **source fields only** (not array dependents like `security_groups_worker` or `machine_pools_subnets`). Source changes are compared with [`wizardFormFieldValuesEqual`](../fieldMetaChangeEffects/wizardFormFieldValuesEqual.ts) (semantic equality for arrays and select ids), and [`resetFieldsToDefaultValues`](../fieldMetaChangeEffects/resetFieldsToDefaultValues.ts) skips `setValue` when the form already matches Yup defaults — so dependent `setValue` writes do not re-trigger source-field effects.
+
 ---
 
 ## Conditional schemas and required UI

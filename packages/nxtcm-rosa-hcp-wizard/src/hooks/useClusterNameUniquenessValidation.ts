@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
-import type { ClusterFormData } from '@/components/Wizards/types';
-import type { CheckClusterNameUniqueness } from '../types';
+import { hasRefetchableStringValue } from '../hasRefetchableStringValue';
+import type { CheckClusterNameUniqueness, ROSAHCPCluster } from '../types';
 import { useRosaHcpWizardValidators } from '../stringsProvider/RosaHcpWizardStringsContext';
 import { validateClusterNameSync } from '../yupSchemas/helpers';
 
@@ -17,10 +17,6 @@ type LastCheckedPair = {
   region: string;
 };
 
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === 'string' && value !== '';
-}
-
 /** Runs async cluster name uniqueness checks on name blur and region change only. */
 export function useClusterNameUniquenessValidation({
   checkClusterNameUniqueness,
@@ -29,7 +25,7 @@ export function useClusterNameUniquenessValidation({
 } {
   const msgs = useRosaHcpWizardValidators();
   const { control, getValues, setError, clearErrors, getFieldState } =
-    useFormContext<Partial<ClusterFormData>>();
+    useFormContext<Partial<ROSAHCPCluster>>();
   const region = useWatch({ control, name: 'region' });
   const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const previousRegionRef = useRef<string | undefined>(undefined);
@@ -69,7 +65,7 @@ export function useClusterNameUniquenessValidation({
 
     const name = getValues('name');
     const currentRegion = getValues('region');
-    if (!isNonEmptyString(name) || !isNonEmptyString(currentRegion)) {
+    if (!hasRefetchableStringValue(name) || !hasRefetchableStringValue(currentRegion)) {
       ++uniquenessRequestIdRef.current;
       lastCheckedRef.current = null;
       applyUniqueErrorToForm(null);
@@ -117,7 +113,7 @@ export function useClusterNameUniquenessValidation({
   useEffect(() => clearPendingDebounce, [clearPendingDebounce]);
 
   useEffect(() => {
-    const currentRegion = isNonEmptyString(region) ? region : undefined;
+    const currentRegion = hasRefetchableStringValue(region) ? region : undefined;
 
     if (!hasInitializedRegionRef.current) {
       previousRegionRef.current = currentRegion;
@@ -132,7 +128,7 @@ export function useClusterNameUniquenessValidation({
     previousRegionRef.current = currentRegion;
 
     const name = getValues('name');
-    if (!isNonEmptyString(name) || !currentRegion) {
+    if (!hasRefetchableStringValue(name) || !currentRegion) {
       lastCheckedRef.current = null;
       applyUniqueErrorToForm(null);
       return;
