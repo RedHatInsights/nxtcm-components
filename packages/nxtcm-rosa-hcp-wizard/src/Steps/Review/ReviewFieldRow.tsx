@@ -1,6 +1,7 @@
-import { Flex, FlexItem, StackItem } from '@patternfly/react-core';
+import { useId, useState } from 'react';
+import { ExpandableSectionToggle, Flex, FlexItem, StackItem } from '@patternfly/react-core';
 
-import { CollapsibleReviewFieldRow } from './CollapsibleReviewFieldRow';
+import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { ReviewFieldValueWithLock } from './ReviewFieldRowShared';
 
 export type ReviewFieldRowProps = {
@@ -12,33 +13,6 @@ export type ReviewFieldRowProps = {
   lockedSettingsScreenReaderText: string;
 };
 
-const SimpleReviewFieldRow = ({
-  labelText,
-  value,
-  noEditAfterStep,
-  lockedSettingsScreenReaderText,
-}: Pick<
-  ReviewFieldRowProps,
-  'labelText' | 'value' | 'noEditAfterStep' | 'lockedSettingsScreenReaderText'
->) => (
-  <StackItem>
-    <Flex
-      justifyContent={{ default: 'justifyContentSpaceBetween' }}
-      alignItems={{ default: 'alignItemsFlexStart' }}
-    >
-      <FlexItem>{labelText}</FlexItem>
-      <FlexItem align={{ default: 'alignRight' }}>
-        <ReviewFieldValueWithLock
-          noEditAfterStep={noEditAfterStep ?? false}
-          lockedSettingsScreenReaderText={lockedSettingsScreenReaderText}
-        >
-          {value}
-        </ReviewFieldValueWithLock>
-      </FlexItem>
-    </Flex>
-  </StackItem>
-);
-
 export const ReviewFieldRow = ({
   labelText,
   value,
@@ -47,27 +21,55 @@ export const ReviewFieldRow = ({
   noEditAfterStep,
   lockedSettingsScreenReaderText,
 }: ReviewFieldRowProps) => {
+  const { review } = useRosaHcpWizardStrings();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const uniqueId = useId();
+  const contentId = `${uniqueId}-content`;
+  const toggleId = `${uniqueId}-toggle`;
+
   if (hideInReview) {
     return null;
   }
 
-  if (collapseOnRequired) {
-    return (
-      <CollapsibleReviewFieldRow
-        labelText={labelText}
-        value={value}
-        noEditAfterStep={noEditAfterStep}
-        lockedSettingsScreenReaderText={lockedSettingsScreenReaderText}
-      />
-    );
-  }
-
   return (
-    <SimpleReviewFieldRow
-      labelText={labelText}
-      value={value}
-      noEditAfterStep={noEditAfterStep}
-      lockedSettingsScreenReaderText={lockedSettingsScreenReaderText}
-    />
+    <StackItem>
+      <Flex
+        justifyContent={{ default: 'justifyContentSpaceBetween' }}
+        alignItems={{ default: 'alignItemsFlexStart' }}
+      >
+        <FlexItem>{labelText}</FlexItem>
+        <FlexItem align={{ default: 'alignRight' }}>
+          <Flex direction={{ default: 'column' }} alignItems={{ default: 'alignItemsFlexEnd' }}>
+            <FlexItem>
+              <ReviewFieldValueWithLock
+                noEditAfterStep={noEditAfterStep ?? false}
+                lockedSettingsScreenReaderText={lockedSettingsScreenReaderText}
+              >
+                {collapseOnRequired ? (
+                  <ExpandableSectionToggle
+                    isExpanded={isExpanded}
+                    isDetached
+                    onToggle={setIsExpanded}
+                    toggleId={toggleId}
+                    contentId={contentId}
+                  >
+                    {isExpanded ? review.showLess : review.showMore}
+                  </ExpandableSectionToggle>
+                ) : (
+                  value
+                )}
+              </ReviewFieldValueWithLock>
+            </FlexItem>
+            {collapseOnRequired && isExpanded && (
+              <FlexItem>
+                <section id={contentId} aria-labelledby={toggleId}>
+                  <pre>{value}</pre>
+                </section>
+              </FlexItem>
+            )}
+          </Flex>
+        </FlexItem>
+      </Flex>
+    </StackItem>
   );
 };
