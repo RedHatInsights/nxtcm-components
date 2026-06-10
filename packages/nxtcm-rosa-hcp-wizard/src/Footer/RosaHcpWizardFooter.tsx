@@ -11,7 +11,7 @@ import {
   type WizardFooterProps,
   WizardFooterWrapper,
 } from '@patternfly/react-core';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { ROSAHCPCluster } from '../types';
 import { STEP_IDS } from '../constants';
@@ -21,13 +21,13 @@ import {
   isRosaHcpWizardSkipToReviewVisible,
 } from './rosaHcpWizardFooter.utils';
 import {
-  markSectionsWithValidationErrors,
   reconcileValidationAttemptedFlags,
   touchInvalidPaths,
   validateWizardStepFields,
 } from './rosaHcpWizardFooter.validation';
 import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
+import { useRosaHcpWizardSubmit } from './useRosaHcpWizardSubmit';
 
 type RosaHcpWizardFooterProps = Pick<
   WizardFooterProps,
@@ -64,17 +64,12 @@ export function RosaHcpWizardFooter({
     getFieldState,
     formState: { errors },
   } = useFormContext<Partial<ROSAHCPCluster>>();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isSubmitting, submitWizard } = useRosaHcpWizardSubmit({ onSubmit });
 
   const activeStepId = String(activeStep.id);
   const getCurrentStepId = useCallback(() => String(activeStep.id), [activeStep.id]);
   const isReviewStep = activeStepId === STEP_IDS.REVIEW;
   const showSkipToReview = isRosaHcpWizardSkipToReviewVisible(activeStepId);
-
-  const allFormFieldPaths = useMemo(
-    () => reviewSections.flatMap((section) => section.fieldPaths),
-    [reviewSections]
-  );
 
   const stepFieldPaths = useMemo(
     () => reviewSections.find((section) => section.id === activeStepId)?.fieldPaths ?? [],
@@ -193,50 +188,6 @@ export function RosaHcpWizardFooter({
     trigger,
   ]);
 
-  const validateEntireForm = useCallback(async (): Promise<boolean> => {
-    const stepId = STEP_IDS.REVIEW;
-
-    const outcome = await validateWizardStepFields({
-      stepIdWhenStarted: stepId,
-      getCurrentStepId,
-      fieldPaths: allFormFieldPaths,
-      trigger,
-      validateAllFields: true,
-    });
-
-    if (outcome === 'stale') {
-      return false;
-    }
-    if (outcome === 'valid') {
-      clearValidationAttempted(stepId);
-      return true;
-    }
-
-    revealInvalidFields(allFormFieldPaths);
-    markSectionsWithValidationErrors(
-      reviewSections,
-      getFieldState,
-      errors,
-      markValidationAttempted,
-      {
-        alsoMarkStepId: stepId,
-      }
-    );
-    setValidationAlertStepId(stepId);
-    return false;
-  }, [
-    allFormFieldPaths,
-    clearValidationAttempted,
-    errors,
-    getCurrentStepId,
-    getFieldState,
-    markValidationAttempted,
-    revealInvalidFields,
-    reviewSections,
-    setValidationAlertStepId,
-    trigger,
-  ]);
-
   const handleNext = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
       void (async () => {
@@ -249,18 +200,8 @@ export function RosaHcpWizardFooter({
   );
 
   const handleSubmit = useCallback(() => {
-    void (async () => {
-      if (!(await validateEntireForm())) {
-        return;
-      }
-      setIsSubmitting(true);
-      try {
-        await onSubmit(getValues() as ROSAHCPCluster);
-      } finally {
-        setIsSubmitting(false);
-      }
-    })();
-  }, [getValues, onSubmit, validateEntireForm]);
+    void submitWizard();
+  }, [submitWizard]);
 
   const handlePrimaryAction = isReviewStep ? handleSubmit : handleNext;
   const primaryButtonLabel = isReviewStep ? wizard.submit : wizard.next;
