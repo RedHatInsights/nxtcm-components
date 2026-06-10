@@ -28,6 +28,8 @@
         ".storybook/**/*",
         "packages/nxtcm-dashboard/src/**/*",
         "packages/nxtcm-rosa-hcp-wizard/src/**/*",
+        "e2e-app/**/*",
+        "playwright/**/*",
         "test-helpers.ts",
         "vite-env.d.ts"
     ],
