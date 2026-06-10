@@ -19,11 +19,8 @@ jobs:
           node-version-file: 'package.json'
           cache: 'npm'
 
-      # install main dependencies and subpackage dependencies
       - name: Install dependencies
-        run: |
-          npm ci
-          cd packages/react-form-wizard && npm ci
+        run: npm ci
 
       - name: Build Storybook
         run: npm run build-storybook

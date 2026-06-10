@@ -67,7 +67,6 @@
         "dist/",
         "build/",
         "coverage/",
-        "packages/react-form-wizard/",
         "*.config.js",
         "*.config.ts"
     ]

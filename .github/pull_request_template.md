@@ -41,10 +41,7 @@
 
 **E2E Run:**
 
-- [ ] Cypress Tests: E2E tests completed successfully (npm run e2e:run)
-      <!-- Provide link to test run if available -->
-
-- [ ] Playwright Tests: E2E tests completed successfully (cd playwright && npm run live)
+- [ ] Playwright Tests: E2E tests completed successfully (npm run test:e2e)
       <!-- Provide link to test run if available -->
 
 **Unit Tests:**

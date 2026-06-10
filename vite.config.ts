@@ -87,10 +87,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(repoRoot, './src'),
-      '@patternfly-labs/react-form-wizard': path.resolve(
-        repoRoot,
-        './packages/react-form-wizard/src'
-      ),
       '@redhat-cloud-services/nxtcm-dashboard': path.resolve(
         repoRoot,
         './packages/nxtcm-dashboard/src'

@@ -11,8 +11,6 @@
         "moduleResolution": "bundler",
         "resolveJsonModule": true,
         "paths": {
-            "@patternfly-labs/react-form-wizard": ["./packages/react-form-wizard/src"],
-            "@patternfly-labs/react-form-wizard/*": ["./packages/react-form-wizard/src/*"],
             "@redhat-cloud-services/nxtcm-dashboard": ["./packages/nxtcm-dashboard/src"],
             "@redhat-cloud-services/nxtcm-dashboard/*": ["./packages/nxtcm-dashboard/src/*"],
             "@redhat-cloud-services/nxtcm-rosa-hcp-wizard": ["./packages/nxtcm-rosa-hcp-wizard/src"],
@@ -36,6 +34,5 @@
     "exclude": [
         "node_modules",
         "dist",
-        "packages/react-form-wizard/**/*"
     ]
 }
