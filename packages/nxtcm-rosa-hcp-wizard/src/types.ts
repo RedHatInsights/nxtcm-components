@@ -65,11 +65,13 @@ export type Subnet = {
   subnet_id: string;
   name: string;
   availability_zone: string;
+  public: boolean;
 };
 
 export type CIDRSubnet = {
   cidr_block: string;
   name: string;
+  public: boolean;
   subnet_id: string;
   availability_zone: string;
 };
@@ -82,8 +84,8 @@ export type VPC = {
 };
 
 export type SecurityGroup = {
-  id?: string;
-  name?: string;
+  id: string;
+  name: string;
   red_hat_managed?: boolean;
 };
 

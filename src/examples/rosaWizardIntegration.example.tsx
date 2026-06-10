@@ -61,6 +61,7 @@ const exampleVpcList: VPC[] = [
       {
         subnet_id: 'subnet-private-a',
         name: 'example-subnet-private1-us-east-1a',
+        public: false,
         availability_zone: 'us-east-1a',
       },
     ],

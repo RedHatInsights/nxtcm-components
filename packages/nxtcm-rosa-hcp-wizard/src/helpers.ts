@@ -14,6 +14,7 @@ export type LabelValueOption = { label: string; value: string };
 export type MachinePoolsReviewSelectOptions = {
   vpc: LabelValueOption[];
   subnet: LabelValueOption[];
+  publicSubnet: LabelValueOption[];
   securityGroup: LabelValueOption[];
 };
 
@@ -42,7 +43,7 @@ export function buildMachinePoolsReviewSelectOptions(
   selectedVPC: VPC | undefined,
   vpcListData: VPC[]
 ): MachinePoolsReviewSelectOptions {
-  const { privateSubnets } = subnetsFilter(selectedVPC);
+  const { privateSubnets, publicSubnets } = subnetsFilter(selectedVPC);
   const securityGroups = [...(selectedVPC?.aws_security_groups ?? [])];
   securityGroups.sort(securityGroupsSort);
 
@@ -52,6 +53,10 @@ export function buildMachinePoolsReviewSelectOptions(
       value: vpc.id,
     })),
     subnet: (privateSubnets ?? []).map((subnet) => ({
+      label: subnet.name,
+      value: subnet.subnet_id,
+    })),
+    publicSubnet: (publicSubnets ?? []).map((subnet) => ({
       label: subnet.name,
       value: subnet.subnet_id,
     })),
@@ -143,12 +148,12 @@ const constructSelectedSubnets = (formValues?: ROSAHCPCluster): CIDRSubnet[] => 
 };
 
 const subnetsFilter = (selectedVPC: VPC | undefined) => {
-  const privateSubnets = selectedVPC?.aws_subnets.filter((privateSubnet: Subnet) =>
-    privateSubnet.name.includes('private')
+  const privateSubnets = selectedVPC?.aws_subnets.filter(
+    (privateSubnet: Subnet) => privateSubnet.public === false
   );
 
-  const publicSubnets = selectedVPC?.aws_subnets.filter((publicSubnet: Subnet) =>
-    publicSubnet.name.includes('public')
+  const publicSubnets = selectedVPC?.aws_subnets.filter(
+    (publicSubnet: Subnet) => publicSubnet.public === true
   );
 
   return {

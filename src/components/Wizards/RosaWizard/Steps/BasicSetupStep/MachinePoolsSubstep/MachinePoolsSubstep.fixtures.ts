@@ -19,21 +19,25 @@ export const mockSubnets: Subnet[] = [
   {
     subnet_id: 'subnet-private-1',
     name: 'my-vpc-private-us-east-1a',
+    public: false,
     availability_zone: 'us-east-1a',
   },
   {
     subnet_id: 'subnet-private-2',
     name: 'my-vpc-private-us-east-1b',
+    public: false,
     availability_zone: 'us-east-1b',
   },
   {
     subnet_id: 'subnet-public-1',
     name: 'my-vpc-public-us-east-1a',
+    public: true,
     availability_zone: 'us-east-1a',
   },
   {
     subnet_id: 'subnet-public-2',
     name: 'my-vpc-public-us-east-1b',
+    public: true,
     availability_zone: 'us-east-1b',
   },
 ];
@@ -53,11 +57,13 @@ export const mockVpcList: Resource<VPC[]> = {
         {
           subnet_id: 'subnet-staging-private',
           name: 'staging-private-subnet',
+          public: false,
           availability_zone: 'us-west-2a',
         },
         {
           subnet_id: 'subnet-staging-public',
           name: 'staging-public-subnet',
+          public: true,
           availability_zone: 'us-west-2a',
         },
       ],

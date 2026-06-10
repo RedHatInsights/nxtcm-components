@@ -690,6 +690,7 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
           cidr_block: '192.168.1.0/24',
           name: 'my-subnet',
           subnet_id: 'sub-1',
+          public: true,
           availability_zone: 'us-east-1a',
         },
       ];
@@ -772,6 +773,7 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
           cidr_block: '172.30.0.0/24',
           name: 'svc-subnet',
           subnet_id: 'sub-2',
+          public: true,
           availability_zone: 'us-east-1a',
         },
       ];
@@ -866,6 +868,7 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
           cidr_block: '10.128.0.0/24',
           name: 'pod-subnet',
           subnet_id: 'sub-3',
+          public: true,
           availability_zone: 'us-east-1a',
         },
       ];

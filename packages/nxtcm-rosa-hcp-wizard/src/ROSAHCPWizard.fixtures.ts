@@ -1,5 +1,18 @@
 import React from 'react';
-import { Resource, ValidationResource, OpenShiftVersionsData } from './types';
+import {
+  AWSBillingAccounts,
+  AWSInfrastructureAccounts,
+  CIDRSubnet,
+  MachineTypesDropdownType,
+  OIDCConfig,
+  OpenShiftVersionsData,
+  Region,
+  Resource,
+  Role,
+  SecurityGroup,
+  ValidationResource,
+  VPC,
+} from './types';
 
 const REFETCH_ALL_DELAY_MS = 2000;
 /** Shared API error string for the `AllApiErrors` story (popover/detail body). */
@@ -50,7 +63,7 @@ const mockVersionsData: OpenShiftVersionsData = {
 };
 
 /** When default and latest share the same value, wizard shows a single "Default (Recommended)" group. */
-const mockOpenShiftVersionsDataDefaultEqualsLatest = {
+const mockOpenShiftVersionsDataDefaultEqualsLatest: OpenShiftVersionsData = {
   latest: { label: 'OpenShift 4.21.8', value: '4.21.8' },
   default: { label: 'OpenShift 4.21.8', value: '4.21.8' },
   releases: [
@@ -60,7 +73,7 @@ const mockOpenShiftVersionsDataDefaultEqualsLatest = {
   ],
 };
 
-const mockAwsInfrastructureAccounts = [
+const mockAwsInfrastructureAccounts: AWSInfrastructureAccounts[] = [
   {
     label: 'AWS Account - Production (123456789012)',
     value: 'aws-prod-123456789012',
@@ -75,7 +88,7 @@ const mockAwsInfrastructureAccounts = [
   },
 ];
 
-const mockAwsBillingAccounts = [
+const mockAwsBillingAccounts: AWSBillingAccounts[] = [
   {
     label: 'Billing Account - Main (123456789012)',
     value: 'billing-main-123456789012',
@@ -86,7 +99,7 @@ const mockAwsBillingAccounts = [
   },
 ];
 
-const mockRegions = [
+const mockRegions: Region[] = [
   { label: 'US West (N. California)', value: 'us-west-1' },
   { label: 'US West (Oregon)', value: 'us-west-2' },
   { label: 'EU (Ireland)', value: 'eu-west-1' },
@@ -95,13 +108,13 @@ const mockRegions = [
   { label: 'Region for machine types (us-east-1)', value: 'us-east-1' },
 ];
 
-const mockRegionsLimited = [
+const mockRegionsLimited: Region[] = [
   { label: 'US West (Oregon) - Limited', value: 'us-west-2' },
   { label: 'EU (Frankfurt)', value: 'eu-west-4' },
   { label: 'EU (Rome)', value: 'eu-west-5' },
 ];
 
-const mockRoles = [
+const mockRoles: Role[] = [
   {
     installerRole: {
       label: 'arn:aws:iam::720424066366:role/ManagedOpenShift-HCP-ROSA-Installer-Role',
@@ -161,7 +174,7 @@ const mockRoles = [
   },
 ];
 
-const mockOicdConfig = [
+const mockOicdConfig: OIDCConfig[] = [
   {
     label: '2kl4t2st8eg2u5jppv8kjeemkvimfm99',
     value: '2kl4t2st8eg2u5jppv8kjeemkvimfm99',
@@ -174,7 +187,7 @@ const mockOicdConfig = [
   },
 ];
 
-const mockMachineTypes = [
+const mockMachineTypes: MachineTypesDropdownType[] = [
   {
     id: 'm5a.xlarge',
     label: 'm5a.xlarge',
@@ -188,7 +201,7 @@ const mockMachineTypes = [
     value: 'm6a.xlarge',
   },
 ];
-const mockAdditionalMachineTypes = [
+const mockAdditionalMachineTypes: MachineTypesDropdownType[] = [
   {
     id: 'c5.2xlarge',
     label: 'c5.2xlarge',
@@ -209,7 +222,7 @@ const mockAdditionalMachineTypes = [
   },
 ];
 
-const mockMachineTypesLimited = [
+const mockMachineTypesLimited: MachineTypesDropdownType[] = [
   {
     id: 'm6a.xlarge',
     label: 'm6a.xlarge',
@@ -218,7 +231,7 @@ const mockMachineTypesLimited = [
   },
 ];
 
-const mockSecurityGroups = [
+const mockSecurityGroups: SecurityGroup[] = [
   { id: 'sg-0a1b2c3d4e5f00001', name: 'default' },
   { id: 'sg-0a1b2c3d4e5f00002', name: 'k8s-traffic-rules' },
   { id: 'sg-0a1b2c3d4e5f00003', name: 'web-server-sg' },
@@ -226,7 +239,7 @@ const mockSecurityGroups = [
   { id: 'sg-0a1b2c3d4e5f00005', name: '' },
 ];
 
-const mockVPCs = [
+const mockVPCs: VPC[] = [
   {
     name: 'test-vpc-1',
     id: 'vpc-01496860a4b0475a3',
@@ -234,28 +247,32 @@ const mockVPCs = [
       {
         subnet_id: 'subnet-0cd89766e94deb008',
         name: 'test-1-subnet-public1-us-east-1b',
+        public: true,
         availability_zone: 'us-east-1b',
         cidr_block: '10.0.16.0/20',
       },
       {
         subnet_id: 'subnet-032asd766e94deb008',
         name: 'test-1-subnet-private1-us-east-1a',
+        public: false,
         availability_zone: 'us-east-1a',
         cidr_block: '10.0.128.0/20',
       },
       {
         subnet_id: 'subnet-032as34ty2a6e94deb008',
         name: 'test-1-subnet-public1-us-east-1a',
+        public: true,
         availability_zone: 'us-east-1a',
         cidr_block: '10.0.160.0/20',
       },
       {
         subnet_id: 'subnet-03aas45qwe94deb008',
         name: 'test-1-subnet-private1-us-east-1b',
+        public: false,
         availability_zone: 'us-east-1b',
         cidr_block: '10.0.144.0/20',
       },
-    ],
+    ] as CIDRSubnet[],
     aws_security_groups: mockSecurityGroups,
   },
   {
@@ -264,21 +281,25 @@ const mockVPCs = [
     aws_subnets: [
       {
         name: 'test-subnet-private1-us-east-1a',
+        public: false,
         availability_zone: 'us-east-1a',
         subnet_id: 'subnet-0b5b55dvdv12236d',
       },
       {
         name: 'test-subnet-public1-us-east-1a',
+        public: true,
         availability_zone: 'us-east-1a',
         subnet_id: 'subnet-0b5b33hgvdv12236d',
       },
       {
         name: 'test-subnet-private1-us-east-1b',
+        public: false,
         availability_zone: 'us-east-1b',
         subnet_id: 'subnet-0b5b5611aser12236d',
       },
       {
         name: 'test-subnet-public1-us-east-1b',
+        public: true,
         availability_zone: 'us-east-1b',
         subnet_id: 'subnet-0b776hbdfdfdv12236d',
       },
@@ -286,7 +307,7 @@ const mockVPCs = [
   },
 ];
 
-const mockAdditionalVPCs = [
+const mockAdditionalVPCs: VPC[] = [
   {
     name: 'prod-vpc-multi-az',
     id: 'vpc-prod-multi-az-001',
@@ -294,21 +315,25 @@ const mockAdditionalVPCs = [
       {
         subnet_id: 'subnet-mp-private-1a',
         name: 'prod-vpc-subnet-private1-us-east-1a',
+        public: false,
         availability_zone: 'us-east-1a',
       },
       {
         subnet_id: 'subnet-mp-public-1a',
         name: 'prod-vpc-subnet-public1-us-east-1a',
+        public: true,
         availability_zone: 'us-east-1a',
       },
       {
         subnet_id: 'subnet-mp-private-1b',
         name: 'prod-vpc-subnet-private1-us-east-1b',
+        public: false,
         availability_zone: 'us-east-1b',
       },
       {
         subnet_id: 'subnet-mp-public-1b',
         name: 'prod-vpc-subnet-public1-us-east-1b',
+        public: true,
         availability_zone: 'us-east-1b',
       },
     ],
@@ -316,7 +341,7 @@ const mockAdditionalVPCs = [
   },
 ];
 
-const mockUpdatedAwsInfrastructureAccounts = [
+const mockUpdatedAwsInfrastructureAccounts: AWSInfrastructureAccounts[] = [
   {
     label: 'AWS Account - US Sandbox (555000555666)',
     value: 'aws-us-sandbox-555000555666',
@@ -327,7 +352,7 @@ const mockUpdatedAwsInfrastructureAccounts = [
   },
 ];
 
-const mockUpdatedAwsBillingAccounts = [
+const mockUpdatedAwsBillingAccounts: AWSBillingAccounts[] = [
   {
     label: 'Billing - EMEA Cost Center (600111222333)',
     value: 'billing-emea-600111222333',
@@ -338,7 +363,7 @@ const mockUpdatedAwsBillingAccounts = [
   },
 ];
 
-const mockUpdatedOpenShiftVersions = {
+const mockUpdatedOpenShiftVersions: OpenShiftVersionsData = {
   latest: { label: 'OpenShift 4.22.1', value: '4.22.1' },
   default: { label: 'OpenShift 4.21.10', value: '4.21.10' },
   releases: [
@@ -349,7 +374,7 @@ const mockUpdatedOpenShiftVersions = {
   ],
 };
 
-const mockUpdatedOIDCConfig = [
+const mockUpdatedOIDCConfig: OIDCConfig[] = [
   {
     label: '7xk9m3bc4dp1qw2ef6ghjt5nrs8uv0ya',
     value: '7xk9m3bc4dp1qw2ef6ghjt5nrs8uv0ya',
@@ -362,7 +387,7 @@ const mockUpdatedOIDCConfig = [
   },
 ];
 
-const mockUpdatedVPCList = [
+const mockUpdatedVPCList: VPC[] = [
   {
     name: 'refreshed-prod-vpc',
     id: 'vpc-refreshed-prod-001',
@@ -370,21 +395,25 @@ const mockUpdatedVPCList = [
       {
         subnet_id: 'subnet-ref-priv-1a',
         name: 'refreshed-prod-subnet-private1-us-west-2a',
+        public: false,
         availability_zone: 'us-west-2a',
       },
       {
         subnet_id: 'subnet-ref-pub-1a',
         name: 'refreshed-prod-subnet-public1-us-west-2a',
+        public: true,
         availability_zone: 'us-west-2a',
       },
       {
         subnet_id: 'subnet-ref-priv-1b',
         name: 'refreshed-prod-subnet-private1-us-west-2b',
+        public: false,
         availability_zone: 'us-west-2b',
       },
       {
         subnet_id: 'subnet-ref-pub-1b',
         name: 'refreshed-prod-subnet-public1-us-west-2b',
+        public: true,
         availability_zone: 'us-west-2b',
       },
     ],
@@ -400,11 +429,13 @@ const mockUpdatedVPCList = [
       {
         subnet_id: 'subnet-ref-stg-priv-1a',
         name: 'refreshed-staging-subnet-private1-eu-west-1a',
+        public: false,
         availability_zone: 'eu-west-1a',
       },
       {
         subnet_id: 'subnet-ref-stg-pub-1a',
         name: 'refreshed-staging-subnet-public1-eu-west-1a',
+        public: true,
         availability_zone: 'eu-west-1a',
       },
     ],
@@ -416,38 +447,40 @@ const mockUpdatedVPCList = [
       {
         subnet_id: 'subnet-ref-dev-priv-1a',
         name: 'refreshed-dev-subnet-private1-ap-southeast-1a',
+        public: false,
         availability_zone: 'ap-southeast-1a',
       },
       {
         subnet_id: 'subnet-ref-dev-pub-1a',
         name: 'refreshed-dev-subnet-public1-ap-southeast-1a',
+        public: true,
         availability_zone: 'ap-southeast-1a',
       },
     ],
   },
 ];
 
-const mockLimitedOpenShiftVersions = {
+const mockLimitedOpenShiftVersions: OpenShiftVersionsData = {
   latest: { label: 'OpenShift 4.12.0', value: '4.12.0' },
   default: { label: 'OpenShift 4.12.0', value: '4.12.0' },
   releases: [],
 };
 
-const mockLimitedAwsInfrastructureAccounts = [
+const mockLimitedAwsInfrastructureAccounts: AWSInfrastructureAccounts[] = [
   {
     label: 'AWS Account - Production (123456789012)',
     value: 'aws-prod-123456789012',
   },
 ];
 
-const mockLimitedAwsBillingAccounts = [
+const mockLimitedAwsBillingAccounts: AWSBillingAccounts[] = [
   {
     label: 'Billing Account - Main (123456789012)',
     value: 'billing-main-123456789012',
   },
 ];
 
-const mockExtensiveNumOpenShiftVersions = {
+const mockExtensiveNumOpenShiftVersions: OpenShiftVersionsData = {
   latest: { label: 'OpenShift 4.12.0', value: '4.12.0' },
   default: { label: 'OpenShift 4.11.4', value: '4.11.4' },
   releases: Array.from({ length: 18 }, (_, i) => ({
@@ -456,49 +489,62 @@ const mockExtensiveNumOpenShiftVersions = {
   })),
 };
 
-const mockExtensiveNumAWsInfrastructureAccounts = Array.from({ length: 15 }, (_, i) => ({
-  label: `AWS Account - Environment ${i + 1} (${100000000000 + i})`,
-  value: `aws-env-${i + 1}-${100000000000 + i}`,
-}));
+const mockExtensiveNumAWsInfrastructureAccounts: AWSInfrastructureAccounts[] = Array.from(
+  { length: 15 },
+  (_, i) => ({
+    label: `AWS Account - Environment ${i + 1} (${100000000000 + i})`,
+    value: `aws-env-${i + 1}-${100000000000 + i}`,
+  })
+);
 
-const mockExtensiveNumAwsBillingAccounts = Array.from({ length: 10 }, (_, i) => ({
-  label: `Billing Account ${i + 1} (${100000000000 + i})`,
-  value: `billing-${i + 1}-${100000000000 + i}`,
-}));
+const mockExtensiveNumAwsBillingAccounts: AWSBillingAccounts[] = Array.from(
+  { length: 10 },
+  (_, i) => ({
+    label: `Billing Account ${i + 1} (${100000000000 + i})`,
+    value: `billing-${i + 1}-${100000000000 + i}`,
+  })
+);
 
-const mockExtensiveNumVPCs = Array.from({ length: 5 }, (_, i) => ({
+const mockExtensiveNumVPCs: VPC[] = Array.from({ length: 5 }, (_, i) => ({
   name: `extensive-vpc-${i + 3}`,
   id: `vpc-extensive-${i + 3}`,
   aws_subnets: [
     {
       subnet_id: `subnet-ext-private-${i}-a`,
       name: `extensive-vpc-${i + 3}-subnet-private1-us-east-1a`,
+      public: false,
       availability_zone: 'us-east-1a',
     },
     {
       subnet_id: `subnet-ext-public-${i}-a`,
       name: `extensive-vpc-${i + 3}-subnet-public1-us-east-1a`,
+      public: true,
       availability_zone: 'us-east-1a',
     },
     {
       subnet_id: `subnet-ext-private-${i}-b`,
       name: `extensive-vpc-${i + 3}-subnet-private1-us-east-1b`,
+      public: false,
       availability_zone: 'us-east-1b',
     },
     {
       subnet_id: `subnet-ext-public-${i}-b`,
       name: `extensive-vpc-${i + 3}-subnet-public1-us-east-1b`,
+      public: true,
       availability_zone: 'us-east-1b',
     },
   ],
 }));
 
-const mockExtensiveNumMachineTypes = Array.from({ length: 10 }, (_, i) => ({
-  id: `ext-instance-${i + 1}`,
-  label: `ext-instance-${i + 1}.xlarge`,
-  description: `${(i + 2) * 2} vCPU ${(i + 2) * 8} GiB RAM`,
-  value: `ext-instance-${i + 1}.xlarge`,
-}));
+const mockExtensiveNumMachineTypes: MachineTypesDropdownType[] = Array.from(
+  { length: 10 },
+  (_, i) => ({
+    id: `ext-instance-${i + 1}`,
+    label: `ext-instance-${i + 1}.xlarge`,
+    description: `${(i + 2) * 2} vCPU ${(i + 2) * 8} GiB RAM`,
+    value: `ext-instance-${i + 1}.xlarge`,
+  })
+);
 
 export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));

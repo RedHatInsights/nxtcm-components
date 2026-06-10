@@ -307,4 +307,107 @@ test.describe('Networking (ROSA HCP)', () => {
       await expect(component.getByText(n.cidrLearnMoreLink)).toBeVisible();
     });
   });
+
+  test.describe('Networking — public subnet select', () => {
+    test('should render the public subnet select when Public radio is selected', async ({
+      mount,
+    }) => {
+      const component = await mount(
+        <NetworkingMount defaultValues={{ selected_vpc: 'vpc-12345' }} />
+      );
+
+      await expect(
+        component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') })
+      ).toBeVisible();
+    });
+
+    test('should hide the public subnet select when Private radio is selected', async ({
+      mount,
+    }) => {
+      const component = await mount(
+        <NetworkingMount
+          defaultValues={{
+            cluster_privacy: ClusterNetwork.internal,
+            selected_vpc: 'vpc-12345',
+          }}
+        />
+      );
+
+      await expect(
+        component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') })
+      ).toHaveCount(0);
+    });
+
+    test('should hide the public subnet select after switching from Public to Private', async ({
+      mount,
+    }) => {
+      const component = await mount(
+        <NetworkingMount defaultValues={{ selected_vpc: 'vpc-12345' }} />
+      );
+
+      await expect(
+        component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') })
+      ).toBeVisible();
+
+      await component.getByRole('radio', { name: n.privateLabel }).click();
+
+      await expect(
+        component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') })
+      ).toHaveCount(0);
+    });
+
+    test('should show public subnet options from the selected VPC', async ({ mount, page }) => {
+      const component = await mount(
+        <NetworkingMount defaultValues={{ selected_vpc: 'vpc-12345' }} />
+      );
+
+      await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();
+
+      await expect(page.getByRole('option', { name: 'public-subnet-a' })).toBeVisible();
+      await expect(page.getByRole('option', { name: 'public-subnet-b' })).toBeVisible();
+    });
+
+    test('should not list private subnets in the public subnet select', async ({ mount, page }) => {
+      const component = await mount(
+        <NetworkingMount defaultValues={{ selected_vpc: 'vpc-12345' }} />
+      );
+
+      await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();
+
+      await expect(page.getByRole('option', { name: 'private-subnet-a' })).toHaveCount(0);
+    });
+
+    test('should allow selecting a public subnet option', async ({ mount, page }) => {
+      const component = await mount(
+        <NetworkingMount defaultValues={{ selected_vpc: 'vpc-12345' }} />
+      );
+
+      await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();
+
+      await page.getByRole('option', { name: 'public-subnet-a' }).click();
+
+      await expect(component.getByText('public-subnet-a')).toBeVisible();
+    });
+
+    test('should show no public subnet options when a VPC with no public subnets is selected', async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(
+        <NetworkingMount defaultValues={{ selected_vpc: 'vpc-67890' }} />
+      );
+
+      await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();
+
+      await expect(page.getByRole('option', { name: /no results found/i })).toBeVisible();
+    });
+
+    test('should show no public subnet options when no VPC is selected', async ({ mount }) => {
+      const component = await mount(<NetworkingMount />);
+
+      await expect(
+        component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') })
+      ).toBeVisible();
+    });
+  });
 });
