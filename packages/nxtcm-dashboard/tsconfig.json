@@ -5,9 +5,9 @@
     "outDir": "dist"
   },
   "include": [
-    "src/**/*",
-    "../../src/types/typings.d.ts"
-  ],
+    "../../*",
+    "../../types/typings.d.ts", 
+    "../../test-helpers.ts" ],
   "exclude": [
     "**/*.spec.tsx",
     "**/*.spec-helpers.tsx",

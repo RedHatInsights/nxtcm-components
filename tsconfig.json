@@ -8,7 +8,7 @@
         "strict": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "resolveJsonModule": true,
         "paths": {
             "@patternfly-labs/react-form-wizard": ["./packages/react-form-wizard/src"],
@@ -17,7 +17,7 @@
             "@redhat-cloud-services/nxtcm-dashboard/*": ["./packages/nxtcm-dashboard/src/*"],
             "@redhat-cloud-services/nxtcm-rosa-hcp-wizard": ["./packages/nxtcm-rosa-hcp-wizard/src"],
             "@redhat-cloud-services/nxtcm-rosa-hcp-wizard/*": ["./packages/nxtcm-rosa-hcp-wizard/src/*"],
-            "@/*": ["./src/*"]
+            "@/*": ["./*"]
         },
         "lib": [
             "dom",
@@ -27,10 +27,11 @@
         "types": ["node", "jest", "@testing-library/jest-dom"]
     },
     "include": [
-        "src/**/*",
         ".storybook/**/*",
         "packages/nxtcm-dashboard/src/**/*",
-        "packages/nxtcm-rosa-hcp-wizard/src/**/*"
+        "packages/nxtcm-rosa-hcp-wizard/src/**/*",
+        "test-helpers.ts",
+        "vite-env.d.ts"
     ],
     "exclude": [
         "node_modules",
