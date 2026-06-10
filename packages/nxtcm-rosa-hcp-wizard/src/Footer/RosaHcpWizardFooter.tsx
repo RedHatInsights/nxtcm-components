@@ -200,7 +200,13 @@ export function RosaHcpWizardFooter({
   );
 
   const handleSubmit = useCallback(() => {
-    void submitWizard();
+    void (async () => {
+      try {
+        await submitWizard();
+      } catch {
+        // keep the wizard open so the user can correct and retry
+      }
+    })();
   }, [submitWizard]);
 
   const handlePrimaryAction = isReviewStep ? handleSubmit : handleNext;

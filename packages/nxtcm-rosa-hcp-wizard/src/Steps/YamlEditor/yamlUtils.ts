@@ -20,7 +20,7 @@ export function parseYaml(yamlString: string): YamlParseResult {
       return {
         isValid: false,
         error: error.message,
-        errorLine: error.mark?.line ? error.mark.line + 1 : undefined,
+        errorLine: error.mark?.line !== undefined ? error.mark.line + 1 : undefined,
       };
     }
     return {
@@ -44,6 +44,19 @@ export function prettifyYaml(yamlString: string, indent: number = 2): string {
   }
 }
 
+function cleanArrayItem(item: unknown): unknown {
+  if (item === null || item === undefined) return undefined;
+  if (typeof item === 'string' && item.trim() === '') return undefined;
+  if (Array.isArray(item)) {
+    const cleaned = item.map(cleanArrayItem).filter((v) => v !== null && v !== undefined);
+    return cleaned.length > 0 ? cleaned : undefined;
+  }
+  if (typeof item === 'object') {
+    return removeEmptyValues(item as Record<string, unknown>);
+  }
+  return item;
+}
+
 export function removeEmptyValues(
   obj: Record<string, unknown>
 ): Record<string, unknown> | undefined {
@@ -53,13 +66,7 @@ export function removeEmptyValues(
 
     if (Array.isArray(value)) {
       const filteredArray = value
-        .map((item: unknown) => {
-          if (item === null || item === undefined) return undefined;
-          if (typeof item === 'object' && !Array.isArray(item)) {
-            return removeEmptyValues(item as Record<string, unknown>);
-          }
-          return item;
-        })
+        .map(cleanArrayItem)
         .filter((item) => item !== null && item !== undefined);
       if (filteredArray.length > 0) {
         cleaned[key] = filteredArray;

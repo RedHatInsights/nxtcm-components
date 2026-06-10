@@ -40,6 +40,29 @@ const compiledTemplate = Handlebars.compile(rosaHcpTemplateRaw);
 const YAML_MODEL_PATH = 'rosa-hcp-control-plane.yaml';
 const YAML_VALIDATION_OWNER = 'yaml-hcp-validation';
 
+const YAML_PARSER_FIELDS = [
+  'name',
+  'cluster_version',
+  'region',
+  'billing_account_id',
+  'cluster_privacy',
+  'installer_role_arn',
+  'support_role_arn',
+  'worker_role_arn',
+  'byo_oidc_config_id',
+  'network_machine_cidr',
+  'network_service_cidr',
+  'network_pod_cidr',
+  'network_host_prefix',
+  'machine_type',
+  'compute_root_volume',
+  'autoscaling',
+  'min_replicas',
+  'max_replicas',
+  'etcd_encryption',
+  'etcd_key_arn',
+] as const satisfies ReadonlyArray<keyof ROSAHCPCluster>;
+
 function renderTemplate(data: Record<string, unknown>): string {
   try {
     const raw = compiledTemplate(data);
@@ -171,6 +194,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         };
 
         if (!isInitializedRef.current) {
+          setupMonacoEnvironmentIfNeeded();
           monacoYamlDisposeRef.current?.();
           monacoYamlDisposeRef.current = new RosaHcpYamlMonacoLoader().configure(
             monaco as Parameters<RosaHcpYamlMonacoLoader['configure']>[0]
@@ -203,9 +227,10 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         applyToForm() {
           const parsed = parseRosaControlPlaneYaml(pendingYamlRef.current);
           if (parsed?.cluster) {
-            Object.entries(parsed.cluster).forEach(([key, value]) => {
-              setValue(key as keyof ROSAHCPCluster, value as ROSAHCPCluster[keyof ROSAHCPCluster]);
-            });
+            const cluster = parsed.cluster as Record<string, unknown>;
+            for (const key of YAML_PARSER_FIELDS) {
+              setValue(key, cluster[key] as ROSAHCPCluster[typeof key]);
+            }
           }
         },
         discard() {

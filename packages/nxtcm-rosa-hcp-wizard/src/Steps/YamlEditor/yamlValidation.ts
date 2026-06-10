@@ -22,6 +22,17 @@ export interface ValidationError {
   path?: string;
 }
 
+function detectChildIndent(lines: string[], fromLine: number, parentIndent: number): number {
+  for (let j = fromLine + 1; j < lines.length; j++) {
+    const t = lines[j].trimStart();
+    if (!t || t.startsWith('#')) continue;
+    const ci = lines[j].length - t.length;
+    if (ci > parentIndent) return ci;
+    break;
+  }
+  return parentIndent + 2;
+}
+
 function findLineForPath(content: string, instancePath: string): number {
   if (!instancePath) return 1;
 
@@ -48,7 +59,7 @@ function findLineForPath(content: string, instancePath: string): number {
       if ((trimmed.startsWith('- ') || trimmed === '-') && indent === minIndent) {
         if (arrayItemCount === parseInt(target, 10)) {
           depth++;
-          minIndent = indent + 2;
+          minIndent = detectChildIndent(lines, i, indent);
           arrayItemCount = 0;
           if (depth >= segments.length) return i + 1;
         } else {
@@ -65,7 +76,7 @@ function findLineForPath(content: string, instancePath: string): number {
 
       if (matchedKey === target && indent === minIndent) {
         depth++;
-        minIndent = indent + 2;
+        minIndent = detectChildIndent(lines, i, indent);
         arrayItemCount = 0;
         if (depth >= segments.length) return i + 1;
       }

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import type { ClusterFormData } from '@/components/Wizards/types';
@@ -42,6 +42,7 @@ export function useRosaHcpWizardSubmit({
   } = useFormContext<Partial<ClusterFormData>>();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const inFlightRef = useRef(false);
 
   const allFormFieldPaths = useMemo(
     () => reviewSections.flatMap((section) => section.fieldPaths),
@@ -97,16 +98,22 @@ export function useRosaHcpWizardSubmit({
   ]);
 
   const submitWizard = useCallback(async (): Promise<boolean> => {
-    if (!(await validateEntireForm())) {
-      return false;
-    }
-
-    setIsSubmitting(true);
+    if (inFlightRef.current) return false;
+    inFlightRef.current = true;
     try {
-      await onSubmit(getValues() as ROSAHCPCluster);
-      return true;
+      if (!(await validateEntireForm())) {
+        return false;
+      }
+
+      setIsSubmitting(true);
+      try {
+        await onSubmit(getValues() as ROSAHCPCluster);
+        return true;
+      } finally {
+        setIsSubmitting(false);
+      }
     } finally {
-      setIsSubmitting(false);
+      inFlightRef.current = false;
     }
   }, [getValues, onSubmit, validateEntireForm]);
 
