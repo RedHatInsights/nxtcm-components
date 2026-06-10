@@ -1,7 +1,10 @@
 import * as yup from 'yup';
 import type { FieldPathValue, UseFormSetValue } from 'react-hook-form';
 
-import { buildFormSetValueOptions, type FormSetValueOptions } from '../formSetValueOptions';
+import {
+  buildFormSetValueOptions,
+  type FormSetValueOptions,
+} from '../utilities/formSetValueOptions';
 import type { ROSAHCPCluster } from '../types';
 import { clusterValidationSchema } from '../yupSchemas';
 import type { WizardFieldSyncOnChange, WizardFormFieldName } from '../yupSchemas/types';

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Alert, AlertActionLink } from '@patternfly/react-core';
-import links from '../../../../links';
+import links from '../../../../constants/links';
 import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWizardStringsContext';
 
 const SecurityGroupsNoEditAlert = () => {

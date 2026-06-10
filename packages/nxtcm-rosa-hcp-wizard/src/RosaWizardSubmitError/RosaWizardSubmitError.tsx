@@ -6,7 +6,7 @@ import {
   EmptyStateFooter,
   EmptyStateStatus,
 } from '@patternfly/react-core';
-import { useRosaHcpWizardStrings } from './stringsProvider/RosaHcpWizardStringsContext';
+import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
 
 export type RosaWizardSubmitErrorProps = {
   /** Error message or flag from parent (e.g. submit failure). */

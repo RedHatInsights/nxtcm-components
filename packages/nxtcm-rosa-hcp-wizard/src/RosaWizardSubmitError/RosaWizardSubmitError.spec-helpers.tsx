@@ -5,7 +5,7 @@
 import React from 'react';
 
 import { RosaWizardSubmitError } from './RosaWizardSubmitError';
-import { withRosaCt } from './components/WizFields/wizFieldCtSpecHelpers';
+import { withRosaCt } from '../components/WizFields/wizFieldCtSpecHelpers';
 
 export type RosaWizardSubmitErrorMountProps = React.ComponentProps<typeof RosaWizardSubmitError>;
 

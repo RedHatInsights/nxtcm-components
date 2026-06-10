@@ -9,7 +9,7 @@ import {
 import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../links';
+import links from '../../../constants/links';
 import { ClusterNetwork, ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
 import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
 import { Radio } from '../../../components/Fields/RadioGroup';

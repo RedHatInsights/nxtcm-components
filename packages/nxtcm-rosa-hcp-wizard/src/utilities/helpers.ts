@@ -1,5 +1,5 @@
-import { MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH } from './constants';
-import { securityGroupsSort } from './Steps/BasicSetup/MachinePools/SecurityGroupSection/helpers';
+import { MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH } from '../constants';
+import { securityGroupsSort } from '../Steps/BasicSetup/MachinePools/SecurityGroupSection/helpers';
 import {
   ClusterUpgrade,
   CIDRSubnet,
@@ -7,7 +7,7 @@ import {
   ROSAHCPCluster,
   Subnet,
   VPC,
-} from './types';
+} from '../types';
 
 export type LabelValueOption = { label: string; value: string };
 

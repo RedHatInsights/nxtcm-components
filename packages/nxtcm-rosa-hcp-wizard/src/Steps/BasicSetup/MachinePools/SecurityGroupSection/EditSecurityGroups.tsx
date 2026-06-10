@@ -4,7 +4,7 @@ import { Stack, StackItem } from '@patternfly/react-core';
 import SecurityGroupsViewList from './SecurityGroupsViewList';
 
 import { securityGroupsSort } from './helpers';
-import { showSecurityGroupsSection, truncateTextWithEllipsis } from '../../../../helpers';
+import { showSecurityGroupsSection, truncateTextWithEllipsis } from '../../../../utilities/helpers';
 import { WizMultiSelect } from '../../../../components/WizFields';
 import { clusterValidationSchema } from '../../../../yupSchemas';
 import type { CloudVpc, ROSAHCPCluster } from '../../../../types';

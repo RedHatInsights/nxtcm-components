@@ -5,8 +5,8 @@ import {
   type ReconcileFieldOption,
 } from '../utilities/reconcileFieldValueWithNewOptions';
 
-import { hasRefetchableStringValue } from '../hasRefetchableStringValue';
-import { getNestedValue } from '../helpers';
+import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
+import { getNestedValue } from '../utilities/helpers';
 import { normalizeOption } from '../components/Fields/Select/SelectOptions';
 import type { Option, OptionGroup } from '../components/Fields/Select/SelectTypes';
 import { readWizardFieldMeta } from '../yupSchemas/readWizardFieldMeta';

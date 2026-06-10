@@ -1,6 +1,6 @@
 import { useFormContext, useWatch } from 'react-hook-form';
 import { ROSAHCPCluster } from '../../../types';
-import { createOperatorRolesPrefix } from '../../../helpers';
+import { createOperatorRolesPrefix } from '../../../utilities/helpers';
 import React from 'react';
 
 export const useUpdateOperatorPrefix = () => {

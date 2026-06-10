@@ -14,7 +14,7 @@ import {
   SERVICE_CIDR_MAX,
   STEP_IDS,
 } from '../constants';
-import { parseCIDRSubnetLength } from '../helpers';
+import { parseCIDRSubnetLength } from '../utilities/helpers';
 import { ClusterNetwork, ROSAHCPCluster } from '../types';
 import type { WizardFieldMeta } from './types';
 import {

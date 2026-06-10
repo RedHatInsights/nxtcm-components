@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 
 import { BASE_DOMAIN_REGEXP, MAX_CA_SIZE_BYTES, STEP_IDS } from '../constants';
-import { stringToArray } from '../helpers';
+import { stringToArray } from '../utilities/helpers';
 import type { WizardFieldMeta } from './types';
 import { ctx } from './helpers';
 

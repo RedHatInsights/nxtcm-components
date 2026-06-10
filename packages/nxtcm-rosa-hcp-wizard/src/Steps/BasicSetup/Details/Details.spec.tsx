@@ -3,7 +3,7 @@ import { checkAccessibility } from '../../../test-helpers';
 import type { Resource, Role } from '../../../types';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
-import { makeVpcListResource } from '../../../rosaHcpWizardCtSpecHelpers';
+import { makeVpcListResource } from '../../../test/rosaHcpWizardCtSpecHelpers';
 import { DetailsMount } from './Details.spec-helpers';
 import {
   INSTALLER_ARN_412,

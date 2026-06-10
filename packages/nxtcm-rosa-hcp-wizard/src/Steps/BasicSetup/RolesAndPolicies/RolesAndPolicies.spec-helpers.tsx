@@ -12,7 +12,6 @@ import {
   ClusterUpgrade,
   type OidcConfigResource,
   type ROSAHCPCluster,
-  type ROSAHCPWizardData,
   type RolesResource,
 } from '../../../types';
 import { RolesAndPolicies } from './RolesAndPolicies';
@@ -24,7 +23,7 @@ import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers'
 import {
   WizardFieldMetaChangeEffectsCtHarness,
   makeDefaultRosaHcpCtWizardData,
-} from '../../../rosaHcpWizardCtSpecHelpers';
+} from '../../../test/rosaHcpWizardCtSpecHelpers';
 
 /** Defaults aligned with {@link ROSAHCPWizardBody} so the composed Yup schema resolves consistently in CT. */
 const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ROSAHCPCluster> = {

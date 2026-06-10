@@ -5,12 +5,12 @@ import {
   ROSAHCPCluster,
   VPC,
 } from '../../types';
-import type { LabelValueOption } from '../../helpers';
+import type { LabelValueOption } from '../../utilities/helpers';
 import {
   formatUpgradePolicyForReview,
   formatUpgradeScheduleForReview,
   getNestedValue,
-} from '../../helpers';
+} from '../../utilities/helpers';
 import { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.types';
 import { wizardFieldMetaByPath } from '../../yupSchemas';
 

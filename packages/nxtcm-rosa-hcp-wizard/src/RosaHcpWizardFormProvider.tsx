@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { FormProvider, type Resolver, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import type { ROSAHCPCluster, RosaHCPWizardProps } from './types';
-import { buildClusterValidationSchemaContext } from './buildClusterValidationSchemaContext';
+import { buildClusterValidationSchemaContext } from './utilities/buildClusterValidationSchemaContext';
 import { ROSAHCPWizardBody } from './ROSAHCPWizardBody';
 import { RosaHcpWizardValidationProvider } from './rosaHcpWizardValidationContext';
 import { useRosaHcpWizardValidators } from './stringsProvider/RosaHcpWizardStringsContext';

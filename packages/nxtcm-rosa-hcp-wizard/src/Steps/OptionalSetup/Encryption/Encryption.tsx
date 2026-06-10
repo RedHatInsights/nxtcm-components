@@ -8,7 +8,7 @@ import { useWatch } from 'react-hook-form';
 import { ClusterEncryptionKeys, ROSAHCPCluster } from '../../../types';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../links';
+import links from '../../../constants/links';
 import { FieldWrapper } from '../../../components/FieldWrapper';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
 import { useClearFieldWhenHidden } from './useClearFieldWhenHidden';

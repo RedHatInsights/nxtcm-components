@@ -14,7 +14,7 @@ import { OIDCConfigHint } from '../../../components/OIDCConfigHint';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../links';
+import links from '../../../constants/links';
 import { ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
 import { useDependentRoles } from './useDependentRoles';
 import { clusterValidationSchema } from '../../../yupSchemas';

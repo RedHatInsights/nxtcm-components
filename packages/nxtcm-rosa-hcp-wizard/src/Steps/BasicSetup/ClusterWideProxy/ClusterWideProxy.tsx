@@ -2,7 +2,7 @@ import { Alert, Content, ContentVariants, Stack, StackItem } from '@patternfly/r
 import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../links';
+import links from '../../../constants/links';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import { useFormContext, useWatch } from 'react-hook-form';

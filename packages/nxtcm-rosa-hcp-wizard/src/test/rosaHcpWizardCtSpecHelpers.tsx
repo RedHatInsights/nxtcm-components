@@ -1,7 +1,7 @@
-import rosaHcpWizardFixtures from './ROSAHCPWizard.fixtures';
-import { useWizardFieldMetaChangeEffects } from './fieldMetaChangeEffects/useWizardFieldMetaChangeEffects';
+import rosaHcpWizardFixtures from '../ROSAHCPWizard.fixtures';
+import { useWizardFieldMetaChangeEffects } from '../fieldMetaChangeEffects/useWizardFieldMetaChangeEffects';
 
-import type { MachineTypesResource, ROSAHCPWizardData, VpcListResource } from './types';
+import type { MachineTypesResource, ROSAHCPWizardData, VpcListResource } from '../types';
 
 const noopFetch = async (): Promise<void> => {};
 const defaultMachineTypesFetch = async (_region: string): Promise<void> => {};

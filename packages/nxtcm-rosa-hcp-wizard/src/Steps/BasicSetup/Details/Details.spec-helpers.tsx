@@ -28,7 +28,7 @@ import {
   makeDefaultRosaHcpCtWizardData,
   makeVpcListResource,
   WizardFieldMetaChangeEffectsCtHarness,
-} from '../../../rosaHcpWizardCtSpecHelpers';
+} from '../../../test/rosaHcpWizardCtSpecHelpers';
 import type {
   AwsBillingAccountsResource,
   AwsInfrastructureAccountsResource,

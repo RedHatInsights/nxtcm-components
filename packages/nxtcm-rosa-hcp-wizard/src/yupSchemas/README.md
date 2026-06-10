@@ -53,7 +53,7 @@ Nested fields (e.g. `machine_pools_subnets.0.machine_pool_subnet`) may also decl
 | Option | Type | Purpose |
 |--------|------|---------|
 | `id` | `string` | Field identifier; used as DOM id fallback and in review. Should match the schema path. |
-| `stepId` | `string` | Wizard step this field belongs to. Groups fields for review sections and Next-step validation via [`getFieldPathsByStepId`](./wizardFieldMetaChangeRegistry.ts). Values are defined in [`constants.ts`](../constants.ts) (`STEP_IDS`). |
+| `stepId` | `string` | Wizard step this field belongs to. Groups fields for review sections and Next-step validation via [`getFieldPathsByStepId`](./wizardFieldMetaChangeRegistry.ts). Values are defined in [`constants`](../constants/index.ts) (`STEP_IDS`). |
 
 ### Presentation (form UI)
 
@@ -158,7 +158,7 @@ Add new keys in [`types.ts`](./types.ts) and implement the handler in [`wizardFi
 Some fields are required only in certain modes (e.g. KMS ARN when custom encryption is selected). Validation uses Yup `.when()` branches; the UI asterisk uses a separate meta flag on the **active branch**:
 
 ```ts
-import { YUP_FIELD_REQUIRED_UI_META_KEY } from '@/utilities/yupFieldRequired';
+import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
 
 .when('encryption_keys', {
   is: ClusterEncryptionKeys.custom,

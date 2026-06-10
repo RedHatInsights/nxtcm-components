@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
-import { hasRefetchableStringValue } from '../hasRefetchableStringValue';
+import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
 import type { CheckClusterNameUniqueness, ROSAHCPCluster } from '../types';
 import { useRosaHcpWizardValidators } from '../stringsProvider/RosaHcpWizardStringsContext';
 import { validateClusterNameSync } from '../yupSchemas/helpers';

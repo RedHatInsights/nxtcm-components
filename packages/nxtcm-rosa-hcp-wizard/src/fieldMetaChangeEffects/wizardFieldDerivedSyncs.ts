@@ -3,13 +3,13 @@ import type { UseFormSetValue } from 'react-hook-form';
 import {
   DEFAULT_FORM_SET_VALUE_OPTS,
   DEFAULT_FORM_SET_VALUE_OPTS_WITH_VALIDATE,
-} from '../formSetValueOptions';
-import { resolveSelectedVpc } from '../helpers';
+} from '../utilities/formSetValueOptions';
+import { resolveSelectedVpc } from '../utilities/helpers';
 import type { ROSAHCPCluster, ROSAHCPWizardData, Role, VPC } from '../types';
 import type { WizardFieldDerivedSyncKey } from '../yupSchemas/types';
 import type { WizardFieldDerivedSyncEntry } from '../yupSchemas/wizardFieldMetaChangeRegistry';
 
-import { hasRefetchableStringValue } from '../hasRefetchableStringValue';
+import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
 
 export { hasRefetchableStringValue };
 

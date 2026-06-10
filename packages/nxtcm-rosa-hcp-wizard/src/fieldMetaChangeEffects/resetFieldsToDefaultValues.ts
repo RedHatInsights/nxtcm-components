@@ -1,6 +1,9 @@
 import type { FieldPathValue, UseFormSetValue } from 'react-hook-form';
 
-import { buildFormSetValueOptions, type FormSetValueOptions } from '../formSetValueOptions';
+import {
+  buildFormSetValueOptions,
+  type FormSetValueOptions,
+} from '../utilities/formSetValueOptions';
 import type { ROSAHCPCluster } from '../types';
 import { getClusterValidationSchemaDefaultValues } from '../yupSchemas';
 import type { WizardFormFieldName } from '../yupSchemas/types';

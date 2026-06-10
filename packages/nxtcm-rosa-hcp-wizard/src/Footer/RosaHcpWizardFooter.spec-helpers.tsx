@@ -36,7 +36,7 @@ import {
   defaultRosaHcpWizardValidatorStrings,
 } from '../stringsProvider/rosaHcpWizardStrings.defaults';
 import { withRosaCt } from '../components/WizFields/wizFieldCtSpecHelpers';
-import { makeVpcListResource } from '../rosaHcpWizardCtSpecHelpers';
+import { makeVpcListResource } from '../test/rosaHcpWizardCtSpecHelpers';
 import type {
   AwsBillingAccountsResource,
   AwsInfrastructureAccountsResource,

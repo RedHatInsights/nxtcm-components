@@ -21,7 +21,7 @@ import {
   buildMachinePoolsReviewSelectOptions,
   getNestedValue,
   resolveSelectedVpc,
-} from '../../helpers';
+} from '../../utilities/helpers';
 import { Section } from '../../components/Section';
 import { STEP_IDS } from '../../constants';
 import { useRosaHcpWizardReviewSections } from './ROSAHCPWizardReviewSections';

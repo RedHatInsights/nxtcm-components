@@ -1,4 +1,4 @@
-import { hasRefetchableStringValue } from '../hasRefetchableStringValue';
+import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
 
 /** Normalizes select-backed form values (string id or `{ id }` object) for comparison. */
 function normalizeSelectBackedFormValue(value: unknown): unknown {

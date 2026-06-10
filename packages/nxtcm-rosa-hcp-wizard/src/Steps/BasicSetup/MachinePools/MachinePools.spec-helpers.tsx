@@ -13,7 +13,7 @@ import {
   makeMachineTypesResource,
   makeVpcListResource,
   WizardFieldMetaChangeEffectsCtHarness,
-} from '../../../rosaHcpWizardCtSpecHelpers';
+} from '../../../test/rosaHcpWizardCtSpecHelpers';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
   clusterValidationSchema,

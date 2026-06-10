@@ -3,7 +3,10 @@ import type { Page } from '@playwright/test';
 import { checkAccessibility } from '../../../test-helpers';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
-import { makeMachineTypesResource, makeVpcListResource } from '../../../rosaHcpWizardCtSpecHelpers';
+import {
+  makeMachineTypesResource,
+  makeVpcListResource,
+} from '../../../test/rosaHcpWizardCtSpecHelpers';
 import { maxReplicasSchema, minReplicasSchema, nodesComputeSchema } from '../../../yupSchemas';
 import { MachinePoolsMount } from './MachinePools.spec-helpers';
 

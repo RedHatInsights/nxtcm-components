@@ -7,14 +7,14 @@ import {
   canSelectImds,
   getWorkerNodeVolumeSizeMaxGiB,
   resolveSelectedVpc,
-} from '../../../helpers';
+} from '../../../utilities/helpers';
 import { Section } from '../../../components/Section';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../links';
+import links from '../../../constants/links';
 import { WizCheckbox, WizNumberInput, WizSelect } from '../../../components/WizFields';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { clusterValidationSchema } from '../../../yupSchemas';
-import { getAutoscalingMaxNodes } from '../../../getAutoscalingMaxNodes';
+import { getAutoscalingMaxNodes } from '../../../utilities/getAutoscalingMaxNodes';
 import { MachinePoolsAdvancedSection } from './MachinePoolsAdvancedSection';
 import { MachinePoolsAutoscalingReplicas } from './MachinePoolsAutoscalingReplicas';
 
