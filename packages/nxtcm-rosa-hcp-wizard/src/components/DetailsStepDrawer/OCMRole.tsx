@@ -1,15 +1,17 @@
 import { Alert, AlertVariant, Content, ContentVariants, Title } from '@patternfly/react-core';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { CopyInstruction } from '../CopyInstruction';
-import { TabGroup } from '../TabGroup';
+import { TabGroup } from './TabGroup';
 import PopoverHintWithTitle from '../PopoverHintWithTitle';
+import ExternalLink from '../ExternalLink';
+import links from '../../constants/links';
 
 export const OCMRole = () => {
   const { ocmRole: o, associateAwsDrawer: a } = useRosaHcpWizardStrings();
-
+  const u = useRosaHcpWizardStrings().userRole;
   return (
     <>
-      <Title headingLevel="h3" className="pf-v6-u-mb-md" size="md">
+      <Title headingLevel="h4" className="pf-v6-u-mb-md" size="md">
         {o.checkLinkedTitle}
       </Title>
 
@@ -23,10 +25,20 @@ export const OCMRole = () => {
         className="pf-v6-u-mb-lg"
       />
 
-      <Title headingLevel="h3" size="md">
+      <Title headingLevel="h4" size="md">
         {o.unlinkedTitle}
       </Title>
-
+      <PopoverHintWithTitle
+        title={u.whyLinkTitle}
+        bodyContent={
+          <>
+            {u.whyLinkBodyPrefix}{' '}
+            <ExternalLink href={links.ROSA_AWS_ACCOUNT_ASSOCIATION}>
+              {u.reviewPermissionsLink}
+            </ExternalLink>
+          </>
+        }
+      />
       <TabGroup
         tabs={[
           {
