@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Wizard, WizardStep } from '@patternfly/react-core';
+import React, { useState, useCallback, useMemo, useRef, Suspense, lazy } from 'react';
+import { Spinner, Wizard, WizardStep } from '@patternfly/react-core';
 import { useWatch } from 'react-hook-form';
 import { Details } from './Steps/BasicSetup/Details/Details';
 import { RolesAndPolicies } from './Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies';
@@ -9,48 +9,90 @@ import { Encryption } from './Steps/OptionalSetup/Encryption/Encryption';
 import { ClusterUpdates } from './Steps/OptionalSetup/ClusterUpdates/ClusterUpdates';
 import { ClusterWideProxy } from './Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy';
 import { Review } from './Steps/Review/Review';
+import type { YamlEditorHandle } from './Steps/YamlEditor/RosaHcpYamlEditorStep';
 import { createRosaHcpWizardFooter } from './Footer/RosaHcpWizardFooter';
+import { RosaHcpYamlEditorFooter } from './Footer/RosaHcpYamlEditorFooter';
 import { useRosaHcpWizardStrings } from './stringsProvider/RosaHcpWizardStringsContext';
 import { STEP_IDS } from './constants';
 import type { RosaHCPWizardProps } from './types';
 import { RosaWizardSubmitError } from './RosaWizardSubmitError';
 
+const RosaHcpYamlEditorStep = lazy(() =>
+  import('./Steps/YamlEditor/RosaHcpYamlEditorStep').then((module) => ({
+    default: module.RosaHcpYamlEditorStep,
+  }))
+);
+
 export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
-  const { wizardData, onSubmit, onSubmitError, onBackToReviewStep, onCancel } = props;
+  const { wizardData, onSubmit, onCancel, yaml, onSubmitError, onBackToReviewStep } = props;
+
+  const [isNavigatingToReview, setIsNavigatingToReview] = useState(false);
+  const [isYamlEditorOpen, setIsYamlEditorOpen] = useState(false);
+  const yamlEditorRef = useRef<YamlEditorHandle>(null);
+
+  const handleBackToReviewStep = useCallback(async () => {
+    if (!onBackToReviewStep) return;
+    setIsNavigatingToReview(true);
+    try {
+      await onBackToReviewStep();
+    } finally {
+      setIsNavigatingToReview(false);
+    }
+  }, [onBackToReviewStep]);
+
+  const handleCloseYamlEditor = useCallback(() => setIsYamlEditorOpen(false), []);
+  const openYamlEditor = useCallback(() => setIsYamlEditorOpen(true), []);
+
+  const handleWizardStepChange = useCallback<
+    NonNullable<React.ComponentProps<typeof Wizard>['onStepChange']>
+  >(
+    (_event, newStep) => {
+      if (isYamlEditorOpen && newStep?.id !== STEP_IDS.REVIEW) {
+        setIsYamlEditorOpen(false);
+      }
+    },
+    [isYamlEditorOpen]
+  );
+
   const footer = useMemo(() => createRosaHcpWizardFooter(onSubmit), [onSubmit]);
 
   const clusterWideProxySelected = useWatch({ name: 'configure_proxy' });
 
   const rosaStrings = useRosaHcpWizardStrings();
-  const { wizard } = rosaStrings;
+  const { wizard, yamlEditor: yamlStrings } = rosaStrings;
   const sl = wizard.stepLabels;
 
-  const hasSubmitError = !!onSubmitError;
-  const [isNavigatingToReview, setIsNavigatingToReview] = React.useState(false);
+  const yamlEditorFooter = useMemo(
+    () => (
+      <RosaHcpYamlEditorFooter
+        editorRef={yamlEditorRef}
+        onClose={handleCloseYamlEditor}
+        onCancel={onCancel}
+        onSubmit={onSubmit}
+      />
+    ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [handleCloseYamlEditor, onCancel, onSubmit]
+  );
 
-  const onBackToReviewClick = React.useCallback(async () => {
-    setIsNavigatingToReview(true);
-    if (onBackToReviewStep) {
-      await onBackToReviewStep();
-    }
-
-    setIsNavigatingToReview(false);
-  }, [onBackToReviewStep]);
+  if (onSubmitError) {
+    return (
+      <RosaWizardSubmitError
+        onSubmitError={onSubmitError}
+        onBackToReviewStep={onBackToReviewStep ? handleBackToReviewStep : undefined}
+        isNavigatingToReview={isNavigatingToReview}
+        onCancel={onCancel}
+      />
+    );
+  }
 
   return (
     <div>
-      {hasSubmitError && (
-        <RosaWizardSubmitError
-          onSubmitError={onSubmitError}
-          onBackToReviewStep={onBackToReviewStep ? onBackToReviewClick : undefined}
-          isNavigatingToReview={isNavigatingToReview}
-          onCancel={() => onCancel()}
-        />
-      )}
       <Wizard
         height="100vh"
         footer={footer}
-        style={{ display: hasSubmitError ? 'none' : undefined }}
+        onClose={onCancel}
+        onStepChange={handleWizardStepChange}
       >
         <WizardStep
           isExpandable
@@ -113,8 +155,33 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
             </WizardStep>,
           ]}
         />
-        <WizardStep name={sl.review} id={STEP_IDS.REVIEW} key={STEP_IDS.REVIEW}>
-          <Review vpcList={wizardData.vpcList} />
+
+        <WizardStep
+          name={sl.review}
+          id={STEP_IDS.REVIEW}
+          key={STEP_IDS.REVIEW}
+          footer={isYamlEditorOpen ? yamlEditorFooter : undefined}
+        >
+          {isYamlEditorOpen ? (
+            <Suspense
+              fallback={
+                <div className="pf-v6-u-p-lg pf-v6-u-text-align-center">
+                  <Spinner size="lg" aria-label={yamlStrings.title} />
+                </div>
+              }
+            >
+              <RosaHcpYamlEditorStep
+                ref={yamlEditorRef}
+                onClose={handleCloseYamlEditor}
+                onCancel={onCancel}
+              />
+            </Suspense>
+          ) : (
+            <Review
+              vpcList={wizardData.vpcList}
+              onOpenYamlEditor={yaml ? openYamlEditor : undefined}
+            />
+          )}
         </WizardStep>
       </Wizard>
     </div>

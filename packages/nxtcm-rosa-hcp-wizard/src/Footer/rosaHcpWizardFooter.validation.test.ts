@@ -78,7 +78,7 @@ describe('reconcileValidationAttemptedFlags', () => {
     expect(becameValid).toBe(true);
   });
 
-  it('does not clear attempted when trigger fails even if getFieldState.invalid is false', async () => {
+  it('clears attempted when trigger fails but getFieldState is valid (ignores stale resolver errors)', async () => {
     const getFieldState = mockGetFieldState(() => ({ invalid: false }));
     const clearValidationAttempted = jest.fn();
     const trigger = jest.fn().mockResolvedValue(false);
@@ -95,8 +95,8 @@ describe('reconcileValidationAttemptedFlags', () => {
       clearValidationAttempted,
     });
 
-    expect(clearValidationAttempted).not.toHaveBeenCalled();
-    expect(becameValid).toBe(false);
+    expect(clearValidationAttempted).toHaveBeenCalledWith('encryption-step');
+    expect(becameValid).toBe(true);
   });
 
   it('on Review, reconciles sections after a single form trigger without per-section trigger', async () => {

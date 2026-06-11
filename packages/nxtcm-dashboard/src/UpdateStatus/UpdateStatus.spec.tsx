@@ -48,7 +48,7 @@ test.describe('UpdateStatus', () => {
 
   test('should render two icons when no updating data', async ({ mount }) => {
     const component = await mount(<UpdateStatus data={defaultData} />);
-    await expect(component.locator('svg')).toHaveCount(2);
+    await expect(component.locator('svg[role="img"]')).toHaveCount(2);
   });
 
   test('should not show currently updating section when omitted', async ({ mount }) => {
@@ -64,7 +64,7 @@ test.describe('UpdateStatus', () => {
 
   test('should render three icons when updating data is provided', async ({ mount }) => {
     const component = await mount(<UpdateStatus data={dataWithUpdating} />);
-    await expect(component.locator('svg')).toHaveCount(3);
+    await expect(component.locator('svg[role="img"]')).toHaveCount(3);
   });
 
   test('should render two dividers when updating data is provided', async ({ mount }) => {

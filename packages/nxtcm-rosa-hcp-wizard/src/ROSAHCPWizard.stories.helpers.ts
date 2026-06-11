@@ -29,7 +29,7 @@ export function createMockRosaHcpWizardData(
       fetch: noopFetch,
     },
     awsBillingAccounts: {
-      data: [{ label: 'Example billing account', value: 'billing-1' }],
+      data: [{ label: 'Example billing account', value: '123456789123' }],
       error: null,
       isFetching: false,
       fetch: noopFetch,
