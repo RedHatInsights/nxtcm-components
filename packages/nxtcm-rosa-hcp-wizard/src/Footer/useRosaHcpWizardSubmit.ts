@@ -1,8 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
-import type { ClusterFormData } from '@/components/Wizards/types';
-
 import { STEP_IDS } from '../constants';
 import { useRosaHcpWizardReviewSections } from '../Steps/Review/ROSAHCPWizardReviewSections';
 import type { ROSAHCPCluster } from '../types';
@@ -39,7 +37,7 @@ export function useRosaHcpWizardSubmit({
     setValue,
     getFieldState,
     formState: { errors },
-  } = useFormContext<Partial<ClusterFormData>>();
+  } = useFormContext<Partial<ROSAHCPCluster>>();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inFlightRef = useRef(false);

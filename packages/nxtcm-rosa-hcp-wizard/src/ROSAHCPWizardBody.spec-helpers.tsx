@@ -66,7 +66,7 @@ export function RosaHcpWizardBodyErrorThenBackMount(props: RosaHcpWizardBodyMoun
     <RosaHcpWizardBodyMount
       {...props}
       onSubmitError={submitError}
-      onBackToReviewStep={async () => setSubmitError(false)}
+      onBackToReviewStep={() => setSubmitError(false)}
     />
   );
 }
