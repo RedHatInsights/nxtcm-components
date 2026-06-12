@@ -15,7 +15,7 @@ Construct the correct `npm run test:stryker` command from what the user says. **
 
 1. **Parse the request** — which component(s) or test file(s) did they mean?
 2. **Resolve paths** — map names to repo-relative `*.tsx` component files (not specs).
-3. **Add flags** — `--force`, `--report`, `STRYKER_CONCURRENCY` when appropriate.
+3. **Add flags** — `--report`, `STRYKER_CONCURRENCY` when appropriate.
 4. **Output** — one fenced `bash` block + short notes (runtime, prerequisites).
 5. **Ask the user** to run the command in their terminal and paste results if they want help interpreting them.
 
@@ -36,12 +36,6 @@ Optional env prefix (parallel workers, default is `min(4, cpuCount - 1)`):
 
 ```bash
 STRYKER_CONCURRENCY=2 npm run test:stryker -- <component.tsx>
-```
-
-Re-run all mutants (ignore incremental cache):
-
-```bash
-npm run test:stryker -- --force <component.tsx>
 ```
 
 ## Resolving what to mutate
@@ -68,7 +62,6 @@ If the user names a **spec** or you're unsure of the subject, read [.agents/skil
 
 | User intent | Add |
 |-------------|-----|
-| "again", "from scratch", "re-run everything" | `--force` |
 | "HTML report", "open report" | `--report` or `test:stryker:report` |
 | "faster", "parallel", "use more cores" | `STRYKER_CONCURRENCY=4` (warn about RAM) |
 | "laptop", "slow machine", "while I work" | `STRYKER_CONCURRENCY=2` |
@@ -113,7 +106,7 @@ npm run test:stryker -- --report \
 **User:** "Re-run stryker on the footer, 2 workers"
 
 ```bash
-STRYKER_CONCURRENCY=2 npm run test:stryker -- --force \
+STRYKER_CONCURRENCY=2 npm run test:stryker -- \
   packages/nxtcm-rosa-hcp-wizard/src/Footer/RosaHcpWizardFooter.tsx
 ```
 

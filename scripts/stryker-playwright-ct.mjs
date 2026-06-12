@@ -14,7 +14,16 @@ const mutantId = process.env.__STRYKER_ACTIVE_MUTANT__ ?? 'dry-run';
 const workingDir = process.cwd();
 
 /** @type {{ specs?: string[] } | null} */
-const targets = process.env.STRYKER_TARGETS ? JSON.parse(process.env.STRYKER_TARGETS) : null;
+let targets = null;
+if (process.env.STRYKER_TARGETS) {
+  const raw = process.env.STRYKER_TARGETS;
+  try {
+    targets = JSON.parse(raw);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Malformed STRYKER_TARGETS: ${message}. Raw value: ${raw}`);
+  }
+}
 const specs = targets?.specs ?? [];
 
 if (specs.length === 0) {

@@ -24,7 +24,6 @@ Examples:
 
 Options:
   --report    Include HTML mutation report (same as test:stryker:report)
-  --force     Re-run all mutants in scope (passes --force to Stryker incremental mode)
   --help      Show this help text
 
 Environment:
@@ -99,7 +98,6 @@ function parseArgs(argv) {
   /** @type {string[]} */
   const componentArgs = [];
   let report = false;
-  let force = false;
 
   for (const arg of argv) {
     if (arg === '--help' || arg === '-h') {
@@ -112,18 +110,13 @@ function parseArgs(argv) {
       continue;
     }
 
-    if (arg === '--force') {
-      force = true;
-      continue;
-    }
-
     componentArgs.push(arg);
   }
 
-  return { componentArgs, report, force };
+  return { componentArgs, report };
 }
 
-const { componentArgs, report, force } = parseArgs(process.argv.slice(2));
+const { componentArgs, report } = parseArgs(process.argv.slice(2));
 
 if (componentArgs.length === 0) {
   printUsage('Provide at least one component .tsx file.');
@@ -179,11 +172,12 @@ if (report) {
   strykerArgs.push('--reporters', 'html,clear-text,progress');
 }
 
-if (force) {
-  strykerArgs.push('--force');
+const strykerBin = path.join(repoRoot, 'node_modules', '.bin', 'stryker');
+if (!existsSync(strykerBin)) {
+  console.error(`Stryker binary not found at ${strykerBin} (repo root: ${repoRoot})`);
+  process.exit(1);
 }
 
-const strykerBin = path.join(repoRoot, 'node_modules', '.bin', 'stryker');
 const result = spawnSync(strykerBin, strykerArgs, spawnOptions);
 
 process.exit(result.status ?? 1);

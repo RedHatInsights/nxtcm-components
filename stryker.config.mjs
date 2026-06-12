@@ -14,7 +14,16 @@ import os from 'node:os';
  * playwright/index.tsx mirrors __STRYKER_ACTIVE_MUTANT__ into the browser bundle.
  */
 /** @type {{ components: string[]; specs: string[] } | null} */
-const targets = process.env.STRYKER_TARGETS ? JSON.parse(process.env.STRYKER_TARGETS) : null;
+let targets = null;
+if (process.env.STRYKER_TARGETS) {
+  const raw = process.env.STRYKER_TARGETS;
+  try {
+    targets = JSON.parse(raw);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Malformed STRYKER_TARGETS: ${message}. Raw value: ${raw}`);
+  }
+}
 
 if (!targets?.components.length || !targets.specs.length) {
   throw new Error(
