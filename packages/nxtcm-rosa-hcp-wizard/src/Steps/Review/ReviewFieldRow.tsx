@@ -4,6 +4,8 @@ import { ExpandableSectionToggle, Flex, FlexItem, StackItem } from '@patternfly/
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { ReviewFieldValueWithLock } from './ReviewFieldRowShared';
 
+import './ReviewFieldRow.css';
+
 export type ReviewFieldRowProps = {
   labelText: string;
   value: string;
@@ -35,7 +37,7 @@ export const ReviewFieldRow = ({
     <StackItem>
       <Flex
         justifyContent={{ default: 'justifyContentSpaceBetween' }}
-        alignItems={{ default: 'alignItemsFlexStart' }}
+        alignItems={{ default: 'alignItemsBaseline' }}
       >
         <FlexItem>{labelText}</FlexItem>
         <FlexItem align={{ default: 'alignRight' }}>
@@ -47,6 +49,7 @@ export const ReviewFieldRow = ({
               >
                 {collapseOnRequired ? (
                   <ExpandableSectionToggle
+                    className="review-field-row__expandable-toggle"
                     isExpanded={isExpanded}
                     isDetached
                     onToggle={setIsExpanded}

@@ -1,0 +1,5 @@
+.review-field-row__expandable-toggle .pf-v6-c-button.pf-m-link {
+  margin-inline-end: calc(-1 * var(--pf-v6-c-button--PaddingInlineEnd));
+  margin-block-start: calc(-1 * var(--pf-v6-c-button--PaddingBlockStart));
+  margin-block-end: calc(-1 * var(--pf-v6-c-button--PaddingBlockEnd));
+}
