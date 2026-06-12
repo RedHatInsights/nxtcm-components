@@ -61,6 +61,7 @@
     "test:ct:debug": "playwright test -c playwright-ct.config.ts --debug",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
+    "allthethings": "npm run prettier:fix && npm run lint:fix && npm run type-check && npm run test && npm run test:ct",
     "prepare": "husky"
   },
   "dependencies": {
