@@ -23,7 +23,8 @@ export function resetFieldsToDefaultValues(
   const setOpts = buildFormSetValueOptions(options);
 
   for (const name of fieldNames) {
-    const value = (defaults as Record<string, unknown>)[name];
+    const value = Object.hasOwn(defaults, name) ? defaults[name] : undefined;
+
     if (currentFormValues && wizardFormFieldValuesEqual(currentFormValues[name], value)) {
       continue;
     }
