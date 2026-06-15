@@ -9,8 +9,7 @@ export const OIDCConfigHint = () => {
     <>
       <Content component={ContentVariants.p}>{oidcHint.instructions}</Content>
       <CopyInstruction variant={ClipboardCopyVariant.expansion} className="pf-v6-u-text-wrap">
-        rosa login --use-auth-code --url https://api.stage.openshift.com
-        {/* TODO: This should be at least production */}
+        rosa login --use-auth-code --url https://api.openshift.com
       </CopyInstruction>
       <CopyInstruction>rosa create oidc-config</CopyInstruction>
     </>
