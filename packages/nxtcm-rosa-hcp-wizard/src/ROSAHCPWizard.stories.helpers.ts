@@ -232,7 +232,7 @@ export function createMockRosaHcpWizardDataWithFetchLogging(
     },
     oidcConfig: {
       ...base.oidcConfig,
-      fetch: storyFetchWithLogging('oidcConfig'),
+      fetch: storyFetchWithLogging<[awsAccount: string]>('oidcConfig'),
     },
     vpcList: {
       ...base.vpcList,

@@ -1385,6 +1385,7 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
       expect(meta!.refetchesResourcesOnChange).toEqual([
         { resource: 'regions', argFromField: 'associated_aws_id' },
         { resource: 'roles', argFromField: 'associated_aws_id' },
+        { resource: 'oidcConfig', argFromField: 'associated_aws_id' },
       ]);
     });
 

@@ -15,7 +15,7 @@ import {
   useStoryClusterNameValidation,
 } from './ROSAHCPWizard.stories.helpers';
 import fixtures from './ROSAHCPWizard.fixtures';
-import { MachineTypesDropdownType, Region, Role, ROSAHCPWizardData } from './types';
+import { MachineTypesDropdownType, OIDCConfig, Region, Role, ROSAHCPWizardData } from './types';
 import { defaultRosaHcpWizardStrings } from './stringsProvider/rosaHcpWizardStrings.defaults';
 
 const onWizardSubmit = async (data: unknown) => {
@@ -48,7 +48,10 @@ const mockWizardData: ROSAHCPWizardData = {
     ...fixtures.mockFetchResource<Role[], [awsAccount: string]>(fixtures.mockRoles),
     fetch: async () => {},
   },
-  oidcConfig: fixtures.mockResource(fixtures.mockOicdConfig),
+  oidcConfig: {
+    ...fixtures.mockFetchResource<OIDCConfig[], [awsAccount: string]>(fixtures.mockOicdConfig),
+    fetch: async () => {},
+  },
   vpcList: fixtures.mockResource(fixtures.mockVPCs),
   subnets: fixtures.mockResource(getMockStoryPrivateSubnets()),
   securityGroups: fixtures.mockResource(fixtures.mockSecurityGroups),

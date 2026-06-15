@@ -68,6 +68,7 @@ export const associatedAwsIdSchema = yup
     refetchesResourcesOnChange: [
       { resource: 'regions', argFromField: 'associated_aws_id' },
       { resource: 'roles', argFromField: 'associated_aws_id' },
+      { resource: 'oidcConfig', argFromField: 'associated_aws_id' },
     ],
   } satisfies WizardFieldMeta);
 

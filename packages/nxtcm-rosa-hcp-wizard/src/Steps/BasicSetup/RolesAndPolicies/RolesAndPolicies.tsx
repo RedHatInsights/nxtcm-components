@@ -98,7 +98,9 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
             <Stack>
               <StackItem>
                 <WizSelect<ROSAHCPCluster>
-                  onRefresh={oidcConfig.fetch}
+                  onRefresh={() =>
+                    void (awsInfrastructureAccount && roles.fetch(awsInfrastructureAccount))
+                  }
                   apiError={oidcConfig.error}
                   isLoading={oidcConfig.isFetching}
                   schema={clusterValidationSchema}

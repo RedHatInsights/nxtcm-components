@@ -22,7 +22,7 @@ export function makeDefaultRosaHcpCtWizardData(
       fetch: defaultMachineTypesFetch,
     },
     roles: { data: [], error: null, isFetching: false, fetch: noopFetch },
-    oidcConfig: { data: [], error: null, isFetching: false },
+    oidcConfig: { data: [], error: null, isFetching: false, fetch: noopFetch },
     vpcList: { data: [], error: null, isFetching: false, fetch: noopFetch },
     subnets: { data: [], error: null, isFetching: false },
     securityGroups: { data: [], error: null, isFetching: false },

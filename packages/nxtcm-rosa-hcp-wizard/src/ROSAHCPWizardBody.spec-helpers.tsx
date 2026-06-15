@@ -30,7 +30,10 @@ export function makeMinimalRosaHcpWizardData(
       ...fixtures.mockFetchResource(fixtures.mockRoles),
       fetch: noopFetch,
     },
-    oidcConfig: fixtures.mockResource(fixtures.mockOicdConfig),
+    oidcConfig: {
+      ...fixtures.mockFetchResource(fixtures.mockOicdConfig),
+      fetch: noopFetch,
+    },
     vpcList: makeVpcListResource(),
     subnets: fixtures.mockResource([]),
     securityGroups: fixtures.mockResource(fixtures.mockSecurityGroups),
