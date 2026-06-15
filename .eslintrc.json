@@ -22,6 +22,7 @@
         "jsx-a11y",
         "prettier"
     ],
+    
     "rules": {
         "react/react-in-jsx-scope": "off",
         "react/prop-types": "off",
@@ -53,6 +54,22 @@
             "files": ["*.test.tsx", "*.test.ts"],
             "rules": {
                 "@typescript-eslint/no-unused-vars": "off"
+            }
+        },
+        {
+            "files": ["packages/nxtcm-rosa-hcp-wizard/src/**/*.{ts,tsx}"],
+            "rules": {
+                "no-restricted-imports": ["error", {
+                    "patterns": ["@redhat-cloud-services/nxtcm-rosa-hcp-wizard", "@redhat-cloud-services/nxtcm-rosa-hcp-wizard/*"]
+                }]
+            }
+        },
+        {
+            "files": ["packages/nxtcm-dashboard/src/**/*.{ts,tsx}"],
+            "rules": {
+                "no-restricted-imports": ["error", {
+                    "patterns": ["@redhat-cloud-services/nxtcm-dashboard", "@redhat-cloud-services/nxtcm-dashboard/*"]
+                }]
             }
         }
     ],

@@ -115,6 +115,7 @@ export default defineConfig({
     rollupOptions: {
       external: libRollupExternal,
       output: {
+        inlineDynamicImports: true,
         globals: resolveUmdGlobal,
         assetFileNames: (assetInfo) => {
           if (assetInfo.name === 'style.css') return 'index.css';
