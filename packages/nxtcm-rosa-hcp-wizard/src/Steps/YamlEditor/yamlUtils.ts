@@ -1,4 +1,4 @@
-import { ClusterNetwork } from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
+import { ClusterNetwork } from '../../types';
 import * as yaml from 'js-yaml';
 
 export interface YamlParseResult {
