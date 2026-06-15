@@ -134,18 +134,54 @@ function SelectOptionsReconcileOnRefetchWrapper(props: React.ComponentProps<type
   return <ROSAHCPWizard {...props} wizardData={wizardData} />;
 }
 
+/** Stop Storybook focus shortcuts (1/2/3) outside text fields so they don't steal focus from the wizard. */
+function BlockStorybookFocusShortcuts({ children }: Readonly<{ children: React.ReactNode }>) {
+  React.useEffect(() => {
+    const isEditableTarget = (target: EventTarget | null): boolean => {
+      if (!(target instanceof HTMLElement)) {
+        return false;
+      }
+      return (
+        /input|textarea/i.test(target.tagName) || target.getAttribute('contenteditable') !== null
+      );
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!['1', '2', '3'].includes(event.key)) {
+        return;
+      }
+      const eventTarget = event.composedPath()[0] ?? event.target;
+      if (isEditableTarget(eventTarget)) {
+        return;
+      }
+
+      event.stopPropagation();
+    };
+
+    document.addEventListener('keydown', onKeyDown, true);
+    return () => document.removeEventListener('keydown', onKeyDown, true);
+  }, []);
+
+  return <>{children}</>;
+}
+
 const meta: Meta<typeof ROSAHCPWizard> = {
   title: 'Wizards/RosaHCPWizard',
   component: ROSAHCPWizard,
   decorators: [
     (Story) => (
-      <div style={{ minHeight: '100vh', paddingBottom: '4rem', overflow: 'auto' }}>
-        <Story />
-      </div>
+      <BlockStorybookFocusShortcuts>
+        <div style={{ minHeight: '100vh', paddingBottom: '4rem', overflow: 'auto' }}>
+          <Story />
+        </div>
+      </BlockStorybookFocusShortcuts>
     ),
   ],
   parameters: {
     layout: 'fullscreen',
+    toolbar: {
+      'storybook/measure-addon/tool': { hidden: true },
+    },
     docs: {
       description: {
         component:
@@ -154,6 +190,9 @@ const meta: Meta<typeof ROSAHCPWizard> = {
     },
   },
   tags: ['autodocs'],
+  globals: {
+    measureEnabled: false,
+  },
   argTypes: {
     onSubmit: {
       description: 'Callback function called when the wizard is submitted',
