@@ -119,31 +119,37 @@ const mockWizardData: ROSAHCPWizardData = {
           {
             subnet_id: 'subnet-0cd89766e94deb008',
             name: 'test-1-subnet-public1-us-east-1b',
+            public: true,
             availability_zone: 'us-east-1b',
           },
           {
             subnet_id: 'subnet-032asd766e94deb008',
             name: 'test-1-subnet-private1-us-east-1a',
+            public: false,
             availability_zone: 'us-east-1a',
           },
           {
             subnet_id: 'subnet-032as34ty2a6e94deb008',
             name: 'test-1-subnet-public1-us-east-1a',
+            public: true,
             availability_zone: 'us-east-1a',
           },
           {
             subnet_id: 'subnet-03aas45qwe94deb008',
             name: 'test-1-subnet-private1-us-east-1b',
+            public: false,
             availability_zone: 'us-east-1b',
           },
           {
             subnet_id: 'subnet-03azxc15qwe94deb008',
             name: 'test-1-subnet-public1-us-east-1c',
+            public: true,
             availability_zone: 'us-east-1c',
           },
           {
             subnet_id: 'subnet-03aas45qzxc123deb008',
             name: 'test-1-subnet-private1-us-east-1c',
+            public: false,
             availability_zone: 'us-east-1c',
           },
         ],
@@ -159,11 +165,13 @@ const mockWizardData: ROSAHCPWizardData = {
           {
             name: 'test-subnet-private1-us-east-1a',
             availability_zone: 'us-east-1a',
+            public: false,
             subnet_id: 'subnet-0b5b55dvdv12236d',
           },
           {
             name: 'test-subnet-public1-us-east-1a',
             availability_zone: 'us-east-1a',
+            public: true,
             subnet_id: 'subnet-0b5b33hgvdv12236d',
           },
         ],
