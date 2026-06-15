@@ -169,4 +169,41 @@ describe('shouldHideReviewRow', () => {
       })
     ).toBe(false);
   });
+
+  it('hides additional_trust_bundle when missing or blank', () => {
+    expect(
+      shouldHideReviewRow({
+        path: 'additional_trust_bundle',
+        formValues: { ...baseFormValues, additional_trust_bundle: '' },
+        metaShouldHideInReview: false,
+      })
+    ).toBe(true);
+    expect(
+      shouldHideReviewRow({
+        path: 'additional_trust_bundle',
+        formValues: { ...baseFormValues, additional_trust_bundle: undefined },
+        metaShouldHideInReview: false,
+      })
+    ).toBe(true);
+    expect(
+      shouldHideReviewRow({
+        path: 'additional_trust_bundle',
+        formValues: { ...baseFormValues, additional_trust_bundle: '   ' },
+        metaShouldHideInReview: false,
+      })
+    ).toBe(true);
+  });
+
+  it('shows additional_trust_bundle when PEM content is present', () => {
+    expect(
+      shouldHideReviewRow({
+        path: 'additional_trust_bundle',
+        formValues: {
+          ...baseFormValues,
+          additional_trust_bundle: '-----BEGIN CERTIFICATE-----\nMIIB\n-----END CERTIFICATE-----',
+        },
+        metaShouldHideInReview: false,
+      })
+    ).toBe(false);
+  });
 });

@@ -481,6 +481,8 @@ export type RosaHcpWizardStrings = {
     strategyAutomatic: string;
     autoscalingMinPrefix: string;
     autoscalingMaxPrefix: string;
+    showMore: string;
+    showLess: string;
   };
   common: {
     errorValidatingPrefix: string;

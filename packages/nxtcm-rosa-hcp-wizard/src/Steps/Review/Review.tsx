@@ -30,6 +30,7 @@ import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardSt
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { getClusterValidationSchemaDefaultValues, wizardFieldMetaByPath } from '../../yupSchemas';
 import { ReviewExpandSection } from './ReviewExpandSection';
+import { ReviewFieldRow } from './ReviewFieldRow';
 import { formatReviewFieldValue, normalizeEmptyFormValue } from './formatReviewValueDisplay';
 import { shouldHideReviewRow } from './shouldHideReviewRow';
 
@@ -69,42 +70,6 @@ function resolveReviewFieldLabelText(
     ? resolveStringByDotPath(strings, reviewLabelKeyOrLiteral)
     : resolveStringByDotPath(strings, labelKey);
 }
-
-const ReviewFieldRow = ({
-  labelText,
-  value,
-  hideInReview,
-  noEditAfterStep,
-  lockedSettingsScreenReaderText,
-}: {
-  labelText: string;
-  value: string;
-  hideInReview?: boolean;
-  noEditAfterStep?: boolean;
-  lockedSettingsScreenReaderText: string;
-}) => {
-  if (hideInReview) {
-    return null;
-  }
-
-  return (
-    <StackItem>
-      <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
-        <FlexItem>{labelText}</FlexItem>
-        <FlexItem>
-          {value}
-          {noEditAfterStep && (
-            <>
-              {' '}
-              <span className="pf-v6-screen-reader">{lockedSettingsScreenReaderText}</span>
-              <LockIcon />
-            </>
-          )}
-        </FlexItem>
-      </Flex>
-    </StackItem>
-  );
-};
 
 export type ReviewProps = Pick<ROSAHCPWizardData, 'vpcList'> & {
   onOpenYamlEditor?: () => void;
@@ -184,6 +149,7 @@ export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
                           formValues,
                           metaShouldHideInReview: meta?.hideInReview ?? false,
                         });
+                        const collapseOnRequired = meta?.collapseOnRequired ?? false;
                         return (
                           <ReviewFieldRow
                             key={path}
@@ -197,6 +163,7 @@ export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
                             )}
                             noEditAfterStep={meta?.noEditAfterSubmit ?? false}
                             lockedSettingsScreenReaderText={review.lockedSettings}
+                            collapseOnRequired={collapseOnRequired}
                           />
                         );
                       })}

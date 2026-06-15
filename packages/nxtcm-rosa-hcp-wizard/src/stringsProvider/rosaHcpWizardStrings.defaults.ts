@@ -402,6 +402,8 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     strategyAutomatic: 'Automatic updates',
     autoscalingMinPrefix: 'Min:',
     autoscalingMaxPrefix: 'Max:',
+    showMore: 'Show more',
+    showLess: 'Show less',
   },
   common: {
     errorValidatingPrefix: 'Error validating',
