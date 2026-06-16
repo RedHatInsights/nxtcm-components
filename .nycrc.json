@@ -1,10 +1,10 @@
 {
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "include": ["packages/**/*.ts", "packages/**/*.tsx"],
   "exclude": [
-    "src/**/*.spec.tsx",
-    "src/ct-fixture.ts",
-    "src/test-helpers.ts",
-    "src/**/*.stories.*",
+    "packages/**/*.spec.tsx",
+    "packages/ct-fixture.ts",
+    "packages/test-helpers.ts",
+    "packages/**/*.stories.*",
     "node_modules"
   ],
   "reporter": ["html", "lcov", "text-summary"],

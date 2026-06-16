@@ -1,10 +1,9 @@
 import { defineConfig, devices } from '@playwright/experimental-ct-react';
 import path from 'path';
+
 const enableCoverage = process.env.COVERAGE === 'true';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const istanbulPlugin = enableCoverage
-  ? (require('./playwright/istanbul-plugin.cjs') as object)
-  : null;
+const istanbulPlugin = enableCoverage ? require('./playwright/istanbul-plugin.cjs')() : null;
 
 /**
  * See https://playwright.dev/docs/test-configuration.

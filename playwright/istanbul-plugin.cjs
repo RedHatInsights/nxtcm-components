@@ -14,31 +14,32 @@ const instrumenter = createInstrumenter({
 
 const testExclude = new TestExclude({
   cwd: process.cwd(),
-  include: ['src/**/*.ts', 'src/**/*.tsx'],
+  include: ['packages/**/*.ts', 'packages/**/*.tsx'],
   exclude: [
-    '**/*.spec.tsx',
+    'packages/**/*.spec.tsx',
     '**/ct-fixture.ts',
-    '**/test-helpers.ts',
-    '**/*.stories.*',
+    'packages/**/test-helpers.ts',
+    'packages/**/*.stories.*',
     'node_modules',
   ],
   extension: ['.ts', '.tsx'],
   excludeNodeModules: true,
 });
 
-const coverageEnabled = process.env.COVERAGE === 'true';
-
-module.exports = {
-  name: 'vite:istanbul',
-  enforce: 'post',
-  transform(srcCode, id) {
-    if (!coverageEnabled) return;
-    if (id.includes('\0') || id.includes('node_modules')) return;
-    const [filename] = id.split('?');
-    if (!testExclude.shouldInstrument(filename)) return;
-    const combinedSourceMap = this.getCombinedSourcemap?.();
-    const code = instrumenter.instrumentSync(srcCode, filename, combinedSourceMap);
-    const map = instrumenter.lastSourceMap();
-    return { code, map };
-  },
+module.exports = function istanbulPlugin() {
+  return {
+    name: 'vite:istanbul',
+    transform(srcCode, id) {
+      const coverageEnabled = process.env.COVERAGE === 'true';
+      if (!coverageEnabled) return;
+      if (id.includes('\0') || id.includes('node_modules')) return;
+      const [filename] = id.split('?');
+      const shouldInstrument = testExclude.shouldInstrument(filename);
+      if (!shouldInstrument) return;
+      const combinedSourceMap = this.getCombinedSourcemap?.();
+      const code = instrumenter.instrumentSync(srcCode, filename, combinedSourceMap);
+      const map = instrumenter.lastSourceMap();
+      return { code, map };
+    },
+  };
 };
