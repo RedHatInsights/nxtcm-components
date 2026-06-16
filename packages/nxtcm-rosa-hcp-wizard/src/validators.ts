@@ -6,11 +6,11 @@ import {
   AWS_MACHINE_CIDR_MAX_SINGLE_AZ,
   AWS_MACHINE_CIDR_MIN,
   BASE_DOMAIN_REGEXP,
-  CIDR_REGEXP,
   DNS_LABEL_REGEXP,
   HOST_PREFIX_MAX,
   HOST_PREFIX_MIN,
   HOST_PREFIX_REGEXP,
+  isValidIpv4Cidr,
   MAX_CA_SIZE_BYTES,
   MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH,
   POD_CIDR_MAX,
@@ -69,7 +69,7 @@ export function validateClusterName(
       return msgs.invalidChars;
   }
   if (!lowercaseAlphaNumericCharacters.includes(value[0])) return msgs.mustStartAlphanumeric;
-  if (/^[0-9]/.test(value[0])) return msgs.mustNotStartNumber;
+  if (/^\d/.test(value[0])) return msgs.mustNotStartNumber;
   if (!lowercaseAlphaNumericCharacters.includes(value[value.length - 1]))
     return msgs.mustEndAlphanumeric;
   return undefined;
@@ -129,7 +129,7 @@ export const checkNoProxyDomains = (
   const stringArray = stringToArray(value);
   if (stringArray && stringArray.length > 0) {
     const invalidDomains = stringArray.filter(
-      (domain) => !!domain && !(BASE_DOMAIN_REGEXP.test(domain) && BASE_DOMAIN_REGEXP.test(domain))
+      (domain) => !!domain && !BASE_DOMAIN_REGEXP.test(domain)
     );
     const plural = invalidDomains.length > 1;
     if (invalidDomains.length > 0) {
@@ -204,7 +204,7 @@ export const disjointSubnets =
     delete networkingFields[fieldName];
     const overlappingFields: string[] = [];
 
-    if (CIDR_REGEXP.test(value)) {
+    if (isValidIpv4Cidr(value)) {
       Object.keys(networkingFields).forEach((name) => {
         const fieldValue = (formData as Record<string, string | undefined> | undefined)?.[name];
         try {
@@ -258,7 +258,7 @@ export const cidr = (
   value?: string,
   msgs: RosaHcpWizardCidrValidatorStrings = defaultRosaHcpWizardValidatorStrings.cidr
 ): string | undefined => {
-  if (value && !CIDR_REGEXP.test(value)) {
+  if (value && !isValidIpv4Cidr(value)) {
     return msgs.invalidNotation(value);
   }
   return undefined;
@@ -389,34 +389,36 @@ export const subnetCidrs = (
     return ip.start().toString();
   };
 
-  const compareCidrs = (shouldInclude: boolean) => {
-    if (shouldInclude) {
-      selectedSubnets?.forEach((subnet: CIDRSubnet) => {
-        if (
-          CIDR_REGEXP.test(subnet.cidr_block) &&
-          !containsCidr(value, startingIP(subnet.cidr_block))
-        ) {
-          erroredSubnets.push(subnet);
-        }
-      });
-    } else {
-      selectedSubnets?.forEach((subnet: CIDRSubnet) => {
-        if (CIDR_REGEXP.test(subnet.cidr_block)) {
-          if (containsCidr(value, startingIP(subnet.cidr_block))) {
-            erroredSubnets.push(subnet);
-          } else if (overlapCidr(value, subnet.cidr_block)) {
-            const overlappedSubnet = { ...subnet, overlaps: true };
-            erroredSubnets.push(overlappedSubnet);
-          }
-        }
-      });
-    }
+  const collectMachineSubnetErrors = (): void => {
+    selectedSubnets?.forEach((subnet: CIDRSubnet) => {
+      if (
+        isValidIpv4Cidr(subnet.cidr_block) &&
+        !containsCidr(value, startingIP(subnet.cidr_block))
+      ) {
+        erroredSubnets.push(subnet);
+      }
+    });
+  };
+
+  const collectServiceOrPodSubnetErrors = (): void => {
+    selectedSubnets?.forEach((subnet: CIDRSubnet) => {
+      if (!isValidIpv4Cidr(subnet.cidr_block)) {
+        return;
+      }
+      if (containsCidr(value, startingIP(subnet.cidr_block))) {
+        erroredSubnets.push(subnet);
+        return;
+      }
+      if (overlapCidr(value, subnet.cidr_block)) {
+        erroredSubnets.push({ ...subnet, overlaps: true });
+      }
+    });
   };
 
   const subnetName = () => erroredSubnets[0]?.name || erroredSubnets[0]?.subnet_id;
 
   if (fieldName === 'network_machine_cidr') {
-    compareCidrs(true);
+    collectMachineSubnetErrors();
     if (erroredSubnets.length > 0) {
       return msgs.machineDoesNotIncludeStartIp(
         startingIP(erroredSubnets[0].cidr_block),
@@ -425,7 +427,7 @@ export const subnetCidrs = (
     }
   }
   if (fieldName === 'network_service_cidr') {
-    compareCidrs(false);
+    collectServiceOrPodSubnetErrors();
     if (erroredSubnets.length > 0) {
       if (erroredSubnets[0]?.overlaps) {
         return msgs.serviceOverlaps(subnetName() ?? '', erroredSubnets[0].cidr_block);
@@ -437,7 +439,7 @@ export const subnetCidrs = (
     }
   }
   if (fieldName === 'network_pod_cidr') {
-    compareCidrs(false);
+    collectServiceOrPodSubnetErrors();
     if (erroredSubnets.length > 0) {
       if (erroredSubnets[0]?.overlaps) {
         return msgs.podOverlaps(subnetName() ?? '', erroredSubnets[0].cidr_block);

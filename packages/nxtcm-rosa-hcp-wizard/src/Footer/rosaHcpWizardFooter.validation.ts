@@ -83,6 +83,75 @@ function stepPathsAreValid<TFieldValues extends FieldValues>(
   return !pathsHaveValidationIssues(fieldPaths, getFieldState, errors, options);
 }
 
+async function triggerReconcileFields<TFieldValues extends FieldValues>(
+  isReviewStep: boolean,
+  stepFieldPaths: readonly string[],
+  trigger: UseFormTrigger<TFieldValues>
+): Promise<boolean> {
+  if (isReviewStep) {
+    return trigger();
+  }
+  if (stepFieldPaths.length === 0) {
+    return false;
+  }
+  return trigger(stepFieldPaths as FieldPath<TFieldValues>[], { shouldFocus: false });
+}
+
+function clearValidReviewSections<TFieldValues extends FieldValues>(
+  reviewSections: readonly RosaHcpWizardReviewSection[],
+  getFieldState: UseFormGetFieldState<TFieldValues>,
+  errors: FieldErrors<TFieldValues>,
+  clearValidationAttempted: (stepId: string) => void
+): void {
+  const ignoreStaleResolverErrors = { ignoreResolverErrors: true } as const;
+  for (const section of reviewSections) {
+    if (section.fieldPaths.length === 0) {
+      continue;
+    }
+    if (stepPathsAreValid(section.fieldPaths, getFieldState, errors, ignoreStaleResolverErrors)) {
+      clearValidationAttempted(section.id);
+    }
+  }
+}
+
+function reconcileReviewStepFlags<TFieldValues extends FieldValues>(params: {
+  stepIdAtStart: string;
+  reviewSections: readonly RosaHcpWizardReviewSection[];
+  triggerPassed: boolean;
+  getFieldState: UseFormGetFieldState<TFieldValues>;
+  errors: FieldErrors<TFieldValues>;
+  clearValidationAttempted: (stepId: string) => void;
+}): boolean {
+  const {
+    stepIdAtStart,
+    reviewSections,
+    triggerPassed,
+    getFieldState,
+    errors,
+    clearValidationAttempted,
+  } = params;
+
+  if (triggerPassed) {
+    clearValidationAttempted(stepIdAtStart);
+    for (const section of reviewSections) {
+      if (section.fieldPaths.length > 0) {
+        clearValidationAttempted(section.id);
+      }
+    }
+    return true;
+  }
+
+  let activeStepBecameValid = false;
+  const allPaths = reviewSections.flatMap((section) => section.fieldPaths);
+  const ignoreStaleResolverErrors = { ignoreResolverErrors: true } as const;
+  if (stepPathsAreValid(allPaths, getFieldState, errors, ignoreStaleResolverErrors)) {
+    clearValidationAttempted(stepIdAtStart);
+    activeStepBecameValid = true;
+  }
+  clearValidReviewSections(reviewSections, getFieldState, errors, clearValidationAttempted);
+  return activeStepBecameValid;
+}
+
 /**
  * After a failed Next/Submit, re-triggers validation when values change and clears attempted flags
  * for steps/sections that become valid.
@@ -114,44 +183,21 @@ export async function reconcileValidationAttemptedFlags<TFieldValues extends Fie
     return false;
   }
 
-  const triggerPassed = isReviewStep
-    ? await trigger()
-    : stepFieldPaths.length > 0
-      ? await trigger(stepFieldPaths as FieldPath<TFieldValues>[], { shouldFocus: false })
-      : false;
+  const triggerPassed = await triggerReconcileFields(isReviewStep, stepFieldPaths, trigger);
 
   if (getCurrentStepId() !== stepIdAtStart) {
     return false;
   }
 
   if (isReviewStep) {
-    if (triggerPassed) {
-      clearValidationAttempted(stepIdAtStart);
-      for (const section of reviewSections) {
-        if (section.fieldPaths.length > 0) {
-          clearValidationAttempted(section.id);
-        }
-      }
-      return true;
-    }
-
-    let activeStepBecameValid = false;
-    const allPaths = reviewSections.flatMap((section) => section.fieldPaths);
-    const ignoreStaleResolverErrors = { ignoreResolverErrors: true } as const;
-    if (stepPathsAreValid(allPaths, getFieldState, errors, ignoreStaleResolverErrors)) {
-      clearValidationAttempted(stepIdAtStart);
-      activeStepBecameValid = true;
-    }
-    for (const section of reviewSections) {
-      const sectionPaths = section.fieldPaths;
-      if (sectionPaths.length === 0) {
-        continue;
-      }
-      if (stepPathsAreValid(sectionPaths, getFieldState, errors, ignoreStaleResolverErrors)) {
-        clearValidationAttempted(section.id);
-      }
-    }
-    return activeStepBecameValid;
+    return reconcileReviewStepFlags({
+      stepIdAtStart,
+      reviewSections,
+      triggerPassed,
+      getFieldState,
+      errors,
+      clearValidationAttempted,
+    });
   }
 
   if (triggerPassed) {

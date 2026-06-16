@@ -29,4 +29,12 @@ export const helperTextId = ({
 export const getValidated = (
   isError: boolean | undefined,
   isSuccess: boolean | undefined
-): ValidatedErrorOrSuccess | undefined => (isError ? 'error' : isSuccess ? 'success' : undefined);
+): ValidatedErrorOrSuccess | undefined => {
+  if (isError) {
+    return 'error';
+  }
+  if (isSuccess) {
+    return 'success';
+  }
+  return undefined;
+};
