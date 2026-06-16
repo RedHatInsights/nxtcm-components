@@ -145,6 +145,7 @@ export function WizSelect<TFieldValues extends FieldValues = FieldValues, TOptio
       placeholder={placeholder}
       helperText={helperText}
       labelHelp={labelHelp}
+      isScrollable
       labelHelpTitle={labelHelpTitle}
       isRequired={isRequired}
       value={value}

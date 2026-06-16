@@ -17,6 +17,16 @@ export const installerRoleArnSchema = yup
     stepId: STEP_IDS.ROLES_AND_POLICIES,
     fieldType: 'select',
     optionsWizardDataResource: 'roles',
+    refetchesResourcesOnChange: [
+      {
+        resource: 'vpcList',
+        argsFromFields: {
+          account_id: 'associated_aws_id',
+          role_arn: 'installer_role_arn',
+          region: 'region',
+        },
+      },
+    ],
     reconcileValueWithOptions: true,
     derivedFieldsSyncOnChange: 'installerRoleDependentRoles',
   } satisfies WizardFieldMeta);

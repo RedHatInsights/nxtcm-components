@@ -112,7 +112,14 @@ export const regionSchema = yup
       'cluster_privacy_public_subnet_id',
     ],
     refetchesResourcesOnChange: [
-      { resource: 'vpcList' },
+      {
+        resource: 'vpcList',
+        argsFromFields: {
+          account_id: 'associated_aws_id',
+          role_arn: 'installer_role_arn',
+          region: 'region',
+        },
+      },
       { resource: 'machineTypes', argFromField: 'region' },
     ],
   } satisfies WizardFieldMeta);

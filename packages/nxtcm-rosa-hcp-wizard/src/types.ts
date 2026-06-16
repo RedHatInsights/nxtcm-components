@@ -164,7 +164,17 @@ export type AwsBillingAccountsResource = Resource<AWSBillingAccounts[]>;
 export type OidcConfigResource = Resource<OIDCConfig[], [awsAccount: string]> & {
   fetch: (awsAccount: string) => Promise<void>;
 };
-export type VpcListResource = Resource<VPC[]>;
+
+/** Flat args the host app receives when the wizard triggers a VPC refetch. */
+export type VPCRefetchArgs = {
+  account_id: string;
+  role_arn: string;
+  region: string;
+};
+
+export type VpcListResource = Resource<VPC[], [args: VPCRefetchArgs]> & {
+  fetch: (args: VPCRefetchArgs) => Promise<void>;
+};
 export type SubnetsResource = Resource<Subnet[]>;
 export type SecurityGroupsResource = Resource<SecurityGroup[]>;
 

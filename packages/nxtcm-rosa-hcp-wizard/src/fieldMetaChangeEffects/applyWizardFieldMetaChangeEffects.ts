@@ -23,18 +23,53 @@ export type ApplyWizardFieldMetaChangeEffectsArgs = {
   setValue: UseFormSetValue<Partial<ROSAHCPCluster>>;
 };
 
+/**
+ * Builds a `Record<string, string>` from multiple form field values.
+ * Returns `null` when any referenced field is empty/missing so the refetch is skipped.
+ */
+export function buildComposedRefetchArg(
+  argsFromFields: Readonly<Record<string, WizardFormFieldName>>,
+  formValues: Partial<ROSAHCPCluster>
+): Record<string, string> | null {
+  const result: Record<string, string> = {};
+  for (const [key, fieldName] of Object.entries(argsFromFields)) {
+    const value = formValues[fieldName];
+    if (!hasRefetchableStringValue(value)) {
+      return null;
+    }
+    result[key] = value;
+  }
+  return result;
+}
+
 function refetchWizardResource(
   wizardData: ROSAHCPWizardData,
   refetch: WizardResourceRefetchOnChange,
   formValues: Partial<ROSAHCPCluster>
 ): void {
-  const resource = wizardData[refetch.resource];
-  const fetch = resource.fetch;
+  const resourceKey = refetch.resource;
+  if (!resourceKey) {
+    return;
+  }
+  const resource = wizardData[resourceKey as keyof ROSAHCPWizardData];
+  if (resource == null || typeof resource !== 'object' || !('fetch' in resource)) {
+    return;
+  }
+  const fetch = (resource as { fetch?: (...args: unknown[]) => Promise<void> }).fetch;
   if (!fetch) {
     return;
   }
 
-  if (refetch.argFromField) {
+  if ('argsFromFields' in refetch) {
+    const composed = buildComposedRefetchArg(refetch.argsFromFields, formValues);
+    if (!composed) {
+      return;
+    }
+    void (fetch as (arg: Record<string, string>) => Promise<void>)(composed);
+    return;
+  }
+
+  if ('argFromField' in refetch && refetch.argFromField) {
     const arg = formValues[refetch.argFromField];
     if (!hasRefetchableStringValue(arg)) {
       return;
