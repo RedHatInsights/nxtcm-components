@@ -2,15 +2,21 @@ import { ClipboardCopyVariant, Content, ContentVariants } from '@patternfly/reac
 import { CopyInstruction } from './CopyInstruction';
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
 
-export const OIDCConfigHint = () => {
+const DEFAULT_ROSA_LOGIN_COMMAND = 'rosa login --use-auth-code --url https://api.openshift.com';
+
+export interface OIDCConfigHintProps {
+  /** ROSA login command from the host application. Falls back to a built-in default when omitted. */
+  loginCommand?: string;
+}
+
+export const OIDCConfigHint = ({ loginCommand }: OIDCConfigHintProps) => {
   const { oidcHint } = useRosaHcpWizardStrings();
 
   return (
     <>
       <Content component={ContentVariants.p}>{oidcHint.instructions}</Content>
       <CopyInstruction variant={ClipboardCopyVariant.expansion} className="pf-v6-u-text-wrap">
-        rosa login --use-auth-code --url https://api.stage.openshift.com
-        {/* TODO: This should be at least production */}
+        {loginCommand ?? DEFAULT_ROSA_LOGIN_COMMAND}
       </CopyInstruction>
       <CopyInstruction>rosa create oidc-config</CopyInstruction>
     </>

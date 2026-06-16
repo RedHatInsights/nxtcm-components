@@ -22,10 +22,13 @@ import { useInstallerRoleOptions } from './useInstallerRoleOptions';
 import { useRosaCommand } from './useRosaCommand';
 import { RolesAlert } from '../../../components/RolesErrorAlert';
 
-type RolesAndPoliciesStepProps = Pick<ROSAHCPWizardData, 'roles' | 'oidcConfig'>;
+type RolesAndPoliciesStepProps = Pick<ROSAHCPWizardData, 'roles' | 'oidcConfig'> & {
+  /** ROSA login command supplied by the host application. */
+  rosaLoginCommand?: string;
+};
 
 export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
-  const { roles, oidcConfig } = props;
+  const { roles, oidcConfig, rosaLoginCommand } = props;
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
   const rp = useRosaHcpWizardStrings().rolesAndPolicies;
@@ -122,7 +125,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
                 <PopoverHintWithTitle
                   displayHintIcon
                   title={rp.oidcPopoverTitle}
-                  bodyContent={<OIDCConfigHint />}
+                  bodyContent={<OIDCConfigHint loginCommand={rosaLoginCommand} />}
                 />
               </StackItem>
             </Stack>
