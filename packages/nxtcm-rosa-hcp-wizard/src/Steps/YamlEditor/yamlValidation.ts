@@ -86,7 +86,72 @@ function tryMatchKeySegment(
   return matchedKey === target && indent === minIndent;
 }
 
-function findLineForPath(content: string, instancePath: string): number {
+function getInlineContentAfterArrayMarker(trimmed: string): string {
+  if (trimmed.startsWith('- ')) {
+    return trimmed.slice(2);
+  }
+  if (trimmed === '-') {
+    return '';
+  }
+  return trimmed;
+}
+
+function tryMatchInlineKeyAfterArray(
+  trimmed: string,
+  indent: number,
+  minIndent: number,
+  nextTarget: string
+): boolean {
+  const inlineTrimmed = getInlineContentAfterArrayMarker(trimmed);
+  return Boolean(inlineTrimmed) && tryMatchKeySegment(inlineTrimmed, indent, minIndent, nextTarget);
+}
+
+interface PathSegmentMatch {
+  matched: boolean;
+  depthAdvance: number;
+  nextArrayItemCount: number;
+}
+
+function tryMatchPathSegment(
+  trimmed: string,
+  indent: number,
+  minIndent: number,
+  segments: string[],
+  depth: number,
+  arrayItemCount: number
+): PathSegmentMatch {
+  const target = segments[depth];
+  if (/^\d+$/.test(target)) {
+    const arrayMatch = tryMatchArraySegment(trimmed, indent, minIndent, target, arrayItemCount);
+    if (!arrayMatch.matched) {
+      return {
+        matched: false,
+        depthAdvance: 0,
+        nextArrayItemCount: arrayMatch.nextArrayItemCount,
+      };
+    }
+
+    const nextTarget = segments[depth + 1];
+    if (
+      depth + 1 < segments.length &&
+      !/^\d+$/.test(nextTarget) &&
+      tryMatchInlineKeyAfterArray(trimmed, indent, minIndent, nextTarget)
+    ) {
+      return { matched: true, depthAdvance: 2, nextArrayItemCount: 0 };
+    }
+
+    return { matched: true, depthAdvance: 1, nextArrayItemCount: 0 };
+  }
+
+  const matched = tryMatchKeySegment(trimmed, indent, minIndent, target);
+  return {
+    matched,
+    depthAdvance: matched ? 1 : 0,
+    nextArrayItemCount: matched ? 0 : arrayItemCount,
+  };
+}
+
+export function findLineForPath(content: string, instancePath: string): number {
   if (!instancePath) return 1;
 
   const segments = instancePath.split('/').filter(Boolean);
@@ -104,26 +169,13 @@ function findLineForPath(content: string, instancePath: string): number {
 
     if (depth > 0 && indent < minIndent) break;
 
-    const target = segments[depth];
-    const isArrayIndex = /^\d+$/.test(target);
-    let segmentMatched = false;
-
-    if (isArrayIndex) {
-      const arrayMatch = tryMatchArraySegment(trimmed, indent, minIndent, target, arrayItemCount);
-      segmentMatched = arrayMatch.matched;
-      arrayItemCount = arrayMatch.nextArrayItemCount;
-    } else {
-      segmentMatched = tryMatchKeySegment(trimmed, indent, minIndent, target);
-      if (segmentMatched) {
-        arrayItemCount = 0;
-      }
-    }
-
-    if (!segmentMatched) {
+    const match = tryMatchPathSegment(trimmed, indent, minIndent, segments, depth, arrayItemCount);
+    arrayItemCount = match.nextArrayItemCount;
+    if (!match.matched) {
       continue;
     }
 
-    depth++;
+    depth += match.depthAdvance;
     minIndent = detectChildIndent(lines, i, indent);
     if (depth >= segments.length) return i + 1;
   }
