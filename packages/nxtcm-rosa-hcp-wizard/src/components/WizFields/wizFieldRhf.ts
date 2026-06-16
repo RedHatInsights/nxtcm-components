@@ -73,6 +73,17 @@ export function stringLabelFromYupMeta(metaLabel: ReactNode | undefined, fallbac
   return fallback;
 }
 
+function wizResolvePresentation<T extends string | ReactNode | undefined>(
+  prop: T | undefined,
+  metaKey: string | undefined,
+  strings: RosaHcpWizardStrings,
+  yupFallback: T | undefined
+): T | undefined {
+  return (prop ??
+    (metaKey !== undefined ? getRosaHcpWizardStringByLabelKey(strings, metaKey) : undefined) ??
+    yupFallback) as T | undefined;
+}
+
 /** Explicit string prop, then ROSA string from `.meta().*Key`, then Yup `.meta()` inline string. */
 export function wizResolvePresentationString(
   prop: string | undefined,
@@ -80,11 +91,7 @@ export function wizResolvePresentationString(
   strings: RosaHcpWizardStrings,
   yupFallback: string | undefined
 ): string | undefined {
-  return (
-    prop ??
-    (metaKey !== undefined ? getRosaHcpWizardStringByLabelKey(strings, metaKey) : undefined) ??
-    yupFallback
-  );
+  return wizResolvePresentation(prop, metaKey, strings, yupFallback);
 }
 
 /** Explicit ReactNode prop, then ROSA string from `.meta().*Key`, then Yup `.meta()` inline node. */
@@ -94,11 +101,7 @@ export function wizResolvePresentationReactNode(
   strings: RosaHcpWizardStrings,
   yupFallback: ReactNode | undefined
 ): ReactNode | undefined {
-  return (
-    prop ??
-    (metaKey !== undefined ? getRosaHcpWizardStringByLabelKey(strings, metaKey) : undefined) ??
-    yupFallback
-  );
+  return wizResolvePresentation(prop, metaKey, strings, yupFallback);
 }
 
 /**

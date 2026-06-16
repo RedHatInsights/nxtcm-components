@@ -1,11 +1,20 @@
 import * as yup from 'yup';
-import { overlapCidr } from 'cidr-tools';
+import { containsCidr, overlapCidr } from 'cidr-tools';
 import IPCIDR from 'ip-cidr';
 
-import { CIDR_REGEXP } from '../constants';
+import {
+  AWS_MACHINE_CIDR_MAX_MULTI_AZ,
+  AWS_MACHINE_CIDR_MAX_SINGLE_AZ,
+  AWS_MACHINE_CIDR_MIN,
+  isValidIpv4Cidr,
+  POD_CIDR_MAX,
+  POD_NODES_MIN,
+  SERVICE_CIDR_MAX,
+} from '../constants';
+import { parseCIDRSubnetLength } from '../utilities/helpers';
 import type { RosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings';
 import type { ValidationSchemaContext } from './types';
-import { ROSAHCPCluster } from '../types';
+import { CIDRSubnet, ROSAHCPCluster } from '../types';
 
 export const LOWERCASE_ALPHANUMERIC = 'abcdefghijklmnopqrstuvwxyz1234567890';
 
@@ -14,7 +23,7 @@ export function ctx(testContext: yup.TestContext): ValidationSchemaContext {
 }
 
 export function isValidCidr(value: string): boolean {
-  return CIDR_REGEXP.test(value);
+  return isValidIpv4Cidr(value);
 }
 
 export function isCidrSubnetAddress(value: string): boolean {
@@ -45,8 +54,111 @@ export function validateClusterNameSync(
     }
   }
   if (!LOWERCASE_ALPHANUMERIC.includes(value[0])) return msgs.mustStartAlphanumeric;
-  if (/^[0-9]/.test(value[0])) return msgs.mustNotStartNumber;
+  if (/^\d/.test(value[0])) return msgs.mustNotStartNumber;
   if (!LOWERCASE_ALPHANUMERIC.includes(value[value.length - 1])) return msgs.mustEndAlphanumeric;
+  return undefined;
+}
+
+export function validateAwsMachineCidrPrefix(
+  prefixLength: number,
+  isMultiAz: boolean,
+  isHypershift: boolean,
+  msgs: RosaHcpWizardValidatorStrings['awsMachineCidr']
+): string | undefined {
+  if (prefixLength < AWS_MACHINE_CIDR_MIN) {
+    return msgs.maskTooLarge(AWS_MACHINE_CIDR_MIN);
+  }
+  if ((isMultiAz || isHypershift) && prefixLength > AWS_MACHINE_CIDR_MAX_MULTI_AZ) {
+    return msgs.maskTooSmallMultiAz(AWS_MACHINE_CIDR_MAX_MULTI_AZ);
+  }
+  if (!isMultiAz && prefixLength > AWS_MACHINE_CIDR_MAX_SINGLE_AZ) {
+    return msgs.maskTooSmallSingleAz(AWS_MACHINE_CIDR_MAX_SINGLE_AZ);
+  }
+  return undefined;
+}
+
+export function findMachineSubnetIncludeError(
+  value: string,
+  selectedSubnets: CIDRSubnet[],
+  msgs: RosaHcpWizardValidatorStrings['subnetCidrs']
+): string | undefined {
+  for (const subnet of selectedSubnets) {
+    if (
+      isValidIpv4Cidr(subnet.cidr_block) &&
+      !containsCidr(value, getStartingIP(subnet.cidr_block))
+    ) {
+      const subnetLabel = subnet.name || subnet.subnet_id;
+      return msgs.machineDoesNotIncludeStartIp(getStartingIP(subnet.cidr_block), subnetLabel);
+    }
+  }
+  return undefined;
+}
+
+type ServiceOrPodSubnetMsgs = Pick<
+  RosaHcpWizardValidatorStrings['subnetCidrs'],
+  'serviceIncludesStartIp' | 'serviceOverlaps' | 'podIncludesStartIp' | 'podOverlaps'
+>;
+
+export function findServiceOrPodSubnetConflict(
+  value: string,
+  selectedSubnets: CIDRSubnet[],
+  msgs: ServiceOrPodSubnetMsgs,
+  kind: 'service' | 'pod'
+): string | undefined {
+  for (const subnet of selectedSubnets) {
+    if (!isValidIpv4Cidr(subnet.cidr_block)) {
+      continue;
+    }
+    const subnetLabel = subnet.name || subnet.subnet_id;
+    const startIp = getStartingIP(subnet.cidr_block);
+    if (containsCidr(value, startIp)) {
+      return kind === 'service'
+        ? msgs.serviceIncludesStartIp(startIp, subnetLabel)
+        : msgs.podIncludesStartIp(startIp, subnetLabel);
+    }
+    if (overlapCidr(value, subnet.cidr_block)) {
+      return kind === 'service'
+        ? msgs.serviceOverlaps(subnetLabel, subnet.cidr_block)
+        : msgs.podOverlaps(subnetLabel, subnet.cidr_block);
+    }
+  }
+  return undefined;
+}
+
+export function validateServiceCidrMask(
+  value: string,
+  msgs: RosaHcpWizardValidatorStrings['serviceCidr']
+): string | undefined {
+  const prefixLength = parseCIDRSubnetLength(value);
+  if (prefixLength != null && prefixLength > SERVICE_CIDR_MAX) {
+    const maxServices = 2 ** (32 - SERVICE_CIDR_MAX) - 2;
+    return msgs.maskTooSmall(SERVICE_CIDR_MAX, maxServices);
+  }
+
+  const maskBits = parseInt(value.split('/')[1], 10);
+  if (maskBits > SERVICE_CIDR_MAX || maskBits < 1) {
+    return msgs.subnetMaskBetweenOneAnd(SERVICE_CIDR_MAX);
+  }
+
+  return undefined;
+}
+
+export function validatePodCidrCapacity(
+  prefixLength: number,
+  hostPrefix: string | undefined,
+  msgs: RosaHcpWizardValidatorStrings['podCidr']
+): string | undefined {
+  if (prefixLength > POD_CIDR_MAX) {
+    return msgs.maskTooSmall(POD_CIDR_MAX);
+  }
+
+  const hostPrefixLen = parseCIDRSubnetLength(hostPrefix) || 23;
+  const maxPodIPs = 2 ** (32 - hostPrefixLen);
+  const maxPodNodes = Math.floor(2 ** (32 - prefixLength) / maxPodIPs);
+  if (maxPodNodes < POD_NODES_MIN) {
+    return msgs.notEnoughNodes(prefixLength);
+  }
+
   return undefined;
 }
 

@@ -112,7 +112,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
       },
     });
 
-    await mount(
+    const component = await mount(
       <MachinePoolsMount
         machineTypes={machineTypes}
         defaultValues={{
@@ -122,6 +122,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
       />
     );
 
+    await expect(component.getByText(mp.sectionLabel, { exact: true })).toBeVisible();
     await expect
       .poll(() => fetchedRegions.length > 0 && fetchedRegions.every((r) => r === 'us-east-1'))
       .toBe(true);

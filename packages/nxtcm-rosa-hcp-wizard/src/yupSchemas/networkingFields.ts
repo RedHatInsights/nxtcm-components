@@ -1,29 +1,20 @@
 import * as yup from 'yup';
-import { overlapCidr, containsCidr } from 'cidr-tools';
 
-import {
-  AWS_MACHINE_CIDR_MAX_MULTI_AZ,
-  AWS_MACHINE_CIDR_MAX_SINGLE_AZ,
-  AWS_MACHINE_CIDR_MIN,
-  CIDR_REGEXP,
-  HOST_PREFIX_MAX,
-  HOST_PREFIX_MIN,
-  HOST_PREFIX_REGEXP,
-  POD_CIDR_MAX,
-  POD_NODES_MIN,
-  SERVICE_CIDR_MAX,
-  STEP_IDS,
-} from '../constants';
+import { HOST_PREFIX_MAX, HOST_PREFIX_MIN, HOST_PREFIX_REGEXP, STEP_IDS } from '../constants';
 import { parseCIDRSubnetLength } from '../utilities/helpers';
 import { ClusterNetwork, ROSAHCPCluster } from '../types';
 import type { WizardFieldMeta } from './types';
 import {
   ctx,
+  findMachineSubnetIncludeError,
   findOverlappingCidrFields,
-  getStartingIP,
+  findServiceOrPodSubnetConflict,
   isCidrSubnetAddress,
   isValidCidr,
   rosaCommonRequiredNonEmptyTest,
+  validateAwsMachineCidrPrefix,
+  validatePodCidrCapacity,
+  validateServiceCidrMask,
 } from './helpers';
 
 export const clusterPrivacySchema = yup
@@ -107,40 +98,21 @@ export const networkMachineCidrSchema = yup
     const isMultiAz = formData.multi_az === 'true';
 
     if (prefixLength != null) {
-      if (prefixLength < AWS_MACHINE_CIDR_MIN) {
-        return this.createError({
-          message: msgs.awsMachineCidr.maskTooLarge(AWS_MACHINE_CIDR_MIN),
-        });
-      }
-      if (
-        (isMultiAz || formData.hypershift === 'true') &&
-        prefixLength > AWS_MACHINE_CIDR_MAX_MULTI_AZ
-      ) {
-        return this.createError({
-          message: msgs.awsMachineCidr.maskTooSmallMultiAz(AWS_MACHINE_CIDR_MAX_MULTI_AZ),
-        });
-      }
-      if (!isMultiAz && prefixLength > AWS_MACHINE_CIDR_MAX_SINGLE_AZ) {
-        return this.createError({
-          message: msgs.awsMachineCidr.maskTooSmallSingleAz(AWS_MACHINE_CIDR_MAX_SINGLE_AZ),
-        });
+      const prefixError = validateAwsMachineCidrPrefix(
+        prefixLength,
+        isMultiAz,
+        formData.hypershift === 'true',
+        msgs.awsMachineCidr
+      );
+      if (prefixError) {
+        return this.createError({ message: prefixError });
       }
     }
 
     if (selectedSubnets && selectedSubnets.length > 0) {
-      for (const subnet of selectedSubnets) {
-        if (
-          CIDR_REGEXP.test(subnet.cidr_block) &&
-          !containsCidr(value, getStartingIP(subnet.cidr_block))
-        ) {
-          const subnetLabel = subnet.name || subnet.subnet_id;
-          return this.createError({
-            message: msgs.subnetCidrs.machineDoesNotIncludeStartIp(
-              getStartingIP(subnet.cidr_block),
-              subnetLabel
-            ),
-          });
-        }
+      const subnetError = findMachineSubnetIncludeError(value, selectedSubnets, msgs.subnetCidrs);
+      if (subnetError) {
+        return this.createError({ message: subnetError });
       }
     }
 
@@ -183,42 +155,22 @@ export const networkServiceCidrSchema = yup
       return this.createError({ message: msgs.validateRange.notSubnetAddress });
     }
 
-    const prefixLength = parseCIDRSubnetLength(value);
-    if (prefixLength != null && prefixLength > SERVICE_CIDR_MAX) {
-      const maxServices = 2 ** (32 - SERVICE_CIDR_MAX) - 2;
-      return this.createError({
-        message: msgs.serviceCidr.maskTooSmall(SERVICE_CIDR_MAX, maxServices),
-      });
-    }
-
-    const parts = value.split('/');
-    const maskBits = parseInt(parts[1], 10);
-    if (maskBits > SERVICE_CIDR_MAX || maskBits < 1) {
-      return this.createError({
-        message: msgs.serviceCidr.subnetMaskBetweenOneAnd(SERVICE_CIDR_MAX),
-      });
+    const maskError = validateServiceCidrMask(value, msgs.serviceCidr);
+    if (maskError) {
+      return this.createError({ message: maskError });
     }
 
     const formData = this.parent as Partial<ROSAHCPCluster>;
 
     if (selectedSubnets && selectedSubnets.length > 0) {
-      for (const subnet of selectedSubnets) {
-        if (CIDR_REGEXP.test(subnet.cidr_block)) {
-          const subnetLabel = subnet.name || subnet.subnet_id;
-          if (containsCidr(value, getStartingIP(subnet.cidr_block))) {
-            return this.createError({
-              message: msgs.subnetCidrs.serviceIncludesStartIp(
-                getStartingIP(subnet.cidr_block),
-                subnetLabel
-              ),
-            });
-          }
-          if (overlapCidr(value, subnet.cidr_block)) {
-            return this.createError({
-              message: msgs.subnetCidrs.serviceOverlaps(subnetLabel, subnet.cidr_block),
-            });
-          }
-        }
+      const subnetError = findServiceOrPodSubnetConflict(
+        value,
+        selectedSubnets,
+        msgs.subnetCidrs,
+        'service'
+      );
+      if (subnetError) {
+        return this.createError({ message: subnetError });
       }
     }
 
@@ -265,36 +217,25 @@ export const networkPodCidrSchema = yup
     const prefixLength = parseCIDRSubnetLength(value);
 
     if (prefixLength != null) {
-      if (prefixLength > POD_CIDR_MAX) {
-        return this.createError({ message: msgs.podCidr.maskTooSmall(POD_CIDR_MAX) });
-      }
-
-      const hostPrefixLen = parseCIDRSubnetLength(formData.network_host_prefix) || 23;
-      const maxPodIPs = 2 ** (32 - hostPrefixLen);
-      const maxPodNodes = Math.floor(2 ** (32 - prefixLength) / maxPodIPs);
-      if (maxPodNodes < POD_NODES_MIN) {
-        return this.createError({ message: msgs.podCidr.notEnoughNodes(prefixLength) });
+      const capacityError = validatePodCidrCapacity(
+        prefixLength,
+        formData.network_host_prefix,
+        msgs.podCidr
+      );
+      if (capacityError) {
+        return this.createError({ message: capacityError });
       }
     }
 
     if (selectedSubnets && selectedSubnets.length > 0) {
-      for (const subnet of selectedSubnets) {
-        if (CIDR_REGEXP.test(subnet.cidr_block)) {
-          const subnetLabel = subnet.name || subnet.subnet_id;
-          if (containsCidr(value, getStartingIP(subnet.cidr_block))) {
-            return this.createError({
-              message: msgs.subnetCidrs.podIncludesStartIp(
-                getStartingIP(subnet.cidr_block),
-                subnetLabel
-              ),
-            });
-          }
-          if (overlapCidr(value, subnet.cidr_block)) {
-            return this.createError({
-              message: msgs.subnetCidrs.podOverlaps(subnetLabel, subnet.cidr_block),
-            });
-          }
-        }
+      const subnetError = findServiceOrPodSubnetConflict(
+        value,
+        selectedSubnets,
+        msgs.subnetCidrs,
+        'pod'
+      );
+      if (subnetError) {
+        return this.createError({ message: subnetError });
       }
     }
 

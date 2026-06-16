@@ -35,6 +35,8 @@ import { useSelectDerived } from './useSelectDerived';
 import { HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
 
+type SelectChangeValue<T> = T | string | number | undefined;
+
 export interface SelectProps<T = unknown> {
   /** Stable field id (toggle and listbox wiring). */
   id: string;
@@ -58,7 +60,7 @@ export interface SelectProps<T = unknown> {
    */
   value: T | string | number | null | undefined;
   /** Called when the user picks an option or clears the field. */
-  onChange: (next: T | string | number | undefined) => void;
+  onChange: (next: SelectChangeValue<T>) => void;
   /** Fires when the menu toggle loses focus (e.g. react-hook-form `field.onBlur`). */
   onBlur?: FocusEventHandler<HTMLElement>;
   /** Use `keyPath` when option values are objects and selection is compared via a nested field. */
@@ -165,14 +167,14 @@ export function Select<T = unknown>(props: SelectProps<T>) {
          * for typeahead clears.
          */
         if (isTypeAhead) {
-          onChange(undefined as T | string | number | undefined);
+          onChange(undefined as SelectChangeValue<T>);
         }
         setOpen(false);
         return;
       }
       const opt = flatForLookup.find((o) => o.id === optionId);
       if (opt) {
-        onChange(opt.value as T | string | number | undefined);
+        onChange(opt.value as SelectChangeValue<T>);
       }
       setOpen(false);
     },
@@ -293,7 +295,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
       event.stopPropagation();
-      onChange(undefined as T | string | number | undefined);
+      onChange(undefined as SelectChangeValue<T>);
       setTypeaheadQuery('');
       textInputRef.current?.focus();
     },

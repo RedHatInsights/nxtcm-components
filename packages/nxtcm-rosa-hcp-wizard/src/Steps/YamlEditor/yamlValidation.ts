@@ -33,6 +33,59 @@ function detectChildIndent(lines: string[], fromLine: number, parentIndent: numb
   return parentIndent + 2;
 }
 
+const SINGLE_QUOTED_YAML_KEY = /^'([^']*)'\s*:/;
+const DOUBLE_QUOTED_YAML_KEY = /^"([^"]*)"\s*:/;
+
+function parseUnquotedYamlKey(trimmed: string): string | undefined {
+  const colonIndex = trimmed.indexOf(':');
+  if (colonIndex <= 0) {
+    return undefined;
+  }
+
+  const key = trimmed.slice(0, colonIndex).trim();
+  if (!key || key.startsWith('#')) {
+    return undefined;
+  }
+
+  return key;
+}
+
+function parseYamlKey(trimmed: string): string | undefined {
+  for (const pattern of [SINGLE_QUOTED_YAML_KEY, DOUBLE_QUOTED_YAML_KEY]) {
+    const match = pattern.exec(trimmed);
+    if (match) {
+      return match[1].trim();
+    }
+  }
+  return parseUnquotedYamlKey(trimmed);
+}
+
+function tryMatchArraySegment(
+  trimmed: string,
+  indent: number,
+  minIndent: number,
+  target: string,
+  arrayItemCount: number
+): { matched: boolean; nextArrayItemCount: number } {
+  if (!(trimmed.startsWith('- ') || trimmed === '-') || indent !== minIndent) {
+    return { matched: false, nextArrayItemCount: arrayItemCount };
+  }
+  if (arrayItemCount === parseInt(target, 10)) {
+    return { matched: true, nextArrayItemCount: 0 };
+  }
+  return { matched: false, nextArrayItemCount: arrayItemCount + 1 };
+}
+
+function tryMatchKeySegment(
+  trimmed: string,
+  indent: number,
+  minIndent: number,
+  target: string
+): boolean {
+  const matchedKey = parseYamlKey(trimmed);
+  return matchedKey === target && indent === minIndent;
+}
+
 function findLineForPath(content: string, instancePath: string): number {
   if (!instancePath) return 1;
 
@@ -53,34 +106,26 @@ function findLineForPath(content: string, instancePath: string): number {
 
     const target = segments[depth];
     const isArrayIndex = /^\d+$/.test(target);
+    let segmentMatched = false;
 
     if (isArrayIndex) {
-      // Match YAML list items ('- ') at the expected indentation
-      if ((trimmed.startsWith('- ') || trimmed === '-') && indent === minIndent) {
-        if (arrayItemCount === parseInt(target, 10)) {
-          depth++;
-          minIndent = detectChildIndent(lines, i, indent);
-          arrayItemCount = 0;
-          if (depth >= segments.length) return i + 1;
-        } else {
-          arrayItemCount++;
-        }
-      }
+      const arrayMatch = tryMatchArraySegment(trimmed, indent, minIndent, target, arrayItemCount);
+      segmentMatched = arrayMatch.matched;
+      arrayItemCount = arrayMatch.nextArrayItemCount;
     } else {
-      // Match quoted or unquoted YAML keys at the expected indentation level
-      const keyMatch =
-        trimmed.match(/^'([^']*)'\s*:/) ??
-        trimmed.match(/^"([^"]*)"\s*:/) ??
-        trimmed.match(/^([^:'"#{[\s][^:]*?)\s*:/);
-      const matchedKey = (keyMatch?.[1] ?? '').trim();
-
-      if (matchedKey === target && indent === minIndent) {
-        depth++;
-        minIndent = detectChildIndent(lines, i, indent);
+      segmentMatched = tryMatchKeySegment(trimmed, indent, minIndent, target);
+      if (segmentMatched) {
         arrayItemCount = 0;
-        if (depth >= segments.length) return i + 1;
       }
     }
+
+    if (!segmentMatched) {
+      continue;
+    }
+
+    depth++;
+    minIndent = detectChildIndent(lines, i, indent);
+    if (depth >= segments.length) return i + 1;
   }
   return 1;
 }

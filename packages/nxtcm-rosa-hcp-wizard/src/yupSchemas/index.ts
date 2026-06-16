@@ -20,7 +20,9 @@ export { clusterValidationSchema } from './clusterValidationSchema';
 export function getClusterValidationSchemaDefaultValues(): Partial<ROSAHCPCluster> {
   const defaults = clusterValidationSchema.getDefault() as Partial<ROSAHCPCluster>;
   // Replica defaults exist on the Yup fields for toggling autoscaling UX; keep them unset until the user enables autoscaling.
-  const { min_replicas: _min, max_replicas: _max, ...rest } = defaults;
+  const rest = { ...defaults };
+  delete rest.min_replicas;
+  delete rest.max_replicas;
   return rest;
 }
 

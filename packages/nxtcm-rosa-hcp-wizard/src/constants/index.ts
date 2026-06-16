@@ -18,18 +18,50 @@ export const AWS_KMS_MULTI_REGION_SERVICE_ACCOUNT_REGEX =
   /^arn:aws([-\w]+)?:kms:[\w-]+:\d{12}:key\/mrk-[0-9a-f]{32}$/;
 
 // Regular expression used to check whether forward slash is multiple times
-export const MULTIPLE_FORWARD_SLASH_REGEX = /^.*[/]+.*[/]+.*$/i;
-
-// Regular expression used to check base DNS domains, based on RFC-1035
-export const BASE_DOMAIN_REGEXP = /^([a-z]([-a-z0-9]*[a-z0-9])?\.)+[a-z]([-a-z0-9]*[a-z0-9])?$/;
+export const MULTIPLE_FORWARD_SLASH_REGEX = /\/.+\//;
 
 // Maximum length for a cluster name
 export const MAX_CLUSTER_NAME_LENGTH = 54;
 // Maximum length of a cluster display name
 export const MAX_CLUSTER_DISPLAY_NAME_LENGTH = 63;
-// Regular expression used to check whether input is a valid IPv4 CIDR range
-export const CIDR_REGEXP =
-  /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(3[0-2]|[1-2][0-9]|[1-9]))$/;
+
+function isValidIpv4Octet(octet: string): boolean {
+  if (!/^\d{1,3}$/.test(octet)) {
+    return false;
+  }
+  const value = Number(octet);
+  return value >= 0 && value <= 255;
+}
+
+/** Validates dotted-quad IPv4 CIDR notation (e.g. `10.0.0.0/16`). */
+export function isValidIpv4Cidr(value: string): boolean {
+  const slashIndex = value.lastIndexOf('/');
+  if (slashIndex <= 0) {
+    return false;
+  }
+
+  const ip = value.slice(0, slashIndex);
+  const maskStr = value.slice(slashIndex + 1);
+  if (!/^\d{1,2}$/.test(maskStr)) {
+    return false;
+  }
+
+  const mask = Number(maskStr);
+  if (!Number.isInteger(mask) || mask < 0 || mask > 32) {
+    return false;
+  }
+
+  const octets = ip.split('.');
+  if (octets.length !== 4) {
+    return false;
+  }
+
+  return octets.every(isValidIpv4Octet);
+}
+
+// Regular expression used to check base DNS domains, based on RFC-1035
+export const BASE_DOMAIN_REGEXP = /^([a-z]([-a-z0-9]*[a-z0-9])?\.)+[a-z]([-a-z0-9]*[a-z0-9])?$/;
+
 export const SERVICE_CIDR_MAX = 24;
 export const POD_CIDR_MAX = 21;
 export const POD_NODES_MIN = 32;
@@ -39,7 +71,7 @@ export const AWS_MACHINE_CIDR_MAX_MULTI_AZ = 24;
 export const GCP_MACHINE_CIDR_MAX = 23;
 
 // Regular expression used to check whether input is a valid IPv4 subnet prefix length
-export const HOST_PREFIX_REGEXP = /^\/?(3[0-2]|[1-2][0-9]|[0-9])$/;
+export const HOST_PREFIX_REGEXP = /^\/?(3[0-2]|[1-2]\d|\d)$/;
 export const HOST_PREFIX_MIN = 23;
 export const HOST_PREFIX_MAX = 26;
 

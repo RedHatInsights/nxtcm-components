@@ -137,9 +137,8 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
       const errorCount = errors.filter((e) => e.severity === 'error').length;
       hasSchemaErrorsRef.current = errorCount > 0;
       if (showBanner) {
-        setParseError(
-          errorCount > 0 ? `${errorCount} validation error${errorCount !== 1 ? 's' : ''} found` : ''
-        );
+        const errorNoun = errorCount === 1 ? 'error' : 'errors';
+        setParseError(errorCount > 0 ? `${errorCount} validation ${errorNoun} found` : '');
       }
     }, []);
 
