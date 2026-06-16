@@ -14,6 +14,7 @@ This repository provides reusable React components built with PatternFly that se
 - **Storybook**: Interactive component documentation and development environment
 - **Testing**: Comprehensive unit tests with Jest and React Testing Library
 - **Modern Tooling**: Vite, modern JavaScript features, and fast HMR
+- **Automated Bug Fixing**: Bugs are automatically detected and fixed using [rehor](https://github.com/rehor)
 
 ## Documentation
 
@@ -320,6 +321,12 @@ This project uses GitHub Actions for CI/CD. On every pull request and push to ma
 - ✅ **Storybook Build**: Documentation build verification
 
 See [`.github/workflows/ci.yml`](.github/workflows/ci.yml) for the complete workflow configuration.
+
+## Automated Bug Fixing
+
+This project uses **rehor** to automatically detect and fix bugs. When issues are identified, rehor analyzes the codebase and applies fixes automatically, reducing manual effort and accelerating the development cycle.
+
+Bugs reported through issue tracking are evaluated by rehor, which generates fix PRs when it can confidently resolve the issue.
 
 ## Scripts Reference
 
