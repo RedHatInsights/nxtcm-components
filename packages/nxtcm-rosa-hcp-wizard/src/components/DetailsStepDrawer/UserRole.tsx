@@ -3,7 +3,7 @@ import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStri
 import { CopyInstruction } from '../CopyInstruction';
 import PopoverHintWithTitle from '../PopoverHintWithTitle';
 import ExternalLink from '../ExternalLink';
-import links from '../../links';
+import links from '../../constants/links';
 import { TabGroup } from '../TabGroup';
 import PopoverHint from '../PopoverHint';
 

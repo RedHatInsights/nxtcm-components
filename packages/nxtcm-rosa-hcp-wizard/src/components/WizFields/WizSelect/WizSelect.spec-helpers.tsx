@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Form } from '@patternfly/react-core';
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
@@ -272,5 +273,52 @@ export function WizSelectExplicitControlOnlyHarness() {
         format={(v) => (v === undefined || v === '' ? '(empty)' : String(v))}
       />
     </>
+  );
+}
+
+const optionsReconcileSchema = yup.object({
+  region: yup.string().default('').meta({
+    id: 'region',
+    stepId: 'wiz-select-reconcile-ct',
+    fieldType: 'select',
+    reconcileValueWithOptions: true,
+  }),
+});
+
+type OptionsReconcileFormValues = yup.InferType<typeof optionsReconcileSchema>;
+
+const WIZ_SELECT_RECONCILE_LABEL = 'Region for reconcile';
+export const WIZ_SELECT_RECONCILE_TOGGLE = /select the region for reconcile/i;
+export const WIZ_SELECT_RECONCILE_STATUS = 'region reconcile form value';
+export const WIZ_SELECT_RECONCILE_REPLACE_OPTIONS = 'Replace region options';
+
+/** Swaps option lists to exercise {@link useReconcileWizSelectValueWithOptions}. */
+export function WizSelectOptionsReconcileHarness() {
+  const [options, setOptions] = useState<string[]>(['us-east-1', 'eu-west-1']);
+  const methods = useForm<OptionsReconcileFormValues>({
+    defaultValues: { region: '' },
+  });
+
+  return withRosaCt(
+    <FormProvider {...methods}>
+      <Form>
+        <WizSelect<OptionsReconcileFormValues>
+          name="region"
+          schema={optionsReconcileSchema}
+          label={WIZ_SELECT_RECONCILE_LABEL}
+          options={options}
+          isTypeAhead={false}
+        />
+        <WizCtWatchStatus
+          control={methods.control}
+          name="region"
+          ariaLabel={WIZ_SELECT_RECONCILE_STATUS}
+          format={(v) => (v === undefined || v === '' ? '(empty)' : String(v))}
+        />
+        <Button type="button" onClick={() => setOptions(['us-east-1'])}>
+          {WIZ_SELECT_RECONCILE_REPLACE_OPTIONS}
+        </Button>
+      </Form>
+    </FormProvider>
   );
 }

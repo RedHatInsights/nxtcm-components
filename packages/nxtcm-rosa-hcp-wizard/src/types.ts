@@ -161,12 +161,14 @@ export type MachineTypesResource = Resource<MachineTypesDropdownType[], [region:
 
 export type AwsInfrastructureAccountsResource = Resource<AWSInfrastructureAccounts[]>;
 export type AwsBillingAccountsResource = Resource<AWSBillingAccounts[]>;
-export type OidcConfigResource = Resource<OIDCConfig[]>;
+export type OidcConfigResource = Resource<OIDCConfig[], [awsAccount: string]> & {
+  fetch: (awsAccount: string) => Promise<void>;
+};
 export type VpcListResource = Resource<VPC[]>;
 export type SubnetsResource = Resource<Subnet[]>;
 export type SecurityGroupsResource = Resource<SecurityGroup[]>;
 
-export type CheckClusterNameUniqueness = (name: string, region?: string) => void;
+export type CheckClusterNameUniqueness = (name: string, region?: string) => Promise<string | null>;
 
 export type ROSAHCPWizardData = {
   awsInfrastructureAccounts: AwsInfrastructureAccountsResource;

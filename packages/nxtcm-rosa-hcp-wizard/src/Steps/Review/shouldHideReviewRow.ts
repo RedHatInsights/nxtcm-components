@@ -1,4 +1,4 @@
-import { ClusterUpgrade, type ROSAHCPCluster } from '../../types';
+import { ClusterNetwork, ClusterUpgrade, type ROSAHCPCluster } from '../../types';
 
 /** Whether a review summary row should be omitted for the current form state. */
 export function shouldHideReviewRow({
@@ -20,6 +20,22 @@ export function shouldHideReviewRow({
     return true;
   }
   if (path === 'imds' && !formValues.imds) {
+    return true;
+  }
+  if (path === 'kms_key_arn' || path === 'etcd_key_arn') {
+    const keyArn = formValues[path];
+    if (
+      keyArn === undefined ||
+      keyArn === null ||
+      (typeof keyArn === 'string' && keyArn.trim() === '')
+    ) {
+      return true;
+    }
+  }
+  if (
+    path === 'cluster_privacy_public_subnet_id' &&
+    formValues.cluster_privacy !== ClusterNetwork.external
+  ) {
     return true;
   }
   if (path === 'security_groups_worker') {

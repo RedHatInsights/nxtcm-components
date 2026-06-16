@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Content, ContentVariants, Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
@@ -7,21 +7,16 @@ import {
   canSelectImds,
   getWorkerNodeVolumeSizeMaxGiB,
   resolveSelectedVpc,
-} from '../../../helpers';
+} from '../../../utilities/helpers';
 import { Section } from '../../../components/Section';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../links';
+import links from '../../../constants/links';
 import { WizCheckbox, WizNumberInput, WizSelect } from '../../../components/WizFields';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { clusterValidationSchema } from '../../../yupSchemas';
-import { getAutoscalingMaxNodes } from '../../../getAutoscalingMaxNodes';
+import { getAutoscalingMaxNodes } from '../../../utilities/getAutoscalingMaxNodes';
 import { MachinePoolsAdvancedSection } from './MachinePoolsAdvancedSection';
 import { MachinePoolsAutoscalingReplicas } from './MachinePoolsAutoscalingReplicas';
-import {
-  useAutoscalingFieldDefaults,
-  useEnsureMachinePoolSubnetRow,
-  useResetOnVpcChange,
-} from './useMachinePoolsFormEffects';
 
 type MachinePoolsProps = Pick<ROSAHCPWizardData, 'vpcList' | 'machineTypes'>;
 
@@ -36,7 +31,6 @@ export const MachinePools = (props: MachinePoolsProps) => {
   const clusterVersion = useWatch({ control, name: 'cluster_version' }) ?? '';
   const selectedVpcRaw = useWatch({ control, name: 'selected_vpc' });
   const autoscaling = useWatch({ control, name: 'autoscaling' });
-
   const maxRootDiskSize = getWorkerNodeVolumeSizeMaxGiB(clusterVersion);
   const wrongVersionForIMDS = !canSelectImds(clusterVersion);
   const maxAutoscalingNodes = getAutoscalingMaxNodes(clusterVersion);
@@ -50,19 +44,6 @@ export const MachinePools = (props: MachinePoolsProps) => {
     () => buildMachinePoolsReviewSelectOptions(selectedVPC, vpcList.data),
     [selectedVPC, vpcList.data]
   );
-
-  const vpcId = typeof selectedVpcRaw === 'string' ? selectedVpcRaw : selectedVpcRaw?.id;
-
-  useResetOnVpcChange(vpcId);
-  useEnsureMachinePoolSubnetRow();
-  useAutoscalingFieldDefaults(autoscaling);
-
-  useEffect(() => {
-    if (region && typeof machineTypes.fetch === 'function') {
-      void machineTypes.fetch(region);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [region, machineTypes.fetch]);
 
   const { vpc: vpcOptions, subnet: subnetOptions } = machinePoolsSelectOptions;
 

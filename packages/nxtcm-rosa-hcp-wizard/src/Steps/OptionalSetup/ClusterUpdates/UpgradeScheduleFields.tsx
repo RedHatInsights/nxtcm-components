@@ -4,7 +4,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { HelperText } from '../../../components/Fields/HelperText';
 import { Select } from '../../../components/Fields/Select';
 import { wizFieldShowsError } from '../../../components/WizFields/wizFieldRhf';
-import { parseUpdateSchedule } from '../../../helpers';
+import { parseUpdateSchedule } from '../../../utilities/helpers';
 import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster } from '../../../types';

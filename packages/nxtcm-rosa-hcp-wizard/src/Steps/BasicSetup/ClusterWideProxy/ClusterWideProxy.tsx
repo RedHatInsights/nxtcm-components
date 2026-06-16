@@ -2,17 +2,16 @@ import { Alert, Content, ContentVariants, Stack, StackItem } from '@patternfly/r
 import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../links';
+import links from '../../../constants/links';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import { useFormContext, useWatch } from 'react-hook-form';
-import React from 'react';
 import { ROSAHCPCluster } from '../../../types';
 import { WizFileUpload } from '../../../components/WizFields/WizFileUpload';
 
 export const ClusterWideProxy = () => {
   const cw = useRosaHcpWizardStrings().clusterWideProxy;
-  const { getFieldState, formState, setValue } = useFormContext<ROSAHCPCluster>();
+  const { getFieldState, formState } = useFormContext<ROSAHCPCluster>();
   const httpProxyValue = useWatch<ROSAHCPCluster>({ name: 'http_proxy_url' });
   const httpsProxyValue = useWatch<ROSAHCPCluster>({ name: 'https_proxy_url' });
   const httpState = getFieldState('http_proxy_url', formState);
@@ -20,12 +19,6 @@ export const ClusterWideProxy = () => {
   const isHttpValid = !!httpProxyValue && !httpState.error;
   const isHttpsValid = !!httpsProxyValue && !httpsState.error;
   const disableNoProxyDomains = !isHttpValid && !isHttpsValid;
-
-  React.useEffect(() => {
-    if (disableNoProxyDomains) {
-      setValue('no_proxy_domains', '', { shouldValidate: true });
-    }
-  }, [disableNoProxyDomains, setValue]);
 
   return (
     <Section label={cw.sectionLabel}>

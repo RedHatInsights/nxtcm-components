@@ -115,7 +115,7 @@ test.describe('WizTextInput', () => {
     ).toBeVisible();
   });
 
-  test('shows Yup validation after the field is blurred when the form uses mode onBlur', async ({
+  test('shows Yup validation after the field is blurred when validateOnBlur is set', async ({
     mount,
   }) => {
     const mounted = await mount(<WizTextInputBlurValidationHarness />);
@@ -123,6 +123,18 @@ test.describe('WizTextInput', () => {
     await input.focus();
     await input.blur();
     await expect(mounted.getByText(WIZ_TEXT_INPUT_ALIAS_BLUR_ERROR, { exact: true })).toBeVisible();
+  });
+
+  test('does not validate while the user is typing when validateOnBlur is set', async ({
+    mount,
+  }) => {
+    const mounted = await mount(<WizTextInputBlurValidationHarness />);
+    const input = mounted.getByPlaceholder(WIZ_TEXT_INPUT_ALIAS_BLUR_PLACEHOLDER);
+    await input.focus();
+    await input.fill('x');
+    await expect(mounted.getByText(WIZ_TEXT_INPUT_ALIAS_BLUR_ERROR, { exact: true })).toHaveCount(
+      0
+    );
   });
 
   test('shows required UI when isRequired is set even though Yup treats the leaf as optional', async ({

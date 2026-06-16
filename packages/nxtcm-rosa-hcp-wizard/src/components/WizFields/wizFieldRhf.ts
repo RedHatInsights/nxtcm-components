@@ -122,6 +122,22 @@ export function wizFieldShowsError(
   return invalid && (isTouched || validationRevealed);
 }
 
+/** Like {@link wizFieldShowsError}, but keyed on a resolved error message string. */
+export function wizFieldShowsErrorMessage(
+  errorMessage: ReactNode | string | undefined,
+  isTouched: boolean,
+  isSubmitted: boolean,
+  options?: { showWithoutTouch?: boolean }
+): boolean {
+  if (errorMessage === undefined || errorMessage === null || errorMessage === '') {
+    return false;
+  }
+  if (options?.showWithoutTouch) {
+    return true;
+  }
+  return isTouched || isSubmitted;
+}
+
 /**
  * Resolves {@link Control} from props or react-hook-form context.
  * Throws a consistent error message when neither is available.

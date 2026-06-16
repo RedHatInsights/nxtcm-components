@@ -1,4 +1,4 @@
-import { getNestedValue } from '../../../helpers';
+import { getNestedValue } from '../../../utilities/helpers';
 import { isSyntheticOptionId } from './selectFieldUtils';
 import type { Option, OptionType } from './SelectTypes';
 

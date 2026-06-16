@@ -1,6 +1,12 @@
 import { type ReactNode, useCallback, useState } from 'react';
 import { type FieldValues, useController } from 'react-hook-form';
 import { requiredFromYup } from '../../../utilities/yupFieldRequired';
+import { useReconcileWizSelectValueWithOptions } from '../../../hooks/useReconcileWizSelectValueWithOptions';
+import {
+  getWizSelectFieldDefaultValue,
+  shouldReconcileWizSelectValue,
+  toWizSelectFormValueFromSchemaDefault,
+} from '../../../hooks/wizSelectOptionsReconcile';
 import { FieldWithAPIErrorAlert } from '../../FieldWithAPIErrorAlert';
 import { Select, type SelectProps } from '../../Fields/Select';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
@@ -63,6 +69,9 @@ export function WizSelect<TFieldValues extends FieldValues = FieldValues, TOptio
     apiError,
     isLoading,
     onRefresh,
+    options,
+    optionGroups,
+    keyPath,
     ...rest
   } = props;
 
@@ -88,32 +97,49 @@ export function WizSelect<TFieldValues extends FieldValues = FieldValues, TOptio
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const {
-    field,
+    field: { value, onChange, onBlur },
     fieldState: { invalid, isTouched, error },
     formState: { isSubmitted },
   } = useController({ name, control });
 
   const stepValidationRevealed = useWizStepValidationRevealed(String(name));
   const showError = wizFieldShowsError(invalid, isTouched, isSubmitted || stepValidationRevealed);
+  useReconcileWizSelectValueWithOptions({
+    name,
+    schema,
+    options,
+    optionGroups,
+    keyPath,
+    isLoading,
+    enabled: shouldReconcileWizSelectValue(schema, name),
+    value,
+    onChange,
+  });
 
-  /** Select clears with `undefined`; map to `''` only for string-backed RHF values (Yup string fields). */
+  /**
+   * Select clears with `undefined`. Map that to the Yup schema default so RHF matches
+   * string-backed wizard fields (typically `''`). Non-string defaults (e.g. `.default('vanilla')`)
+   * are preserved; object-valued form fields are not supported here.
+   */
   const handleChange = useCallback(
     (next: TOption | string | number | undefined) => {
-      if (next !== undefined) {
-        field.onChange(next);
+      if (next === undefined) {
+        onChange(
+          toWizSelectFormValueFromSchemaDefault(getWizSelectFieldDefaultValue(schema, name))
+        );
         return;
       }
-      const isStringBacked =
-        typeof field.value === 'string' ||
-        (Array.isArray(field.value) && typeof field.value[0] === 'string');
-      field.onChange(isStringBacked ? '' : undefined);
+      onChange(next);
     },
-    [field]
+    [name, onChange, schema]
   );
 
   const select = (
     <Select<TOption>
       {...rest}
+      options={options}
+      optionGroups={optionGroups}
+      keyPath={keyPath}
       id={id}
       label={label}
       placeholder={placeholder}
@@ -121,8 +147,8 @@ export function WizSelect<TFieldValues extends FieldValues = FieldValues, TOptio
       labelHelp={labelHelp}
       labelHelpTitle={labelHelpTitle}
       isRequired={isRequired}
-      value={field.value}
-      onBlur={field.onBlur}
+      value={value}
+      onBlur={onBlur}
       onChange={handleChange}
       errorMessage={error?.message}
       isError={showError && !isMenuOpen}

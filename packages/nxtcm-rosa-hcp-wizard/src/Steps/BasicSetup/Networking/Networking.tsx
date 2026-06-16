@@ -9,7 +9,7 @@ import {
 import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../links';
+import links from '../../../constants/links';
 import { ClusterNetwork, ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
 import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
 import { Radio } from '../../../components/Fields/RadioGroup';
@@ -19,10 +19,12 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
-
 import { useEffect, useMemo, useRef } from 'react';
 import { useClearFieldWhenHidden } from '../../OptionalSetup/Encryption/useClearFieldWhenHidden';
-import { buildMachinePoolsReviewSelectOptions, resolveSelectedVpc } from '../../../helpers';
+import {
+  buildMachinePoolsReviewSelectOptions,
+  resolveSelectedVpc,
+} from '../../../utilities/helpers';
 
 type NetworkingStepProps = Pick<ROSAHCPWizardData, 'vpcList' | 'subnets'>;
 

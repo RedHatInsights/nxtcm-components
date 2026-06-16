@@ -14,7 +14,7 @@ import {
   SERVICE_CIDR_MAX,
   STEP_IDS,
 } from '../constants';
-import { parseCIDRSubnetLength } from '../helpers';
+import { parseCIDRSubnetLength } from '../utilities/helpers';
 import { ClusterNetwork, ROSAHCPCluster } from '../types';
 import type { WizardFieldMeta } from './types';
 import {
@@ -33,10 +33,12 @@ export const clusterPrivacySchema = yup
   .required()
   .meta({
     id: 'cluster_privacy',
+    labelKey: 'networking.clusterPrivacyLabel',
     stepId: STEP_IDS.NETWORKING,
     fieldSetLegend: false,
     fieldType: 'radio',
     noEditAfterSubmit: true,
+    resetsFieldsToDefaultOnChange: ['cluster_privacy_public_subnet_id'],
   } satisfies WizardFieldMeta);
 
 export const clusterPrivacyPublicSubnetIdSchema = yup
@@ -47,6 +49,8 @@ export const clusterPrivacyPublicSubnetIdSchema = yup
     labelKey: 'networking.publicSubnetLabel',
     stepId: STEP_IDS.NETWORKING,
     fieldType: 'select',
+    optionsWizardDataResource: 'vpcList',
+    reconcileValueWithOptions: true,
   } satisfies WizardFieldMeta);
 
 export const cidrDefaultSchema = yup
@@ -60,6 +64,7 @@ export const cidrDefaultSchema = yup
     stepId: STEP_IDS.NETWORKING,
     fieldType: 'checkbox',
     advanced: true,
+    hideInReview: true,
   } satisfies WizardFieldMeta);
 
 export const networkMachineCidrSchema = yup
@@ -347,6 +352,13 @@ export const configureProxySchema = yup
     stepId: STEP_IDS.NETWORKING,
     fieldType: 'checkbox',
     advanced: true,
+    hideInReview: true,
+    resetsFieldsToDefaultOnChange: [
+      'http_proxy_url',
+      'https_proxy_url',
+      'no_proxy_domains',
+      'additional_trust_bundle',
+    ],
   } satisfies WizardFieldMeta);
 
 export const multiAzSchema = yup
@@ -356,6 +368,7 @@ export const multiAzSchema = yup
     id: 'multi_az',
     labelKey: 'networking.multiAzLabel',
     stepId: STEP_IDS.NETWORKING,
+    hideInReview: true,
   } satisfies WizardFieldMeta);
 
 export const hypershiftSchema = yup
@@ -365,6 +378,7 @@ export const hypershiftSchema = yup
     id: 'hypershift',
     labelKey: 'networking.hypershiftLabel',
     stepId: STEP_IDS.NETWORKING,
+    hideInReview: true,
   } satisfies WizardFieldMeta);
 
 export const networkingFields = {

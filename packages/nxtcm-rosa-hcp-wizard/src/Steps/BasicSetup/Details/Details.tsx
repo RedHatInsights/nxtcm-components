@@ -1,23 +1,28 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Button, Stack } from '@patternfly/react-core';
 import semver from 'semver';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { clusterValidationSchema } from '../../../yupSchemas';
-import { buildOpenShiftVersionGroups } from '../../../buildOpenShiftVersionGroups';
+import { buildOpenShiftVersionGroups } from '../../../utilities/buildOpenShiftVersionGroups';
 import { DetailsStepDrawer } from '../../../components/DetailsStepDrawer/DetailsStepDrawer';
 import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../links';
-import { type ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
+import links from '../../../constants/links';
+import { ROSAHCPWizardData, type ROSAHCPCluster } from '../../../types';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { FieldWrapper } from '../../../components/FieldWrapper';
-import { resetMachinePoolVpcDependentFields } from '../../../resetMachinePoolVpcDependentFields';
+import { useClusterNameUniquenessValidation } from '../../../hooks/useClusterNameUniquenessValidation';
 
 type DetailsStepProps = Pick<
   ROSAHCPWizardData,
-  'awsInfrastructureAccounts' | 'awsBillingAccounts' | 'regions' | 'versions' | 'roles' | 'vpcList'
+  | 'awsInfrastructureAccounts'
+  | 'awsBillingAccounts'
+  | 'regions'
+  | 'versions'
+  | 'roles'
+  | 'checkClusterNameUniqueness'
 >;
 
 type AssociateNewAccountLinkProps = {
@@ -51,32 +56,17 @@ export const Details = ({
   regions,
   versions,
   roles,
-  vpcList,
+  checkClusterNameUniqueness,
 }: DetailsStepProps) => {
   const d = useRosaHcpWizardStrings().details;
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
   const drawerRef = React.useRef<HTMLSpanElement>(null);
   const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
 
-  const { control, setValue } = useFormContext<Partial<ROSAHCPCluster>>();
-  const region = useWatch({ control, name: 'region' });
-  const prevRegionRef = useRef<string | undefined>(undefined);
-
-  /** Region lives on this step; when it changes, machine-pool VPC data must reload and prior VPC/subnet choices are invalid. */
-  useEffect(() => {
-    const prev = prevRegionRef.current;
-
-    if (region && (prev === undefined || prev !== region)) {
-      void vpcList.fetch?.();
-    }
-
-    if (prev !== undefined && prev !== region) {
-      resetMachinePoolVpcDependentFields(setValue);
-    }
-
-    prevRegionRef.current = region;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [region, setValue, vpcList.fetch]);
+  const { control } = useFormContext<Partial<ROSAHCPCluster>>();
+  const { checkOnNameBlur } = useClusterNameUniquenessValidation({
+    checkClusterNameUniqueness,
+  });
 
   const installerRoleArn = useWatch({ control, name: 'installer_role_arn' });
   const associatedAwsIdRaw = useWatch({ control, name: 'associated_aws_id' });
@@ -197,7 +187,13 @@ export const Details = ({
             />
           </FieldWrapper>
           <FieldWrapper>
-            <WizTextInput<ROSAHCPCluster> name="name" schema={clusterValidationSchema} />
+            <WizTextInput<ROSAHCPCluster>
+              name="name"
+              schema={clusterValidationSchema}
+              onBlur={() => {
+                void checkOnNameBlur();
+              }}
+            />
           </FieldWrapper>
 
           <FieldWrapper>

@@ -1,7 +1,75 @@
-import type { CIDRSubnet } from '../types';
+import type { CIDRSubnet, ROSAHCPCluster, ROSAHCPWizardData } from '../types';
 import type { RosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings';
 
-/** Static metadata attached to each field via `.meta()`. */
+/** Top-level {@link ROSAHCPCluster} keys used in form reset metadata. */
+export type WizardFormFieldName = keyof ROSAHCPCluster;
+
+/** {@link ROSAHCPWizardData} entries that expose an optional `fetch` callback. */
+export type WizardDataResourceKey = {
+  [K in keyof ROSAHCPWizardData]: 'fetch' extends keyof NonNullable<ROSAHCPWizardData[K]>
+    ? NonNullable<NonNullable<ROSAHCPWizardData[K]>['fetch']> extends (...args: never[]) => unknown
+      ? K
+      : never
+    : never;
+}[keyof ROSAHCPWizardData];
+
+type WizardResourceFetchArgs<K extends WizardDataResourceKey> = K extends keyof ROSAHCPWizardData
+  ? NonNullable<ROSAHCPWizardData[K]> extends {
+      fetch?: (...args: infer Args) => unknown;
+    }
+    ? Args extends unknown[]
+      ? Args
+      : never
+    : never
+  : never;
+
+type WizardFormFieldNameMatchingValue<V> = {
+  [F in WizardFormFieldName]: NonNullable<ROSAHCPCluster[F]> extends V ? F : never;
+}[WizardFormFieldName];
+
+type WizardResourceRefetchOnChangeForResource<K extends WizardDataResourceKey> =
+  K extends keyof ROSAHCPWizardData
+    ? WizardResourceFetchArgs<K> extends readonly []
+      ? { readonly resource: K; readonly argFromField?: undefined }
+      : WizardResourceFetchArgs<K> extends readonly [infer Arg, ...unknown[]]
+        ? {
+            readonly resource: K;
+            readonly argFromField: WizardFormFieldNameMatchingValue<Arg>;
+          }
+        : never
+    : never;
+
+/** Describes a {@link ROSAHCPWizardData} resource reload when a form field changes. */
+export type WizardResourceRefetchOnChange =
+  WizardResourceRefetchOnChangeForResource<WizardDataResourceKey>;
+
+/**
+ * When a source field changes to `when`, apply `setDefaults` and/or `clear` on dependent fields.
+ * Used for mode toggles (e.g. autoscaling) where some fields should be cleared, not reset globally.
+ */
+export type WizardFieldSyncOnChange = {
+  /** Source-field value that selects this branch (boolean mode toggles today). */
+  when: boolean;
+  /** Fields set to their individual Yup schema defaults. */
+  setDefaults?: readonly WizardFormFieldName[];
+  /** Fields set to `undefined` (hidden / inactive in the current mode). */
+  clear?: readonly WizardFormFieldName[];
+};
+
+/**
+ * Identifies a handler in {@link wizardFieldDerivedSyncHandlers} for resource-driven dependent fields.
+ * Declared on the source field's Yup `.meta()` via `derivedFieldsSyncOnChange`.
+ */
+export type WizardFieldDerivedSyncKey =
+  | 'installerRoleDependentRoles'
+  | 'vpcSecurityGroupsWorkerSelection';
+
+/**
+ * Static metadata attached to each field via `.meta()`.
+ *
+ * When `resetsFieldsToDefaultOnChange` is set, changing this field's value should reset the
+ * listed fields to their Yup schema defaults (see {@link resetFieldsToDefaultValues}).
+ */
 export type WizardFieldMeta = {
   /** Unique field identifier (matches the schema path). */
   id: string;
@@ -25,6 +93,11 @@ export type WizardFieldMeta = {
   reviewLabel?: string;
   /** Hint for which component type to render. */
   fieldType?: 'text' | 'select' | 'radio' | 'checkbox' | 'number' | 'textarea' | 'typeahead';
+  /**
+   * When true, {@link WizTextInput} validates only on blur (not on each keystroke after touch).
+   * Useful for fields with async validation such as cluster name uniqueness.
+   */
+  validateOnBlur?: boolean;
   /** Whether the field lives behind an "Advanced" toggle. */
   advanced?: boolean;
   /** Display unit for the review step. */
@@ -35,6 +108,40 @@ export type WizardFieldMeta = {
   fieldSetLegend?: boolean;
   /** Whether the field should be collapsed when required. */
   collapseOnRequired?: boolean;
+  /**
+   * Other form fields reset to schema defaults when this field's value changes.
+   * Wired by {@link useWizardFieldMetaChangeEffects} via {@link getWizardFieldResetsForSourceField}.
+   */
+  resetsFieldsToDefaultOnChange?: readonly WizardFormFieldName[];
+  /**
+   * {@link ROSAHCPWizardData} resources whose `fetch` should run when this field changes.
+   * Wired by {@link useWizardFieldMetaChangeEffects} via {@link getWizardResourceRefetchesForSourceField}.
+   */
+  refetchesResourcesOnChange?: readonly WizardResourceRefetchOnChange[];
+  /**
+   * Conditional dependent-field updates when this field changes to a matching `when` value.
+   * Wired by {@link useWizardFieldMetaChangeEffects} via {@link getWizardFieldSyncsForSourceField}.
+   */
+  syncsFieldsOnChange?: readonly WizardFieldSyncOnChange[];
+  /**
+   * Custom dependent-field updates using wizard data (see {@link wizardFieldDerivedSyncHandlers}).
+   * Wired by {@link useWizardFieldMetaChangeEffects} via {@link getWizardFieldDerivedSyncKeyForSourceField}.
+   */
+  derivedFieldsSyncOnChange?: WizardFieldDerivedSyncKey;
+  /**
+   * When true (default for `fieldType: 'select'`), {@link WizSelect} clears this field if the
+   * current value is absent from the rendered options list (e.g. after a resource refetch).
+   * Set to `false` for selects with static options or fields reconciled elsewhere (e.g. derived sync).
+   */
+  reconcileValueWithOptions?: boolean;
+  /**
+   * Primary {@link ROSAHCPWizardData} entry feeding this select's options. Documents the
+   * refetch → invalidate chain for reviewers; execution stays in {@link WizSelect}.
+   */
+  optionsWizardDataResource?: Exclude<
+    keyof ROSAHCPWizardData,
+    'clusterNameValidation' | 'checkClusterNameUniqueness'
+  >;
 };
 
 /**

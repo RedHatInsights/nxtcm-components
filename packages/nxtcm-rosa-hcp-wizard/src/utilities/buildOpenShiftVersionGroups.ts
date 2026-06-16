@@ -1,5 +1,5 @@
-import type { OpenShiftVersionGroup, OpenShiftVersionsData } from './types';
-import type { RosaHcpWizardOpenShiftVersionGroupLabels } from './stringsProvider/rosaHcpWizardStrings.types';
+import type { OpenShiftVersionGroup, OpenShiftVersionsData } from '../types';
+import type { RosaHcpWizardOpenShiftVersionGroupLabels } from '../stringsProvider/rosaHcpWizardStrings.types';
 
 /** Builds grouped OpenShift version options for the version select (Details step). */
 export function buildOpenShiftVersionGroups(

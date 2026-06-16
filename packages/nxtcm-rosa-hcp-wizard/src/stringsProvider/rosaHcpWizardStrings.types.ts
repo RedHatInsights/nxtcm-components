@@ -306,6 +306,7 @@ export type RosaHcpWizardStrings = {
   networking: {
     sectionLabel: string;
     privacyHelper: string;
+    clusterPrivacyLabel: string;
     publicLabel: string;
     publicPopover: string;
     publicSubnetLabel: string;
@@ -422,6 +423,7 @@ export type RosaHcpWizardStrings = {
   };
   clusterUpdates: {
     sectionLabel: string;
+    upgradePolicyLabel: string;
     versionIntroPrefix: string;
     versionIntroSuffix: string;
     detailsStepLink: string;
@@ -441,7 +443,6 @@ export type RosaHcpWizardStrings = {
     dayTimeLabel: string;
     selectDayPlaceholder: string;
     selectTimePlaceholder: string;
-    upgradePolicyLabel: string;
     upgradeScheduleLabel: string;
     daysOfWeek: [string, string, string, string, string, string, string];
   };

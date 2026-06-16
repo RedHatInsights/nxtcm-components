@@ -12,6 +12,7 @@ import { Review } from './Steps/Review/Review';
 import type { YamlEditorHandle } from './Steps/YamlEditor/RosaHcpYamlEditorStep';
 import { createRosaHcpWizardFooter } from './Footer/RosaHcpWizardFooter';
 import { RosaHcpYamlEditorFooter } from './Footer/RosaHcpYamlEditorFooter';
+import { useWizardFieldMetaChangeEffects } from './fieldMetaChangeEffects/useWizardFieldMetaChangeEffects';
 import { useRosaHcpWizardStrings } from './stringsProvider/RosaHcpWizardStringsContext';
 import { STEP_IDS } from './constants';
 import type { RosaHCPWizardProps } from './types';
@@ -55,6 +56,8 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
   );
 
   const footer = useMemo(() => createRosaHcpWizardFooter(onSubmit), [onSubmit]);
+
+  useWizardFieldMetaChangeEffects(wizardData);
 
   const clusterWideProxySelected = useWatch({ name: 'configure_proxy' });
 

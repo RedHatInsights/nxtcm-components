@@ -23,7 +23,8 @@ export const upgradeScheduleSchema = yup
   .default('00 0 * * 0')
   .meta({
     id: 'upgrade_schedule',
-    labelKey: 'clusterUpdates.upgradeScheduleLabel',
+    labelKey: 'clusterUpdates.dayTimeLabel',
+    reviewLabel: 'clusterUpdates.upgradeScheduleLabel',
     stepId: STEP_IDS.CLUSTER_UPDATES,
   } satisfies WizardFieldMeta)
   .when('upgrade_policy', {
