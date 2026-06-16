@@ -81,6 +81,88 @@ export function normalizeEmptyFormValue(value: unknown): unknown {
   return value;
 }
 
+function formatImdsReviewValue(raw: unknown, strings: RosaHcpWizardStrings): string | null {
+  if (typeof raw !== 'string' || raw === '') {
+    return null;
+  }
+  const mp = strings.machinePools;
+  if (raw === 'imdsv1andimdsv2') {
+    return mp.imdsBothLabel;
+  }
+  if (raw === 'imdsv2only') {
+    return mp.imdsV2Label;
+  }
+  return raw;
+}
+
+function formatSecurityGroupsWorkerReviewValue(
+  raw: unknown,
+  securityGroupOptions?: ReviewSelectOption[]
+): string | null {
+  if (!Array.isArray(raw)) {
+    return null;
+  }
+  const ids = raw.filter((id): id is string => typeof id === 'string' && id !== '');
+  return formatIdsAsOptionLabels(ids, securityGroupOptions);
+}
+
+function formatMachinePoolsSubnetsReviewValue(
+  raw: unknown,
+  subnetOptions?: ReviewSelectOption[]
+): string | null {
+  if (!Array.isArray(raw)) {
+    return null;
+  }
+  const subnetIds = (raw as MachinePoolSubnetEntry[])
+    .map((entry) => entry?.machine_pool_subnet?.trim() ?? '')
+    .filter((id) => id !== '');
+  return formatIdsAsOptionLabels(subnetIds, subnetOptions);
+}
+
+function formatClusterPrivacyReviewValue(raw: unknown, strings: RosaHcpWizardStrings): string {
+  const privacy = raw as ROSAHCPCluster['cluster_privacy'];
+  if (privacy === ClusterNetwork.external) {
+    return strings.networking.publicLabel;
+  }
+  if (privacy === ClusterNetwork.internal) {
+    return strings.networking.privateLabel;
+  }
+  return formatScalarForReview(raw);
+}
+
+function formatUpgradePolicyReviewValue(
+  raw: unknown,
+  strings: RosaHcpWizardStrings
+): string | null {
+  if (typeof raw !== 'string' || !isClusterUpgradePolicy(raw)) {
+    return null;
+  }
+  const { review } = strings;
+  return formatUpgradePolicyForReview(raw, {
+    individualLabel: review.strategyIndividual,
+    recurringLabel: review.strategyAutomatic,
+  });
+}
+
+function formatUpgradeScheduleReviewValue(
+  raw: unknown,
+  strings: RosaHcpWizardStrings
+): string | null {
+  if (typeof raw !== 'string' || raw === '') {
+    return null;
+  }
+  return formatUpgradeScheduleForReview(raw, strings.clusterUpdates.daysOfWeek);
+}
+
+function formatDefaultFieldReviewValue(path: string, raw: unknown): string {
+  const meta = wizardFieldMetaByPath(path);
+  const scalar = formatScalarForReview(raw);
+  if (scalar !== '' && meta?.unit) {
+    return `${scalar} ${meta.unit}`;
+  }
+  return scalar;
+}
+
 export function formatReviewFieldValue(
   path: string,
   formValues: Partial<ROSAHCPCluster>,
@@ -89,60 +171,32 @@ export function formatReviewFieldValue(
 ): string {
   const raw = normalizeEmptyFormValue(getNestedValue(formValues, path));
 
-  if (path === 'imds' && typeof raw === 'string' && raw !== '') {
-    const mp = strings.machinePools;
-    if (raw === 'imdsv1andimdsv2') {
-      return mp.imdsBothLabel;
-    }
-    if (raw === 'imdsv2only') {
-      return mp.imdsV2Label;
-    }
-    return raw;
+  switch (path) {
+    case 'imds':
+      return formatImdsReviewValue(raw, strings) ?? formatDefaultFieldReviewValue(path, raw);
+    case 'security_groups_worker':
+      return (
+        formatSecurityGroupsWorkerReviewValue(raw, reviewOptions?.securityGroup) ??
+        formatDefaultFieldReviewValue(path, raw)
+      );
+    case 'selected_vpc':
+      return formatSelectedVpcForReview(raw, reviewOptions?.vpc);
+    case 'machine_pools_subnets':
+      return (
+        formatMachinePoolsSubnetsReviewValue(raw, reviewOptions?.subnet) ??
+        formatDefaultFieldReviewValue(path, raw)
+      );
+    case 'cluster_privacy':
+      return formatClusterPrivacyReviewValue(raw, strings);
+    case 'upgrade_policy':
+      return (
+        formatUpgradePolicyReviewValue(raw, strings) ?? formatDefaultFieldReviewValue(path, raw)
+      );
+    case 'upgrade_schedule':
+      return (
+        formatUpgradeScheduleReviewValue(raw, strings) ?? formatDefaultFieldReviewValue(path, raw)
+      );
+    default:
+      return formatDefaultFieldReviewValue(path, raw);
   }
-
-  if (path === 'security_groups_worker' && Array.isArray(raw)) {
-    const ids = raw.filter((id): id is string => typeof id === 'string' && id !== '');
-    return formatIdsAsOptionLabels(ids, reviewOptions?.securityGroup);
-  }
-
-  if (path === 'selected_vpc') {
-    return formatSelectedVpcForReview(raw, reviewOptions?.vpc);
-  }
-
-  if (path === 'machine_pools_subnets' && Array.isArray(raw)) {
-    const subnetIds = (raw as MachinePoolSubnetEntry[])
-      .map((entry) => entry?.machine_pool_subnet?.trim() ?? '')
-      .filter((id) => id !== '');
-    return formatIdsAsOptionLabels(subnetIds, reviewOptions?.subnet);
-  }
-
-  if (path === 'cluster_privacy') {
-    const privacy = raw as ROSAHCPCluster['cluster_privacy'];
-    if (privacy === ClusterNetwork.external) {
-      return strings.networking.publicLabel;
-    }
-    if (privacy === ClusterNetwork.internal) {
-      return strings.networking.privateLabel;
-    }
-    return formatScalarForReview(raw);
-  }
-
-  if (path === 'upgrade_policy' && typeof raw === 'string' && isClusterUpgradePolicy(raw)) {
-    const { review } = strings;
-    return formatUpgradePolicyForReview(raw, {
-      individualLabel: review.strategyIndividual,
-      recurringLabel: review.strategyAutomatic,
-    });
-  }
-
-  if (path === 'upgrade_schedule' && typeof raw === 'string' && raw !== '') {
-    return formatUpgradeScheduleForReview(raw, strings.clusterUpdates.daysOfWeek);
-  }
-
-  const meta = wizardFieldMetaByPath(path);
-  const scalar = formatScalarForReview(raw);
-  if (scalar !== '' && meta?.unit) {
-    return `${scalar} ${meta.unit}`;
-  }
-  return scalar;
 }
