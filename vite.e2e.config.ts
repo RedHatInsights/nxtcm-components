@@ -7,10 +7,6 @@ export default defineConfig({
   root: './e2e-app',
   resolve: {
     alias: {
-      '@patternfly-labs/react-form-wizard': path.resolve(
-        __dirname,
-        './packages/react-form-wizard/src'
-      ),
       '@redhat-cloud-services/nxtcm-dashboard': path.resolve(
         __dirname,
         './packages/nxtcm-dashboard/src'

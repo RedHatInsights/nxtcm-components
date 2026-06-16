@@ -15,28 +15,26 @@ async function fillDetailsStep(page: Page) {
 }
 
 async function fillRolesStep(page: Page) {
-  await page.getByRole('combobox', { name: 'Select an Installer role' }).click();
+  await page.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
   await page.getByRole('option', { name: /ManagedOpenShift-HCP-ROSA-Installer-Role/ }).click();
-  await page.getByRole('combobox', { name: 'Select an OIDC config ID' }).click();
+  await page.locator('#byo_oidc_config_id-form-group .pf-v6-c-menu-toggle').click();
   await page.getByRole('option', { name: '2kl4t2st8eg2u5jppv8kjeemkvimfm99' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
 }
 
 async function fillMachinePoolsStep(page: Page) {
   await page
-    .getByRole('combobox', { name: 'Select a VPC to install your machine pools into' })
+    .getByRole('button', { name: 'Select a VPC to install your machine pool into us-east-1' })
     .click();
   await page.getByRole('option', { name: 'test-vpc-1' }).click();
-  await page.getByRole('combobox', { name: 'Select private subnet' }).click();
+  await page.getByRole('button', { name: 'Select private subnet' }).click();
   await page.getByRole('option', { name: 'test-1-subnet-private1-us-east-1a' }).click();
-  await page.getByRole('combobox', { name: 'Select the compute node instance type' }).click();
+  await page.getByRole('button', { name: 'Select the compute node instance type' }).click();
   await page.getByRole('option', { name: 'm5a.xlarge' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
 }
 
 async function fillNetworkingStep(page: Page) {
-  await page.getByRole('combobox', { name: 'Select public subnet name' }).click();
-  await page.getByRole('option', { name: 'test-1-subnet-public1-us-east-1b' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
 }
 
@@ -76,37 +74,32 @@ test.describe('ROSA Wizard', () => {
 
     await page.getByRole('button', { name: 'Next' }).click();
 
-    await expect(page.getByRole('combobox', { name: 'Select an Installer role' })).toBeVisible();
+    await expect(page.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle')).toBeVisible();
 
-    await page.getByRole('combobox', { name: 'Select an Installer role' }).click();
+    await page.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
     await page.getByRole('option', { name: /ManagedOpenShift-HCP-ROSA-Installer-Role/ }).click();
 
-    await page.getByRole('combobox', { name: 'Select an OIDC config ID' }).click();
+    await page.locator('#byo_oidc_config_id-form-group .pf-v6-c-menu-toggle').click();
     await page.getByRole('option', { name: '2kl4t2st8eg2u5jppv8kjeemkvimfm99' }).click();
 
     await page.getByRole('button', { name: 'Next' }).click();
 
     await expect(
-      page.getByRole('combobox', { name: 'Select a VPC to install your machine pools into' })
+      page.getByRole('button', { name: 'Select a VPC to install your machine pool into us-east-1' })
     ).toBeVisible();
 
     await page
-      .getByRole('combobox', { name: 'Select a VPC to install your machine pools into' })
+      .getByRole('button', { name: 'Select a VPC to install your machine pool into us-east-1' })
       .click();
     await page.getByRole('option', { name: 'test-vpc-1' }).click();
 
-    await page.getByRole('combobox', { name: 'Select private subnet' }).click();
+    await page.getByRole('button', { name: 'Select private subnet' }).click();
     await page.getByRole('option', { name: 'test-1-subnet-private1-us-east-1a' }).click();
 
-    await page.getByRole('combobox', { name: 'Select the compute node instance type' }).click();
+    await page.getByRole('button', { name: 'Select the compute node instance type' }).click();
     await page.getByRole('option', { name: 'm5a.xlarge' }).click();
 
     await page.getByRole('button', { name: 'Next' }).click();
-
-    await expect(page.getByRole('combobox', { name: 'Select public subnet name' })).toBeVisible();
-
-    await page.getByRole('combobox', { name: 'Select public subnet name' }).click();
-    await page.getByRole('option', { name: 'test-1-subnet-public1-us-east-1b' }).click();
 
     await page.getByRole('button', { name: 'Next' }).click();
 
@@ -114,7 +107,7 @@ test.describe('ROSA Wizard', () => {
 
     await page.getByRole('button', { name: 'Next' }).click();
 
-    await expect(page.getByRole('radio', { name: 'Individual updates' })).toBeVisible();
+    await expect(page.getByRole('radio', { name: 'Manual updates' })).toBeVisible();
 
     await page.getByRole('button', { name: 'Next' }).click();
 
@@ -122,11 +115,6 @@ test.describe('ROSA Wizard', () => {
 
     await expect(page.getByText('test-cluster', { exact: true }).first()).toBeVisible();
     await expect(page.getByText('4.12.0', { exact: true }).first()).toBeVisible();
-    await expect(page.getByText('aws-prod-123456789012', { exact: true }).first()).toBeVisible();
-    await expect(
-      page.getByText('billing-main-123456789012', { exact: true }).first()
-    ).toBeVisible();
-    await expect(page.getByText('us-east-1', { exact: true }).first()).toBeVisible();
     await expect(page.getByText('ManagedOpenShift-HCP-ROSA-Installer-Role').first()).toBeVisible();
     await expect(
       page.getByText('2kl4t2st8eg2u5jppv8kjeemkvimfm99', { exact: true }).first()

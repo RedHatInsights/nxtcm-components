@@ -3,7 +3,10 @@
     "include": [
         "src/**/*",
         ".storybook/**/*",
-        "packages/**/*"
+        "packages/**/*",
+        "test-helpers.ts",
+        "vite-env.d.ts",
+        "types/**/*"
     ],
     "exclude": [
         "node_modules",

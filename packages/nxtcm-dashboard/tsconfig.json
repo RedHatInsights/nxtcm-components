@@ -5,8 +5,8 @@
     "outDir": "dist"
   },
   "include": [
-    "src/**/*",
-    "../../src/types/typings.d.ts"
+   "src/**/*",
+   "../../types/typings.d.ts"
   ],
   "exclude": [
     "**/*.spec.tsx",

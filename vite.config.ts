@@ -86,11 +86,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(repoRoot, './src'),
-      '@patternfly-labs/react-form-wizard': path.resolve(
-        repoRoot,
-        './packages/react-form-wizard/src'
-      ),
+      '@': path.resolve(repoRoot, './'),
       '@redhat-cloud-services/nxtcm-dashboard': path.resolve(
         repoRoot,
         './packages/nxtcm-dashboard/src'
@@ -119,6 +115,7 @@ export default defineConfig({
     rollupOptions: {
       external: libRollupExternal,
       output: {
+        inlineDynamicImports: true,
         globals: resolveUmdGlobal,
         assetFileNames: (assetInfo) => {
           if (assetInfo.name === 'style.css') return 'index.css';

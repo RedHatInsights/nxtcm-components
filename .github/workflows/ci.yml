@@ -24,12 +24,10 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-      - name: Install subpackage dependencies
-        run: cd packages/react-form-wizard && npm ci
 
       - name: Check lockfile for git-based dependencies
         run: |
-          if grep -qE '"resolved":\s*"(git\+|git:|github:)' package-lock.json packages/react-form-wizard/package-lock.json; then
+          if grep -qE '"resolved":\s*"(git\+|git:|github:)' package-lock.json; then
             echo "::error::git-based dependency found in lockfile (supply chain risk)"
             exit 1
           fi
@@ -54,8 +52,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-      - name: Install subpackage dependencies
-        run: cd packages/react-form-wizard && npm ci
 
       - name: Run TypeScript type checking
         run: npm run type-check
@@ -74,8 +70,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-      - name: Install subpackage dependencies
-        run: cd packages/react-form-wizard && npm ci
 
       - name: Run Jest unit tests
         run: |
@@ -106,8 +100,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-      - name: Install subpackage dependencies
-        run: cd packages/react-form-wizard && npm ci
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
@@ -164,8 +156,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-      - name: Install subpackage dependencies
-        run: cd packages/react-form-wizard && npm ci
 
       - name: Build library
         run: npm run build
@@ -174,7 +164,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: dist
-          path: dist/
+          path: |
+            packages/nxtcm-dashboard/dist/
+            packages/nxtcm-rosa-hcp-wizard/dist/
           retention-days: 7
 
   e2e:
@@ -191,8 +183,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-      - name: Install subpackage dependencies
-        run: cd packages/react-form-wizard && npm ci
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
@@ -278,8 +268,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-      - name: Install subpackage dependencies
-        run: cd packages/react-form-wizard && npm ci
 
       - name: Build Storybook
         run: npm run build-storybook

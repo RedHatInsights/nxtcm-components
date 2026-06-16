@@ -8,7 +8,6 @@ export default defineConfig({
   testDir: '.',
   /* Match only component test files (.spec.tsx), includes packages directory */
   testMatch: [
-    'src/**/*.spec.tsx',
     'packages/nxtcm-dashboard/src/**/*.spec.tsx',
     'packages/nxtcm-rosa-hcp-wizard/src/**/*.spec.tsx',
   ],
@@ -36,10 +35,6 @@ export default defineConfig({
     ctViteConfig: {
       resolve: {
         alias: {
-          '@patternfly-labs/react-form-wizard': path.resolve(
-            __dirname,
-            './packages/react-form-wizard/src'
-          ),
           '@redhat-cloud-services/nxtcm-dashboard': path.resolve(
             __dirname,
             './packages/nxtcm-dashboard/src'
@@ -48,12 +43,7 @@ export default defineConfig({
             __dirname,
             './packages/nxtcm-rosa-hcp-wizard/src'
           ),
-          '@': path.resolve(__dirname, './src'),
-          // Playwright CT resolves component path from playwright/index.tsx; alias old .story to .ct
-          './RosaWizard.story': path.resolve(
-            __dirname,
-            './src/components/Wizards/RosaWizard/RosaWizard.ct.tsx'
-          ),
+          '@': path.resolve(__dirname, './'),
         },
       },
     },
