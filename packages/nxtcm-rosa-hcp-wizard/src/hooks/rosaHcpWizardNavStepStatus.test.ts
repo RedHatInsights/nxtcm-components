@@ -1,15 +1,32 @@
 import type { FieldValues, UseFormGetFieldState } from 'react-hook-form';
 
 import { STEP_IDS } from '../constants';
-import type { RosaHcpWizardReviewSection } from '../Steps/Review/rosaHcpWizardReviewSections.data';
+import {
+  buildRosaHcpWizardReviewSections,
+  type RosaHcpWizardReviewSection,
+} from '../Steps/Review/rosaHcpWizardReviewSections.data';
 
 import {
+  buildOrderedWizardNavStepIds,
+  buildRosaHcpWizardNavStepDisabledByValidation,
   buildRosaHcpWizardNavStepStatuses,
   buildVisibleWizardStepIds,
+  findFirstWizardNavStepIndexWithVisibleErrors,
   stepHasVisibleValidationErrors,
 } from './rosaHcpWizardNavStepStatus';
 
-const visibleStepIds = buildVisibleWizardStepIds(false);
+const reviewStepLabels = {
+  details: 'Details',
+  rolesAndPolicies: 'Roles and policies',
+  machinePools: 'Machine pools',
+  networking: 'Networking',
+  clusterWideProxy: 'Cluster-wide proxy',
+  encryptionOptional: 'Encryption (optional)',
+  clusterUpdatesOptional: 'Cluster updates (optional)',
+};
+
+const allReviewSections = buildRosaHcpWizardReviewSections(reviewStepLabels);
+const visibleStepIds = buildVisibleWizardStepIds(allReviewSections, false);
 
 const mockGetFieldState = (
   impl: (path: string) => { invalid: boolean; isTouched: boolean }
@@ -28,9 +45,29 @@ const sections: RosaHcpWizardReviewSection[] = [
   { id: STEP_IDS.ENCRYPTION, label: 'Encryption', fieldPaths: ['etcd_key_arn'] },
 ];
 
+describe('buildOrderedWizardNavStepIds', () => {
+  it('orders leaf steps ending with Review', () => {
+    const ids = buildOrderedWizardNavStepIds(allReviewSections, false);
+
+    expect(ids[0]).toBe(STEP_IDS.DETAILS);
+    expect(ids.at(-1)).toBe(STEP_IDS.REVIEW);
+    expect(ids).not.toContain(STEP_IDS.CLUSTER_WIDE_PROXY);
+  });
+
+  it('includes cluster-wide proxy before optional setup when enabled', () => {
+    const ids = buildOrderedWizardNavStepIds(allReviewSections, true);
+    const networkingIndex = ids.indexOf(STEP_IDS.NETWORKING);
+    const proxyIndex = ids.indexOf(STEP_IDS.CLUSTER_WIDE_PROXY);
+    const encryptionIndex = ids.indexOf(STEP_IDS.ENCRYPTION);
+
+    expect(proxyIndex).toBeGreaterThan(networkingIndex);
+    expect(encryptionIndex).toBeGreaterThan(proxyIndex);
+  });
+});
+
 describe('buildVisibleWizardStepIds', () => {
   it('omits cluster-wide proxy when not enabled', () => {
-    const ids = buildVisibleWizardStepIds(false);
+    const ids = buildVisibleWizardStepIds(allReviewSections, false);
 
     expect(ids.has(STEP_IDS.CLUSTER_WIDE_PROXY)).toBe(false);
     expect(ids.has(STEP_IDS.NETWORKING)).toBe(true);
@@ -38,7 +75,9 @@ describe('buildVisibleWizardStepIds', () => {
   });
 
   it('includes cluster-wide proxy when enabled', () => {
-    expect(buildVisibleWizardStepIds(true).has(STEP_IDS.CLUSTER_WIDE_PROXY)).toBe(true);
+    expect(
+      buildVisibleWizardStepIds(allReviewSections, true).has(STEP_IDS.CLUSTER_WIDE_PROXY)
+    ).toBe(true);
   });
 });
 
@@ -73,6 +112,46 @@ describe('stepHasVisibleValidationErrors', () => {
         new Set([STEP_IDS.DETAILS])
       )
     ).toBe(true);
+  });
+});
+
+describe('findFirstWizardNavStepIndexWithVisibleErrors', () => {
+  it('returns the earliest ordered step index with a visible error', () => {
+    const getFieldState = mockGetFieldState((path) => ({
+      invalid: path === 'region',
+      isTouched: path === 'region',
+    }));
+    const orderedStepIds = buildOrderedWizardNavStepIds(allReviewSections, false);
+
+    expect(
+      findFirstWizardNavStepIndexWithVisibleErrors({
+        orderedStepIds,
+        sections,
+        getFieldState,
+        validationAttemptedStepIds: new Set(),
+      })
+    ).toBe(orderedStepIds.indexOf(STEP_IDS.NETWORKING));
+  });
+});
+
+describe('buildRosaHcpWizardNavStepDisabledByValidation', () => {
+  it('disables only steps after the earliest visible validation error', () => {
+    const getFieldState = mockGetFieldState((path) => ({
+      invalid: path === 'name',
+      isTouched: path === 'name',
+    }));
+    const orderedStepIds = buildOrderedWizardNavStepIds(allReviewSections, false);
+
+    const disabled = buildRosaHcpWizardNavStepDisabledByValidation({
+      orderedStepIds,
+      sections,
+      getFieldState,
+      validationAttemptedStepIds: new Set(),
+    });
+
+    expect(disabled[STEP_IDS.DETAILS]).toBe(false);
+    expect(disabled[STEP_IDS.ROLES_AND_POLICIES]).toBe(true);
+    expect(disabled[STEP_IDS.REVIEW]).toBe(true);
   });
 });
 

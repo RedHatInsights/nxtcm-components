@@ -6,23 +6,54 @@ import type { RosaHcpWizardReviewSection } from '../Steps/Review/rosaHcpWizardRe
 
 export type RosaHcpWizardNavStepStatus = 'default' | 'error';
 
-const BASIC_SETUP_CHILD_STEP_IDS = [
-  STEP_IDS.DETAILS,
-  STEP_IDS.ROLES_AND_POLICIES,
-  STEP_IDS.MACHINE_POOLS,
-  STEP_IDS.NETWORKING,
-  STEP_IDS.CLUSTER_WIDE_PROXY,
-] as const;
+const OPTIONAL_SETUP_CHILD_STEP_IDS = new Set<string>([
+  STEP_IDS.ENCRYPTION,
+  STEP_IDS.CLUSTER_UPDATES,
+]);
 
-const ADDITIONAL_SETUP_CHILD_STEP_IDS = [STEP_IDS.ENCRYPTION, STEP_IDS.CLUSTER_UPDATES] as const;
+function visibleLeafStepIdsFromSections(
+  sections: readonly RosaHcpWizardReviewSection[],
+  includeClusterWideProxy: boolean
+): readonly string[] {
+  return sections
+    .map((section) => section.id)
+    .filter((id) => includeClusterWideProxy || id !== STEP_IDS.CLUSTER_WIDE_PROXY);
+}
+
+function groupChildStepIdsFromSections(
+  sections: readonly RosaHcpWizardReviewSection[],
+  visibleStepIds: ReadonlySet<string>,
+  group: 'basic' | 'optional'
+): readonly string[] {
+  return sections
+    .map((section) => section.id)
+    .filter((id) => {
+      if (!visibleStepIds.has(id)) {
+        return false;
+      }
+      const isOptional = OPTIONAL_SETUP_CHILD_STEP_IDS.has(id);
+      return group === 'optional' ? isOptional : !isOptional;
+    });
+}
+
+/** Linear nav order for leaf wizard steps (cluster-wide proxy only when enabled). */
+export function buildOrderedWizardNavStepIds(
+  sections: readonly RosaHcpWizardReviewSection[],
+  includeClusterWideProxy: boolean
+): readonly string[] {
+  return [...visibleLeafStepIdsFromSections(sections, includeClusterWideProxy), STEP_IDS.REVIEW];
+}
 
 /** Wizard steps that participate in nav status (cluster-wide proxy only when enabled). */
-export function buildVisibleWizardStepIds(includeClusterWideProxy: boolean): ReadonlySet<string> {
-  const basicSetupStepIds = BASIC_SETUP_CHILD_STEP_IDS.filter(
-    (id) => includeClusterWideProxy || id !== STEP_IDS.CLUSTER_WIDE_PROXY
+export function buildVisibleWizardStepIds(
+  sections: readonly RosaHcpWizardReviewSection[],
+  includeClusterWideProxy: boolean
+): ReadonlySet<string> {
+  return new Set(
+    buildOrderedWizardNavStepIds(sections, includeClusterWideProxy).filter(
+      (id) => id !== STEP_IDS.REVIEW
+    )
   );
-
-  return new Set([...basicSetupStepIds, ...ADDITIONAL_SETUP_CHILD_STEP_IDS]);
 }
 
 /** True when any field on the step shows a validation error in the form UI. */
@@ -73,12 +104,62 @@ export function buildRosaHcpWizardNavStepStatuses<TFieldValues extends FieldValu
       : 'default';
   }
 
-  const basicSetupChildren = BASIC_SETUP_CHILD_STEP_IDS.filter((id) => visibleStepIds.has(id));
-  statuses[STEP_IDS.BASIC_SETUP] = parentStepHasChildErrors(basicSetupChildren, statuses);
+  statuses[STEP_IDS.BASIC_SETUP] = parentStepHasChildErrors(
+    groupChildStepIdsFromSections(sections, visibleStepIds, 'basic'),
+    statuses
+  );
   statuses[STEP_IDS.OPTIONAL_SETUP] = parentStepHasChildErrors(
-    ADDITIONAL_SETUP_CHILD_STEP_IDS,
+    groupChildStepIdsFromSections(sections, visibleStepIds, 'optional'),
     statuses
   );
 
   return statuses;
+}
+
+/** Index of the earliest ordered step with a visible validation error, if any. */
+export function findFirstWizardNavStepIndexWithVisibleErrors<
+  TFieldValues extends FieldValues,
+>(params: {
+  orderedStepIds: readonly string[];
+  sections: readonly RosaHcpWizardReviewSection[];
+  getFieldState: UseFormGetFieldState<TFieldValues>;
+  validationAttemptedStepIds: ReadonlySet<string>;
+}): number | undefined {
+  const { orderedStepIds, sections, getFieldState, validationAttemptedStepIds } = params;
+
+  for (const [index, stepId] of orderedStepIds.entries()) {
+    const section = sections.find((entry) => entry.id === stepId);
+    if (
+      section &&
+      stepHasVisibleValidationErrors(
+        section.fieldPaths,
+        section.id,
+        getFieldState,
+        validationAttemptedStepIds
+      )
+    ) {
+      return index;
+    }
+  }
+
+  return undefined;
+}
+
+/** PatternFly `isDisabled` for leaf nav steps blocked by a visible validation error upstream. */
+export function buildRosaHcpWizardNavStepDisabledByValidation<
+  TFieldValues extends FieldValues,
+>(params: {
+  orderedStepIds: readonly string[];
+  sections: readonly RosaHcpWizardReviewSection[];
+  getFieldState: UseFormGetFieldState<TFieldValues>;
+  validationAttemptedStepIds: ReadonlySet<string>;
+}): Readonly<Record<string, boolean>> {
+  const firstErrorIndex = findFirstWizardNavStepIndexWithVisibleErrors(params);
+  const disabled: Record<string, boolean> = {};
+
+  for (const [index, stepId] of params.orderedStepIds.entries()) {
+    disabled[stepId] = firstErrorIndex !== undefined && index > firstErrorIndex;
+  }
+
+  return disabled;
 }

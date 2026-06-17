@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { type FieldPath, useFormContext, useWatch } from 'react-hook-form';
 
 import { applyWizardFieldMetaChangeEffects } from './applyWizardFieldMetaChangeEffects';
+import { readWatchedFieldValue } from './readWatchedFieldValue';
 import { reapplyWizardFieldDerivedSyncs } from './wizardFieldDerivedSyncs';
 import { wizardFormFieldValuesEqual } from './wizardFormFieldValuesEqual';
 import type { ROSAHCPCluster, ROSAHCPWizardData } from '../types';
@@ -10,10 +11,6 @@ import {
   listWizardFieldMetaChangeSourceFields,
 } from '../yupSchemas';
 import type { WizardFormFieldName } from '../yupSchemas/types';
-
-function readWatchedFieldValue(watchedValues: unknown, fieldIndex: number): unknown {
-  return Array.isArray(watchedValues) ? watchedValues[fieldIndex] : watchedValues;
-}
 
 /** Merges live `useWatch` values into `getValues()` so refetch args match the field being processed. */
 function buildFormValuesForMetaEffects(

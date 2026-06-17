@@ -101,6 +101,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
         footer={footer}
         onClose={onCancel}
         onStepChange={handleWizardStepChange}
+        isVisitRequired
       >
         <WizardStep
           isExpandable

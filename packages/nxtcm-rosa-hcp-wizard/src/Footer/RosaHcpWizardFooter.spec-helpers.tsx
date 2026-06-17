@@ -14,6 +14,9 @@ import {
   type ROSAHCPCluster,
 } from '../types';
 import { Details } from '../Steps/BasicSetup/Details/Details';
+import { MachinePools } from '../Steps/BasicSetup/MachinePools/MachinePools';
+import { Networking } from '../Steps/BasicSetup/Networking/Networking';
+import { mockSubnets } from '../Steps/BasicSetup/Networking/Networking.fixtures';
 import { RolesAndPolicies } from '../Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies';
 import { Encryption } from '../Steps/OptionalSetup/Encryption/Encryption';
 import { ClusterUpdates } from '../Steps/OptionalSetup/ClusterUpdates/ClusterUpdates';
@@ -36,7 +39,12 @@ import {
   defaultRosaHcpWizardValidatorStrings,
 } from '../stringsProvider/rosaHcpWizardStrings.defaults';
 import { withRosaCt } from '../components/WizFields/wizFieldCtSpecHelpers';
-import { makeVpcListResource } from '../test/rosaHcpWizardCtSpecHelpers';
+import {
+  makeDefaultRosaHcpCtWizardData,
+  makeMachineTypesResource,
+  makeVpcListResource,
+  WizardFieldMetaChangeEffectsCtHarness,
+} from '../test/rosaHcpWizardCtSpecHelpers';
 import type {
   AwsBillingAccountsResource,
   AwsInfrastructureAccountsResource,
@@ -97,57 +105,111 @@ export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMount
 
   const sl = defaultRosaHcpWizardStrings.wizard.stepLabels;
 
-  const versionsProps: VersionsResource = {
-    data: mockOpenShiftVersionsData,
-    isFetching: false,
-    fetch: async () => {},
-    error: null,
-  };
+  const versionsProps = useMemo<VersionsResource>(
+    () => ({
+      data: mockOpenShiftVersionsData,
+      isFetching: false,
+      fetch: async () => {},
+      error: null,
+    }),
+    []
+  );
 
-  const awsInfra: AwsInfrastructureAccountsResource = {
-    data: mockAwsInfrastructureAccounts,
-    isFetching: false,
-    fetch: async () => {},
-    error: null,
-  };
+  const awsInfra = useMemo<AwsInfrastructureAccountsResource>(
+    () => ({
+      data: mockAwsInfrastructureAccounts,
+      isFetching: false,
+      fetch: async () => {},
+      error: null,
+    }),
+    []
+  );
 
-  const awsBilling: AwsBillingAccountsResource = {
-    data: mockAwsBillingAccounts,
-    isFetching: false,
-    fetch: async () => {},
-    error: null,
-  };
+  const awsBilling = useMemo<AwsBillingAccountsResource>(
+    () => ({
+      data: mockAwsBillingAccounts,
+      isFetching: false,
+      fetch: async () => {},
+      error: null,
+    }),
+    []
+  );
 
-  const regionsProps: RegionsResource = {
-    data: mockRegions,
-    isFetching: false,
-    fetch: async (_awsAccount: string) => {},
-    error: null,
-  };
+  const regionsProps = useMemo<RegionsResource>(
+    () => ({
+      data: mockRegions,
+      isFetching: false,
+      fetch: async (_awsAccount: string) => {},
+      error: null,
+    }),
+    []
+  );
 
-  const rolesProps: RolesResource = {
-    data: mockRoles,
-    isFetching: false,
-    fetch: async (_awsAccount: string) => {},
-    error: null,
-    ocmRoleError: null,
-    userRoleError: null,
-    ocmRoleARN: null,
-  };
+  const rolesProps = useMemo<RolesResource>(
+    () => ({
+      data: mockRoles,
+      isFetching: false,
+      fetch: async (_awsAccount: string) => {},
+      error: null,
+      ocmRoleError: null,
+      userRoleError: null,
+      ocmRoleARN: null,
+    }),
+    []
+  );
 
-  const oidcProps = {
-    data: fixtures.mockOicdConfig,
-    error: null,
-    isFetching: false,
-    fetch: async () => {},
-  };
+  const oidcProps = useMemo(
+    () => ({
+      data: fixtures.mockOicdConfig,
+      error: null,
+      isFetching: false,
+      fetch: async () => {},
+    }),
+    []
+  );
 
-  const vpcListProps = makeVpcListResource();
+  const vpcListProps = useMemo(() => makeVpcListResource(), []);
+  const machineTypesProps = useMemo(() => makeMachineTypesResource(), []);
+  const subnetsProps = useMemo(
+    () => ({
+      data: mockSubnets,
+      error: null,
+      isFetching: false,
+    }),
+    []
+  );
+
+  const wizardData = useMemo(
+    () =>
+      makeDefaultRosaHcpCtWizardData({
+        awsInfrastructureAccounts: awsInfra,
+        awsBillingAccounts: awsBilling,
+        regions: regionsProps,
+        versions: versionsProps,
+        roles: rolesProps,
+        oidcConfig: oidcProps,
+        machineTypes: machineTypesProps,
+        vpcList: vpcListProps,
+        subnets: subnetsProps,
+      }),
+    [
+      awsBilling,
+      awsInfra,
+      machineTypesProps,
+      oidcProps,
+      regionsProps,
+      rolesProps,
+      subnetsProps,
+      versionsProps,
+      vpcListProps,
+    ]
+  );
 
   return withRosaCt(
     <FormProvider {...methods}>
       <RosaHcpWizardValidationProvider>
-        <Wizard height={720} footer={rosaHcpWizardFooter}>
+        <WizardFieldMetaChangeEffectsCtHarness wizardData={wizardData} />
+        <Wizard height={720} footer={rosaHcpWizardFooter} isVisitRequired>
           <WizardStep
             isExpandable
             name={sl.basicSetup}
@@ -168,6 +230,16 @@ export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMount
                 id={STEP_IDS.ROLES_AND_POLICIES}
               >
                 <RolesAndPolicies roles={rolesProps} oidcConfig={oidcProps} />
+              </WizardStep>,
+              <WizardStep
+                key={STEP_IDS.MACHINE_POOLS}
+                name={sl.machinePools}
+                id={STEP_IDS.MACHINE_POOLS}
+              >
+                <MachinePools vpcList={vpcListProps} machineTypes={machineTypesProps} />
+              </WizardStep>,
+              <WizardStep name={sl.networking} id={STEP_IDS.NETWORKING} key={STEP_IDS.NETWORKING}>
+                <Networking vpcList={vpcListProps} subnets={subnetsProps} />
               </WizardStep>,
             ]}
           />

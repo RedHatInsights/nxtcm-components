@@ -71,6 +71,7 @@ export function RosaHcpWizardFooter({
   useRosaHcpWizardNavStatusSync(!!clusterWideProxySelected);
 
   const activeStepId = String(activeStep.id);
+
   const getCurrentStepId = useCallback(() => String(activeStep.id), [activeStep.id]);
   const isReviewStep = activeStepId === STEP_IDS.REVIEW;
   const showSkipToReview = isRosaHcpWizardSkipToReviewVisible(activeStepId);

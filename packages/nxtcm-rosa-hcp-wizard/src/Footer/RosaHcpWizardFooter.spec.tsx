@@ -41,6 +41,26 @@ function wizardNavStep(component: MountResult, stepId: string) {
   return component.locator(`#${stepId}`);
 }
 
+async function clickNextTimes(component: MountResult, count: number): Promise<void> {
+  for (let index = 0; index < count; index += 1) {
+    await component.getByRole('button', { name: FOOTER_NEXT }).click();
+  }
+}
+
+async function advancePastDetailsStep(component: MountResult): Promise<void> {
+  await clickNextTimes(component, 1);
+}
+
+/** Details → Roles → Machine pools → Networking → Encryption (requires `isVisitRequired`). */
+async function advanceToEncryptionStep(component: MountResult): Promise<void> {
+  await clickNextTimes(component, 4);
+}
+
+/** Details → … → Cluster updates → Review. */
+async function advanceToReviewStep(component: MountResult): Promise<void> {
+  await clickNextTimes(component, 6);
+}
+
 test.describe('RosaHcpWizardFooter — left nav validation icons', () => {
   test('shows error icons on Details and Basic setup after Next fails validation', async ({
     mount,
@@ -76,12 +96,11 @@ test.describe('RosaHcpWizardFooter — left nav validation icons', () => {
   test('shows error icons on Encryption and Additional setup after Skip to review fails', async ({
     mount,
   }) => {
-    const component = await mount(<RosaHcpWizardValidationMount />);
+    const component = await mount(
+      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
+    );
 
-    await component.getByText(w.stepLabels.additionalSetup).click();
-    await component
-      .getByRole('button', { name: w.stepLabels.encryptionOptional, exact: true })
-      .click();
+    await advanceToEncryptionStep(component);
     await component.getByRole('checkbox', { name: encryption.etcdLabel }).check();
     await component.getByRole('button', { name: SKIP_TO_REVIEW }).click();
 
@@ -92,15 +111,16 @@ test.describe('RosaHcpWizardFooter — left nav validation icons', () => {
 
   test('shows error icons on steps with errors after a failed Review Submit', async ({ mount }) => {
     const component = await mount(
-      <RosaHcpWizardValidationMount
-        defaultValues={{
-          ...VALID_REVIEW_SUBMIT_FORM_VALUES,
-          name: '',
-        }}
-      />
+      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
     );
 
+    await advanceToReviewStep(component);
+    await expect(component.getByText(review.sectionLabel, { exact: true })).toBeVisible();
+
+    await component.getByRole('button', { name: review.editStep }).first().click();
+    await component.getByRole('textbox', { name: /Cluster name/i }).fill('');
     await component.getByRole('button', { name: w.stepLabels.review, exact: true }).click();
+
     await component.getByRole('button', { name: FOOTER_SUBMIT }).click();
 
     await expectWizardNavError(component, STEP_IDS.DETAILS);
@@ -166,7 +186,7 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
     );
   });
 
-  test('does not show the validation alert on another step after Details Next failed and the user navigates away', async ({
+  test('keeps future nav steps disabled after Details Next failed validation', async ({
     mount,
   }) => {
     const component = await mount(<RosaHcpWizardValidationMount />);
@@ -174,15 +194,9 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
     await component.getByRole('button', { name: FOOTER_NEXT }).click();
     await expect(component.getByRole('heading', validationAlertHeading)).toBeVisible();
 
-    await component
-      .getByRole('button', { name: w.stepLabels.rolesAndPolicies, exact: true })
-      .click();
-
-    await expect(component.getByText(rp.accountRolesSection, { exact: true })).toBeVisible();
-    await expect(component.getByRole('heading', validationAlertHeading)).not.toBeVisible();
-    await expect(component.locator('#installer_role_arn-form-group')).not.toContainText(
-      REQUIRED_FIELD_MESSAGE
-    );
+    await expect(
+      component.getByRole('button', { name: w.stepLabels.rolesAndPolicies, exact: true })
+    ).toBeDisabled();
   });
 });
 
@@ -193,12 +207,11 @@ test.describe('RosaHcpWizardFooter — Skip to review', () => {
   });
 
   test('shows Skip to review on an Additional setup step', async ({ mount }) => {
-    const component = await mount(<RosaHcpWizardValidationMount />);
+    const component = await mount(
+      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
+    );
 
-    await component.getByText(w.stepLabels.additionalSetup).click();
-    await component
-      .getByRole('button', { name: w.stepLabels.encryptionOptional, exact: true })
-      .click();
+    await advanceToEncryptionStep(component);
 
     await expect(component.getByText(encryption.sectionLabel, { exact: true })).toBeVisible();
     await expect(component.getByRole('button', { name: SKIP_TO_REVIEW })).toBeVisible();
@@ -207,12 +220,11 @@ test.describe('RosaHcpWizardFooter — Skip to review', () => {
   test('shows the validation alert and stays on the step when Skip to review is pressed with invalid fields', async ({
     mount,
   }) => {
-    const component = await mount(<RosaHcpWizardValidationMount />);
+    const component = await mount(
+      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
+    );
 
-    await component.getByText(w.stepLabels.additionalSetup).click();
-    await component
-      .getByRole('button', { name: w.stepLabels.encryptionOptional, exact: true })
-      .click();
+    await advanceToEncryptionStep(component);
     await component.getByRole('checkbox', { name: encryption.etcdLabel }).check();
     await component.getByRole('button', { name: SKIP_TO_REVIEW }).click();
 
@@ -224,12 +236,11 @@ test.describe('RosaHcpWizardFooter — Skip to review', () => {
   test('keeps Next and Skip to review enabled after field blur validation on Encryption', async ({
     mount,
   }) => {
-    const component = await mount(<RosaHcpWizardValidationMount />);
+    const component = await mount(
+      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
+    );
 
-    await component.getByText(w.stepLabels.additionalSetup).click();
-    await component
-      .getByRole('button', { name: w.stepLabels.encryptionOptional, exact: true })
-      .click();
+    await advanceToEncryptionStep(component);
     await component.getByRole('radio', { name: encryption.customKms }).check();
     await component.getByRole('textbox', { name: encryption.keyArnLabel }).focus();
     await component.getByRole('textbox', { name: encryption.keyArnLabel }).blur();
@@ -243,12 +254,11 @@ test.describe('RosaHcpWizardFooter — Skip to review', () => {
     mount,
   }) => {
     test.setTimeout(30_000);
-    const component = await mount(<RosaHcpWizardValidationMount />);
+    const component = await mount(
+      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
+    );
 
-    await component.getByText(w.stepLabels.additionalSetup).click();
-    await component
-      .getByRole('button', { name: w.stepLabels.encryptionOptional, exact: true })
-      .click();
+    await advanceToEncryptionStep(component);
     await component.getByRole('radio', { name: encryption.customKms }).check();
     const keyArn = component.getByRole('textbox', { name: encryption.keyArnLabel });
     await keyArn.focus();
@@ -277,12 +287,11 @@ test.describe('RosaHcpWizardFooter — Skip to review', () => {
   test('navigates to Review when Skip to review is pressed with a valid current step', async ({
     mount,
   }) => {
-    const component = await mount(<RosaHcpWizardValidationMount />);
+    const component = await mount(
+      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
+    );
 
-    await component.getByText(w.stepLabels.additionalSetup).click();
-    await component
-      .getByRole('button', { name: w.stepLabels.encryptionOptional, exact: true })
-      .click();
+    await advanceToEncryptionStep(component);
     await component.getByRole('button', { name: SKIP_TO_REVIEW }).click();
 
     await expect(component.getByText(review.sectionLabel, { exact: true })).toBeVisible();
@@ -291,26 +300,22 @@ test.describe('RosaHcpWizardFooter — Skip to review', () => {
 });
 
 test.describe('RosaHcpWizardFooter — Review Submit validation alert', () => {
-  test('hides the validation alert on Review after a failed Submit when the form becomes valid', async ({
+  test('hides the validation alert after a failed Submit when the edited field becomes valid', async ({
     mount,
   }) => {
     const component = await mount(
-      <RosaHcpWizardValidationMount
-        defaultValues={{
-          ...VALID_REVIEW_SUBMIT_FORM_VALUES,
-          name: '',
-        }}
-      />
+      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
     );
 
-    await component.getByRole('button', { name: w.stepLabels.review, exact: true }).click();
+    await advanceToReviewStep(component);
     await expect(component.getByText(review.sectionLabel, { exact: true })).toBeVisible();
-
-    await component.getByRole('button', { name: FOOTER_SUBMIT }).click();
-    await expect(component.getByRole('heading', validationAlertHeading)).toBeVisible();
 
     await component.getByRole('button', { name: review.editStep }).first().click();
     const nameInput = component.getByRole('textbox', { name: /Cluster name/i });
+    await nameInput.fill('');
+    await component.getByRole('button', { name: FOOTER_NEXT }).click();
+    await expect(component.getByRole('heading', validationAlertHeading)).toBeVisible();
+
     await nameInput.fill('mycluster');
 
     await expect(component.getByRole('heading', validationAlertHeading)).not.toBeVisible();
@@ -332,12 +337,9 @@ test.describe('RosaHcpWizardFooter — validation alert after failed Review Subm
       />
     );
 
-    await component.getByRole('button', { name: w.stepLabels.review, exact: true }).click();
-    await component.getByRole('button', { name: FOOTER_SUBMIT }).click();
+    await advancePastDetailsStep(component);
+    await component.getByRole('button', { name: FOOTER_NEXT }).click();
     await expect(component.getByRole('heading', validationAlertHeading)).toBeVisible();
-
-    await component.getByRole('button', { name: review.editStep }).nth(1).click();
-    await expect(component.getByText(rp.accountRolesSection, { exact: true })).toBeVisible();
 
     await component.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
     await page.getByRole('option', { name: INSTALLER_ROLE_LABEL }).click();

@@ -24,8 +24,8 @@ export function useRosaHcpWizardNavStepStatuses(
   useWatch();
 
   const visibleStepIds = useMemo(
-    () => buildVisibleWizardStepIds(includeClusterWideProxy),
-    [includeClusterWideProxy]
+    () => buildVisibleWizardStepIds(reviewSections, includeClusterWideProxy),
+    [includeClusterWideProxy, reviewSections]
   );
 
   return useMemo(
