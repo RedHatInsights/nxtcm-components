@@ -17,6 +17,7 @@ import { useRosaHcpWizardStrings } from './stringsProvider/RosaHcpWizardStringsC
 import { STEP_IDS } from './constants';
 import type { RosaHCPWizardProps } from './types';
 import { RosaWizardSubmitError } from './RosaWizardSubmitError';
+import './ROSAHCPWizardBody.css';
 
 const RosaHcpYamlEditorStep = lazy(() =>
   import('./Steps/YamlEditor/RosaHcpYamlEditorStep').then((module) => ({
@@ -90,7 +91,9 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
   }
 
   return (
-    <div>
+    <div
+      className={`rosa-hcp-wizard${isYamlEditorOpen ? ' rosa-hcp-wizard--yaml-editor-open' : ''}`}
+    >
       <Wizard
         height="100vh"
         footer={footer}
