@@ -33,6 +33,7 @@
     "prettier:check": "prettier --check 'src/**/*.{js,ts,mjs,jsx,tsx}'",
     "prettier:fix": "prettier --write 'src/**/*.{js,ts,mjs,jsx,tsx}'",
     "test": "jest --config ../../jest.config.js packages/nxtcm-dashboard --passWithNoTests",
-    "test:ct": "playwright test -c ../../playwright-ct.config.ts packages/nxtcm-dashboard"
+    "test:ct": "playwright test -c ../../playwright-ct.config.ts packages/nxtcm-dashboard",
+    "allthethings": "npm run prettier:fix && npm run lint:fix && npm run type-check && npm run test && npm run test:ct"
   }
 }
