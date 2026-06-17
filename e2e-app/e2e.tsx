@@ -180,6 +180,7 @@ const mockWizardData: ROSAHCPWizardData = {
     ],
     error: null,
     isFetching: false,
+    fetch: async () => {},
   },
   subnets: {
     data: [],

@@ -1,4 +1,7 @@
-export { applyWizardFieldMetaChangeEffects } from './applyWizardFieldMetaChangeEffects';
+export {
+  applyWizardFieldMetaChangeEffects,
+  buildComposedRefetchArg,
+} from './applyWizardFieldMetaChangeEffects';
 export type { ApplyWizardFieldMetaChangeEffectsArgs } from './applyWizardFieldMetaChangeEffects';
 export { resetFieldsToDefaultValues } from './resetFieldsToDefaultValues';
 export type { ResetFieldsToDefaultValuesOptions } from './resetFieldsToDefaultValues';

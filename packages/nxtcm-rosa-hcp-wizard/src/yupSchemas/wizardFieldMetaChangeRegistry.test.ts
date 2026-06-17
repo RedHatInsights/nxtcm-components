@@ -66,7 +66,14 @@ describe('wizardFieldMetaChangeRegistry', () => {
     it('lists region refetches from Yup meta', () => {
       expect(getWizardResourceRefetchesForSourceField('region')).toEqual(
         expect.arrayContaining([
-          { resource: 'vpcList' },
+          {
+            resource: 'vpcList',
+            argsFromFields: {
+              account_id: 'associated_aws_id',
+              role_arn: 'installer_role_arn',
+              region: 'region',
+            },
+          },
           { resource: 'machineTypes', argFromField: 'region' },
         ])
       );

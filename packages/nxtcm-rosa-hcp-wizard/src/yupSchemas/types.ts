@@ -39,9 +39,24 @@ type WizardResourceRefetchOnChangeForResource<K extends WizardDataResourceKey> =
         : never
     : never;
 
+/** Single-arg or no-arg refetch derived from the resource's fetch signature. */
+export type WizardResourceSimpleRefetchOnChange =
+  WizardResourceRefetchOnChangeForResource<WizardDataResourceKey>;
+
+/**
+ * Composed-arg refetch: builds a `Record<string, string>` from multiple form field values
+ * and passes it to the resource's `fetch`. All referenced fields must have non-empty string
+ * values for the refetch to fire.
+ */
+export type WizardResourceComposedRefetchOnChange = {
+  readonly resource: WizardDataResourceKey;
+  readonly argsFromFields: Readonly<Record<string, WizardFormFieldName>>;
+};
+
 /** Describes a {@link ROSAHCPWizardData} resource reload when a form field changes. */
 export type WizardResourceRefetchOnChange =
-  WizardResourceRefetchOnChangeForResource<WizardDataResourceKey>;
+  | WizardResourceSimpleRefetchOnChange
+  | WizardResourceComposedRefetchOnChange;
 
 /**
  * When a source field changes to `when`, apply `setDefaults` and/or `clear` on dependent fields.

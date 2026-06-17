@@ -52,7 +52,7 @@ const mockWizardData: ROSAHCPWizardData = {
     ...fixtures.mockFetchResource<OIDCConfig[], [awsAccount: string]>(fixtures.mockOicdConfig),
     fetch: async () => {},
   },
-  vpcList: fixtures.mockResource(fixtures.mockVPCs),
+  vpcList: { ...fixtures.mockResource(fixtures.mockVPCs), fetch: async () => {} },
   subnets: fixtures.mockResource(getMockStoryPrivateSubnets()),
   securityGroups: fixtures.mockResource(fixtures.mockSecurityGroups),
   clusterNameValidation: fixtures.mockValidationResource(),

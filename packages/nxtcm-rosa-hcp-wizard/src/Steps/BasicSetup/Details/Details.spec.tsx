@@ -358,6 +358,8 @@ test.describe('Details (ROSA HCP)', () => {
         <DetailsMount
           vpcList={vpcList}
           defaultValues={{
+            associated_aws_id: 'aws-prod-123456789012',
+            installer_role_arn: 'arn:aws:iam::123456789012:role/Installer',
             region: 'us-east-1',
             selected_vpc: rosaHcpWizardFixtures.mockVPCs[0].id,
           }}

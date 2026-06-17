@@ -1374,7 +1374,14 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
       expect(meta!.fieldType).toBe('select');
       expect(meta!.noEditAfterSubmit).toBe(true);
       expect(meta!.refetchesResourcesOnChange).toEqual([
-        { resource: 'vpcList' },
+        {
+          resource: 'vpcList',
+          argsFromFields: {
+            account_id: 'associated_aws_id',
+            role_arn: 'installer_role_arn',
+            region: 'region',
+          },
+        },
         { resource: 'machineTypes', argFromField: 'region' },
       ]);
     });

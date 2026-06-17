@@ -236,7 +236,7 @@ export function createMockRosaHcpWizardDataWithFetchLogging(
     },
     vpcList: {
       ...base.vpcList,
-      fetch: storyFetchWithLogging('vpcList'),
+      fetch: storyFetchWithLogging<[args: import('./types').VPCRefetchArgs]>('vpcList'),
     },
     subnets: {
       ...base.subnets,

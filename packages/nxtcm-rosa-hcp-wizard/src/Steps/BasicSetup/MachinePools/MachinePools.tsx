@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Content, ContentVariants, Grid, GridItem, Stack, StackItem } from '@patternfly/react-core';
 import { useFormContext, useWatch } from 'react-hook-form';
-import type { ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
+import type { ROSAHCPCluster, ROSAHCPWizardData, VPCRefetchArgs } from '../../../types';
 import {
   buildMachinePoolsReviewSelectOptions,
   canSelectImds,
@@ -31,6 +31,8 @@ export const MachinePools = (props: MachinePoolsProps) => {
   const clusterVersion = useWatch({ control, name: 'cluster_version' }) ?? '';
   const selectedVpcRaw = useWatch({ control, name: 'selected_vpc' });
   const autoscaling = useWatch({ control, name: 'autoscaling' });
+  const awsAccountId = useWatch({ control, name: 'associated_aws_id' });
+  const installerRoleArn = useWatch({ control, name: 'installer_role_arn' });
   const maxRootDiskSize = getWorkerNodeVolumeSizeMaxGiB(clusterVersion);
   const wrongVersionForIMDS = !canSelectImds(clusterVersion);
   const maxAutoscalingNodes = getAutoscalingMaxNodes(clusterVersion);
@@ -47,9 +49,14 @@ export const MachinePools = (props: MachinePoolsProps) => {
 
   const { vpc: vpcOptions, subnet: subnetOptions } = machinePoolsSelectOptions;
 
-  const onRefreshVpc = vpcList.fetch
+  const vpcRefetchArgs: VPCRefetchArgs | undefined =
+    awsAccountId && installerRoleArn && region
+      ? { account_id: awsAccountId, role_arn: installerRoleArn, region }
+      : undefined;
+
+  const onRefreshVpc = vpcRefetchArgs
     ? () => {
-        void vpcList.fetch?.();
+        void vpcList.fetch(vpcRefetchArgs);
       }
     : undefined;
   const onRefreshMachineTypes =

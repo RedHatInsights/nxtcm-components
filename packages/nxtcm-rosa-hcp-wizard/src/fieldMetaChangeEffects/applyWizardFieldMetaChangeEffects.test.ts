@@ -87,7 +87,11 @@ describe('applyWizardFieldMetaChangeEffects', () => {
 
     applyWizardFieldMetaChangeEffects({
       sourceField: 'region',
-      formValues: { region: 'us-east-1' },
+      formValues: {
+        region: 'us-east-1',
+        associated_aws_id: 'aws-123',
+        installer_role_arn: 'arn:aws:iam::role/installer',
+      },
       previousValue: undefined,
       currentValue: 'us-east-1',
       wizardData: makeWizardData({ vpcListFetch, machineTypesFetch }),
@@ -95,9 +99,35 @@ describe('applyWizardFieldMetaChangeEffects', () => {
     });
 
     expect(vpcListFetch).toHaveBeenCalledTimes(1);
-    expect(vpcListFetch).toHaveBeenCalledWith();
+    expect(vpcListFetch).toHaveBeenCalledWith({
+      account_id: 'aws-123',
+      role_arn: 'arn:aws:iam::role/installer',
+      region: 'us-east-1',
+    });
     expect(machineTypesFetch).toHaveBeenCalledWith('us-east-1');
     expect(resetFieldsToDefaultValuesMock).not.toHaveBeenCalled();
+  });
+
+  it('skips composed vpcList refetch when a required field is empty', () => {
+    const vpcListFetch = jest.fn();
+    const machineTypesFetch = jest.fn();
+    const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
+
+    applyWizardFieldMetaChangeEffects({
+      sourceField: 'region',
+      formValues: {
+        region: 'us-east-1',
+        associated_aws_id: '',
+        installer_role_arn: 'arn:aws:iam::role/installer',
+      },
+      previousValue: undefined,
+      currentValue: 'us-east-1',
+      wizardData: makeWizardData({ vpcListFetch, machineTypesFetch }),
+      setValue,
+    });
+
+    expect(vpcListFetch).not.toHaveBeenCalled();
+    expect(machineTypesFetch).toHaveBeenCalledWith('us-east-1');
   });
 
   it('resets dependents and refetches when a tracked field changes', () => {
@@ -107,7 +137,11 @@ describe('applyWizardFieldMetaChangeEffects', () => {
 
     applyWizardFieldMetaChangeEffects({
       sourceField: 'region',
-      formValues: { region: 'us-west-2' },
+      formValues: {
+        region: 'us-west-2',
+        associated_aws_id: 'aws-123',
+        installer_role_arn: 'arn:aws:iam::role/installer',
+      },
       previousValue: 'us-east-1',
       currentValue: 'us-west-2',
       wizardData: makeWizardData({ vpcListFetch, machineTypesFetch }),
@@ -115,7 +149,11 @@ describe('applyWizardFieldMetaChangeEffects', () => {
     });
 
     expect(vpcListFetch).toHaveBeenCalledTimes(1);
-    expect(vpcListFetch).toHaveBeenCalledWith();
+    expect(vpcListFetch).toHaveBeenCalledWith({
+      account_id: 'aws-123',
+      role_arn: 'arn:aws:iam::role/installer',
+      region: 'us-west-2',
+    });
     expect(machineTypesFetch).toHaveBeenCalledWith('us-west-2');
     expect(resetFieldsToDefaultValuesMock).toHaveBeenCalledWith(
       setValue,
@@ -126,7 +164,11 @@ describe('applyWizardFieldMetaChangeEffects', () => {
         'cluster_privacy_public_subnet_id',
       ],
       {},
-      { region: 'us-west-2' }
+      {
+        region: 'us-west-2',
+        associated_aws_id: 'aws-123',
+        installer_role_arn: 'arn:aws:iam::role/installer',
+      }
     );
   });
 
