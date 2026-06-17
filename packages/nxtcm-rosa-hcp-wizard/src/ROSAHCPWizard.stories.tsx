@@ -171,7 +171,7 @@ const meta: Meta<typeof ROSAHCPWizard> = {
   decorators: [
     (Story) => (
       <BlockStorybookFocusShortcuts>
-        <div style={{ minHeight: '100vh', paddingBottom: '4rem', overflow: 'auto' }}>
+        <div style={{ height: '100vh', overflow: 'hidden' }}>
           <Story />
         </div>
       </BlockStorybookFocusShortcuts>
