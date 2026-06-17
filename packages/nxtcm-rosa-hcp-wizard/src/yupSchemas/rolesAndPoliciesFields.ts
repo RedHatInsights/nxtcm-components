@@ -26,6 +26,14 @@ export const installerRoleArnSchema = yup
           region: 'region',
         },
       },
+      {
+        resource: 'machineTypes',
+        argsFromFields: {
+          role_arn: 'installer_role_arn',
+          region: 'region',
+          availability_zones: 'selected_vpc',
+        },
+      },
     ],
     reconcileValueWithOptions: true,
     derivedFieldsSyncOnChange: 'installerRoleDependentRoles',

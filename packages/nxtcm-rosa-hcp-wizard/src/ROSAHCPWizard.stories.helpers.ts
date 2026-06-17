@@ -224,7 +224,7 @@ export function createMockRosaHcpWizardDataWithFetchLogging(
     },
     machineTypes: {
       ...base.machineTypes,
-      fetch: storyFetchWithLogging<[region: string]>('machineTypes'),
+      fetch: storyFetchWithLogging<[args: import('./types').MachineTypesArgs]>('machineTypes'),
     },
     roles: {
       ...base.roles,

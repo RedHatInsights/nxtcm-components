@@ -49,6 +49,13 @@ export const MachinePools = (props: MachinePoolsProps) => {
 
   const { vpc: vpcOptions, subnet: subnetOptions } = machinePoolsSelectOptions;
 
+  const availabilityZones = useMemo(() => {
+    if (!selectedVPC?.aws_subnets?.length) {
+      return undefined;
+    }
+    return [...new Set(selectedVPC.aws_subnets.map((s) => s.availability_zone))];
+  }, [selectedVPC]);
+
   const vpcRefetchArgs: VPCRefetchArgs | undefined =
     awsAccountId && installerRoleArn && region
       ? { account_id: awsAccountId, role_arn: installerRoleArn, region }
@@ -59,12 +66,16 @@ export const MachinePools = (props: MachinePoolsProps) => {
         void vpcList.fetch(vpcRefetchArgs);
       }
     : undefined;
-  const onRefreshMachineTypes =
-    region && machineTypes.fetch
-      ? () => {
-          void machineTypes.fetch(region);
-        }
+  const machineTypesFetchArgs =
+    installerRoleArn && region && availabilityZones
+      ? { role_arn: installerRoleArn, region: region, availability_zones: availabilityZones }
       : undefined;
+
+  const onRefreshMachineTypes = machineTypesFetchArgs
+    ? () => {
+        void machineTypes.fetch(machineTypesFetchArgs);
+      }
+    : undefined;
 
   return (
     <>

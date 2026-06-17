@@ -18,8 +18,19 @@ export const selectedVpcSchema = yup
     noEditAfterSubmit: true,
     reviewLabel: 'Install to selected VPC',
     optionsWizardDataResource: 'vpcList',
+    refetchesResourcesOnChange: [
+      {
+        resource: 'machineTypes',
+        argsFromFields: {
+          role_arn: 'installer_role_arn',
+          region: 'region',
+          availability_zones: 'selected_vpc',
+        },
+      },
+    ],
     reconcileValueWithOptions: true,
     resetsFieldsToDefaultOnChange: ['machine_pools_subnets', 'security_groups_worker'],
+
     derivedFieldsSyncOnChange: 'vpcSecurityGroupsWorkerSelection',
   } satisfies WizardFieldMeta);
 
