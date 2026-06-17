@@ -91,6 +91,7 @@ describe('applyWizardFieldMetaChangeEffects', () => {
         region: 'us-east-1',
         associated_aws_id: 'aws-123',
         installer_role_arn: 'arn:aws:iam::role/installer',
+        selected_vpc: 'vpc-123',
       },
       previousValue: undefined,
       currentValue: 'us-east-1',
@@ -104,7 +105,11 @@ describe('applyWizardFieldMetaChangeEffects', () => {
       role_arn: 'arn:aws:iam::role/installer',
       region: 'us-east-1',
     });
-    expect(machineTypesFetch).toHaveBeenCalledWith('us-east-1');
+    expect(machineTypesFetch).toHaveBeenCalledWith({
+      role_arn: 'arn:aws:iam::role/installer',
+      region: 'us-east-1',
+      availability_zones: 'vpc-123',
+    });
     expect(resetFieldsToDefaultValuesMock).not.toHaveBeenCalled();
   });
 
@@ -119,6 +124,7 @@ describe('applyWizardFieldMetaChangeEffects', () => {
         region: 'us-east-1',
         associated_aws_id: '',
         installer_role_arn: 'arn:aws:iam::role/installer',
+        selected_vpc: 'vpc-123',
       },
       previousValue: undefined,
       currentValue: 'us-east-1',
@@ -127,7 +133,11 @@ describe('applyWizardFieldMetaChangeEffects', () => {
     });
 
     expect(vpcListFetch).not.toHaveBeenCalled();
-    expect(machineTypesFetch).toHaveBeenCalledWith('us-east-1');
+    expect(machineTypesFetch).toHaveBeenCalledWith({
+      role_arn: 'arn:aws:iam::role/installer',
+      region: 'us-east-1',
+      availability_zones: 'vpc-123',
+    });
   });
 
   it('resets dependents and refetches when a tracked field changes', () => {
@@ -141,6 +151,7 @@ describe('applyWizardFieldMetaChangeEffects', () => {
         region: 'us-west-2',
         associated_aws_id: 'aws-123',
         installer_role_arn: 'arn:aws:iam::role/installer',
+        selected_vpc: 'vpc-123',
       },
       previousValue: 'us-east-1',
       currentValue: 'us-west-2',
@@ -154,7 +165,11 @@ describe('applyWizardFieldMetaChangeEffects', () => {
       role_arn: 'arn:aws:iam::role/installer',
       region: 'us-west-2',
     });
-    expect(machineTypesFetch).toHaveBeenCalledWith('us-west-2');
+    expect(machineTypesFetch).toHaveBeenCalledWith({
+      role_arn: 'arn:aws:iam::role/installer',
+      region: 'us-west-2',
+      availability_zones: 'vpc-123',
+    });
     expect(resetFieldsToDefaultValuesMock).toHaveBeenCalledWith(
       setValue,
       [
@@ -168,6 +183,7 @@ describe('applyWizardFieldMetaChangeEffects', () => {
         region: 'us-west-2',
         associated_aws_id: 'aws-123',
         installer_role_arn: 'arn:aws:iam::role/installer',
+        selected_vpc: 'vpc-123',
       }
     );
   });
