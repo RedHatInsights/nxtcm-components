@@ -20,10 +20,19 @@ import { useRosaHcpWizardNavStepStatuses } from './useRosaHcpWizardNavStepStatus
 export function useRosaHcpWizardNavStatusSync(includeClusterWideProxy: boolean): void {
   const navStepStatuses = useRosaHcpWizardNavStepStatuses(includeClusterWideProxy);
   const reviewSections = useRosaHcpWizardReviewSections();
-  const { validationAttemptedStepIds } = useRosaHcpWizardValidation();
+  const { validationAttemptedStepIds, asyncValidatingStepIds } = useRosaHcpWizardValidation();
   const { getFieldState } = useFormContext<Partial<ROSAHCPCluster>>();
   const formState = useFormState<Partial<ROSAHCPCluster>>();
   const { activeStep, setStep } = useWizardContext();
+  const activeStepId = String(activeStep.id);
+  const parentStepId = 'parentId' in activeStep ? activeStep.parentId : undefined;
+
+  const activeStepSection = reviewSections.find((section) => section.id === activeStepId);
+  const isActiveStepValidating =
+    activeStepSection?.fieldPaths.some(
+      (path) => getFieldState(path as FieldPath<Partial<ROSAHCPCluster>>, formState).isValidating
+    ) ?? false;
+  const isActiveStepAsyncValidating = asyncValidatingStepIds.has(activeStepId);
 
   const orderedStepIds = useMemo(
     () => buildOrderedWizardNavStepIds(reviewSections, includeClusterWideProxy),
@@ -38,9 +47,28 @@ export function useRosaHcpWizardNavStatusSync(includeClusterWideProxy: boolean):
         getFieldState: (path, state) =>
           getFieldState(path as FieldPath<Partial<ROSAHCPCluster>>, state ?? formState),
         validationAttemptedStepIds,
+        activeStepId,
+        asyncValidatingStepIds,
       }),
-    [formState, getFieldState, orderedStepIds, reviewSections, validationAttemptedStepIds]
+    // isActiveStepValidating/isActiveStepAsyncValidating: RHF formState proxy may keep a stable reference while validation toggles.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- bust memo when active-step async validation runs
+    [
+      activeStepId,
+      asyncValidatingStepIds,
+      formState,
+      getFieldState,
+      isActiveStepAsyncValidating,
+      isActiveStepValidating,
+      orderedStepIds,
+      reviewSections,
+      validationAttemptedStepIds,
+    ]
   );
+
+  const prevNavSyncRef = useRef<{
+    statuses: Record<string, string | undefined>;
+    disabled: Record<string, boolean | undefined>;
+  }>({ statuses: {}, disabled: {} });
 
   useEffect(() => {
     const stepIds = new Set([
@@ -51,6 +79,17 @@ export function useRosaHcpWizardNavStatusSync(includeClusterWideProxy: boolean):
     for (const stepId of stepIds) {
       const status = navStepStatuses[stepId];
       const isDisabled = navStepDisabledByValidation[stepId];
+
+      if (
+        prevNavSyncRef.current.statuses[stepId] === status &&
+        prevNavSyncRef.current.disabled[stepId] === isDisabled
+      ) {
+        continue;
+      }
+
+      prevNavSyncRef.current.statuses[stepId] = status;
+      prevNavSyncRef.current.disabled[stepId] = isDisabled;
+
       setStep({
         id: stepId,
         ...(status !== undefined ? { status } : {}),
@@ -59,15 +98,22 @@ export function useRosaHcpWizardNavStatusSync(includeClusterWideProxy: boolean):
     }
   }, [navStepDisabledByValidation, navStepStatuses, setStep]);
 
-  useEffect(() => {
-    const activeStepId = String(activeStep.id);
-    setStep({ id: activeStepId, isVisited: true });
+  const prevVisitedStepIdsRef = useRef<Set<string>>(new Set());
 
-    const parentStepId = 'parentId' in activeStep ? activeStep.parentId : undefined;
-    if (parentStepId !== undefined) {
-      setStep({ id: parentStepId, isVisited: true });
+  useEffect(() => {
+    const visitedStepIds = [activeStepId, parentStepId].filter(
+      (stepId): stepId is string => stepId !== undefined
+    );
+
+    for (const stepId of visitedStepIds) {
+      if (prevVisitedStepIdsRef.current.has(stepId)) {
+        continue;
+      }
+
+      prevVisitedStepIdsRef.current.add(stepId);
+      setStep({ id: stepId, isVisited: true });
     }
-  }, [activeStep, setStep]);
+  }, [activeStepId, parentStepId, setStep]);
 
   const unvisitSourceFields = useMemo(() => listWizardNavUnvisitSourceFields(), []);
   const watchedUnvisitFieldValues = useWatch({
@@ -101,6 +147,7 @@ export function useRosaHcpWizardNavStatusSync(includeClusterWideProxy: boolean):
             stepIndex++
           ) {
             setStep({ id: orderedStepIds[stepIndex], isVisited: false });
+            prevVisitedStepIdsRef.current.delete(orderedStepIds[stepIndex]);
           }
         }
       }

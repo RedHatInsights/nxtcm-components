@@ -23,6 +23,7 @@ import {
 import { clusterValidationSchema } from '../../../yupSchemas';
 import type { CheckClusterNameUniqueness } from '../../../types';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { RosaHcpWizardValidationProvider } from '../../../rosaHcpWizardValidationContext';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
 import {
   makeDefaultRosaHcpCtWizardData,
@@ -204,19 +205,21 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
   );
 
   return withRosaCt(
-    <FormProvider {...methods}>
-      <Form>
-        <WizardFieldMetaChangeEffectsCtHarness wizardData={wizardData} />
-        <Details
-          awsInfrastructureAccounts={awsInfra}
-          awsBillingAccounts={awsBilling}
-          regions={regionsProps}
-          versions={versionsProps}
-          roles={rolesProps}
-          checkClusterNameUniqueness={resolvedCheckClusterNameUniqueness}
-        />
-        <DetailsFormValuesProbe />
-      </Form>
-    </FormProvider>
+    <RosaHcpWizardValidationProvider>
+      <FormProvider {...methods}>
+        <Form>
+          <WizardFieldMetaChangeEffectsCtHarness wizardData={wizardData} />
+          <Details
+            awsInfrastructureAccounts={awsInfra}
+            awsBillingAccounts={awsBilling}
+            regions={regionsProps}
+            versions={versionsProps}
+            roles={rolesProps}
+            checkClusterNameUniqueness={resolvedCheckClusterNameUniqueness}
+          />
+          <DetailsFormValuesProbe />
+        </Form>
+      </FormProvider>
+    </RosaHcpWizardValidationProvider>
   );
 };

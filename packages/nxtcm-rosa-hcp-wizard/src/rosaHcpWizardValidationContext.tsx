@@ -4,9 +4,11 @@ import { useRosaHcpWizardReviewSections } from './Steps/Review/ROSAHCPWizardRevi
 type RosaHcpWizardValidationContextValue = {
   fieldPathToStepId: Readonly<Record<string, string>>;
   validationAttemptedStepIds: ReadonlySet<string>;
+  asyncValidatingStepIds: ReadonlySet<string>;
   validationAlertStepId: string | null;
   markValidationAttempted: (stepId: string) => void;
   clearValidationAttempted: (stepId: string) => void;
+  setStepAsyncValidating: (stepId: string, isValidating: boolean) => void;
   setValidationAlertStepId: (
     stepId: string | null | ((prev: string | null) => string | null)
   ) => void;
@@ -33,6 +35,7 @@ export function RosaHcpWizardValidationProvider({ children }: { children: ReactN
   const [validationAttemptedStepIds, setValidationAttemptedStepIds] = useState(
     () => new Set<string>()
   );
+  const [asyncValidatingStepIds, setAsyncValidatingStepIds] = useState(() => new Set<string>());
   const [validationAlertStepId, setValidationAlertStepIdState] = useState<string | null>(null);
   const setValidationAlertStepId = useCallback(
     (stepIdOrFn: string | null | ((prev: string | null) => string | null)) => {
@@ -65,19 +68,43 @@ export function RosaHcpWizardValidationProvider({ children }: { children: ReactN
     });
   }, []);
 
+  const setStepAsyncValidating = useCallback((stepId: string, isValidating: boolean) => {
+    setAsyncValidatingStepIds((prev) => {
+      if (isValidating) {
+        if (prev.has(stepId)) {
+          return prev;
+        }
+        const next = new Set(prev);
+        next.add(stepId);
+        return next;
+      }
+
+      if (!prev.has(stepId)) {
+        return prev;
+      }
+      const next = new Set(prev);
+      next.delete(stepId);
+      return next;
+    });
+  }, []);
+
   const value = useMemo(
     () => ({
       fieldPathToStepId,
       validationAttemptedStepIds,
+      asyncValidatingStepIds,
       validationAlertStepId,
       markValidationAttempted,
       clearValidationAttempted,
+      setStepAsyncValidating,
       setValidationAlertStepId,
     }),
     [
+      asyncValidatingStepIds,
       clearValidationAttempted,
       fieldPathToStepId,
       markValidationAttempted,
+      setStepAsyncValidating,
       setValidationAlertStepId,
       validationAlertStepId,
       validationAttemptedStepIds,

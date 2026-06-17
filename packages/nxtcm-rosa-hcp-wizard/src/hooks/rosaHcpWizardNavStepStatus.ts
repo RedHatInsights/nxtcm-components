@@ -72,6 +72,31 @@ export function stepHasVisibleValidationErrors<TFieldValues extends FieldValues>
   });
 }
 
+/** True when any field on the step has async validation in progress. */
+export function stepHasPendingAsyncValidation<TFieldValues extends FieldValues>(
+  fieldPaths: readonly string[],
+  getFieldState: UseFormGetFieldState<TFieldValues>
+): boolean {
+  return fieldPaths.some((path) => {
+    const fieldPath = path as FieldPath<TFieldValues>;
+    return getFieldState(fieldPath).isValidating;
+  });
+}
+
+/** True when a step has in-flight async validation tracked by RHF or wizard validation context. */
+export function stepHasAsyncValidationInProgress<TFieldValues extends FieldValues>(
+  stepId: string,
+  fieldPaths: readonly string[],
+  getFieldState: UseFormGetFieldState<TFieldValues>,
+  asyncValidatingStepIds?: ReadonlySet<string>
+): boolean {
+  if (asyncValidatingStepIds?.has(stepId)) {
+    return true;
+  }
+
+  return stepHasPendingAsyncValidation(fieldPaths, getFieldState);
+}
+
 function parentStepHasChildErrors(
   childStepIds: readonly string[],
   statuses: Readonly<Record<string, RosaHcpWizardNavStepStatus>>
@@ -145,7 +170,50 @@ export function findFirstWizardNavStepIndexWithVisibleErrors<
   return undefined;
 }
 
-/** PatternFly `isDisabled` for leaf nav steps blocked by a visible validation error upstream. */
+/** Index of the active step when it has async validation in progress, if any. */
+export function findActiveWizardNavStepIndexWithPendingValidation<
+  TFieldValues extends FieldValues,
+>(params: {
+  orderedStepIds: readonly string[];
+  sections: readonly RosaHcpWizardReviewSection[];
+  getFieldState: UseFormGetFieldState<TFieldValues>;
+  activeStepId?: string;
+  asyncValidatingStepIds?: ReadonlySet<string>;
+}): number | undefined {
+  const { orderedStepIds, sections, getFieldState, activeStepId, asyncValidatingStepIds } = params;
+  if (activeStepId === undefined) {
+    return undefined;
+  }
+
+  const activeIndex = orderedStepIds.indexOf(activeStepId);
+  if (activeIndex < 0) {
+    return undefined;
+  }
+
+  const section = sections.find((entry) => entry.id === activeStepId);
+  if (
+    section &&
+    stepHasAsyncValidationInProgress(
+      activeStepId,
+      section.fieldPaths,
+      getFieldState,
+      asyncValidatingStepIds
+    )
+  ) {
+    return activeIndex;
+  }
+
+  return undefined;
+}
+
+function earliestWizardNavStepIndex(
+  ...indices: readonly (number | undefined)[]
+): number | undefined {
+  const defined = indices.filter((index): index is number => index !== undefined);
+  return defined.length > 0 ? Math.min(...defined) : undefined;
+}
+
+/** PatternFly `isDisabled` for leaf nav steps blocked by validation upstream or on the active step. */
 export function buildRosaHcpWizardNavStepDisabledByValidation<
   TFieldValues extends FieldValues,
 >(params: {
@@ -153,12 +221,17 @@ export function buildRosaHcpWizardNavStepDisabledByValidation<
   sections: readonly RosaHcpWizardReviewSection[];
   getFieldState: UseFormGetFieldState<TFieldValues>;
   validationAttemptedStepIds: ReadonlySet<string>;
+  activeStepId?: string;
+  asyncValidatingStepIds?: ReadonlySet<string>;
 }): Readonly<Record<string, boolean>> {
-  const firstErrorIndex = findFirstWizardNavStepIndexWithVisibleErrors(params);
+  const firstBlockingIndex = earliestWizardNavStepIndex(
+    findFirstWizardNavStepIndexWithVisibleErrors(params),
+    findActiveWizardNavStepIndexWithPendingValidation(params)
+  );
   const disabled: Record<string, boolean> = {};
 
   for (const [index, stepId] of params.orderedStepIds.entries()) {
-    disabled[stepId] = firstErrorIndex !== undefined && index > firstErrorIndex;
+    disabled[stepId] = firstBlockingIndex !== undefined && index > firstBlockingIndex;
   }
 
   return disabled;

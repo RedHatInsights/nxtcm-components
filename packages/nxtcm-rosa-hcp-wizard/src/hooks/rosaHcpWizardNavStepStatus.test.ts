@@ -11,7 +11,10 @@ import {
   buildRosaHcpWizardNavStepDisabledByValidation,
   buildRosaHcpWizardNavStepStatuses,
   buildVisibleWizardStepIds,
+  findActiveWizardNavStepIndexWithPendingValidation,
   findFirstWizardNavStepIndexWithVisibleErrors,
+  stepHasAsyncValidationInProgress,
+  stepHasPendingAsyncValidation,
   stepHasVisibleValidationErrors,
 } from './rosaHcpWizardNavStepStatus';
 
@@ -29,13 +32,13 @@ const allReviewSections = buildRosaHcpWizardReviewSections(reviewStepLabels);
 const visibleStepIds = buildVisibleWizardStepIds(allReviewSections, false);
 
 const mockGetFieldState = (
-  impl: (path: string) => { invalid: boolean; isTouched: boolean }
+  impl: (path: string) => { invalid: boolean; isTouched: boolean; isValidating?: boolean }
 ): UseFormGetFieldState<FieldValues> =>
   jest.fn((path: string) => ({
     invalid: impl(path).invalid,
     isTouched: impl(path).isTouched,
     isDirty: false,
-    isValidating: false,
+    isValidating: impl(path).isValidating ?? false,
     error: undefined,
   })) as UseFormGetFieldState<FieldValues>;
 
@@ -115,6 +118,116 @@ describe('stepHasVisibleValidationErrors', () => {
   });
 });
 
+describe('stepHasPendingAsyncValidation', () => {
+  it('returns true when any field on the step is validating', () => {
+    const getFieldState = mockGetFieldState((path) => ({
+      invalid: false,
+      isTouched: false,
+      isValidating: path === 'name',
+    }));
+
+    expect(stepHasPendingAsyncValidation(['name'], getFieldState)).toBe(true);
+  });
+
+  it('returns false when no fields on the step are validating', () => {
+    const getFieldState = mockGetFieldState(() => ({
+      invalid: false,
+      isTouched: false,
+      isValidating: false,
+    }));
+
+    expect(stepHasPendingAsyncValidation(['name'], getFieldState)).toBe(false);
+  });
+});
+
+describe('stepHasAsyncValidationInProgress', () => {
+  it('returns true when the step is tracked in asyncValidatingStepIds', () => {
+    const getFieldState = mockGetFieldState(() => ({
+      invalid: false,
+      isTouched: false,
+      isValidating: false,
+    }));
+
+    expect(
+      stepHasAsyncValidationInProgress(
+        STEP_IDS.DETAILS,
+        ['name'],
+        getFieldState,
+        new Set([STEP_IDS.DETAILS])
+      )
+    ).toBe(true);
+  });
+
+  it('falls back to RHF isValidating when the step is not tracked in context', () => {
+    const getFieldState = mockGetFieldState((path) => ({
+      invalid: false,
+      isTouched: false,
+      isValidating: path === 'name',
+    }));
+
+    expect(
+      stepHasAsyncValidationInProgress(STEP_IDS.DETAILS, ['name'], getFieldState, new Set())
+    ).toBe(true);
+  });
+});
+
+describe('findActiveWizardNavStepIndexWithPendingValidation', () => {
+  it('returns the active step index when that step has pending async validation', () => {
+    const getFieldState = mockGetFieldState((path) => ({
+      invalid: false,
+      isTouched: false,
+      isValidating: path === 'name',
+    }));
+    const orderedStepIds = buildOrderedWizardNavStepIds(allReviewSections, false);
+
+    expect(
+      findActiveWizardNavStepIndexWithPendingValidation({
+        orderedStepIds,
+        sections,
+        getFieldState,
+        activeStepId: STEP_IDS.DETAILS,
+      })
+    ).toBe(orderedStepIds.indexOf(STEP_IDS.DETAILS));
+  });
+
+  it('returns undefined when async validation is pending on a different step', () => {
+    const getFieldState = mockGetFieldState((path) => ({
+      invalid: false,
+      isTouched: false,
+      isValidating: path === 'name',
+    }));
+    const orderedStepIds = buildOrderedWizardNavStepIds(allReviewSections, false);
+
+    expect(
+      findActiveWizardNavStepIndexWithPendingValidation({
+        orderedStepIds,
+        sections,
+        getFieldState,
+        activeStepId: STEP_IDS.NETWORKING,
+      })
+    ).toBeUndefined();
+  });
+
+  it('returns the active step index when async validation is tracked in context', () => {
+    const getFieldState = mockGetFieldState(() => ({
+      invalid: false,
+      isTouched: false,
+      isValidating: false,
+    }));
+    const orderedStepIds = buildOrderedWizardNavStepIds(allReviewSections, false);
+
+    expect(
+      findActiveWizardNavStepIndexWithPendingValidation({
+        orderedStepIds,
+        sections,
+        getFieldState,
+        activeStepId: STEP_IDS.DETAILS,
+        asyncValidatingStepIds: new Set([STEP_IDS.DETAILS]),
+      })
+    ).toBe(orderedStepIds.indexOf(STEP_IDS.DETAILS));
+  });
+});
+
 describe('findFirstWizardNavStepIndexWithVisibleErrors', () => {
   it('returns the earliest ordered step index with a visible error', () => {
     const getFieldState = mockGetFieldState((path) => ({
@@ -135,6 +248,49 @@ describe('findFirstWizardNavStepIndexWithVisibleErrors', () => {
 });
 
 describe('buildRosaHcpWizardNavStepDisabledByValidation', () => {
+  it('disables only steps after the earliest pending async validation from context', () => {
+    const getFieldState = mockGetFieldState(() => ({
+      invalid: false,
+      isTouched: false,
+      isValidating: false,
+    }));
+    const orderedStepIds = buildOrderedWizardNavStepIds(allReviewSections, false);
+
+    const disabled = buildRosaHcpWizardNavStepDisabledByValidation({
+      orderedStepIds,
+      sections,
+      getFieldState,
+      validationAttemptedStepIds: new Set(),
+      activeStepId: STEP_IDS.DETAILS,
+      asyncValidatingStepIds: new Set([STEP_IDS.DETAILS]),
+    });
+
+    expect(disabled[STEP_IDS.DETAILS]).toBe(false);
+    expect(disabled[STEP_IDS.ROLES_AND_POLICIES]).toBe(true);
+    expect(disabled[STEP_IDS.REVIEW]).toBe(true);
+  });
+
+  it('disables only steps after the earliest pending async validation from RHF', () => {
+    const getFieldState = mockGetFieldState((path) => ({
+      invalid: false,
+      isTouched: false,
+      isValidating: path === 'name',
+    }));
+    const orderedStepIds = buildOrderedWizardNavStepIds(allReviewSections, false);
+
+    const disabled = buildRosaHcpWizardNavStepDisabledByValidation({
+      orderedStepIds,
+      sections,
+      getFieldState,
+      validationAttemptedStepIds: new Set(),
+      activeStepId: STEP_IDS.DETAILS,
+    });
+
+    expect(disabled[STEP_IDS.DETAILS]).toBe(false);
+    expect(disabled[STEP_IDS.ROLES_AND_POLICIES]).toBe(true);
+    expect(disabled[STEP_IDS.REVIEW]).toBe(true);
+  });
+
   it('disables only steps after the earliest visible validation error', () => {
     const getFieldState = mockGetFieldState((path) => ({
       invalid: path === 'name',
@@ -147,6 +303,7 @@ describe('buildRosaHcpWizardNavStepDisabledByValidation', () => {
       sections,
       getFieldState,
       validationAttemptedStepIds: new Set(),
+      activeStepId: STEP_IDS.DETAILS,
     });
 
     expect(disabled[STEP_IDS.DETAILS]).toBe(false);

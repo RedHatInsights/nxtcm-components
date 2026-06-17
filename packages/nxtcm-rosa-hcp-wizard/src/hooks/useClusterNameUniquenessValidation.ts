@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
+import { STEP_IDS } from '../constants';
+import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
 import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
 import type { CheckClusterNameUniqueness, ROSAHCPCluster } from '../types';
 import { useRosaHcpWizardValidators } from '../stringsProvider/RosaHcpWizardStringsContext';
@@ -24,6 +26,7 @@ export function useClusterNameUniquenessValidation({
   checkOnNameBlur: () => Promise<void>;
 } {
   const msgs = useRosaHcpWizardValidators();
+  const { setStepAsyncValidating } = useRosaHcpWizardValidation();
   const { control, getValues, setError, clearErrors, getFieldState } =
     useFormContext<Partial<ROSAHCPCluster>>();
   const region = useWatch({ control, name: 'region' });
@@ -83,11 +86,16 @@ export function useClusterNameUniquenessValidation({
     }
 
     const requestId = ++uniquenessRequestIdRef.current;
+    setStepAsyncValidating(STEP_IDS.DETAILS, true);
     let error: string | null | undefined;
     try {
       error = await check(name, currentRegion);
     } catch {
       return;
+    } finally {
+      if (requestId === uniquenessRequestIdRef.current) {
+        setStepAsyncValidating(STEP_IDS.DETAILS, false);
+      }
     }
     if (requestId !== uniquenessRequestIdRef.current) {
       return;
@@ -95,7 +103,7 @@ export function useClusterNameUniquenessValidation({
 
     lastCheckedRef.current = { name, region: currentRegion };
     applyUniqueErrorToForm(error ?? null);
-  }, [applyUniqueErrorToForm, getValues, msgs.clusterName]);
+  }, [applyUniqueErrorToForm, getValues, msgs.clusterName, setStepAsyncValidating]);
 
   const scheduleUniquenessCheck = useCallback(() => {
     clearPendingDebounce();
