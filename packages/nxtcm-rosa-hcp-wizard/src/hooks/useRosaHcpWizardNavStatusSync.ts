@@ -43,11 +43,17 @@ export function useRosaHcpWizardNavStatusSync(includeClusterWideProxy: boolean):
   );
 
   useEffect(() => {
-    for (const [stepId, status] of Object.entries(navStepStatuses)) {
+    const stepIds = new Set([
+      ...Object.keys(navStepStatuses),
+      ...Object.keys(navStepDisabledByValidation),
+    ]);
+
+    for (const stepId of stepIds) {
+      const status = navStepStatuses[stepId];
       const isDisabled = navStepDisabledByValidation[stepId];
       setStep({
         id: stepId,
-        status,
+        ...(status !== undefined ? { status } : {}),
         ...(isDisabled !== undefined ? { isDisabled } : {}),
       });
     }
