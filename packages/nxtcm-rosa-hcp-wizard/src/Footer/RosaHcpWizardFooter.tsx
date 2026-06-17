@@ -210,7 +210,7 @@ export function RosaHcpWizardFooter({
   }, [submitWizard]);
 
   const handlePrimaryAction = isReviewStep ? handleSubmit : handleNext;
-  const primaryButtonLabel = isReviewStep ? wizard.submit : wizard.next;
+  const primaryButtonLabel = isReviewStep ? wizard.createCluster : wizard.next;
 
   const handleSkipToReview = useCallback(() => {
     void (async () => {

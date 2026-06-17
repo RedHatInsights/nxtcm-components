@@ -50,9 +50,8 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     skipToReview: 'Skip to review',
     back: 'Back',
     next: 'Next',
-    submit: 'Submit',
     cancel: 'Cancel',
-    applyChanges: 'Apply changes',
+    createCluster: 'Create cluster',
   },
   submitError: {
     title: 'Error creating cluster',

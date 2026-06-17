@@ -176,10 +176,10 @@ export type RosaHcpWizardStrings = {
     /** Footer Next button label. */
     next: string;
     /** Footer Submit button label on the Review step. */
-    submit: string;
+    createCluster: string;
     /** Footer Cancel button label. */
     cancel: string;
-    applyChanges: string;
+    // applyChanges: string;
   };
   submitError: {
     title: string;
