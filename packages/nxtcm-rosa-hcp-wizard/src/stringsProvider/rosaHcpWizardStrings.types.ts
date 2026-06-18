@@ -299,6 +299,9 @@ export type RosaHcpWizardStrings = {
     clipboardCopyAria: string;
     copyHover: string;
     copyClicked: string;
+    rolesAlertTitle: string;
+    accountRolesHelp: string;
+    userRolesHelp: string;
   };
   oidcHint: {
     instructions: string;

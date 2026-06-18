@@ -61,7 +61,14 @@ function makeWizardData(
       isFetching: false,
       fetch: overrides.machineTypesFetch ?? jest.fn(),
     },
-    roles: { data: fixtures.mockRoles, error: null, isFetching: false, fetch: jest.fn() },
+    roles: {
+      data: fixtures.mockRoles,
+      error: null,
+      isFetching: false,
+      fetch: jest.fn(),
+      ocmRoleError: null,
+      userRoleError: null,
+    },
     oidcConfig: { data: [], error: null, isFetching: false, fetch: jest.fn() },
     vpcList: {
       data: [],

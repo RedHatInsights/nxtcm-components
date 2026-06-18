@@ -288,6 +288,8 @@ export function createMockRosaHcpWizardData(
       data: fixtures.mockRoles,
       error: null,
       isFetching: false,
+      ocmRoleError: null,
+      userRoleError: null,
       fetch: async () => {
         /* story stub */
       },

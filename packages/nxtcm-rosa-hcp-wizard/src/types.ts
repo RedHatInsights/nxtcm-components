@@ -147,6 +147,8 @@ export type ValidationResource = {
 };
 
 export type RolesResource = Resource<Role[], [awsAccount: string]> & {
+  ocmRoleError: string | null;
+  userRoleError: string | null;
   fetch: (awsAccount: string) => Promise<void>;
 };
 export type RegionsResource = Resource<Region[], [awsAccount: string]> & {

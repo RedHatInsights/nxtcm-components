@@ -53,8 +53,8 @@ const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ROSAHCPCluster> = {
 };
 
 export type RolesAndPoliciesMountProps = {
-  roles?: RolesResource;
-  oidcConfig?: OidcConfigResource;
+  roles?: Partial<RolesResource>;
+  oidcConfig?: Partial<OidcConfigResource>;
   defaultValues?: Partial<ROSAHCPCluster>;
 };
 
@@ -86,6 +86,8 @@ export const RolesAndPoliciesMount: React.FC<RolesAndPoliciesMountProps> = ({
       isFetching: roles?.isFetching ?? false,
       fetch: roles?.fetch ?? (async (_awsAccount: string) => {}),
       error: roles?.error ?? null,
+      ocmRoleError: roles?.ocmRoleError ?? null,
+      userRoleError: roles?.userRoleError ?? null,
     }),
     [roles]
   );

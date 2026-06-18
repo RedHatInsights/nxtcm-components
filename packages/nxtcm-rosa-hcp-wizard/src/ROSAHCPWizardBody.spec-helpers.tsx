@@ -29,6 +29,8 @@ export function makeMinimalRosaHcpWizardData(
     roles: {
       ...fixtures.mockFetchResource(fixtures.mockRoles),
       fetch: noopFetch,
+      ocmRoleError: null,
+      userRoleError: null,
     },
     oidcConfig: {
       ...fixtures.mockFetchResource(fixtures.mockOicdConfig),

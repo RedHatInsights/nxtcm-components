@@ -22,6 +22,7 @@ import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { useUpdateOperatorPrefix } from './useUpdateOperatorPrefix';
 import { useInstallerRoleOptions } from './useInstallerRoleOptions';
 import { useRosaCommand } from './useRosaCommand';
+import { RolesAlert } from '../../../components/RolesErrorAlert';
 
 type RolesAndPoliciesStepProps = Pick<ROSAHCPWizardData, 'roles' | 'oidcConfig'>;
 
@@ -34,15 +35,25 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   const awsInfrastructureAccount = useWatch({ name: 'associated_aws_id' });
 
   const installerRoleOptions = useInstallerRoleOptions(roles);
-  const { supportRoleOptions, workerRoleOptions } = useDependentRoles(roles);
+  const { supportRoleOptions, workerRoleOptions, isIncompleteRoleSet } = useDependentRoles(roles);
   useUpdateOperatorPrefix();
 
   const rosaCommand = useRosaCommand();
 
+  const hasNoRoles = !roles.isFetching && !roles.error && roles.data.length === 0;
+  const showMissingArnsError = hasNoRoles || isIncompleteRoleSet;
+
   return (
     <>
       <Section label={rp.accountRolesSection}>
-        <Grid>
+        <Grid hasGutter>
+          {showMissingArnsError || roles.ocmRoleError || roles.userRoleError ? (
+            <RolesAlert
+              showMissingArnsError={showMissingArnsError}
+              ocmRoleError={roles.ocmRoleError}
+              userRoleError={roles.userRoleError}
+            />
+          ) : null}
           <GridItem span={7}>
             <WizSelect<ROSAHCPCluster>
               schema={clusterValidationSchema}

@@ -74,6 +74,8 @@ const mockWizardData: ROSAHCPWizardData = {
     error: null,
     isFetching: false,
     fetch: noopFetch,
+    ocmRoleError: null,
+    userRoleError: null,
   },
   oidcConfig: {
     data: [

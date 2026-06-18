@@ -70,7 +70,7 @@ export type DetailsMountProps = {
   awsInfrastructureAccounts?: AwsInfrastructureAccountsResource;
   awsBillingAccounts?: AwsBillingAccountsResource;
   regions?: RegionsResource;
-  roles?: RolesResource;
+  roles?: Partial<RolesResource>;
   vpcList?: VpcListResource;
   defaultValues?: Partial<ROSAHCPCluster>;
   checkClusterNameUniqueness?: CheckClusterNameUniqueness;
@@ -181,6 +181,8 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
       isFetching: roles?.isFetching ?? false,
       fetch: roles?.fetch ?? (async (_awsAccount: string) => {}),
       error: roles?.error ?? null,
+      ocmRoleError: roles?.ocmRoleError ?? null,
+      userRoleError: roles?.userRoleError ?? null,
     }),
     [roles]
   );
