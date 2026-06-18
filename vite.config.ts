@@ -14,6 +14,7 @@ const libRollupExternal = [
   'js-yaml',
   'yaml',
   /^monaco-editor/,
+  /^@monaco-editor\/.*/,
   /^monaco-yaml/,
 ];
 
@@ -51,6 +52,7 @@ const libUmdGlobals: Record<string, string> = {
   yaml: 'YAML',
   'js-yaml': 'yaml',
   'monaco-editor': 'monaco',
+  '@monaco-editor/react': 'monacoEditorReact',
   'monaco-yaml': 'monacoYaml',
   'monaco-editor/esm/vs/editor/editor.worker.js?url': 'editorWorkerUrl',
   'monaco-yaml/yaml.worker.js?url': 'yamlWorkerUrl',

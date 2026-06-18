@@ -110,6 +110,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
     const pendingYamlRef = useRef(yamlContent);
     const userHasEditedRef = useRef(false);
     const hasSchemaErrorsRef = useRef(false);
+    const monacoSetupTokenRef = useRef(0);
 
     const setEditorMarkers = useCallback((yamlStr: string, showBanner = true) => {
       const editor = editorRef.current;
@@ -144,7 +145,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
     }, []);
 
     useEffect(() => {
-      setupMonacoEnvironmentIfNeeded();
+      void setupMonacoEnvironmentIfNeeded();
     }, []);
 
     useEffect(() => {
@@ -195,12 +196,15 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         };
 
         if (!isInitializedRef.current) {
-          setupMonacoEnvironmentIfNeeded();
-          monacoYamlDisposeRef.current?.();
-          monacoYamlDisposeRef.current = new RosaHcpYamlMonacoLoader().configure(
-            monaco as Parameters<RosaHcpYamlMonacoLoader['configure']>[0]
-          );
-          isInitializedRef.current = true;
+          const setupToken = monacoSetupTokenRef.current;
+          void setupMonacoEnvironmentIfNeeded().then(() => {
+            if (setupToken !== monacoSetupTokenRef.current || isInitializedRef.current) {
+              return;
+            }
+            isInitializedRef.current = true;
+            monacoYamlDisposeRef.current?.();
+            monacoYamlDisposeRef.current = new RosaHcpYamlMonacoLoader().configure();
+          });
         }
 
         pendingYamlRef.current = editor.getValue();
@@ -211,6 +215,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
 
     useEffect(() => {
       return () => {
+        monacoSetupTokenRef.current += 1;
         clearTimeout(validationTimerRef.current);
         editorListenersDisposeRef.current?.();
         editorListenersDisposeRef.current = null;
