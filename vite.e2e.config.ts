@@ -5,7 +5,7 @@ import path from 'path';
 const enableCoverage = process.env.COVERAGE === 'true';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const istanbulPlugin = enableCoverage ? require('./playwright/istanbul-plugin.cjs') : null;
+const istanbulPlugin = enableCoverage ? require('./playwright/istanbul-plugin.cjs')() : null;
 
 export default defineConfig({
   plugins: [react(), ...(istanbulPlugin ? [istanbulPlugin] : [])],
