@@ -14,6 +14,7 @@ const libRollupExternal = [
   'js-yaml',
   'yaml',
   /^monaco-editor/,
+  /^@monaco-editor\/.*/,
   /^monaco-yaml/,
 ];
 

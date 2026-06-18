@@ -24,6 +24,10 @@
     "ui"
   ],
   "private": true,
+  "peerDependencies": {
+    "@monaco-editor/react": "^4.6.0",
+    "monaco-editor": "^0.34.1"
+  },
   "scripts": {
     "prepack": "cp ../../LICENSE LICENSE",
     "postpack": "rm -f LICENSE",
