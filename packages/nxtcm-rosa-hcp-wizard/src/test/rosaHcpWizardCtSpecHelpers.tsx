@@ -4,7 +4,9 @@ import { useWizardFieldMetaChangeEffects } from '../fieldMetaChangeEffects/useWi
 import type { MachineTypesResource, ROSAHCPWizardData, VpcListResource } from '../types';
 
 const noopFetch = async (): Promise<void> => {};
-const defaultMachineTypesFetch = async (_region: string): Promise<void> => {};
+const defaultMachineTypesFetch = async (
+  _args: import('../types').MachineTypesArgs
+): Promise<void> => {};
 
 /** Minimal {@link ROSAHCPWizardData} for step-isolated Playwright CT mounts using meta change effects. */
 export function makeDefaultRosaHcpCtWizardData(
