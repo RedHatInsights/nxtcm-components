@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, Page } from './fixtures';
 
 async function fillDetailsStep(page: Page) {
   await page.getByRole('textbox', { name: 'Cluster name' }).fill('test-cluster');

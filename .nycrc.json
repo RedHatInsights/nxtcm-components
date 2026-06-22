@@ -1,0 +1,13 @@
+{
+  "include": ["packages/**/*.ts", "packages/**/*.tsx"],
+  "exclude": [
+    "packages/**/*.spec.tsx",
+    "packages/ct-fixture.ts",
+    "packages/test-helpers.ts",
+    "packages/**/*.stories.*",
+    "node_modules"
+  ],
+  "reporter": ["html", "lcov", "text-summary"],
+  "report-dir": "coverage",
+  "all": true
+}
