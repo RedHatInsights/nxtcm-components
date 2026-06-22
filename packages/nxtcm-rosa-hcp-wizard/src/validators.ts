@@ -17,7 +17,7 @@ import {
   POD_NODES_MIN,
   SERVICE_CIDR_MAX,
 } from './constants';
-import { parseCIDRSubnetLength, stringToArray } from './helpers';
+import { parseCIDRSubnetLength, stringToArray } from './utilities/helpers';
 import IPCIDR from 'ip-cidr';
 import {
   defaultRosaHcpWizardValidatorStrings,

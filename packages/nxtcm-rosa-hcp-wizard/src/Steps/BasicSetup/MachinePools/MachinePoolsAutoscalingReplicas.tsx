@@ -1,7 +1,7 @@
 import { Flex, FlexItem } from '@patternfly/react-core';
 import type { ROSAHCPCluster } from '../../../types';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../links';
+import links from '../../../constants/links';
 import { WizNumberInput } from '../../../components/WizFields';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { clusterValidationSchema, minReplicasSchema } from '../../../yupSchemas';

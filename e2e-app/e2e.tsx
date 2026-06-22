@@ -90,6 +90,7 @@ const mockWizardData: ROSAHCPWizardData = {
     ],
     error: null,
     isFetching: false,
+    fetch: noopFetch,
   },
   machineTypes: {
     data: [
@@ -179,6 +180,7 @@ const mockWizardData: ROSAHCPWizardData = {
     ],
     error: null,
     isFetching: false,
+    fetch: async () => {},
   },
   subnets: {
     data: [],

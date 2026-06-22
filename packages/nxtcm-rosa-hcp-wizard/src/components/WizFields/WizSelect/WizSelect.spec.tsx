@@ -7,6 +7,7 @@ import {
   WizSelectExplicitPropsOverrideMetaHarness,
   WizSelectNestedFallbackHarness,
   WizSelectNumericMetaLabelHarness,
+  WizSelectOptionsReconcileHarness,
   WizSelectSubmitValidationHarness,
   WizSelectTypeaheadClearHarness,
   WizSelectYupMetaHarness,
@@ -23,6 +24,9 @@ import {
   WIZ_SELECT_ONLY_CONTROL_TOGGLE,
   WIZ_SELECT_OVERRIDE_HELPER,
   WIZ_SELECT_OVERRIDE_LABEL,
+  WIZ_SELECT_RECONCILE_REPLACE_OPTIONS,
+  WIZ_SELECT_RECONCILE_STATUS,
+  WIZ_SELECT_RECONCILE_TOGGLE,
   WIZ_SELECT_SUBMIT_TOGGLE_NAME,
   WIZ_SELECT_SUBMIT_ERROR,
   WIZ_SELECT_VPC_SUBNET_FORM_VALUE_LABEL,
@@ -136,5 +140,23 @@ test.describe('WizSelect', () => {
     await page.getByRole('button', { name: WIZ_SELECT_ONLY_CONTROL_TOGGLE }).click();
     await page.getByRole('option', { name: 'alpha' }).click();
     await expect(status).toHaveText('alpha');
+  });
+
+  test('clears the form value when new options no longer include the selection', async ({
+    mount,
+    page,
+  }) => {
+    await mount(<WizSelectOptionsReconcileHarness />);
+    const status = page.getByRole('status', { name: WIZ_SELECT_RECONCILE_STATUS });
+    await expect(status).toHaveText('(empty)');
+
+    await page.getByRole('button', { name: WIZ_SELECT_RECONCILE_TOGGLE }).click();
+    await page.getByRole('option', { name: 'eu-west-1' }).click();
+    await expect(status).toHaveText('eu-west-1');
+
+    await page
+      .getByRole('button', { name: WIZ_SELECT_RECONCILE_REPLACE_OPTIONS, exact: true })
+      .click();
+    await expect(status).toHaveText('(empty)');
   });
 });

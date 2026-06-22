@@ -3,7 +3,7 @@ import { Wizard, WizardStep } from '@patternfly/react-core';
 import { FormProvider, useForm } from 'react-hook-form';
 import type { ROSAHCPCluster, VpcListResource } from '../../types';
 import { STEP_IDS } from '../../constants';
-import { makeVpcListResource } from '../../rosaHcpWizardCtSpecHelpers';
+import { makeVpcListResource } from '../../test/rosaHcpWizardCtSpecHelpers';
 import { RosaHcpWizardStringsProvider } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { getClusterValidationSchemaDefaultValues } from '../../yupSchemas';
 import { Review } from './Review';

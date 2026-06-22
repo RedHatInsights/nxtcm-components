@@ -1,4 +1,4 @@
-import { ClusterUpgrade, type ROSAHCPCluster } from '../../types';
+import { ClusterNetwork, ClusterUpgrade, type ROSAHCPCluster } from '../../types';
 import { shouldHideReviewRow } from './shouldHideReviewRow';
 
 const baseFormValues: Partial<ROSAHCPCluster> = {
@@ -202,6 +202,60 @@ describe('shouldHideReviewRow', () => {
           ...baseFormValues,
           additional_trust_bundle: '-----BEGIN CERTIFICATE-----\nMIIB\n-----END CERTIFICATE-----',
         },
+        metaShouldHideInReview: false,
+      })
+    ).toBe(false);
+  });
+
+  it('hides cluster_privacy_public_subnet_id when cluster privacy is private', () => {
+    expect(
+      shouldHideReviewRow({
+        path: 'cluster_privacy_public_subnet_id',
+        formValues: { ...baseFormValues, cluster_privacy: ClusterNetwork.internal },
+        metaShouldHideInReview: false,
+      })
+    ).toBe(true);
+  });
+
+  it('hides kms_key_arn and etcd_key_arn when unset or blank', () => {
+    for (const path of ['kms_key_arn', 'etcd_key_arn'] as const) {
+      expect(
+        shouldHideReviewRow({
+          path,
+          formValues: baseFormValues,
+          metaShouldHideInReview: false,
+        })
+      ).toBe(true);
+      expect(
+        shouldHideReviewRow({
+          path,
+          formValues: { ...baseFormValues, [path]: '' },
+          metaShouldHideInReview: false,
+        })
+      ).toBe(true);
+      expect(
+        shouldHideReviewRow({
+          path,
+          formValues: { ...baseFormValues, [path]: '  ' },
+          metaShouldHideInReview: false,
+        })
+      ).toBe(true);
+    }
+  });
+
+  it('shows kms_key_arn and etcd_key_arn when a value is present', () => {
+    const arn = 'arn:aws:kms:us-east-1:123456789012:key/abc';
+    expect(
+      shouldHideReviewRow({
+        path: 'kms_key_arn',
+        formValues: { ...baseFormValues, kms_key_arn: arn },
+        metaShouldHideInReview: false,
+      })
+    ).toBe(false);
+    expect(
+      shouldHideReviewRow({
+        path: 'etcd_key_arn',
+        formValues: { ...baseFormValues, etcd_key_arn: arn },
         metaShouldHideInReview: false,
       })
     ).toBe(false);

@@ -3,11 +3,21 @@ import React from 'react';
 import ROSAHCPWizard from './ROSAHCPWizard';
 import {
   createMockRosaHcpWizardData,
+  createMockRosaHcpWizardDataWithFetchLogging,
+  createSelectOptionsReconcileDemoWizardData,
   getMockStoryPrivateSubnets,
   rosaHcpWizardDetailsFieldsAllApiErrorsData,
+  storyAwsInfrastructureAccountRefetchCycle,
+  storyFetchWithLogging,
+  storyRegionsAfterRefetch,
+  useCyclingRefetchResource,
+  useRefetchReplacingData,
+  useStoryClusterNameValidation,
 } from './ROSAHCPWizard.stories.helpers';
-import { MachineTypesDropdownType, Region, Role, ROSAHCPWizardData } from './types';
 import fixtures from './ROSAHCPWizard.fixtures';
+import { MachineTypesDropdownType, OIDCConfig, Region, Role, ROSAHCPWizardData } from './types';
+import { defaultRosaHcpWizardStrings } from './stringsProvider/rosaHcpWizardStrings.defaults';
+
 const onWizardSubmit = async (data: unknown) => {
   console.log('Wizard submitted with data:', data);
   await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -38,8 +48,11 @@ const mockWizardData: ROSAHCPWizardData = {
     ...fixtures.mockFetchResource<Role[], [awsAccount: string]>(fixtures.mockRoles),
     fetch: async () => {},
   },
-  oidcConfig: fixtures.mockResource(fixtures.mockOicdConfig),
-  vpcList: fixtures.mockResource(fixtures.mockVPCs),
+  oidcConfig: {
+    ...fixtures.mockFetchResource<OIDCConfig[], [awsAccount: string]>(fixtures.mockOicdConfig),
+    fetch: async () => {},
+  },
+  vpcList: { ...fixtures.mockResource(fixtures.mockVPCs), fetch: async () => {} },
   subnets: fixtures.mockResource(getMockStoryPrivateSubnets()),
   securityGroups: fixtures.mockResource(fixtures.mockSecurityGroups),
   clusterNameValidation: fixtures.mockValidationResource(),
@@ -64,6 +77,60 @@ function DefaultWithInitialLoading(props: React.ComponentProps<typeof ROSAHCPWiz
     }),
     [props.wizardData, isFetching]
   );
+  return <ROSAHCPWizard {...props} wizardData={wizardData} />;
+}
+
+/** Default story wrapper: initial resource loading plus logged cluster name validation. */
+function DefaultStoryWrapper(props: React.ComponentProps<typeof ROSAHCPWizard>) {
+  const { clusterNameValidation, checkClusterNameUniqueness } = useStoryClusterNameValidation();
+  const [isFetching, setIsFetching] = React.useState(true);
+  React.useEffect(() => {
+    const t = setTimeout(() => setIsFetching(false), 3000);
+    return () => clearTimeout(t);
+  }, []);
+  const wizardData = React.useMemo<ROSAHCPWizardData>(
+    () => ({
+      ...props.wizardData,
+      clusterNameValidation,
+      checkClusterNameUniqueness,
+      versions: { ...props.wizardData.versions, isFetching },
+      awsInfrastructureAccounts: { ...props.wizardData.awsInfrastructureAccounts, isFetching },
+      awsBillingAccounts: { ...props.wizardData.awsBillingAccounts, isFetching },
+      regions: { ...props.wizardData.regions, isFetching },
+      oidcConfig: { ...props.wizardData.oidcConfig, isFetching },
+      vpcList: { ...props.wizardData.vpcList, isFetching },
+      machineTypes: { ...props.wizardData.machineTypes, isFetching },
+    }),
+    [props.wizardData, isFetching, clusterNameValidation, checkClusterNameUniqueness]
+  );
+  return <ROSAHCPWizard {...props} wizardData={wizardData} />;
+}
+
+/**
+ * Details-step demo for select value reconciliation after refetch:
+ * - AWS infrastructure account refresh cycles through three disjoint option sets.
+ * - Region refresh replaces the list with `us-east-1` only (pick an AWS account first).
+ */
+function SelectOptionsReconcileOnRefetchWrapper(props: React.ComponentProps<typeof ROSAHCPWizard>) {
+  const awsInfrastructureAccounts = useCyclingRefetchResource(
+    storyAwsInfrastructureAccountRefetchCycle
+  );
+  const regions = useRefetchReplacingData(fixtures.mockRegions, storyRegionsAfterRefetch);
+
+  const wizardData: ROSAHCPWizardData = {
+    ...createSelectOptionsReconcileDemoWizardData(),
+    awsInfrastructureAccounts: {
+      ...awsInfrastructureAccounts,
+      fetch: storyFetchWithLogging('awsInfrastructureAccounts', awsInfrastructureAccounts.fetch),
+    },
+    regions: {
+      ...regions,
+      fetch: storyFetchWithLogging<[awsAccount: string]>('regions', async () => {
+        await regions.fetch();
+      }),
+    },
+  };
+
   return <ROSAHCPWizard {...props} wizardData={wizardData} />;
 }
 
@@ -114,13 +181,15 @@ type Story = StoryObj<typeof ROSAHCPWizard>;
  * AWS infrastructure account, billing account, region, and OpenShift version start in a loading state,
  * then finish loading after 1 second. VPC list, subnets, and compute instance types use ROSA HCP wizard
  * Storybook fixtures (`mockVPCs`, `mockMachineTypes` from `ROSAHCPWizard.fixtures`).
+ * Cluster name uniqueness is mocked asynchronously — type `taken`, `existing`, or `my-cluster` to
+ * see a duplicate-name error after ~800 ms (check the browser console for validation logs).
  */
 export const Default: Story = {
-  render: (args) => <DefaultWithInitialLoading {...args} />,
+  render: (args) => <DefaultStoryWrapper {...args} />,
   args: {
     title: 'Create ROSA Cluster',
     yaml: true,
-    wizardData: createMockRosaHcpWizardData(),
+    wizardData: createMockRosaHcpWizardDataWithFetchLogging(),
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -129,6 +198,39 @@ export const Default: Story = {
     onCancel: () => {
       console.log('Wizard cancelled');
       alert('Wizard cancelled');
+    },
+  },
+};
+
+/**
+ * Same wizard as Default, with simulated refetches on the Details step to exercise
+ * `WizSelect` option reconciliation. Select an AWS infrastructure account, then use
+ * its refresh control — each refetch (~2 s) returns a new disjoint account list and
+ * clears the field when the prior value is missing. Select an account and a non–`us-east-1`
+ * region, then refresh the region list; only `us-east-1` remains and other regions clear.
+ */
+export const SelectOptionsReconcileOnRefetch: Story = {
+  render: (args) => <SelectOptionsReconcileOnRefetchWrapper {...args} />,
+  args: {
+    title: 'Create ROSA Cluster — select reconcile on refetch',
+    yaml: true,
+    wizardData: createSelectOptionsReconcileDemoWizardData(),
+    onSubmit: async (data: unknown) => {
+      console.log('Wizard submitted with data:', data);
+      alert('Cluster creation initiated successfully!');
+    },
+    onCancel: () => {
+      console.log('Wizard cancelled');
+      alert('Wizard cancelled');
+    },
+    strings: defaultRosaHcpWizardStrings,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates clearing stale `WizSelect` values when refetched options no longer include the current selection. On the Details step: refresh **AWS infrastructure account** to cycle through three different mock account lists; refresh **Region** (after choosing an account) to load only `us-east-1`.',
+      },
     },
   },
 };

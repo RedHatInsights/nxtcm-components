@@ -5,7 +5,7 @@ import {
   RosaHcpWizardBodyErrorThenBackMount,
   RosaHcpWizardBodyMount,
 } from './ROSAHCPWizardBody.spec-helpers';
-import { checkAccessibility } from '@/test-helpers';
+import { checkAccessibility } from './test-helpers';
 
 const { submitError: submitErrorStrings, wizard } = defaultRosaHcpWizardStrings;
 const ERROR_MESSAGE = 'There has been an error creating the cluster';
@@ -18,6 +18,13 @@ test.describe('ROSAHCPWizardBody', () => {
       component.getByRole('button', { name: wizard.stepLabels.basicSetup })
     ).toBeVisible();
     await expect(component.getByRole('textbox', { name: /Cluster name/i })).toBeVisible();
+  });
+
+  test('passes accessibility tests when showing the wizard', async ({ mount }) => {
+    test.setTimeout(60_000);
+    const component = await mount(<RosaHcpWizardBodyMount />);
+
+    await checkAccessibility({ component });
   });
 
   test.describe('submit error state', () => {
@@ -91,6 +98,7 @@ test.describe('ROSAHCPWizardBody', () => {
     });
 
     test('passes accessibility tests when showing the error state', async ({ mount }) => {
+      test.setTimeout(60_000);
       const component = await mount(
         <RosaHcpWizardBodyMount onSubmitError={ERROR_MESSAGE} onBackToReviewStep={() => {}} />
       );

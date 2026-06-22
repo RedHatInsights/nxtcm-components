@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 
 import { BASE_DOMAIN_REGEXP, MAX_CA_SIZE_BYTES, STEP_IDS } from '../constants';
-import { stringToArray } from '../helpers';
+import { stringToArray } from '../utilities/helpers';
 import type { WizardFieldMeta } from './types';
 import { ctx } from './helpers';
 
@@ -15,6 +15,7 @@ export const httpProxyUrlSchema = yup
     placeholderKey: 'clusterWideProxy.httpPlaceholder',
     stepId: STEP_IDS.CLUSTER_WIDE_PROXY,
     fieldType: 'text',
+    resetsFieldsToDefaultOnChange: ['no_proxy_domains'],
   } satisfies WizardFieldMeta)
   .test('http-proxy-url', '', function (value) {
     if (!value) return true;
@@ -42,6 +43,7 @@ export const httpsProxyUrlSchema = yup
     placeholderKey: 'clusterWideProxy.httpsPlaceholder',
     stepId: STEP_IDS.CLUSTER_WIDE_PROXY,
     fieldType: 'text',
+    resetsFieldsToDefaultOnChange: ['no_proxy_domains'],
   } satisfies WizardFieldMeta)
   .test('https-proxy-url', '', function (value) {
     if (!value) return true;
@@ -62,6 +64,7 @@ export const httpsProxyUrlSchema = yup
 export const noProxyDomainsSchema = yup
   .string()
   .optional()
+  .default('')
   .meta({
     id: 'no_proxy_domains',
     labelKey: 'clusterWideProxy.noProxyLabel',

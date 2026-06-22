@@ -14,9 +14,9 @@ import { OIDCConfigHint } from '../../../components/OIDCConfigHint';
 import { useWatch } from 'react-hook-form';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../links';
+import links from '../../../constants/links';
 import { ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
-import { useDependentRoles } from './useUpdateRoles';
+import { useDependentRoles } from './useDependentRoles';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { useUpdateOperatorPrefix } from './useUpdateOperatorPrefix';
@@ -98,7 +98,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
             <Stack>
               <StackItem>
                 <WizSelect<ROSAHCPCluster>
-                  onRefresh={oidcConfig.fetch}
+                  onRefresh={() => void oidcConfig.fetch(awsInfrastructureAccount)}
                   apiError={oidcConfig.error}
                   isLoading={oidcConfig.isFetching}
                   schema={clusterValidationSchema}

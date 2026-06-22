@@ -4,7 +4,7 @@ import { Stack, StackItem } from '@patternfly/react-core';
 import SecurityGroupsViewList from './SecurityGroupsViewList';
 
 import { securityGroupsSort } from './helpers';
-import { showSecurityGroupsSection, truncateTextWithEllipsis } from '../../../../helpers';
+import { showSecurityGroupsSection, truncateTextWithEllipsis } from '../../../../utilities/helpers';
 import { WizMultiSelect } from '../../../../components/WizFields';
 import { clusterValidationSchema } from '../../../../yupSchemas';
 import type { CloudVpc, ROSAHCPCluster } from '../../../../types';
@@ -80,27 +80,6 @@ const EditSecurityGroups = ({
   const selectedOptions = vpcSecurityGroupsSorted.filter((s) =>
     selectedGroupIds?.includes(s.id || '')
   );
-
-  React.useEffect(() => {
-    if (!selectedVPC?.id) {
-      return;
-    }
-
-    const newGroupIds = vpcSecurityGroupsSorted.map((g) => g.id || '');
-    const newSelectedGroupIds = selectedGroupIds.filter((gId) => newGroupIds.includes(gId));
-
-    const selectionChanged =
-      newSelectedGroupIds.length !== selectedGroupIds.length ||
-      newSelectedGroupIds.some((id, index) => id !== selectedGroupIds[index]);
-
-    if (selectionChanged) {
-      setValue('security_groups_worker', newSelectedGroupIds, {
-        shouldDirty: true,
-        shouldTouch: true,
-        shouldValidate: true,
-      });
-    }
-  }, [selectedVPC?.id, vpcSecurityGroupsSorted, selectedGroupIds, setValue]);
 
   if (isReadOnly) {
     return (

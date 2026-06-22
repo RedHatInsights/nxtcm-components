@@ -1,6 +1,6 @@
 import { Alert, AlertActionLink } from '@patternfly/react-core';
 import ExternalLink from '../../../../components/ExternalLink';
-import links from '../../../../links';
+import links from '../../../../constants/links';
 import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWizardStringsContext';
 
 type SecurityGroupsEmptyAlertProps = {

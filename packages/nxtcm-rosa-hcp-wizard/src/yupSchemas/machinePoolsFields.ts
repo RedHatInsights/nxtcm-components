@@ -17,6 +17,10 @@ export const selectedVpcSchema = yup
     fieldType: 'select',
     noEditAfterSubmit: true,
     reviewLabel: 'Install to selected VPC',
+    optionsWizardDataResource: 'vpcList',
+    reconcileValueWithOptions: true,
+    resetsFieldsToDefaultOnChange: ['machine_pools_subnets', 'security_groups_worker'],
+    derivedFieldsSyncOnChange: 'vpcSecurityGroupsWorkerSelection',
   } satisfies WizardFieldMeta);
 
 /** One machine pool row; array shape is required for API / review even when the UI shows a single subnet. */
@@ -30,13 +34,18 @@ export const machinePoolSubnetEntrySchema = yup.object({
       placeholderKey: 'machinePools.subnetPlaceholder',
       stepId: STEP_IDS.MACHINE_POOLS,
       fieldType: 'select',
+      optionsWizardDataResource: 'vpcList',
+      reconcileValueWithOptions: true,
     } satisfies WizardFieldMeta),
 });
+
+/** Default single-subnet row for the machine pools UI (`machine_pools_subnets.0`). */
+export const DEFAULT_MACHINE_POOL_SUBNETS = [{ machine_pool_subnet: '' }] as const;
 
 export const machinePoolsSubnetsSchema = yup
   .array()
   .of(machinePoolSubnetEntrySchema)
-  .default([])
+  .default([...DEFAULT_MACHINE_POOL_SUBNETS])
   .test(rosaCommonRequiredNonEmptyTest)
   .required()
   .meta({
@@ -54,6 +63,8 @@ export const machineTypeSchema = yup
     labelKey: 'machinePools.instanceTypeLabel',
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'select',
+    optionsWizardDataResource: 'machineTypes',
+    reconcileValueWithOptions: true,
   } satisfies WizardFieldMeta);
 
 export const autoscalingSchema = yup
@@ -66,6 +77,18 @@ export const autoscalingSchema = yup
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'checkbox',
     hideInReview: true,
+    syncsFieldsOnChange: [
+      {
+        when: true,
+        setDefaults: ['min_replicas', 'max_replicas'],
+        clear: ['nodes_compute'],
+      },
+      {
+        when: false,
+        setDefaults: ['nodes_compute'],
+        clear: ['min_replicas', 'max_replicas'],
+      },
+    ],
   } satisfies WizardFieldMeta);
 
 export const nodesComputeSchema = yup
@@ -211,6 +234,8 @@ export const securityGroupsWorkerSchema = yup
     labelKey: 'securityGroups.formLabel',
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'select',
+    /** Reconciled via {@link WizMultiSelect} derived sync, not {@link WizSelect}. */
+    reconcileValueWithOptions: false,
   } satisfies WizardFieldMeta);
 
 export const machinePoolsFields = {

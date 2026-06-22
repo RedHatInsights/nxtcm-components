@@ -6,7 +6,7 @@ import React from 'react';
 import fixtures from './ROSAHCPWizard.fixtures';
 import { RosaHcpWizardFormProvider } from './RosaHcpWizardFormProvider';
 import { RosaHcpWizardStringsProvider } from './stringsProvider/RosaHcpWizardStringsContext';
-import { makeMachineTypesResource, makeVpcListResource } from './rosaHcpWizardCtSpecHelpers';
+import { makeMachineTypesResource, makeVpcListResource } from './test/rosaHcpWizardCtSpecHelpers';
 import type { RosaHCPWizardProps, ROSAHCPWizardData } from './types';
 
 const noopFetch = async (): Promise<void> => {};
@@ -30,7 +30,10 @@ export function makeMinimalRosaHcpWizardData(
       ...fixtures.mockFetchResource(fixtures.mockRoles),
       fetch: noopFetch,
     },
-    oidcConfig: fixtures.mockResource(fixtures.mockOicdConfig),
+    oidcConfig: {
+      ...fixtures.mockFetchResource(fixtures.mockOicdConfig),
+      fetch: noopFetch,
+    },
     vpcList: makeVpcListResource(),
     subnets: fixtures.mockResource([]),
     securityGroups: fixtures.mockResource(fixtures.mockSecurityGroups),
@@ -66,7 +69,7 @@ export function RosaHcpWizardBodyErrorThenBackMount(props: RosaHcpWizardBodyMoun
     <RosaHcpWizardBodyMount
       {...props}
       onSubmitError={submitError}
-      onBackToReviewStep={async () => setSubmitError(false)}
+      onBackToReviewStep={() => setSubmitError(false)}
     />
   );
 }

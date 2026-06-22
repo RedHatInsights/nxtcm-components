@@ -20,6 +20,10 @@ import { clusterValidationSchema } from '../../../yupSchemas';
 import type { ValidationSchemaContext } from '../../../yupSchemas/types';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
+import {
+  WizardFieldMetaChangeEffectsCtHarness,
+  makeDefaultRosaHcpCtWizardData,
+} from '../../../test/rosaHcpWizardCtSpecHelpers';
 
 /** Defaults aligned with {@link ROSAHCPWizardBody} so the composed Yup schema resolves consistently in CT. */
 const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ROSAHCPCluster> = {
@@ -76,23 +80,39 @@ export const RolesAndPoliciesMount: React.FC<RolesAndPoliciesMountProps> = ({
     mode: 'onTouched',
   });
 
-  const rolesProps: RolesResource = {
-    data: roles?.data ?? fixtures.mockRoles,
-    isFetching: roles?.isFetching ?? false,
-    fetch: roles?.fetch ?? (async (_awsAccount: string) => {}),
-    error: roles?.error ?? null,
-  };
+  const rolesProps = useMemo<RolesResource>(
+    () => ({
+      data: roles?.data ?? fixtures.mockRoles,
+      isFetching: roles?.isFetching ?? false,
+      fetch: roles?.fetch ?? (async (_awsAccount: string) => {}),
+      error: roles?.error ?? null,
+    }),
+    [roles]
+  );
 
-  const oidcProps: OidcConfigResource = {
-    data: oidcConfig?.data ?? fixtures.mockOicdConfig,
-    isFetching: oidcConfig?.isFetching ?? false,
-    fetch: oidcConfig?.fetch ?? (async () => {}),
-    error: oidcConfig?.error ?? null,
-  };
+  const oidcProps = useMemo<OidcConfigResource>(
+    () => ({
+      data: oidcConfig?.data ?? fixtures.mockOicdConfig,
+      isFetching: oidcConfig?.isFetching ?? false,
+      fetch: oidcConfig?.fetch ?? (async () => {}),
+      error: oidcConfig?.error ?? null,
+    }),
+    [oidcConfig]
+  );
+
+  const wizardData = useMemo(
+    () =>
+      makeDefaultRosaHcpCtWizardData({
+        roles: rolesProps,
+        oidcConfig: oidcProps,
+      }),
+    [oidcProps, rolesProps]
+  );
 
   return withRosaCt(
     <FormProvider {...methods}>
       <Form>
+        <WizardFieldMetaChangeEffectsCtHarness wizardData={wizardData} />
         <RolesAndPolicies roles={rolesProps} oidcConfig={oidcProps} />
       </Form>
     </FormProvider>

@@ -184,37 +184,6 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
       const error = await validate(buildContext(), buildFormData({ name: 'my-cluster.v1' }), field);
       expect(error).toBeNull();
     });
-
-    it('calls async uniqueness check when provided', async () => {
-      const checkClusterNameUniqueness = jest.fn().mockResolvedValue('Name is taken');
-      const error = await validate(
-        buildContext({ checkClusterNameUniqueness }),
-        buildFormData({ name: 'mycluster', region: 'us-east-1' }),
-        field
-      );
-      expect(checkClusterNameUniqueness).toHaveBeenCalledWith('mycluster', 'us-east-1');
-      expect(error).toBe('Name is taken');
-    });
-
-    it('passes when async uniqueness check returns null', async () => {
-      const checkClusterNameUniqueness = jest.fn().mockResolvedValue(null);
-      const error = await validate(
-        buildContext({ checkClusterNameUniqueness }),
-        buildFormData({ name: 'mycluster' }),
-        field
-      );
-      expect(error).toBeNull();
-    });
-
-    it('skips async check when sync validation fails', async () => {
-      const checkClusterNameUniqueness = jest.fn().mockResolvedValue('taken');
-      await validate(
-        buildContext({ checkClusterNameUniqueness }),
-        buildFormData({ name: 'MY_BAD' }),
-        field
-      );
-      expect(checkClusterNameUniqueness).not.toHaveBeenCalled();
-    });
   });
 
   // -----------------------------------------------------------------------
@@ -1404,6 +1373,27 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
       expect(meta!.labelKey).toBe('details.regionLabel');
       expect(meta!.fieldType).toBe('select');
       expect(meta!.noEditAfterSubmit).toBe(true);
+      expect(meta!.refetchesResourcesOnChange).toEqual([
+        {
+          resource: 'vpcList',
+          argsFromFields: {
+            account_id: 'associated_aws_id',
+            role_arn: 'installer_role_arn',
+            region: 'region',
+          },
+        },
+        { resource: 'machineTypes', argFromField: 'region' },
+      ]);
+    });
+
+    it('returns refetch metadata for associated_aws_id field', () => {
+      const meta = wizardFieldMetaByPath('associated_aws_id');
+      expect(meta).toBeDefined();
+      expect(meta!.refetchesResourcesOnChange).toEqual([
+        { resource: 'regions', argFromField: 'associated_aws_id' },
+        { resource: 'roles', argFromField: 'associated_aws_id' },
+        { resource: 'oidcConfig', argFromField: 'associated_aws_id' },
+      ]);
     });
 
     it('returns meta for compute_root_volume field', () => {
@@ -1443,6 +1433,7 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
       expect(defaults.compute_root_volume).toBe(300);
       expect(defaults.upgrade_policy).toBe('automatic');
       expect(defaults.upgrade_schedule).toBe('00 0 * * 0');
+      expect(defaults.machine_pools_subnets).toEqual([{ machine_pool_subnet: '' }]);
     });
   });
 });

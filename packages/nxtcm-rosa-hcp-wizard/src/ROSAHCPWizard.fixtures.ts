@@ -105,7 +105,7 @@ const mockRegions: Region[] = [
   { label: 'EU (Ireland)', value: 'eu-west-1' },
   { label: 'EU (Frankfurt)', value: 'eu-central-1' },
   { label: 'Asia Pacific (Tokyo)', value: 'ap-northeast-1' },
-  { label: 'Region for machine types (us-east-1)', value: 'us-east-1' },
+  { label: 'US East 1 (us-east-1)', value: 'us-east-1' },
 ];
 
 const mockRegionsLimited: Region[] = [

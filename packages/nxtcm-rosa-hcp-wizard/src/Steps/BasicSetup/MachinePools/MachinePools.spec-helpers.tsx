@@ -8,7 +8,12 @@ import { FormProvider, useForm, type Resolver } from 'react-hook-form';
 
 import type { MachineTypesResource, ROSAHCPCluster, VpcListResource } from '../../../types';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
-import { makeMachineTypesResource, makeVpcListResource } from '../../../rosaHcpWizardCtSpecHelpers';
+import {
+  makeDefaultRosaHcpCtWizardData,
+  makeMachineTypesResource,
+  makeVpcListResource,
+  WizardFieldMetaChangeEffectsCtHarness,
+} from '../../../test/rosaHcpWizardCtSpecHelpers';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
   clusterValidationSchema,
@@ -56,9 +61,19 @@ export const MachinePoolsMount: React.FC<MachinePoolsMountProps> = ({
   const vpcListProps = makeVpcListResource(vpcList);
   const machineTypesProps = makeMachineTypesResource(machineTypes);
 
+  const wizardData = useMemo(
+    () =>
+      makeDefaultRosaHcpCtWizardData({
+        machineTypes: machineTypesProps,
+        vpcList: vpcListProps,
+      }),
+    [machineTypesProps, vpcListProps]
+  );
+
   return withRosaCt(
     <FormProvider {...methods}>
       <Form>
+        <WizardFieldMetaChangeEffectsCtHarness wizardData={wizardData} />
         <MachinePools vpcList={vpcListProps} machineTypes={machineTypesProps} />
       </Form>
     </FormProvider>

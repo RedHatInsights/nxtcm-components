@@ -161,12 +161,24 @@ export type MachineTypesResource = Resource<MachineTypesDropdownType[], [region:
 
 export type AwsInfrastructureAccountsResource = Resource<AWSInfrastructureAccounts[]>;
 export type AwsBillingAccountsResource = Resource<AWSBillingAccounts[]>;
-export type OidcConfigResource = Resource<OIDCConfig[]>;
-export type VpcListResource = Resource<VPC[]>;
+export type OidcConfigResource = Resource<OIDCConfig[], [awsAccount: string]> & {
+  fetch: (awsAccount: string) => Promise<void>;
+};
+
+/** Flat args the host app receives when the wizard triggers a VPC refetch. */
+export type VPCRefetchArgs = {
+  account_id: string;
+  role_arn: string;
+  region: string;
+};
+
+export type VpcListResource = Resource<VPC[], [args: VPCRefetchArgs]> & {
+  fetch: (args: VPCRefetchArgs) => Promise<void>;
+};
 export type SubnetsResource = Resource<Subnet[]>;
 export type SecurityGroupsResource = Resource<SecurityGroup[]>;
 
-export type CheckClusterNameUniqueness = (name: string, region?: string) => void;
+export type CheckClusterNameUniqueness = (name: string, region?: string) => Promise<string | null>;
 
 export type ROSAHCPWizardData = {
   awsInfrastructureAccounts: AwsInfrastructureAccountsResource;

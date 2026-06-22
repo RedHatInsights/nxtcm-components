@@ -2,7 +2,7 @@ import { Alert, AlertVariant, Content, ContentVariants } from '@patternfly/react
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { CopyInstruction } from '../CopyInstruction';
 import ExternalLink from '../ExternalLink';
-import links from '../../links';
+import links from '../../constants/links';
 
 export const AccountRoles = () => {
   const a = useRosaHcpWizardStrings().accountRoles;

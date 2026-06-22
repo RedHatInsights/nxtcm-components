@@ -2,7 +2,7 @@ import { Button, Content, ContentVariants, useWizardContext } from '@patternfly/
 import { useWatch } from 'react-hook-form';
 import { Section } from '../../../components/Section';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../links';
+import links from '../../../constants/links';
 import { STEP_IDS } from '../../../constants';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';

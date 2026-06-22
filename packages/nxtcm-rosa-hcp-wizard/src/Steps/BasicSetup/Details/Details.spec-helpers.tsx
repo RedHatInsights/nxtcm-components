@@ -21,10 +21,14 @@ import {
   mockRoles,
 } from './Details.fixtures';
 import { clusterValidationSchema } from '../../../yupSchemas';
-import type { ValidationSchemaContext } from '../../../yupSchemas/types';
+import type { CheckClusterNameUniqueness } from '../../../types';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
-import { makeVpcListResource } from '../../../rosaHcpWizardCtSpecHelpers';
+import {
+  makeDefaultRosaHcpCtWizardData,
+  makeVpcListResource,
+  WizardFieldMetaChangeEffectsCtHarness,
+} from '../../../test/rosaHcpWizardCtSpecHelpers';
 import type {
   AwsBillingAccountsResource,
   AwsInfrastructureAccountsResource,
@@ -69,7 +73,14 @@ export type DetailsMountProps = {
   roles?: RolesResource;
   vpcList?: VpcListResource;
   defaultValues?: Partial<ROSAHCPCluster>;
-  checkClusterNameUniqueness?: ValidationSchemaContext['checkClusterNameUniqueness'];
+  checkClusterNameUniqueness?: CheckClusterNameUniqueness;
+  /**
+   * CT-only: when set, DetailsMount wires a stable async check that returns this value.
+   * Prefer over inline JSX callbacks — Playwright CT may not forward callback return values.
+   */
+  clusterNameUniquenessError?: string | null;
+  /** CT-only: invoked when the resolved uniqueness check runs (for call-count assertions). */
+  onClusterNameUniquenessCheck?: (name: string, region?: string) => void;
 };
 
 /** Hidden probe for Playwright CT assertions on cross-step form fields. */
@@ -91,72 +102,115 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
   vpcList,
   defaultValues = {},
   checkClusterNameUniqueness,
+  clusterNameUniquenessError,
+  onClusterNameUniquenessCheck,
 }) => {
-  const validationContext = useMemo<ValidationSchemaContext>(
-    () => ({
-      msgs: defaultRosaHcpWizardValidatorStrings,
-      maxRootDiskSize: 16384,
-      maxAutoscalingNodes: 500,
-      machinePoolsNumber: 1,
-      checkClusterNameUniqueness,
-    }),
-    [checkClusterNameUniqueness]
-  );
+  const resolvedCheckClusterNameUniqueness = useMemo((): CheckClusterNameUniqueness | undefined => {
+    if (checkClusterNameUniqueness) {
+      return async (name, region) => {
+        onClusterNameUniquenessCheck?.(name, region);
+        return checkClusterNameUniqueness(name, region);
+      };
+    }
+
+    if (clusterNameUniquenessError !== undefined) {
+      return (name, region) => {
+        onClusterNameUniquenessCheck?.(name, region);
+        return Promise.resolve(clusterNameUniquenessError);
+      };
+    }
+
+    return undefined;
+  }, [checkClusterNameUniqueness, clusterNameUniquenessError, onClusterNameUniquenessCheck]);
 
   const methods = useForm<ROSAHCPCluster>({
     defaultValues: { ...DEFAULT_ROSA_HCP_CT_FORM_VALUES, ...defaultValues },
     resolver: yupResolver(clusterValidationSchema) as Resolver<ROSAHCPCluster>,
-    context: validationContext,
+    context: {
+      msgs: defaultRosaHcpWizardValidatorStrings,
+      maxRootDiskSize: 16384,
+      maxAutoscalingNodes: 500,
+      machinePoolsNumber: 1,
+    },
     mode: 'onTouched',
   });
 
-  const awsInfra: AwsInfrastructureAccountsResource = {
-    data: awsInfrastructureAccounts?.data ?? mockAwsInfrastructureAccounts,
-    isFetching: awsInfrastructureAccounts?.isFetching ?? false,
-    fetch: awsInfrastructureAccounts?.fetch ?? (async () => {}),
-    error: awsInfrastructureAccounts?.error ?? null,
-  };
+  const awsInfra = useMemo<AwsInfrastructureAccountsResource>(
+    () => ({
+      data: awsInfrastructureAccounts?.data ?? mockAwsInfrastructureAccounts,
+      isFetching: awsInfrastructureAccounts?.isFetching ?? false,
+      fetch: awsInfrastructureAccounts?.fetch ?? (async () => {}),
+      error: awsInfrastructureAccounts?.error ?? null,
+    }),
+    [awsInfrastructureAccounts]
+  );
 
-  const awsBilling: AwsBillingAccountsResource = {
-    data: awsBillingAccounts?.data ?? mockAwsBillingAccounts,
-    isFetching: awsBillingAccounts?.isFetching ?? false,
-    fetch: awsBillingAccounts?.fetch ?? (async () => {}),
-    error: awsBillingAccounts?.error ?? null,
-  };
+  const awsBilling = useMemo<AwsBillingAccountsResource>(
+    () => ({
+      data: awsBillingAccounts?.data ?? mockAwsBillingAccounts,
+      isFetching: awsBillingAccounts?.isFetching ?? false,
+      fetch: awsBillingAccounts?.fetch ?? (async () => {}),
+      error: awsBillingAccounts?.error ?? null,
+    }),
+    [awsBillingAccounts]
+  );
 
-  const regionsProps: RegionsResource = {
-    data: regions?.data ?? mockRegions,
-    isFetching: regions?.isFetching ?? false,
-    fetch: regions?.fetch ?? (async (_awsAccount: string) => {}),
-    error: regions?.error ?? null,
-  };
+  const regionsProps = useMemo<RegionsResource>(
+    () => ({
+      data: regions?.data ?? mockRegions,
+      isFetching: regions?.isFetching ?? false,
+      fetch: regions?.fetch ?? (async (_awsAccount: string) => {}),
+      error: regions?.error ?? null,
+    }),
+    [regions]
+  );
 
-  const versionsProps: VersionsResource = {
-    data: versions?.data ?? mockOpenShiftVersionsData,
-    isFetching: versions?.isFetching ?? false,
-    fetch: versions?.fetch ?? (async () => {}),
-    error: versions?.error ?? null,
-  };
+  const versionsProps = useMemo<VersionsResource>(
+    () => ({
+      data: versions?.data ?? mockOpenShiftVersionsData,
+      isFetching: versions?.isFetching ?? false,
+      fetch: versions?.fetch ?? (async () => {}),
+      error: versions?.error ?? null,
+    }),
+    [versions]
+  );
 
-  const rolesProps: RolesResource = {
-    data: roles?.data ?? mockRoles,
-    isFetching: roles?.isFetching ?? false,
-    fetch: roles?.fetch ?? (async (_awsAccount: string) => {}),
-    error: roles?.error ?? null,
-  };
+  const rolesProps = useMemo<RolesResource>(
+    () => ({
+      data: roles?.data ?? mockRoles,
+      isFetching: roles?.isFetching ?? false,
+      fetch: roles?.fetch ?? (async (_awsAccount: string) => {}),
+      error: roles?.error ?? null,
+    }),
+    [roles]
+  );
 
-  const vpcListProps = makeVpcListResource(vpcList);
+  const vpcListProps = useMemo(() => makeVpcListResource(vpcList), [vpcList]);
+
+  const wizardData = useMemo(
+    () =>
+      makeDefaultRosaHcpCtWizardData({
+        awsInfrastructureAccounts: awsInfra,
+        awsBillingAccounts: awsBilling,
+        regions: regionsProps,
+        versions: versionsProps,
+        roles: rolesProps,
+        vpcList: vpcListProps,
+      }),
+    [awsBilling, awsInfra, regionsProps, rolesProps, versionsProps, vpcListProps]
+  );
 
   return withRosaCt(
     <FormProvider {...methods}>
       <Form>
+        <WizardFieldMetaChangeEffectsCtHarness wizardData={wizardData} />
         <Details
           awsInfrastructureAccounts={awsInfra}
           awsBillingAccounts={awsBilling}
           regions={regionsProps}
           versions={versionsProps}
           roles={rolesProps}
-          vpcList={vpcListProps}
+          checkClusterNameUniqueness={resolvedCheckClusterNameUniqueness}
         />
         <DetailsFormValuesProbe />
       </Form>

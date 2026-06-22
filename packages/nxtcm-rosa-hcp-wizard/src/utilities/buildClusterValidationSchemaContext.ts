@@ -1,8 +1,8 @@
-import type { ROSAHCPCluster } from './types';
+import type { ROSAHCPCluster } from '../types';
 import { getAutoscalingMaxNodes } from './getAutoscalingMaxNodes';
 import { constructSelectedSubnets, getWorkerNodeVolumeSizeMaxGiB } from './helpers';
-import type { RosaHcpWizardValidatorStrings } from './stringsProvider/rosaHcpWizardStrings';
-import type { ValidationSchemaContext } from './yupSchemas/types';
+import type { RosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings';
+import type { ValidationSchemaContext } from '../yupSchemas/types';
 
 export function buildClusterValidationSchemaContext(
   formValues: Partial<ROSAHCPCluster>,

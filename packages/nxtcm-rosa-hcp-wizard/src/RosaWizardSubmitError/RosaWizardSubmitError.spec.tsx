@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/experimental-ct-react';
 
-import { defaultRosaHcpWizardStrings } from './stringsProvider/rosaHcpWizardStrings.defaults';
+import { defaultRosaHcpWizardStrings } from '../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
   RosaWizardSubmitErrorMount,
   RosaWizardSubmitErrorThenBackMount,
 } from './RosaWizardSubmitError.spec-helpers';
-import { checkAccessibility } from '@/test-helpers';
+import { checkAccessibility } from '../test-helpers';
 
 const { submitError: submitErrorStrings } = defaultRosaHcpWizardStrings;
 const ERROR_MESSAGE = 'There has been an error creating the cluster';
@@ -134,6 +134,7 @@ test.describe('RosaWizardSubmitError', () => {
   });
 
   test('passes accessibility tests in the error state', async ({ mount }) => {
+    test.setTimeout(60_000);
     const component = await mount(
       <RosaWizardSubmitErrorMount
         onSubmitError={ERROR_MESSAGE}

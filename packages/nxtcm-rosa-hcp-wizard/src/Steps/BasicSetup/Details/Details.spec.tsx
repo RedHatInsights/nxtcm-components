@@ -3,7 +3,7 @@ import { checkAccessibility } from '../../../test-helpers';
 import type { Resource, Role } from '../../../types';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
-import { makeVpcListResource } from '../../../rosaHcpWizardCtSpecHelpers';
+import { makeVpcListResource } from '../../../test/rosaHcpWizardCtSpecHelpers';
 import { DetailsMount } from './Details.spec-helpers';
 import {
   INSTALLER_ARN_412,
@@ -119,45 +119,6 @@ test.describe('Details (ROSA HCP)', () => {
       await nameInput.blur();
 
       await expect(component.getByText(/This value must not start with a number/)).toBeVisible();
-    });
-
-    test('should cancel pending async check when name becomes sync-invalid', async ({ mount }) => {
-      const calls: Array<{ name: string; region: string | undefined }> = [];
-      const component = await mount(
-        <DetailsMount
-          checkClusterNameUniqueness={(name, region) => {
-            calls.push({ name, region });
-            return Promise.resolve(null);
-          }}
-          defaultValues={{ region: 'us-east-1' }}
-        />
-      );
-      const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
-      await nameInput.fill('taken');
-      await nameInput.fill('TAKEN');
-      await nameInput.blur();
-      await expect(
-        component.getByText(/This value can only contain lowercase alphanumeric characters/)
-      ).toBeVisible();
-      await expect.poll(() => calls.length).toBe(0);
-    });
-
-    test('should not display async error when sync validation fails', async ({ mount }) => {
-      const component = await mount(
-        <DetailsMount
-          checkClusterNameUniqueness={() => Promise.resolve('Cluster name already exists.')}
-          defaultValues={{ name: 'INVALID' }}
-        />
-      );
-
-      const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
-      await nameInput.click();
-      await nameInput.blur();
-
-      await expect(
-        component.getByText(/This value can only contain lowercase alphanumeric characters/)
-      ).toBeVisible();
-      await expect(component.getByText('Cluster name already exists.')).not.toBeVisible();
     });
 
     test('should allow typing a cluster name', async ({ mount }) => {
@@ -397,6 +358,8 @@ test.describe('Details (ROSA HCP)', () => {
         <DetailsMount
           vpcList={vpcList}
           defaultValues={{
+            associated_aws_id: 'aws-prod-123456789012',
+            installer_role_arn: 'arn:aws:iam::123456789012:role/Installer',
             region: 'us-east-1',
             selected_vpc: rosaHcpWizardFixtures.mockVPCs[0].id,
           }}
@@ -473,7 +436,55 @@ test.describe('Details (ROSA HCP)', () => {
   });
 
   test.describe('Details — async cluster name uniqueness check', () => {
-    test('should call checkClusterNameUniqueness when a valid name is typed', async ({ mount }) => {
+    test('should skip async check and show sync error when name is invalid on blur', async ({
+      mount,
+    }) => {
+      const calls: Array<{ name: string; region: string | undefined }> = [];
+      const component = await mount(
+        <DetailsMount
+          checkClusterNameUniqueness={(name, region) => {
+            calls.push({ name, region });
+            return Promise.resolve('Cluster name already exists.');
+          }}
+          defaultValues={{ region: 'us-east-1' }}
+        />
+      );
+
+      const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
+      await nameInput.fill('taken');
+      await nameInput.fill('TAKEN');
+      await nameInput.blur();
+
+      await expect(
+        component.getByText(/This value can only contain lowercase alphanumeric characters/)
+      ).toBeVisible();
+      await expect(component.getByText('Cluster name already exists.')).not.toBeVisible();
+      await expect.poll(() => calls.length).toBe(0);
+    });
+
+    test('should not display async error when sync validation fails on an existing invalid value', async ({
+      mount,
+    }) => {
+      const component = await mount(
+        <DetailsMount
+          checkClusterNameUniqueness={() => Promise.resolve('Cluster name already exists.')}
+          defaultValues={{ name: 'INVALID', region: 'us-east-1' }}
+        />
+      );
+
+      const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
+      await nameInput.click();
+      await nameInput.blur();
+
+      await expect(
+        component.getByText(/This value can only contain lowercase alphanumeric characters/)
+      ).toBeVisible();
+      await expect(component.getByText('Cluster name already exists.')).not.toBeVisible();
+    });
+
+    test('should call checkClusterNameUniqueness when a valid name is blurred', async ({
+      mount,
+    }) => {
       const calls: Array<{ name: string; region: string | undefined }> = [];
 
       const component = await mount(
@@ -493,32 +504,7 @@ test.describe('Details (ROSA HCP)', () => {
       await expect.poll(() => calls.some((c) => c.name === 'valid-cluster')).toBe(true);
     });
 
-    test('should NOT call checkClusterNameUniqueness for an invalid name', async ({ mount }) => {
-      const calls: Array<{ name: string; region: string | undefined }> = [];
-
-      const component = await mount(
-        <DetailsMount
-          checkClusterNameUniqueness={(name, region) => {
-            calls.push({ name, region });
-            return Promise.resolve(null);
-          }}
-          defaultValues={{ region: 'us-east-1' }}
-        />
-      );
-
-      const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
-      await nameInput.fill('INVALID_NAME');
-      await nameInput.blur();
-
-      await expect(
-        component.getByText(/This value can only contain lowercase alphanumeric characters/)
-      ).toBeVisible();
-      await expect.poll(() => calls.length).toBe(0);
-    });
-
-    test('should run async uniqueness check once after blur with a valid name', async ({
-      mount,
-    }) => {
+    test('should call checkClusterNameUniqueness only once after blur', async ({ mount }) => {
       const calls: Array<{ name: string; region: string | undefined }> = [];
 
       const component = await mount(
@@ -535,7 +521,169 @@ test.describe('Details (ROSA HCP)', () => {
       await nameInput.fill('abc');
       await nameInput.blur();
 
-      await expect.poll(() => calls.some((c) => c.name === 'abc')).toBe(true);
+      await expect.poll(() => calls.length).toBe(1);
+
+      await nameInput.click();
+      await nameInput.blur();
+
+      await expect
+        .poll(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 400));
+          return calls.length;
+        })
+        .toBe(1);
+    });
+
+    test('should show async error when uniqueness check fails', async ({ mount }) => {
+      const calls: string[] = [];
+
+      const component = await mount(
+        <DetailsMount
+          clusterNameUniquenessError="Cluster name already exists."
+          onClusterNameUniquenessCheck={(name) => calls.push(name)}
+          defaultValues={{ region: 'us-east-1' }}
+        />
+      );
+
+      const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
+      await nameInput.fill('mycluster');
+      await nameInput.blur();
+
+      await expect.poll(() => calls).toEqual(['mycluster']);
+
+      await expect
+        .poll(async () =>
+          component
+            .locator('#name-form-group')
+            .getByText('Cluster name already exists.')
+            .isVisible()
+        )
+        .toBe(true);
+    });
+
+    test('should clear async uniqueness error when region changes and name is empty', async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(
+        <DetailsMount
+          clusterNameUniquenessError="Cluster name already exists."
+          defaultValues={{ name: 'mycluster', region: 'us-east-1' }}
+        />
+      );
+
+      const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
+      await nameInput.click();
+      await nameInput.blur();
+
+      await expect
+        .poll(async () =>
+          component
+            .locator('#name-form-group')
+            .getByText('Cluster name already exists.')
+            .isVisible()
+        )
+        .toBe(true);
+
+      await nameInput.fill('');
+
+      await component
+        .locator('#region-form-group')
+        .getByRole('combobox', { name: d.regionPlaceholder, exact: true })
+        .click();
+      await component
+        .locator('#region-form-group')
+        .locator('#region-typeahead-input')
+        .locator('input')
+        .fill('Oregon');
+      await page.getByRole('option', { name: 'US West (Oregon)', exact: true }).click();
+
+      await expect(component.getByText('Cluster name already exists.')).not.toBeVisible();
+    });
+
+    test('should call checkClusterNameUniqueness when region changes and a valid name exists', async ({
+      mount,
+      page,
+    }) => {
+      const calls: Array<{ name: string; region: string | undefined }> = [];
+
+      const component = await mount(
+        <DetailsMount
+          checkClusterNameUniqueness={(name, region) => {
+            calls.push({ name, region });
+            return Promise.resolve(null);
+          }}
+          defaultValues={{ name: 'mycluster', region: 'us-east-1' }}
+        />
+      );
+
+      await component
+        .locator('#region-form-group')
+        .getByRole('combobox', { name: d.regionPlaceholder, exact: true })
+        .click();
+      await component
+        .locator('#region-form-group')
+        .locator('#region-typeahead-input')
+        .locator('input')
+        .fill('Oregon');
+      await page.getByRole('option', { name: 'US West (Oregon)', exact: true }).click();
+
+      await expect
+        .poll(() => calls.some((c) => c.name === 'mycluster' && c.region === 'us-west-2'))
+        .toBe(true);
+      expect(calls.every((c) => c.region !== undefined)).toBe(true);
+    });
+
+    test('should NOT call checkClusterNameUniqueness on blur when region is empty', async ({
+      mount,
+    }) => {
+      const calls: Array<{ name: string; region: string | undefined }> = [];
+
+      const component = await mount(
+        <DetailsMount
+          checkClusterNameUniqueness={(name, region) => {
+            calls.push({ name, region });
+            return Promise.resolve(null);
+          }}
+        />
+      );
+
+      const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
+      await nameInput.fill('valid-cluster');
+      await nameInput.blur();
+
+      await expect.poll(() => calls.length, { timeout: 2000 }).toBe(0);
+    });
+
+    test('should NOT call checkClusterNameUniqueness when billing account changes', async ({
+      mount,
+      page,
+    }) => {
+      const calls: Array<{ name: string; region: string | undefined }> = [];
+
+      const component = await mount(
+        <DetailsMount
+          checkClusterNameUniqueness={(name, region) => {
+            calls.push({ name, region });
+            return Promise.resolve(null);
+          }}
+          defaultValues={{ name: 'mycluster', region: 'us-east-1' }}
+        />
+      );
+
+      const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
+      await nameInput.focus();
+      await nameInput.blur();
+
+      await expect.poll(() => calls.length).toBe(1);
+
+      await component
+        .locator('#billing_account_id-form-group')
+        .getByRole('combobox', { name: d.billingPlaceholder, exact: true })
+        .click();
+      await page.getByText('Billing Account - Secondary (234567890123)', { exact: true }).click();
+
+      await expect.poll(() => calls.length, { timeout: 2000 }).toBe(1);
     });
 
     test('should NOT call checkClusterNameUniqueness when region is selected but no name exists', async ({
