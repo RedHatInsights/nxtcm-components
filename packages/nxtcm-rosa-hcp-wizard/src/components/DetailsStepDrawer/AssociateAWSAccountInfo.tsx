@@ -18,7 +18,6 @@ export const AssociateAWSAccountInfo = (props: AssociateAWSAccountInfoProps) => 
   return (
     <ExpandableSection
       className="associate-aws-account-info"
-      toggleWrapper="h3"
       toggleText={title}
       onToggle={(event: React.MouseEvent<Element, MouseEvent>, isExpanded: boolean) =>
         onToggle(event, isExpanded)

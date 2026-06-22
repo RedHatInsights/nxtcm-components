@@ -6,6 +6,8 @@ import { withThemeByClassName } from '@storybook/addon-themes';
 import editorWorkerUrl from 'monaco-editor/esm/vs/editor/editor.worker.js?url';
 import yamlWorkerUrl from 'monaco-yaml/yaml.worker.js?url';
 
+import { applyRosaHcpMonacoYamlDiagnostics } from '../packages/nxtcm-rosa-hcp-wizard/src/Steps/YamlEditor/RosaHcpYamlMonacoLoader';
+
 window.MonacoEnvironment = {
   getWorker(_moduleId: string, label: string): Worker {
     if (label === 'yaml') {
@@ -14,6 +16,8 @@ window.MonacoEnvironment = {
     return new Worker(editorWorkerUrl, { type: 'module' });
   },
 };
+
+void applyRosaHcpMonacoYamlDiagnostics();
 
 const preview: Preview = {
   parameters: {

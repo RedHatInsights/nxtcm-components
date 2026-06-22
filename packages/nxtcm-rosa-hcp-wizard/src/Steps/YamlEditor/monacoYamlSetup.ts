@@ -4,6 +4,12 @@ function hostProvidesMonacoWorkers(): boolean {
 }
 
 let setupPromise: Promise<void> | null = null;
+let wizardOwnsMonacoEnvironment = false;
+
+/** True only when this package configured Monaco workers (Vite dev / CT), not host or Storybook preview. */
+export function isMonacoYamlDiagnosticsAvailable(): boolean {
+  return wizardOwnsMonacoEnvironment;
+}
 
 export function setupMonacoEnvironmentIfNeeded(): Promise<void> {
   if (typeof window === 'undefined' || hostProvidesMonacoWorkers()) {
@@ -29,6 +35,7 @@ export function setupMonacoEnvironmentIfNeeded(): Promise<void> {
         return new Worker(editorWorkerUrl, { type: 'module' });
       },
     };
+    wizardOwnsMonacoEnvironment = true;
   })();
 
   return setupPromise;

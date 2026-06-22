@@ -57,8 +57,9 @@ The host must provide (already satisfied in ACM today):
 | `monaco-editor` | `^0.34.1` — bundled by the host |
 | `@monaco-editor/react` | `^4.6.0` — used by PatternFly CodeEditor and `configureRosaHcpMonaco` |
 | `@patternfly/react-code-editor` | `^6.4.0` — YAML step `CodeEditor` (host provides; matches ACM) |
+| `monaco-yaml` | `^4.0.4` — **optional** peer; schema completion/hover in Monaco only |
 
-`monaco-yaml` is **not** shipped in the wizard bundle; it is optional and only loaded in Storybook/Vite dev for schema completion/hover. YAML validation in the wizard uses Ajv and works without it.
+`monaco-yaml` is **not** shipped in the wizard bundle. Hosts that already provide `MonacoEnvironment` workers (e.g. ACM) do not need it — the wizard skips the dynamic import and YAML validation uses Ajv. Install `monaco-yaml` only when you want Monaco schema completion/hover in a local Vite or Storybook setup.
 
 ## Local development (linked checkout)
 
