@@ -1,10 +1,7 @@
-import { Alert, AlertVariant, Content, ContentVariants, Title } from '@patternfly/react-core';
+import { Alert, AlertVariant, Title } from '@patternfly/react-core';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { CopyInstruction } from '../CopyInstruction';
-import PopoverHintWithTitle from '../PopoverHintWithTitle';
-import ExternalLink from '../ExternalLink';
-import links from '../../constants/links';
-import { TabGroup } from '../TabGroup';
+import { TabGroup } from './TabGroup';
 import PopoverHint from '../PopoverHint';
 
 export const UserRole = () => {
@@ -12,7 +9,7 @@ export const UserRole = () => {
 
   return (
     <>
-      <Title headingLevel="h3" className="pf-v6-u-mb-md" size="md">
+      <Title headingLevel="h4" className="pf-v6-u-mb-md" size="md">
         {u.checkLinkedTitle}
       </Title>
 
@@ -32,19 +29,9 @@ export const UserRole = () => {
         className="pf-v6-u-mb-lg"
       />
 
-      <Content component={ContentVariants.h3}>{u.unlinkedTitle}</Content>
-
-      <PopoverHintWithTitle
-        title={u.whyLinkTitle}
-        bodyContent={
-          <>
-            {u.whyLinkBodyPrefix}{' '}
-            <ExternalLink href={links.ROSA_AWS_ACCOUNT_ASSOCIATION}>
-              {u.reviewPermissionsLink}
-            </ExternalLink>
-          </>
-        }
-      />
+      <Title headingLevel="h4" size="md">
+        {u.unlinkedTitle}
+      </Title>
 
       <TabGroup
         tabs={[
