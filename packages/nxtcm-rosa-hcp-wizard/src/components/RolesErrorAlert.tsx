@@ -25,7 +25,7 @@ export const RolesAlert = (props: RolesErrorAlertProps) => {
         <Stack hasGutter>
           {showMissingArnsError ? (
             <StackItem>
-              <Content content={ContentVariants.p}>{rp.accountRolesHelp}</Content>
+              <Content component={ContentVariants.p}>{rp.accountRolesHelp}</Content>
               <CopyInstruction
                 data-testid="copy-rosa-create-account-roles"
                 textAriaLabel="Copyable ROSA create account-roles"
@@ -36,7 +36,7 @@ export const RolesAlert = (props: RolesErrorAlertProps) => {
           ) : null}
           {userRoleError && !ocmRoleError ? (
             <StackItem>
-              <Content content={ContentVariants.p}>{rp.userRolesHelp}</Content>
+              <Content component={ContentVariants.p}>{rp.userRolesHelp}</Content>
               <CopyInstruction
                 data-testid="copy-rosa-create-user-role"
                 textAriaLabel="Copyable ROSA create user-role"
