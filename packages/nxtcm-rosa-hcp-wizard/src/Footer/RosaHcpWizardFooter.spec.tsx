@@ -61,6 +61,26 @@ async function advanceToReviewStep(component: MountResult): Promise<void> {
   await clickNextTimes(component, 6);
 }
 
+async function clickBackTimes(component: MountResult, count: number): Promise<void> {
+  for (let index = 0; index < count; index += 1) {
+    await component.getByRole('button', { name: FOOTER_BACK }).click();
+  }
+}
+
+async function selectAwsInfrastructureAccount(
+  component: MountResult,
+  page: import('@playwright/test').Page,
+  accountLabel: string
+): Promise<void> {
+  const combo = component.locator('#associated_aws_id-form-group').getByRole('combobox', {
+    name: defaultRosaHcpWizardStrings.details.awsInfraPlaceholder,
+    exact: true,
+  });
+  await combo.click();
+  await combo.fill(accountLabel.includes('Staging') ? 'Staging' : accountLabel);
+  await page.getByRole('option', { name: accountLabel, exact: true }).click();
+}
+
 test.describe('RosaHcpWizardFooter — left nav validation icons', () => {
   test('shows error icons on Details and Basic setup after Next fails validation', async ({
     mount,
@@ -197,6 +217,30 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
     await expect(
       component.getByRole('button', { name: w.stepLabels.rolesAndPolicies, exact: true })
     ).toBeDisabled();
+  });
+
+  test('disables future nav steps after changing associated AWS infrastructure account on Details', async ({
+    mount,
+    page,
+  }) => {
+    test.setTimeout(30_000);
+    const component = await mount(
+      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
+    );
+
+    await advanceToReviewStep(component);
+    await expect(component.getByText(review.sectionLabel, { exact: true })).toBeVisible();
+
+    await clickBackTimes(component, 6);
+    await expect(
+      component.getByText(defaultRosaHcpWizardStrings.details.awsInfraLabel)
+    ).toBeVisible();
+
+    await selectAwsInfrastructureAccount(component, page, 'AWS Account - Staging (234567890123)');
+
+    await expect(wizardNavStep(component, STEP_IDS.ROLES_AND_POLICIES)).toBeDisabled();
+    await expect(wizardNavStep(component, STEP_IDS.MACHINE_POOLS)).toBeDisabled();
+    await expect(wizardNavStep(component, STEP_IDS.REVIEW)).toBeDisabled();
   });
 });
 

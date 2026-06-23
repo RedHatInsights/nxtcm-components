@@ -1,29 +1,27 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useWizardContext } from '@patternfly/react-core';
-import { type FieldPath, useFormContext, useFormState, useWatch } from 'react-hook-form';
+import { type FieldPath, useFormContext, useFormState } from 'react-hook-form';
 
-import { readWatchedFieldValue } from '../fieldMetaChangeEffects/readWatchedFieldValue';
-import { wizardFormFieldValuesEqual } from '../fieldMetaChangeEffects/wizardFormFieldValuesEqual';
 import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
 import { useRosaHcpWizardReviewSections } from '../Steps/Review/ROSAHCPWizardReviewSections';
 import type { ROSAHCPCluster } from '../types';
-import { listWizardNavUnvisitSourceFields, wizardFieldMetaByPath } from '../yupSchemas';
-import type { WizardFormFieldName } from '../yupSchemas/types';
 
 import {
   buildOrderedWizardNavStepIds,
   buildRosaHcpWizardNavStepDisabledByValidation,
 } from './rosaHcpWizardNavStepStatus';
+import { unvisitWizardNavStepsAfterSourcePfIndex } from './unvisitWizardNavStepsAfterSource';
 import { useRosaHcpWizardNavStepStatuses } from './useRosaHcpWizardNavStepStatuses';
 
 /** Pushes nav status, visit, and validation-disable state onto PatternFly wizard steps. */
 export function useRosaHcpWizardNavStatusSync(includeClusterWideProxy: boolean): void {
   const navStepStatuses = useRosaHcpWizardNavStepStatuses(includeClusterWideProxy);
   const reviewSections = useRosaHcpWizardReviewSections();
-  const { validationAttemptedStepIds, asyncValidatingStepIds } = useRosaHcpWizardValidation();
+  const { validationAttemptedStepIds, asyncValidatingStepIds, registerNavUnvisitApplier } =
+    useRosaHcpWizardValidation();
   const { getFieldState } = useFormContext<Partial<ROSAHCPCluster>>();
   const formState = useFormState<Partial<ROSAHCPCluster>>();
-  const { activeStep, setStep } = useWizardContext();
+  const { activeStep, setStep, steps: wizardSteps } = useWizardContext();
   const activeStepId = String(activeStep.id);
   const parentStepId = 'parentId' in activeStep ? activeStep.parentId : undefined;
 
@@ -69,11 +67,66 @@ export function useRosaHcpWizardNavStatusSync(includeClusterWideProxy: boolean):
     statuses: Record<string, string | undefined>;
     disabled: Record<string, boolean | undefined>;
   }>({ statuses: {}, disabled: {} });
+  const prevVisitedStepIdsRef = useRef<Set<string>>(new Set());
+  const maxVisitedPfStepIndexRef = useRef(0);
+
+  const applyNavUnvisit = useCallback(
+    (sourceStepIds: readonly string[]) => {
+      const sourcePfIndices = sourceStepIds
+        .map((stepId) => wizardSteps.find((step) => step.id === stepId)?.index ?? -1)
+        .filter((index) => index > 0);
+      if (sourcePfIndices.length === 0) {
+        return;
+      }
+
+      const sourcePfIndex = Math.min(...sourcePfIndices);
+      maxVisitedPfStepIndexRef.current = sourcePfIndex;
+      unvisitWizardNavStepsAfterSourcePfIndex(wizardSteps, sourcePfIndex, (unvisitStepId) => {
+        setStep({ id: unvisitStepId, isVisited: false });
+        prevVisitedStepIdsRef.current.delete(unvisitStepId);
+      });
+    },
+    [setStep, wizardSteps]
+  );
 
   useEffect(() => {
+    return () => registerNavUnvisitApplier(null);
+  }, [registerNavUnvisitApplier]);
+
+  registerNavUnvisitApplier(applyNavUnvisit);
+
+  useEffect(() => {
+    const visitedStepIds = [activeStepId, parentStepId].filter(
+      (stepId): stepId is string => stepId !== undefined
+    );
+
+    for (const stepId of visitedStepIds) {
+      const pfIndex = wizardSteps.find((step) => step.id === stepId)?.index ?? -1;
+      if (pfIndex > maxVisitedPfStepIndexRef.current) {
+        maxVisitedPfStepIndexRef.current = pfIndex;
+      }
+
+      if (prevVisitedStepIdsRef.current.has(stepId)) {
+        continue;
+      }
+
+      prevVisitedStepIdsRef.current.add(stepId);
+      setStep({ id: stepId, isVisited: true });
+    }
+  }, [activeStepId, parentStepId, setStep, wizardSteps]);
+
+  useEffect(() => {
+    for (const wizardStep of wizardSteps) {
+      if (wizardStep.index > maxVisitedPfStepIndexRef.current && wizardStep.isVisited) {
+        setStep({ id: String(wizardStep.id), isVisited: false });
+        prevVisitedStepIdsRef.current.delete(String(wizardStep.id));
+      }
+    }
+
     const stepIds = new Set([
       ...Object.keys(navStepStatuses),
       ...Object.keys(navStepDisabledByValidation),
+      ...orderedStepIds,
     ]);
 
     for (const stepId of stepIds) {
@@ -96,65 +149,5 @@ export function useRosaHcpWizardNavStatusSync(includeClusterWideProxy: boolean):
         ...(isDisabled !== undefined ? { isDisabled } : {}),
       });
     }
-  }, [navStepDisabledByValidation, navStepStatuses, setStep]);
-
-  const prevVisitedStepIdsRef = useRef<Set<string>>(new Set());
-
-  useEffect(() => {
-    const visitedStepIds = [activeStepId, parentStepId].filter(
-      (stepId): stepId is string => stepId !== undefined
-    );
-
-    for (const stepId of visitedStepIds) {
-      if (prevVisitedStepIdsRef.current.has(stepId)) {
-        continue;
-      }
-
-      prevVisitedStepIdsRef.current.add(stepId);
-      setStep({ id: stepId, isVisited: true });
-    }
-  }, [activeStepId, parentStepId, setStep]);
-
-  const unvisitSourceFields = useMemo(() => listWizardNavUnvisitSourceFields(), []);
-  const watchedUnvisitFieldValues = useWatch({
-    name: unvisitSourceFields as FieldPath<Partial<ROSAHCPCluster>>[],
-  });
-  const previousUnvisitFieldValuesRef = useRef<Partial<Record<WizardFormFieldName, unknown>>>({});
-  const hasInitializedUnvisitTrackingRef = useRef(false);
-
-  useEffect(() => {
-    const isInitialPass = !hasInitializedUnvisitTrackingRef.current;
-
-    for (const [index, field] of unvisitSourceFields.entries()) {
-      const currentValue = readWatchedFieldValue(watchedUnvisitFieldValues, index);
-      const previousValue = isInitialPass
-        ? undefined
-        : previousUnvisitFieldValuesRef.current[field];
-
-      if (!isInitialPass && wizardFormFieldValuesEqual(previousValue, currentValue)) {
-        continue;
-      }
-
-      if (!isInitialPass) {
-        const sourceStepId = wizardFieldMetaByPath(field)?.stepId;
-        const sourceStepIndex =
-          sourceStepId !== undefined ? orderedStepIds.indexOf(sourceStepId) : -1;
-
-        if (sourceStepIndex >= 0) {
-          for (
-            let stepIndex = sourceStepIndex + 1;
-            stepIndex < orderedStepIds.length;
-            stepIndex++
-          ) {
-            setStep({ id: orderedStepIds[stepIndex], isVisited: false });
-            prevVisitedStepIdsRef.current.delete(orderedStepIds[stepIndex]);
-          }
-        }
-      }
-
-      previousUnvisitFieldValuesRef.current[field] = currentValue;
-    }
-
-    hasInitializedUnvisitTrackingRef.current = true;
-  }, [orderedStepIds, setStep, unvisitSourceFields, watchedUnvisitFieldValues]);
+  }, [navStepDisabledByValidation, navStepStatuses, orderedStepIds, setStep, wizardSteps]);
 }
