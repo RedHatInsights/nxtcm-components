@@ -79,6 +79,8 @@ export interface SelectProps<T = unknown> {
   maxMenuHeight?: string;
   /** When `true`, constrains the menu height and scrolls overflow (requires `maxMenuHeight`). */
   isScrollable?: boolean;
+  /** Optional test ID for the menu toggle button (for E2E testing). */
+  'data-testid'?: string;
 }
 
 export function Select<T = unknown>(props: SelectProps<T>) {
@@ -109,6 +111,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     onMenuOpenChange,
     maxMenuHeight,
     isScrollable,
+    'data-testid': dataTestId,
   } = props;
 
   const disabled = isDisabled;
@@ -321,6 +324,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
       status={getStatus(!!isError, !!isSuccess)}
       aria-label={plainToggleAriaLabel}
       aria-describedby={describedBy || undefined}
+      data-testid={dataTestId}
     >
       {isLoading && !toggleLabel ? 'Loading...' : toggleLabel || placeholderText}
     </MenuToggle>

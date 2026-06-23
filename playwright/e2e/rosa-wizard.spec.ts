@@ -15,9 +15,9 @@ async function fillDetailsStep(page: Page) {
 }
 
 async function fillRolesStep(page: Page) {
-  await page.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
+  await page.getByTestId('installer-role-select').click();
   await page.getByRole('option', { name: /ManagedOpenShift-HCP-ROSA-Installer-Role/ }).click();
-  await page.locator('#byo_oidc_config_id-form-group .pf-v6-c-menu-toggle').click();
+  await page.getByTestId('oidc-config-select').click();
   await page.getByRole('option', { name: '2kl4t2st8eg2u5jppv8kjeemkvimfm99' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
 }
@@ -74,12 +74,12 @@ test.describe('ROSA Wizard', () => {
 
     await page.getByRole('button', { name: 'Next' }).click();
 
-    await expect(page.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle')).toBeVisible();
+    await expect(page.getByTestId('installer-role-select')).toBeVisible();
 
-    await page.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
+    await page.getByTestId('installer-role-select').click();
     await page.getByRole('option', { name: /ManagedOpenShift-HCP-ROSA-Installer-Role/ }).click();
 
-    await page.locator('#byo_oidc_config_id-form-group .pf-v6-c-menu-toggle').click();
+    await page.getByTestId('oidc-config-select').click();
     await page.getByRole('option', { name: '2kl4t2st8eg2u5jppv8kjeemkvimfm99' }).click();
 
     await page.getByRole('button', { name: 'Next' }).click();
