@@ -157,7 +157,7 @@ export const RosaHcpSchemaPanel = ({ onClose }: RosaHcpSchemaPanelProps) => {
   }, [specProperties, searchText]);
 
   return (
-    <DrawerPanelContent widths={{ default: 'width_33' }}>
+    <DrawerPanelContent isResizable defaultSize="33%">
       <DrawerHead>
         <Title headingLevel="h3" size="md">
           {yamlEditor.schemaTitle}
@@ -166,7 +166,7 @@ export const RosaHcpSchemaPanel = ({ onClose }: RosaHcpSchemaPanelProps) => {
           <DrawerCloseButton onClick={onClose} aria-label={yamlEditor.schemaToggleAriaLabel} />
         </DrawerActions>
       </DrawerHead>
-      <DrawerPanelBody style={{ overflowY: 'auto' }}>
+      <DrawerPanelBody>
         <Stack hasGutter>
           <StackItem>
             <SearchInput

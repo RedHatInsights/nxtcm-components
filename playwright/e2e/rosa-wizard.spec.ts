@@ -111,7 +111,7 @@ test.describe('ROSA Wizard', () => {
 
     await page.getByRole('button', { name: 'Next' }).click();
 
-    await expect(page.getByRole('button', { name: 'Submit' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Create cluster' })).toBeVisible();
 
     await expect(page.getByText('test-cluster', { exact: true }).first()).toBeVisible();
     await expect(page.getByText('4.12.0', { exact: true }).first()).toBeVisible();

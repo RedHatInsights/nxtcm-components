@@ -18,6 +18,7 @@ import { STEP_IDS } from './constants';
 import type { RosaHCPWizardProps } from './types';
 import { RosaWizardSubmitError } from './RosaWizardSubmitError';
 import './ROSAHCPWizardBody.css';
+import './Steps/YamlEditor/RosaHcpYamlEditorStep.css';
 
 const RosaHcpYamlEditorStep = lazy(() =>
   import('./Steps/YamlEditor/RosaHcpYamlEditorStep').then((module) => ({
@@ -167,6 +168,11 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
           id={STEP_IDS.REVIEW}
           key={STEP_IDS.REVIEW}
           footer={isYamlEditorOpen ? yamlEditorFooter : undefined}
+          body={
+            isYamlEditorOpen
+              ? { className: 'rosa-hcp-yaml-editor-wizard-main', hasNoPadding: true }
+              : undefined
+          }
         >
           {isYamlEditorOpen ? (
             <Suspense

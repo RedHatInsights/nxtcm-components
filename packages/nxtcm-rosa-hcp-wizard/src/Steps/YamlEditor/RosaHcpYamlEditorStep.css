@@ -1,0 +1,61 @@
+/**
+ * Full-height YAML editor in the wizard review step.
+ * PatternFly wizard/drawer use flex layout but omit min-height: 0 on nested
+ * children, so content grows past the viewport. These rules complete the flex
+ * chain and keep scroll inside the code editor and schema panel body.
+ */
+.rosa-hcp-yaml-editor-wizard-main {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.rosa-hcp-yaml-editor-wizard-main .pf-v6-c-wizard__main-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.rosa-hcp-yaml-editor-step {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.rosa-hcp-yaml-editor-step > .pf-v6-c-drawer {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.rosa-hcp-yaml-editor-step .pf-v6-c-drawer__main,
+.rosa-hcp-yaml-editor-step .pf-v6-c-drawer__content,
+.rosa-hcp-yaml-editor-step .pf-v6-c-drawer__panel,
+.rosa-hcp-yaml-editor-step .pf-v6-c-drawer__panel-main,
+.rosa-hcp-yaml-editor-step .pf-v6-c-drawer__panel-main > .pf-v6-c-drawer__body:last-child {
+  min-height: 0;
+}
+
+.rosa-hcp-yaml-editor-step .pf-v6-c-drawer__content,
+.rosa-hcp-yaml-editor-step .pf-v6-c-drawer__panel-main {
+  overflow: hidden;
+}
+
+.rosa-hcp-yaml-editor-step .pf-v6-c-drawer__content > .pf-v6-c-drawer__body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.rosa-hcp-yaml-editor-step .pf-v6-c-drawer__panel {
+  max-height: 100%;
+}
+
+.rosa-hcp-yaml-editor-step .pf-v6-c-drawer__panel-main > .pf-v6-c-drawer__body:last-child {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
