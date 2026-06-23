@@ -67,6 +67,9 @@ export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): 
       const previousValue = isInitialPass ? undefined : previousByFieldRef.current[field];
 
       if (!isInitialPass && wizardFormFieldValuesEqual(previousValue, currentValue)) {
+        if (programmaticallyResetFieldsRef.current.has(field)) {
+          programmaticallyResetFieldsRef.current.delete(field);
+        }
         continue;
       }
 

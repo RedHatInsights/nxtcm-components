@@ -35,6 +35,7 @@ export function useClusterNameUniquenessValidation({
   const hasInitializedRegionRef = useRef(false);
   const checkClusterNameUniquenessRef = useRef(checkClusterNameUniqueness);
   const uniquenessRequestIdRef = useRef(0);
+  const asyncValidatingRequestIdRef = useRef<number | null>(null);
   const lastCheckedRef = useRef<LastCheckedPair | null>(null);
   checkClusterNameUniquenessRef.current = checkClusterNameUniqueness;
 
@@ -68,14 +69,23 @@ export function useClusterNameUniquenessValidation({
 
     const name = getValues('name');
     const currentRegion = getValues('region');
+    const clearAsyncValidatingIfInFlight = (): void => {
+      if (asyncValidatingRequestIdRef.current !== null) {
+        asyncValidatingRequestIdRef.current = null;
+        setStepAsyncValidating(STEP_IDS.DETAILS, false);
+      }
+    };
+
     if (!hasRefetchableStringValue(name) || !hasRefetchableStringValue(currentRegion)) {
       ++uniquenessRequestIdRef.current;
+      clearAsyncValidatingIfInFlight();
       lastCheckedRef.current = null;
       applyUniqueErrorToForm(null);
       return;
     }
     if (validateClusterNameSync(name, msgs.clusterName)) {
       ++uniquenessRequestIdRef.current;
+      clearAsyncValidatingIfInFlight();
       applyUniqueErrorToForm(null);
       return;
     }
@@ -86,6 +96,7 @@ export function useClusterNameUniquenessValidation({
     }
 
     const requestId = ++uniquenessRequestIdRef.current;
+    asyncValidatingRequestIdRef.current = requestId;
     setStepAsyncValidating(STEP_IDS.DETAILS, true);
     let error: string | null | undefined;
     try {
@@ -93,7 +104,8 @@ export function useClusterNameUniquenessValidation({
     } catch {
       return;
     } finally {
-      if (requestId === uniquenessRequestIdRef.current) {
+      if (asyncValidatingRequestIdRef.current === requestId) {
+        asyncValidatingRequestIdRef.current = null;
         setStepAsyncValidating(STEP_IDS.DETAILS, false);
       }
     }

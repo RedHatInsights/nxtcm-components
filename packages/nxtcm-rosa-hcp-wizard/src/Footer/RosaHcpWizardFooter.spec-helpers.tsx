@@ -43,7 +43,7 @@ import {
   makeDefaultRosaHcpCtWizardData,
   makeMachineTypesResource,
   makeVpcListResource,
-  WizardFieldMetaChangeEffectsCtHarness,
+  WizardFieldMetaChangeEffectsRunner,
 } from '../test/rosaHcpWizardCtSpecHelpers';
 import type {
   AwsBillingAccountsResource,
@@ -208,7 +208,7 @@ export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMount
   return withRosaCt(
     <FormProvider {...methods}>
       <RosaHcpWizardValidationProvider>
-        <WizardFieldMetaChangeEffectsCtHarness wizardData={wizardData} />
+        <WizardFieldMetaChangeEffectsRunner wizardData={wizardData} />
         <Wizard height={720} footer={rosaHcpWizardFooter} isVisitRequired>
           <WizardStep
             isExpandable

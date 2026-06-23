@@ -28,7 +28,7 @@ import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers'
 import {
   makeDefaultRosaHcpCtWizardData,
   makeVpcListResource,
-  WizardFieldMetaChangeEffectsCtHarness,
+  WizardFieldMetaChangeEffectsRunner,
 } from '../../../test/rosaHcpWizardCtSpecHelpers';
 import type {
   AwsBillingAccountsResource,
@@ -208,7 +208,7 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
     <RosaHcpWizardValidationProvider>
       <FormProvider {...methods}>
         <Form>
-          <WizardFieldMetaChangeEffectsCtHarness wizardData={wizardData} />
+          <WizardFieldMetaChangeEffectsRunner wizardData={wizardData} />
           <Details
             awsInfrastructureAccounts={awsInfra}
             awsBillingAccounts={awsBilling}

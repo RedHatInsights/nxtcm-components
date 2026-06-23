@@ -4,8 +4,13 @@ import type { ROSAHCPCluster } from '../types';
 
 const mockRoleSet = mockRoles[0];
 const mockVpc = fixtures.mockVPCs[0];
-const mockMachinePoolSubnet =
-  mockVpc.aws_subnets.find((subnet) => subnet.name.includes('private'))?.subnet_id ?? '';
+const privateSubnet = mockVpc.aws_subnets.find((subnet) => subnet.name.includes('private'));
+if (!privateSubnet?.subnet_id) {
+  throw new Error(
+    `Expected mock VPC "${mockVpc.id}" to include a private subnet in aws_subnets for footer test data`
+  );
+}
+const mockMachinePoolSubnet = privateSubnet.subnet_id;
 
 /** Values that pass Details-step validation in CT and unit tests. */
 export const VALID_DETAILS_FORM_VALUES: Partial<ROSAHCPCluster> = {
