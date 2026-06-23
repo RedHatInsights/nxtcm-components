@@ -13,9 +13,9 @@ test.describe('RosaHcpYamlEditorFooter', () => {
     await checkAccessibility({ component });
   });
 
-  test('renders the Apply changes, Discard changes, and Cancel buttons', async ({ mount }) => {
+  test('renders the Create cluster, Discard changes, and Cancel buttons', async ({ mount }) => {
     const component = await mount(<YamlEditorFooterMount />);
-    await expect(component.getByRole('button', { name: w.applyChanges })).toBeVisible();
+    await expect(component.getByRole('button', { name: w.createCluster })).toBeVisible();
     await expect(component.getByRole('button', { name: s.discardChanges })).toBeVisible();
     await expect(component.getByRole('button', { name: s.cancelCreation })).toBeVisible();
   });
@@ -80,7 +80,7 @@ test.describe('RosaHcpYamlEditorFooter', () => {
         }}
       />
     );
-    await page.getByRole('button', { name: w.applyChanges }).click();
+    await page.getByRole('button', { name: w.createCluster }).click();
     expect(submitted).toBe(false);
   });
 });

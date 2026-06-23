@@ -179,7 +179,6 @@ export type RosaHcpWizardStrings = {
     createCluster: string;
     /** Footer Cancel button label. */
     cancel: string;
-    // applyChanges: string;
   };
   submitError: {
     title: string;
