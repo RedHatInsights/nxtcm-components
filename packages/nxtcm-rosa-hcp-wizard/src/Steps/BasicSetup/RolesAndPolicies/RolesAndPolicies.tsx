@@ -8,7 +8,7 @@ import {
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import React from 'react';
 import PopoverHintWithTitle from '../../../components/PopoverHintWithTitle';
-import { OIDCConfigHint } from '../../../components/OIDCConfigHint';
+import { OIDCConfigHint, OIDCConfigHintProduct } from '../../../components/OIDCConfigHint';
 import { useWatch } from 'react-hook-form';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import ExternalLink from '../../../components/ExternalLink';
@@ -23,12 +23,12 @@ import { useRosaCommand } from './useRosaCommand';
 import { RolesAlert } from '../../../components/RolesErrorAlert';
 
 type RolesAndPoliciesStepProps = Pick<ROSAHCPWizardData, 'roles' | 'oidcConfig'> & {
-  /** ROSA login command supplied by the host application. */
-  rosaLoginCommand?: string;
+  /** The consuming product. Determines which ROSA login command is shown. Defaults to 'acm'. */
+  product?: OIDCConfigHintProduct;
 };
 
 export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
-  const { roles, oidcConfig, rosaLoginCommand } = props;
+  const { roles, oidcConfig, product } = props;
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
   const rp = useRosaHcpWizardStrings().rolesAndPolicies;
@@ -125,7 +125,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
                 <PopoverHintWithTitle
                   displayHintIcon
                   title={rp.oidcPopoverTitle}
-                  bodyContent={<OIDCConfigHint loginCommand={rosaLoginCommand} />}
+                  bodyContent={<OIDCConfigHint product={product} />}
                 />
               </StackItem>
             </Stack>

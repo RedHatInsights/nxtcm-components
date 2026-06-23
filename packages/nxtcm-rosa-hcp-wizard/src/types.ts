@@ -216,8 +216,8 @@ export type RosaHCPWizardProps = {
   onBackToReviewStep?: () => void | Promise<void>;
   yamlEditor?: () => React.ReactNode;
   yaml?: boolean;
-  /** ROSA login command supplied by the host application (e.g. `rosa login --use-auth-code --url https://api.openshift.com`). Falls back to a built-in default when omitted. */
-  rosaLoginCommand?: string;
+  /** The consuming product. */
+  product?: 'acm' | 'ocm' | 'oem';
 };
 
 export type WizardNavigationContext = ReturnType<typeof useWizardContext>;
