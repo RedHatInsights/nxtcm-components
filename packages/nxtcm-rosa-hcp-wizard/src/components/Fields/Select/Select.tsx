@@ -6,7 +6,6 @@ import {
   type ReactNode,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -309,16 +308,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     successMessage,
   });
 
-  // Always provide an accessible name for the menu toggle
-  const toggleAriaLabel = useMemo(() => {
-    if (label) {
-      return label;
-    }
-    if (placeholderText) {
-      return placeholderText;
-    }
-    return `Select ${id}`;
-  }, [label, placeholderText, id]);
+  const plainToggleAriaLabel = !toggleLabel && !isLoading ? placeholderText : undefined;
 
   const plainToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
     <MenuToggle
@@ -329,7 +319,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
       isDisabled={!!disabled}
       isFullWidth
       status={getStatus(!!isError, !!isSuccess)}
-      aria-label={toggleAriaLabel}
+      aria-label={plainToggleAriaLabel}
       aria-describedby={describedBy || undefined}
     >
       {isLoading && !toggleLabel ? 'Loading...' : toggleLabel || placeholderText}

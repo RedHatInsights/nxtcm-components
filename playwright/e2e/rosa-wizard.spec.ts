@@ -15,19 +15,21 @@ async function fillDetailsStep(page: Page) {
 }
 
 async function fillRolesStep(page: Page) {
-  await page.getByRole('button', { name: 'Installer role' }).click();
+  await page.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
   await page.getByRole('option', { name: /ManagedOpenShift-HCP-ROSA-Installer-Role/ }).click();
-  await page.getByRole('button', { name: 'OIDC config ID', exact: true }).first().click();
+  await page.locator('#byo_oidc_config_id-form-group .pf-v6-c-menu-toggle').click();
   await page.getByRole('option', { name: '2kl4t2st8eg2u5jppv8kjeemkvimfm99' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
 }
 
 async function fillMachinePoolsStep(page: Page) {
-  await page.getByRole('button', { name: 'VPC' }).click();
+  await page
+    .getByRole('button', { name: 'Select a VPC to install your machine pool into us-east-1' })
+    .click();
   await page.getByRole('option', { name: 'test-vpc-1' }).click();
-  await page.getByRole('button', { name: 'Private subnet name' }).click();
+  await page.getByRole('button', { name: 'Select private subnet' }).click();
   await page.getByRole('option', { name: 'test-1-subnet-private1-us-east-1a' }).click();
-  await page.getByRole('button', { name: 'Compute node instance type' }).click();
+  await page.getByRole('button', { name: 'Select the compute node instance type' }).click();
   await page.getByRole('option', { name: 'm5a.xlarge' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
 }
@@ -72,25 +74,29 @@ test.describe('ROSA Wizard', () => {
 
     await page.getByRole('button', { name: 'Next' }).click();
 
-    await expect(page.getByRole('button', { name: 'Installer role' })).toBeVisible();
+    await expect(page.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle')).toBeVisible();
 
-    await page.getByRole('button', { name: 'Installer role' }).click();
+    await page.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
     await page.getByRole('option', { name: /ManagedOpenShift-HCP-ROSA-Installer-Role/ }).click();
 
-    await page.getByRole('button', { name: 'OIDC config ID', exact: true }).first().click();
+    await page.locator('#byo_oidc_config_id-form-group .pf-v6-c-menu-toggle').click();
     await page.getByRole('option', { name: '2kl4t2st8eg2u5jppv8kjeemkvimfm99' }).click();
 
     await page.getByRole('button', { name: 'Next' }).click();
 
-    await expect(page.getByRole('button', { name: 'VPC' })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Select a VPC to install your machine pool into us-east-1' })
+    ).toBeVisible();
 
-    await page.getByRole('button', { name: 'VPC' }).click();
+    await page
+      .getByRole('button', { name: 'Select a VPC to install your machine pool into us-east-1' })
+      .click();
     await page.getByRole('option', { name: 'test-vpc-1' }).click();
 
-    await page.getByRole('button', { name: 'Private subnet name' }).click();
+    await page.getByRole('button', { name: 'Select private subnet' }).click();
     await page.getByRole('option', { name: 'test-1-subnet-private1-us-east-1a' }).click();
 
-    await page.getByRole('button', { name: 'Compute node instance type' }).click();
+    await page.getByRole('button', { name: 'Select the compute node instance type' }).click();
     await page.getByRole('option', { name: 'm5a.xlarge' }).click();
 
     await page.getByRole('button', { name: 'Next' }).click();
