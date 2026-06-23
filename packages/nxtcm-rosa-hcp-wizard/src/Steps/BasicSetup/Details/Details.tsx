@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Stack } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core';
 import semver from 'semver';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { clusterValidationSchema } from '../../../yupSchemas';
@@ -12,7 +12,7 @@ import links from '../../../constants/links';
 import { ROSAHCPWizardData, type ROSAHCPCluster } from '../../../types';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
-import { FieldWrapper } from '../../../components/FieldWrapper';
+import { FieldWrapper, FieldWrapperStack } from '../../../components/FieldWrapper';
 import { useClusterNameUniquenessValidation } from '../../../hooks/useClusterNameUniquenessValidation';
 
 type DetailsStepProps = Pick<
@@ -119,9 +119,9 @@ export const Details = ({
         setIsDrawerExpanded={setIsDrawerExpanded}
         onWizardExpand={onWizardExpand}
       >
-        <Stack hasGutter>
+        <FieldWrapperStack>
           <FieldWrapper
-            AdditionalContent={
+            additionalContent={
               <AssociateNewAccountLink
                 label={d.associateNewAccount}
                 isDrawerExpanded={isDrawerExpanded}
@@ -146,7 +146,7 @@ export const Details = ({
           </FieldWrapper>
 
           <FieldWrapper
-            AdditionalContent={
+            additionalContent={
               <ExternalLink
                 variant="secondary"
                 className="pf-v6-u-mt-md"
@@ -208,7 +208,7 @@ export const Details = ({
               apiError={versions.error}
             />
           </FieldWrapper>
-        </Stack>
+        </FieldWrapperStack>
       </DetailsStepDrawer>
     </Section>
   );
