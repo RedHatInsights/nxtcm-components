@@ -23,6 +23,7 @@ This package expects these dependencies to be provided by the consuming applicat
 ## Usage
 
 ```tsx
+import '@redhat-cloud-services/nxtcm-dashboard/dist/index.css';
 import { TotalClusters, AdvisorSeverity } from '@redhat-cloud-services/nxtcm-dashboard';
 
 export const DashboardSummary = () => (
