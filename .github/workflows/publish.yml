@@ -69,5 +69,14 @@ jobs:
       - name: Build dashboard package
         run: npm run build -w packages/nxtcm-dashboard
 
+      - name: Verify release tag matches dashboard package version
+        run: |
+          expected="v$(node -p "require('./packages/nxtcm-dashboard/package.json').version")"
+          actual="${{ github.event.release.tag_name }}"
+          if [ "$actual" != "$expected" ]; then
+            echo "::error::Release tag $actual does not match dashboard package version $expected"
+            exit 1
+          fi
+
       - name: Publish dashboard package
         run: npm publish -w packages/nxtcm-dashboard --provenance --access public
