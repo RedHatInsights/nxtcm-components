@@ -1,4 +1,4 @@
-import { Alert, Content, ContentVariants } from '@patternfly/react-core';
+import { Alert } from '@patternfly/react-core';
 import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
@@ -26,11 +26,8 @@ export const ClusterWideProxy = () => {
   const disableNoProxyDomains = !isHttpValid && !isHttpsValid;
 
   return (
-    <Section label={cw.sectionLabel}>
+    <Section label={cw.sectionLabel} description={cw.intro}>
       <FieldWrapperStack>
-        <FieldWrapperBlock>
-          <Content component={ContentVariants.p}>{cw.intro}</Content>
-        </FieldWrapperBlock>
         <FieldWrapperBlock>
           <ExternalLink href={links.CONFIGURE_PROXY_URL}>{cw.learnMoreLink}</ExternalLink>
         </FieldWrapperBlock>

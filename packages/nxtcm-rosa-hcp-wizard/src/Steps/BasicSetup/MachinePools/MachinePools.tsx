@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { Content, ContentVariants } from '@patternfly/react-core';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { ROSAHCPCluster, ROSAHCPWizardData, VPCRefetchArgs } from '../../../types';
 import {
@@ -9,11 +8,7 @@ import {
   resolveSelectedVpc,
 } from '../../../utilities/helpers';
 import { Section } from '../../../components/Section';
-import {
-  FieldWrapper,
-  FieldWrapperBlock,
-  FieldWrapperStack,
-} from '../../../components/FieldWrapper';
+import { FieldWrapper, FieldWrapperStack } from '../../../components/FieldWrapper';
 import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../constants/links';
 import { WizCheckbox, WizNumberInput, WizSelect } from '../../../components/WizFields';
@@ -83,11 +78,11 @@ export const MachinePools = (props: MachinePoolsProps) => {
     : undefined;
 
   return (
-    <Section label={mp.sectionLabel} id="machine-pools-section">
+    <Section label={mp.sectionLabel} id="machine-pools-section" description={mp.intro}>
       <FieldWrapperStack>
-        <FieldWrapperBlock>
+        {/* <FieldWrapperBlock>
           <Content component={ContentVariants.p}>{mp.intro}</Content>
-        </FieldWrapperBlock>
+        </FieldWrapperBlock> */}
         <FieldWrapper width="medium">
           <WizSelect<ROSAHCPCluster>
             name="selected_vpc"
