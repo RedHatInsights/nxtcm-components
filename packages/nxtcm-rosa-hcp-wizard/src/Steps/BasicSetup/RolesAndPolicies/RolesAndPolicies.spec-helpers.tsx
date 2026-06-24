@@ -88,6 +88,7 @@ export const RolesAndPoliciesMount: React.FC<RolesAndPoliciesMountProps> = ({
       error: roles?.error ?? null,
       ocmRoleError: roles?.ocmRoleError ?? null,
       userRoleError: roles?.userRoleError ?? null,
+      ocmRoleARN: roles?.ocmRoleARN ?? null,
     }),
     [roles]
   );

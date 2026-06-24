@@ -132,6 +132,7 @@ export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMount
     error: null,
     ocmRoleError: null,
     userRoleError: null,
+    ocmRoleARN: null,
   };
 
   const oidcProps = {

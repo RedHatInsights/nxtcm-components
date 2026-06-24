@@ -183,6 +183,7 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
       error: roles?.error ?? null,
       ocmRoleError: roles?.ocmRoleError ?? null,
       userRoleError: roles?.userRoleError ?? null,
+      ocmRoleARN: roles?.ocmRoleARN ?? null,
     }),
     [roles]
   );

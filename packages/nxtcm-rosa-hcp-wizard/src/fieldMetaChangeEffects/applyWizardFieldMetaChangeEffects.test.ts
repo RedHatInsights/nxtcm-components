@@ -69,6 +69,7 @@ function makeWizardData(
       isFetching: false,
       fetch: jest.fn(),
       ocmRoleError: null,
+      ocmRoleARN: null,
       userRoleError: null,
     },
     oidcConfig: { data: [], error: null, isFetching: false, fetch: jest.fn() },
