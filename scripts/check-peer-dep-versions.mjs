@@ -27,7 +27,9 @@ for (const wsPath of workspaces) {
 
   try {
     wsPkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
-  } catch {
+  } catch (err) {
+    console.warn(`  warning: could not read ${pkgPath} (${err.message})`);
+    errors.push(`  ${wsPath}: package.json is unreadable or missing`);
     continue;
   }
 
