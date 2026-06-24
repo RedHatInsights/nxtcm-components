@@ -10,6 +10,7 @@ permissions:
 jobs:
   quality-gates:
     name: Dashboard Quality Gates
+    if: github.event.release.target_commitish == 'main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -23,6 +24,13 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Check lockfile for git-based dependencies
+        run: |
+          if grep -qE '"resolved":\s*"(git\+|git:|github:)' package-lock.json; then
+            echo "::error::git-based dependency found in lockfile (supply chain risk)"
+            exit 1
+          fi
 
       - name: Run dashboard lint
         run: npx eslint --config .eslintrc.json 'packages/nxtcm-dashboard/src/**/*.{ts,tsx}'
