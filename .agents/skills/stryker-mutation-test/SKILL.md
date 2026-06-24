@@ -32,7 +32,7 @@ npm run test:stryker:report -- <component.tsx> [more...]
 # same as: npm run test:stryker -- --report <component.tsx> ...
 ```
 
-Optional env prefix (parallel workers, default is `min(4, cpuCount - 1)`):
+Optional env prefix (parallel workers, default is `min(4, max(1, cpuCount - 1))`):
 
 ```bash
 STRYKER_CONCURRENCY=2 npm run test:stryker -- <component.tsx>
@@ -47,10 +47,12 @@ Pass the **component** `.tsx` file, never the `.spec.tsx`.
 | `FieldWithAPIErrorAlert` | `packages/nxtcm-rosa-hcp-wizard/src/components/FieldWithAPIErrorAlert.tsx` |
 | `FieldWithAPIErrorAlert.spec.tsx` | Same component path (strip `.spec`) |
 | `rosa hcp footer` / `RosaHcpWizardFooter` | `packages/nxtcm-rosa-hcp-wizard/src/Footer/RosaHcpWizardFooter.tsx` |
-| `src/components/Foo` | `src/components/Foo/Foo.tsx` (confirm file exists) |
+| `src/components/Foo` (any package) | `packages/<package>/src/components/Foo/Foo.tsx` (confirm file exists) |
 | Ambiguous basename | Search with Glob; if multiple matches, ask the user to pick |
 
-If the user names a **spec** or you're unsure of the subject, read [.agents/skills/find-tested-component/SKILL.md](../find-tested-component/SKILL.md) and trace mount/imports to the real `*.tsx` subject.
+All paths must be **repo-relative** from the monorepo root (include the `packages/<package>/` prefix when the component lives in a workspace package, not just `src/...`).
+
+If the user names a **spec** or you're unsure of the subject, read the `.spec.tsx` file and trace the mount target and imports to the co-located `*.tsx` component.
 
 **Prerequisites** (mention only if relevant):
 
@@ -113,6 +115,6 @@ STRYKER_CONCURRENCY=2 npm run test:stryker -- \
 ## Hard rules
 
 - **Do not** execute `npm run test:stryker`, `stryker run`, or `node scripts/stryker-target.mjs`.
-- **Do not** pass `*.spec.tsx` paths as mutation targets (runner expects component files).
-- **Do not** suggest Jest for mutation testing in this repo — Playwright CT is the supported path.
+- **Never pass** `*.spec.tsx` paths as mutation targets (runner expects component files).
+- **Jest is not supported** for mutation testing in this repo — Playwright CT is the supported path.
 - If paths cannot be resolved confidently, ask one clarifying question before outputting the command.
