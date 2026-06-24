@@ -289,6 +289,7 @@ export function createMockRosaHcpWizardData(
       error: null,
       isFetching: false,
       ocmRoleError: null,
+      ocmRoleARN: null,
       userRoleError: null,
       fetch: async () => {
         /* story stub */
