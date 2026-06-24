@@ -74,7 +74,14 @@ describe('wizardFieldMetaChangeRegistry', () => {
               region: 'region',
             },
           },
-          { resource: 'machineTypes', argFromField: 'region' },
+          {
+            resource: 'machineTypes',
+            argsFromFields: {
+              role_arn: 'installer_role_arn',
+              region: 'region',
+              availability_zones: 'selected_vpc',
+            },
+          },
         ])
       );
     });

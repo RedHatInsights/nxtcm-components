@@ -224,7 +224,7 @@ export function createMockRosaHcpWizardDataWithFetchLogging(
     },
     machineTypes: {
       ...base.machineTypes,
-      fetch: storyFetchWithLogging<[region: string]>('machineTypes'),
+      fetch: storyFetchWithLogging<[args: import('./types').MachineTypesArgs]>('machineTypes'),
     },
     roles: {
       ...base.roles,
@@ -288,6 +288,8 @@ export function createMockRosaHcpWizardData(
       data: fixtures.mockRoles,
       error: null,
       isFetching: false,
+      ocmRoleError: null,
+      userRoleError: null,
       fetch: async () => {
         /* story stub */
       },

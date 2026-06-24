@@ -85,7 +85,7 @@ export function RosaHcpYamlEditorFooter({
               isDisabled={isSubmitting}
               onClick={handleApply}
             >
-              {wizard.applyChanges}
+              {wizard.createCluster}
             </Button>
           </ActionListItem>
           <ActionListItem>

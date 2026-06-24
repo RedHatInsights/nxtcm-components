@@ -1,5 +1,7 @@
-import { ExpandableSection, Title } from '@patternfly/react-core';
+import { ExpandableSection } from '@patternfly/react-core';
 import React from 'react';
+
+import './AssociateAWSAccountInfo.css';
 
 type AssociateAWSAccountInfoProps = {
   title: string;
@@ -14,20 +16,16 @@ export const AssociateAWSAccountInfo = (props: AssociateAWSAccountInfoProps) => 
     setIsExpanded(isExpanded);
   };
   return (
-    <>
-      <ExpandableSection
-        onToggle={(event: React.MouseEvent<Element, MouseEvent>, isExpanded: boolean) =>
-          onToggle(event, isExpanded)
-        }
-        isExpanded={isExpanded}
-        toggleContent={
-          <Title headingLevel="h3" size="md">
-            {title}
-          </Title>
-        }
-      >
-        {props.children}
-      </ExpandableSection>
-    </>
+    <ExpandableSection
+      className="associate-aws-account-info"
+      toggleWrapper="h3"
+      toggleText={title}
+      onToggle={(event: React.MouseEvent<Element, MouseEvent>, isExpanded: boolean) =>
+        onToggle(event, isExpanded)
+      }
+      isExpanded={isExpanded}
+    >
+      {props.children}
+    </ExpandableSection>
   );
 };

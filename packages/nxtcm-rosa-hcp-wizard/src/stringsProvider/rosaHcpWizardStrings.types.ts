@@ -176,10 +176,9 @@ export type RosaHcpWizardStrings = {
     /** Footer Next button label. */
     next: string;
     /** Footer Submit button label on the Review step. */
-    submit: string;
+    createCluster: string;
     /** Footer Cancel button label. */
     cancel: string;
-    applyChanges: string;
   };
   submitError: {
     title: string;
@@ -299,6 +298,9 @@ export type RosaHcpWizardStrings = {
     clipboardCopyAria: string;
     copyHover: string;
     copyClicked: string;
+    rolesAlertTitle: string;
+    accountRolesHelp: string;
+    userRolesHelp: string;
   };
   oidcHint: {
     instructions: string;

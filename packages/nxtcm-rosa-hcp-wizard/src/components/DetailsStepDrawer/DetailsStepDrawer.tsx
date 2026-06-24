@@ -18,7 +18,7 @@ import { OCMRole } from './OCMRole';
 import { AccountRoles } from './AccountRoles';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { UserRole } from './UserRole';
-import { AssociateAWSAccountInfo } from '../AssociateAWSAccountInfo';
+import { AssociateAWSAccountInfo } from './AssociateAWSAccountInfo';
 
 type StepDrawerProps = {
   isDrawerExpanded: boolean;
@@ -31,7 +31,7 @@ export const DetailsStepDrawer = (props: StepDrawerProps) => {
   const { isDrawerExpanded, onWizardExpand, setIsDrawerExpanded } = props;
   const d = useRosaHcpWizardStrings().associateAwsDrawer;
   return (
-    <Drawer isInline isExpanded={isDrawerExpanded} onExpand={onWizardExpand}>
+    <Drawer isExpanded={isDrawerExpanded} onExpand={onWizardExpand}>
       <DrawerContent
         panelContent={
           <DrawerPanelContent isResizable={true} defaultSize="40%">

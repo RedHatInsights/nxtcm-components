@@ -130,6 +130,8 @@ export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMount
     isFetching: false,
     fetch: async (_awsAccount: string) => {},
     error: null,
+    ocmRoleError: null,
+    userRoleError: null,
   };
 
   const oidcProps = {

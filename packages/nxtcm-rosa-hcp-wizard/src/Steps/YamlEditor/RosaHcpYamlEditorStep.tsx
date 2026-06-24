@@ -22,6 +22,7 @@ import { setupMonacoEnvironmentIfNeeded } from './monacoYamlSetup';
 import { validateYaml } from './yamlValidation';
 import { parseRosaControlPlaneYaml } from './yamlUtils';
 import rosaHcpTemplateRaw from './templates/rosa-hcp-template.hbs?raw';
+import './RosaHcpYamlEditorStep.css';
 
 Handlebars.registerHelper(
   'eq',
@@ -256,7 +257,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
     );
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <div className="rosa-hcp-yaml-editor-step">
         {parseError && (
           <Alert
             variant="danger"
@@ -268,44 +269,42 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
           </Alert>
         )}
 
-        <div style={{ flex: '1 1 auto', minHeight: 0 }}>
-          <Drawer isExpanded={showSchema} position="right">
-            <DrawerContent
-              panelContent={
-                showSchema ? <RosaHcpSchemaPanel onClose={() => setShowSchema(false)} /> : undefined
-              }
-            >
-              <DrawerContentBody style={{ height: '100%' }}>
-                <CodeEditor
-                  language={Language.yaml}
-                  code={yamlContent}
-                  onCodeChange={handleCodeChange}
-                  onEditorDidMount={handleEditorDidMount}
-                  isFullHeight
-                  isCopyEnabled
-                  isDownloadEnabled
-                  customControls={schemaToggleControl}
-                  options={{
-                    minimap: { enabled: false },
-                    scrollBeyondLastLine: false,
-                    fontSize: 14,
-                    tabSize: 2,
-                    automaticLayout: true,
-                    wordWrap: 'wordWrapColumn',
-                    wordWrapColumn: 256,
-                    glyphMargin: true,
-                    quickSuggestions: { other: true, comments: true, strings: true },
-                    scrollbar: {
-                      verticalScrollbarSize: 17,
-                      horizontalScrollbarSize: 17,
-                    },
-                  }}
-                  editorProps={{ path: YAML_MODEL_PATH }}
-                />
-              </DrawerContentBody>
-            </DrawerContent>
-          </Drawer>
-        </div>
+        <Drawer isInline isExpanded={showSchema} position="end">
+          <DrawerContent
+            panelContent={
+              showSchema ? <RosaHcpSchemaPanel onClose={() => setShowSchema(false)} /> : undefined
+            }
+          >
+            <DrawerContentBody>
+              <CodeEditor
+                language={Language.yaml}
+                code={yamlContent}
+                onCodeChange={handleCodeChange}
+                onEditorDidMount={handleEditorDidMount}
+                isFullHeight
+                isCopyEnabled
+                isDownloadEnabled
+                customControls={schemaToggleControl}
+                options={{
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                  fontSize: 14,
+                  tabSize: 2,
+                  automaticLayout: true,
+                  wordWrap: 'wordWrapColumn',
+                  wordWrapColumn: 256,
+                  glyphMargin: true,
+                  quickSuggestions: { other: true, comments: true, strings: true },
+                  scrollbar: {
+                    verticalScrollbarSize: 17,
+                    horizontalScrollbarSize: 17,
+                  },
+                }}
+                editorProps={{ path: YAML_MODEL_PATH }}
+              />
+            </DrawerContentBody>
+          </DrawerContent>
+        </Drawer>
       </div>
     );
   }

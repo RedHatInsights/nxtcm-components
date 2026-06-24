@@ -147,6 +147,8 @@ export type ValidationResource = {
 };
 
 export type RolesResource = Resource<Role[], [awsAccount: string]> & {
+  ocmRoleError: string | null;
+  userRoleError: string | null;
   fetch: (awsAccount: string) => Promise<void>;
 };
 export type RegionsResource = Resource<Region[], [awsAccount: string]> & {
@@ -155,8 +157,17 @@ export type RegionsResource = Resource<Region[], [awsAccount: string]> & {
 export type VersionsResource = Resource<OpenShiftVersionsData, []> & {
   fetch: () => Promise<void>;
 };
-export type MachineTypesResource = Resource<MachineTypesDropdownType[], [region: string]> & {
-  fetch: (region: string) => Promise<void>;
+
+export type MachineTypesArgs = {
+  region: string;
+  role_arn: string;
+  availability_zones: string[];
+};
+export type MachineTypesResource = Resource<
+  MachineTypesDropdownType[],
+  [args: MachineTypesArgs]
+> & {
+  fetch: (args: MachineTypesArgs) => Promise<void>;
 };
 
 export type AwsInfrastructureAccountsResource = Resource<AWSInfrastructureAccounts[]>;

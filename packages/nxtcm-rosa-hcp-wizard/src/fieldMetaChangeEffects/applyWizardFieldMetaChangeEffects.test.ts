@@ -4,7 +4,7 @@ import { applyWizardFieldMetaChangeEffects } from './applyWizardFieldMetaChangeE
 import { resetFieldsToDefaultValues } from './resetFieldsToDefaultValues';
 import { syncFieldsOnSourceChange } from './syncFieldsOnSourceChange';
 import { applyWizardFieldDerivedSync } from './wizardFieldDerivedSyncs';
-import type { ROSAHCPCluster, ROSAHCPWizardData } from '../types';
+import type { ROSAHCPCluster, ROSAHCPWizardData, VPC } from '../types';
 import fixtures from '../ROSAHCPWizard.fixtures';
 import { getWizardFieldSyncsForSourceField } from '../yupSchemas';
 
@@ -41,6 +41,7 @@ const applyWizardFieldDerivedSyncMock = applyWizardFieldDerivedSync as jest.Mock
 function makeWizardData(
   overrides: Partial<{
     vpcListFetch: jest.Mock;
+    vpcListData: VPC[];
     machineTypesFetch: jest.Mock;
     regionsFetch: jest.Mock;
   }> = {}
@@ -61,10 +62,17 @@ function makeWizardData(
       isFetching: false,
       fetch: overrides.machineTypesFetch ?? jest.fn(),
     },
-    roles: { data: fixtures.mockRoles, error: null, isFetching: false, fetch: jest.fn() },
+    roles: {
+      data: fixtures.mockRoles,
+      error: null,
+      isFetching: false,
+      fetch: jest.fn(),
+      ocmRoleError: null,
+      userRoleError: null,
+    },
     oidcConfig: { data: [], error: null, isFetching: false, fetch: jest.fn() },
     vpcList: {
-      data: [],
+      data: overrides.vpcListData ?? [],
       error: null,
       isFetching: false,
       fetch: overrides.vpcListFetch ?? jest.fn(),
@@ -91,6 +99,7 @@ describe('applyWizardFieldMetaChangeEffects', () => {
         region: 'us-east-1',
         associated_aws_id: 'aws-123',
         installer_role_arn: 'arn:aws:iam::role/installer',
+        selected_vpc: 'vpc-123',
       },
       previousValue: undefined,
       currentValue: 'us-east-1',
@@ -104,7 +113,7 @@ describe('applyWizardFieldMetaChangeEffects', () => {
       role_arn: 'arn:aws:iam::role/installer',
       region: 'us-east-1',
     });
-    expect(machineTypesFetch).toHaveBeenCalledWith('us-east-1');
+    expect(machineTypesFetch).not.toHaveBeenCalled();
     expect(resetFieldsToDefaultValuesMock).not.toHaveBeenCalled();
   });
 
@@ -119,6 +128,7 @@ describe('applyWizardFieldMetaChangeEffects', () => {
         region: 'us-east-1',
         associated_aws_id: '',
         installer_role_arn: 'arn:aws:iam::role/installer',
+        selected_vpc: 'vpc-123',
       },
       previousValue: undefined,
       currentValue: 'us-east-1',
@@ -127,7 +137,7 @@ describe('applyWizardFieldMetaChangeEffects', () => {
     });
 
     expect(vpcListFetch).not.toHaveBeenCalled();
-    expect(machineTypesFetch).toHaveBeenCalledWith('us-east-1');
+    expect(machineTypesFetch).not.toHaveBeenCalled();
   });
 
   it('resets dependents and refetches when a tracked field changes', () => {
@@ -141,6 +151,7 @@ describe('applyWizardFieldMetaChangeEffects', () => {
         region: 'us-west-2',
         associated_aws_id: 'aws-123',
         installer_role_arn: 'arn:aws:iam::role/installer',
+        selected_vpc: 'vpc-123',
       },
       previousValue: 'us-east-1',
       currentValue: 'us-west-2',
@@ -154,7 +165,7 @@ describe('applyWizardFieldMetaChangeEffects', () => {
       role_arn: 'arn:aws:iam::role/installer',
       region: 'us-west-2',
     });
-    expect(machineTypesFetch).toHaveBeenCalledWith('us-west-2');
+    expect(machineTypesFetch).not.toHaveBeenCalled();
     expect(resetFieldsToDefaultValuesMock).toHaveBeenCalledWith(
       setValue,
       [
@@ -168,6 +179,7 @@ describe('applyWizardFieldMetaChangeEffects', () => {
         region: 'us-west-2',
         associated_aws_id: 'aws-123',
         installer_role_arn: 'arn:aws:iam::role/installer',
+        selected_vpc: 'vpc-123',
       }
     );
   });
@@ -339,5 +351,98 @@ describe('applyWizardFieldMetaChangeEffects', () => {
     });
 
     expect(regionsFetch).not.toHaveBeenCalled();
+  });
+
+  it('resolves availability zones from VPC list when selected_vpc is a string id', () => {
+    const machineTypesFetch = jest.fn();
+    const vpcListFetch = jest.fn();
+    const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
+    const vpcListData: VPC[] = [
+      {
+        id: 'vpc-123',
+        name: 'test-vpc',
+        aws_subnets: [
+          { subnet_id: 'sub-1', name: 's1', availability_zone: 'us-east-1a', public: true },
+          { subnet_id: 'sub-2', name: 's2', availability_zone: 'us-east-1b', public: false },
+          { subnet_id: 'sub-3', name: 's3', availability_zone: 'us-east-1a', public: false },
+        ],
+      },
+    ];
+
+    applyWizardFieldMetaChangeEffects({
+      sourceField: 'region',
+      formValues: {
+        region: 'us-east-1',
+        associated_aws_id: 'aws-123',
+        installer_role_arn: 'arn:aws:iam::role/installer',
+        selected_vpc: 'vpc-123',
+      },
+      previousValue: undefined,
+      currentValue: 'us-east-1',
+      wizardData: makeWizardData({ machineTypesFetch, vpcListFetch, vpcListData }),
+      setValue,
+    });
+
+    expect(machineTypesFetch).toHaveBeenCalledTimes(1);
+    expect(machineTypesFetch).toHaveBeenCalledWith({
+      role_arn: 'arn:aws:iam::role/installer',
+      region: 'us-east-1',
+      availability_zones: ['us-east-1a', 'us-east-1b'],
+    });
+  });
+
+  it('resolves availability zones from VPC object when selected_vpc is already resolved', () => {
+    const machineTypesFetch = jest.fn();
+    const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
+    const vpcObj: VPC = {
+      id: 'vpc-456',
+      name: 'resolved-vpc',
+      aws_subnets: [
+        { subnet_id: 'sub-a', name: 'sa', availability_zone: 'us-west-2a', public: true },
+        { subnet_id: 'sub-b', name: 'sb', availability_zone: 'us-west-2b', public: false },
+      ],
+    };
+
+    applyWizardFieldMetaChangeEffects({
+      sourceField: 'selected_vpc',
+      formValues: {
+        selected_vpc: vpcObj,
+        installer_role_arn: 'arn:aws:iam::role/installer',
+        region: 'us-west-2',
+      },
+      previousValue: '',
+      currentValue: vpcObj,
+      wizardData: makeWizardData({ machineTypesFetch }),
+      setValue,
+    });
+
+    expect(machineTypesFetch).toHaveBeenCalledTimes(1);
+    expect(machineTypesFetch).toHaveBeenCalledWith({
+      role_arn: 'arn:aws:iam::role/installer',
+      region: 'us-west-2',
+      availability_zones: ['us-west-2a', 'us-west-2b'],
+    });
+  });
+
+  it('skips machineTypes refetch when VPC has no subnets', () => {
+    const machineTypesFetch = jest.fn();
+    const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
+    const vpcListData: VPC[] = [{ id: 'vpc-empty', name: 'empty-vpc', aws_subnets: [] }];
+
+    applyWizardFieldMetaChangeEffects({
+      sourceField: 'region',
+      formValues: {
+        region: 'us-east-1',
+        associated_aws_id: 'aws-123',
+        installer_role_arn: 'arn:aws:iam::role/installer',
+        selected_vpc: 'vpc-empty',
+      },
+      previousValue: undefined,
+      currentValue: 'us-east-1',
+      wizardData: makeWizardData({ machineTypesFetch, vpcListData }),
+      setValue,
+    });
+
+    expect(machineTypesFetch).not.toHaveBeenCalled();
   });
 });

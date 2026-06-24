@@ -106,13 +106,21 @@ test.describe('MachinePools (ROSA HCP)', () => {
   test('should fetch machine types when region is present', async ({ mount }) => {
     const fetchedRegions: string[] = [];
     const machineTypes = makeMachineTypesResource({
-      fetch: (region: string) => {
-        fetchedRegions.push(region);
+      fetch: (args) => {
+        fetchedRegions.push(args.region);
         return Promise.resolve();
       },
     });
 
-    await mount(<MachinePoolsMount machineTypes={machineTypes} />);
+    await mount(
+      <MachinePoolsMount
+        machineTypes={machineTypes}
+        defaultValues={{
+          installer_role_arn: 'arn:aws:iam::role/test-installer',
+          selected_vpc: fixtureVpc1.id,
+        }}
+      />
+    );
 
     await expect
       .poll(() => fetchedRegions.length > 0 && fetchedRegions.every((r) => r === 'us-east-1'))

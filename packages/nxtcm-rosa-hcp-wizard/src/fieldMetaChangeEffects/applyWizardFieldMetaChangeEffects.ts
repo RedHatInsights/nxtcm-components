@@ -6,6 +6,7 @@ import { syncFieldsOnSourceChange } from './syncFieldsOnSourceChange';
 import { applyWizardFieldDerivedSync } from './wizardFieldDerivedSyncs';
 import { wizardFormFieldValuesEqual } from './wizardFormFieldValuesEqual';
 import type { ROSAHCPCluster, ROSAHCPWizardData } from '../types';
+import { resolveSelectedVpc } from '../utilities/helpers';
 import {
   getWizardFieldDerivedSyncKeyForSourceField,
   getWizardFieldResetsForSourceField,
@@ -13,6 +14,24 @@ import {
   getWizardResourceRefetchesForSourceField,
 } from '../yupSchemas';
 import type { WizardFormFieldName, WizardResourceRefetchOnChange } from '../yupSchemas/types';
+
+type ComposedArgResolver = (rawValue: unknown, wizardData: ROSAHCPWizardData) => unknown;
+
+/**
+ * Arg-key-specific resolvers that transform raw form field values into the shape
+ * expected by a resource's `fetch`. Keys not listed here fall through to the
+ * default `hasRefetchableStringValue` string check.
+ */
+const COMPOSED_REFETCH_ARG_RESOLVERS: Readonly<Record<string, ComposedArgResolver>> = {
+  availability_zones: (rawValue, wizardData) => {
+    const vpc = resolveSelectedVpc(
+      rawValue as ROSAHCPCluster['selected_vpc'],
+      wizardData.vpcList.data
+    );
+    if (!vpc?.aws_subnets?.length) return null;
+    return [...new Set(vpc.aws_subnets.map((s) => s.availability_zone))];
+  },
+};
 
 export type ApplyWizardFieldMetaChangeEffectsArgs = {
   sourceField: WizardFormFieldName;
@@ -24,20 +43,28 @@ export type ApplyWizardFieldMetaChangeEffectsArgs = {
 };
 
 /**
- * Builds a `Record<string, string>` from multiple form field values.
+ * Builds a fetch-args record from multiple form field values.
+ * Arg keys with a registered {@link COMPOSED_REFETCH_ARG_RESOLVERS} entry are transformed
+ * (e.g. `availability_zones` resolves a VPC value into a `string[]` of AZ identifiers).
  * Returns `null` when any referenced field is empty/missing so the refetch is skipped.
  */
 export function buildComposedRefetchArg(
   argsFromFields: Readonly<Record<string, WizardFormFieldName>>,
-  formValues: Partial<ROSAHCPCluster>
-): Record<string, string> | null {
-  const result: Record<string, string> = {};
+  formValues: Partial<ROSAHCPCluster>,
+  wizardData: ROSAHCPWizardData
+): Record<string, unknown> | null {
+  const result: Record<string, unknown> = {};
   for (const [key, fieldName] of Object.entries(argsFromFields)) {
     const value = formValues[fieldName];
-    if (!hasRefetchableStringValue(value)) {
-      return null;
+    const resolver = COMPOSED_REFETCH_ARG_RESOLVERS[key];
+    if (resolver) {
+      const resolved = resolver(value, wizardData);
+      if (resolved == null) return null;
+      result[key] = resolved;
+    } else {
+      if (!hasRefetchableStringValue(value)) return null;
+      result[key] = value;
     }
-    result[key] = value;
   }
   return result;
 }
@@ -61,11 +88,11 @@ function refetchWizardResource(
   }
 
   if ('argsFromFields' in refetch) {
-    const composed = buildComposedRefetchArg(refetch.argsFromFields, formValues);
+    const composed = buildComposedRefetchArg(refetch.argsFromFields, formValues, wizardData);
     if (!composed) {
       return;
     }
-    void (fetch as (arg: Record<string, string>) => Promise<void>)(composed);
+    void (fetch as (arg: Record<string, unknown>) => Promise<void>)(composed);
     return;
   }
 

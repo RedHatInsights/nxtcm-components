@@ -50,9 +50,8 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     skipToReview: 'Skip to review',
     back: 'Back',
     next: 'Next',
-    submit: 'Submit',
     cancel: 'Cancel',
-    applyChanges: 'Apply changes',
+    createCluster: 'Create cluster',
   },
   submitError: {
     title: 'Error creating cluster',
@@ -198,6 +197,9 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     clipboardCopyAria: 'Copy read-only example',
     copyHover: 'Copy',
     copyClicked: 'Copied',
+    rolesAlertTitle: 'Some roles are missing',
+    accountRolesHelp: 'Missing account roles',
+    userRolesHelp: 'Missing user role',
   },
   oidcHint: {
     instructions:
