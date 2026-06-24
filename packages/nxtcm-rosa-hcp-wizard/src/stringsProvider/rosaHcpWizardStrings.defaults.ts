@@ -197,6 +197,9 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     clipboardCopyAria: 'Copy read-only example',
     copyHover: 'Copy',
     copyClicked: 'Copied',
+    rolesAlertTitle: 'Some roles are missing',
+    accountRolesHelp: 'Missing account roles',
+    userRolesHelp: 'Missing user role',
   },
   oidcHint: {
     instructions:

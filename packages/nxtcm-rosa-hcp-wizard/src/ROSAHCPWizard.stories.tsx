@@ -47,6 +47,8 @@ const mockWizardData: ROSAHCPWizardData = {
   roles: {
     ...fixtures.mockFetchResource<Role[], [awsAccount: string]>(fixtures.mockRoles),
     fetch: async () => {},
+    ocmRoleError: null,
+    userRoleError: null,
   },
   oidcConfig: {
     ...fixtures.mockFetchResource<OIDCConfig[], [awsAccount: string]>(fixtures.mockOicdConfig),
@@ -336,5 +338,75 @@ export const SubmitError: Story = {
       console.log('Wizard cancelled');
       alert('Wizard cancelled');
     },
+  },
+};
+
+/**
+ * Wizard with no account roles available. Navigate to the Roles & Policies step to see
+ * the "Missing account roles" danger alert with a `rosa create account-role` copy instruction.
+ */
+export const RolesAlertMissingAccountRoles: Story = {
+  args: {
+    title: 'Create ROSA Cluster — missing account roles',
+    yaml: true,
+    onSubmit: onWizardSubmit,
+    onCancel: onWizardCancel,
+    wizardData: createMockRosaHcpWizardData({
+      roles: {
+        data: [],
+        error: null,
+        isFetching: false,
+        ocmRoleError: null,
+        userRoleError: null,
+        fetch: async () => {},
+      },
+    }),
+  },
+};
+
+/**
+ * Wizard with a user role error. Navigate to the Roles & Policies step to see
+ * the "Missing user role" danger alert with a `rosa create user-role` copy instruction.
+ */
+export const RolesAlertMissingUserRole: Story = {
+  args: {
+    title: 'Create ROSA Cluster — missing user role',
+    yaml: true,
+    onSubmit: onWizardSubmit,
+    onCancel: onWizardCancel,
+    wizardData: createMockRosaHcpWizardData({
+      roles: {
+        data: fixtures.mockRoles,
+        error: null,
+        isFetching: false,
+        ocmRoleError: null,
+        userRoleError: 'User role is not linked to your Red Hat account',
+        fetch: async () => {},
+      },
+    }),
+  },
+};
+
+/**
+ * Wizard with an OCM role error. Navigate to the Roles & Policies step to see
+ * the danger alert with the OCM error message.
+ * When `ocmRoleError` is set, the "Missing user role" section is suppressed even if `userRoleError` is also set.
+ */
+export const RolesAlertOcmRoleError: Story = {
+  args: {
+    title: 'Create ROSA Cluster — OCM role error',
+    yaml: true,
+    onSubmit: onWizardSubmit,
+    onCancel: onWizardCancel,
+    wizardData: createMockRosaHcpWizardData({
+      roles: {
+        data: fixtures.mockRoles,
+        error: null,
+        isFetching: false,
+        ocmRoleError: 'OCM role is not linked to your organization',
+        userRoleError: null,
+        fetch: async () => {},
+      },
+    }),
   },
 };

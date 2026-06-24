@@ -307,6 +307,148 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     });
   });
 
+  test.describe('RolesAndPolicies — RolesAlert', () => {
+    const ALERT_HEADING = /Some roles are missing/;
+
+    test('should not show alert when roles are loaded and no errors', async ({ mount }) => {
+      const component = await mount(<RolesAndPoliciesMount />);
+
+      await expect(component.getByRole('heading', { name: ALERT_HEADING })).not.toBeVisible();
+    });
+
+    test('should show "Missing account roles" when no roles data is available', async ({
+      mount,
+    }) => {
+      const component = await mount(
+        <RolesAndPoliciesMount
+          roles={{
+            data: [],
+            isFetching: false,
+            error: null,
+            fetch: async () => {},
+            ocmRoleError: null,
+            userRoleError: null,
+          }}
+        />
+      );
+
+      await expect(component.getByRole('heading', { name: ALERT_HEADING })).toBeVisible();
+      await expect(component.getByText('Missing account roles')).toBeVisible();
+    });
+
+    test('should show copy instruction for rosa create account-role when no roles data', async ({
+      mount,
+    }) => {
+      const component = await mount(
+        <RolesAndPoliciesMount
+          roles={{
+            data: [],
+            isFetching: false,
+            error: null,
+            fetch: async () => {},
+            ocmRoleError: null,
+            userRoleError: null,
+          }}
+        />
+      );
+
+      await expect(
+        component.getByRole('textbox', { name: 'Copyable ROSA create account-roles' })
+      ).toBeVisible();
+    });
+
+    test('should show "Missing account roles" when selected role has incomplete support/worker roles', async ({
+      mount,
+      page,
+    }) => {
+      const incompleteRoles = {
+        data: [
+          {
+            installerRole: mockRoles[0].installerRole,
+            supportRole: [],
+            workerRole: [],
+          },
+        ],
+        isFetching: false,
+        error: null,
+        fetch: async () => {},
+        ocmRoleError: null,
+        userRoleError: null,
+      };
+      const component = await mount(<RolesAndPoliciesMount roles={incompleteRoles} />);
+
+      await component.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
+      await page.getByRole('option', { name: mockRoles[0].installerRole.label }).click();
+
+      await expect(component.getByRole('heading', { name: ALERT_HEADING })).toBeVisible();
+      await expect(component.getByText('Missing account roles')).toBeVisible();
+    });
+
+    test('should show "Missing user role" when userRoleError is present and no ocmRoleError', async ({
+      mount,
+    }) => {
+      const component = await mount(
+        <RolesAndPoliciesMount
+          roles={{
+            data: mockRoles,
+            isFetching: false,
+            error: null,
+            fetch: async () => {},
+            ocmRoleError: null,
+            userRoleError: 'User role is not linked',
+          }}
+        />
+      );
+
+      await expect(component.getByRole('heading', { name: ALERT_HEADING })).toBeVisible();
+      await expect(component.getByText('Missing user role')).toBeVisible();
+      await expect(
+        component.getByRole('textbox', { name: 'Copyable ROSA create user-role' })
+      ).toBeVisible();
+    });
+
+    test('should show ocmRoleError message when ocmRoleError is present', async ({ mount }) => {
+      const ocmError = 'OCM role is not linked to your organization';
+      const component = await mount(
+        <RolesAndPoliciesMount
+          roles={{
+            data: mockRoles,
+            isFetching: false,
+            error: null,
+            fetch: async () => {},
+            ocmRoleError: ocmError,
+            userRoleError: null,
+          }}
+        />
+      );
+
+      await expect(component.getByRole('heading', { name: ALERT_HEADING })).toBeVisible();
+      await expect(component.getByText(ocmError)).toBeVisible();
+    });
+
+    test('should not show "Missing user role" when both ocmRoleError and userRoleError are present', async ({
+      mount,
+    }) => {
+      const ocmError = 'OCM role is not linked to your organization';
+      const component = await mount(
+        <RolesAndPoliciesMount
+          roles={{
+            data: mockRoles,
+            isFetching: false,
+            error: null,
+            fetch: async () => {},
+            ocmRoleError: ocmError,
+            userRoleError: 'User role is not linked',
+          }}
+        />
+      );
+
+      await expect(component.getByRole('heading', { name: ALERT_HEADING })).toBeVisible();
+      await expect(component.getByText(ocmError)).toBeVisible();
+      await expect(component.getByText('Missing user role')).not.toBeVisible();
+    });
+  });
+
   test.describe('RolesAndPolicies — operator roles prefix', () => {
     test('should render the operator role prefix toggle', async ({ mount }) => {
       const component = await mount(<RolesAndPoliciesMount />);
