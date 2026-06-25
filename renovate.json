@@ -9,7 +9,7 @@
     },
     {
       "description": "Group PatternFly packages across all workspaces",
-      "matchPackagePatterns": ["@patternfly/*"],
+      "matchPackageNames": ["@patternfly/**"],
       "groupName": "patternfly"
     },
     {
