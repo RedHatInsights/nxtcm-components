@@ -49,3 +49,10 @@ fix-all.sh
 /packages/*/node_modules
 
 /packages/*/lib/
+
+# stryker temp files
+.stryker-tmp
+.stryker-incremental.json
+.stryker-ct-cache
+.stryker-pwtest-cache
+/reports/mutation/
