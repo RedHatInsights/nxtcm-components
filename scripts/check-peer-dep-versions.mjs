@@ -5,8 +5,10 @@
  * package.json. exits with code 1 if any shared dep has a different version
  * range than what the root declares.
  *
- * source of truth: root peerDependencies + devDependencies.
- * only checks deps that exist in BOTH root and workspace peerDependencies.
+ * source of truth: root devDependencies (wins) merged over root peerDependencies.
+ * only flags a dep if it exists in both the root (peer or dev) AND a workspace's
+ * peerDependencies. if the same package appears in both root peer and dev with
+ * different ranges, the devDependencies range takes precedence.
  */
 
 import { readFileSync } from 'node:fs';
