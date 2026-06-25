@@ -9,7 +9,7 @@ import { ClusterEncryptionKeys, ROSAHCPCluster } from '../../../types';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../constants/links';
-import { FieldWrapper } from '../../../components/FieldWrapper';
+import { FieldWrapper, FieldWrapperStack } from '../../../components/FieldWrapper';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
 import { useClearFieldWhenHidden } from './useClearFieldWhenHidden';
 import { useEncryptionYupDescribeOptions } from './useEncryptionYupDescribeOptions';
@@ -50,37 +50,43 @@ export const Encryption = () => {
         </FieldWrapper>
       </WizRadioGroup>
 
-      {customKmsSelected === 'custom' ? (
-        <WizTextInput<ROSAHCPCluster>
-          name="kms_key_arn"
-          schema={clusterValidationSchema}
-          yupDescribeOptions={yupDescribeOptions}
-        />
-      ) : null}
-      <FieldWrapper span={6}>
-        <WizCheckbox<ROSAHCPCluster>
-          name="etcd_encryption"
-          schema={clusterValidationSchema}
-          helperText={
-            <>
-              {e.etcdHelperLead}{' '}
-              <ExternalLink href={links.ROSA_SERVICE_ETCD_ENCRYPTION}>
-                {e.etcdLearnMore}
-              </ExternalLink>
-            </>
-          }
-        />
-      </FieldWrapper>
-      {etcdIsChecked ? (
-        <WizTextInput<ROSAHCPCluster>
-          name="etcd_key_arn"
-          schema={clusterValidationSchema}
-          yupDescribeOptions={yupDescribeOptions}
-        />
-      ) : null}
-      <FieldWrapper span={6}>
-        <Alert variant="info" title={e.keysNoteAlert} ouiaId="encryptionKeysAlert" />
-      </FieldWrapper>
+      <FieldWrapperStack>
+        {customKmsSelected === 'custom' ? (
+          <FieldWrapper width="large">
+            <WizTextInput<ROSAHCPCluster>
+              name="kms_key_arn"
+              schema={clusterValidationSchema}
+              yupDescribeOptions={yupDescribeOptions}
+            />
+          </FieldWrapper>
+        ) : null}
+        <FieldWrapper width="medium">
+          <WizCheckbox<ROSAHCPCluster>
+            name="etcd_encryption"
+            schema={clusterValidationSchema}
+            helperText={
+              <>
+                {e.etcdHelperLead}{' '}
+                <ExternalLink href={links.ROSA_SERVICE_ETCD_ENCRYPTION}>
+                  {e.etcdLearnMore}
+                </ExternalLink>
+              </>
+            }
+          />
+        </FieldWrapper>
+        {etcdIsChecked ? (
+          <FieldWrapper width="large">
+            <WizTextInput<ROSAHCPCluster>
+              name="etcd_key_arn"
+              schema={clusterValidationSchema}
+              yupDescribeOptions={yupDescribeOptions}
+            />
+          </FieldWrapper>
+        ) : null}
+        <FieldWrapper width="medium">
+          <Alert variant="info" title={e.keysNoteAlert} ouiaId="encryptionKeysAlert" />
+        </FieldWrapper>
+      </FieldWrapperStack>
     </Section>
   );
 };

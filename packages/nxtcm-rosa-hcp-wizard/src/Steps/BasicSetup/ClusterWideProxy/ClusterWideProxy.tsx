@@ -1,4 +1,4 @@
-import { Alert, Content, ContentVariants, Stack, StackItem } from '@patternfly/react-core';
+import { Alert } from '@patternfly/react-core';
 import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
@@ -8,6 +8,11 @@ import { clusterValidationSchema } from '../../../yupSchemas';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { ROSAHCPCluster } from '../../../types';
 import { WizFileUpload } from '../../../components/WizFields/WizFileUpload';
+import {
+  FieldWrapper,
+  FieldWrapperBlock,
+  FieldWrapperStack,
+} from '../../../components/FieldWrapper';
 
 export const ClusterWideProxy = () => {
   const cw = useRosaHcpWizardStrings().clusterWideProxy;
@@ -21,39 +26,33 @@ export const ClusterWideProxy = () => {
   const disableNoProxyDomains = !isHttpValid && !isHttpsValid;
 
   return (
-    <Section label={cw.sectionLabel}>
-      <Stack hasGutter>
-        <StackItem>
-          {' '}
-          <Content component={ContentVariants.p}>{cw.intro}</Content>
-        </StackItem>
-        <StackItem>
-          {' '}
+    <Section label={cw.sectionLabel} description={cw.intro}>
+      <FieldWrapperStack>
+        <FieldWrapperBlock>
           <ExternalLink href={links.CONFIGURE_PROXY_URL}>{cw.learnMoreLink}</ExternalLink>
-        </StackItem>
-        <StackItem>
-          {' '}
+        </FieldWrapperBlock>
+        <FieldWrapperBlock>
           <Alert variant="info" isInline isPlain title={cw.alertConfigureFields} />
-        </StackItem>
-      </Stack>
-      <Stack hasGutter>
-        <StackItem>
+        </FieldWrapperBlock>
+      </FieldWrapperStack>
+      <FieldWrapperStack>
+        <FieldWrapper width="large">
           <WizTextInput name="http_proxy_url" schema={clusterValidationSchema} />
-        </StackItem>
-        <StackItem>
+        </FieldWrapper>
+        <FieldWrapper width="large">
           <WizTextInput name="https_proxy_url" schema={clusterValidationSchema} />
-        </StackItem>
-        <StackItem>
+        </FieldWrapper>
+        <FieldWrapper width="large">
           <WizTextInput
             isDisabled={disableNoProxyDomains}
             name="no_proxy_domains"
             schema={clusterValidationSchema}
           />
-        </StackItem>
-        <StackItem>
+        </FieldWrapper>
+        <FieldWrapper width="large">
           <WizFileUpload name="additional_trust_bundle" schema={clusterValidationSchema} />
-        </StackItem>
-      </Stack>
+        </FieldWrapper>
+      </FieldWrapperStack>
     </Section>
   );
 };
