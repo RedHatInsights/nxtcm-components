@@ -10,7 +10,7 @@ All PRs require **2 approvals** to merge.
 
 ### When Opening a PR
 
-When you open a PR, CODEOWNERS automatically requests `@RedHatInsights/console-next` as a reviewer. For changes to the GitHub configuration it will also require a review from `@RedHatInsights/console-next-admins`. 
+When you open a PR, CODEOWNERS automatically requests `@RedHatInsights/console-next` as a reviewer. For changes to the GitHub configuration it will require a review from `@RedHatInsights/console-next-admins`. 
 
 You should still:
 1. **Add reviewers manually** based on the expertise needed
