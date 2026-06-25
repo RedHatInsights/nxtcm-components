@@ -6,6 +6,16 @@
       "description": "Disable all major updates",
       "matchUpdateTypes": ["major"],
       "enabled": false
+    },
+    {
+      "description": "Group PatternFly packages across all workspaces",
+      "matchPackagePatterns": ["@patternfly/*"],
+      "groupName": "patternfly"
+    },
+    {
+      "description": "Group React packages across all workspaces",
+      "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
+      "groupName": "react"
     }
   ],
   "reviewers": ["nitin-dhevar", "kdoberst", "davidaznaur", "jloss-redhat", "vishsanghishetty", "brandonthanhnguyen"],
