@@ -1,37 +1,22 @@
+.container {
+  padding: var(--pf-t--global--spacer--md);
+}
+
 .bar {
   padding-top: var(--pf-t--global--spacer--xl);
+  width: 100%;
+
   div {
     display: inline-block;
   }
-  width: 100%;
+}
+
+.barSegment {
+  display: inline-block;
 }
 
 .legend {
   svg {
-    margin-right: 0.2em;
+    margin-right: var(--pf-t--global--spacer--xs);
   }
-}
-
-.serviceAvailability {
-  //background-color: var(--pf-v6-chart-color-blue-300);
-  background-color: #92c5f9;
-  color: #92c5f9;
-}
-
-.performance {
-  // background-color: var(--pf-v6-chart-color-blue-100);
-  background-color: #0066cc;
-  color: #0066cc;
-}
-
-.security {
-  // background-color: var(--pf-v6-chart-color-yellow-300);
-  background-color: #ffcc17;
-  color: #ffcc17;
-}
-
-.faultTolerance {
-  // background-color: var(--pf-v6-chart-color-yellow-100);
-  background-color: #b98412;
-  color: #b98412;
 }
