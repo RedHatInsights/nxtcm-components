@@ -5,28 +5,57 @@
  * package.json. exits with code 1 if any shared dep has a different version
  * range than what the root declares.
  *
- * source of truth (merge order, last wins):
- *   1. root peerDependencies
- *   2. root dependencies
- *   3. root devDependencies
+ * validation steps:
+ *   1. check root internal consistency: peerDependencies vs devDependencies
+ *   2. compare workspace peerDependencies against root peerDependencies
  *
- * only flags a dep if it exists in both the root AND a workspace's
- * peerDependencies. if the same package appears in multiple root sections
- * with different ranges, the devDependencies range takes precedence.
+ * source of truth for workspace comparison (merge order, last wins):
+ *   1. root dependencies
+ *   2. root devDependencies
+ *   3. root peerDependencies (takes precedence - this is the public contract)
+ *
+ * rationale: if root declares a peerDependency, that's what workspaces AND
+ * consuming apps must satisfy. root devDependencies should match peerDeps
+ * to ensure we develop against the same versions we ask consumers to provide.
  */
 
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const rootPkg = JSON.parse(readFileSync('package.json', 'utf8'));
+const errors = [];
+
+// Step 1: Check root internal consistency (peer vs dev)
+const peerDeps = rootPkg.peerDependencies || {};
+const devDeps = rootPkg.devDependencies || {};
+
+for (const [dep, peerVersion] of Object.entries(peerDeps)) {
+  if (devDeps[dep] && devDeps[dep] !== peerVersion) {
+    errors.push(
+      `  root: ${dep} is "${peerVersion}" in peerDependencies but "${devDeps[dep]}" in devDependencies`
+    );
+  }
+}
+
+if (errors.length > 0) {
+  console.error('Root peer/dev dependency version mismatch detected:\n');
+  console.error(errors.join('\n'));
+  console.error('\nUpdate root package.json so peerDependencies and devDependencies match.');
+  console.error(
+    'We develop against devDependencies but ask consumers to satisfy peerDependencies.'
+  );
+  process.exit(1);
+}
+
+// Step 2: Build source of truth (peerDependencies take precedence)
 const rootVersions = {
-  ...rootPkg.peerDependencies,
   ...rootPkg.dependencies,
   ...rootPkg.devDependencies,
+  ...rootPkg.peerDependencies,
 };
 
 const workspaces = rootPkg.workspaces || [];
-const errors = [];
+errors.length = 0; // reset for workspace checks
 
 for (const wsPath of workspaces) {
   const pkgPath = join(wsPath, 'package.json');
