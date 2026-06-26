@@ -1,0 +1,9 @@
+# Default owners for everything in the repo
+* @RedHatInsights/console-next
+
+# All GitHub configuration requires review from admins
+.github/** @RedHatInsights/console-next-admins
+
+# CODEOWNERS file itself requires admin review to prevent bypass attacks
+# Must come after wildcard so this rule takes precedence (last match wins)
+CODEOWNERS @RedHatInsights/console-next-admins
