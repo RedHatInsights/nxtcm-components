@@ -25,6 +25,15 @@ jobs:
             exit 1
           fi
 
+      - name: Verify release tag matches dashboard package version
+        run: |
+          expected="nxtcm-dashboard-v$(node -p "require('./packages/nxtcm-dashboard/package.json').version")"
+          actual="${{ github.event.release.tag_name }}"
+          if [ "$actual" != "$expected" ]; then
+            echo "::error::Release tag $actual does not match expected $expected"
+            exit 1
+          fi
+
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
@@ -43,13 +52,19 @@ jobs:
           fi
 
       - name: Run dashboard lint
-        run: npx eslint --config .eslintrc.json 'packages/nxtcm-dashboard/src/**/*.{ts,tsx}'
+        run: npm run lint -w packages/nxtcm-dashboard
 
       - name: Run dashboard type-check
         run: npm run type-check -w packages/nxtcm-dashboard
 
       - name: Run dashboard unit tests
         run: npm run test -w packages/nxtcm-dashboard
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run dashboard component tests
+        run: npm run test:ct -w packages/nxtcm-dashboard
 
       - name: Build dashboard package
         run: npm run build -w packages/nxtcm-dashboard
@@ -78,15 +93,6 @@ jobs:
 
       - name: Build dashboard package
         run: npm run build -w packages/nxtcm-dashboard
-
-      - name: Verify release tag matches dashboard package version
-        run: |
-          expected="v$(node -p "require('./packages/nxtcm-dashboard/package.json').version")"
-          actual="${{ github.event.release.tag_name }}"
-          if [ "$actual" != "$expected" ]; then
-            echo "::error::Release tag $actual does not match dashboard package version $expected"
-            exit 1
-          fi
 
       - name: Publish dashboard package
         run: npm publish -w packages/nxtcm-dashboard --provenance --access public
