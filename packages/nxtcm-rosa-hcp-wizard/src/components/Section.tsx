@@ -4,7 +4,7 @@ import React, { ReactNode } from 'react';
 
 type SectionProps = {
   id?: string;
-  label: string;
+  label: string | ReactNode;
   description?: ReactNode;
   children?: ReactNode;
   labelHelpTitle?: string;
@@ -12,7 +12,9 @@ type SectionProps = {
 };
 
 export const Section: React.FunctionComponent<SectionProps> = (props) => {
-  const id = props.id ?? props.label?.toLowerCase().split(' ').join('-') ?? '';
+  const id =
+    props.id ??
+    (typeof props.label === 'string' ? props.label.toLowerCase().split(' ').join('-') : '');
 
   return (
     <section id={id} className="pf-v6-c-form__group" role="group">
@@ -21,7 +23,7 @@ export const Section: React.FunctionComponent<SectionProps> = (props) => {
           <SplitItem isFilled>
             <Stack>
               <Split hasGutter>
-                <div className="pf-v6-c-form__section-title">
+                <div className="pf-v6-c-form__section-title pf-v6-u-w-100">
                   {props.label}
                   {props.id && (
                     <LabelHelp
