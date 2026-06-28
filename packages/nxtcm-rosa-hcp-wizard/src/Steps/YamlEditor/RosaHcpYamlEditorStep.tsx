@@ -295,6 +295,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
                   wordWrapColumn: 256,
                   glyphMargin: true,
                   quickSuggestions: { other: true, comments: true, strings: true },
+                  fixedOverflowWidgets: true,
                   scrollbar: {
                     verticalScrollbarSize: 17,
                     horizontalScrollbarSize: 17,

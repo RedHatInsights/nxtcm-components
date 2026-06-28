@@ -106,9 +106,9 @@ function formatAjvError(err: ErrorObject): string {
 }
 
 export function validateYaml(yamlStr: string): ValidationError[] {
-  let parsed: unknown;
+  let documents: unknown[];
   try {
-    parsed = yaml.load(yamlStr);
+    documents = yaml.loadAll(yamlStr);
   } catch (e) {
     if (e instanceof yaml.YAMLException) {
       return [
@@ -123,17 +123,20 @@ export function validateYaml(yamlStr: string): ValidationError[] {
     return [];
   }
 
-  if (
-    parsed === null ||
-    typeof parsed !== 'object' ||
-    (parsed as Record<string, unknown>).kind !== 'ROSAControlPlane'
-  ) {
+  const controlPlane = documents.find(
+    (doc) =>
+      doc !== null &&
+      typeof doc === 'object' &&
+      (doc as Record<string, unknown>).kind === 'ROSAControlPlane'
+  );
+
+  if (!controlPlane) {
     return [
       { message: 'Missing ROSAControlPlane document', line: 1, column: 1, severity: 'error' },
     ];
   }
 
-  const valid = validateRosaControlPlane(parsed);
+  const valid = validateRosaControlPlane(controlPlane);
   if (valid || !validateRosaControlPlane.errors) return [];
 
   return validateRosaControlPlane.errors.map((err) => ({

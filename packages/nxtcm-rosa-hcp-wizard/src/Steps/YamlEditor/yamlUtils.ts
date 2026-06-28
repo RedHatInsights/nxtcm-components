@@ -10,10 +10,10 @@ export interface YamlParseResult {
 
 export function parseYaml(yamlString: string): YamlParseResult {
   try {
-    const data = yaml.load(yamlString);
+    const documents = yaml.loadAll(yamlString);
     return {
       isValid: true,
-      data,
+      data: documents.length === 1 ? documents[0] : documents,
     };
   } catch (error) {
     if (error instanceof yaml.YAMLException) {
@@ -32,13 +32,17 @@ export function parseYaml(yamlString: string): YamlParseResult {
 
 export function prettifyYaml(yamlString: string, indent: number = 2): string {
   try {
-    const data = yaml.load(yamlString);
-    return yaml.dump(data, {
-      indent,
-      lineWidth: -1,
-      noRefs: true,
-      sortKeys: false,
-    });
+    const documents = yaml.loadAll(yamlString);
+    return documents
+      .map((doc) =>
+        yaml.dump(doc, {
+          indent,
+          lineWidth: -1,
+          noRefs: true,
+          sortKeys: false,
+        })
+      )
+      .join('---\n');
   } catch {
     return yamlString;
   }
@@ -98,7 +102,7 @@ export function objectToYaml(obj: unknown, indent: number = 2): string {
 
 export function isValidYaml(yamlString: string): boolean {
   try {
-    yaml.load(yamlString);
+    yaml.loadAll(yamlString);
     return true;
   } catch {
     return false;
@@ -107,12 +111,14 @@ export function isValidYaml(yamlString: string): boolean {
 
 export function parseRosaControlPlaneYaml(yamlStr: string): Record<string, unknown> | null {
   try {
-    const obj = yaml.load(yamlStr);
-    if (
-      !obj ||
-      typeof obj !== 'object' ||
-      (obj as Record<string, unknown>).kind !== 'ROSAControlPlane'
-    ) {
+    const documents = yaml.loadAll(yamlStr);
+    const obj = documents.find(
+      (doc) =>
+        doc !== null &&
+        typeof doc === 'object' &&
+        (doc as Record<string, unknown>).kind === 'ROSAControlPlane'
+    );
+    if (!obj || typeof obj !== 'object') {
       return null;
     }
     const parsed = obj as Record<string, unknown>;
