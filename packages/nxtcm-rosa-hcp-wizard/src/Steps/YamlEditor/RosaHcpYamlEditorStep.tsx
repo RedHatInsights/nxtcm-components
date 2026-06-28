@@ -17,7 +17,6 @@ import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStri
 import type { ROSAHCPCluster } from '../../types';
 import { RosaHcpYamlMonacoLoader } from './RosaHcpYamlMonacoLoader';
 import { RosaHcpSchemaPanel } from './RosaHcpSchemaPanel';
-import { setupMonacoEnvironmentIfNeeded } from './monacoYamlSetup';
 import type { YamlResourceGenerator } from './types';
 import './RosaHcpYamlEditorStep.css';
 
@@ -102,10 +101,6 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
     );
 
     useEffect(() => {
-      setupMonacoEnvironmentIfNeeded();
-    }, []);
-
-    useEffect(() => {
       if (!hasFocusRef.current && !userHasEditedRef.current) {
         const rendered = generator.renderYaml(watchedValues as Partial<ROSAHCPCluster>);
         if (rendered === pendingYamlRef.current) {
@@ -153,7 +148,6 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         };
 
         if (!isInitializedRef.current) {
-          setupMonacoEnvironmentIfNeeded();
           monacoYamlDisposeRef.current?.();
           monacoYamlDisposeRef.current = new RosaHcpYamlMonacoLoader().configure(
             monaco as Parameters<RosaHcpYamlMonacoLoader['configure']>[0],
