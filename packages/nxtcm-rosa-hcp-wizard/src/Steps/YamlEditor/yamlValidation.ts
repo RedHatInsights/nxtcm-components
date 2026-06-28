@@ -1,18 +1,4 @@
-import Ajv, { type ErrorObject } from 'ajv';
-import addFormats from 'ajv-formats';
-import IPCIDR from 'ip-cidr';
-import * as yaml from 'js-yaml';
-
-import rosaControlPlaneSchema from './schemas/rosaControlPlaneSchema.json';
-
-const ajv = new Ajv({ allErrors: true, strict: false });
-addFormats(ajv);
-ajv.addFormat('cidr', {
-  type: 'string',
-  validate: (value: string) => IPCIDR.isValidCIDR(value),
-});
-
-const validateRosaControlPlane = ajv.compile(rosaControlPlaneSchema);
+import { type ErrorObject } from 'ajv';
 
 export interface ValidationError {
   message: string;
@@ -22,7 +8,7 @@ export interface ValidationError {
   path?: string;
 }
 
-function detectChildIndent(lines: string[], fromLine: number, parentIndent: number): number {
+export function detectChildIndent(lines: string[], fromLine: number, parentIndent: number): number {
   for (let j = fromLine + 1; j < lines.length; j++) {
     const t = lines[j].trimStart();
     if (!t || t.startsWith('#')) continue;
@@ -33,7 +19,7 @@ function detectChildIndent(lines: string[], fromLine: number, parentIndent: numb
   return parentIndent + 2;
 }
 
-function findLineForPath(content: string, instancePath: string): number {
+export function findLineForPath(content: string, instancePath: string): number {
   if (!instancePath) return 1;
 
   const segments = instancePath.split('/').filter(Boolean);
@@ -85,7 +71,7 @@ function findLineForPath(content: string, instancePath: string): number {
   return 1;
 }
 
-function formatAjvError(err: ErrorObject): string {
+export function formatAjvError(err: ErrorObject): string {
   const path = err.instancePath || '/';
   switch (err.keyword) {
     case 'additionalProperties':
@@ -103,47 +89,4 @@ function formatAjvError(err: ErrorObject): string {
     default:
       return `${err.message ?? 'Validation error'} at ${path}`;
   }
-}
-
-export function validateYaml(yamlStr: string): ValidationError[] {
-  let documents: unknown[];
-  try {
-    documents = yaml.loadAll(yamlStr);
-  } catch (e) {
-    if (e instanceof yaml.YAMLException) {
-      return [
-        {
-          message: e.message.split('\n')[0],
-          line: (e.mark?.line ?? 0) + 1,
-          column: (e.mark?.column ?? 0) + 1,
-          severity: 'error',
-        },
-      ];
-    }
-    return [];
-  }
-
-  const controlPlane = documents.find(
-    (doc) =>
-      doc !== null &&
-      typeof doc === 'object' &&
-      (doc as Record<string, unknown>).kind === 'ROSAControlPlane'
-  );
-
-  if (!controlPlane) {
-    return [
-      { message: 'Missing ROSAControlPlane document', line: 1, column: 1, severity: 'error' },
-    ];
-  }
-
-  const valid = validateRosaControlPlane(controlPlane);
-  if (valid || !validateRosaControlPlane.errors) return [];
-
-  return validateRosaControlPlane.errors.map((err) => ({
-    message: formatAjvError(err),
-    line: findLineForPath(yamlStr, err.instancePath),
-    column: 1,
-    severity: 'error' as const,
-    path: err.instancePath,
-  }));
 }

@@ -2,31 +2,35 @@
 import { type MonacoEditor } from 'monaco-types';
 import { configureMonacoYaml, type MonacoYamlOptions, type SchemasSettings } from 'monaco-yaml';
 
-import rosaControlPlaneSchema from './schemas/rosaControlPlaneSchema.json';
+import type { ResourceSchema } from './types';
 
 function isYamlWorkerConfigured(): boolean {
   return typeof window !== 'undefined' && typeof window.MonacoEnvironment?.getWorker === 'function';
 }
 
 export class RosaHcpYamlMonacoLoader {
-  configure(monaco: MonacoEditor, options?: MonacoYamlOptions): () => void {
+  configure(
+    monaco: MonacoEditor,
+    resourceSchemas?: ResourceSchema[],
+    options?: MonacoYamlOptions
+  ): () => void {
     if (!isYamlWorkerConfigured()) {
       return () => undefined;
     }
+
+    const schemas: SchemasSettings[] = (resourceSchemas ?? []).map(({ kind, schema }) => ({
+      uri: `inmemory://${kind}-schema.json`,
+      fileMatch: ['*'],
+      schema: schema as SchemasSettings['schema'],
+    }));
 
     const monacoYaml = configureMonacoYaml(monaco, {
       validate: false,
       hover: true,
       completion: true,
-      isKubernetes: true,
+      isKubernetes: false,
       enableSchemaRequest: false,
-      schemas: [
-        {
-          uri: 'inmemory://rosa-hcp-control-plane-schema.json',
-          fileMatch: ['*'],
-          schema: rosaControlPlaneSchema as SchemasSettings['schema'],
-        },
-      ],
+      schemas,
       ...options,
     });
     return () => {
