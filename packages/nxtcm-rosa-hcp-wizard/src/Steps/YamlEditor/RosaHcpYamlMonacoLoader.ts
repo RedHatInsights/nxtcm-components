@@ -4,20 +4,12 @@ import { configureMonacoYaml, type MonacoYamlOptions, type SchemasSettings } fro
 
 import type { ResourceSchema } from './types';
 
-function isYamlWorkerConfigured(): boolean {
-  return typeof window !== 'undefined' && typeof window.MonacoEnvironment?.getWorker === 'function';
-}
-
 export class RosaHcpYamlMonacoLoader {
   configure(
     monaco: MonacoEditor,
     resourceSchemas?: ResourceSchema[],
     options?: MonacoYamlOptions
   ): () => void {
-    if (!isYamlWorkerConfigured()) {
-      return () => undefined;
-    }
-
     const schemas: SchemasSettings[] = (resourceSchemas ?? []).map(({ kind, schema }) => ({
       uri: `inmemory://${kind}-schema.json`,
       fileMatch: ['*'],

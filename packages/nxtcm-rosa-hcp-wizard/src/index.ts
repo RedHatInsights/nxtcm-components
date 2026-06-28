@@ -19,3 +19,5 @@ export type {
   ResourceSchema,
   ValidationError,
 } from './Steps/YamlEditor/types';
+export { RosaHcpYamlMonacoLoader } from './Steps/YamlEditor/RosaHcpYamlMonacoLoader';
+export type { MonacoYamlOptions } from 'monaco-yaml';
