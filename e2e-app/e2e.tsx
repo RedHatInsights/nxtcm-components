@@ -1,8 +1,15 @@
 import '@patternfly/react-core/dist/styles/base.css';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { RosaHCPWizard } from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
+import {
+  RosaHCPWizard,
+  createAcmCapaGenerator,
+} from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
 import type { ROSAHCPWizardData } from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
+import rosaControlPlaneSchema from '../packages/nxtcm-rosa-hcp-wizard/src/Steps/YamlEditor/schemas/rosaControlPlaneSchema.json';
+import managedClusterSchema from '../packages/nxtcm-rosa-hcp-wizard/src/Steps/YamlEditor/schemas/managedClusterSchema.json';
+import capiClusterSchema from '../packages/nxtcm-rosa-hcp-wizard/src/Steps/YamlEditor/schemas/capiClusterSchema.json';
+import rosaClusterSchema from '../packages/nxtcm-rosa-hcp-wizard/src/Steps/YamlEditor/schemas/rosaClusterSchema.json';
 
 const noopFetch = async (): Promise<void> => {};
 
@@ -209,6 +216,12 @@ if (rootEl) {
       onSubmit={async () => {}}
       onCancel={() => {}}
       wizardData={mockWizardData}
+      resourceGenerator={createAcmCapaGenerator([
+        { kind: 'ROSAControlPlane', schema: rosaControlPlaneSchema, primary: true },
+        { kind: 'ManagedCluster', schema: managedClusterSchema },
+        { kind: 'Cluster', schema: capiClusterSchema },
+        { kind: 'ROSACluster', schema: rosaClusterSchema },
+      ])}
     />
   );
 }

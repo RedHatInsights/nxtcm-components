@@ -17,7 +17,6 @@ import ChevronRightIcon from '@patternfly/react-icons/dist/esm/icons/chevron-rig
 import ChevronDownIcon from '@patternfly/react-icons/dist/esm/icons/chevron-down-icon';
 
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
-import rosaControlPlaneSchema from './schemas/rosaControlPlaneSchema.json';
 
 type SchemaProperty = {
   type?: string | string[];
@@ -132,17 +131,18 @@ const SchemaField = ({ name, prop, depth = 0 }: SchemaFieldProps) => {
 
 export type RosaHcpSchemaPanelProps = {
   onClose: () => void;
+  schema: object;
 };
 
-export const RosaHcpSchemaPanel = ({ onClose }: RosaHcpSchemaPanelProps) => {
+export const RosaHcpSchemaPanel = ({ onClose, schema }: RosaHcpSchemaPanelProps) => {
   const { yamlEditor } = useRosaHcpWizardStrings();
   const [searchText, setSearchText] = useState('');
 
   const specProperties = useMemo(
     () =>
-      (rosaControlPlaneSchema as { properties?: { spec?: { properties?: SchemaProps } } })
-        .properties?.spec?.properties ?? {},
-    []
+      (schema as { properties?: { spec?: { properties?: SchemaProps } } }).properties?.spec
+        ?.properties ?? {},
+    [schema]
   );
 
   const filteredProperties = useMemo(() => {

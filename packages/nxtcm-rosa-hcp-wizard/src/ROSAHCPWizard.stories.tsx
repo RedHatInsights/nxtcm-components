@@ -17,6 +17,18 @@ import {
 import fixtures from './ROSAHCPWizard.fixtures';
 import { MachineTypesDropdownType, OIDCConfig, Region, Role, ROSAHCPWizardData } from './types';
 import { defaultRosaHcpWizardStrings } from './stringsProvider/rosaHcpWizardStrings.defaults';
+import { createAcmCapaGenerator } from './Steps/YamlEditor/generators/acmCapaGenerator';
+import rosaControlPlaneSchema from './Steps/YamlEditor/schemas/rosaControlPlaneSchema.json';
+import managedClusterSchema from './Steps/YamlEditor/schemas/managedClusterSchema.json';
+import capiClusterSchema from './Steps/YamlEditor/schemas/capiClusterSchema.json';
+import rosaClusterSchema from './Steps/YamlEditor/schemas/rosaClusterSchema.json';
+
+const storyAcmGenerator = createAcmCapaGenerator([
+  { kind: 'ROSAControlPlane', schema: rosaControlPlaneSchema, primary: true },
+  { kind: 'ManagedCluster', schema: managedClusterSchema },
+  { kind: 'Cluster', schema: capiClusterSchema },
+  { kind: 'ROSACluster', schema: rosaClusterSchema },
+]);
 
 const onWizardSubmit = async (data: unknown) => {
   console.log('Wizard submitted with data:', data);
@@ -235,7 +247,7 @@ export const Default: Story = {
   render: (args) => <DefaultStoryWrapper {...args} />,
   args: {
     title: 'Create ROSA Cluster',
-    yaml: true,
+    resourceGenerator: storyAcmGenerator,
     wizardData: createMockRosaHcpWizardDataWithFetchLogging(),
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
@@ -260,7 +272,7 @@ export const SelectOptionsReconcileOnRefetch: Story = {
   render: (args) => <SelectOptionsReconcileOnRefetchWrapper {...args} />,
   args: {
     title: 'Create ROSA Cluster — select reconcile on refetch',
-    yaml: true,
+    resourceGenerator: storyAcmGenerator,
     wizardData: createSelectOptionsReconcileDemoWizardData(),
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);
@@ -287,7 +299,7 @@ export const WizardWithLoadingState: Story = {
   render: (args) => <DefaultWithInitialLoading {...args} />,
   args: {
     title: 'Create ROSA Cluster',
-    yaml: true,
+    resourceGenerator: storyAcmGenerator,
     wizardData: mockWizardData,
     onSubmit: onWizardSubmit,
     onCancel: onWizardCancel,
@@ -297,7 +309,7 @@ export const WizardWithLoadingState: Story = {
 export const AllApiErrors: Story = {
   args: {
     title: 'Create ROSA HCP Cluster — all API errors',
-    yaml: true,
+    resourceGenerator: storyAcmGenerator,
     onSubmit: onWizardSubmit,
     onCancel: onWizardCancel,
     wizardData: rosaHcpWizardDetailsFieldsAllApiErrorsData,
@@ -338,7 +350,7 @@ export const SubmitError: Story = {
   render: (args) => <SubmitErrorWrapper {...args} />,
   args: {
     title: 'Create ROSA Cluster',
-    yaml: true,
+    resourceGenerator: storyAcmGenerator,
     wizardData: createMockRosaHcpWizardData(),
     onCancel: () => {
       console.log('Wizard cancelled');
@@ -354,7 +366,7 @@ export const SubmitError: Story = {
 export const RolesAlertMissingAccountRoles: Story = {
   args: {
     title: 'Create ROSA Cluster — missing account roles',
-    yaml: true,
+    resourceGenerator: storyAcmGenerator,
     onSubmit: onWizardSubmit,
     onCancel: onWizardCancel,
     wizardData: createMockRosaHcpWizardData({
@@ -378,7 +390,7 @@ export const RolesAlertMissingAccountRoles: Story = {
 export const RolesAlertMissingUserRole: Story = {
   args: {
     title: 'Create ROSA Cluster — missing user role',
-    yaml: true,
+    resourceGenerator: storyAcmGenerator,
     onSubmit: onWizardSubmit,
     onCancel: onWizardCancel,
     wizardData: createMockRosaHcpWizardData({
@@ -403,7 +415,7 @@ export const RolesAlertMissingUserRole: Story = {
 export const RolesAlertOcmRoleError: Story = {
   args: {
     title: 'Create ROSA Cluster — OCM role error',
-    yaml: true,
+    resourceGenerator: storyAcmGenerator,
     onSubmit: onWizardSubmit,
     onCancel: onWizardCancel,
     wizardData: createMockRosaHcpWizardData({

@@ -31,9 +31,9 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
     wizardData,
     onSubmit,
     onCancel,
-    yaml,
     onSubmitError,
     onBackToReviewStep,
+    resourceGenerator,
     product,
     enableAllWizardNavSteps = false,
   } = props;
@@ -199,12 +199,13 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
                 ref={yamlEditorRef}
                 onClose={handleCloseYamlEditor}
                 onCancel={onCancel}
+                resourceGenerator={resourceGenerator}
               />
             </Suspense>
           ) : (
             <Review
               vpcList={wizardData.vpcList}
-              onOpenYamlEditor={yaml ? openYamlEditor : undefined}
+              onOpenYamlEditor={resourceGenerator ? openYamlEditor : undefined}
             />
           )}
         </WizardStep>
