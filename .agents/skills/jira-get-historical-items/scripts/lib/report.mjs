@@ -16,19 +16,24 @@ export function buildHistoricalReport({
   issues,
   rows,
   storyPointsField = 'customfield_10028',
+  site = JIRA_SITE,
+  maxResults = 100,
   runAt = new Date().toISOString(),
 }) {
+  const fetched = issues.length;
   return {
     version: REPORT_VERSION,
     runAt,
     jql,
     meta: {
-      site: JIRA_SITE,
+      site,
       storyPointsField,
       counts: {
-        fetched: issues.length,
+        fetched,
         included: rows.length,
-        skipped: issues.length - rows.length,
+        skipped: fetched - rows.length,
+        maxResults,
+        fetchCapHit: fetched >= maxResults,
       },
     },
     items: rows,

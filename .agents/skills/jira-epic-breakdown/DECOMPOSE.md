@@ -44,7 +44,7 @@ Use **Mockups/Design** links in child story bodies when the epic supplies Figma 
 | Shell UI (routes, layout, gates) | story |
 | Shared library publish / version | task |
 | Integration foundation (shared client, auth, callback shape) | task — one small item when many endpoints follow |
-| **Per API / data source** | task — **one item per endpoint** ([§ API and data-fetch splits](#api-and-data-fetch-splits)) |
+| **Per API / data source** | task — **one item per endpoint** ([§ API and data-fetch splits](#2b-api-and-data-fetch-splits)) |
 | Submit / persistence | task |
 | Docs / E2E harness | task — trace to **Test Plan** when epic lists them |
 
@@ -104,7 +104,7 @@ Every child item should be **completable within one sprint** by a developer (or 
 | Signal to split | Action |
 |-----------------|--------|
 | More than **~3–5 verifiable AC bullets** and multiple subsystems | Split by journey step, layer, or API |
-| Epic AC says “wire all X” but lists **many data sources** | One task **per API/fetch** ([§ API and data-fetch splits](#api-and-data-fetch-splits)) |
+| Epic AC says “wire all X” but lists **many data sources** | One task **per API/fetch** ([§ API and data-fetch splits](#2b-api-and-data-fetch-splits)) |
 | Description would need “and also … and also …” for unrelated deliverables | Separate items |
 | Item mixes UI + many backend integrations | Story for UI; tasks for each integration chunk |
 | Two engineers could work in parallel without conflict | Should usually be two items |
@@ -118,7 +118,7 @@ Every child item should be **completable within one sprint** by a developer (or 
 | Avoid | Instead |
 |-------|---------|
 | One AC per microscopic ticket | Group related AC into one shippable item |
-| **One mega-task for all API calls** | **One task per endpoint/fetch** when sprint-sized or parallel ([§ API and data-fetch splits](#api-and-data-fetch-splits)) |
+| **One mega-task for all API calls** | **One task per endpoint/fetch** when sprint-sized or parallel ([§ API and data-fetch splits](#2b-api-and-data-fetch-splits)) |
 | "Write unit tests" alone | Fold into story/task AC as one bullet, or one integration test task traced to Test Plan |
 | Per-component file tickets | One integration task per **API/resource**, not per source file |
 | Duplicate prerequisites + wizard if one team ships both | Single story with nested AC |

@@ -6,9 +6,10 @@ export function processHistoricalIssues(issues, storyPointsFieldId = 'customfiel
     .filter(Boolean);
 
   rows.sort((a, b) => {
-    const na = Number(a.key.split('-')[1]);
-    const nb = Number(b.key.split('-')[1]);
-    return na - nb;
+    const na = Number(a.key.split('-').pop());
+    const nb = Number(b.key.split('-').pop());
+    if (Number.isFinite(na) && Number.isFinite(nb) && na !== nb) return na - nb;
+    return a.key.localeCompare(b.key);
   });
 
   return rows;

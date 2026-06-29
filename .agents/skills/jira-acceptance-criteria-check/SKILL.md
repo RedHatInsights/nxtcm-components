@@ -119,6 +119,6 @@ Follow [POST_JIRA.md](POST_JIRA.md):
 - **Ask** once after the report — do not post without clear user agreement.
 - **Post only** Needs review items (scores 1–3 **with** suggestions) — not Ready, not Needs Refinement.
 - **Use MCP** (`addCommentToJiraIssue`).
-- **Skip** synthetic/draft-only ids and keys that already have a prior `Suggested …` comment from this run’s enrichment.
+- **Skip** synthetic/draft-only IDs and keys that already have a prior `Suggested …` comment from this run’s enrichment.
 
 If nothing qualifies for posting, skip this step.

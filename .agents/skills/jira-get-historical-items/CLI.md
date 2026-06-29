@@ -80,7 +80,7 @@ export JIRA_API_TOKEN='your-api-token'
 Use **absolute** `--output`. Replace `{workspace}` with the Cursor workspace root (or wherever artifacts should live).
 
 ```bash
-node scripts/fetch-historical-items.mjs \
+node .agents/skills/jira-get-historical-items/scripts/fetch-historical-items.mjs \
   --jql 'parent = FCN-41 AND created >= -20d' \
   --output /absolute/path/to/workspace/.jira-historical-issues.json \
   --env-file ~/.config/jira-fetch.env
@@ -144,7 +144,7 @@ Tell the agent fetch is done (e.g. "continue") so it can post JQL + report + **S
 To re-run the report from an existing fetch file:
 
 ```bash
-node scripts/run-historical-report.mjs \
+node .agents/skills/jira-get-historical-items/scripts/run-historical-report.mjs \
   --input /absolute/path/to/workspace/.jira-historical-issues.json \
   --workspace /absolute/path/to/workspace \
   --jql 'parent = FCN-41 AND created >= -20d'

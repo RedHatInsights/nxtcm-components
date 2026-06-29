@@ -63,7 +63,7 @@ Paste-ready skeleton — headings must match the registry:
 
 ## Mockups/Design
 
-[FIGMA DESIGNS MANDATORY!!!(for UI changes at discretion)]
+[Figma link or design reference when this epic includes UI changes; omit or N/A when there is no UI work]
 
 ---
 

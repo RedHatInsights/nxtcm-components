@@ -13,7 +13,7 @@ Replace keys and summaries with real values. Do **not** wrap the whole report in
 | Issue count | Destination | Section headers (`# Ready`, etc.) |
 |-------------|-------------|-----------------------------------|
 | **1** | **Chat** — full report content | **Omit** — no `# Ready` / `# Needs review` / `# Needs Refinement` wrappers |
-| **2+** | **Markdown file** in the workspace — `jira-acceptance-criteria-check-report.md` | **Include** — see [Report shape](#report-shape) |
+| **2+** | **`{workspace}/jira-acceptance-criteria-check-report.md`** (absolute path) | **Include** — see [Report shape](#report-shape) |
 
 **Multiple issues — chat:** Post only a short pointer in chat (file path, JQL, issue count, fetch transport, one-line summary of bucket counts). Do **not** paste the full report body into chat.
 
