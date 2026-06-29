@@ -5,6 +5,7 @@ const CYCLE_TIME_PERCENTILE = 0.75;
 const ISSUE_TYPE_SECTIONS = [
   { label: 'STORIES', match: (t) => t === 'story' },
   { label: 'TASKS', match: (t) => t === 'task' },
+  { label: 'BUGS', match: (t) => t === 'bug' },
 ];
 
 const ALL_TYPE_LINES = [
@@ -34,7 +35,7 @@ export function closedDateRange(items) {
   const dates = items
     .map((item) => item.completionDate)
     .filter(Boolean)
-    .sort();
+    .sort((a, b) => new Date(a) - new Date(b));
   if (dates.length === 0) return null;
   return { earliest: dates[0], latest: dates[dates.length - 1] };
 }
@@ -119,6 +120,7 @@ const ISSUE_TYPE_BY_LABEL = {
 const SECTION_ISSUE_TYPE = {
   STORIES: 'story',
   TASKS: 'task',
+  BUGS: 'bug',
 };
 
 export function buildCycleTimeData(items) {

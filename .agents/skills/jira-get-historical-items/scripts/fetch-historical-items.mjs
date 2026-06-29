@@ -23,6 +23,11 @@ import { defaultWorkspaceDir, resolvePath } from './lib/paths.mjs';
 import { runHistoricalReport } from './lib/run-report.mjs';
 import { validateFetchIssues } from './lib/validate-fetch.mjs';
 
+function parsePositiveInt(value, fallback) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : fallback;
+}
+
 function parseArgs(argv) {
   const opts = {
     jql: '',
@@ -48,9 +53,13 @@ function parseArgs(argv) {
     else if (arg === '--token') ((opts.token = next), i++);
     else if (arg === '--env-file') ((opts.envFile = next), i++);
     else if (arg === '--story-points-field') ((opts.storyPointsField = next), i++);
-    else if (arg === '--concurrency') ((opts.concurrency = Number(next)), i++);
-    else if (arg === '--max-results') ((opts.maxResults = Number(next)), i++);
-    else if (arg === '--workspace' || arg === '-w') ((opts.workspace = next), i++);
+    else if (arg === '--concurrency') {
+      opts.concurrency = parsePositiveInt(next, opts.concurrency);
+      i++;
+    } else if (arg === '--max-results') {
+      opts.maxResults = parsePositiveInt(next, opts.maxResults);
+      i++;
+    } else if (arg === '--workspace' || arg === '-w') ((opts.workspace = next), i++);
     else if (arg === '--skip-report') opts.skipReport = true;
     else if (arg === '--help' || arg === '-h') {
       console.log(`Usage: node fetch-historical-items.mjs --jql 'JQL' --output /abs/path/.jira-historical-issues.json
@@ -121,6 +130,8 @@ async function main() {
       workspace,
       jql: opts.jql,
       storyPointsField: opts.storyPointsField,
+      site: auth.site,
+      maxResults: opts.maxResults,
       issues,
     });
   }

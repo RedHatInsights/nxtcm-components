@@ -1,10 +1,20 @@
-import { readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import { writeFileSync, mkdirSync } from 'fs';
+import { join, resolve, sep, dirname } from 'path';
 import { processHistoricalIssues } from './process.mjs';
 import { buildHistoricalReport } from './report.mjs';
 import { buildSummaryReport } from './summarize.mjs';
 import { defaultWorkspaceDir, resolvePath } from './paths.mjs';
+import { readJsonFile } from './read-json.mjs';
 import { validateFetchIssues } from './validate-fetch.mjs';
+
+function assertPathWithinWorkspace(resolvedPath, workspaceDir) {
+  const workspaceRoot = resolve(workspaceDir);
+  const target = resolve(resolvedPath);
+  const prefix = workspaceRoot.endsWith(sep) ? workspaceRoot : `${workspaceRoot}${sep}`;
+  if (target !== workspaceRoot && !target.startsWith(prefix)) {
+    throw new Error(`Report output must stay within workspace: ${workspaceRoot}`);
+  }
+}
 
 /**
  * @param {object} options
@@ -14,6 +24,8 @@ import { validateFetchIssues } from './validate-fetch.mjs';
  * @param {string} [options.storyPointsField]
  * @param {string} [options.reportOutput]
  * @param {boolean} [options.stdout]
+ * @param {string} [options.site]
+ * @param {number} [options.maxResults]
  * @param {object[]} [options.issues] Pre-validated issues (skips read/parse when set)
  * @returns {{ reportPath: string, report: object, issues: object[], rows: object[] }}
  */
@@ -22,6 +34,8 @@ export function runHistoricalReport({
   workspace,
   jql = '',
   storyPointsField = 'customfield_10028',
+  site,
+  maxResults = 100,
   reportOutput,
   stdout = false,
   issues: issuesOverride,
@@ -32,16 +46,21 @@ export function runHistoricalReport({
     ? resolvePath(reportOutput, workspaceDir)
     : join(workspaceDir, '.jira-historical-report.json');
 
-  const issues = issuesOverride ?? validateFetchIssues(JSON.parse(readFileSync(inputPath, 'utf8')));
+  assertPathWithinWorkspace(reportPath, workspaceDir);
+
+  const issues = issuesOverride ?? validateFetchIssues(readJsonFile(inputPath));
   const rows = processHistoricalIssues(issues, storyPointsField);
   const report = buildHistoricalReport({
     jql,
     issues,
     rows,
     storyPointsField,
+    site,
+    maxResults,
   });
 
   const reportJson = JSON.stringify(report, null, 2);
+  mkdirSync(dirname(reportPath), { recursive: true });
   writeFileSync(reportPath, reportJson);
 
   console.error(

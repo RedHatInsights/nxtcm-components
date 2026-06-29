@@ -1,8 +1,8 @@
 # jira-get-historical-items
 
-A [Cursor Agent Skill](https://cursor.com/docs/agent/skills) that builds a historical baseline from closed Jira work — fetch issues with changelog (CLI or MCP), compute cycle time and p75 percentiles, and write `.jira-historical-report.json` for sizing calibration.
+A [Cursor Agent Skill](https://cursor.com/docs/agent/skills) that builds a historical baseline from Jira work — fetch issues with changelog (CLI or MCP), compute cycle time and p75 percentiles, and write `.jira-historical-report.json` for sizing calibration.
 
-Use when you need data from real **finished** work — not to look up a single ticket.
+Use when you need data from real team work — closed items for cycle time, and pointed Done items (including bugs still in flight) for story-point calibration — not to look up a single ticket.
 
 **Supersedes:** [OLD/jira-cycle-time-report](../OLD/jira-cycle-time-report/SKILL.md).
 
@@ -17,19 +17,22 @@ Historical data is most useful when the window is **narrow and recent**. Asking 
 | **One project** (or a small set of parent epics) | Keeps fetch fast and relevant |
 | Items **closed in the last 3–6 months** | Recent work reflects how the team ships today |
 | **Story** and **Task** types you actually point | Epics and one-offs skew calibration |
-| **`resolution = Done`** | Report only includes Done — see below |
+| **`resolution = Done`** | Report includes Done-resolution items — see below |
+| **`status = Closed`** (optional) | Narrows fetch and ensures `completionDate` / `cycleTime` on every row |
 
-**Fetch vs report:** the skill runs **whatever JQL you provide**. It does **not** silently add `status = Closed`. **Open or in-progress items in the fetch won’t break anything** — they are **skipped during processing** (no row in the report). They still cost fetch time and count toward the **100-issue cap**, so narrowing JQL is a performance tip, not a hard requirement.
+**Fetch vs report:** the skill runs **whatever JQL you provide**. It does **not** silently add `status = Closed`. **Processing keeps items with `resolution = Done`** — regardless of status. Only items with a **non-Done** resolution (open, in progress, Won’t Fix, Duplicate, etc.) are **skipped** (no row in the report).
 
-**Example JQL** for sizing calibration (adjust project and window):
+**Done but not Closed:** pointed stories, tasks, and bugs with Done resolution can appear in the report even when status is still open or in progress. They contribute **`storyPoints`** for [jira-get-estimates](../jira-get-estimates/SKILL.md) calibration; **`completionDate`** and **`cycleTime`** are filled only when status is **Closed**. That is intentional — pointed work without cycle time still helps humans and bots size new items.
+
+Looser JQL is fine when you want that pointing signal — e.g. `project = FCN AND updated >= -90d` fetches open tickets too; only **resolution Done** items land in `.jira-historical-report.json`. They still cost fetch time and count toward the **100-issue cap**, so narrowing JQL is a performance tip, not a hard requirement.
+
+**Example JQL** for cycle-time calibration (adjust project and window):
 
 ```text
 project = FCN AND status = Closed AND resolution = Done AND type in (Story, Task) AND updated >= -90d
 ```
 
-Looser JQL is fine if you accept skips — e.g. `project = FCN AND updated >= -90d` will fetch open tickets too; only **resolution Done** items appear in `.jira-historical-report.json`.
-
-Items **closed without** Done resolution (won’t fix, duplicate, cancelled) are also skipped at processing — add `resolution = Done` in JQL to avoid fetching them.
+Items **closed without** Done resolution (won’t fix, duplicate, cancelled) are skipped at processing — add `resolution = Done` in JQL to avoid fetching them.
 
 If you ask for **more than ~6 months**, the agent posts a heads-up (older data is often less useful for sizing) but still proceeds unless you narrow the scope.
 
@@ -70,7 +73,7 @@ Once you pick a path, the agent **locks** to it for that run — no silent switc
 1. **Discovery** — confirm what to include (project, types, status, date window) and **CLI vs MCP** ([SKILL.md](SKILL.md) §0).
 2. **Build JQL** — from your filters or paste JQL as-is.
 3. **Fetch** — save raw issues + changelog to `.jira-historical-issues.json`.
-4. **Process** — keep resolution **Done**; compute dates and cycle time.
+4. **Process** — keep resolution **Done**; compute dates and cycle time (cycle time only when status is **Closed**).
 5. **Report** — write `.jira-historical-report.json`; post JQL, counts, summary, and **clickable file links** in chat ([REPORT.md](REPORT.md)).
 
 ---
@@ -90,8 +93,8 @@ Each processed item in the report includes:
 |-------|---------|
 | `key`, `summary`, `description`, `issueType`, `storyPoints` | Issue metadata |
 | `startDate` | First date the item moved **out of To Do** into another status (from changelog) |
-| `completionDate` | Date the item moved to **Closed** |
-| `cycleTime` | Business days (Mon–Fri) from start to close |
+| `completionDate` | Date the item moved to **Closed** — empty when status is not Closed |
+| `cycleTime` | Business days (Mon–Fri) from start to close — present only when status is **Closed** |
 
 The report also includes **75th-percentile cycle time** grouped by issue type and story points — useful when suggesting how long similar work might take.
 
@@ -185,14 +188,14 @@ jira-get-historical-items/
 |---------|----------------|
 | Agent asks scope / CLI vs MCP before fetching | Expected — [SKILL.md](SKILL.md) §0 discovery gate |
 | Fetch is slow or times out | Narrow to 3–6 months; prefer **CLI**; check issue count vs 100 cap |
-| Many items **skipped** after fetch | Expected if JQL included open or non-Done items — report keeps **resolution Done** only; tighten JQL to fetch fewer skips |
-| No `startDate` / `cycleTime` on some rows | Changelog missing a **To Do → …** transition or **Closed** transition |
+| Many items **skipped** after fetch | Expected if JQL included non-Done resolutions — report keeps **resolution Done** only; tighten JQL to fetch fewer skips |
+| Empty `completionDate` / missing `cycleTime` on some rows | Item has Done resolution but status is not **Closed** (expected for pointing-only rows), or changelog missing a **To Do → …** or **Closed** transition |
 | CLI: missing credentials | [CLI.md](CLI.md) — create `~/.config/jira-fetch.env` |
 | CLI: `fetch is not defined` | Upgrade to **Node.js 18+** |
 | MCP auth failed | Settings → MCP → Atlassian; run `mcp_auth`; or switch to CLI |
 | Want estimates from the report | Run [jira-get-estimates](../jira-get-estimates/SKILL.md) with the saved report path |
 
-Site default: **redhat.atlassian.net**. Story points field default (FCN): `customfield_10028`.
+Site and story-points defaults: [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md#jira-site-defaults).
 
 ---
 

@@ -87,7 +87,7 @@ export function resolveJiraAuth(options = {}) {
 
   if (!email || !token) {
     throw new Error(
-      'Missing Jira API credentials for fetch-historical-items.mjs.\n' +
+      'Missing Jira API credentials.\n' +
         'Provide credentials using one of:\n' +
         '  • --env-file ~/.config/jira-fetch.env\n' +
         '  • export JIRA_EMAIL and JIRA_API_TOKEN\n' +

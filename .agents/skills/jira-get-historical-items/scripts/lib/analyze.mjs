@@ -2,6 +2,11 @@ import { businessDaysBetween, formatDate, parseDate, plainDescription } from './
 
 const DONE_RESOLUTION = 'Done';
 
+function historyTimestamp(iso) {
+  const t = Date.parse(iso);
+  return Number.isFinite(t) ? t : 0;
+}
+
 /**
  * @param {object} issue Jira issue with fields + changelog
  * @returns {object|null} Output row, or null when resolution is not Done
@@ -17,12 +22,13 @@ export function analyzeHistoricalItem(issue, storyPointsFieldId = 'customfield_1
   const isClosed = statusName === 'Closed';
 
   const histories = [...(issue.changelog?.histories ?? [])].sort(
-    (a, b) => new Date(a.created) - new Date(b.created)
+    (a, b) => historyTimestamp(a.created) - historyTimestamp(b.created)
   );
 
   let startDate = null;
   let completionDate = null;
 
+  // Workflow-specific status names (Red Hat FCN default workflow).
   for (const h of histories) {
     for (const item of h.items ?? []) {
       if (item.field !== 'status') continue;
@@ -39,8 +45,11 @@ export function analyzeHistoricalItem(issue, storyPointsFieldId = 'customfield_1
 
   const issueType = issue.fields?.issuetype?.name ?? '';
   const rawPoints = issue.fields?.[storyPointsFieldId] ?? issue.fields?.storyPoints;
-  const storyPoints =
-    rawPoints === null || rawPoints === undefined || rawPoints === '' ? '' : Number(rawPoints);
+  let storyPoints = '';
+  if (rawPoints !== null && rawPoints !== undefined && rawPoints !== '') {
+    const parsed = Number(rawPoints);
+    if (Number.isFinite(parsed)) storyPoints = parsed;
+  }
 
   const row = {
     key,

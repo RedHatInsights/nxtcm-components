@@ -144,16 +144,26 @@ export async function fetchIssueWithChangelog(auth, issueKey, fields) {
 export async function mapPool(items, concurrency, fn) {
   const results = new Array(items.length);
   let nextIndex = 0;
+  let failed = false;
+  let firstError = null;
 
   async function worker() {
     while (nextIndex < items.length) {
+      if (failed) return;
       const index = nextIndex++;
-      results[index] = await fn(items[index], index);
+      try {
+        results[index] = await fn(items[index], index);
+      } catch (err) {
+        failed = true;
+        firstError = err;
+        return;
+      }
     }
   }
 
   const workers = Array.from({ length: Math.min(concurrency, items.length) }, () => worker());
   await Promise.all(workers);
+  if (firstError) throw firstError;
   return results;
 }
 

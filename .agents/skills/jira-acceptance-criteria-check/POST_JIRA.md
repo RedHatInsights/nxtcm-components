@@ -98,4 +98,4 @@ Preserve markdown (`*`, `**`, nesting). Omit the `## KEY - Summary` title line (
 
 When input came from [DRAFT_INPUT.md](DRAFT_INPUT.md) with **no** real Jira keys → **never** ask to post; **never** call MCP for comments.
 
-When a run mixes Jira keys and draft ids → ask only about postable Jira keys; skip draft ids silently in the count unless the user asks.
+When a run mixes Jira keys and draft IDs → ask only about postable Jira keys; skip draft IDs silently in the count unless the user asks.

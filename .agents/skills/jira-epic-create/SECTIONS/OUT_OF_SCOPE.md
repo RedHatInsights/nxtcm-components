@@ -54,7 +54,7 @@ Phrase as **what is excluded**, not what is included.
 ## Do not
 
 - Repeat acceptance criteria as negated items ("not failing tests")
-- Use vague exclusions ("nice-to-haves", "low priority items")
+- Use vague exclusions ("nice-to-haves", "low-priority items")
 - Invent out-of-scope items the user never implied
 - Hide scope boundaries only in Description — they belong here
 

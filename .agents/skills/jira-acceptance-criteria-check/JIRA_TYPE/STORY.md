@@ -28,7 +28,7 @@ Describes the **what** and **why** ([GENERAL.md](../GENERAL.md)).
 
 The full acceptance criteria — testable bullets judged against the rubric in [Acceptance criteria](#acceptance-criteria) below.
 
-### Mock ups / Design
+### Mockups / Design
 
 Description and/or a link to design docs — for example a Figma link, prototype, or spec. Required for large or complex UI (see [Description (story-specific)](#description-story-specific)); may be brief or **N/A** for trivial UI tweaks.
 
@@ -52,7 +52,7 @@ This section doesn't need to be filled out.  When it is filled out it contains h
 * <Verifiable outcome 1>
 * <Verifiable outcome 2>
 
-### Mock ups / Design
+### Mockups / Design
 
 <Figma link, screenshot reference, or N/A — small UI tweak>
 ```

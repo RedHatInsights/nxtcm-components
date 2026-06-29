@@ -8,10 +8,11 @@
  *   node summarize-report-stats.mjs --input report.json --stdout
  */
 
-import { readFileSync, writeFileSync } from 'fs';
-import { dirname, join } from 'path';
+import { writeFileSync } from 'fs';
+import { join } from 'path';
 import { buildReportStats, formatStatsReport } from './lib/stats.mjs';
 import { defaultWorkspaceDir, resolveInputPath, resolvePath } from './lib/paths.mjs';
+import { readJsonFile } from './lib/read-json.mjs';
 
 function parseArgs(argv) {
   const opts = {
@@ -49,7 +50,8 @@ Options:
 }
 
 function readJson(pathValue) {
-  return JSON.parse(readFileSync(resolveInputPath(pathValue), 'utf8'));
+  const resolved = resolveInputPath(pathValue);
+  return readJsonFile(resolved);
 }
 
 function main() {

@@ -101,7 +101,7 @@ Always post **`## Saved files`** (OUTPUT.md §10) after a successful run: clicka
 
 ### Step 4 — Canvas for large item table
 
-When `items.length > 15`, read [canvas/SKILL.md](../../skills-cursor/canvas/SKILL.md) and create a sortable items table canvas. Embed data from `.jira-historical-stats.json` `items` array. Skip the full markdown items table in chat — link to the canvas instead.
+When `items.length > 15`, create a sortable items table canvas (`.canvas.tsx` in the workspace `canvases/` directory). Embed data from `.jira-historical-stats.json` `items` array; columns per [OUTPUT.md](OUTPUT.md) §9. Skip the full markdown items table in chat — post a one-line item count and link to the canvas.
 
 When `items.length ≤ 15`, include the items table from `--stdout` in chat.
 

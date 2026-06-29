@@ -30,11 +30,11 @@ The full acceptance criteria — testable bullets judged against the rubric in [
 
 ### Out of Scope
 
-This section doesn't need to be filled out.  When it is filled out is specifies any thing that is not covered by this story.  Not that this shouldn't replace acceptance criteria. The purpose of this section is for clarification or to answer commonly asked questions.
+This section doesn't need to be filled out. When it is filled out, it specifies anything that is not covered by this task. Note that this shouldn't replace acceptance criteria. The purpose of this section is for clarification or to answer commonly asked questions.
 
 ### Implementation Notes
 
-This section doesn't need to be filled out.  When it is filled out it contains high level implementation approaches, notes, or items a developer will need to know when coding.
+This section doesn't need to be filled out. When it is filled out it contains high-level implementation approaches, notes, or items a developer will need to know when coding.
 
 **Example skeleton** (paste into Jira; replace placeholders):
 

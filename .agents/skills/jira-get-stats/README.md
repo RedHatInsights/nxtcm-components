@@ -220,4 +220,4 @@ Site default: **redhat.atlassian.net**. Story points field default (FCN): `custo
 
 ---
 
-*Originally created by Kim Doberstein.*
+*Created by Kim Doberstein.*

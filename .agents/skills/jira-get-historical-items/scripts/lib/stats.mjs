@@ -258,7 +258,9 @@ export function buildReportStats(report, rawIssues = null) {
       included: report.meta?.counts?.included ?? items.length,
       skipped: report.meta?.counts?.skipped ?? 0,
       inReport: items.length,
-      fetchCapWarning: fetched >= FETCH_CAP,
+      fetchCapWarning:
+        report.meta?.counts?.fetchCapHit ??
+        fetched >= (report.meta?.counts?.maxResults ?? FETCH_CAP),
     },
     dateRanges: {
       created: dateRangeFrom(createdDates),
@@ -371,7 +373,7 @@ export function formatStatsReport(stats) {
   if (stats.counts.fetchCapWarning) {
     lines.push('');
     lines.push(
-      '**Warning:** Fetch hit the 100-issue cap — results may be incomplete. Narrow JQL or raise `--max-results`.'
+      '**Warning:** Fetch hit the issue cap — results may be incomplete. Narrow JQL or raise `--max-results`.'
     );
   }
 

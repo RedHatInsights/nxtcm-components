@@ -10,11 +10,18 @@
  *        { "issues": [...] } from searchJiraIssuesUsingJql merged with changelogs.
  */
 
-import { readFileSync, writeFileSync } from 'fs';
+import { writeFileSync } from 'fs';
 import { loadIssuesFromJson } from './lib/load-issues.mjs';
+import { readJsonFile } from './lib/read-json.mjs';
 import { resolveInputPath, resolvePath } from './lib/paths.mjs';
 import { processHistoricalIssues } from './lib/process.mjs';
 import { validateFetchIssues } from './lib/validate-fetch.mjs';
+
+function requireOptionValue(flag, next) {
+  if (!next || next.startsWith('-')) {
+    throw new Error(`Missing value for ${flag}`);
+  }
+}
 
 function parseArgs(argv) {
   const opts = {
@@ -26,10 +33,19 @@ function parseArgs(argv) {
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
     const next = argv[i + 1];
-    if (a === '--input' || a === '-i') ((opts.input = next), i++);
-    else if (a === '--output' || a === '-o') ((opts.output = next), i++);
-    else if (a === '--story-points-field') ((opts.storyPointsField = next), i++);
-    else if (a === '--help' || a === '-h') {
+    if (a === '--input' || a === '-i') {
+      requireOptionValue(a, next);
+      opts.input = next;
+      i++;
+    } else if (a === '--output' || a === '-o') {
+      requireOptionValue(a, next);
+      opts.output = next;
+      i++;
+    } else if (a === '--story-points-field') {
+      requireOptionValue(a, next);
+      opts.storyPointsField = next;
+      i++;
+    } else if (a === '--help' || a === '-h') {
       console.log(
         'Usage: node process-historical-items.mjs [--input issues.json] [--output rows.json]'
       );
@@ -41,10 +57,10 @@ function parseArgs(argv) {
 }
 
 function readIssues(opts) {
-  const raw = opts.input
-    ? readFileSync(resolveInputPath(opts.input), 'utf8')
-    : readFileSync(0, 'utf8');
-  return validateFetchIssues(JSON.parse(raw));
+  const inputPath = opts.input ? resolveInputPath(opts.input) : 0;
+  const label = opts.input ? inputPath : '<stdin>';
+  const parsed = readJsonFile(inputPath, { label });
+  return validateFetchIssues(loadIssuesFromJson(parsed));
 }
 
 function main() {
