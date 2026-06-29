@@ -145,12 +145,10 @@ test.describe('StorageCard', () => {
     await expect(availableContainer).toContainText(`${preciseData.available.toFixed(2)} TiB`);
   });
 
-  test('should render SVG circular progress indicator', async ({ mount, page }) => {
+  test('should render utilization chart', async ({ mount, page }) => {
     await mount(<StorageCard storageData={mockStorageData} />);
-    const svgElement = page.locator('svg');
-    await expect(svgElement).toBeVisible();
-    await expect(svgElement).toHaveAttribute('width', '200');
-    await expect(svgElement).toHaveAttribute('height', '200');
+    const chart = page.getByRole('img', { name: 'Storage utilization chart' });
+    await expect(chart).toBeVisible();
   });
 
   test('should display total storage label correctly', async ({ mount }) => {

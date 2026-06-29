@@ -1,3 +1,8 @@
+.container {
+  height: 100%;
+  padding: var(--pf-t--global--spacer--md);
+}
+
 .description {
   font-size: var(--pf-t--global--font--size--sm);
 }

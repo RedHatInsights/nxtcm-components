@@ -1,4 +1,4 @@
-import { Button, Flex, FlexItem, Skeleton } from '@patternfly/react-core';
+import { Button, Flex, FlexItem, Skeleton, Title } from '@patternfly/react-core';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon';
 import React from 'react';
@@ -45,13 +45,12 @@ export const CVECard: React.FC<CVECardProps> = ({
   const showSkeleton = !!isLoading;
 
   return (
-    <Flex
-      direction={{ default: 'column' }}
-      style={{ height: '100%', padding: '1rem' }}
-      className={className}
-    >
-      {/* TODO: consider making this a heading */}
-      <FlexItem>{title}</FlexItem>
+    <Flex direction={{ default: 'column' }} className={`${styles.container} ${className ?? ''}`}>
+      <FlexItem>
+        <Title headingLevel="h3" size="md">
+          {title}
+        </Title>
+      </FlexItem>
       <FlexItem flex={{ default: 'flex_1' }}>
         {showSkeleton ? (
           <FlexItem>
@@ -116,7 +115,11 @@ export const CVECard: React.FC<CVECardProps> = ({
                           alignItems={{ default: 'alignItemsCenter' }}
                           spaceItems={{ default: 'spaceItemsXs' }}
                         >
-                          <Icon color={config.iconColor} className={styles.severityIcon} />
+                          <Icon
+                            color={config.iconColor}
+                            className={styles.severityIcon}
+                            aria-hidden="true"
+                          />
                           <span className={countClassName}>{data.count}</span>
                         </Flex>
                       </FlexItem>
