@@ -26,11 +26,12 @@ jobs:
           fi
 
       - name: Verify release tag matches dashboard package version
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
           expected="nxtcm-dashboard-v$(node -p "require('./packages/nxtcm-dashboard/package.json').version")"
-          actual="${{ github.event.release.tag_name }}"
-          if [ "$actual" != "$expected" ]; then
-            echo "::error::Release tag $actual does not match expected $expected"
+          if [ "$RELEASE_TAG" != "$expected" ]; then
+            echo "::error::Release tag $RELEASE_TAG does not match expected $expected"
             exit 1
           fi
 
