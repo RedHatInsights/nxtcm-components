@@ -6,11 +6,114 @@ import {
   RosaHcpWizardBodyMount,
 } from './ROSAHCPWizardBody.spec-helpers';
 import { checkAccessibility } from './test-helpers';
+import { STEP_IDS } from './constants';
 
 const { submitError: submitErrorStrings, wizard } = defaultRosaHcpWizardStrings;
+const sl = wizard.stepLabels;
 const ERROR_MESSAGE = 'There has been an error creating the cluster';
 
 test.describe('ROSAHCPWizardBody', () => {
+  test.describe('config.hiddenSteps', () => {
+    test('shows all optional steps when no config is provided', async ({ mount }) => {
+      const component = await mount(<RosaHcpWizardBodyMount />);
+
+      await expect(component.getByRole('button', { name: sl.additionalSetup })).toBeVisible();
+    });
+
+    test('hides the Cluster updates step when it is in hiddenSteps', async ({ mount }) => {
+      const component = await mount(
+        <RosaHcpWizardBodyMount config={{ hiddenSteps: [STEP_IDS.CLUSTER_UPDATES] }} />
+      );
+
+      // Expand the Additional setup parent to reveal sub-steps
+      await component.getByRole('button', { name: sl.additionalSetup }).click();
+
+      await expect(component.getByRole('button', { name: sl.clusterUpdatesOptional })).toHaveCount(
+        0
+      );
+    });
+
+    test('keeps the Encryption step visible when only Cluster updates is hidden', async ({
+      mount,
+    }) => {
+      const component = await mount(
+        <RosaHcpWizardBodyMount config={{ hiddenSteps: [STEP_IDS.CLUSTER_UPDATES] }} />
+      );
+
+      await component.getByRole('button', { name: sl.additionalSetup }).click();
+
+      await expect(component.getByRole('button', { name: sl.encryptionOptional })).toBeVisible();
+    });
+
+    test('hides the Encryption step when it is in hiddenSteps', async ({ mount }) => {
+      const component = await mount(
+        <RosaHcpWizardBodyMount config={{ hiddenSteps: [STEP_IDS.ENCRYPTION] }} />
+      );
+
+      await component.getByRole('button', { name: sl.additionalSetup }).click();
+
+      await expect(component.getByRole('button', { name: sl.encryptionOptional })).toHaveCount(0);
+    });
+
+    test('hides the Additional setup parent when both Encryption and Cluster updates are hidden', async ({
+      mount,
+    }) => {
+      const component = await mount(
+        <RosaHcpWizardBodyMount
+          config={{ hiddenSteps: [STEP_IDS.ENCRYPTION, STEP_IDS.CLUSTER_UPDATES] }}
+        />
+      );
+
+      await expect(component.getByRole('button', { name: sl.additionalSetup })).toHaveCount(0);
+    });
+
+    test('does not show the Cluster-wide proxy step even when configure_proxy is enabled', async ({
+      mount,
+    }) => {
+      const component = await mount(
+        <RosaHcpWizardBodyMount config={{ hiddenSteps: [STEP_IDS.CLUSTER_WIDE_PROXY] }} />
+      );
+
+      // Navigate to Networking step and enable the proxy checkbox
+      await component.getByRole('button', { name: sl.basicSetup }).click();
+      await component.getByRole('button', { name: sl.networking }).click();
+      await component.getByText(defaultRosaHcpWizardStrings.networking.privacyHelper).waitFor();
+
+      // Open advanced section and check the proxy checkbox
+      await component.getByText(defaultRosaHcpWizardStrings.networking.advancedToggle).click();
+
+      // The proxy checkbox should be absent (hidden by config)
+      await expect(
+        component.getByRole('checkbox', {
+          name: defaultRosaHcpWizardStrings.networking.proxyCheckboxLabel,
+        })
+      ).toHaveCount(0);
+
+      // The Cluster-wide proxy nav item should never appear
+      await expect(component.getByRole('button', { name: sl.clusterWideProxy })).toHaveCount(0);
+    });
+
+    test('shows the Cluster-wide proxy step when configure_proxy is enabled and step is not hidden', async ({
+      mount,
+    }) => {
+      const component = await mount(<RosaHcpWizardBodyMount />);
+
+      // Navigate to Networking and enable proxy
+      await component.getByRole('button', { name: sl.basicSetup }).click();
+      await component.getByRole('button', { name: sl.networking }).click();
+      await component.getByText(defaultRosaHcpWizardStrings.networking.privacyHelper).waitFor();
+
+      await component.getByText(defaultRosaHcpWizardStrings.networking.advancedToggle).click();
+      await component
+        .getByRole('checkbox', {
+          name: defaultRosaHcpWizardStrings.networking.proxyCheckboxLabel,
+        })
+        .click();
+
+      await expect(component.getByRole('button', { name: sl.clusterWideProxy })).toBeVisible();
+    });
+  });
+
   test('shows the wizard when onSubmitError is not set', async ({ mount }) => {
     const component = await mount(<RosaHcpWizardBodyMount />);
 

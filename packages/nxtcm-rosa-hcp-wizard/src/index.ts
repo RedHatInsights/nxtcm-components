@@ -1,5 +1,6 @@
 export { RosaHCPWizard, default } from './ROSAHCPWizard';
 export * from './types';
+export { STEP_IDS } from './constants';
 export * from './stringsProvider/rosaHcpWizardStrings';
 export {
   RosaHcpWizardStringsProvider,
