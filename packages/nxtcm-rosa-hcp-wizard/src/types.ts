@@ -216,6 +216,8 @@ export type RosaHCPWizardProps = {
   onBackToReviewStep?: () => void | Promise<void>;
   yamlEditor?: () => React.ReactNode;
   yaml?: boolean;
+  /** The consuming product. */
+  product?: 'acm' | 'ocm' | 'oem';
 };
 
 export type WizardNavigationContext = ReturnType<typeof useWizardContext>;

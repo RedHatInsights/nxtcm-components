@@ -27,7 +27,8 @@ const RosaHcpYamlEditorStep = lazy(() =>
 );
 
 export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
-  const { wizardData, onSubmit, onCancel, yaml, onSubmitError, onBackToReviewStep } = props;
+  const { wizardData, onSubmit, onCancel, yaml, onSubmitError, onBackToReviewStep, product } =
+    props;
 
   const [isNavigatingToReview, setIsNavigatingToReview] = useState(false);
   const [isYamlEditorOpen, setIsYamlEditorOpen] = useState(false);
@@ -114,7 +115,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
               id={STEP_IDS.ROLES_AND_POLICIES}
               key={STEP_IDS.ROLES_AND_POLICIES}
             >
-              <RolesAndPolicies {...wizardData} />
+              <RolesAndPolicies {...wizardData} product={product} />
             </WizardStep>,
             <WizardStep
               name={sl.machinePools}

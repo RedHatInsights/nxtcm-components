@@ -55,3 +55,10 @@ export const DNS_END_ALPHANUMERIC = /[a-z0-9]$/;
 export const MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH = 32;
 
 export const MAX_CA_SIZE_BYTES = 4 * 1024 * 1024;
+
+export const ROSA_LOGIN_COMMAND_DEFAULT =
+  'rosa login --use-auth-code --url https://api.openshift.com';
+export const ROSA_LOGIN_COMMAND_SERVICE =
+  'rosa login --client-id <CLIENT_ID> --client-secret <CLIENT_SECRET>';
+
+export const DEFAULT_HOST_PRODUCT = 'acm' as const;
