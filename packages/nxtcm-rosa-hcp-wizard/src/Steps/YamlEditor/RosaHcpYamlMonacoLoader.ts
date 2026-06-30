@@ -2,15 +2,12 @@
 import { type MonacoEditor } from 'monaco-types';
 import { configureMonacoYaml, type MonacoYamlOptions, type SchemasSettings } from 'monaco-yaml';
 
+import { isMonacoYamlLanguageSupportEnabled } from '../../configureRosaHcpMonaco';
 import rosaControlPlaneSchema from './schemas/rosaControlPlaneSchema.json';
-
-function isYamlWorkerConfigured(): boolean {
-  return typeof window !== 'undefined' && typeof window.MonacoEnvironment?.getWorker === 'function';
-}
 
 export class RosaHcpYamlMonacoLoader {
   configure(monaco: MonacoEditor, options?: MonacoYamlOptions): () => void {
-    if (!isYamlWorkerConfigured()) {
+    if (!isMonacoYamlLanguageSupportEnabled()) {
       return () => undefined;
     }
 

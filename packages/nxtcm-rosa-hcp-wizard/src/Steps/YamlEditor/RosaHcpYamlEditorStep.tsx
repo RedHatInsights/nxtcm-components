@@ -16,9 +16,9 @@ import { useFormContext, useWatch } from 'react-hook-form';
 
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster } from '../../types';
+import { configureRosaHcpMonaco } from '../../configureRosaHcpMonaco';
 import { RosaHcpYamlMonacoLoader } from './RosaHcpYamlMonacoLoader';
 import { RosaHcpSchemaPanel } from './RosaHcpSchemaPanel';
-import { setupMonacoEnvironmentIfNeeded } from './monacoYamlSetup';
 import { validateYaml } from './yamlValidation';
 import { parseRosaControlPlaneYaml } from './yamlUtils';
 import rosaHcpTemplateRaw from './templates/rosa-hcp-template.hbs?raw';
@@ -144,7 +144,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
     }, []);
 
     useEffect(() => {
-      setupMonacoEnvironmentIfNeeded();
+      configureRosaHcpMonaco();
     }, []);
 
     useEffect(() => {
@@ -195,7 +195,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         };
 
         if (!isInitializedRef.current) {
-          setupMonacoEnvironmentIfNeeded();
+          configureRosaHcpMonaco();
           monacoYamlDisposeRef.current?.();
           monacoYamlDisposeRef.current = new RosaHcpYamlMonacoLoader().configure(
             monaco as Parameters<RosaHcpYamlMonacoLoader['configure']>[0]
