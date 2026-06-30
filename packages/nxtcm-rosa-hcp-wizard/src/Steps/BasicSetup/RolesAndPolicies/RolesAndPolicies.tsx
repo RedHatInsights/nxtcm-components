@@ -72,6 +72,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
               }
               name="installer_role_arn"
               options={installerRoleOptions}
+              data-testid="installer-role-select"
             />
           </FieldWrapper>
         </FieldWrapperStack>
@@ -116,6 +117,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
                   name="byo_oidc_config_id"
                   isRequired
                   options={oidcConfig.data}
+                  data-testid="oidc-config-select"
                 />
               </StackItem>
               <StackItem>
