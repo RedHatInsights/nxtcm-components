@@ -11,7 +11,7 @@ import { CodeEditor, Language } from '@patternfly/react-code-editor';
 import type { EditorDidMount } from '@patternfly/react-code-editor';
 import type * as MonacoTypes from 'monaco-editor';
 import OpenDrawerRightIcon from '@patternfly/react-icons/dist/esm/icons/open-drawer-right-icon';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster } from '../../types';
@@ -24,7 +24,6 @@ const YAML_MODEL_PATH = 'rosa-hcp-control-plane.yaml';
 const YAML_VALIDATION_OWNER = 'yaml-hcp-validation';
 
 export type YamlEditorHandle = {
-  applyToForm: () => void;
   discard: () => void;
   hasSchemaErrors: () => boolean;
 };
@@ -37,7 +36,6 @@ export type RosaHcpYamlEditorStepProps = {
 
 export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEditorStepProps>(
   ({ onClose, onCancel: _onCancel, resourceGenerator }, ref) => {
-    const { setValue } = useFormContext<Partial<ROSAHCPCluster>>();
     const watchedValues = useWatch<Partial<ROSAHCPCluster>>();
 
     const { yamlEditor: yamlStrings } = useRosaHcpWizardStrings();
@@ -187,15 +185,6 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
     useImperativeHandle(
       ref,
       () => ({
-        applyToForm() {
-          const parsed = generator.parseYamlToForm(pendingYamlRef.current);
-          if (parsed?.cluster) {
-            const cluster = parsed.cluster as Record<string, unknown>;
-            for (const key of generator.formFields) {
-              setValue(key, cluster[key] as ROSAHCPCluster[typeof key]);
-            }
-          }
-        },
         discard() {
           onClose?.();
         },
@@ -203,7 +192,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
           return hasSchemaErrorsRef.current;
         },
       }),
-      [onClose, setValue, generator]
+      [onClose]
     );
 
     const schemaToggleControl = (
