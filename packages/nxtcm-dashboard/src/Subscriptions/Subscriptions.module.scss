@@ -1,70 +1,52 @@
 .subscriptions {
-  padding: 1rem;
+  padding: var(--pf-t--global--spacer--md);
   height: 100%;
 }
 
 .header {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--pf-t--global--spacer--sm);
 }
 
 .title {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--pf-t--global--font--size--body--default);
+  font-weight: var(--pf-t--global--font--weight--body--bold);
   color: var(--pf-t--global--text--color--regular);
   margin: 0;
 }
 
 .chevron {
   color: var(--pf-t--global--text--color--regular);
-  font-size: 0.875rem;
+  font-size: var(--pf-t--global--font--size--sm);
 }
 
 .description {
-  font-size: 0.875rem;
+  font-size: var(--pf-t--global--font--size--sm);
   color: var(--pf-t--global--text--color--regular);
-  margin-bottom: 1rem;
+  margin-bottom: var(--pf-t--global--spacer--md);
 }
 
 .metrics {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-top: var(--pf-t--global--spacer--md);
+  margin-bottom: var(--pf-t--global--spacer--md);
 }
 
 .count {
-  font-size: 2.5rem;
-  font-weight: 300;
-  line-height: 1;
+  font-size: var(--pf-t--global--font--size--4xl);
+  font-weight: var(--pf-t--global--font--weight--body--default);
+  line-height: var(--pf-t--global--font--line-height--body);
   color: var(--pf-t--global--text--color--regular);
-}
-
-.clickableCount {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  color: var(--pf-t--global--color--link--default);
-  transition: color 0.2s ease;
-
-  &:hover {
-    color: var(--pf-t--global--color--link--hover);
-    text-decoration: underline;
-  }
-
-  &:active {
-    color: var(--pf-t--global--color--link--clicked);
-  }
 }
 
 .icon {
   color: var(--pf-t--global--text--color--regular);
-  font-size: 1rem;
+  font-size: var(--pf-t--global--font--size--body--default);
 }
 
 .label {
-  font-size: 0.875rem;
+  font-size: var(--pf-t--global--font--size--sm);
   color: var(--pf-t--global--text--color--regular);
 }
 
 .viewLink {
-  padding-top: 1rem;
+  padding-top: var(--pf-t--global--spacer--md);
 }

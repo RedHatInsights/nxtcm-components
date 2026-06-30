@@ -28,6 +28,7 @@ export function makeDefaultRosaHcpCtWizardData(
       error: null,
       isFetching: false,
       fetch: noopFetch,
+      ocmRoleARN: null,
       userRoleError: null,
       ocmRoleError: null,
     },

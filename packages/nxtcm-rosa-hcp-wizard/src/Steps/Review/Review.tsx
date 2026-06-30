@@ -3,8 +3,6 @@ import {
   Alert,
   AlertVariant,
   Button,
-  Flex,
-  FlexItem,
   Split,
   SplitItem,
   Stack,
@@ -91,17 +89,21 @@ export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
   const rosaStrings = useRosaHcpWizardStrings();
   const { review } = rosaStrings;
 
+  const Label = (
+    <Split hasGutter>
+      <SplitItem isFilled>{review.sectionLabel}</SplitItem>
+      {onOpenYamlEditor ? (
+        <SplitItem>
+          <Button variant="secondary" icon={<PencilAltIcon />} onClick={onOpenYamlEditor}>
+            {review.editInYaml}
+          </Button>
+        </SplitItem>
+      ) : null}
+    </Split>
+  );
+
   return (
-    <Section label={review.sectionLabel} id={STEP_IDS.REVIEW}>
-      {onOpenYamlEditor && (
-        <Flex justifyContent={{ default: 'justifyContentFlexEnd' }} className="pf-v6-u-mb-md">
-          <FlexItem>
-            <Button variant="secondary" icon={<PencilAltIcon />} onClick={onOpenYamlEditor}>
-              {review.editInYaml}
-            </Button>
-          </FlexItem>
-        </Flex>
-      )}
+    <Section label={Label} id={STEP_IDS.REVIEW}>
       <Alert
         variant={AlertVariant.info}
         title={

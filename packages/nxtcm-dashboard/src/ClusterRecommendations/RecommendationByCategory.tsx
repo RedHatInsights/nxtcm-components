@@ -1,5 +1,6 @@
-import { Button, Flex, FlexItem } from '@patternfly/react-core';
+import { Button, Flex, FlexItem, Title } from '@patternfly/react-core';
 import { SquareFullIcon } from '@patternfly/react-icons';
+import { ChartThemeColor, getTheme } from '@patternfly/react-charts/victory';
 
 import styles from './RecommendationByCategory.module.scss';
 
@@ -13,6 +14,13 @@ export type RecommendationByCategoryProps = {
   onCategoryClick: (category: Category) => void;
 };
 
+const categories: { key: Category; label: string }[] = [
+  { key: 'serviceAvailability', label: 'Service availability' },
+  { key: 'performance', label: 'Performance' },
+  { key: 'security', label: 'Security' },
+  { key: 'faultTolerance', label: 'Fault tolerance' },
+];
+
 export const RecommendationByCategory = ({
   serviceAvailability,
   performance,
@@ -20,58 +28,48 @@ export const RecommendationByCategory = ({
   faultTolerance,
   onCategoryClick,
 }: RecommendationByCategoryProps) => {
+  const counts: Record<Category, number> = {
+    serviceAvailability,
+    performance,
+    security,
+    faultTolerance,
+  };
   const total = serviceAvailability + performance + security + faultTolerance;
+
+  const blueTheme = getTheme(ChartThemeColor.blue);
+  const categoryColors = (blueTheme.chart?.colorScale?.slice(0, 4) ?? []) as string[];
+
   return (
-    <Flex direction={{ default: 'column' }} style={{ padding: '1rem' }}>
+    <Flex direction={{ default: 'column' }} className={styles.container}>
       <FlexItem>
-        <h3>Recommendation by Category</h3>
+        <Title headingLevel="h3" size="md">
+          Recommendation by Category
+        </Title>
       </FlexItem>
       <FlexItem flex={{ default: 'flex_1' }}>
         <Flex className={styles.legend}>
-          <FlexItem>
-            <SquareFullIcon className={styles.serviceAvailability} />
-            <Button onClick={() => onCategoryClick('serviceAvailability')} variant="link">
-              Service availability: {serviceAvailability}
-            </Button>
-          </FlexItem>
-          <FlexItem>
-            <SquareFullIcon className={styles.performance} />
-            <Button onClick={() => onCategoryClick('performance')} variant="link">
-              Performance: {performance}
-            </Button>
-          </FlexItem>
-          <FlexItem>
-            <SquareFullIcon className={styles.security} />
-            <Button onClick={() => onCategoryClick('security')} variant="link">
-              Security: {security}
-            </Button>
-          </FlexItem>
-          <FlexItem>
-            <SquareFullIcon className={styles.faultTolerance} />
-            <Button onClick={() => onCategoryClick('faultTolerance')} variant="link">
-              Fault tolerance: {faultTolerance}
-            </Button>
-          </FlexItem>
+          {categories.map((cat, idx) => (
+            <FlexItem key={cat.key}>
+              <SquareFullIcon style={{ color: categoryColors[idx] }} aria-hidden="true" />
+              <Button onClick={() => onCategoryClick(cat.key)} variant="link" isInline>
+                {cat.label}: {counts[cat.key]}
+              </Button>
+            </FlexItem>
+          ))}
         </Flex>
-        <div className={styles.bar}>
-          <div
-            className={styles.serviceAvailability}
-            style={{ width: `${(serviceAvailability / total) * 100}%` }}
-          >
-            &nbsp;
-          </div>
-          <div className={styles.performance} style={{ width: `${(performance / total) * 100}%` }}>
-            &nbsp;
-          </div>
-          <div className={styles.security} style={{ width: `${(security / total) * 100}%` }}>
-            &nbsp;
-          </div>
-          <div
-            className={styles.faultTolerance}
-            style={{ width: `${(faultTolerance / total) * 100}%` }}
-          >
-            &nbsp;
-          </div>
+        <div className={styles.bar} role="img" aria-label="Recommendation category distribution">
+          {categories.map((cat, idx) => {
+            const pct = total > 0 ? (counts[cat.key] / total) * 100 : 0;
+            return (
+              <div
+                key={cat.key}
+                className={styles.barSegment}
+                style={{ width: `${pct}%`, backgroundColor: categoryColors[idx] }}
+              >
+                &nbsp;
+              </div>
+            );
+          })}
         </div>
       </FlexItem>
     </Flex>

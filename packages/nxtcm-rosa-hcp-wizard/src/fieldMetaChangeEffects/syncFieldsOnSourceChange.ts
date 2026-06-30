@@ -3,6 +3,7 @@ import type { FieldPathValue, UseFormSetValue } from 'react-hook-form';
 
 import {
   buildFormSetValueOptions,
+  DEFAULT_FORM_SET_VALUE_OPTS_WITH_VALIDATE,
   type FormSetValueOptions,
 } from '../utilities/formSetValueOptions';
 import type { ROSAHCPCluster } from '../types';
@@ -41,8 +42,13 @@ export function syncFieldsOnSourceChange(
     return;
   }
 
+  const setDefaultsOpts: Required<FormSetValueOptions> = {
+    ...setOpts,
+    shouldValidate: DEFAULT_FORM_SET_VALUE_OPTS_WITH_VALIDATE.shouldValidate,
+  };
+
   for (const name of branch.setDefaults ?? []) {
     const value = getWizardFieldSchemaDefault(name);
-    setValue(name, value as FieldPathValue<Partial<ROSAHCPCluster>, typeof name>, setOpts);
+    setValue(name, value as FieldPathValue<Partial<ROSAHCPCluster>, typeof name>, setDefaultsOpts);
   }
 }

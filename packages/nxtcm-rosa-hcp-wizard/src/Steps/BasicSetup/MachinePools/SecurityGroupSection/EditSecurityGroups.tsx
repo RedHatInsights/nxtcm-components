@@ -1,10 +1,10 @@
 import React, { type ReactNode } from 'react';
 
-import { Stack, StackItem } from '@patternfly/react-core';
 import SecurityGroupsViewList from './SecurityGroupsViewList';
 
 import { securityGroupsSort } from './helpers';
 import { showSecurityGroupsSection, truncateTextWithEllipsis } from '../../../../utilities/helpers';
+import { FieldWrapper } from '../../../../components/FieldWrapper';
 import { WizMultiSelect } from '../../../../components/WizFields';
 import { clusterValidationSchema } from '../../../../yupSchemas';
 import type { CloudVpc, ROSAHCPCluster } from '../../../../types';
@@ -104,35 +104,35 @@ const EditSecurityGroups = ({
     return <SecurityGroupsEmptyAlert refreshVPCCallback={refreshVPCCallback} />;
   }
 
+  if (incompatibleClusterVersion) {
+    return <div>{incompatibleClusterVersionMessage}</div>;
+  }
+
   return (
-    <>
-      <Stack hasGutter className="pf-v6-u-mt-md">
-        <StackItem>
-          {incompatibleClusterVersion ? (
-            <div>{incompatibleClusterVersionMessage}</div>
-          ) : (
-            <WizMultiSelect<ROSAHCPCluster>
-              name="security_groups_worker"
-              schema={clusterValidationSchema}
-              label={label}
-              placeholder={sg.selectToggle}
-              menuToggleAriaLabel={sg.optionsMenuAria}
-              badgeScreenReaderText={sg.badgeSrText}
-              options={options}
-              maxMenuHeight="300px"
-              data-testid="securitygroups-id"
-              apiError={apiError}
-              isLoading={isVPCLoading}
-              onRefresh={refreshVPCCallback}
-            />
-          )}
-        </StackItem>
-        <StackItem>
+    <FieldWrapper
+      width="medium"
+      additionalContent={
+        <>
           <SecurityGroupsViewList securityGroups={selectedOptions} onCloseItem={onDeleteGroup} />
-        </StackItem>
-        {!incompatibleClusterVersion ? <SecurityGroupsNoEditAlert /> : null}
-      </Stack>
-    </>
+          <SecurityGroupsNoEditAlert />
+        </>
+      }
+    >
+      <WizMultiSelect<ROSAHCPCluster>
+        name="security_groups_worker"
+        schema={clusterValidationSchema}
+        label={label}
+        placeholder={sg.selectToggle}
+        menuToggleAriaLabel={sg.optionsMenuAria}
+        badgeScreenReaderText={sg.badgeSrText}
+        options={options}
+        maxMenuHeight="300px"
+        data-testid="securitygroups-id"
+        apiError={apiError}
+        isLoading={isVPCLoading}
+        onRefresh={refreshVPCCallback}
+      />
+    </FieldWrapper>
   );
 };
 

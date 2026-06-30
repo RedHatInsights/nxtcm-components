@@ -5,6 +5,13 @@ const enableCoverage = process.env.COVERAGE === 'true';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const istanbulPlugin = enableCoverage ? require('./playwright/istanbul-plugin.cjs')() : null;
 
+const strykerCacheDir = process.env.STRYKER_CT_CACHE_DIR;
+const strykerCtPortParsed = process.env.STRYKER_CT_PORT
+  ? Number(process.env.STRYKER_CT_PORT)
+  : undefined;
+const strykerCtPort = Number.isFinite(strykerCtPortParsed) ? strykerCtPortParsed : undefined;
+const strykerActiveMutant = process.env.__STRYKER_ACTIVE_MUTANT__;
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -12,6 +19,7 @@ export default defineConfig({
   testDir: '.',
   /* Match only component test files (.spec.tsx), includes packages directory */
   testMatch: [
+    'src/**/*.spec.tsx',
     'packages/nxtcm-dashboard/src/**/*.spec.tsx',
     'packages/nxtcm-rosa-hcp-wizard/src/**/*.spec.tsx',
   ],
@@ -35,11 +43,31 @@ export default defineConfig({
     trace: 'on-first-retry',
 
     /* Port to use for Playwright component endpoint. */
-    ctPort: 3100,
+    ctPort: strykerCtPort ?? 3100,
+    ...(strykerCacheDir ? { ctCacheDir: strykerCacheDir } : {}),
     ctViteConfig: {
       plugins: [...(istanbulPlugin ? [istanbulPlugin] : [])],
+      ...(strykerCacheDir
+        ? {
+            cacheDir: path.join(strykerCacheDir, 'vite-deps'),
+            server: { strictPort: true },
+            build: { emptyOutDir: true },
+            // Baked into the browser bundle so Stryker-instrumented code can activate mutants.
+            ...(strykerActiveMutant
+              ? {
+                  define: {
+                    'import.meta.env.STRYKER_ACTIVE_MUTANT': JSON.stringify(strykerActiveMutant),
+                  },
+                }
+              : {}),
+          }
+        : {}),
       resolve: {
         alias: {
+          '@patternfly-labs/react-form-wizard': path.resolve(
+            __dirname,
+            './packages/react-form-wizard/src'
+          ),
           '@redhat-cloud-services/nxtcm-dashboard': path.resolve(
             __dirname,
             './packages/nxtcm-dashboard/src'
@@ -48,7 +76,12 @@ export default defineConfig({
             __dirname,
             './packages/nxtcm-rosa-hcp-wizard/src'
           ),
-          '@': path.resolve(__dirname, './'),
+          '@': path.resolve(__dirname, './src'),
+          // Playwright CT resolves component path from playwright/index.tsx; alias old .story to .ct
+          './RosaWizard.story': path.resolve(
+            __dirname,
+            './src/components/Wizards/RosaWizard/RosaWizard.ct.tsx'
+          ),
         },
       },
     },
