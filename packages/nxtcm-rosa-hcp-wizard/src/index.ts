@@ -10,7 +10,6 @@ export {
 export * from './yupSchemas';
 export {
   createAcmCapaGenerator,
-  ACM_CAPA_FORM_FIELDS,
   createOcmClusterServiceGenerator,
   createTemplateBasedGenerator,
 } from './Steps/YamlEditor/generators';

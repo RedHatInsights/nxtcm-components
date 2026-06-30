@@ -41,7 +41,6 @@ function YamlEditorFooterMountInner({
   const methods = useForm<ROSAHCPCluster>({ defaultValues: {} });
 
   const editorRef = useRef<YamlEditorHandle>({
-    applyToForm: () => {},
     discard: () => {},
     hasSchemaErrors: () => hasSchemaErrors,
   });

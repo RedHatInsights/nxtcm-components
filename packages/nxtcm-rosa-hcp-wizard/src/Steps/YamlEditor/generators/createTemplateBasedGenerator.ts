@@ -6,20 +6,18 @@ import * as yaml from 'js-yaml';
 
 import { findLineForPath, formatAjvError } from '../yamlValidation';
 import type { YamlResourceGenerator, ValidationError, ResourceSchema } from '../types';
-import type { ROSAHCPCluster } from '../../../types';
 
 export interface TemplateBasedGeneratorOptions {
   template: string;
   resourceSchemas: ResourceSchema[];
   parseYamlToForm: (yamlStr: string) => Record<string, unknown> | null;
-  formFields: ReadonlyArray<keyof ROSAHCPCluster>;
   helpers?: Record<string, Handlebars.HelperDelegate>;
 }
 
 export function createTemplateBasedGenerator(
   options: TemplateBasedGeneratorOptions
 ): YamlResourceGenerator {
-  const { template, resourceSchemas, parseYamlToForm, formFields, helpers } = options;
+  const { template, resourceSchemas, parseYamlToForm, helpers } = options;
 
   const primaryEntry = resourceSchemas.find((s) => s.primary);
   const primaryKind = primaryEntry?.kind;
@@ -121,7 +119,6 @@ export function createTemplateBasedGenerator(
     },
 
     parseYamlToForm,
-    formFields,
     resourceSchemas,
   };
 }

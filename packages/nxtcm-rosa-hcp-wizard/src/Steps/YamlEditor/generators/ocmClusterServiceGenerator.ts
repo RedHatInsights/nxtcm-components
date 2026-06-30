@@ -1,7 +1,6 @@
 import * as yaml from 'js-yaml';
 
 import type { YamlResourceGenerator, ValidationError } from '../types';
-import type { ROSAHCPCluster } from '../../../types';
 
 export function createOcmClusterServiceGenerator(): YamlResourceGenerator {
   return {
@@ -94,10 +93,6 @@ export function createOcmClusterServiceGenerator(): YamlResourceGenerator {
         return null;
       }
     },
-
-    formFields: ['name', 'region', 'cluster_version'] as const satisfies ReadonlyArray<
-      keyof ROSAHCPCluster
-    >,
 
     // monacoSchema intentionally omitted until the ClusterService JSON Schema is available.
   };
