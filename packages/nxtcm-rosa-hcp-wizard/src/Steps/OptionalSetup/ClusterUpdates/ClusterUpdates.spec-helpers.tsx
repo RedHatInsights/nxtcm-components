@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Form } from '@patternfly/react-core';
 import { FormProvider, type Resolver, useForm, useFormContext } from 'react-hook-form';
 import {
@@ -9,8 +8,7 @@ import {
   type ROSAHCPCluster,
 } from '../../../types';
 import { STEP_IDS } from '../../../constants';
-import { clusterValidationSchema } from '../../../yupSchemas';
-import type { ValidationSchemaContext } from '../../../yupSchemas/types';
+import { createClusterValidationResolver } from '../../../utilities/clusterValidationResolver';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
   RosaHcpWizardValidationProvider,
@@ -67,20 +65,14 @@ function ClusterUpdatesValidateButton() {
 }
 
 export const ClusterUpdatesMount: React.FC<ClusterUpdatesMountProps> = ({ defaultValues = {} }) => {
-  const validationContext = useMemo<ValidationSchemaContext>(
-    () => ({
-      msgs: defaultRosaHcpWizardValidatorStrings,
-      maxRootDiskSize: 16384,
-      maxAutoscalingNodes: 500,
-      machinePoolsNumber: 1,
-    }),
+  const resolver = useMemo(
+    () => createClusterValidationResolver(defaultRosaHcpWizardValidatorStrings),
     []
   );
 
   const methods = useForm<ROSAHCPCluster>({
     defaultValues: { ...DEFAULT_ROSA_HCP_CT_FORM_VALUES, ...defaultValues },
-    resolver: yupResolver(clusterValidationSchema) as Resolver<ROSAHCPCluster>,
-    context: validationContext,
+    resolver: resolver as Resolver<ROSAHCPCluster>,
     mode: 'onTouched',
   });
 

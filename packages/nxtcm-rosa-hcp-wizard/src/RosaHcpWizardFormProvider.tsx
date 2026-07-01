@@ -1,27 +1,16 @@
-import React, { useCallback } from 'react';
-import { FormProvider, type Resolver, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import React, { useMemo } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import type { ROSAHCPCluster, RosaHCPWizardProps } from './types';
-import { buildClusterValidationSchemaContext } from './utilities/buildClusterValidationSchemaContext';
+import { createClusterValidationResolver } from './utilities/clusterValidationResolver';
 import { ROSAHCPWizardBody } from './ROSAHCPWizardBody';
 import { RosaHcpWizardValidationProvider } from './rosaHcpWizardValidationContext';
 import { useRosaHcpWizardValidators } from './stringsProvider/RosaHcpWizardStringsContext';
-import { clusterValidationSchema, getClusterValidationSchemaDefaultValues } from './yupSchemas';
-
-const clusterYupResolver = yupResolver(clusterValidationSchema) as Resolver<
-  Partial<ROSAHCPCluster>
->;
+import { getClusterValidationSchemaDefaultValues } from './yupSchemas';
 
 export function RosaHcpWizardFormProvider(props: RosaHCPWizardProps) {
   const msgs = useRosaHcpWizardValidators();
 
-  const resolver = useCallback<Resolver<Partial<ROSAHCPCluster>>>(
-    async (values, _rhfContext, options) => {
-      const yupContext = buildClusterValidationSchemaContext(values, msgs);
-      return clusterYupResolver(values, yupContext, options);
-    },
-    [msgs]
-  );
+  const resolver = useMemo(() => createClusterValidationResolver(msgs), [msgs]);
 
   const methods = useForm<Partial<ROSAHCPCluster>>({
     defaultValues: getClusterValidationSchemaDefaultValues(),

@@ -78,45 +78,111 @@ export function findOverlappingCidrFields(
 }
 
 /**
- * Yup test (use before `.required()` on the same chain) so the message comes from
+ * Yup transform for required **string** fields (selects, text inputs).
+ * Use before {@link rosaCommonRequiredNonEmptyTest} and `.required()`.
+ * Coerces `null` to `''`; untouched `undefined` is handled by {@link coerceAbsentRequiredFieldValues}.
+ */
+function rosaAbsentStringToEmpty(value: unknown, originalValue: unknown): unknown {
+  return originalValue == null ? '' : value;
+}
+
+/**
+ * Yup transform for required **mixed** object selects (e.g. VPC).
+ * Use before {@link rosaCommonRequiredNonEmptyTest} and `.required()`.
+ * Untouched `undefined` is handled by {@link coerceAbsentRequiredFieldValues}.
+ */
+function rosaUndefinedMixedToAbsentObject(value: unknown, originalValue: unknown): unknown {
+  return originalValue === undefined ? {} : value;
+}
+
+function isAbsentRequiredValue(value: unknown): boolean {
+  if (value == null) {
+    return true;
+  }
+  if (typeof value === 'string') {
+    return value.length === 0;
+  }
+  if (Array.isArray(value)) {
+    return value.length === 0;
+  }
+  if (typeof value !== 'object') {
+    return false;
+  }
+  if (Object.keys(value).length === 0) {
+    return true;
+  }
+  const id = (value as { id?: unknown }).id;
+  if (typeof id === 'string') {
+    return id.trim() === '';
+  }
+  return id == null || id === '';
+}
+
+/**
+ * Yup test paired with `.required()` (via {@link rosaRequiredStringField} / {@link rosaRequiredMixedField})
+ * so the message comes from
  * {@link RosaHcpWizardValidatorStrings.commonRequired} (override via `strings.validators.commonRequired`
  * on {@link RosaHCPWizard} / the strings provider).
  *
  * Treats a value as **missing** when it is `null`/`undefined`, an empty string, or an empty array.
  * Non-empty strings, non-empty arrays, and non-null objects (e.g. a selected VPC record from the machine pools step)
- * count as present. Yup’s `.required(fn)` message callbacks do not receive validation `context`, so this
- * pattern is required for contextual copy.
+ * count as present.
+ *
+ * **Required field pattern:** {@link rosaRequiredStringField}, {@link rosaRequiredMixedField}, or
+ * {@link rosaRequiredArrayField}.
  */
 export function rosaRequiredPresentValue(
   this: yup.TestContext,
   value: unknown
 ): true | yup.ValidationError {
-  if (value == null) {
-    return this.createError({ message: ctx(this).msgs.commonRequired });
-  }
-  if (typeof value === 'string' && value.length === 0) {
-    return this.createError({ message: ctx(this).msgs.commonRequired });
-  }
-  if (Array.isArray(value) && value.length === 0) {
+  if (isAbsentRequiredValue(value)) {
     return this.createError({ message: ctx(this).msgs.commonRequired });
   }
   return true;
 }
 
-/** Use on `string` / `mixed` / `array` schemas before `.required()` — see {@link rosaRequiredPresentValue}. */
+/**
+ * Use on `string` / `mixed` / `array` schemas with `.required()` — see {@link rosaRequiredPresentValue}.
+ * `skipAbsent: false` ensures `null` / `''` / `[]` are validated (Yup skips absent values by default).
+ */
 export const rosaCommonRequiredNonEmptyTest = {
   name: 'rosa-common-required-nonempty',
   exclusive: true,
-  skipAbsent: true,
+  skipAbsent: false,
   test: rosaRequiredPresentValue,
 };
 
 /**
- * Like {@link rosaCommonRequiredNonEmptyTest} but still runs when the value is `undefined`.
- * Use on conditionally required fields that may be untouched (e.g. Key ARN shown only when a toggle is on).
+ * Required string field (select, text): transform + {@link rosaCommonRequiredNonEmptyTest} + `.required()`.
+ * Untouched top-level `undefined` is coerced in {@link coerceAbsentRequiredFieldValues} before validate.
  */
-export const rosaCommonRequiredNonEmptyIncludingAbsentTest = {
-  name: 'rosa-common-required-nonempty',
-  exclusive: true,
-  test: rosaRequiredPresentValue,
-};
+export function rosaRequiredStringField(): yup.StringSchema {
+  return yup
+    .string()
+    .transform(rosaAbsentStringToEmpty)
+    .test(rosaCommonRequiredNonEmptyTest)
+    .required();
+}
+
+/**
+ * Required object select (`mixed`, e.g. VPC): {@link rosaUndefinedMixedToAbsentObject} + test + `.required()`.
+ */
+export function rosaRequiredMixedField(): yup.MixedSchema {
+  return yup
+    .mixed()
+    .transform(rosaUndefinedMixedToAbsentObject)
+    .test(rosaCommonRequiredNonEmptyTest)
+    .required();
+}
+
+/**
+ * Required non-empty array: test + `.required()`. Optional `defaultValue` for structural row shape
+ * (e.g. `[{ machine_pool_subnet: '' }]`); use {@link rosaRequiredStringField} on item fields for leaf validation.
+ */
+export function rosaRequiredArrayField(of: yup.AnySchema, defaultValue?: unknown[]): yup.AnySchema {
+  let schema: yup.AnySchema = yup.array().of(of);
+  if (defaultValue !== undefined) {
+    schema = schema.default(defaultValue);
+  }
+  return schema.test(rosaCommonRequiredNonEmptyTest).required();
+}
