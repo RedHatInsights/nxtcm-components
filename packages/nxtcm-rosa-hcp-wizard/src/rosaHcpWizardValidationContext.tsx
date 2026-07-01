@@ -1,15 +1,32 @@
-import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from 'react';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useRosaHcpWizardReviewSections } from './Steps/Review/ROSAHCPWizardReviewSections';
+
+/** Applies nav unvisit for the earliest source step among the listed wizard step ids. */
+export type RosaHcpNavUnvisitApplier = (sourceStepIds: readonly string[]) => void;
 
 type RosaHcpWizardValidationContextValue = {
   fieldPathToStepId: Readonly<Record<string, string>>;
   validationAttemptedStepIds: ReadonlySet<string>;
+  asyncValidatingStepIds: ReadonlySet<string>;
   validationAlertStepId: string | null;
   markValidationAttempted: (stepId: string) => void;
   clearValidationAttempted: (stepId: string) => void;
+  setStepAsyncValidating: (stepId: string, isValidating: boolean) => void;
   setValidationAlertStepId: (
     stepId: string | null | ((prev: string | null) => string | null)
   ) => void;
+  /** Footer registers the PatternFly wizard `setStep` unvisit handler (Wizard context required). */
+  registerNavUnvisitApplier: (applier: RosaHcpNavUnvisitApplier | null) => void;
+  /** Unvisit later nav steps after the earliest listed source step id. */
+  requestNavUnvisitAfterSteps: (sourceStepIds: readonly string[]) => void;
 };
 
 const RosaHcpWizardValidationContext = createContext<RosaHcpWizardValidationContextValue | null>(
@@ -33,7 +50,9 @@ export function RosaHcpWizardValidationProvider({ children }: { children: ReactN
   const [validationAttemptedStepIds, setValidationAttemptedStepIds] = useState(
     () => new Set<string>()
   );
+  const [asyncValidatingStepIds, setAsyncValidatingStepIds] = useState(() => new Set<string>());
   const [validationAlertStepId, setValidationAlertStepIdState] = useState<string | null>(null);
+  const navUnvisitApplierRef = useRef<RosaHcpNavUnvisitApplier | null>(null);
   const setValidationAlertStepId = useCallback(
     (stepIdOrFn: string | null | ((prev: string | null) => string | null)) => {
       setValidationAlertStepIdState((prev) =>
@@ -65,19 +84,58 @@ export function RosaHcpWizardValidationProvider({ children }: { children: ReactN
     });
   }, []);
 
+  const setStepAsyncValidating = useCallback((stepId: string, isValidating: boolean) => {
+    setAsyncValidatingStepIds((prev) => {
+      if (isValidating) {
+        if (prev.has(stepId)) {
+          return prev;
+        }
+        const next = new Set(prev);
+        next.add(stepId);
+        return next;
+      }
+
+      if (!prev.has(stepId)) {
+        return prev;
+      }
+      const next = new Set(prev);
+      next.delete(stepId);
+      return next;
+    });
+  }, []);
+
+  const registerNavUnvisitApplier = useCallback((applier: RosaHcpNavUnvisitApplier | null) => {
+    navUnvisitApplierRef.current = applier;
+  }, []);
+
+  const requestNavUnvisitAfterSteps = useCallback((sourceStepIds: readonly string[]) => {
+    if (sourceStepIds.length === 0) {
+      return;
+    }
+    navUnvisitApplierRef.current?.(sourceStepIds);
+  }, []);
+
   const value = useMemo(
     () => ({
       fieldPathToStepId,
       validationAttemptedStepIds,
+      asyncValidatingStepIds,
       validationAlertStepId,
       markValidationAttempted,
       clearValidationAttempted,
+      setStepAsyncValidating,
       setValidationAlertStepId,
+      registerNavUnvisitApplier,
+      requestNavUnvisitAfterSteps,
     }),
     [
+      asyncValidatingStepIds,
       clearValidationAttempted,
       fieldPathToStepId,
       markValidationAttempted,
+      registerNavUnvisitApplier,
+      requestNavUnvisitAfterSteps,
+      setStepAsyncValidating,
       setValidationAlertStepId,
       validationAlertStepId,
       validationAttemptedStepIds,
