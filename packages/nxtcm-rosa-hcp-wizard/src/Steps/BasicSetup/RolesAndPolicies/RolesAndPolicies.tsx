@@ -36,7 +36,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   const awsInfrastructureAccount = useWatch({ name: 'associated_aws_id' });
 
   const installerRoleOptions = useInstallerRoleOptions(roles);
-  const { supportRoleOptions, workerRoleOptions, isIncompleteRoleSet } = useDependentRoles(roles);
+  const { isIncompleteRoleSet } = useDependentRoles(roles);
   useUpdateOperatorPrefix();
 
   const rosaCommand = useRosaCommand();
@@ -87,21 +87,21 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
         >
           <FieldWrapperStack>
             <FieldWrapper width="large">
-              <WizSelect<ROSAHCPCluster>
+              <WizTextInput<ROSAHCPCluster>
                 isRequired
                 schema={clusterValidationSchema}
                 name="support_role_arn"
-                options={supportRoleOptions}
-                isDisabled
+                readOnly
+                readOnlyVariant="plain"
               />
             </FieldWrapper>
             <FieldWrapper width="large">
-              <WizSelect<ROSAHCPCluster>
+              <WizTextInput<ROSAHCPCluster>
                 isRequired
                 schema={clusterValidationSchema}
                 name="worker_role_arn"
-                options={workerRoleOptions}
-                isDisabled
+                readOnly
+                readOnlyVariant="plain"
               />
             </FieldWrapper>
           </FieldWrapperStack>
