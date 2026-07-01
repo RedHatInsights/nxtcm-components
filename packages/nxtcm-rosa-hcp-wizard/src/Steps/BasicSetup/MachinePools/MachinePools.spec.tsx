@@ -159,6 +159,30 @@ test.describe('MachinePools (ROSA HCP)', () => {
     ).not.toBeVisible();
   });
 
+  test('should disable min replica plus button at max replica bound', async ({ mount }) => {
+    const component = await mount(<MachinePoolsMount />);
+
+    await component.getByRole('checkbox', { name: a.enableLabel, exact: true }).click();
+
+    const minField = component.locator('#min_replicas-form-group');
+    await minField.getByRole('button', { name: 'Plus' }).click();
+    await minField.getByRole('button', { name: 'Plus' }).click();
+    await expect(minField.getByRole('spinbutton')).toHaveValue(defaultMaxReplicas);
+    await expect(minField.getByRole('button', { name: 'Plus' })).toBeDisabled();
+  });
+
+  test('should disable max replica minus button at min replica bound', async ({ mount }) => {
+    const component = await mount(<MachinePoolsMount />);
+
+    await component.getByRole('checkbox', { name: a.enableLabel, exact: true }).click();
+
+    const maxField = component.locator('#max_replicas-form-group');
+    await maxField.getByRole('button', { name: 'Minus' }).click();
+    await maxField.getByRole('button', { name: 'Minus' }).click();
+    await expect(maxField.getByRole('spinbutton')).toHaveValue(defaultMinReplicas);
+    await expect(maxField.getByRole('button', { name: 'Minus' })).toBeDisabled();
+  });
+
   test('should set replica defaults when autoscaling is enabled and restore compute count when disabled', async ({
     mount,
   }) => {
