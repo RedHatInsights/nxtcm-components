@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Form } from '@patternfly/react-core';
 import { Select } from './Select';
 
+type SelectHarnessValue = string | number | undefined;
+
 export function PlainMenuHarness() {
-  const [value, setValue] = useState<string | number | undefined>();
+  const [value, setValue] = useState<SelectHarnessValue>();
   return (
     <Form>
       <Select
@@ -19,7 +21,7 @@ export function PlainMenuHarness() {
 }
 
 export function TypeaheadHarness() {
-  const [value, setValue] = useState<string | number | undefined>();
+  const [value, setValue] = useState<SelectHarnessValue>();
   return (
     <Form>
       <Select
@@ -35,7 +37,7 @@ export function TypeaheadHarness() {
 }
 
 export function RefreshHarness() {
-  const [value, setValue] = useState<string | number | undefined>();
+  const [value, setValue] = useState<SelectHarnessValue>();
   const [refreshed, setRefreshed] = useState(0);
   return (
     <Form>

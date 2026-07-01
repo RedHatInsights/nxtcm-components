@@ -501,6 +501,7 @@ test.describe('Details (ROSA HCP)', () => {
       await nameInput.fill('valid-cluster');
       await nameInput.blur();
 
+      await expect(nameInput).toHaveValue('valid-cluster');
       await expect.poll(() => calls.some((c) => c.name === 'valid-cluster')).toBe(true);
     });
 
@@ -521,11 +522,13 @@ test.describe('Details (ROSA HCP)', () => {
       await nameInput.fill('abc');
       await nameInput.blur();
 
+      await expect(nameInput).toHaveValue('abc');
       await expect.poll(() => calls.length).toBe(1);
 
       await nameInput.click();
       await nameInput.blur();
 
+      await expect(nameInput).toHaveValue('abc');
       await expect
         .poll(async () => {
           await new Promise((resolve) => setTimeout(resolve, 400));
@@ -551,14 +554,9 @@ test.describe('Details (ROSA HCP)', () => {
 
       await expect.poll(() => calls).toEqual(['mycluster']);
 
-      await expect
-        .poll(async () =>
-          component
-            .locator('#name-form-group')
-            .getByText('Cluster name already exists.')
-            .isVisible()
-        )
-        .toBe(true);
+      await expect(
+        component.locator('#name-form-group').getByText('Cluster name already exists.')
+      ).toBeVisible();
     });
 
     test('should clear async uniqueness error when region changes and name is empty', async ({
@@ -652,6 +650,7 @@ test.describe('Details (ROSA HCP)', () => {
       await nameInput.fill('valid-cluster');
       await nameInput.blur();
 
+      await expect(nameInput).toHaveValue('valid-cluster');
       await expect.poll(() => calls.length, { timeout: 2000 }).toBe(0);
     });
 
@@ -683,6 +682,11 @@ test.describe('Details (ROSA HCP)', () => {
         .click();
       await page.getByText('Billing Account - Secondary (234567890123)', { exact: true }).click();
 
+      await expect(
+        component
+          .locator('#billing_account_id-form-group')
+          .getByRole('combobox', { name: d.billingPlaceholder, exact: true })
+      ).toHaveValue('Billing Account - Secondary (234567890123)');
       await expect.poll(() => calls.length, { timeout: 2000 }).toBe(1);
     });
 

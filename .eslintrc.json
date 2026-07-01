@@ -13,17 +13,20 @@
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
-        "plugin:prettier/recommended"
+        "plugin:prettier/recommended",
+        "plugin:sonarjs/recommended-legacy"
     ],
     "plugins": [
         "@typescript-eslint",
         "react",
         "react-hooks",
         "jsx-a11y",
-        "prettier"
+        "prettier",
+        "sonarjs"
     ],
     
     "rules": {
+        "complexity": ["error", { "max": 20 }],
         "react/react-in-jsx-scope": "off",
         "react/prop-types": "off",
         "react/display-name": "warn",
@@ -40,7 +43,17 @@
             "ignoreRestSiblings": true
         }],
         "@typescript-eslint/require-await": "warn",
-        "@typescript-eslint/ban-types": "warn"
+        "@typescript-eslint/ban-types": "warn",
+        "sonarjs/prefer-read-only-props": "off",
+        "sonarjs/no-hardcoded-ip": "off",
+        "sonarjs/different-types-comparison": "off",
+        "sonarjs/function-return-type": "off",
+        "sonarjs/no-redundant-optional": "off",
+        "sonarjs/redundant-type-aliases": "off",
+        "sonarjs/no-clear-text-protocols": "off",
+        "sonarjs/void-use": "off",
+        "sonarjs/todo-tag": "off",
+        "sonarjs/cognitive-complexity": ["error", 20]
     },
     "overrides": [
         {

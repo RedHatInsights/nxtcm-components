@@ -21,7 +21,6 @@ describe('multiSelect option helpers', () => {
   it('matches object values via keyPath when toggling', () => {
     const optA = normalizeOption({ label: 'Zone A', value: { id: 'zone-a', name: 'A' } }, 'id');
     const optB = normalizeOption({ label: 'Zone B', value: { id: 'zone-b', name: 'B' } }, 'id');
-    const lookup = [optA, optB];
     const selected = [{ id: 'zone-a', name: 'A' }];
 
     expect(optionContainsValue(optA, selected, 'id')).toBe(true);

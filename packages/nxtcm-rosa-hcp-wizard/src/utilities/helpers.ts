@@ -176,14 +176,12 @@ const truncateTextWithEllipsis = (text: string, maxLength?: number) => {
  * @returns An array with destructuralized version [major, minor, patch, ...]
  */
 const splitVersion = (version: string): number[] => {
-  let versionArray = [];
-  try {
-    versionArray = version.split('.').map((num) => parseInt(num, 10));
-    versionArray[1] = versionArray[1] ?? 0;
-    versionArray[2] = versionArray[2] ?? 0;
-  } catch (error) {
+  const versionArray = version.split('.').map((num) => parseInt(num, 10));
+  if (versionArray.some(Number.isNaN)) {
     return [];
   }
+  versionArray[1] = versionArray[1] ?? 0;
+  versionArray[2] = versionArray[2] ?? 0;
   return versionArray;
 };
 

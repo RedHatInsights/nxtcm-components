@@ -40,11 +40,17 @@ const mockNotifications: NotificationItem[] = [
   },
 ];
 
+const mockNotificationTypes: NotificationItem['type'][] = [
+  'Security',
+  'Advisor',
+  'Update risks',
+  'Status',
+];
+
 const manyNotifications: NotificationItem[] = Array.from({ length: 36 }, (_, i) => ({
   id: i + 1,
   title: `Notification ${i + 1}: Important Update`,
-  type:
-    i % 4 === 0 ? 'Security' : i % 4 === 1 ? 'Advisor' : i % 4 === 2 ? 'Update risks' : 'Status',
+  type: mockNotificationTypes[i % mockNotificationTypes.length],
   time: 'Nov. 28 12:09 UTC',
 }));
 

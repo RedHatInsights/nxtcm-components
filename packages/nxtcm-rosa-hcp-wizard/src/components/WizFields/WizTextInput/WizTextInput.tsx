@@ -116,12 +116,13 @@ type WizTextInputBoundFieldProps<TFieldValues extends FieldValues> = {
 };
 
 function resolveValidateOnBlur<TFieldValues extends FieldValues>(
-  props: WizTextInputProps<TFieldValues>,
-  name: FieldPath<TFieldValues>
+  schema: WizTextInputProps<TFieldValues>['schema'],
+  name: FieldPath<TFieldValues>,
+  validateOnBlur?: boolean
 ): boolean {
   const validateOnBlurFromMeta =
-    props.schema !== undefined ? wizardFieldMetaByPath(String(name))?.validateOnBlur : undefined;
-  return props.validateOnBlur ?? validateOnBlurFromMeta ?? false;
+    schema === undefined ? undefined : wizardFieldMetaByPath(String(name))?.validateOnBlur;
+  return validateOnBlur ?? validateOnBlurFromMeta ?? false;
 }
 
 const EMPTY_SUBSCRIBED_FIELD_STATE = {
@@ -268,7 +269,7 @@ export function WizTextInput<TFieldValues extends FieldValues = FieldValues>(
   } = props;
 
   const validateOnBlur = useMemo(
-    () => resolveValidateOnBlur({ ...props, validateOnBlur: validateOnBlurProp }, name),
+    () => resolveValidateOnBlur(schema, name, validateOnBlurProp),
     [name, schema, validateOnBlurProp]
   );
 

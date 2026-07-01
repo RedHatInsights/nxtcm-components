@@ -6,7 +6,6 @@ import {
 describe('getAutoscalingMaxNodes', () => {
   it('returns default max when openshift version is not provided', () => {
     expect(getAutoscalingMaxNodes()).toBe(MAX_NODES_HCP_DEFAULT);
-    expect(getAutoscalingMaxNodes(undefined)).toBe(MAX_NODES_HCP_DEFAULT);
   });
 
   it('returns insufficient max for openshift 4.13 and below', () => {

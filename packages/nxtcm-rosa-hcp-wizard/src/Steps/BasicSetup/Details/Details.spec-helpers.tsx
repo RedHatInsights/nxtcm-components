@@ -10,7 +10,15 @@ import {
   ClusterEncryptionKeys,
   ClusterNetwork,
   ClusterUpgrade,
+  type AwsBillingAccountsResource,
+  type AwsInfrastructureAccountsResource,
+  type CheckClusterNameUniqueness,
+  type RegionsResource,
+  type Resource,
   type ROSAHCPCluster,
+  type RolesResource,
+  type VersionsResource,
+  type VpcListResource,
 } from '../../../types';
 import { Details } from './Details';
 import {
@@ -21,7 +29,6 @@ import {
   mockRoles,
 } from './Details.fixtures';
 import { clusterValidationSchema } from '../../../yupSchemas';
-import type { CheckClusterNameUniqueness } from '../../../types';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
 import {
@@ -29,14 +36,6 @@ import {
   makeVpcListResource,
   WizardFieldMetaChangeEffectsCtHarness,
 } from '../../../test/rosaHcpWizardCtSpecHelpers';
-import type {
-  AwsBillingAccountsResource,
-  AwsInfrastructureAccountsResource,
-  RegionsResource,
-  RolesResource,
-  VersionsResource,
-  VpcListResource,
-} from '../../../types';
 
 /** Defaults aligned with {@link ROSAHCPWizardBody} so the composed Yup schema resolves consistently in CT. */
 const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ROSAHCPCluster> = {
@@ -93,17 +92,67 @@ const DetailsFormValuesProbe: React.FC = () => {
   );
 };
 
-export const DetailsMount: React.FC<DetailsMountProps> = ({
+function makeDetailsCtResource<TData, TArgs extends unknown[] = []>(
+  defaultData: TData,
+  overrides: Partial<Resource<TData, TArgs>> | undefined,
+  defaultFetch: (...args: TArgs) => Promise<void>
+): Resource<TData, TArgs> & { fetch: (...args: TArgs) => Promise<void> } {
+  return {
+    data: overrides?.data ?? defaultData,
+    isFetching: overrides?.isFetching ?? false,
+    error: overrides?.error ?? null,
+    fetch: overrides?.fetch ?? defaultFetch,
+  };
+}
+
+function buildDetailsMountResources({
   versions,
   awsInfrastructureAccounts,
   awsBillingAccounts,
   regions,
   roles,
   vpcList,
+}: Pick<
+  DetailsMountProps,
+  'versions' | 'awsInfrastructureAccounts' | 'awsBillingAccounts' | 'regions' | 'roles' | 'vpcList'
+>) {
+  return {
+    awsInfrastructureAccounts: makeDetailsCtResource(
+      mockAwsInfrastructureAccounts,
+      awsInfrastructureAccounts,
+      async () => {}
+    ) as AwsInfrastructureAccountsResource,
+    awsBillingAccounts: makeDetailsCtResource(
+      mockAwsBillingAccounts,
+      awsBillingAccounts,
+      async () => {}
+    ) as AwsBillingAccountsResource,
+    regions: makeDetailsCtResource(
+      mockRegions,
+      regions,
+      async (_awsAccount: string) => {}
+    ) as RegionsResource,
+    versions: makeDetailsCtResource(
+      mockOpenShiftVersionsData,
+      versions,
+      async () => {}
+    ) as VersionsResource,
+    roles: {
+      ...makeDetailsCtResource(mockRoles, roles, async (_awsAccount: string) => {}),
+      ocmRoleError: roles?.ocmRoleError ?? null,
+      userRoleError: roles?.userRoleError ?? null,
+      ocmRoleARN: roles?.ocmRoleARN ?? null,
+    } as RolesResource,
+    vpcList: makeVpcListResource(vpcList),
+  };
+}
+
+export const DetailsMount: React.FC<DetailsMountProps> = ({
   defaultValues = {},
   checkClusterNameUniqueness,
   clusterNameUniquenessError,
   onClusterNameUniquenessCheck,
+  ...resourceProps
 }) => {
   const resolvedCheckClusterNameUniqueness = useMemo((): CheckClusterNameUniqueness | undefined => {
     if (checkClusterNameUniqueness) {
@@ -135,60 +184,14 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
     mode: 'onTouched',
   });
 
-  const awsInfra = useMemo<AwsInfrastructureAccountsResource>(
-    () => ({
-      data: awsInfrastructureAccounts?.data ?? mockAwsInfrastructureAccounts,
-      isFetching: awsInfrastructureAccounts?.isFetching ?? false,
-      fetch: awsInfrastructureAccounts?.fetch ?? (async () => {}),
-      error: awsInfrastructureAccounts?.error ?? null,
-    }),
-    [awsInfrastructureAccounts]
-  );
-
-  const awsBilling = useMemo<AwsBillingAccountsResource>(
-    () => ({
-      data: awsBillingAccounts?.data ?? mockAwsBillingAccounts,
-      isFetching: awsBillingAccounts?.isFetching ?? false,
-      fetch: awsBillingAccounts?.fetch ?? (async () => {}),
-      error: awsBillingAccounts?.error ?? null,
-    }),
-    [awsBillingAccounts]
-  );
-
-  const regionsProps = useMemo<RegionsResource>(
-    () => ({
-      data: regions?.data ?? mockRegions,
-      isFetching: regions?.isFetching ?? false,
-      fetch: regions?.fetch ?? (async (_awsAccount: string) => {}),
-      error: regions?.error ?? null,
-    }),
-    [regions]
-  );
-
-  const versionsProps = useMemo<VersionsResource>(
-    () => ({
-      data: versions?.data ?? mockOpenShiftVersionsData,
-      isFetching: versions?.isFetching ?? false,
-      fetch: versions?.fetch ?? (async () => {}),
-      error: versions?.error ?? null,
-    }),
-    [versions]
-  );
-
-  const rolesProps = useMemo<RolesResource>(
-    () => ({
-      data: roles?.data ?? mockRoles,
-      isFetching: roles?.isFetching ?? false,
-      fetch: roles?.fetch ?? (async (_awsAccount: string) => {}),
-      error: roles?.error ?? null,
-      ocmRoleError: roles?.ocmRoleError ?? null,
-      userRoleError: roles?.userRoleError ?? null,
-      ocmRoleARN: roles?.ocmRoleARN ?? null,
-    }),
-    [roles]
-  );
-
-  const vpcListProps = useMemo(() => makeVpcListResource(vpcList), [vpcList]);
+  const {
+    awsInfrastructureAccounts: awsInfra,
+    awsBillingAccounts: awsBilling,
+    regions: regionsProps,
+    versions: versionsProps,
+    roles: rolesProps,
+    vpcList: vpcListProps,
+  } = buildDetailsMountResources(resourceProps);
 
   const wizardData = useMemo(
     () =>

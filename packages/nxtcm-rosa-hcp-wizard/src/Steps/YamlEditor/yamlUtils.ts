@@ -105,66 +105,86 @@ export function isValidYaml(yamlString: string): boolean {
   }
 }
 
+function isRosaControlPlaneYaml(obj: unknown): obj is Record<string, unknown> {
+  return Boolean(
+    obj && typeof obj === 'object' && (obj as Record<string, unknown>).kind === 'ROSAControlPlane'
+  );
+}
+
+function mapRosaEndpointAccess(
+  cluster: Record<string, unknown>,
+  endpointAccess: string | undefined
+): void {
+  if (endpointAccess === 'Private') {
+    cluster.cluster_privacy = ClusterNetwork.internal;
+  } else if (endpointAccess === 'Public') {
+    cluster.cluster_privacy = ClusterNetwork.external;
+  }
+}
+
+function mapRosaNetworkFields(
+  cluster: Record<string, unknown>,
+  network: Record<string, unknown> | undefined
+): void {
+  if (!network) return;
+  if (network.machineCIDR) cluster.network_machine_cidr = network.machineCIDR;
+  if (network.serviceCIDR) cluster.network_service_cidr = network.serviceCIDR;
+  if (network.podCIDR) cluster.network_pod_cidr = network.podCIDR;
+  if (network.hostPrefix) cluster.network_host_prefix = `/${String(network.hostPrefix)}`;
+}
+
+function mapRosaMachinePoolFields(
+  cluster: Record<string, unknown>,
+  machinePoolSpec: Record<string, unknown> | undefined
+): void {
+  if (!machinePoolSpec) return;
+  if (machinePoolSpec.instanceType) cluster.machine_type = machinePoolSpec.instanceType;
+  if (machinePoolSpec.volumeSize) cluster.compute_root_volume = machinePoolSpec.volumeSize;
+  const autoscaling = machinePoolSpec.autoscaling as Record<string, unknown> | undefined;
+  if (!autoscaling) return;
+  cluster.autoscaling = true;
+  cluster.min_replicas = autoscaling.minReplicas;
+  cluster.max_replicas = autoscaling.maxReplicas;
+}
+
+function mapRosaControlPlaneToCluster(parsed: Record<string, unknown>): Record<string, unknown> {
+  const spec = parsed.spec as Record<string, unknown> | undefined;
+  const metadata = parsed.metadata as Record<string, unknown> | undefined;
+  const network = spec?.network as Record<string, unknown> | undefined;
+  const machinePoolSpec = spec?.defaultMachinePoolSpec as Record<string, unknown> | undefined;
+
+  const cluster: Record<string, unknown> = {};
+
+  if (metadata?.name) cluster.name = metadata.name;
+  if (spec?.version) cluster.cluster_version = spec.version;
+  if (spec?.region) cluster.region = spec.region;
+  if (spec?.billingAccount) cluster.billing_account_id = spec.billingAccount;
+
+  mapRosaEndpointAccess(cluster, spec?.endpointAccess as string | undefined);
+
+  if (spec?.installerRoleARN) cluster.installer_role_arn = spec.installerRoleARN;
+  if (spec?.supportRoleARN) cluster.support_role_arn = spec.supportRoleARN;
+  if (spec?.workerRoleARN) cluster.worker_role_arn = spec.workerRoleARN;
+  if (spec?.oidcID) cluster.byo_oidc_config_id = spec.oidcID;
+
+  mapRosaNetworkFields(cluster, network);
+  mapRosaMachinePoolFields(cluster, machinePoolSpec);
+
+  if (spec?.etcdEncryptionKMSARN) {
+    cluster.etcd_encryption = true;
+    cluster.etcd_key_arn = spec.etcdEncryptionKMSARN;
+  }
+
+  return cluster;
+}
+
 export function parseRosaControlPlaneYaml(yamlStr: string): Record<string, unknown> | null {
   try {
     const obj = yaml.load(yamlStr);
-    if (
-      !obj ||
-      typeof obj !== 'object' ||
-      (obj as Record<string, unknown>).kind !== 'ROSAControlPlane'
-    ) {
+    if (!isRosaControlPlaneYaml(obj)) {
       return null;
     }
-    const parsed = obj as Record<string, unknown>;
-
-    const spec = parsed.spec as Record<string, unknown> | undefined;
-    const metadata = parsed.metadata as Record<string, unknown> | undefined;
-    const network = spec?.network as Record<string, unknown> | undefined;
-    const machinePoolSpec = spec?.defaultMachinePoolSpec as Record<string, unknown> | undefined;
-    const autoscaling = machinePoolSpec?.autoscaling as Record<string, unknown> | undefined;
-
-    const cluster: Record<string, unknown> = {};
-
-    if (metadata?.name) cluster.name = metadata.name;
-    if (spec?.version) cluster.cluster_version = spec.version;
-    if (spec?.region) cluster.region = spec.region;
-    if (spec?.billingAccount) cluster.billing_account_id = spec.billingAccount;
-
-    const endpointAccess = spec?.endpointAccess as string | undefined;
-    if (endpointAccess === 'Private') {
-      cluster.cluster_privacy = ClusterNetwork.internal;
-    } else if (endpointAccess === 'Public') {
-      cluster.cluster_privacy = ClusterNetwork.external;
-    }
-
-    if (spec?.installerRoleARN) cluster.installer_role_arn = spec.installerRoleARN;
-    if (spec?.supportRoleARN) cluster.support_role_arn = spec.supportRoleARN;
-    if (spec?.workerRoleARN) cluster.worker_role_arn = spec.workerRoleARN;
-    if (spec?.oidcID) cluster.byo_oidc_config_id = spec.oidcID;
-
-    if (network) {
-      if (network.machineCIDR) cluster.network_machine_cidr = network.machineCIDR;
-      if (network.serviceCIDR) cluster.network_service_cidr = network.serviceCIDR;
-      if (network.podCIDR) cluster.network_pod_cidr = network.podCIDR;
-      if (network.hostPrefix) cluster.network_host_prefix = `/${String(network.hostPrefix)}`;
-    }
-
-    if (machinePoolSpec) {
-      if (machinePoolSpec.instanceType) cluster.machine_type = machinePoolSpec.instanceType;
-      if (machinePoolSpec.volumeSize) cluster.compute_root_volume = machinePoolSpec.volumeSize;
-      if (autoscaling) {
-        cluster.autoscaling = true;
-        cluster.min_replicas = autoscaling.minReplicas;
-        cluster.max_replicas = autoscaling.maxReplicas;
-      }
-    }
-
-    if (spec?.etcdEncryptionKMSARN) {
-      cluster.etcd_encryption = true;
-      cluster.etcd_key_arn = spec.etcdEncryptionKMSARN;
-    }
-
-    return { cluster };
+    return { cluster: mapRosaControlPlaneToCluster(obj) };
   } catch {
     return null;
   }
