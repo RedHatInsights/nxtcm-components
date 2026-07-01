@@ -9,7 +9,7 @@ import { clusterValidationSchema } from '../../../yupSchemas';
 import EditSecurityGroups from './SecurityGroupSection/EditSecurityGroups';
 
 export interface MachinePoolsAdvancedSectionProps {
-  /** When true, IMDS options are disabled (unsupported cluster version). */
+  /** When true, IMDS options are hidden (unsupported cluster version). */
   wrongVersionForIMDS: boolean;
   /** Max root volume size (GiB) from the selected OpenShift version. */
   maxRootDiskSize: number;
@@ -33,29 +33,30 @@ export const MachinePoolsAdvancedSection = (props: MachinePoolsAdvancedSectionPr
   return (
     <ExpandableSection toggleText={mp.advancedToggle} isIndented>
       <NestedFields>
-        <FieldWrapper>
-          <WizRadioGroup<ROSAHCPCluster>
-            name="imds"
-            schema={clusterValidationSchema}
-            label={mp.imdsLabel}
-            isDisabled={wrongVersionForIMDS}
-            labelHelpTitle={mp.imdsHelpTitle}
-            labelHelp={<Content component={ContentVariants.p}>{mp.imdsHelpP1}</Content>}
-          >
-            <Radio
-              id="cluster-metadata-service-imdsv1-imdsv2-btn"
-              label={mp.imdsBothLabel}
-              value="imdsv1andimdsv2"
-              description={mp.imdsBothDescription}
-            />
-            <Radio
-              id="cluster-metadata-service-imdsv2-only-btn"
-              label={mp.imdsV2Label}
-              value="imdsv2only"
-              description={mp.imdsV2Description}
-            />
-          </WizRadioGroup>
-        </FieldWrapper>
+        {wrongVersionForIMDS ? null : (
+          <FieldWrapper>
+            <WizRadioGroup<ROSAHCPCluster>
+              name="imds"
+              schema={clusterValidationSchema}
+              label={mp.imdsLabel}
+              labelHelpTitle={mp.imdsHelpTitle}
+              labelHelp={<Content component={ContentVariants.p}>{mp.imdsHelpP1}</Content>}
+            >
+              <Radio
+                id="cluster-metadata-service-imdsv1-imdsv2-btn"
+                label={mp.imdsBothLabel}
+                value="imdsv1andimdsv2"
+                description={mp.imdsBothDescription}
+              />
+              <Radio
+                id="cluster-metadata-service-imdsv2-only-btn"
+                label={mp.imdsV2Label}
+                value="imdsv2only"
+                description={mp.imdsV2Description}
+              />
+            </WizRadioGroup>
+          </FieldWrapper>
+        )}
 
         <FieldWrapper size="md">
           <WizNumberInput<ROSAHCPCluster>
