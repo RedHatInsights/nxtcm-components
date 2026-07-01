@@ -103,7 +103,7 @@ export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
   );
 
   return (
-    <Section label={Label} id={STEP_IDS.REVIEW}>
+    <Section label={Label} id={STEP_IDS.REVIEW} isForm={false}>
       <Alert
         variant={AlertVariant.info}
         title={

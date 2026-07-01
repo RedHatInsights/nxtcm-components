@@ -1,14 +1,14 @@
 import { test, expect } from '../../../../ct-fixture';
-import { FieldWrapper, FieldWrapperBlock, FieldWrapperStack } from './FieldWrapper';
+import { FieldWrapper, NestedFields } from './FieldWrapper';
 
 test.describe('FieldWrapper', () => {
-  test('renders field content inside grid layout', async ({ mount }) => {
+  test('renders field content', async ({ mount }) => {
     const component = await mount(
-      <FieldWrapperStack>
+      <NestedFields>
         <FieldWrapper width="medium">
           <span>Cluster name</span>
         </FieldWrapper>
-      </FieldWrapperStack>
+      </NestedFields>
     );
 
     await expect(component.getByText('Cluster name')).toBeVisible();
@@ -16,27 +16,25 @@ test.describe('FieldWrapper', () => {
 
   test('renders additional content below the field', async ({ mount }) => {
     const component = await mount(
-      <FieldWrapperStack>
+      <NestedFields>
         <FieldWrapper additionalContent={<a href="/help">Learn more</a>}>
           <span>Field label</span>
         </FieldWrapper>
-      </FieldWrapperStack>
+      </NestedFields>
     );
 
     await expect(component.getByText('Field label')).toBeVisible();
     await expect(component.getByRole('link', { name: 'Learn more' })).toBeVisible();
   });
 
-  test('renders full-width blocks in the stack', async ({ mount }) => {
+  test('renders full-width blocks alongside fields', async ({ mount }) => {
     const component = await mount(
-      <FieldWrapperStack>
-        <FieldWrapperBlock>
-          <p>Intro copy</p>
-        </FieldWrapperBlock>
+      <NestedFields>
+        <p>Intro copy</p>
         <FieldWrapper>
           <span>Field label</span>
         </FieldWrapper>
-      </FieldWrapperStack>
+      </NestedFields>
     );
 
     await expect(component.getByText('Intro copy')).toBeVisible();

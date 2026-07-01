@@ -7,11 +7,7 @@ import { ClusterNetwork, ROSAHCPCluster, ROSAHCPWizardData } from '../../../type
 import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
 import { Radio } from '../../../components/Fields/RadioGroup';
 import { clusterValidationSchema } from '../../../yupSchemas';
-import {
-  FieldWrapper,
-  FieldWrapperBlock,
-  FieldWrapperStack,
-} from '../../../components/FieldWrapper';
+import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
@@ -102,92 +98,89 @@ export const Networking = (props: NetworkingStepProps) => {
       </FieldWrapper>
 
       <ExpandableSection isIndented toggleText={n.advancedToggle}>
-        <FieldWrapperStack>
+        <NestedFields>
           {!isProxyStepHidden && (
             <FieldWrapper>
               <WizCheckbox name="configure_proxy" schema={clusterValidationSchema} />
             </FieldWrapper>
           )}
 
-          <FieldWrapperBlock>
-            <Alert
-              isExpandable
-              variant="info"
-              title={n.cidrAlertTitle}
-              ouiaId="networkingCidrAlert"
-            >
-              <Content component={ContentVariants.p}>{n.cidrAlertBody}</Content>
+          <Alert
+            isExpandable
+            variant="info"
+            title={n.cidrAlertTitle}
+            ouiaId="networkingCidrAlert"
+          >
+            <Content component={ContentVariants.p}>{n.cidrAlertBody}</Content>
 
-              <Content component={ContentVariants.p}>
-                <ExternalLink href={links.CIDR_RANGE_DEFINITIONS_ROSA}>
-                  {n.cidrLearnMoreLink}
-                </ExternalLink>
-              </Content>
-            </Alert>
-          </FieldWrapperBlock>
+            <Content component={ContentVariants.p}>
+              <ExternalLink href={links.CIDR_RANGE_DEFINITIONS_ROSA}>
+                {n.cidrLearnMoreLink}
+              </ExternalLink>
+            </Content>
+          </Alert>
 
           <FieldWrapper>
             <WizCheckbox name="cidr_default" schema={clusterValidationSchema} />
           </FieldWrapper>
-          <FieldWrapperStack>
-            <FieldWrapper width="large">
-              <WizTextInput<ROSAHCPCluster>
-                name="network_machine_cidr"
-                schema={clusterValidationSchema}
-                isDisabled={cidrDefaultChecked}
-                labelHelp={
-                  <CidrFieldLabelHelp
-                    helpLead={n.machineCidrHelpLead}
-                    href={links.CIDR_MACHINE}
-                    learnMoreLink={n.cidrFieldLearnMoreLink}
-                  />
-                }
-              />
-            </FieldWrapper>
-            <FieldWrapper width="large">
-              <WizTextInput<ROSAHCPCluster>
-                name="network_service_cidr"
-                schema={clusterValidationSchema}
-                isDisabled={cidrDefaultChecked}
-                labelHelp={
-                  <CidrFieldLabelHelp
-                    helpLead={n.serviceCidrHelpLead}
-                    href={links.CIDR_SERVICE}
-                    learnMoreLink={n.cidrFieldLearnMoreLink}
-                  />
-                }
-              />
-            </FieldWrapper>
-            <FieldWrapper width="large">
-              <WizTextInput<ROSAHCPCluster>
-                name="network_pod_cidr"
-                schema={clusterValidationSchema}
-                isDisabled={cidrDefaultChecked}
-                labelHelp={
-                  <CidrFieldLabelHelp
-                    helpLead={n.podCidrHelpLead}
-                    href={links.CIDR_POD}
-                    learnMoreLink={n.cidrFieldLearnMoreLink}
-                  />
-                }
-              />
-            </FieldWrapper>
-            <FieldWrapper width="large">
-              <WizTextInput<ROSAHCPCluster>
-                name="network_host_prefix"
-                schema={clusterValidationSchema}
-                isDisabled={cidrDefaultChecked}
-                labelHelp={
-                  <CidrFieldLabelHelp
-                    helpLead={n.hostPrefixHelpLead}
-                    href={links.CIDR_HOST_PREFIX}
-                    learnMoreLink={n.cidrFieldLearnMoreLink}
-                  />
-                }
-              />
-            </FieldWrapper>
-          </FieldWrapperStack>
-        </FieldWrapperStack>
+
+          <FieldWrapper width="large">
+            <WizTextInput<ROSAHCPCluster>
+              name="network_machine_cidr"
+              schema={clusterValidationSchema}
+              isDisabled={cidrDefaultChecked}
+              labelHelp={
+                <CidrFieldLabelHelp
+                  helpLead={n.machineCidrHelpLead}
+                  href={links.CIDR_MACHINE}
+                  learnMoreLink={n.cidrFieldLearnMoreLink}
+                />
+              }
+            />
+          </FieldWrapper>
+          <FieldWrapper width="large">
+            <WizTextInput<ROSAHCPCluster>
+              name="network_service_cidr"
+              schema={clusterValidationSchema}
+              isDisabled={cidrDefaultChecked}
+              labelHelp={
+                <CidrFieldLabelHelp
+                  helpLead={n.serviceCidrHelpLead}
+                  href={links.CIDR_SERVICE}
+                  learnMoreLink={n.cidrFieldLearnMoreLink}
+                />
+              }
+            />
+          </FieldWrapper>
+          <FieldWrapper width="large">
+            <WizTextInput<ROSAHCPCluster>
+              name="network_pod_cidr"
+              schema={clusterValidationSchema}
+              isDisabled={cidrDefaultChecked}
+              labelHelp={
+                <CidrFieldLabelHelp
+                  helpLead={n.podCidrHelpLead}
+                  href={links.CIDR_POD}
+                  learnMoreLink={n.cidrFieldLearnMoreLink}
+                />
+              }
+            />
+          </FieldWrapper>
+          <FieldWrapper width="large">
+            <WizTextInput<ROSAHCPCluster>
+              name="network_host_prefix"
+              schema={clusterValidationSchema}
+              isDisabled={cidrDefaultChecked}
+              labelHelp={
+                <CidrFieldLabelHelp
+                  helpLead={n.hostPrefixHelpLead}
+                  href={links.CIDR_HOST_PREFIX}
+                  learnMoreLink={n.cidrFieldLearnMoreLink}
+                />
+              }
+            />
+          </FieldWrapper>
+        </NestedFields>
       </ExpandableSection>
     </Section>
   );

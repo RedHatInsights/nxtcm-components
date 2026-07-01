@@ -12,7 +12,7 @@ import links from '../../../constants/links';
 import { ROSAHCPWizardData, type RosaHCPWizardProps, type ROSAHCPCluster } from '../../../types';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
-import { FieldWrapper, FieldWrapperStack } from '../../../components/FieldWrapper';
+import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
 import { useClusterNameUniquenessValidation } from '../../../hooks/useClusterNameUniquenessValidation';
 
 type DetailsStepProps = Pick<
@@ -114,7 +114,7 @@ export const Details = ({
         onWizardExpand={onWizardExpand}
         product={product}
       >
-        <FieldWrapperStack>
+        <NestedFields>
           <FieldWrapper
             additionalContent={
               <AssociateNewAccountLink
@@ -208,7 +208,7 @@ export const Details = ({
               apiError={versions.error}
             />
           </FieldWrapper>
-        </FieldWrapperStack>
+        </NestedFields>
       </DetailsStepDrawer>
     </Section>
   );
