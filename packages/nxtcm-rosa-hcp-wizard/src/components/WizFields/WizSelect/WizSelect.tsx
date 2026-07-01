@@ -11,7 +11,12 @@ import { FieldWithAPIErrorAlert } from '../../FieldWithAPIErrorAlert';
 import { Select, type SelectProps } from '../../Fields/Select';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
 import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
-import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
+import {
+  useWizRhfControl,
+  useWizMenuFieldBlur,
+  wizFieldShowsError,
+  type WizRhfBoundFieldProps,
+} from '../wizFieldRhf';
 
 type WizSelectControlledKeys = 'value' | 'onChange' | 'onBlur' | 'errorMessage' | 'isError';
 
@@ -104,6 +109,7 @@ export function WizSelect<TFieldValues extends FieldValues = FieldValues, TOptio
 
   const stepValidationRevealed = useWizStepValidationRevealed(String(name));
   const showError = wizFieldShowsError(invalid, isTouched, isSubmitted || stepValidationRevealed);
+  const handleBlur = useWizMenuFieldBlur(onBlur, isMenuOpen);
   useReconcileWizSelectValueWithOptions({
     name,
     schema,
@@ -149,7 +155,7 @@ export function WizSelect<TFieldValues extends FieldValues = FieldValues, TOptio
       labelHelpTitle={labelHelpTitle}
       isRequired={isRequired}
       value={value}
-      onBlur={onBlur}
+      onBlur={handleBlur}
       onChange={handleChange}
       errorMessage={error?.message}
       isError={showError && !isMenuOpen}
