@@ -3,7 +3,7 @@ import * as yup from 'yup';
 import { STEP_IDS } from '../constants';
 import { ClusterEncryptionKeys, ROSAHCPCluster } from '../types';
 import type { WizardFieldMeta } from './types';
-import { ctx, rosaCommonRequiredNonEmptyIncludingAbsentTest } from './helpers';
+import { ctx, rosaCommonRequiredNonEmptyTest } from './helpers';
 import { validateAWSKMSKeyARN } from '../validators';
 import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
 
@@ -47,7 +47,7 @@ export const kmsKeyArnSchema = yup
     is: ClusterEncryptionKeys.custom,
     then: (schema) =>
       schema
-        .test(rosaCommonRequiredNonEmptyIncludingAbsentTest)
+        .test(rosaCommonRequiredNonEmptyTest)
         .meta({ [YUP_FIELD_REQUIRED_UI_META_KEY]: true })
         .test(kmsKeyArnFormatTest),
     otherwise: (schema) => schema.optional().test(kmsKeyArnFormatTest),
@@ -80,7 +80,7 @@ export const etcdKeyArnSchema = yup
     is: true,
     then: (schema) =>
       schema
-        .test(rosaCommonRequiredNonEmptyIncludingAbsentTest)
+        .test(rosaCommonRequiredNonEmptyTest)
         .meta({ [YUP_FIELD_REQUIRED_UI_META_KEY]: true })
         .test(etcdKeyArnFormatTest),
     otherwise: (schema) => schema.optional().test(etcdKeyArnFormatTest),
