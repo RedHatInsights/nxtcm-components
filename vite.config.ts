@@ -15,6 +15,7 @@ const libRollupExternal = [
   'yaml',
   /^monaco-editor/,
   /^monaco-yaml/,
+  '@monaco-editor/react',
 ];
 
 /** Convert kebab-case (e.g. lock-icon) to PascalCase (LockIcon) for UMD globals. */
@@ -54,6 +55,7 @@ const libUmdGlobals: Record<string, string> = {
   'monaco-yaml': 'monacoYaml',
   'monaco-editor/esm/vs/editor/editor.worker.js?url': 'editorWorkerUrl',
   'monaco-yaml/yaml.worker.js?url': 'yamlWorkerUrl',
+  '@monaco-editor/react': 'MonacoEditorReact',
 };
 
 const resolveUmdGlobal = (id: string): string => {

@@ -35,12 +35,13 @@
     "node": ">=24.15"
   },
   "peerDependencies": {
+    "@patternfly/react-charts": "^8.4.0",
     "@patternfly/react-core": "^6.0.0",
-    "js-yaml": "^4.1.0",
+    "@patternfly/react-icons": "^6.3.1",
+    "@patternfly/react-table": "^6.0.0",
+    "@patternfly/widgetized-dashboard": "^1.0.0-prerelease.6",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "semver": "^7.7.4",
-    "yaml": "^2.8.3"
+    "react-dom": "^18.2.0"
   },
   "scripts": {
     "start": "vite",
@@ -71,24 +72,10 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.2.2",
-    "@monaco-editor/react": "^4.7.0",
     "@patternfly/patternfly": "^6.4.0",
-    "@patternfly/react-code-editor": "^6.5.1",
     "@patternfly/react-component-groups": "^6.3.0",
-    "@patternfly/react-icons": "^6.3.1",
     "@patternfly/react-styles": "^6.4.0",
-    "@patternfly/widgetized-dashboard": "^1.0.0-prerelease.6",
-    "ajv": "^8.20.0",
-    "ajv-formats": "^3.0.1",
-    "cidr-tools": "^11.3.5",
-    "handlebars": "^4.7.8",
-    "ip-cidr": "^3.1.0",
-    "js-yaml": "^4.1.0",
-    "monaco-yaml": "^5.4.1",
-    "progress": "^2.0.3",
-    "react-hook-form": "^7.74.0",
-    "yup": "^1.7.1"
+    "progress": "^2.0.3"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
@@ -96,8 +83,13 @@
     "@babel/preset-env": "^7.29.0",
     "@babel/preset-react": "^7.28.5",
     "@babel/preset-typescript": "^7.28.5",
+    "@monaco-editor/react": "^4.7.0",
     "@patternfly/react-charts": "^8.4.0",
+    "@patternfly/react-code-editor": "^6.5.1",
     "@patternfly/react-core": "^6.0.0",
+    "@patternfly/react-icons": "^6.3.1",
+    "@patternfly/react-table": "^6.0.0",
+    "@patternfly/widgetized-dashboard": "^1.0.0-prerelease.6",
     "@playwright/experimental-ct-react": "^1.59.1",
     "@playwright/test": "^1.59.1",
     "@react-hook/resize-observer": "^2.0.2",
@@ -130,6 +122,8 @@
     "jest-environment-jsdom": "^29.7.0",
     "klona": "^2.0.6",
     "lint-staged": "^16.2.6",
+    "monaco-editor": ">=0.36.0",
+    "monaco-yaml": "^5.4.1",
     "nyc": "^18.0.0",
     "test-exclude": "^6.0.0",
     "prettier": "3.8.3",
