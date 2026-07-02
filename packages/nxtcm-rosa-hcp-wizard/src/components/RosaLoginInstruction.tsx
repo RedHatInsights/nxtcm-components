@@ -22,11 +22,13 @@ export const RosaLoginInstruction = ({
 }: RosaLoginInstructionProps) => {
   const { rosaLogin } = useRosaHcpWizardStrings();
   const loginCommand = getRosaLoginCommand(product);
+  const defaultInstructions =
+    product === 'acm' ? rosaLogin.instructionsService : rosaLogin.instructions;
 
   return (
     <>
       {showInstructions ? (
-        <Content component={ContentVariants.p}>{instructions ?? rosaLogin.instructions}</Content>
+        <Content component={ContentVariants.p}>{instructions ?? defaultInstructions}</Content>
       ) : null}
       <CopyInstruction
         variant={ClipboardCopyVariant.expansion}

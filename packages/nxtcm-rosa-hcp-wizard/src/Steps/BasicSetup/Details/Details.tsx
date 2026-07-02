@@ -28,7 +28,6 @@ type DetailsStepProps = Pick<
 
 type AssociateNewAccountLinkProps = {
   label: string;
-  isDrawerExpanded: boolean;
   setIsDrawerExpanded: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -120,7 +119,6 @@ export const Details = ({
             additionalContent={
               <AssociateNewAccountLink
                 label={d.associateNewAccount}
-                isDrawerExpanded={isDrawerExpanded}
                 setIsDrawerExpanded={setIsDrawerExpanded}
               />
             }

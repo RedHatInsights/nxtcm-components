@@ -207,9 +207,6 @@ export type RosaHcpWizardStrings = {
     introSts: string;
     cliVersion: string;
     stepLoginTitle: string;
-    loginInstructions: string;
-    loginInstructionsService: string;
-    loginCopyAriaLabel: string;
     step1Title: string;
     step2Title: string;
     step3Title: string;
@@ -301,7 +298,6 @@ export type RosaHcpWizardStrings = {
     operatorRolesCreateLabel: string;
     operatorRolesCreateInstructions: string;
     operatorRolesCreateCommandAriaLabel: string;
-    clipboardCopyAria: string;
     copyHover: string;
     copyClicked: string;
     rolesAlertTitle: string;
@@ -313,6 +309,7 @@ export type RosaHcpWizardStrings = {
   };
   rosaLogin: {
     instructions: string;
+    instructionsService: string;
     copyAriaLabel: string;
   };
   networking: {

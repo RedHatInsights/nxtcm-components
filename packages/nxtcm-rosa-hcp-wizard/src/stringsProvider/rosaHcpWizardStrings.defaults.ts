@@ -81,11 +81,6 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
       'ROSA cluster deployments use the AWS Security Token Service for added security. Run the following required steps from a CLI authenticated with both AWS and ROSA.',
     cliVersion: 'You must use ROSA CLI version 1.2.31 or above.',
     stepLoginTitle: 'Step 1: Log in to ROSA',
-    loginInstructions:
-      'Before you can create or link AWS IAM roles, log in to ROSA from your CLI. Run the following command to authenticate with your Red Hat account.',
-    loginInstructionsService:
-      'Before you can create or link AWS IAM roles, log in to ROSA from your CLI. Run the following command to authenticate with your Red Hat account. Replace the `<CLIENT_ID>` and `<CLIENT_SECRET>` placeholders with your service account credentials.',
-    loginCopyAriaLabel: 'Copyable ROSA login command',
     step1Title: 'Step 2: OCM role',
     step2Title: 'Step 3: User role',
     step3Title: 'Step 4: Account roles',
@@ -203,7 +198,6 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     operatorRolesCreateInstructions:
       'Create operator AWS IAM roles by running the following commands in your CLI. You must complete this step before your cluster can be created.',
     operatorRolesCreateCommandAriaLabel: 'Copyable ROSA create operator-roles command',
-    clipboardCopyAria: 'Copy read-only example',
     copyHover: 'Copy',
     copyClicked: 'Copied',
     rolesAlertTitle: 'Some roles are missing',
@@ -216,7 +210,9 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
   },
   rosaLogin: {
     instructions:
-      'Log in to ROSA from your CLI. Run the following command to authenticate with your Red Hat account.',
+      'Before you can create or link AWS IAM roles, log in to ROSA from your CLI. Run the following command to authenticate with your Red Hat account.',
+    instructionsService:
+      'Before you can create or link AWS IAM roles, log in to ROSA from your CLI. Run the following command to authenticate with your Red Hat account. Replace the `<CLIENT_ID>` and `<CLIENT_SECRET>` placeholders with your service account credentials.',
     copyAriaLabel: 'Copyable ROSA login command',
   },
   networking: {
