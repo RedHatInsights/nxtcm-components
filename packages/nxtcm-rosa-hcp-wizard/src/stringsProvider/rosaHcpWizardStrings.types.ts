@@ -299,6 +299,9 @@ export type RosaHcpWizardStrings = {
     operatorPrefixHelpLead: string;
     operatorPrefixLearnMoreLink: string;
     operatorPrefixHelper: string;
+    operatorRolesCreateLabel: string;
+    operatorRolesCreateInstructions: string;
+    operatorRolesCreateCommandAriaLabel: string;
     clipboardCopyAria: string;
     copyHover: string;
     copyClicked: string;

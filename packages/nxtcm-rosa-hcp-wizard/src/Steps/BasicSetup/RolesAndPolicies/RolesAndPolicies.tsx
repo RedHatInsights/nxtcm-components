@@ -1,4 +1,11 @@
-import { ClipboardCopy, ExpandableSection, Stack, StackItem } from '@patternfly/react-core';
+import {
+  ClipboardCopyVariant,
+  Content,
+  ContentVariants,
+  ExpandableSection,
+  Stack,
+  StackItem,
+} from '@patternfly/react-core';
 import { Section } from '../../../components/Section';
 import {
   FieldWrapper,
@@ -21,6 +28,8 @@ import { useUpdateOperatorPrefix } from './useUpdateOperatorPrefix';
 import { useInstallerRoleOptions } from './useInstallerRoleOptions';
 import { useRosaCommand } from './useRosaCommand';
 import { RolesAlert } from '../../../components/RolesErrorAlert';
+import { RosaLoginInstruction } from '../../../components/RosaLoginInstruction';
+import { CopyInstruction } from '../../../components/CopyInstruction';
 
 type RolesAndPoliciesStepProps = Pick<ROSAHCPWizardData, 'roles' | 'oidcConfig'> & {
   /** The consuming product. Determines which ROSA login command is shown. Defaults to 'acm'. */
@@ -30,7 +39,7 @@ type RolesAndPoliciesStepProps = Pick<ROSAHCPWizardData, 'roles' | 'oidcConfig'>
 export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   const { roles, oidcConfig, product } = props;
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
-  const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(true);
+  const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(false);
   const rp = useRosaHcpWizardStrings().rolesAndPolicies;
 
   const awsInfrastructureAccount = useWatch({ name: 'associated_aws_id' });
@@ -138,6 +147,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
           isExpanded={isOperatorRolesOpen}
           onToggle={() => setIsOperatorRolesOpen(!isOperatorRolesOpen)}
           toggleText={rp.operatorPrefixToggle}
+          className="pf-v6-u-mb-lg"
         >
           <FieldWrapper width="small">
             <WizTextInput<ROSAHCPCluster>
@@ -155,17 +165,33 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
               helperText={rp.operatorPrefixHelper}
             />
           </FieldWrapper>
-          <ClipboardCopy
-            variant="expansion"
-            copyAriaLabel={rp.clipboardCopyAria}
-            isReadOnly
-            hoverTip={rp.copyHover}
-            clickTip={rp.copyClicked}
-            style={{ marginTop: '1rem' }}
-          >
-            {rosaCommand}
-          </ClipboardCopy>
         </ExpandableSection>
+
+        <FieldWrapperStack>
+          <FieldWrapperBlock>
+            <span className="pf-v6-c-form__label pf-v6-u-display-block pf-v6-u-mb-sm">
+              <span className="pf-v6-c-form__label-text">{rp.operatorRolesCreateLabel}</span>
+            </span>
+            <Stack hasGutter>
+              <StackItem>
+                <Content component={ContentVariants.p}>
+                  {rp.operatorRolesCreateInstructions}
+                </Content>
+              </StackItem>
+              <StackItem>
+                <RosaLoginInstruction product={product} showInstructions={false} />
+              </StackItem>
+              <StackItem>
+                <CopyInstruction
+                  variant={ClipboardCopyVariant.expansion}
+                  textAriaLabel={rp.operatorRolesCreateCommandAriaLabel}
+                >
+                  {rosaCommand}
+                </CopyInstruction>
+              </StackItem>
+            </Stack>
+          </FieldWrapperBlock>
+        </FieldWrapperStack>
       </Section>
     </>
   );
