@@ -3,6 +3,7 @@ import type { FieldPath, FieldValues, UseFormGetFieldState } from 'react-hook-fo
 import { wizFieldShowsError } from '../components/WizFields/wizFieldRhf';
 import { STEP_IDS } from '../constants';
 import type { RosaHcpWizardReviewSection } from '../Steps/Review/rosaHcpWizardReviewSections.data';
+import { getWizardSelectFieldPaths } from '../yupSchemas/wizardFieldMetaChangeRegistry';
 
 export type RosaHcpWizardNavStepStatus = 'default' | 'error';
 
@@ -56,8 +57,31 @@ export function buildVisibleWizardStepIds(
   );
 }
 
-/** True when any field on the step shows a validation error in the form UI. */
+/** True when any field on the step shows a validation error in the form UI or left-nav icon. */
 export function stepHasVisibleValidationErrors<TFieldValues extends FieldValues>(
+  fieldPaths: readonly string[],
+  stepId: string,
+  getFieldState: UseFormGetFieldState<TFieldValues>,
+  validationAttemptedStepIds: ReadonlySet<string>
+): boolean {
+  const validationRevealed = validationAttemptedStepIds.has(stepId);
+  const selectFieldPaths = getWizardSelectFieldPaths();
+
+  return fieldPaths.some((path) => {
+    const fieldPath = path as FieldPath<TFieldValues>;
+    const { invalid, isTouched } = getFieldState(fieldPath);
+    if (selectFieldPaths.has(path)) {
+      return invalid && validationRevealed;
+    }
+    return wizFieldShowsError(invalid, isTouched, validationRevealed);
+  });
+}
+
+/**
+ * True when a step should block forward nav. Selects use touched+invalid (same as RHF) even
+ * before the inline error or nav icon is shown.
+ */
+export function stepHasNavBlockingValidationErrors<TFieldValues extends FieldValues>(
   fieldPaths: readonly string[],
   stepId: string,
   getFieldState: UseFormGetFieldState<TFieldValues>,
@@ -141,8 +165,8 @@ export function buildRosaHcpWizardNavStepStatuses<TFieldValues extends FieldValu
   return statuses;
 }
 
-/** Index of the earliest ordered step with a visible validation error, if any. */
-export function findFirstWizardNavStepIndexWithVisibleErrors<
+/** Index of the earliest ordered step that should block forward navigation. */
+export function findFirstWizardNavStepIndexWithBlockingErrors<
   TFieldValues extends FieldValues,
 >(params: {
   orderedStepIds: readonly string[];
@@ -156,7 +180,7 @@ export function findFirstWizardNavStepIndexWithVisibleErrors<
     const section = sections.find((entry) => entry.id === stepId);
     if (
       section &&
-      stepHasVisibleValidationErrors(
+      stepHasNavBlockingValidationErrors(
         section.fieldPaths,
         section.id,
         getFieldState,
@@ -225,7 +249,7 @@ export function buildRosaHcpWizardNavStepDisabledByValidation<
   asyncValidatingStepIds?: ReadonlySet<string>;
 }): Readonly<Record<string, boolean>> {
   const firstBlockingIndex = earliestWizardNavStepIndex(
-    findFirstWizardNavStepIndexWithVisibleErrors(params),
+    findFirstWizardNavStepIndexWithBlockingErrors(params),
     findActiveWizardNavStepIndexWithPendingValidation(params)
   );
   const disabled: Record<string, boolean> = {};

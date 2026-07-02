@@ -11,12 +11,7 @@ import { FieldWithAPIErrorAlert } from '../../FieldWithAPIErrorAlert';
 import { Select, type SelectProps } from '../../Fields/Select';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
 import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
-import {
-  useWizRhfControl,
-  useWizMenuFieldBlur,
-  wizFieldShowsError,
-  type WizRhfBoundFieldProps,
-} from '../wizFieldRhf';
+import { useWizRhfControl, useWizMenuFieldBlur, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizSelectControlledKeys = 'value' | 'onChange' | 'onBlur' | 'errorMessage' | 'isError';
 
@@ -103,12 +98,13 @@ export function WizSelect<TFieldValues extends FieldValues = FieldValues, TOptio
 
   const {
     field: { value, onChange, onBlur },
-    fieldState: { invalid, isTouched, error },
+    fieldState: { invalid, error },
     formState: { isSubmitted },
   } = useController({ name, control });
 
   const stepValidationRevealed = useWizStepValidationRevealed(String(name));
-  const showError = wizFieldShowsError(invalid, isTouched, isSubmitted || stepValidationRevealed);
+  // Defer inline required errors until Next / step validation; nav still uses touched+invalid.
+  const showError = invalid && (isSubmitted || stepValidationRevealed);
   const handleBlur = useWizMenuFieldBlur(onBlur, isMenuOpen);
   useReconcileWizSelectValueWithOptions({
     name,

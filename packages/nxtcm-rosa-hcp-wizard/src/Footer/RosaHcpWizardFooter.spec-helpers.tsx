@@ -3,7 +3,6 @@
  * Keep a single mount export in this file (see Details.spec-helpers / NumberInput.spec).
  */
 import React, { useMemo } from 'react';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm, type Resolver } from 'react-hook-form';
 import { Wizard, WizardStep } from '@patternfly/react-core';
 
@@ -32,8 +31,7 @@ import { STEP_IDS } from '../constants';
 import { rosaHcpWizardFooter } from './RosaHcpWizardFooter';
 import { RosaHcpWizardValidationProvider } from '../rosaHcpWizardValidationContext';
 import fixtures from '../ROSAHCPWizard.fixtures';
-import { clusterValidationSchema } from '../yupSchemas';
-import type { ValidationSchemaContext } from '../yupSchemas/types';
+import { createClusterValidationResolver } from '../utilities/clusterValidationResolver';
 import {
   defaultRosaHcpWizardStrings,
   defaultRosaHcpWizardValidatorStrings,
@@ -86,20 +84,14 @@ export type RosaHcpWizardValidationMountProps = {
 export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMountProps> = ({
   defaultValues = {},
 }) => {
-  const validationContext = useMemo<ValidationSchemaContext>(
-    () => ({
-      msgs: defaultRosaHcpWizardValidatorStrings,
-      maxRootDiskSize: 16384,
-      maxAutoscalingNodes: 500,
-      machinePoolsNumber: 1,
-    }),
+  const resolver = useMemo(
+    () => createClusterValidationResolver(defaultRosaHcpWizardValidatorStrings),
     []
   );
 
   const methods = useForm<ROSAHCPCluster>({
     defaultValues: { ...DEFAULT_ROSA_HCP_CT_FORM_VALUES, ...defaultValues },
-    resolver: yupResolver(clusterValidationSchema) as Resolver<ROSAHCPCluster>,
-    context: validationContext,
+    resolver: resolver as Resolver<ROSAHCPCluster>,
     mode: 'onTouched',
   });
 

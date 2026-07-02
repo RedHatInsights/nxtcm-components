@@ -16,6 +16,8 @@ import { STEP_IDS } from '../constants';
 const INSTALLER_ROLE_LABEL = mockRoles[0].installerRole.label;
 
 const w = defaultRosaHcpWizardStrings.wizard;
+const d = defaultRosaHcpWizardStrings.details;
+const mp = defaultRosaHcpWizardStrings.machinePools;
 const FIX_VALIDATION_ALERT = w.fixValidationErrors;
 const SKIP_TO_REVIEW = w.skipToReview;
 const FOOTER_BACK = w.back;
@@ -214,6 +216,75 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
     await component.getByRole('button', { name: FOOTER_NEXT }).click();
     await expect(component.getByRole('heading', validationAlertHeading)).toBeVisible();
 
+    await expect(
+      component.getByRole('button', { name: w.stepLabels.rolesAndPolicies, exact: true })
+    ).toBeDisabled();
+  });
+
+  test('shows private subnet validation after Next when VPC is selected but subnet is empty', async ({
+    mount,
+    page,
+  }) => {
+    const mockVpc = fixtures.mockVPCs[0];
+    const region = VALID_DETAILS_FORM_VALUES.region ?? 'us-east-1';
+    const vpcSelectToggle = `${mp.vpcPlaceholder} ${region}`;
+
+    const component = await mount(
+      <RosaHcpWizardValidationMount
+        defaultValues={{
+          ...VALID_REVIEW_SUBMIT_FORM_VALUES,
+          selected_vpc: '',
+          machine_pools_subnets: [{ machine_pool_subnet: '' }],
+        }}
+      />
+    );
+
+    await advancePastDetailsStep(component);
+    await component.getByRole('button', { name: FOOTER_NEXT }).click();
+    await expect(component.locator('#machine-pools-section')).toBeVisible();
+
+    await component.getByRole('button', { name: vpcSelectToggle, exact: true }).click();
+    await page.getByRole('option', { name: mockVpc.name, exact: true }).click();
+
+    await component.getByRole('button', { name: FOOTER_NEXT }).click();
+
+    await expect(component.getByRole('heading', validationAlertHeading)).toBeVisible();
+    await expect(component.locator('#machine_pool_subnet-form-group')).toContainText(
+      REQUIRED_FIELD_MESSAGE
+    );
+    await expectWizardNavError(component, STEP_IDS.MACHINE_POOLS);
+  });
+
+  test('disables forward nav after clearing a billing select without revealing the inline error until Next', async ({
+    mount,
+  }) => {
+    const component = await mount(
+      <RosaHcpWizardValidationMount defaultValues={VALID_DETAILS_FORM_VALUES} />
+    );
+
+    await expect(
+      component.getByText(defaultRosaHcpWizardStrings.details.awsInfraLabel)
+    ).toBeVisible();
+
+    const billingCombo = component
+      .locator('#billing_account_id-form-group')
+      .getByRole('combobox', { name: d.billingPlaceholder, exact: true });
+    await billingCombo.click();
+    await component
+      .locator('#billing_account_id-form-group')
+      .getByRole('button', { name: 'Clear selection' })
+      .click();
+
+    await expect(component.getByText(REQUIRED_FIELD_MESSAGE)).not.toBeVisible();
+    await expectWizardNavNoError(component, STEP_IDS.DETAILS);
+    await expect(
+      component.getByRole('button', { name: w.stepLabels.rolesAndPolicies, exact: true })
+    ).toBeDisabled();
+
+    await component.getByRole('button', { name: FOOTER_NEXT }).click();
+
+    await expect(component.getByText(REQUIRED_FIELD_MESSAGE).first()).toBeVisible();
+    await expectWizardNavError(component, STEP_IDS.DETAILS);
     await expect(
       component.getByRole('button', { name: w.stepLabels.rolesAndPolicies, exact: true })
     ).toBeDisabled();

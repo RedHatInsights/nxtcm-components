@@ -2,6 +2,7 @@ import React from 'react';
 import { test, expect } from '@playwright/experimental-ct-react';
 
 import {
+  WizSelectDeferValidationHarness,
   WizSelectExplicitControlOnlyHarness,
   WizSelectExplicitHarness,
   WizSelectExplicitPropsOverrideMetaHarness,
@@ -33,6 +34,7 @@ import {
   WIZ_SELECT_VALUE_STATUS_LABEL,
   WIZ_SELECT_YUP_META_HELPER,
   WIZ_SELECT_YUP_META_LABEL,
+  WIZ_SELECT_DEFER_REVEAL_BUTTON,
   WIZ_SELECT_TYPEAHEAD_CLEAR_STATUS,
   WIZ_SELECT_TYPEAHEAD_CLEAR_TOGGLE,
 } from './WizSelect.spec-helpers';
@@ -70,6 +72,23 @@ test.describe('WizSelect', () => {
     const mounted = await mount(<WizSelectSubmitValidationHarness />);
     await mounted.getByRole('button', { name: 'Submit', exact: true }).click();
     await expect(mounted.getByText(WIZ_SELECT_SUBMIT_ERROR, { exact: true })).toBeVisible();
+  });
+
+  test('does not show required validation after clearing a typeahead selection until validation is revealed', async ({
+    mount,
+    page,
+  }) => {
+    await mount(<WizSelectDeferValidationHarness />);
+    const combo = page.getByRole('combobox', { name: /select the region/i });
+
+    await combo.click();
+    await page.getByRole('option', { name: 'eu-west-1' }).click();
+    await page.getByRole('button', { name: 'Clear selection' }).click();
+
+    await expect(page.getByText(WIZ_SELECT_SUBMIT_ERROR, { exact: true })).not.toBeVisible();
+
+    await page.getByRole('button', { name: WIZ_SELECT_DEFER_REVEAL_BUTTON, exact: true }).click();
+    await expect(page.getByText(WIZ_SELECT_SUBMIT_ERROR, { exact: true })).toBeVisible();
   });
 
   test('clears Yup validation after the user selects a value and submits again', async ({
