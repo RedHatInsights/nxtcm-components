@@ -9,6 +9,9 @@ spec:
   versionGate: WaitForAcknowledge
   channelGroup: stable
   region: '{{{cluster.region}}}'
+{{#if cluster.domain_prefix}}
+  domainPrefix: '{{{cluster.domain_prefix}}}'
+{{/if}}
 {{#if cluster.billing_account_id}}
   billingAccount: '{{{cluster.billing_account_id}}}'
 {{/if}}
@@ -22,8 +25,16 @@ spec:
 {{#if cluster.worker_role_arn}}
   workerRoleARN: '{{{cluster.worker_role_arn}}}'
 {{/if}}
+{{#if cluster.rosa_role_config_ref}}
+  rosaRoleConfigRef:
+    name: '{{{cluster.rosa_role_config_ref}}}'
+{{/if}}
 {{#if cluster.byo_oidc_config_id}}
   oidcID: '{{{cluster.byo_oidc_config_id}}}'
+{{/if}}
+{{#if cluster.rosa_network_ref}}
+  rosaNetworkRef:
+    name: '{{{cluster.rosa_network_ref}}}'
 {{/if}}
   network:
     machineCIDR: '{{{cluster.network_machine_cidr}}}'
@@ -54,5 +65,45 @@ spec:
   etcdEncryptionKMSARN: '{{{cluster.etcd_key_arn}}}'
   {{/if}}
 {{/if}}
+{{#if cluster.additional_tags}}
+  additionalTags:
+  {{#each cluster.additional_tags}}
+    {{{@key}}}: '{{{this}}}'
+  {{/each}}
+{{/if}}
   credentialsSecretRef:
     name: '{{{cluster.name}}}-creds'
+---
+apiVersion: cluster.open-cluster-management.io/v1
+kind: ManagedCluster
+metadata:
+  name: '{{{cluster.name}}}'
+spec:
+  hubAcceptsClient: true
+---
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: '{{{cluster.name}}}'
+  namespace: '{{{cluster.name}}}'
+spec:
+  clusterNetwork:
+    pods:
+      cidrBlocks: ['{{{cluster.network_pod_cidr}}}']
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
+    kind: ROSACluster
+    name: '{{{cluster.name}}}'
+    namespace: '{{{cluster.name}}}'
+  controlPlaneRef:
+    apiVersion: controlplane.cluster.x-k8s.io/v1beta2
+    kind: ROSAControlPlane
+    name: '{{{cluster.name}}}'
+    namespace: '{{{cluster.name}}}'
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
+kind: ROSACluster
+metadata:
+  name: '{{{cluster.name}}}'
+  namespace: '{{{cluster.name}}}'
+spec: {}

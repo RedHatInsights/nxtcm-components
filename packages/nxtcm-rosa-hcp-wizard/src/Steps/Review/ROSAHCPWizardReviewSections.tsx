@@ -12,6 +12,7 @@ import {
   type RosaHcpWizardReviewSection,
 } from './rosaHcpWizardReviewSections.data';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
+import { useWizardConfig } from '../../WizardConfigContext';
 
 export type { RosaHcpWizardReviewSection } from './rosaHcpWizardReviewSections.data';
 export {
@@ -23,6 +24,11 @@ export const useRosaHcpWizardReviewSections = (): RosaHcpWizardReviewSection[] =
   const rosaStrings = useRosaHcpWizardStrings();
   const { wizard } = rosaStrings;
   const stepLabels = wizard.stepLabels;
+  const { hiddenSteps } = useWizardConfig();
 
-  return useMemo(() => buildRosaHcpWizardReviewSections(stepLabels), [stepLabels]);
+  return useMemo(() => {
+    const allSections = buildRosaHcpWizardReviewSections(stepLabels);
+    if (!hiddenSteps?.length) return allSections;
+    return allSections.filter((section) => !hiddenSteps.includes(section.id as never));
+  }, [stepLabels, hiddenSteps]);
 };

@@ -43,7 +43,6 @@ export function RosaHcpYamlEditorFooter({
 
     void (async () => {
       try {
-        editorRef.current?.applyToForm();
         await submitWizard();
       } catch {
         // keep the editor open so the user can correct the issue

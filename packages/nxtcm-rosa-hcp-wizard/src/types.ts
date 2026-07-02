@@ -1,4 +1,6 @@
 import { TooltipProps, useWizardContext } from '@patternfly/react-core';
+import type { YamlResourceGenerator } from './Steps/YamlEditor/types';
+import { STEP_IDS } from './constants';
 
 // -- dropdown / select option types --
 
@@ -207,6 +209,38 @@ export type ROSAHCPWizardData = {
   checkClusterNameUniqueness?: CheckClusterNameUniqueness;
 };
 
+export type { YamlResourceGenerator };
+
+/**
+ * Step IDs that can be optionally hidden via {@link WizardConfig.hiddenSteps}.
+ * Use the exported `STEP_IDS` constants for type-safe values.
+ */
+export type HideableWizardStepId =
+  | typeof STEP_IDS.CLUSTER_WIDE_PROXY
+  | typeof STEP_IDS.CLUSTER_UPDATES;
+
+/**
+ * Configuration for the ROSA HCP wizard.
+ * Pass via the `config` prop on `RosaHCPWizard` to customise behaviour
+ * for different host applications (e.g. ACM vs OCM).
+ */
+export interface WizardConfig {
+  /**
+   * Steps to completely remove from the wizard navigation and the Review summary.
+   * When a step is hidden it is also excluded from the footer's "Skip to review" list.
+   *
+   * Supported values (use `STEP_IDS` constants):
+   * - `STEP_IDS.CLUSTER_WIDE_PROXY` – hides the Cluster-wide proxy step and its
+   *   trigger checkbox in the Networking step.
+   * - `STEP_IDS.CLUSTER_UPDATES` – hides the Cluster update strategy step.
+   *
+   * @example
+   * // In ACM, where CAPI CRs don't support proxy or update strategy:
+   * config={{ hiddenSteps: [STEP_IDS.CLUSTER_WIDE_PROXY, STEP_IDS.CLUSTER_UPDATES] }}
+   */
+  hiddenSteps?: ReadonlyArray<HideableWizardStepId>;
+}
+
 export type RosaHCPWizardProps = {
   wizardData: ROSAHCPWizardData;
   onSubmit: (data: ROSAHCPCluster) => Promise<void>;
@@ -215,9 +249,18 @@ export type RosaHCPWizardProps = {
   title: string;
   onBackToReviewStep?: () => void | Promise<void>;
   yamlEditor?: () => React.ReactNode;
-  yaml?: boolean;
-  /** The consuming product. */
   product?: 'acm' | 'ocm' | 'oem';
+  /**
+   * The consuming application is responsible for supplying this implementation.
+   * The wizard has no built-in knowledge of any specific template, schema, or
+   * generation logic — it only calls the three methods defined by YamlResourceGenerator:
+   * - `renderYaml` — produce the YAML string from current form values
+   * - `validateYaml` — validate a YAML string and return structured errors
+   * - `parseYamlToForm` — parse an edited YAML string back to form values
+   */
+  resourceGenerator: YamlResourceGenerator;
+  /** Optional wizard configuration for host-application-specific customisation. */
+  config?: WizardConfig;
 };
 
 export type WizardNavigationContext = ReturnType<typeof useWizardContext>;

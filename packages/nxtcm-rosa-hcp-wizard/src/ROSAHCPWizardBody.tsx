@@ -16,6 +16,7 @@ import { useWizardFieldMetaChangeEffects } from './fieldMetaChangeEffects/useWiz
 import { useRosaHcpWizardStrings } from './stringsProvider/RosaHcpWizardStringsContext';
 import { STEP_IDS } from './constants';
 import type { RosaHCPWizardProps } from './types';
+import { useIsStepHidden } from './WizardConfigContext';
 import { RosaWizardSubmitError } from './RosaWizardSubmitError';
 import './ROSAHCPWizardBody.css';
 import './Steps/YamlEditor/RosaHcpYamlEditorStep.css';
@@ -27,8 +28,15 @@ const RosaHcpYamlEditorStep = lazy(() =>
 );
 
 export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
-  const { wizardData, onSubmit, onCancel, yaml, onSubmitError, onBackToReviewStep, product } =
-    props;
+  const {
+    wizardData,
+    onSubmit,
+    onCancel,
+    onSubmitError,
+    onBackToReviewStep,
+    resourceGenerator,
+    product,
+  } = props;
 
   const [isNavigatingToReview, setIsNavigatingToReview] = useState(false);
   const [isYamlEditorOpen, setIsYamlEditorOpen] = useState(false);
@@ -63,6 +71,9 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
   useWizardFieldMetaChangeEffects(wizardData);
 
   const clusterWideProxySelected = useWatch({ name: 'configure_proxy' });
+
+  const isClusterWideProxyHidden = useIsStepHidden(STEP_IDS.CLUSTER_WIDE_PROXY);
+  const isClusterUpdatesHidden = useIsStepHidden(STEP_IDS.CLUSTER_UPDATES);
 
   const rosaStrings = useRosaHcpWizardStrings();
   const { wizard, yamlEditor: yamlStrings } = rosaStrings;
@@ -128,7 +139,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
             <WizardStep name={sl.networking} id={STEP_IDS.NETWORKING} key={STEP_IDS.NETWORKING}>
               <Networking {...wizardData} />
             </WizardStep>,
-            ...(clusterWideProxySelected
+            ...(clusterWideProxySelected && !isClusterWideProxyHidden
               ? [
                   <WizardStep
                     name={sl.clusterWideProxy}
@@ -142,12 +153,8 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
           ]}
         />
 
-        <WizardStep
-          isExpandable
-          name={sl.additionalSetup}
-          id={STEP_IDS.OPTIONAL_SETUP}
-          key={STEP_IDS.OPTIONAL_SETUP}
-          steps={[
+        {(() => {
+          const optionalSteps = [
             <WizardStep
               name={sl.encryptionOptional}
               id={STEP_IDS.ENCRYPTION}
@@ -155,15 +162,29 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
             >
               <Encryption />
             </WizardStep>,
+            !isClusterUpdatesHidden && (
+              <WizardStep
+                name={sl.clusterUpdatesOptional}
+                id={STEP_IDS.CLUSTER_UPDATES}
+                key={STEP_IDS.CLUSTER_UPDATES}
+              >
+                <ClusterUpdates />
+              </WizardStep>
+            ),
+          ].filter((s): s is React.ReactElement => Boolean(s));
+
+          if (optionalSteps.length === 0) return null;
+
+          return (
             <WizardStep
-              name={sl.clusterUpdatesOptional}
-              id={STEP_IDS.CLUSTER_UPDATES}
-              key={STEP_IDS.CLUSTER_UPDATES}
-            >
-              <ClusterUpdates />
-            </WizardStep>,
-          ]}
-        />
+              isExpandable
+              name={sl.additionalSetup}
+              id={STEP_IDS.OPTIONAL_SETUP}
+              key={STEP_IDS.OPTIONAL_SETUP}
+              steps={optionalSteps}
+            />
+          );
+        })()}
 
         <WizardStep
           name={sl.review}
@@ -188,12 +209,13 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
                 ref={yamlEditorRef}
                 onClose={handleCloseYamlEditor}
                 onCancel={onCancel}
+                resourceGenerator={resourceGenerator}
               />
             </Suspense>
           ) : (
             <Review
               vpcList={wizardData.vpcList}
-              onOpenYamlEditor={yaml ? openYamlEditor : undefined}
+              onOpenYamlEditor={resourceGenerator ? openYamlEditor : undefined}
             />
           )}
         </WizardStep>

@@ -3,6 +3,7 @@ import type { Locator } from '@playwright/test';
 import { checkAccessibility } from '../../../test-helpers';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { ClusterNetwork } from '../../../types';
+import { STEP_IDS } from '../../../constants';
 import { NetworkingMount } from './Networking.spec-helpers';
 
 const n = defaultRosaHcpWizardStrings.networking;
@@ -366,6 +367,36 @@ test.describe('Networking (ROSA HCP)', () => {
       await component.getByText(n.advancedToggle).click();
 
       await expect(component.getByRole('checkbox', { name: n.proxyCheckboxLabel })).toBeChecked();
+    });
+  });
+
+  test.describe('Networking — configure proxy checkbox with hiddenSteps config', () => {
+    test('should hide the proxy checkbox when CLUSTER_WIDE_PROXY is in hiddenSteps', async ({
+      mount,
+    }) => {
+      const component = await mount(
+        <NetworkingMount config={{ hiddenSteps: [STEP_IDS.CLUSTER_WIDE_PROXY] }} />
+      );
+
+      await component.getByText(n.advancedToggle).click();
+
+      await expect(component.getByRole('checkbox', { name: n.proxyCheckboxLabel })).toHaveCount(0);
+    });
+
+    test('should show the proxy checkbox when hiddenSteps is empty', async ({ mount }) => {
+      const component = await mount(<NetworkingMount config={{ hiddenSteps: [] }} />);
+
+      await component.getByText(n.advancedToggle).click();
+
+      await expect(component.getByRole('checkbox', { name: n.proxyCheckboxLabel })).toBeVisible();
+    });
+
+    test('should show the proxy checkbox when config is not provided', async ({ mount }) => {
+      const component = await mount(<NetworkingMount />);
+
+      await component.getByText(n.advancedToggle).click();
+
+      await expect(component.getByRole('checkbox', { name: n.proxyCheckboxLabel })).toBeVisible();
     });
   });
 
