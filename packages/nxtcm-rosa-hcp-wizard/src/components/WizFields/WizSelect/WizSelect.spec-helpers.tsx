@@ -4,6 +4,12 @@ import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
+import { STEP_IDS } from '../../../constants';
+import {
+  RosaHcpWizardValidationProvider,
+  useRosaHcpWizardValidation,
+} from '../../../rosaHcpWizardValidationContext';
+
 import {
   WizCtWatchStatus,
   wizCtSubmitValidationPreview,
@@ -28,6 +34,53 @@ export const WIZ_SELECT_SUBMIT_TOGGLE_NAME = /select the region \(submit demo\)/
 
 export const WIZ_SELECT_TYPEAHEAD_CLEAR_TOGGLE = /select the region/i;
 export const WIZ_SELECT_TYPEAHEAD_CLEAR_STATUS = 'region value after typeahead clear';
+
+export const WIZ_SELECT_DEFER_REVEAL_BUTTON = 'Reveal select validation';
+
+const deferValidationSchema = yup.object({
+  region: yup.string().required(WIZ_SELECT_SUBMIT_ERROR).default('').meta({
+    id: 'region',
+    stepId: STEP_IDS.DETAILS,
+    fieldType: 'select',
+  }),
+});
+
+type DeferValidationFormValues = yup.InferType<typeof deferValidationSchema>;
+
+function WizSelectDeferValidationRevealButton() {
+  const { markValidationAttempted } = useRosaHcpWizardValidation();
+  return (
+    <Button type="button" onClick={() => markValidationAttempted(STEP_IDS.DETAILS)}>
+      {WIZ_SELECT_DEFER_REVEAL_BUTTON}
+    </Button>
+  );
+}
+
+/** onTouched form mirroring the wizard: required select errors wait for Next / step change. */
+export function WizSelectDeferValidationHarness() {
+  const methods = useForm<DeferValidationFormValues>({
+    resolver: yupResolver(deferValidationSchema),
+    defaultValues: { region: '' },
+    mode: 'onTouched',
+  });
+
+  return withRosaCt(
+    <RosaHcpWizardValidationProvider>
+      <FormProvider {...methods}>
+        <Form>
+          <WizSelect<DeferValidationFormValues>
+            name="region"
+            schema={deferValidationSchema}
+            label="Region"
+            options={['us-east-1', 'eu-west-1']}
+            isTypeAhead
+          />
+          <WizSelectDeferValidationRevealButton />
+        </Form>
+      </FormProvider>
+    </RosaHcpWizardValidationProvider>
+  );
+}
 
 type ExplicitFormValues = { region?: string };
 
