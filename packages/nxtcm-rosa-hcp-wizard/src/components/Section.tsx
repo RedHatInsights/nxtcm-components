@@ -1,6 +1,7 @@
 import { Content, Form, Split, SplitItem, Stack } from '@patternfly/react-core';
 import { LabelHelp } from './LabelHelp';
 import React, { ReactNode } from 'react';
+import './Section.css';
 
 type SectionProps = {
   id?: string;
@@ -9,7 +10,9 @@ type SectionProps = {
   children?: ReactNode;
   labelHelpTitle?: string;
   labelHelp?: string;
-  /** When false, content is not wrapped in PatternFly Form (e.g. Review). Defaults to true. */
+  /** Optional actions rendered beside the section title (e.g. Review "Edit in YAML"). */
+  labelActions?: ReactNode;
+  /** When false, step body is not wrapped in PatternFly Form (e.g. Review). Defaults to true. */
   isForm?: boolean;
 };
 
@@ -22,42 +25,48 @@ export const Section: React.FunctionComponent<SectionProps> = (props) => {
     label,
     labelHelp,
     labelHelpTitle,
+    labelActions,
   } = props;
   const id = idProp ?? (typeof label === 'string' ? label.toLowerCase().split(' ').join('-') : '');
 
-  const sectionContent = (
-    <>
-      <Split hasGutter>
-        <SplitItem isFilled>
-          <Stack>
-            <Split hasGutter>
-              <div className="pf-v6-c-form__section-title pf-v6-u-w-100">
+  const sectionHeader = (
+    <Split hasGutter>
+      <SplitItem isFilled>
+        <Stack>
+          <Split hasGutter>
+            <SplitItem isFilled>
+              <div className="rosa-hcp-section__title pf-v6-u-w-100">
                 {label}
                 {idProp && (
                   <LabelHelp id={idProp} labelHelp={labelHelp} labelHelpTitle={labelHelpTitle} />
                 )}
               </div>
-            </Split>
-            {description && (
-              <Content component="small" className="pf-v6-u-pt-sm">
-                {description}
-              </Content>
-            )}
-          </Stack>
-        </SplitItem>
-      </Split>
-      {children}
-    </>
+            </SplitItem>
+            {labelActions ? <SplitItem>{labelActions}</SplitItem> : null}
+          </Split>
+          {description && (
+            <Content component="small" className="pf-v6-u-pt-sm">
+              {description}
+            </Content>
+          )}
+        </Stack>
+      </SplitItem>
+    </Split>
   );
 
   return (
     <section id={id} className="pf-v6-c-form__group" role="group">
       {isForm ? (
         <Form isWidthLimited onSubmit={(e) => e.preventDefault()}>
-          {sectionContent}
+          {sectionHeader}
+          {children}
         </Form>
       ) : (
-        sectionContent
+        <>
+          {/* pf-m-limit-width reads --pf-v6-c-form--m-limit-width--MaxWidth from PatternFly Form CSS */}
+          <div className="pf-v6-c-form pf-m-limit-width">{sectionHeader}</div>
+          {children}
+        </>
       )}
     </section>
   );

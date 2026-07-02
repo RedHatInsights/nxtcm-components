@@ -1,0 +1,6 @@
+/* Matches PatternFly Form section title; uses global tokens so it works outside .pf-v6-c-form. */
+.rosa-hcp-section__title {
+  margin-block-end: calc(var(--pf-t--global--spacer--sm) * -1);
+  font-size: var(--pf-t--global--font--size--heading--xs);
+  font-weight: var(--pf-t--global--font--weight--heading--default);
+}
