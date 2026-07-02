@@ -4,8 +4,12 @@ import addFormats from 'ajv-formats';
 import IPCIDR from 'ip-cidr';
 import * as yaml from 'js-yaml';
 
-import { findLineForPath, formatAjvError } from '../yamlValidation';
-import type { YamlResourceGenerator, ValidationError, ResourceSchema } from '../types';
+import { findLineForPath, formatAjvError } from '../../Steps/YamlEditor/yamlValidation';
+import type {
+  YamlResourceGenerator,
+  ValidationError,
+  ResourceSchema,
+} from '../../Steps/YamlEditor/types';
 
 export interface TemplateBasedGeneratorOptions {
   template: string;

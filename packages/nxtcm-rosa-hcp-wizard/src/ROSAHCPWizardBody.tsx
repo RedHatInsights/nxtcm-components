@@ -77,7 +77,6 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
   const clusterWideProxySelected = useWatch({ name: 'configure_proxy' });
 
   const isClusterWideProxyHidden = useIsStepHidden(STEP_IDS.CLUSTER_WIDE_PROXY);
-  const isEncryptionHidden = useIsStepHidden(STEP_IDS.ENCRYPTION);
   const isClusterUpdatesHidden = useIsStepHidden(STEP_IDS.CLUSTER_UPDATES);
 
   const rosaStrings = useRosaHcpWizardStrings();
@@ -160,15 +159,13 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
 
         {(() => {
           const optionalSteps = [
-            !isEncryptionHidden && (
-              <WizardStep
-                name={sl.encryptionOptional}
-                id={STEP_IDS.ENCRYPTION}
-                key={STEP_IDS.ENCRYPTION}
-              >
-                <Encryption />
-              </WizardStep>
-            ),
+            <WizardStep
+              name={sl.encryptionOptional}
+              id={STEP_IDS.ENCRYPTION}
+              key={STEP_IDS.ENCRYPTION}
+            >
+              <Encryption />
+            </WizardStep>,
             !isClusterUpdatesHidden && (
               <WizardStep
                 name={sl.clusterUpdatesOptional}

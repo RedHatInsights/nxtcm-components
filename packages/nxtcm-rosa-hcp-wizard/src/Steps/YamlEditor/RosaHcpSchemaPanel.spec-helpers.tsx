@@ -3,7 +3,7 @@ import { Drawer, DrawerContent, DrawerContentBody } from '@patternfly/react-core
 
 import { withRosaCt } from '../../components/WizFields/wizFieldCtSpecHelpers';
 import { RosaHcpSchemaPanel } from './RosaHcpSchemaPanel';
-import rosaControlPlaneSchema from './schemas/rosaControlPlaneSchema.json';
+import rosaControlPlaneSchema from '../../test/acmGeneratorFixtures/schemas/rosaControlPlaneSchema.json';
 
 const defaultSchema = rosaControlPlaneSchema as object;
 

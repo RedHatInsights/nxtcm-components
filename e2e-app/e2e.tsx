@@ -1,15 +1,13 @@
 import '@patternfly/react-core/dist/styles/base.css';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import {
-  RosaHCPWizard,
-  createAcmCapaGenerator,
-} from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
+import { RosaHCPWizard } from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
 import type { ROSAHCPWizardData } from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
-import rosaControlPlaneSchema from '../packages/nxtcm-rosa-hcp-wizard/src/Steps/YamlEditor/schemas/rosaControlPlaneSchema.json';
-import managedClusterSchema from '../packages/nxtcm-rosa-hcp-wizard/src/Steps/YamlEditor/schemas/managedClusterSchema.json';
-import capiClusterSchema from '../packages/nxtcm-rosa-hcp-wizard/src/Steps/YamlEditor/schemas/capiClusterSchema.json';
-import rosaClusterSchema from '../packages/nxtcm-rosa-hcp-wizard/src/Steps/YamlEditor/schemas/rosaClusterSchema.json';
+import { createAcmCapaGenerator } from '../packages/nxtcm-rosa-hcp-wizard/src/test/acmGeneratorFixtures/acmCapaGenerator';
+import rosaControlPlaneSchema from '../packages/nxtcm-rosa-hcp-wizard/src/test/acmGeneratorFixtures/schemas/rosaControlPlaneSchema.json';
+import managedClusterSchema from '../packages/nxtcm-rosa-hcp-wizard/src/test/acmGeneratorFixtures/schemas/managedClusterSchema.json';
+import capiClusterSchema from '../packages/nxtcm-rosa-hcp-wizard/src/test/acmGeneratorFixtures/schemas/capiClusterSchema.json';
+import rosaClusterSchema from '../packages/nxtcm-rosa-hcp-wizard/src/test/acmGeneratorFixtures/schemas/rosaClusterSchema.json';
 
 const noopFetch = async (): Promise<void> => {};
 

@@ -8,11 +8,11 @@ import { RosaHcpWizardFormProvider } from './RosaHcpWizardFormProvider';
 import { RosaHcpWizardStringsProvider } from './stringsProvider/RosaHcpWizardStringsContext';
 import { makeMachineTypesResource, makeVpcListResource } from './test/rosaHcpWizardCtSpecHelpers';
 import type { RosaHCPWizardProps, ROSAHCPWizardData } from './types';
-import { createAcmCapaGenerator } from './Steps/YamlEditor/generators/acmCapaGenerator';
-import rosaControlPlaneSchema from './Steps/YamlEditor/schemas/rosaControlPlaneSchema.json';
-import managedClusterSchema from './Steps/YamlEditor/schemas/managedClusterSchema.json';
-import capiClusterSchema from './Steps/YamlEditor/schemas/capiClusterSchema.json';
-import rosaClusterSchema from './Steps/YamlEditor/schemas/rosaClusterSchema.json';
+import { createAcmCapaGenerator } from './test/acmGeneratorFixtures/acmCapaGenerator';
+import rosaControlPlaneSchema from './test/acmGeneratorFixtures/schemas/rosaControlPlaneSchema.json';
+import managedClusterSchema from './test/acmGeneratorFixtures/schemas/managedClusterSchema.json';
+import capiClusterSchema from './test/acmGeneratorFixtures/schemas/capiClusterSchema.json';
+import rosaClusterSchema from './test/acmGeneratorFixtures/schemas/rosaClusterSchema.json';
 
 const noopFetch = async (): Promise<void> => {};
 
