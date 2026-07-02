@@ -9,7 +9,7 @@ import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../constants/links';
-import { ROSAHCPWizardData, type ROSAHCPCluster } from '../../../types';
+import { ROSAHCPWizardData, type RosaHCPWizardProps, type ROSAHCPCluster } from '../../../types';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { FieldWrapper, FieldWrapperStack } from '../../../components/FieldWrapper';
@@ -23,7 +23,8 @@ type DetailsStepProps = Pick<
   | 'versions'
   | 'roles'
   | 'checkClusterNameUniqueness'
->;
+> &
+  Pick<RosaHCPWizardProps, 'product'>;
 
 type AssociateNewAccountLinkProps = {
   label: string;
@@ -50,6 +51,7 @@ export const Details = ({
   versions,
   roles,
   checkClusterNameUniqueness,
+  product,
 }: DetailsStepProps) => {
   const d = useRosaHcpWizardStrings().details;
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
@@ -111,6 +113,7 @@ export const Details = ({
         isDrawerExpanded={isDrawerExpanded}
         setIsDrawerExpanded={setIsDrawerExpanded}
         onWizardExpand={onWizardExpand}
+        product={product}
       >
         <FieldWrapperStack>
           <FieldWrapper

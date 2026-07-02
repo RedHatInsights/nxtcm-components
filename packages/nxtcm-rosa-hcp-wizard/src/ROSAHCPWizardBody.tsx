@@ -109,7 +109,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
           id={STEP_IDS.BASIC_SETUP}
           steps={[
             <WizardStep name={sl.details} id={STEP_IDS.DETAILS} key={STEP_IDS.DETAILS}>
-              <Details {...wizardData} />
+              <Details {...wizardData} product={product} />
             </WizardStep>,
             <WizardStep
               name={sl.rolesAndPolicies}

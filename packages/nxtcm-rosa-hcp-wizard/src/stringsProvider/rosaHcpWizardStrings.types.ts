@@ -206,6 +206,10 @@ export type RosaHcpWizardStrings = {
     panelTitle: string;
     introSts: string;
     cliVersion: string;
+    stepLoginTitle: string;
+    loginInstructions: string;
+    loginInstructionsService: string;
+    loginCopyAriaLabel: string;
     step1Title: string;
     step2Title: string;
     step3Title: string;
@@ -304,6 +308,10 @@ export type RosaHcpWizardStrings = {
   };
   oidcHint: {
     instructions: string;
+  };
+  rosaLogin: {
+    instructions: string;
+    copyAriaLabel: string;
   };
   networking: {
     sectionLabel: string;

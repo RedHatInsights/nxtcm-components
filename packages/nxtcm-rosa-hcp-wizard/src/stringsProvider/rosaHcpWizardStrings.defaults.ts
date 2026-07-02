@@ -80,9 +80,15 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     introSts:
       'ROSA cluster deployments use the AWS Security Token Service for added security. Run the following required steps from a CLI authenticated with both AWS and ROSA.',
     cliVersion: 'You must use ROSA CLI version 1.2.31 or above.',
-    step1Title: 'Step 1: OCM role',
-    step2Title: 'Step 2: User role',
-    step3Title: 'Step 3: Account roles',
+    stepLoginTitle: 'Step 1: Log in to ROSA',
+    loginInstructions:
+      'Before you can create or link AWS IAM roles, log in to ROSA from your CLI. Run the following command to authenticate with your Red Hat account.',
+    loginInstructionsService:
+      'Before you can create or link AWS IAM roles, log in to ROSA from your CLI. Run the following command to authenticate with your Red Hat account. Replace the `<CLIENT_ID>` and `<CLIENT_SECRET>` placeholders with your service account credentials.',
+    loginCopyAriaLabel: 'Copyable ROSA login command',
+    step1Title: 'Step 2: OCM role',
+    step2Title: 'Step 3: User role',
+    step3Title: 'Step 4: Account roles',
     closingPrompt:
       "After you've completed all the steps, close this guide and choose your account.",
     closeButton: 'Close',
@@ -93,7 +99,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
   ocmRole: {
     checkLinkedTitle: 'First, check if a role exists and is linked with:',
     existingLinkedInfo:
-      "If there is an existing role and it's already linked to your Red Hat account, you can continue to step 2.",
+      "If there is an existing role and it's already linked to your Red Hat account, you can continue to step 3.",
     unlinkedTitle: "Next, is there an existing role that isn't linked?",
     tabCreateNew: 'No, create new role',
     tabLinkExisting: 'Yes, link existing role',
@@ -112,7 +118,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
   userRole: {
     checkLinkedTitle: 'First, check if a role exists and is linked with:',
     existingLinkedInfo:
-      "If there is an existing role and it's already linked to your Red Hat account, you can continue to step 3",
+      "If there is an existing role and it's already linked to your Red Hat account, you can continue to step 4.",
     unlinkedTitle: "Next, is there an existing role that isn't linked?",
     whyLinkTitle: 'Why do I need to link my account?',
     whyLinkBodyPrefix:
@@ -204,6 +210,11 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
   oidcHint: {
     instructions:
       'Create a new OIDC config ID by running the following commands in your CLI. Then, refresh and select the new config ID from the dropdown.',
+  },
+  rosaLogin: {
+    instructions:
+      'Log in to ROSA from your CLI. Run the following command to authenticate with your Red Hat account.',
+    copyAriaLabel: 'Copyable ROSA login command',
   },
   networking: {
     sectionLabel: 'Networking',
