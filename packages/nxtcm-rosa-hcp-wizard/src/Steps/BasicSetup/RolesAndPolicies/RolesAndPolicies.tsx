@@ -42,6 +42,9 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(false);
   const rp = useRosaHcpWizardStrings().rolesAndPolicies;
 
+  const oidcConfigHintContent = <OIDCConfigHint product={product} />;
+  const oidcConfigHintMaxWidth = '25rem';
+
   const awsInfrastructureAccount = useWatch({ name: 'associated_aws_id' });
 
   const installerRoleOptions = useInstallerRoleOptions(roles);
@@ -129,6 +132,8 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
                   name="byo_oidc_config_id"
                   isRequired
                   options={oidcConfig.data}
+                  labelHelp={oidcConfigHintContent}
+                  labelHelpMaxWidth={oidcConfigHintMaxWidth}
                   data-testid="oidc-config-select"
                 />
               </StackItem>
@@ -136,7 +141,8 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
                 <PopoverHintWithTitle
                   displayHintIcon
                   title={rp.oidcPopoverTitle}
-                  bodyContent={<OIDCConfigHint product={product} />}
+                  bodyContent={oidcConfigHintContent}
+                  maxWidth={oidcConfigHintMaxWidth}
                 />
               </StackItem>
             </Stack>

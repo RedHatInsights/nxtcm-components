@@ -192,7 +192,6 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     operatorRolesSection: 'Operator roles',
     oidcLabel: 'OIDC config ID',
     oidcPlaceholder: 'Select an OIDC config ID',
-    oidcHelp: 'The OIDC configuration ID created by running the command: rosa create oidc-config',
     oidcPopoverTitle: 'Create a new OIDC config id',
     operatorPrefixToggle: 'Operator role prefix',
     operatorPrefixLabel: 'Operator roles prefix',
@@ -213,7 +212,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
   },
   oidcHint: {
     instructions:
-      'Create a new OIDC config ID by running the following commands in your CLI. Then, refresh and select the new config ID from the dropdown.',
+      'Create a new OIDC config ID by running the following commands in your CLI. Then, refresh the OIDC config ID dropdown and select the new config ID.',
   },
   rosaLogin: {
     instructions:

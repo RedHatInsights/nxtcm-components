@@ -79,9 +79,7 @@ export const byoOidcConfigIdSchema = yup
   .meta({
     id: 'byo_oidc_config_id',
     labelKey: 'rolesAndPolicies.oidcLabel',
-    labelHelpKey: 'rolesAndPolicies.oidcHelp',
     placeholderKey: 'rolesAndPolicies.oidcPlaceholder',
-    labelHelpTitleKey: 'rolesAndPolicies.oidcPopoverTitle',
     stepId: STEP_IDS.ROLES_AND_POLICIES,
     fieldType: 'select',
     optionsWizardDataResource: 'oidcConfig',

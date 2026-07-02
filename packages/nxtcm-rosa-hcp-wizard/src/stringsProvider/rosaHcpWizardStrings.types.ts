@@ -292,7 +292,6 @@ export type RosaHcpWizardStrings = {
     operatorRolesSection: string;
     oidcLabel: string;
     oidcPlaceholder: string;
-    oidcHelp: string;
     oidcPopoverTitle: string;
     operatorPrefixToggle: string;
     operatorPrefixLabel: string;
