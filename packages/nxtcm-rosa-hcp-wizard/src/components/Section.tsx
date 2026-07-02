@@ -62,11 +62,10 @@ export const Section: React.FunctionComponent<SectionProps> = (props) => {
           {children}
         </Form>
       ) : (
-        <>
-          {/* pf-m-limit-width reads --pf-v6-c-form--m-limit-width--MaxWidth from PatternFly Form CSS */}
-          <div className="pf-v6-c-form pf-m-limit-width">{sectionHeader}</div>
+        <div className="pf-v6-c-form pf-m-limit-width">
+          {sectionHeader}
           {children}
-        </>
+        </div>
       )}
     </section>
   );

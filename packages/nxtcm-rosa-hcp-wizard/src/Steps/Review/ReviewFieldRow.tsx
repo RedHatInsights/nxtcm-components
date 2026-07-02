@@ -39,7 +39,7 @@ export const ReviewFieldRow = ({
         justifyContent={{ default: 'justifyContentSpaceBetween' }}
         alignItems={{ default: 'alignItemsBaseline' }}
       >
-        <FlexItem>{labelText}</FlexItem>
+        <FlexItem className="review-field-row__label">{labelText}</FlexItem>
         <FlexItem align={{ default: 'alignRight' }}>
           <Flex direction={{ default: 'column' }} alignItems={{ default: 'alignItemsFlexEnd' }}>
             <FlexItem>
