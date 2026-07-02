@@ -96,27 +96,25 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
     [handleCloseYamlEditor, onCancel, onSubmit]
   );
 
-  if (onSubmitError) {
-    return (
-      <RosaWizardSubmitError
-        onSubmitError={onSubmitError}
-        onBackToReviewStep={onBackToReviewStep ? handleBackToReviewStep : undefined}
-        isNavigatingToReview={isNavigatingToReview}
-        onCancel={onCancel}
-      />
-    );
-  }
-
   return (
     <div
       className={`rosa-hcp-wizard${isYamlEditorOpen ? ' rosa-hcp-wizard--yaml-editor-open' : ''}`}
     >
+      {onSubmitError ? (
+        <RosaWizardSubmitError
+          onSubmitError={onSubmitError}
+          onBackToReviewStep={onBackToReviewStep ? handleBackToReviewStep : undefined}
+          isNavigatingToReview={isNavigatingToReview}
+          onCancel={onCancel}
+        />
+      ) : null}
       <Wizard
         height="100vh"
         footer={footer}
         onClose={onCancel}
         onStepChange={handleWizardStepChange}
         isVisitRequired={!enableAllWizardNavSteps}
+        className={onSubmitError ? 'rosa-hcp-wizard--submit-error' : undefined}
       >
         <WizardStep
           isExpandable

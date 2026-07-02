@@ -5,3 +5,7 @@
 .rosa-hcp-wizard--yaml-editor-open .pf-v6-c-wizard__outer-wrap {
   padding-left: 0;
 }
+
+.rosa-hcp-wizard--submit-error {
+  display: none;
+}
