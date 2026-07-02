@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useRef, Suspense, lazy, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useRef, Suspense, lazy } from 'react';
 import { Spinner, Wizard, WizardStep } from '@patternfly/react-core';
 import { useWatch } from 'react-hook-form';
 import { Details } from './Steps/BasicSetup/Details/Details';
@@ -17,7 +17,6 @@ import { useRosaHcpWizardStrings } from './stringsProvider/RosaHcpWizardStringsC
 import { STEP_IDS } from './constants';
 import type { RosaHCPWizardProps } from './types';
 import { RosaWizardSubmitError } from './RosaWizardSubmitError';
-import { configureRosaHcpMonaco } from './configureRosaHcpMonaco';
 import './ROSAHCPWizardBody.css';
 import './Steps/YamlEditor/RosaHcpYamlEditorStep.css';
 
@@ -30,12 +29,6 @@ const RosaHcpYamlEditorStep = lazy(() =>
 export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
   const { wizardData, onSubmit, onCancel, yaml, onSubmitError, onBackToReviewStep, product } =
     props;
-
-  useEffect(() => {
-    if (yaml) {
-      configureRosaHcpMonaco();
-    }
-  }, [yaml]);
 
   const [isNavigatingToReview, setIsNavigatingToReview] = useState(false);
   const [isYamlEditorOpen, setIsYamlEditorOpen] = useState(false);

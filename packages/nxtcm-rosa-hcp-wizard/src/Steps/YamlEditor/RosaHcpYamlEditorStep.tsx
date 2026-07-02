@@ -195,7 +195,6 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         };
 
         if (!isInitializedRef.current) {
-          configureRosaHcpMonaco();
           monacoYamlDisposeRef.current?.();
           monacoYamlDisposeRef.current = new RosaHcpYamlMonacoLoader().configure(
             monaco as Parameters<RosaHcpYamlMonacoLoader['configure']>[0]
