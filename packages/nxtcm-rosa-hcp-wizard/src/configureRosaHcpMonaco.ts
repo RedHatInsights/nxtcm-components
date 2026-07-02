@@ -1,7 +1,10 @@
 import { loader } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
 
-import { setupMonacoEnvironmentIfNeeded } from './Steps/YamlEditor/monacoYamlSetup';
+import {
+  isMonacoWorkerEnvironmentConfigured,
+  setupMonacoEnvironmentIfNeeded,
+} from './Steps/YamlEditor/monacoYamlSetup';
 
 let configured = false;
 let monacoYamlLanguageSupportEnabled = false;
@@ -38,11 +41,18 @@ export function configureRosaHcpMonaco(): void {
 
   loader?.config({ monaco });
 
+  if (globalThis.window === undefined) {
+    return;
+  }
+
   // monaco-yaml only works with a dedicated yaml worker; enable in Vite dev only.
   monacoYamlLanguageSupportEnabled = !isLikelyWebpackHostRuntime() && isViteDevRuntime();
 
   if (monacoYamlLanguageSupportEnabled) {
     setupMonacoEnvironmentIfNeeded();
+    if (!isMonacoWorkerEnvironmentConfigured()) {
+      return;
+    }
   }
 
   configured = true;
