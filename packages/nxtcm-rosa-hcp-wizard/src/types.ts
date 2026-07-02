@@ -217,7 +217,6 @@ export type { YamlResourceGenerator };
  */
 export type HideableWizardStepId =
   | typeof STEP_IDS.CLUSTER_WIDE_PROXY
-  | typeof STEP_IDS.ENCRYPTION
   | typeof STEP_IDS.CLUSTER_UPDATES;
 
 /**
@@ -234,7 +233,6 @@ export interface WizardConfig {
    * - `STEP_IDS.CLUSTER_WIDE_PROXY` – hides the Cluster-wide proxy step and its
    *   trigger checkbox in the Networking step.
    * - `STEP_IDS.CLUSTER_UPDATES` – hides the Cluster update strategy step.
-   * - `STEP_IDS.ENCRYPTION` – hides the Encryption step.
    *
    * @example
    * // In ACM, where CAPI CRs don't support proxy or update strategy:
@@ -252,6 +250,14 @@ export type RosaHCPWizardProps = {
   onBackToReviewStep?: () => void | Promise<void>;
   yamlEditor?: () => React.ReactNode;
   product?: 'acm' | 'ocm' | 'oem';
+  /**
+   * The consuming application is responsible for supplying this implementation.
+   * The wizard has no built-in knowledge of any specific template, schema, or
+   * generation logic — it only calls the three methods defined by YamlResourceGenerator:
+   * - `renderYaml` — produce the YAML string from current form values
+   * - `validateYaml` — validate a YAML string and return structured errors
+   * - `parseYamlToForm` — parse an edited YAML string back to form values
+   */
   resourceGenerator: YamlResourceGenerator;
   /** Optional wizard configuration for host-application-specific customisation. */
   config?: WizardConfig;
