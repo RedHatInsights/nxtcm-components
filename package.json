@@ -132,7 +132,7 @@
     "lint-staged": "^16.2.6",
     "nyc": "^18.0.0",
     "test-exclude": "^6.0.0",
-    "prettier": "3.8.3",
+    "prettier": "3.9.1",
     "pretty-html-log": "^1.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
