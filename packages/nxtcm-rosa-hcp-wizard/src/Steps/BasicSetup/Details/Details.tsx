@@ -31,14 +31,7 @@ type AssociateNewAccountLinkProps = {
   setIsDrawerExpanded: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-function AssociateNewAccountLink({
-  label,
-  isDrawerExpanded,
-  setIsDrawerExpanded,
-}: AssociateNewAccountLinkProps) {
-  if (isDrawerExpanded) {
-    return null;
-  }
+function AssociateNewAccountLink({ label, setIsDrawerExpanded }: AssociateNewAccountLinkProps) {
   return (
     <Button
       isInline
