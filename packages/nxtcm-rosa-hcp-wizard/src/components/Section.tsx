@@ -13,8 +13,6 @@ type SectionProps = {
   isForm?: boolean;
 };
 
-const FORM_MAX_WIDTH = '880px';
-
 export const Section: React.FunctionComponent<SectionProps> = (props) => {
   const {
     isForm = true,
@@ -55,7 +53,7 @@ export const Section: React.FunctionComponent<SectionProps> = (props) => {
   return (
     <section id={id} className="pf-v6-c-form__group" role="group">
       {isForm ? (
-        <Form isWidthLimited maxWidth={FORM_MAX_WIDTH} onSubmit={(e) => e.preventDefault()}>
+        <Form isWidthLimited onSubmit={(e) => e.preventDefault()}>
           {sectionContent}
         </Form>
       ) : (
