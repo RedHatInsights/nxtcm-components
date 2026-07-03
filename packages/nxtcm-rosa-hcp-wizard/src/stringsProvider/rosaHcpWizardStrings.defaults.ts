@@ -140,7 +140,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     clusterNameLabel: 'Cluster name',
     clusterNamePlaceholder: 'Enter the cluster name',
     clusterNameHelp:
-      'This will be how we refer to your cluster in the OpenShift cluster list and will form part of the cluster console subdomain.',
+      'This name appears in the OpenShift cluster list and forms part of the cluster console subdomain.',
     openShiftVersionLabel: 'OpenShift version',
     openShiftVersionPlaceholder: 'Select an OpenShift version',
     openShiftVersionOptionDisabledDescription:
@@ -160,12 +160,13 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     billingLabel: 'Associated AWS billing account',
     billingPlaceholder: 'Select an AWS billing account',
     billingHelp:
-      'The AWS billing account is often the same as your Associated AWS infrastructure account, but does not have to be.',
+      'The AWS account that receives billing for cluster usage and Red Hat subscription charges. This account is often the same as your associated AWS infrastructure account, but does not have to be.',
     connectBillingLink: 'Connect ROSA to a new AWS billing account',
     regionLabel: 'Region',
     regionPlaceholder: 'Select a region',
-    regionHelp:
-      'The AWS Region where your compute nodes and control plane will be located. (should be link: Learn more about AWS Regions.)',
+    regionHelpLead:
+      'The AWS Region where your compute nodes and managed control plane will be located.',
+    regionLearnMoreLink: 'Learn more about AWS Regions.',
   },
   rolesAndPolicies: {
     accountRolesSection: 'Account roles',
@@ -236,16 +237,25 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     cidrAlertBody:
       'Specify non-overlapping CIDR ranges for the machine, service, and pod fields. Enter the network address for each range—the first IP address in the subnet (for example, 10.0.0.0/16, not 10.0.0.1/16). Ensure these ranges do not overlap with each other or with networks already in use in your environment, including your VPC subnets.',
     cidrLearnMoreLink: 'Learn more about CIDR range definitions',
+    cidrFieldLearnMoreLink: 'Learn more',
     useDefaultsLabel: 'Use default values',
     useDefaultsHelp:
       'The values are safe defaults. However, you must ensure that the Machine CIDR matches the selected VPC subnets.',
     machineCidrLabel: 'Machine CIDR',
+    machineCidrHelpLead:
+      'A block of IP addresses used by the OpenShift Container Platform installation program while installing the cluster. The address block must not overlap with any other network block.',
     machineCidrHelp: 'Subnet mask must be between /16 and /25',
     serviceCidrLabel: 'Service CIDR',
+    serviceCidrHelpLead:
+      'A block of IP addresses for services. OpenShiftSDN allows only one serviceNetwork block. The address block must not overlap with any other network block.',
     serviceCidrHelp: 'Subnet mask must be at most /24',
     podCidrLabel: 'Pod CIDR',
+    podCidrHelpLead:
+      'A block of IP addresses from which Pod IP addresses are allocated. The OpenShiftSDN network plug-in supports multiple cluster networks. The address blocks for multiple cluster networks must not overlap. Select address pools large enough to fit your anticipated workload.',
     podCidrHelp: 'Subnet mask must allow for at least 32 nodes',
     hostPrefixLabel: 'Host prefix',
+    hostPrefixHelpLead:
+      'The subnet prefix length to assign to each individual node. For example, if host prefix is set to /23, then each node is assigned a /23 subnet out of the given CIDR, allowing for 510 (2^(32 - 23) - 2) pod IP addresses.',
     hostPrefixHelp: 'Must be between /23 and /26',
   },
   machinePools: {
@@ -355,7 +365,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     versionIntroSuffix: 'that you selected in the',
     detailsStepLink: 'Details step',
     midSentence: 'will apply to the managed control plane and the machine pools configured in the',
-    networkingStepLink: 'Networking and subnets step.',
+    networkingStepLink: 'Networking step',
     afterCreation:
       'After cluster creation, you can update the managed control plane and machine pools independently.',
     cveLead: 'In the event of',

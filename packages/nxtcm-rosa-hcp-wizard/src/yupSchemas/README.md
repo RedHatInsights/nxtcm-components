@@ -19,7 +19,6 @@ export const regionSchema = rosaRequiredStringField().meta({
     id: 'region',
     labelKey: 'details.regionLabel',
     placeholderKey: 'details.regionPlaceholder',
-    labelHelpKey: 'details.regionHelp',
     stepId: STEP_IDS.DETAILS,
     fieldType: 'select',
     optionsWizardDataResource: 'regions',
