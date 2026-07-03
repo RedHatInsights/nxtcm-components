@@ -57,7 +57,7 @@ export const MachinePoolsAdvancedSection = (props: MachinePoolsAdvancedSectionPr
           </WizRadioGroup>
         </FieldWrapper>
 
-        <FieldWrapper width="medium">
+        <FieldWrapper size="md">
           <WizNumberInput<ROSAHCPCluster>
             name="compute_root_volume"
             schema={clusterValidationSchema}

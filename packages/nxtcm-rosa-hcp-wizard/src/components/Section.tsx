@@ -57,12 +57,12 @@ export const Section: React.FunctionComponent<SectionProps> = (props) => {
   return (
     <section id={id} className="pf-v6-c-form__group" role="group">
       {isForm ? (
-        <Form isWidthLimited onSubmit={(e) => e.preventDefault()}>
+        <Form onSubmit={(e) => e.preventDefault()}>
           {sectionHeader}
           {children}
         </Form>
       ) : (
-        <div className="pf-v6-c-form pf-m-limit-width">
+        <div className="pf-v6-c-form">
           {sectionHeader}
           {children}
         </div>

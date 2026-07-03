@@ -1,19 +1,28 @@
 import { Stack } from '@patternfly/react-core';
 import type { ReactNode } from 'react';
+import './FieldWrapper.css';
 
-export type FieldWrapperWidth = 'small' | 'medium' | 'large';
+export type FieldWrapperSize = 'sm' | 'md' | 'lg' | 'full';
 
 export type FieldWrapperProps = {
   children: ReactNode;
   /** Optional content rendered below the field (links, actions, etc.). */
   additionalContent?: ReactNode;
-  /** Reserved for future per-field width constraints. Currently unused. */
-  width?: FieldWrapperWidth;
+  /** Max width of the field. Defaults to `sm`. */
+  size?: FieldWrapperSize;
 };
 
-export const FieldWrapper = ({ children, additionalContent }: FieldWrapperProps) => (
+export const FieldWrapper = ({ children, additionalContent, size = 'sm' }: FieldWrapperProps) => (
   <>
-    {children}
+    <div
+      className={
+        size === 'full'
+          ? 'rosa-hcp-field-wrapper'
+          : `rosa-hcp-field-wrapper rosa-hcp-field-wrapper--${size}`
+      }
+    >
+      {children}
+    </div>
     {additionalContent}
   </>
 );

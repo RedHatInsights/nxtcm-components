@@ -1,0 +1,15 @@
+.rosa-hcp-field-wrapper {
+  width: 100%;
+}
+
+.rosa-hcp-field-wrapper--sm {
+  max-width: 20rem;
+}
+
+.rosa-hcp-field-wrapper--md {
+  max-width: 30rem;
+}
+
+.rosa-hcp-field-wrapper--lg {
+  max-width: 40rem;
+}

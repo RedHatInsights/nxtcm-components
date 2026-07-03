@@ -51,7 +51,7 @@ export const Encryption = () => {
       </WizRadioGroup>
 
       {customKmsSelected === 'custom' ? (
-        <FieldWrapper width="large">
+        <FieldWrapper size="lg">
           <WizTextInput<ROSAHCPCluster>
             name="kms_key_arn"
             schema={clusterValidationSchema}
@@ -59,7 +59,7 @@ export const Encryption = () => {
           />
         </FieldWrapper>
       ) : null}
-      <FieldWrapper width="medium">
+      <FieldWrapper size="md">
         <WizCheckbox<ROSAHCPCluster>
           name="etcd_encryption"
           schema={clusterValidationSchema}
@@ -74,7 +74,7 @@ export const Encryption = () => {
         />
       </FieldWrapper>
       {etcdIsChecked ? (
-        <FieldWrapper width="large">
+        <FieldWrapper size="lg">
           <WizTextInput<ROSAHCPCluster>
             name="etcd_key_arn"
             schema={clusterValidationSchema}
@@ -82,7 +82,7 @@ export const Encryption = () => {
           />
         </FieldWrapper>
       ) : null}
-      <FieldWrapper width="medium">
+      <FieldWrapper size="md">
         <Alert variant="info" title={e.keysNoteAlert} ouiaId="encryptionKeysAlert" />
       </FieldWrapper>
     </Section>

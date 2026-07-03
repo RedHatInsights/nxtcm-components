@@ -5,7 +5,7 @@ test.describe('FieldWrapper', () => {
   test('renders field content', async ({ mount }) => {
     const component = await mount(
       <NestedFields>
-        <FieldWrapper width="medium">
+        <FieldWrapper size="md">
           <span>Cluster name</span>
         </FieldWrapper>
       </NestedFields>
@@ -25,6 +25,16 @@ test.describe('FieldWrapper', () => {
 
     await expect(component.getByText('Field label')).toBeVisible();
     await expect(component.getByRole('link', { name: 'Learn more' })).toBeVisible();
+  });
+
+  test('applies size class for constrained field width', async ({ mount }) => {
+    const component = await mount(
+      <FieldWrapper size="lg">
+        <span>Sized field</span>
+      </FieldWrapper>
+    );
+
+    await expect(component.locator('.rosa-hcp-field-wrapper--lg')).toBeVisible();
   });
 
   test('renders full-width blocks alongside fields', async ({ mount }) => {

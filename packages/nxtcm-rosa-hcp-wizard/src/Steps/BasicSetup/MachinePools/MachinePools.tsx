@@ -79,7 +79,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
 
   return (
     <Section label={mp.sectionLabel} id="machine-pools-section" description={mp.intro}>
-      <FieldWrapper width="medium">
+      <FieldWrapper size="md">
         <WizSelect<ROSAHCPCluster>
           name="selected_vpc"
           schema={clusterValidationSchema}
@@ -98,7 +98,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
           }
         />
       </FieldWrapper>
-      <FieldWrapper width="medium">
+      <FieldWrapper size="md">
         <WizSelect<ROSAHCPCluster>
           name="machine_pools_subnets.0.machine_pool_subnet"
           schema={clusterValidationSchema}
@@ -111,7 +111,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
           isDisabled={vpcList.isFetching || !selectedVPC}
         />
       </FieldWrapper>
-      <FieldWrapper width="medium">
+      <FieldWrapper size="md">
         <WizSelect<ROSAHCPCluster>
           name="machine_type"
           schema={clusterValidationSchema}

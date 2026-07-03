@@ -62,7 +62,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
             userRoleError={roles.userRoleError}
           />
         ) : null}
-        <FieldWrapper width="large">
+        <FieldWrapper size="lg">
           <WizSelect<ROSAHCPCluster>
             schema={clusterValidationSchema}
             apiError={roles.error}
@@ -90,7 +90,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
           className="pf-v6-u-mb-lg"
         >
           <NestedFields>
-            <FieldWrapper width="large">
+            <FieldWrapper size="lg">
               <WizSelect<ROSAHCPCluster>
                 isRequired
                 schema={clusterValidationSchema}
@@ -99,7 +99,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
                 isDisabled
               />
             </FieldWrapper>
-            <FieldWrapper width="large">
+            <FieldWrapper size="lg">
               <WizSelect<ROSAHCPCluster>
                 isRequired
                 schema={clusterValidationSchema}
@@ -113,7 +113,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
       </Section>
       <Section label={rp.operatorRolesSection}>
         <FieldWrapper
-          width="large"
+          size="lg"
           additionalContent={
             <PopoverHintWithTitle
               displayHintIcon
@@ -144,7 +144,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
           className="pf-v6-u-mb-lg"
         >
           <NestedFields>
-            <FieldWrapper width="small">
+            <FieldWrapper size="sm">
               <WizTextInput<ROSAHCPCluster>
                 name="custom_operator_roles_prefix"
                 schema={clusterValidationSchema}

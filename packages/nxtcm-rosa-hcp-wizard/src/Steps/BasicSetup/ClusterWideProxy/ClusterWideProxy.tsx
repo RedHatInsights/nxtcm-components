@@ -25,20 +25,20 @@ export const ClusterWideProxy = () => {
     <Section label={cw.sectionLabel} description={cw.intro}>
       <ExternalLink href={links.CONFIGURE_PROXY_URL}>{cw.learnMoreLink}</ExternalLink>
       <Alert variant="info" isInline isPlain title={cw.alertConfigureFields} />
-      <FieldWrapper width="large">
+      <FieldWrapper size="lg">
         <WizTextInput name="http_proxy_url" schema={clusterValidationSchema} />
       </FieldWrapper>
-      <FieldWrapper width="large">
+      <FieldWrapper size="lg">
         <WizTextInput name="https_proxy_url" schema={clusterValidationSchema} />
       </FieldWrapper>
-      <FieldWrapper width="large">
+      <FieldWrapper size="lg">
         <WizTextInput
           isDisabled={disableNoProxyDomains}
           name="no_proxy_domains"
           schema={clusterValidationSchema}
         />
       </FieldWrapper>
-      <FieldWrapper width="large">
+      <FieldWrapper size="lg">
         <WizFileUpload name="additional_trust_bundle" schema={clusterValidationSchema} />
       </FieldWrapper>
     </Section>

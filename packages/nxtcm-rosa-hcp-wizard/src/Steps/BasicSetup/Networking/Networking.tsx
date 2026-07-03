@@ -124,7 +124,7 @@ export const Networking = (props: NetworkingStepProps) => {
             <WizCheckbox name="cidr_default" schema={clusterValidationSchema} />
           </FieldWrapper>
 
-          <FieldWrapper width="large">
+          <FieldWrapper size="lg">
             <WizTextInput<ROSAHCPCluster>
               name="network_machine_cidr"
               schema={clusterValidationSchema}
@@ -138,7 +138,7 @@ export const Networking = (props: NetworkingStepProps) => {
               }
             />
           </FieldWrapper>
-          <FieldWrapper width="large">
+          <FieldWrapper size="lg">
             <WizTextInput<ROSAHCPCluster>
               name="network_service_cidr"
               schema={clusterValidationSchema}
@@ -152,7 +152,7 @@ export const Networking = (props: NetworkingStepProps) => {
               }
             />
           </FieldWrapper>
-          <FieldWrapper width="large">
+          <FieldWrapper size="lg">
             <WizTextInput<ROSAHCPCluster>
               name="network_pod_cidr"
               schema={clusterValidationSchema}
@@ -166,7 +166,7 @@ export const Networking = (props: NetworkingStepProps) => {
               }
             />
           </FieldWrapper>
-          <FieldWrapper width="large">
+          <FieldWrapper size="lg">
             <WizTextInput<ROSAHCPCluster>
               name="network_host_prefix"
               schema={clusterValidationSchema}
