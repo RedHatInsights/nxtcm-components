@@ -57,6 +57,8 @@ export const machinePoolsSubnetsSchema = rosaRequiredArrayField(machinePoolSubne
   id: 'machine_pools_subnets',
   labelKey: 'machinePools.subnetLabel',
   stepId: STEP_IDS.MACHINE_POOLS,
+  /** UI is a {@link WizSelect} on `machine_pools_subnets.0.machine_pool_subnet`; top-level path drives nav validation. */
+  fieldType: 'select',
 } satisfies WizardFieldMeta);
 
 export const machineTypeSchema = rosaRequiredStringField().meta({

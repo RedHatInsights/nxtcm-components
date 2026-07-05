@@ -353,6 +353,15 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
       expect(error).toBe(msgs.commonRequired);
     });
 
+    it('selected_vpc rejects null with common required message', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({ selected_vpc: null as unknown as ROSAHCPCluster['selected_vpc'] }),
+        'selected_vpc'
+      );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
     it('region rejects undefined with common required message', async () => {
       const error = await validate(buildContext(), buildFormData({ region: undefined }), 'region');
       expect(error).toBe(msgs.commonRequired);

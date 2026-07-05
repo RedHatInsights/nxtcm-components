@@ -116,6 +116,22 @@ describe('stepHasVisibleValidationErrors', () => {
     ).toBe(false);
   });
 
+  it('defers nav-visible errors for machine_pools_subnets until validation is revealed', () => {
+    const getFieldState = mockGetFieldState((path) => ({
+      invalid: path === 'machine_pools_subnets',
+      isTouched: path === 'machine_pools_subnets',
+    }));
+
+    expect(
+      stepHasVisibleValidationErrors(
+        ['machine_pools_subnets'],
+        STEP_IDS.MACHINE_POOLS,
+        getFieldState,
+        new Set()
+      )
+    ).toBe(false);
+  });
+
   it('returns true when validation was attempted on the step', () => {
     const getFieldState = mockGetFieldState(() => ({ invalid: true, isTouched: false }));
 

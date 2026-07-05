@@ -89,10 +89,10 @@ function rosaAbsentStringToEmpty(value: unknown, originalValue: unknown): unknow
 /**
  * Yup transform for required **mixed** object selects (e.g. VPC).
  * Use before {@link rosaCommonRequiredNonEmptyTest} and `.required()`.
- * Untouched `undefined` is handled by {@link coerceAbsentRequiredFieldValues}.
+ * Coerces `null` to `{}`; untouched `undefined` is handled by {@link coerceAbsentRequiredFieldValues}.
  */
 function rosaUndefinedMixedToAbsentObject(value: unknown, originalValue: unknown): unknown {
-  return originalValue === undefined ? {} : value;
+  return originalValue == null ? {} : value;
 }
 
 function isAbsentRequiredValue(value: unknown): boolean {
