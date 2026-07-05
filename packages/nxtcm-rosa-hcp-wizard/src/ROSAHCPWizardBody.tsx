@@ -114,7 +114,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
         onClose={onCancel}
         onStepChange={handleWizardStepChange}
         isVisitRequired={!enableAllWizardNavSteps}
-        className={onSubmitError ? 'rosa-hcp-wizard--submit-error' : undefined}
+        style={onSubmitError ? { display: 'none' } : undefined}
       >
         <WizardStep
           isExpandable
