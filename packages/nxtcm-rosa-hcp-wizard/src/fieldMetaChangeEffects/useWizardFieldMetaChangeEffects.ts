@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { type FieldPath, useFormContext, useWatch } from 'react-hook-form';
+import { type FieldPath, type UseFormSetValue, useFormContext, useWatch } from 'react-hook-form';
 
 import { applyWizardFieldMetaChangeEffects } from './applyWizardFieldMetaChangeEffects';
 import { readWatchedFieldValue } from './readWatchedFieldValue';
@@ -32,6 +32,80 @@ function buildFormValuesForMetaEffects(
   return formValues as Partial<ROSAHCPCluster>;
 }
 
+type ProcessSourceFieldMetaChangeArgs = {
+  field: WizardFormFieldName;
+  currentValue: unknown;
+  previousValue: unknown;
+  isInitialPass: boolean;
+  formValues: Partial<ROSAHCPCluster>;
+  setValue: UseFormSetValue<Partial<ROSAHCPCluster>>;
+  wizardData: ROSAHCPWizardData;
+  unvisitSourceFieldSet: ReadonlySet<WizardFormFieldName>;
+  programmaticallyResetFields: Set<WizardFormFieldName>;
+  unvisitSourceStepIds: Set<string>;
+};
+
+function clearProgrammaticResetWhenFieldUnchanged(
+  field: WizardFormFieldName,
+  previousValue: unknown,
+  currentValue: unknown,
+  isInitialPass: boolean,
+  programmaticallyResetFields: Set<WizardFormFieldName>
+): boolean {
+  if (isInitialPass || !wizardFormFieldValuesEqual(previousValue, currentValue)) {
+    return false;
+  }
+
+  if (programmaticallyResetFields.has(field)) {
+    programmaticallyResetFields.delete(field);
+  }
+
+  return true;
+}
+
+function processSourceFieldMetaChange({
+  field,
+  currentValue,
+  previousValue,
+  isInitialPass,
+  formValues,
+  setValue,
+  wizardData,
+  unvisitSourceFieldSet,
+  programmaticallyResetFields,
+  unvisitSourceStepIds,
+}: ProcessSourceFieldMetaChangeArgs): void {
+  applyWizardFieldMetaChangeEffects({
+    sourceField: field,
+    formValues,
+    previousValue,
+    currentValue,
+    wizardData,
+    setValue,
+  });
+
+  if (!isInitialPass) {
+    for (const resetTarget of getWizardFieldResetsForSourceField(field)) {
+      programmaticallyResetFields.add(resetTarget);
+    }
+  }
+
+  if (
+    !isInitialPass &&
+    unvisitSourceFieldSet.has(field) &&
+    !programmaticallyResetFields.has(field)
+  ) {
+    const stepId = wizardFieldMetaByPath(field)?.stepId;
+    if (stepId) {
+      unvisitSourceStepIds.add(stepId);
+    }
+  }
+
+  if (programmaticallyResetFields.has(field)) {
+    programmaticallyResetFields.delete(field);
+  }
+}
+
 /**
  * Subscribes to react-hook-form values for every Yup field that declares
  * `resetsFieldsToDefaultOnChange`, `refetchesResourcesOnChange`, `syncsFieldsOnChange`, or
@@ -62,46 +136,36 @@ export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): 
     const isInitialPass = !hasInitializedRef.current;
     const unvisitSourceStepIds = new Set<string>();
 
+    const programmaticallyResetFields = programmaticallyResetFieldsRef.current;
+
     for (const [index, field] of sourceFields.entries()) {
       const currentValue = readWatchedFieldValue(watchedValues, index);
       const previousValue = isInitialPass ? undefined : previousByFieldRef.current[field];
 
-      if (!isInitialPass && wizardFormFieldValuesEqual(previousValue, currentValue)) {
-        if (programmaticallyResetFieldsRef.current.has(field)) {
-          programmaticallyResetFieldsRef.current.delete(field);
-        }
+      if (
+        clearProgrammaticResetWhenFieldUnchanged(
+          field,
+          previousValue,
+          currentValue,
+          isInitialPass,
+          programmaticallyResetFields
+        )
+      ) {
         continue;
       }
 
-      applyWizardFieldMetaChangeEffects({
-        sourceField: field,
-        formValues,
-        previousValue,
+      processSourceFieldMetaChange({
+        field,
         currentValue,
-        wizardData: wizardDataRef.current,
+        previousValue,
+        isInitialPass,
+        formValues,
         setValue,
+        wizardData: wizardDataRef.current,
+        unvisitSourceFieldSet,
+        programmaticallyResetFields,
+        unvisitSourceStepIds,
       });
-
-      if (!isInitialPass) {
-        for (const resetTarget of getWizardFieldResetsForSourceField(field)) {
-          programmaticallyResetFieldsRef.current.add(resetTarget);
-        }
-      }
-
-      if (
-        !isInitialPass &&
-        unvisitSourceFieldSet.has(field) &&
-        !programmaticallyResetFieldsRef.current.has(field)
-      ) {
-        const stepId = wizardFieldMetaByPath(field)?.stepId;
-        if (stepId) {
-          unvisitSourceStepIds.add(stepId);
-        }
-      }
-
-      if (programmaticallyResetFieldsRef.current.has(field)) {
-        programmaticallyResetFieldsRef.current.delete(field);
-      }
 
       previousByFieldRef.current[field] = currentValue;
     }

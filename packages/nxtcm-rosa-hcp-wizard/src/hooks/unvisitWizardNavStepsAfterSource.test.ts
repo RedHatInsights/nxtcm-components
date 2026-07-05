@@ -1,7 +1,4 @@
-import {
-  unvisitWizardNavStepsAfterSourceIndex,
-  unvisitWizardNavStepsAfterSourcePfIndex,
-} from './unvisitWizardNavStepsAfterSource';
+import { unvisitWizardNavStepsAfterSourcePfIndex } from './unvisitWizardNavStepsAfterSource';
 
 describe('unvisitWizardNavStepsAfterSourcePfIndex', () => {
   it('unvisits later steps in reverse PatternFly index order, including parent steps', () => {
@@ -26,29 +23,6 @@ describe('unvisitWizardNavStepsAfterSourcePfIndex', () => {
     const unvisited: string[] = [];
 
     unvisitWizardNavStepsAfterSourcePfIndex([{ id: 'details', index: 2 }], 0, (stepId) => {
-      unvisited.push(stepId);
-    });
-
-    expect(unvisited).toEqual([]);
-  });
-});
-
-describe('unvisitWizardNavStepsAfterSourceIndex', () => {
-  it('unvisits later steps in reverse order', () => {
-    const orderedStepIds = ['details', 'roles', 'networking', 'review'] as const;
-    const unvisited: string[] = [];
-
-    unvisitWizardNavStepsAfterSourceIndex(orderedStepIds, 0, (stepId) => {
-      unvisited.push(stepId);
-    });
-
-    expect(unvisited).toEqual(['review', 'networking', 'roles']);
-  });
-
-  it('does nothing when the source step index is unknown', () => {
-    const unvisited: string[] = [];
-
-    unvisitWizardNavStepsAfterSourceIndex(['details', 'roles'], -1, (stepId) => {
       unvisited.push(stepId);
     });
 
