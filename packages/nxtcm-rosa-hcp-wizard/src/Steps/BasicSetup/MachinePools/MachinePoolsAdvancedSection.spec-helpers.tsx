@@ -5,7 +5,7 @@
 import React, { useMemo } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Form } from '@patternfly/react-core';
-import { FormProvider, useForm, type Resolver } from 'react-hook-form';
+import { FormProvider, useForm, useWatch, type Resolver } from 'react-hook-form';
 
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
@@ -22,6 +22,15 @@ import {
 import type { ValidationSchemaContext } from '../../../yupSchemas/types';
 
 import { MachinePoolsAdvancedSection } from './MachinePoolsAdvancedSection';
+
+const MachinePoolsAdvancedFormValuesProbe: React.FC = () => {
+  const imds = useWatch({ name: 'imds' });
+  return (
+    <span data-testid="ct-imds-value" hidden aria-hidden>
+      {imds ?? ''}
+    </span>
+  );
+};
 
 export type MachinePoolsAdvancedSectionMountProps = {
   wrongVersionForIMDS?: boolean;
@@ -83,6 +92,7 @@ export const MachinePoolsAdvancedSectionMount: React.FC<MachinePoolsAdvancedSect
           vpcList={vpcListProps}
           refreshVPCs={refreshVPCs}
         />
+        <MachinePoolsAdvancedFormValuesProbe />
       </Form>
     </FormProvider>
   );

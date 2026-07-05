@@ -58,6 +58,17 @@ test.describe('MachinePoolsAdvancedSection (ROSA HCP)', () => {
     ).not.toBeVisible();
   });
 
+  test('should clear stale imds form value when IMDS selection is hidden', async ({ mount }) => {
+    const component = await mount(
+      <MachinePoolsAdvancedSectionMount
+        wrongVersionForIMDS
+        defaultValues={{ imds: 'imdsv2only' }}
+      />
+    );
+
+    await expect(component.getByTestId('ct-imds-value')).toHaveText('');
+  });
+
   test('should always show root disk size input inside advanced section', async ({ mount }) => {
     const component = await mount(<MachinePoolsAdvancedSectionMount wrongVersionForIMDS />);
     await expandAdvancedSection(component);

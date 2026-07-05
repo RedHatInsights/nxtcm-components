@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { Content, ContentVariants, ExpandableSection } from '@patternfly/react-core';
 
 import { Radio } from '../../../components/Fields/RadioGroup';
@@ -29,6 +31,16 @@ export const MachinePoolsAdvancedSection = (props: MachinePoolsAdvancedSectionPr
     refreshVPCs,
   } = props;
   const mp = useRosaHcpWizardStrings().machinePools;
+  const { setValue, getValues } = useFormContext<Partial<ROSAHCPCluster>>();
+
+  useEffect(() => {
+    if (!wrongVersionForIMDS) {
+      return;
+    }
+    if (getValues('imds')) {
+      setValue('imds', undefined);
+    }
+  }, [getValues, setValue, wrongVersionForIMDS]);
 
   return (
     <ExpandableSection toggleText={mp.advancedToggle} isIndented>
