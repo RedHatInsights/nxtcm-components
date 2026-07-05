@@ -178,6 +178,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
 
     const handleEditorDidMount: EditorDidMount = useCallback(
       (editor, monaco) => {
+        configureRosaHcpMonaco();
         editorRef.current = editor;
         monacoRef.current = monaco as unknown as typeof MonacoTypes;
 
