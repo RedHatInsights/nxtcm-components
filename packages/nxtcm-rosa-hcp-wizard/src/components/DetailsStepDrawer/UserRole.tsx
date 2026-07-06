@@ -1,4 +1,4 @@
-import { Alert, AlertVariant, Title } from '@patternfly/react-core';
+import { Alert, AlertVariant, Content, ContentVariants, Title } from '@patternfly/react-core';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { CopyInstruction } from '../CopyInstruction';
 import { TabGroup } from './TabGroup';
@@ -41,8 +41,10 @@ export const UserRole = () => {
             title: u.tabCreateNew,
             body: (
               <>
-                <strong>{u.userRoleLabel}</strong>
-                <PopoverHint bodyContent={u.userRolePopover} />
+                <Content component={ContentVariants.p} className="pf-v6-u-font-weight-bold">
+                  {u.userRoleLabel}
+                  <PopoverHint bodyContent={u.userRolePopover} />
+                </Content>
                 <CopyInstruction
                   data-testid="copy-rosa-create-user-role"
                   textAriaLabel="Copyable ROSA create user-role"
