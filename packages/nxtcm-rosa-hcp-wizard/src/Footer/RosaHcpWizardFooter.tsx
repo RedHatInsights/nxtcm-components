@@ -35,6 +35,7 @@ type RosaHcpWizardFooterProps = Pick<
   'activeStep' | 'onNext' | 'onBack' | 'onClose'
 > & {
   onSubmit: (data: ROSAHCPCluster) => Promise<void>;
+  enableAllWizardNavSteps?: boolean;
 };
 
 /**
@@ -47,6 +48,7 @@ export function RosaHcpWizardFooter({
   onBack,
   onClose,
   onSubmit,
+  enableAllWizardNavSteps = false,
 }: RosaHcpWizardFooterProps) {
   const { goToStepById } = useWizardContext();
   const reviewSections = useRosaHcpWizardReviewSections();
@@ -68,7 +70,7 @@ export function RosaHcpWizardFooter({
   const { isSubmitting, submitWizard } = useRosaHcpWizardSubmit({ onSubmit });
 
   const clusterWideProxySelected = useWatch({ name: 'configure_proxy' });
-  useRosaHcpWizardNavStatusSync(!!clusterWideProxySelected);
+  useRosaHcpWizardNavStatusSync(!!clusterWideProxySelected, enableAllWizardNavSteps);
 
   const activeStepId = String(activeStep.id);
 
@@ -296,13 +298,15 @@ export function RosaHcpWizardFooter({
 
 /** Footer factory wired to {@link RosaHCPWizardProps.onSubmit}. */
 export function createRosaHcpWizardFooter(
-  onSubmit: (data: ROSAHCPCluster) => Promise<void>
+  onSubmit: (data: ROSAHCPCluster) => Promise<void>,
+  enableAllWizardNavSteps = false
 ): CustomWizardFooterFunction {
   return function RosaHcpWizardFooterSlot(activeStep, onNext, onBack, onClose) {
     return (
       <RosaHcpWizardFooter
         activeStep={activeStep}
         onSubmit={onSubmit}
+        enableAllWizardNavSteps={enableAllWizardNavSteps}
         onNext={(event) => {
           void onNext(event);
         }}
