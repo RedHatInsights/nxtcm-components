@@ -51,7 +51,8 @@ import type {
   VersionsResource,
 } from '../types';
 
-const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ROSAHCPCluster> = {
+/** Baseline form values for footer CT mounts before test-specific overrides. */
+export const FOOTER_CT_BASE_FORM_VALUES: Partial<ROSAHCPCluster> = {
   associated_aws_id: '',
   byo_oidc_config_id: '',
   custom_operator_roles_prefix: '',
@@ -90,7 +91,7 @@ export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMount
   );
 
   const methods = useForm<ROSAHCPCluster>({
-    defaultValues: { ...DEFAULT_ROSA_HCP_CT_FORM_VALUES, ...defaultValues },
+    defaultValues: { ...FOOTER_CT_BASE_FORM_VALUES, ...defaultValues },
     resolver: resolver as Resolver<ROSAHCPCluster>,
     mode: 'onTouched',
   });

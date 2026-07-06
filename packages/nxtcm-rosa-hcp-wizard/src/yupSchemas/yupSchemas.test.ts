@@ -63,7 +63,13 @@ import {
   POD_CIDR_MAX,
   MAX_CA_SIZE_BYTES,
 } from '../constants';
-import { CIDRSubnet, ClusterEncryptionKeys, ClusterUpgrade, ROSAHCPCluster } from '../types';
+import {
+  CIDRSubnet,
+  ClusterEncryptionKeys,
+  ClusterNetwork,
+  ClusterUpgrade,
+  ROSAHCPCluster,
+} from '../types';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -97,6 +103,7 @@ function buildFormData(overrides: Partial<ROSAHCPCluster> = {}): Partial<ROSAHCP
     machine_pools_subnets: [{ machine_pool_subnet: 'subnet-123' }],
     machine_type: 'm5.xlarge',
     cluster_privacy: 'external' as ROSAHCPCluster['cluster_privacy'],
+    cluster_privacy_public_subnet_id: 'subnet-public-123',
     network_machine_cidr: '10.0.0.0/16',
     network_service_cidr: '172.30.0.0/16',
     network_pod_cidr: '10.128.0.0/14',
@@ -610,6 +617,49 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
       const error = await validate(
         buildContext(),
         buildFormData({ min_replicas: 5, max_replicas: 5 }),
+        field
+      );
+      expect(error).toBeNull();
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // Public subnet (conditional on cluster privacy)
+  // -----------------------------------------------------------------------
+  describe('cluster_privacy_public_subnet_id', () => {
+    const field = 'cluster_privacy_public_subnet_id' as const;
+
+    it('accepts undefined when cluster privacy is private', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({
+          cluster_privacy: ClusterNetwork.internal,
+          cluster_privacy_public_subnet_id: undefined,
+        }),
+        field
+      );
+      expect(error).toBeNull();
+    });
+
+    it('rejects undefined when cluster privacy is public', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({
+          cluster_privacy: ClusterNetwork.external,
+          cluster_privacy_public_subnet_id: undefined,
+        }),
+        field
+      );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
+    it('accepts a subnet id when cluster privacy is public', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({
+          cluster_privacy: ClusterNetwork.external,
+          cluster_privacy_public_subnet_id: 'subnet-public-123',
+        }),
         field
       );
       expect(error).toBeNull();

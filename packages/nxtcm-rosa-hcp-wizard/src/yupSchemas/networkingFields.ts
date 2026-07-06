@@ -23,8 +23,10 @@ import {
   getStartingIP,
   isCidrSubnetAddress,
   isValidCidr,
+  rosaCommonRequiredNonEmptyTest,
   rosaRequiredStringField,
 } from './helpers';
+import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
 
 export const clusterPrivacySchema = rosaRequiredStringField()
   .default(ClusterNetwork.external)
@@ -40,7 +42,6 @@ export const clusterPrivacySchema = rosaRequiredStringField()
 
 export const clusterPrivacyPublicSubnetIdSchema = yup
   .string()
-  .optional()
   .meta({
     id: 'cluster_privacy_public_subnet_id',
     labelKey: 'networking.publicSubnetLabel',
@@ -48,7 +49,15 @@ export const clusterPrivacyPublicSubnetIdSchema = yup
     fieldType: 'select',
     optionsWizardDataResource: 'vpcList',
     reconcileValueWithOptions: true,
-  } satisfies WizardFieldMeta);
+  } satisfies WizardFieldMeta)
+  .when('cluster_privacy', {
+    is: ClusterNetwork.external,
+    then: (schema) =>
+      schema
+        .test(rosaCommonRequiredNonEmptyTest)
+        .meta({ [YUP_FIELD_REQUIRED_UI_META_KEY]: true }),
+    otherwise: (schema) => schema.optional(),
+  });
 
 export const cidrDefaultSchema = yup
   .boolean()
