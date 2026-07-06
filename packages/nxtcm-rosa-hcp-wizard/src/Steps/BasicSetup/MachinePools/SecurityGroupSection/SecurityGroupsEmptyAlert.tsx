@@ -24,9 +24,11 @@ const SecurityGroupsEmptyAlert = ({
           {sg.emptyBodySuffix}
         </Alert>
       </StackItem>
-      <StackItem>
-        <SecurityGroupsRefreshButton onRefresh={refreshVPCCallback} isLoading={isVPCLoading} />
-      </StackItem>
+      {refreshVPCCallback ? (
+        <StackItem>
+          <SecurityGroupsRefreshButton onRefresh={refreshVPCCallback} isLoading={isVPCLoading} />
+        </StackItem>
+      ) : null}
     </Stack>
   );
 };

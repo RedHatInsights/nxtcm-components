@@ -252,7 +252,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
     await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
 
     const advancedSection = component.getByRole('region', { name: mp.advancedToggle });
-    const refreshButton = advancedSection.getByRole('button', { name: 'Refresh', exact: true });
+    const refreshButton = advancedSection.getByTestId('multiselect-refresh');
 
     await expect(refreshButton).toBeVisible();
     const fetchCountBeforeRefresh = fetchCount;
@@ -309,7 +309,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
     await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
 
     const advancedSection = component.getByRole('region', { name: mp.advancedToggle });
-    const refreshButton = advancedSection.getByRole('button', { name: 'Refresh', exact: true });
+    const refreshButton = advancedSection.getByTestId('multiselect-refresh');
 
     await expect(refreshButton).toBeVisible();
     await expect(refreshButton).toBeDisabled();
