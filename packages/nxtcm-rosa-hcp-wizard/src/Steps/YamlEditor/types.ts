@@ -11,6 +11,5 @@ export interface ResourceSchema {
 export interface YamlResourceGenerator {
   renderYaml: (formValues: Partial<ROSAHCPCluster>) => string;
   validateYaml: (yamlStr: string) => ValidationError[];
-  parseYamlToForm: (yamlStr: string) => Record<string, unknown> | null;
   resourceSchemas?: ResourceSchema[];
 }

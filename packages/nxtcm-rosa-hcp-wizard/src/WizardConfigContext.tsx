@@ -18,5 +18,5 @@ export const useWizardConfig = (): WizardConfig => useContext(WizardConfigContex
 /** Returns true when the given step ID is present in `config.hiddenSteps`. */
 export const useIsStepHidden = (stepId: string): boolean => {
   const { hiddenSteps } = useWizardConfig();
-  return hiddenSteps?.includes(stepId as never) ?? false;
+  return hiddenSteps?.some((step) => step === stepId) ?? false;
 };

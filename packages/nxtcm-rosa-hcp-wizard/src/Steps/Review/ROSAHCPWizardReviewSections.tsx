@@ -29,6 +29,6 @@ export const useRosaHcpWizardReviewSections = (): RosaHcpWizardReviewSection[] =
   return useMemo(() => {
     const allSections = buildRosaHcpWizardReviewSections(stepLabels);
     if (!hiddenSteps?.length) return allSections;
-    return allSections.filter((section) => !hiddenSteps.includes(section.id as never));
+    return allSections.filter((section) => !hiddenSteps.some((step) => step === section.id));
   }, [stepLabels, hiddenSteps]);
 };

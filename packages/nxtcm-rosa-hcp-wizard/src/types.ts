@@ -261,7 +261,6 @@ export type RosaHCPWizardProps = {
    * generation logic — it only calls the three methods defined by YamlResourceGenerator:
    * - `renderYaml` — produce the YAML string from current form values
    * - `validateYaml` — validate a YAML string and return structured errors
-   * - `parseYamlToForm` — parse an edited YAML string back to form values
    */
   resourceGenerator: YamlResourceGenerator;
   

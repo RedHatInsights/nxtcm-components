@@ -112,7 +112,6 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
           setEditorMarkers(rendered, false);
         }
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [watchedValues, generator, setEditorMarkers]);
 
     const handleCodeChange = useCallback(
@@ -159,15 +158,6 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
       },
       [setEditorMarkers, generator]
     );
-
-    useEffect(() => {
-      if (!isInitializedRef.current || !monacoRef.current) return;
-      monacoYamlDisposeRef.current?.();
-      monacoYamlDisposeRef.current = new RosaHcpYamlMonacoLoader().configure(
-        monacoRef.current as unknown as Parameters<RosaHcpYamlMonacoLoader['configure']>[0],
-        generator.resourceSchemas
-      );
-    }, [generator]);
 
     useEffect(() => {
       return () => {

@@ -14,26 +14,26 @@ import type {
 export interface TemplateBasedGeneratorOptions {
   template: string;
   resourceSchemas: ResourceSchema[];
-  parseYamlToForm: (yamlStr: string) => Record<string, unknown> | null;
   helpers?: Record<string, Handlebars.HelperDelegate>;
 }
 
 export function createTemplateBasedGenerator(
   options: TemplateBasedGeneratorOptions
 ): YamlResourceGenerator {
-  const { template, resourceSchemas, parseYamlToForm, helpers } = options;
+  const { template, resourceSchemas, helpers } = options;
 
   const primaryEntry = resourceSchemas.find((s) => s.primary);
   const primaryKind = primaryEntry?.kind;
   const primarySchema = primaryEntry?.schema;
+  const hbs = Handlebars.create();
 
   if (helpers) {
     for (const [name, helper] of Object.entries(helpers)) {
-      Handlebars.registerHelper(name, helper);
+      hbs.registerHelper(name, helper);
     }
   }
 
-  const compiled = Handlebars.compile(template);
+  const compiled = hbs.compile(template);
 
   // Compile Ajv validator only for the primary resource schema.
   let validateDoc: ReturnType<Ajv['compile']> | undefined;
@@ -122,7 +122,6 @@ export function createTemplateBasedGenerator(
       }));
     },
 
-    parseYamlToForm,
     resourceSchemas,
   };
 }

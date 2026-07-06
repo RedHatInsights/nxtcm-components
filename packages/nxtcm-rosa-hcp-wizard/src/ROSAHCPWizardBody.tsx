@@ -217,10 +217,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
               />
             </Suspense>
           ) : (
-            <Review
-              vpcList={wizardData.vpcList}
-              onOpenYamlEditor={resourceGenerator ? openYamlEditor : undefined}
-            />
+            <Review vpcList={wizardData.vpcList} onOpenYamlEditor={openYamlEditor} />
           )}
         </WizardStep>
       </Wizard>

@@ -43,5 +43,8 @@
     "test": "jest --config ../../jest.config.js packages/nxtcm-rosa-hcp-wizard",
     "test:ct": "playwright test -c ../../playwright-ct.config.ts packages/nxtcm-rosa-hcp-wizard",
     "allthethings": "npm run prettier:fix && npm run lint:fix && npm run type-check && npm run test && npm run test:ct"
+  },
+  "devDependencies": {
+    "monaco-types": "^0.1.2"
   }
 }
