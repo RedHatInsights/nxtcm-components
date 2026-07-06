@@ -45,6 +45,7 @@ export const clusterPrivacyPublicSubnetIdSchema = yup
   .meta({
     id: 'cluster_privacy_public_subnet_id',
     labelKey: 'networking.publicSubnetLabel',
+    placeholderKey: 'networking.publicSubnetPlaceholder',
     stepId: STEP_IDS.NETWORKING,
     fieldType: 'select',
     optionsWizardDataResource: 'vpcList',

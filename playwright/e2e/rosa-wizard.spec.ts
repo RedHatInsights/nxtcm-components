@@ -39,7 +39,7 @@ async function fillMachinePoolsStep(page: Page) {
 }
 
 async function fillNetworkingStep(page: Page) {
-  await page.getByRole('button', { name: 'Public subnet name' }).click();
+  await page.getByRole('button', { name: /public subnet name/i }).click();
   await page.getByRole('option', { name: 'test-1-subnet-public1-us-east-1a' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
 }
