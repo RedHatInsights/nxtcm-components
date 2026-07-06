@@ -2,7 +2,7 @@
 
 This directory holds **one markdown file per evaluation criterion**. The skill discovers criteria at runtime — it does **not** assume a fixed set.
 
-**Bundled defaults:** `DESCRIPTION_CLARITY.md`, `OPEN_QUESTIONS.md`, `BLAST_RADIUS.md`. Teams may add, rename, or remove criterion files to match how they pick bot work.
+**Bundled defaults:** `description_clarity.md`, `open_questions.md`, `blast_radius.md`, `architectural_changes.md`. Teams may add, rename, or remove criterion files to match how they pick bot work.
 
 ---
 
@@ -25,17 +25,17 @@ Before scoring each run:
 
 1. List `*.md` in this directory.
 2. **Exclude** `README.md` — orchestration only, not a criterion.
-3. Each remaining file is one criterion. Its **slug** is the filename stem, lowercased, with `-` and spaces → `_` (e.g. `TEST_COVERAGE.md` → `test_coverage`).
+3. Each remaining file is one criterion. Its **slug** is the filename stem (e.g. `test_coverage.md` → `test_coverage`).
 4. Read the **Criterion metadata** section at the top of each file.
 
-**Resolve file from slug:** `CRITERIA/{SLUG}.md` — try case-insensitive filename match if needed (e.g. slug `description_clarity` → `DESCRIPTION_CLARITY.md`).
+**Resolve file from slug:** `CRITERIA/{slug}.md` (filename matches slug exactly).
 
 ---
 
 ## Adding a criterion
 
 1. Copy an existing criterion file or use the skeleton below.
-2. Name the file for the slug (e.g. `TEST_COVERAGE.md`).
+2. Name the file for the slug (e.g. `test_coverage.md`).
 3. Fill **Criterion metadata**, **What to look for**, and **Scoring**.
 4. **No changes to `SKILL.md` required** — the next run discovers the new file automatically.
 
@@ -86,9 +86,10 @@ Rate **this criterion only** from 1–5 (higher = better for bot success).
 
 | Slug | File | Measures |
 |------|------|----------|
-| `description_clarity` | [DESCRIPTION_CLARITY.md](DESCRIPTION_CLARITY.md) | Enough ticket detail to know what to build or fix |
-| `open_questions` | [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) | Unresolved questions and **missing required information** blocking autonomous work |
-| `blast_radius` | [BLAST_RADIUS.md](BLAST_RADIUS.md) | Straightforward repo change with limited touch surface |
+| `description_clarity` | [description_clarity.md](description_clarity.md) | Enough ticket detail to know what to build or fix |
+| `open_questions` | [open_questions.md](open_questions.md) | Unresolved questions and **missing required information** blocking autonomous work |
+| `blast_radius` | [blast_radius.md](blast_radius.md) | Straightforward repo change with limited touch surface |
+| `architectural_changes` | [architectural_changes.md](architectural_changes.md) | Work fits within existing architectural patterns without requiring design decisions |
 
 ---
 

@@ -110,7 +110,7 @@ Follow [REPORT.md](REPORT.md):
 
 **One item** → full content in response; omit section bucket headers.
 
-**Two or more** → write `evaluate-for-bot-report.md` to the target repo directory (or current directory if ticket-only mode); response includes only path, scope, and bucket counts.
+**Two or more** → write `evaluate-for-bot-report.md` to the target repo directory (or current directory if ticket-only mode); response includes only path, scope, repo path, issue count, and bucket counts.
 
 ---
 

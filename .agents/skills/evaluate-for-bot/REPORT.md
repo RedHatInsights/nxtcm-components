@@ -2,7 +2,7 @@
 
 Replace keys and summaries with real values. Do **not** wrap the whole report in a code fence.
 
-**Inputs per issue:** `bot_confidence_score`, `score_justification`, `blockers`, `bot_strengths`, `blast_radius`, `likely_files`, `issuetype`, `status` from [SCORING.md](SCORING.md) and [REPO.md](REPO.md).
+**Inputs per issue:** `key`, `summary` from [JIRA.md](JIRA.md); `bot_confidence_score`, `score_justification`, `blockers`, `bot_strengths` from [SCORING.md](SCORING.md); `blast_radius`, `likely_files` from [REPO.md](REPO.md); `issuetype`, `status` from [JIRA.md](JIRA.md).
 
 **Grouping:** One unified report — each issue in **exactly one** bucket.
 

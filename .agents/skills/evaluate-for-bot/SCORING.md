@@ -21,7 +21,7 @@ Produce **one `bot_confidence_score` from 1 to 5** per item — how likely an au
 
 For **each** discovered criterion:
 
-1. Open `CRITERIA/{SLUG}.md` for that slug.
+1. Open `CRITERIA/{slug}.md` for that slug.
 2. Apply its **Scoring** section — every criterion file defines its own scale and examples.
 3. Record internally:
    - `criterion_slug`
