@@ -247,11 +247,11 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     machineCidrHelp: 'Subnet mask must be between /16 and /25',
     serviceCidrLabel: 'Service CIDR',
     serviceCidrHelpLead:
-      'A block of IP addresses for services. OpenShiftSDN allows only one serviceNetwork block. The address block must not overlap with any other network block.',
+      'A block of IP addresses for services. OpenShift SDN allows only one serviceNetwork block. The address block must not overlap with any other network block.',
     serviceCidrHelp: 'Subnet mask must be at most /24',
     podCidrLabel: 'Pod CIDR',
     podCidrHelpLead:
-      'A block of IP addresses from which Pod IP addresses are allocated. The OpenShiftSDN network plug-in supports multiple cluster networks. The address blocks for multiple cluster networks must not overlap. Select address pools large enough to fit your anticipated workload.',
+      'A block of IP addresses from which Pod IP addresses are allocated. The OpenShift SDN network plug-in supports multiple cluster networks. The address blocks for multiple cluster networks must not overlap. Select address pools large enough to fit your anticipated workload.',
     podCidrHelp: 'Subnet mask must allow for at least 32 nodes',
     hostPrefixLabel: 'Host prefix',
     hostPrefixHelpLead:
