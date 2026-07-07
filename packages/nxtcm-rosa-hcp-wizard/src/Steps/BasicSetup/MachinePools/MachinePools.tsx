@@ -146,7 +146,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
           label={a.enableLabel}
         />
       </FieldWrapper>
-      <FieldWrapper>
+      <FieldWrapper size={autoscaling ? 'lg' : undefined}>
         {autoscaling ? (
           <MachinePoolsAutoscalingReplicas maxAutoscalingNodes={maxAutoscalingNodes} />
         ) : (
