@@ -107,7 +107,7 @@ export const UpgradeRisks = ({
             spaceItems={{ default: 'spaceItemsXs' }}
           >
             <FlexItem className={styles.riskIcon}>
-              <ExclamationCircleIcon className={styles.criticalIcon} />
+              <ExclamationCircleIcon className={styles.criticalIcon} aria-hidden="true" />
             </FlexItem>
             <FlexItem className={styles.riskCount} data-testid="criticalCount">
               {criticalCount ?? 0}
@@ -128,7 +128,7 @@ export const UpgradeRisks = ({
             spaceItems={{ default: 'spaceItemsXs' }}
           >
             <FlexItem className={styles.riskIcon}>
-              <ExclamationTriangleIcon className={styles.warningIcon} />
+              <ExclamationTriangleIcon className={styles.warningIcon} aria-hidden="true" />
             </FlexItem>
             <FlexItem className={styles.riskCount} data-testid="warningCount">
               {warningCount ?? 0}
@@ -149,7 +149,7 @@ export const UpgradeRisks = ({
             spaceItems={{ default: 'spaceItemsXs' }}
           >
             <FlexItem className={styles.riskIcon}>
-              <InfoCircleIcon className={styles.infoIcon} />
+              <InfoCircleIcon className={styles.infoIcon} aria-hidden="true" />
             </FlexItem>
             <FlexItem className={styles.riskCount} data-testid="infoCount">
               {infoCount ?? 0}

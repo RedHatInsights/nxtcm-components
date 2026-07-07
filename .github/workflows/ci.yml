@@ -32,6 +32,9 @@ jobs:
             exit 1
           fi
 
+      - name: Check peer dependency version consistency
+        run: node scripts/check-peer-dep-versions.mjs
+
       - name: Run ESLint
         run: npm run lint
 

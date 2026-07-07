@@ -1,4 +1,11 @@
-import { type ReactNode } from 'react';
+import {
+  type FocusEvent,
+  type FocusEventHandler,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react';
 import {
   type Control,
   type FieldPath,
@@ -120,6 +127,37 @@ export function wizFieldShowsError(
   validationRevealed: boolean
 ): boolean {
   return invalid && (isTouched || validationRevealed);
+}
+
+/**
+ * Defers react-hook-form touch until a dropdown closes. The menu toggle blurs on mousedown
+ * while an option is being chosen; marking touched then briefly shows invalid+ touched in nav
+ * before the new value lands.
+ */
+export function useWizMenuFieldBlur(
+  onBlur: FocusEventHandler<HTMLElement>,
+  isMenuOpen: boolean
+): FocusEventHandler<HTMLElement> {
+  const wasMenuOpenRef = useRef(false);
+  const onBlurRef = useRef(onBlur);
+  onBlurRef.current = onBlur;
+
+  useEffect(() => {
+    if (wasMenuOpenRef.current && !isMenuOpen) {
+      onBlurRef.current({ type: 'blur' } as FocusEvent<HTMLElement>);
+    }
+    wasMenuOpenRef.current = isMenuOpen;
+  }, [isMenuOpen]);
+
+  return useCallback(
+    (event: FocusEvent<HTMLElement>) => {
+      if (isMenuOpen) {
+        return;
+      }
+      onBlur(event);
+    },
+    [isMenuOpen, onBlur]
+  );
 }
 
 /** Like {@link wizFieldShowsError}, but keyed on a resolved error message string. */

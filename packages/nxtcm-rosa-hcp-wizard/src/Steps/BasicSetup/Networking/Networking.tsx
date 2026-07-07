@@ -1,11 +1,4 @@
-import {
-  Alert,
-  Content,
-  ContentVariants,
-  ExpandableSection,
-  Stack,
-  StackItem,
-} from '@patternfly/react-core';
+import { Alert, Content, ContentVariants, ExpandableSection } from '@patternfly/react-core';
 import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
@@ -14,7 +7,11 @@ import { ClusterNetwork, ROSAHCPCluster, ROSAHCPWizardData } from '../../../type
 import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
 import { Radio } from '../../../components/Fields/RadioGroup';
 import { clusterValidationSchema } from '../../../yupSchemas';
-import { FieldWrapper } from '../../../components/FieldWrapper';
+import {
+  FieldWrapper,
+  FieldWrapperBlock,
+  FieldWrapperStack,
+} from '../../../components/FieldWrapper';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
@@ -88,12 +85,12 @@ export const Networking = (props: NetworkingStepProps) => {
       </FieldWrapper>
 
       <ExpandableSection isIndented toggleText={n.advancedToggle}>
-        <Stack hasGutter>
-          <StackItem>
+        <FieldWrapperStack>
+          <FieldWrapper>
             <WizCheckbox name="configure_proxy" schema={clusterValidationSchema} />
-          </StackItem>
+          </FieldWrapper>
 
-          <StackItem>
+          <FieldWrapperBlock>
             <Alert
               isExpandable
               variant="warning"
@@ -108,45 +105,42 @@ export const Networking = (props: NetworkingStepProps) => {
                 </ExternalLink>
               </Content>
             </Alert>
-          </StackItem>
+          </FieldWrapperBlock>
 
-          <StackItem>
+          <FieldWrapper>
             <WizCheckbox name="cidr_default" schema={clusterValidationSchema} />
-          </StackItem>
-          <StackItem>
-            <Stack hasGutter>
-              <StackItem>
-                <WizTextInput<ROSAHCPCluster>
-                  name="network_machine_cidr"
-                  schema={clusterValidationSchema}
-                  isDisabled={cidrDefaultChecked}
-                />
-              </StackItem>
-              <StackItem>
-                <WizTextInput<ROSAHCPCluster>
-                  name="network_service_cidr"
-                  schema={clusterValidationSchema}
-                  isDisabled={cidrDefaultChecked}
-                />
-              </StackItem>
-              <StackItem>
-                <WizTextInput<ROSAHCPCluster>
-                  name="network_pod_cidr"
-                  schema={clusterValidationSchema}
-                  isDisabled={cidrDefaultChecked}
-                />
-              </StackItem>
-
-              <StackItem>
-                <WizTextInput<ROSAHCPCluster>
-                  name="network_host_prefix"
-                  schema={clusterValidationSchema}
-                  isDisabled={cidrDefaultChecked}
-                />
-              </StackItem>
-            </Stack>
-          </StackItem>
-        </Stack>
+          </FieldWrapper>
+          <FieldWrapperStack>
+            <FieldWrapper width="large">
+              <WizTextInput<ROSAHCPCluster>
+                name="network_machine_cidr"
+                schema={clusterValidationSchema}
+                isDisabled={cidrDefaultChecked}
+              />
+            </FieldWrapper>
+            <FieldWrapper width="large">
+              <WizTextInput<ROSAHCPCluster>
+                name="network_service_cidr"
+                schema={clusterValidationSchema}
+                isDisabled={cidrDefaultChecked}
+              />
+            </FieldWrapper>
+            <FieldWrapper width="large">
+              <WizTextInput<ROSAHCPCluster>
+                name="network_pod_cidr"
+                schema={clusterValidationSchema}
+                isDisabled={cidrDefaultChecked}
+              />
+            </FieldWrapper>
+            <FieldWrapper width="large">
+              <WizTextInput<ROSAHCPCluster>
+                name="network_host_prefix"
+                schema={clusterValidationSchema}
+                isDisabled={cidrDefaultChecked}
+              />
+            </FieldWrapper>
+          </FieldWrapperStack>
+        </FieldWrapperStack>
       </ExpandableSection>
     </Section>
   );

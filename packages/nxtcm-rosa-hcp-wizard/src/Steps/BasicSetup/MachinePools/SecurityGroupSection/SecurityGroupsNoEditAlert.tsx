@@ -9,6 +9,7 @@ const SecurityGroupsNoEditAlert = () => {
 
   return (
     <Alert
+      className="pf-v6-u-mt-md"
       variant="info"
       isInline
       title={sg.noEditTitle}

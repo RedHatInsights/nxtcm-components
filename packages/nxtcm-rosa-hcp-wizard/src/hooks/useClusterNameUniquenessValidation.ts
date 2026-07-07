@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
+import { STEP_IDS } from '../constants';
+import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
 import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
 import type { CheckClusterNameUniqueness, ROSAHCPCluster } from '../types';
 import { useRosaHcpWizardValidators } from '../stringsProvider/RosaHcpWizardStringsContext';
@@ -24,6 +26,7 @@ export function useClusterNameUniquenessValidation({
   checkOnNameBlur: () => Promise<void>;
 } {
   const msgs = useRosaHcpWizardValidators();
+  const { setStepAsyncValidating } = useRosaHcpWizardValidation();
   const { control, getValues, setError, clearErrors, getFieldState } =
     useFormContext<Partial<ROSAHCPCluster>>();
   const region = useWatch({ control, name: 'region' });
@@ -32,6 +35,7 @@ export function useClusterNameUniquenessValidation({
   const hasInitializedRegionRef = useRef(false);
   const checkClusterNameUniquenessRef = useRef(checkClusterNameUniqueness);
   const uniquenessRequestIdRef = useRef(0);
+  const asyncValidatingRequestIdRef = useRef<number | null>(null);
   const lastCheckedRef = useRef<LastCheckedPair | null>(null);
   checkClusterNameUniquenessRef.current = checkClusterNameUniqueness;
 
@@ -65,14 +69,23 @@ export function useClusterNameUniquenessValidation({
 
     const name = getValues('name');
     const currentRegion = getValues('region');
+    const clearAsyncValidatingIfInFlight = (): void => {
+      if (asyncValidatingRequestIdRef.current !== null) {
+        asyncValidatingRequestIdRef.current = null;
+        setStepAsyncValidating(STEP_IDS.DETAILS, false);
+      }
+    };
+
     if (!hasRefetchableStringValue(name) || !hasRefetchableStringValue(currentRegion)) {
       ++uniquenessRequestIdRef.current;
+      clearAsyncValidatingIfInFlight();
       lastCheckedRef.current = null;
       applyUniqueErrorToForm(null);
       return;
     }
     if (validateClusterNameSync(name, msgs.clusterName)) {
       ++uniquenessRequestIdRef.current;
+      clearAsyncValidatingIfInFlight();
       applyUniqueErrorToForm(null);
       return;
     }
@@ -83,11 +96,18 @@ export function useClusterNameUniquenessValidation({
     }
 
     const requestId = ++uniquenessRequestIdRef.current;
+    asyncValidatingRequestIdRef.current = requestId;
+    setStepAsyncValidating(STEP_IDS.DETAILS, true);
     let error: string | null | undefined;
     try {
       error = await check(name, currentRegion);
     } catch {
       return;
+    } finally {
+      if (asyncValidatingRequestIdRef.current === requestId) {
+        asyncValidatingRequestIdRef.current = null;
+        setStepAsyncValidating(STEP_IDS.DETAILS, false);
+      }
     }
     if (requestId !== uniquenessRequestIdRef.current) {
       return;
@@ -95,7 +115,7 @@ export function useClusterNameUniquenessValidation({
 
     lastCheckedRef.current = { name, region: currentRegion };
     applyUniqueErrorToForm(error ?? null);
-  }, [applyUniqueErrorToForm, getValues, msgs.clusterName]);
+  }, [applyUniqueErrorToForm, getValues, msgs.clusterName, setStepAsyncValidating]);
 
   const scheduleUniquenessCheck = useCallback(() => {
     clearPendingDebounce();

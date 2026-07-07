@@ -47,6 +47,7 @@
 **Unit Tests:**
 - [ ] Unit tests added/updated
 - [ ] All unit tests pass (npm run test)
+- [ ] Ran new/updated files in Stryker
 
 **Integration Tests:**
 - [ ] Integration tests added/updated

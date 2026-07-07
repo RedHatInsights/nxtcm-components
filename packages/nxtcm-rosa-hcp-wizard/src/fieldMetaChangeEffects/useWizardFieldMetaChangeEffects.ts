@@ -2,18 +2,19 @@ import { useEffect, useMemo, useRef } from 'react';
 import { type FieldPath, useFormContext, useWatch } from 'react-hook-form';
 
 import { applyWizardFieldMetaChangeEffects } from './applyWizardFieldMetaChangeEffects';
+import { readWatchedFieldValue } from './readWatchedFieldValue';
 import { reapplyWizardFieldDerivedSyncs } from './wizardFieldDerivedSyncs';
 import { wizardFormFieldValuesEqual } from './wizardFormFieldValuesEqual';
+import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
 import type { ROSAHCPCluster, ROSAHCPWizardData } from '../types';
 import {
+  getWizardFieldResetsForSourceField,
   listWizardFieldDerivedSyncEntries,
   listWizardFieldMetaChangeSourceFields,
+  listWizardNavUnvisitSourceFields,
+  wizardFieldMetaByPath,
 } from '../yupSchemas';
 import type { WizardFormFieldName } from '../yupSchemas/types';
-
-function readWatchedFieldValue(watchedValues: unknown, fieldIndex: number): unknown {
-  return Array.isArray(watchedValues) ? watchedValues[fieldIndex] : watchedValues;
-}
 
 /** Merges live `useWatch` values into `getValues()` so refetch args match the field being processed. */
 function buildFormValuesForMetaEffects(
@@ -42,13 +43,16 @@ function buildFormValuesForMetaEffects(
  */
 export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): void {
   const { setValue, getValues, control } = useFormContext<Partial<ROSAHCPCluster>>();
+  const { requestNavUnvisitAfterSteps } = useRosaHcpWizardValidation();
   const sourceFields = useMemo(() => listWizardFieldMetaChangeSourceFields(), []);
+  const unvisitSourceFieldSet = useMemo(() => new Set(listWizardNavUnvisitSourceFields()), []);
   const derivedSyncEntries = useMemo(() => listWizardFieldDerivedSyncEntries(), []);
   const watchedValues = useWatch({
     control,
     name: sourceFields as FieldPath<Partial<ROSAHCPCluster>>[],
   });
   const previousByFieldRef = useRef<Partial<Record<WizardFormFieldName, unknown>>>({});
+  const programmaticallyResetFieldsRef = useRef<Set<WizardFormFieldName>>(new Set());
   const hasInitializedRef = useRef(false);
   const wizardDataRef = useRef(wizardData);
   wizardDataRef.current = wizardData;
@@ -56,12 +60,16 @@ export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): 
   useEffect(() => {
     const formValues = buildFormValuesForMetaEffects(sourceFields, watchedValues, getValues);
     const isInitialPass = !hasInitializedRef.current;
+    const unvisitSourceStepIds = new Set<string>();
 
     for (const [index, field] of sourceFields.entries()) {
       const currentValue = readWatchedFieldValue(watchedValues, index);
       const previousValue = isInitialPass ? undefined : previousByFieldRef.current[field];
 
       if (!isInitialPass && wizardFormFieldValuesEqual(previousValue, currentValue)) {
+        if (programmaticallyResetFieldsRef.current.has(field)) {
+          programmaticallyResetFieldsRef.current.delete(field);
+        }
         continue;
       }
 
@@ -73,11 +81,44 @@ export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): 
         wizardData: wizardDataRef.current,
         setValue,
       });
+
+      if (!isInitialPass) {
+        for (const resetTarget of getWizardFieldResetsForSourceField(field)) {
+          programmaticallyResetFieldsRef.current.add(resetTarget);
+        }
+      }
+
+      if (
+        !isInitialPass &&
+        unvisitSourceFieldSet.has(field) &&
+        !programmaticallyResetFieldsRef.current.has(field)
+      ) {
+        const stepId = wizardFieldMetaByPath(field)?.stepId;
+        if (stepId) {
+          unvisitSourceStepIds.add(stepId);
+        }
+      }
+
+      if (programmaticallyResetFieldsRef.current.has(field)) {
+        programmaticallyResetFieldsRef.current.delete(field);
+      }
+
       previousByFieldRef.current[field] = currentValue;
     }
 
+    if (unvisitSourceStepIds.size > 0) {
+      requestNavUnvisitAfterSteps([...unvisitSourceStepIds]);
+    }
+
     hasInitializedRef.current = true;
-  }, [getValues, setValue, sourceFields, watchedValues]);
+  }, [
+    getValues,
+    requestNavUnvisitAfterSteps,
+    setValue,
+    sourceFields,
+    unvisitSourceFieldSet,
+    watchedValues,
+  ]);
 
   useEffect(() => {
     if (!hasInitializedRef.current) {

@@ -28,6 +28,7 @@ import {
 import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
 import { useRosaHcpWizardSubmit } from './useRosaHcpWizardSubmit';
+import { useRosaHcpWizardNavStatusSync } from '../hooks/useRosaHcpWizardNavStatusSync';
 
 type RosaHcpWizardFooterProps = Pick<
   WizardFooterProps,
@@ -66,7 +67,11 @@ export function RosaHcpWizardFooter({
   } = useFormContext<Partial<ROSAHCPCluster>>();
   const { isSubmitting, submitWizard } = useRosaHcpWizardSubmit({ onSubmit });
 
+  const clusterWideProxySelected = useWatch({ name: 'configure_proxy' });
+  useRosaHcpWizardNavStatusSync(!!clusterWideProxySelected);
+
   const activeStepId = String(activeStep.id);
+
   const getCurrentStepId = useCallback(() => String(activeStep.id), [activeStep.id]);
   const isReviewStep = activeStepId === STEP_IDS.REVIEW;
   const showSkipToReview = isRosaHcpWizardSkipToReviewVisible(activeStepId);

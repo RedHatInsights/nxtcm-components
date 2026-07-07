@@ -1,4 +1,4 @@
-import { Button, Flex, FlexItem } from '@patternfly/react-core';
+import { Button, Content, Flex, FlexItem, Title } from '@patternfly/react-core';
 import { CriticalRiskIcon } from '@patternfly/react-icons';
 
 import styles from './Critical.module.scss';
@@ -9,15 +9,19 @@ export type CriticalProps = {
 };
 
 export const Critical = ({ count, onViewRecommendations }: CriticalProps) => (
-  <Flex direction={{ default: 'column' }} style={{ padding: '1rem' }}>
+  <Flex direction={{ default: 'column' }} className={styles.container}>
     <FlexItem>
-      <h3>Critical recommendations</h3>
+      <Title headingLevel="h3" size="md">
+        Critical recommendations
+      </Title>
     </FlexItem>
     <FlexItem>
-      <p>Conditions that cause issues have been detected actively detected on your systems.</p>
+      <Content component="p">
+        Conditions that cause issues have been actively detected on your systems.
+      </Content>
       <Flex direction={{ default: 'column' }} alignItems={{ default: 'alignItemsCenter' }}>
         <FlexItem className={styles.danger}>
-          <CriticalRiskIcon /> {count}
+          <CriticalRiskIcon aria-hidden="true" /> {count}
         </FlexItem>
         <FlexItem>Critical recommendations</FlexItem>
         {count > 0 && (

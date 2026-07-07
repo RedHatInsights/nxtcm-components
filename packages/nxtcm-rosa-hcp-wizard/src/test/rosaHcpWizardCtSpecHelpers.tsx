@@ -1,5 +1,7 @@
+import type { ReactElement } from 'react';
 import rosaHcpWizardFixtures from '../ROSAHCPWizard.fixtures';
 import { useWizardFieldMetaChangeEffects } from '../fieldMetaChangeEffects/useWizardFieldMetaChangeEffects';
+import { RosaHcpWizardValidationProvider } from '../rosaHcpWizardValidationContext';
 
 import type { MachineTypesResource, ROSAHCPWizardData, VpcListResource } from '../types';
 
@@ -28,6 +30,7 @@ export function makeDefaultRosaHcpCtWizardData(
       error: null,
       isFetching: false,
       fetch: noopFetch,
+      ocmRoleARN: null,
       userRoleError: null,
       ocmRoleError: null,
     },
@@ -66,13 +69,27 @@ type WizardFieldMetaChangeEffectsCtHarnessProps = {
   wizardData: ROSAHCPWizardData;
 };
 
-/**
- * Playwright CT only: mounts {@link useWizardFieldMetaChangeEffects} for step-isolated tests.
- * Production uses the hook directly in {@link ROSAHCPWizardBody}.
- */
-export function WizardFieldMetaChangeEffectsCtHarness({
+/** Runs meta change effects; requires an ancestor {@link RosaHcpWizardValidationProvider}. */
+export function WizardFieldMetaChangeEffectsRunner({
   wizardData,
 }: WizardFieldMetaChangeEffectsCtHarnessProps): null {
   useWizardFieldMetaChangeEffects(wizardData);
   return null;
+}
+
+/**
+ * Playwright CT only: mounts {@link useWizardFieldMetaChangeEffects} for step-isolated tests.
+ * Production uses the hook directly in {@link ROSAHCPWizardBody}.
+ *
+ * Wraps {@link WizardFieldMetaChangeEffectsRunner} with {@link RosaHcpWizardValidationProvider}.
+ * When a parent already provides validation context (Footer/Details CT), use the runner instead.
+ */
+export function WizardFieldMetaChangeEffectsCtHarness({
+  wizardData,
+}: WizardFieldMetaChangeEffectsCtHarnessProps): ReactElement {
+  return (
+    <RosaHcpWizardValidationProvider>
+      <WizardFieldMetaChangeEffectsRunner wizardData={wizardData} />
+    </RosaHcpWizardValidationProvider>
+  );
 }

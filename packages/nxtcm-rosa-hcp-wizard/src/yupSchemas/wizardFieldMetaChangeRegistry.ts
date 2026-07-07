@@ -129,6 +129,18 @@ export function listWizardFieldMetaChangeSourceFields(): WizardFormFieldName[] {
   return getWizardFieldMetaChangeRegistry().sourceFields;
 }
 
+/** Fields whose change should unvisit later wizard nav steps (reset or refetch metadata). */
+export function listWizardNavUnvisitSourceFields(): WizardFormFieldName[] {
+  const fields = new Set<WizardFormFieldName>();
+  for (const { sourceField } of getWizardFieldMetaChangeRegistry().resetEntries) {
+    fields.add(sourceField);
+  }
+  for (const { sourceField } of getWizardFieldMetaChangeRegistry().refetchEntries) {
+    fields.add(sourceField);
+  }
+  return [...fields].sort((a, b) => a.localeCompare(b));
+}
+
 export function getWizardFieldResetsForSourceField(
   sourceField: WizardFormFieldName
 ): readonly WizardFormFieldName[] {

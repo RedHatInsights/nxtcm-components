@@ -1,5 +1,11 @@
 import React from 'react';
-import { Flex, FlexItem, Skeleton } from '@patternfly/react-core';
+import { Button, Flex, FlexItem, Skeleton } from '@patternfly/react-core';
+import {
+  ChartDonutUtilization,
+  ChartLabel,
+  ChartThemeColor,
+  getTheme,
+} from '@patternfly/react-charts/victory';
 import styles from './StorageCard.module.scss';
 
 export interface StorageData {
@@ -21,14 +27,19 @@ export interface StorageCardProps {
   isLoading?: boolean;
 }
 
-/**
- * storage card displays storage usage statistics across different cluster types
- * with a visual percentage indicator
- */
-export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMore, isLoading }) => {
-  const showSkeleton = !!isLoading;
+const chartLabelFill = 'var(--pf-t--chart--global--label--fill, #1f1f1f)';
 
-  if (showSkeleton) {
+const clusterTypes: { key: keyof Omit<StorageData, 'available'>; label: string }[] = [
+  { key: 'rosaClusters', label: 'ROSA clusters' },
+  { key: 'aroClusters', label: 'ARO Clusters' },
+  { key: 'osdClusters', label: 'OSD Clusters' },
+];
+
+export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMore, isLoading }) => {
+  const blueTheme = getTheme(ChartThemeColor.blue);
+  const legendColors = (blueTheme.chart?.colorScale?.slice(0, 3) ?? []) as string[];
+
+  if (isLoading) {
     return (
       <Flex className={styles.content}>
         <FlexItem>
@@ -61,48 +72,30 @@ export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMor
   if (!storageData) return null;
   const { rosaClusters, aroClusters, osdClusters, available } = storageData;
 
-  // calculate totals
   const totalUsed = rosaClusters + aroClusters + osdClusters;
   const totalStorage = totalUsed + available;
-  const usagePercentage = Math.round((totalUsed / totalStorage) * 100);
-
-  // calculate stroke offset for circular progress (circumference = 2 * π * r)
-  const radius = 80;
-  const circumference = 2 * Math.PI * radius;
-  const strokeOffset = circumference - (usagePercentage / 100) * circumference;
+  const usagePercentage = totalStorage > 0 ? Math.round((totalUsed / totalStorage) * 100) : 0;
 
   return (
     <>
       <div className={styles.content}>
-        {/* circular progress indicator */}
-        <div className={styles.circularProgress}>
-          <svg width="200" height="200" viewBox="0 0 200 200">
-            {/* background circle */}
-            <circle cx="100" cy="100" r={radius} fill="none" stroke="#d2d2d2" strokeWidth="16" />
-            {/* progress circle */}
-            <circle
-              cx="100"
-              cy="100"
-              r={radius}
-              fill="none"
-              stroke="#0066cc"
-              strokeWidth="16"
-              strokeDasharray={circumference}
-              strokeDashoffset={strokeOffset}
-              strokeLinecap="round"
-              transform="rotate(-90 100 100)"
-              className={styles.progressCircle}
-            />
-          </svg>
-          <div className={styles.percentageLabel}>
-            <div className={styles.percentage} data-testid="percentage">
-              {usagePercentage}%
-            </div>
-            <div className={styles.sublabel}>of {totalStorage.toFixed(2)} TiB used</div>
-          </div>
+        <div className={styles.chartWrapper}>
+          <ChartDonutUtilization
+            ariaDesc="Storage utilization"
+            ariaTitle="Storage utilization chart"
+            constrainToVisibleArea
+            data={{ x: 'Storage used', y: usagePercentage }}
+            height={200}
+            subTitle={`of ${totalStorage.toFixed(2)} TiB used`}
+            title={`${usagePercentage}%`}
+            titleComponent={<ChartLabel style={{ fill: chartLabelFill, fontSize: 22 }} />}
+            subTitleComponent={<ChartLabel style={{ fill: chartLabelFill, fontSize: 14 }} />}
+            width={200}
+            padding={{ top: 20, bottom: 20, left: 20, right: 20 }}
+            name="storage-donut"
+          />
         </div>
 
-        {/* storage details */}
         <div className={styles.details}>
           <div className={styles.totalStorage}>
             <div className={styles.totalValue} data-testid="total-used">
@@ -112,27 +105,15 @@ export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMor
           </div>
 
           <div className={styles.breakdown}>
-            <div className={styles.breakdownItem}>
-              <span className={`${styles.dot} ${styles.rosaDot}`}></span>
-              <span className={styles.label}>ROSA clusters:</span>
-              <span className={styles.value} data-testid="rosa-clusters">
-                {rosaClusters.toFixed(2)} TiB
-              </span>
-            </div>
-            <div className={styles.breakdownItem}>
-              <span className={`${styles.dot} ${styles.aroDot}`}></span>
-              <span className={styles.label}>ARO Clusters:</span>
-              <span className={styles.value} data-testid="aro-clusters">
-                {aroClusters.toFixed(2)} TiB
-              </span>
-            </div>
-            <div className={styles.breakdownItem}>
-              <span className={`${styles.dot} ${styles.osdDot}`}></span>
-              <span className={styles.label}>OSD Clusters:</span>
-              <span className={styles.value} data-testid="osd-clusters">
-                {osdClusters.toFixed(2)} TiB
-              </span>
-            </div>
+            {clusterTypes.map((type, idx) => (
+              <div key={type.key} className={styles.breakdownItem}>
+                <span className={styles.legendDot} style={{ backgroundColor: legendColors[idx] }} />
+                <span className={styles.label}>{type.label}:</span>
+                <span className={styles.value} data-testid={type.key}>
+                  {storageData[type.key].toFixed(2)} TiB
+                </span>
+              </div>
+            ))}
             <div className={styles.breakdownItem}>
               <span className={styles.label}>Available:</span>
               <span className={styles.value} data-testid="available">
@@ -143,11 +124,11 @@ export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMor
         </div>
       </div>
       {onViewMore && (
-        <div className={styles.viewLink}>
-          <button onClick={onViewMore} className={styles.viewMore}>
+        <FlexItem className={styles.viewLink}>
+          <Button variant="link" isInline onClick={onViewMore}>
             View more
-          </button>
-        </div>
+          </Button>
+        </FlexItem>
       )}
     </>
   );
