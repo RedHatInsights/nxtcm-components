@@ -130,7 +130,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
           }
         />
       </FieldWrapper>
-      <FieldWrapper>
+      <FieldWrapper size="full">
         <WizCheckbox<ROSAHCPCluster>
           id="autoscaling-checkbox"
           name="autoscaling"
