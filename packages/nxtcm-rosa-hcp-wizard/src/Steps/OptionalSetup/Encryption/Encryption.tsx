@@ -59,7 +59,7 @@ export const Encryption = () => {
           />
         </FieldWrapper>
       ) : null}
-      <FieldWrapper size="md">
+      <FieldWrapper size="full">
         <WizCheckbox<ROSAHCPCluster>
           name="etcd_encryption"
           schema={clusterValidationSchema}
