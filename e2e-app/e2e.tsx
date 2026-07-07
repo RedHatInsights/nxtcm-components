@@ -208,6 +208,7 @@ if (rootEl) {
       onSubmit={async () => {}}
       onCancel={() => {}}
       wizardData={mockWizardData}
+      yaml={true}
     />
   );
 }

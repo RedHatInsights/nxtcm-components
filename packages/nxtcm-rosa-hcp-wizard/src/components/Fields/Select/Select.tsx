@@ -340,6 +340,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
       isDisabled={!!disabled}
       isFullWidth
       status={getStatus(!!isError, !!isSuccess)}
+      data-testid={dataTestId}
     >
       <TextInputGroup isPlain>
         <TextInputGroupMain
