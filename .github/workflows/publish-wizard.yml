@@ -1,4 +1,4 @@
-name: Publish Dashboard
+name: Publish ROSA HCP Wizard
 
 on:
   release:
@@ -9,8 +9,8 @@ permissions:
 
 jobs:
   quality-gates:
-    name: Dashboard Quality Gates
-    if: github.event.release.target_commitish == 'main' && startsWith(github.event.release.tag_name, 'nxtcm-dashboard-v')
+    name: Wizard Quality Gates
+    if: github.event.release.target_commitish == 'main' && startsWith(github.event.release.tag_name, 'nxtcm-rosa-hcp-wizard-v')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -25,11 +25,11 @@ jobs:
             exit 1
           fi
 
-      - name: Verify release tag matches dashboard package version
+      - name: Verify release tag matches wizard package version
         env:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          expected="nxtcm-dashboard-v$(node -p "require('./packages/nxtcm-dashboard/package.json').version")"
+          expected="nxtcm-rosa-hcp-wizard-v$(node -p "require('./packages/nxtcm-rosa-hcp-wizard/package.json').version")"
           if [ "$RELEASE_TAG" != "$expected" ]; then
             echo "::error::Release tag $RELEASE_TAG does not match expected $expected"
             exit 1
@@ -52,23 +52,23 @@ jobs:
             exit 1
           fi
 
-      - name: Run dashboard lint
-        run: npm run lint -w packages/nxtcm-dashboard
+      - name: Run wizard lint
+        run: npm run lint -w packages/nxtcm-rosa-hcp-wizard
 
-      - name: Run dashboard type-check
-        run: npm run type-check -w packages/nxtcm-dashboard
+      - name: Run wizard type-check
+        run: npm run type-check -w packages/nxtcm-rosa-hcp-wizard
 
-      - name: Run dashboard unit tests
-        run: npm run test -w packages/nxtcm-dashboard
+      - name: Run wizard unit tests
+        run: npm run test -w packages/nxtcm-rosa-hcp-wizard
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run dashboard component tests
-        run: npm run test:ct -w packages/nxtcm-dashboard
+      - name: Run wizard component tests
+        run: npm run test:ct -w packages/nxtcm-rosa-hcp-wizard
 
-      - name: Build dashboard package
-        run: npm run build -w packages/nxtcm-dashboard
+      - name: Build wizard package
+        run: npm run build -w packages/nxtcm-rosa-hcp-wizard
 
   publish:
     name: Publish to npm
@@ -92,8 +92,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build dashboard package
-        run: npm run build -w packages/nxtcm-dashboard
+      - name: Build wizard package
+        run: npm run build -w packages/nxtcm-rosa-hcp-wizard
 
-      - name: Publish dashboard package
-        run: npm publish -w packages/nxtcm-dashboard --provenance --access public
+      - name: Publish wizard package
+        run: npm publish -w packages/nxtcm-rosa-hcp-wizard --provenance --access public
