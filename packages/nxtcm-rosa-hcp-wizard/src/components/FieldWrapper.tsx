@@ -22,6 +22,7 @@ export const FieldWrapper = ({
 }: FieldWrapperProps) => (
   <>
     <div
+      data-testid="rosa-hcp-field-wrapper"
       className={
         size === 'full'
           ? 'rosa-hcp-field-wrapper'

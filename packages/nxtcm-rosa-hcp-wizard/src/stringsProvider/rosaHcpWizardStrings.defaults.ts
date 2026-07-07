@@ -399,7 +399,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     encryptionToggle: 'Encryption (optional)',
     optionalNetworkingToggle: 'Networking (optional)',
     clusterUpdatesToggle: 'Cluster updates (optional)',
-    editStep: 'Edit Step',
+    editStep: 'Edit step',
     editInYaml: 'Edit in YAML',
     clusterName: 'Cluster name',
     openShiftVersion: 'OpenShift version',

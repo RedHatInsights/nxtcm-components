@@ -27,16 +27,17 @@ test.describe('FieldWrapper', () => {
     await expect(component.getByRole('link', { name: 'Learn more' })).toBeVisible();
   });
 
-  test('applies size class for constrained field width', async ({ mount }) => {
-    const component = await mount(
+  test('applies size class for constrained field width', async ({ mount, page }) => {
+    await mount(
       <FieldWrapper size="lg">
         <span>Sized field</span>
       </FieldWrapper>
     );
 
-    const field = component.getByText('Sized field');
-    await expect(field).toBeVisible();
-    await expect(field.locator('..')).toHaveClass(/rosa-hcp-field-wrapper--lg/);
+    await expect(page.getByText('Sized field')).toBeVisible();
+    await expect(page.getByTestId('rosa-hcp-field-wrapper')).toHaveClass(
+      /rosa-hcp-field-wrapper--lg/
+    );
   });
 
   test('renders full-width blocks alongside fields', async ({ mount }) => {
