@@ -100,7 +100,7 @@ export const Networking = (props: NetworkingStepProps) => {
       <ExpandableSection isIndented toggleText={n.advancedToggle}>
         <NestedFields>
           {!isProxyStepHidden && (
-            <FieldWrapper>
+            <FieldWrapper size="full">
               <WizCheckbox name="configure_proxy" schema={clusterValidationSchema} />
             </FieldWrapper>
           )}
@@ -120,7 +120,7 @@ export const Networking = (props: NetworkingStepProps) => {
             </Content>
           </Alert>
 
-          <FieldWrapper>
+          <FieldWrapper size="full">
             <WizCheckbox name="cidr_default" schema={clusterValidationSchema} />
           </FieldWrapper>
 
