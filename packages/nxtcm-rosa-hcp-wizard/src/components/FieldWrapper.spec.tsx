@@ -34,7 +34,9 @@ test.describe('FieldWrapper', () => {
       </FieldWrapper>
     );
 
-    await expect(component.locator('.rosa-hcp-field-wrapper--lg')).toBeVisible();
+    const field = component.getByText('Sized field');
+    await expect(field).toBeVisible();
+    await expect(field.locator('..')).toHaveClass(/rosa-hcp-field-wrapper--lg/);
   });
 
   test('renders full-width blocks alongside fields', async ({ mount }) => {

@@ -8,11 +8,18 @@ export type FieldWrapperProps = {
   children: ReactNode;
   /** Optional content rendered below the field (links, actions, etc.). */
   additionalContent?: ReactNode;
+  /** Optional content rendered inside the field wrapper, directly below the field control. */
+  footer?: ReactNode;
   /** Max width of the field. Defaults to `sm`. */
   size?: FieldWrapperSize;
 };
 
-export const FieldWrapper = ({ children, additionalContent, size = 'sm' }: FieldWrapperProps) => (
+export const FieldWrapper = ({
+  children,
+  additionalContent,
+  footer,
+  size = 'sm',
+}: FieldWrapperProps) => (
   <>
     <div
       className={
@@ -22,6 +29,7 @@ export const FieldWrapper = ({ children, additionalContent, size = 'sm' }: Field
       }
     >
       {children}
+      {footer}
     </div>
     {additionalContent}
   </>
