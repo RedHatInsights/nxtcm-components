@@ -15,6 +15,7 @@ import {
 } from '@patternfly/react-core';
 import ChevronRightIcon from '@patternfly/react-icons/dist/esm/icons/chevron-right-icon';
 import ChevronDownIcon from '@patternfly/react-icons/dist/esm/icons/chevron-down-icon';
+import type { JSONSchema } from 'monaco-yaml';
 
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 
@@ -22,8 +23,7 @@ type SchemaProperty = {
   type?: string | string[];
   description?: string;
   properties?: Record<string, SchemaProperty>;
-  items?: SchemaProperty;
-  enum?: string[];
+  enum?: unknown[];
 };
 
 type SchemaProps = Record<string, SchemaProperty>;
@@ -108,9 +108,9 @@ const SchemaField = ({ name, prop, depth = 0 }: SchemaFieldProps) => {
           )}
           {prop.enum && (
             <div style={{ marginTop: '4px', display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-              {prop.enum.map((v) => (
-                <Label key={v} isCompact variant="outline">
-                  {v}
+              {prop.enum.map((v, i) => (
+                <Label key={i} isCompact variant="outline">
+                  {String(v)}
                 </Label>
               ))}
             </div>
@@ -131,19 +131,22 @@ const SchemaField = ({ name, prop, depth = 0 }: SchemaFieldProps) => {
 
 export type RosaHcpSchemaPanelProps = {
   onClose: () => void;
-  schema: object;
+  schema: JSONSchema;
 };
 
 export const RosaHcpSchemaPanel = ({ onClose, schema }: RosaHcpSchemaPanelProps) => {
   const { yamlEditor } = useRosaHcpWizardStrings();
   const [searchText, setSearchText] = useState('');
 
-  const specProperties = useMemo(
-    () =>
-      (schema as { properties?: { spec?: { properties?: SchemaProps } } }).properties?.spec
-        ?.properties ?? {},
-    [schema]
-  );
+  const specProperties = useMemo(() => {
+    const spec = schema.properties?.spec;
+    if (!spec || typeof spec === 'boolean') return {} as SchemaProps;
+    const specProps = spec.properties;
+    if (!specProps) return {} as SchemaProps;
+    return Object.fromEntries(
+      Object.entries(specProps).filter(([, v]) => typeof v !== 'boolean')
+    ) as SchemaProps;
+  }, [schema]);
 
   const filteredProperties = useMemo(() => {
     const lower = searchText.trim().toLowerCase();

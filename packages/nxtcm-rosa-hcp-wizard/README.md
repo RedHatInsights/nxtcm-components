@@ -6,14 +6,7 @@ PatternFly wizard component for ROSA HCP cluster creation in ACM and OCM.
 
 ### Peer dependencies
 
-Install the required peer dependencies alongside this package:
-
-```
-monaco-editor  >=0.36.0
-monaco-yaml    ^5.4.1
-@patternfly/react-code-editor  ^6.5.1
-react / react-dom  ^18.2.0
-```
+See [`peerDependencies` in `package.json`](./package.json) for the full list and required version ranges.
 
 ### Monaco worker setup
 
@@ -33,7 +26,7 @@ window.MonacoEnvironment = {
 };
 ```
 
-The `?url` import syntax is supported by Vite out of the box. For webpack, use `new URL('...', import.meta.url)` or a dedicated worker loader instead.
+The `?url` import syntax is supported by Vite out of the box. For webpack, use `new URL('...', import.meta.url)` or a dedicated worker loader instead. See the [monaco-yaml worker setup docs](https://www.npmjs.com/package/monaco-yaml#usage) for more details.
 
 ### Resource generator
 

@@ -1,10 +1,11 @@
+import type { JSONSchema } from 'monaco-yaml';
 import type { ValidationError } from './yamlValidation';
 import type { ROSAHCPCluster } from '../../types';
 
 export type { ValidationError };
 export interface ResourceSchema {
   kind: string;
-  schema: object;
+  schema: JSONSchema;
   primary?: boolean;
 }
 

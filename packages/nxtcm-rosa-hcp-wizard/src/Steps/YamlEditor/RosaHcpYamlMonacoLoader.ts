@@ -13,7 +13,7 @@ export class RosaHcpYamlMonacoLoader {
     const schemas: SchemasSettings[] = (resourceSchemas ?? []).map(({ kind, schema }) => ({
       uri: `inmemory://${kind}-schema.json`,
       fileMatch: ['*'],
-      schema: schema as SchemasSettings['schema'],
+      schema,
     }));
 
     const monacoYaml = configureMonacoYaml(monaco, {
