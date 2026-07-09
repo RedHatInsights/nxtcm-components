@@ -197,6 +197,11 @@ const meta: Meta<typeof ROSAHCPWizard> = {
     measureEnabled: false,
   },
   argTypes: {
+    enableAllWizardNavSteps: {
+      description:
+        'Enables all wizard nav steps for Storybook development. Do not use in production.',
+      control: 'boolean',
+    },
     onSubmit: {
       description: 'Callback function called when the wizard is submitted',
       action: 'submitted',
@@ -412,5 +417,19 @@ export const RolesAlertOcmRoleError: Story = {
         fetch: async () => {},
       },
     }),
+  },
+};
+
+/**
+ * DEVS ONLY — same as Default, with all wizard nav steps enabled for engineering work.
+ * Business-facing demos should use Default so visit and validation nav rules match production.
+ */
+export const DefaultAllNavStepsEnabled: Story = {
+  name: 'DEVS ONLY - default all nav steps enabled',
+  render: (args) => <DefaultStoryWrapper {...args} />,
+  args: {
+    ...Default.args,
+    enableAllWizardNavSteps: true,
+    title: 'Create ROSA Cluster — all nav steps enabled',
   },
 };

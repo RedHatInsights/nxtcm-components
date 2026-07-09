@@ -218,6 +218,11 @@ export type RosaHCPWizardProps = {
   yaml?: boolean;
   /** The consuming product. */
   product?: 'acm' | 'ocm' | 'oem';
+  /**
+   * When true, all wizard nav steps stay enabled regardless of visit history or validation.
+   * Intended for Storybook and local development only — do not use in production UIs.
+   */
+  enableAllWizardNavSteps?: boolean;
 };
 
 export type WizardNavigationContext = ReturnType<typeof useWizardContext>;

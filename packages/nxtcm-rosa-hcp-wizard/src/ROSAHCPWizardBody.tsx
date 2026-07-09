@@ -27,8 +27,16 @@ const RosaHcpYamlEditorStep = lazy(() =>
 );
 
 export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
-  const { wizardData, onSubmit, onCancel, yaml, onSubmitError, onBackToReviewStep, product } =
-    props;
+  const {
+    wizardData,
+    onSubmit,
+    onCancel,
+    yaml,
+    onSubmitError,
+    onBackToReviewStep,
+    product,
+    enableAllWizardNavSteps = false,
+  } = props;
 
   const [isNavigatingToReview, setIsNavigatingToReview] = useState(false);
   const [isYamlEditorOpen, setIsYamlEditorOpen] = useState(false);
@@ -58,7 +66,10 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
     [isYamlEditorOpen]
   );
 
-  const footer = useMemo(() => createRosaHcpWizardFooter(onSubmit), [onSubmit]);
+  const footer = useMemo(
+    () => createRosaHcpWizardFooter(onSubmit, enableAllWizardNavSteps),
+    [enableAllWizardNavSteps, onSubmit]
+  );
 
   useWizardFieldMetaChangeEffects(wizardData);
 
@@ -101,7 +112,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
         footer={footer}
         onClose={onCancel}
         onStepChange={handleWizardStepChange}
-        isVisitRequired
+        isVisitRequired={!enableAllWizardNavSteps}
       >
         <WizardStep
           isExpandable
