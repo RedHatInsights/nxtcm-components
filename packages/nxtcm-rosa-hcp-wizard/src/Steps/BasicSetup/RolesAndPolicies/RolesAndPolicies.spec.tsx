@@ -5,6 +5,7 @@ import fixtures from '../../../ROSAHCPWizard.fixtures';
 import { RolesAndPoliciesMount } from './RolesAndPolicies.spec-helpers';
 
 const rp = defaultRosaHcpWizardStrings.rolesAndPolicies;
+const oidcHint = defaultRosaHcpWizardStrings.oidcHint;
 const { mockRoles, mockOicdConfig } = fixtures;
 const INSTALLER_ARN = mockRoles[0].installerRole.value;
 
@@ -305,6 +306,27 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
       const component = await mount(<RolesAndPoliciesMount />);
       await expect(component.getByText(rp.oidcPopoverTitle)).toBeVisible();
     });
+
+    test('should show OIDC config hint content in the field help popover', async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(<RolesAndPoliciesMount />);
+      await component
+        .locator('#byo_oidc_config_id-form-group')
+        .getByRole('button', { name: 'More info' })
+        .click();
+      await expect(page.getByText(oidcHint.instructions)).toBeVisible();
+    });
+
+    test('should show OIDC config hint content in the create link popover', async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(<RolesAndPoliciesMount />);
+      await component.getByRole('button', { name: rp.oidcPopoverTitle }).click();
+      await expect(page.getByText(oidcHint.instructions)).toBeVisible();
+    });
   });
 
   test.describe('RolesAndPolicies — RolesAlert', () => {
@@ -455,19 +477,32 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
       await expect(component.getByText(rp.operatorPrefixToggle, { exact: true })).toBeVisible();
     });
 
-    test('should render the operator roles prefix input', async ({ mount }) => {
+    test('should render the operator roles prefix input when expanded', async ({ mount }) => {
       const component = await mount(<RolesAndPoliciesMount />);
+      await component.getByText(rp.operatorPrefixToggle, { exact: true }).click();
       await expect(component.getByText(rp.operatorPrefixLabel, { exact: true })).toBeVisible();
     });
 
-    test('should render the operator prefix helper text', async ({ mount }) => {
+    test('should render the operator prefix helper text when expanded', async ({ mount }) => {
       const component = await mount(<RolesAndPoliciesMount />);
+      await component.getByText(rp.operatorPrefixToggle, { exact: true }).click();
       await expect(component.getByText(rp.operatorPrefixHelper)).toBeVisible();
     });
 
-    test('should render the clipboard copy for rosa command', async ({ mount }) => {
+    test('should render operator roles create label, instructions, and commands', async ({
+      mount,
+    }) => {
       const component = await mount(<RolesAndPoliciesMount />);
-      await expect(component.getByRole('button', { name: rp.clipboardCopyAria })).toBeVisible();
+      await expect(component.getByText(rp.operatorRolesCreateLabel, { exact: true })).toBeVisible();
+      await expect(component.getByText(rp.operatorRolesCreateInstructions)).toBeVisible();
+      await expect(
+        component.getByRole('textbox', {
+          name: defaultRosaHcpWizardStrings.rosaLogin.copyAriaLabel,
+        })
+      ).toBeVisible();
+      await expect(
+        component.getByRole('textbox', { name: rp.operatorRolesCreateCommandAriaLabel })
+      ).toBeVisible();
     });
   });
 });
