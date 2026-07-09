@@ -8,11 +8,13 @@ export class RosaHcpYamlMonacoLoader {
   configure(
     monaco: MonacoEditor,
     resourceSchemas?: ResourceSchema[],
-    options?: MonacoYamlOptions
+    options?: MonacoYamlOptions,
+    /** Restrict schema completion/hover to this specific model path. */
+    fileMatch = ['rosa-hcp-control-plane.yaml']
   ): () => void {
     const schemas: SchemasSettings[] = (resourceSchemas ?? []).map(({ kind, schema }) => ({
       uri: `inmemory://${kind}-schema.json`,
-      fileMatch: ['*'],
+      fileMatch,
       schema,
     }));
 

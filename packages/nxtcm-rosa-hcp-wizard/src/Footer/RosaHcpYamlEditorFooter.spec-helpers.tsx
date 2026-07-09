@@ -11,7 +11,7 @@ export type YamlEditorFooterMountProps = {
   hasSchemaErrors?: boolean;
   onClose?: () => void;
   onCancel?: () => void;
-  onSubmit?: (data: ROSAHCPCluster) => Promise<void>;
+  onSubmit?: (yamlString: string) => Promise<void>;
 };
 
 export function YamlEditorFooterMount({
@@ -43,6 +43,7 @@ function YamlEditorFooterMountInner({
   const editorRef = useRef<YamlEditorHandle>({
     discard: () => {},
     hasSchemaErrors: () => hasSchemaErrors,
+    getYaml: () => '',
   });
 
   return (

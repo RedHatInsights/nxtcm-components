@@ -243,12 +243,11 @@ export interface WizardConfig {
 
 export type RosaHCPWizardProps = {
   wizardData: ROSAHCPWizardData;
-  onSubmit: (data: ROSAHCPCluster) => Promise<void>;
+  onSubmit: (yamlString: string) => Promise<void>;
   onSubmitError?: string | boolean;
   onCancel: () => void;
   title: string;
   onBackToReviewStep?: () => void | Promise<void>;
-  yamlEditor?: () => React.ReactNode;
   product?: 'acm' | 'ocm' | 'oem';
   /**
    * When true, all wizard nav steps stay enabled regardless of visit history or validation.
