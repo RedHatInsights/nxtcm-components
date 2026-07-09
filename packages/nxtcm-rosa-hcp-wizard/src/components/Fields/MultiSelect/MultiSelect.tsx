@@ -352,6 +352,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
           <Button
             variant="control"
             aria-label="Refresh"
+            data-testid="multiselect-refresh"
             onClick={onRefresh}
             icon={isLoading ? <Spinner size="sm" /> : <RedoIcon />}
             isDisabled={!!disabled || !!isLoading}

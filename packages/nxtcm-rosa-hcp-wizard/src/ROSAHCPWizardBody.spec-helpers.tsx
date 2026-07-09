@@ -8,6 +8,11 @@ import { RosaHcpWizardFormProvider } from './RosaHcpWizardFormProvider';
 import { RosaHcpWizardStringsProvider } from './stringsProvider/RosaHcpWizardStringsContext';
 import { makeMachineTypesResource, makeVpcListResource } from './test/rosaHcpWizardCtSpecHelpers';
 import type { RosaHCPWizardProps, ROSAHCPWizardData } from './types';
+import { createAcmCapaGenerator } from './test/acmGeneratorFixtures/acmCapaGenerator';
+import rosaControlPlaneSchema from './test/acmGeneratorFixtures/schemas/rosaControlPlaneSchema.json';
+import managedClusterSchema from './test/acmGeneratorFixtures/schemas/managedClusterSchema.json';
+import capiClusterSchema from './test/acmGeneratorFixtures/schemas/capiClusterSchema.json';
+import rosaClusterSchema from './test/acmGeneratorFixtures/schemas/rosaClusterSchema.json';
 
 const noopFetch = async (): Promise<void> => {};
 
@@ -50,6 +55,12 @@ const defaultWizardProps: RosaHCPWizardProps = {
   wizardData: makeMinimalRosaHcpWizardData(),
   onSubmit: async () => {},
   onCancel: () => {},
+  resourceGenerator: createAcmCapaGenerator([
+    { kind: 'ROSAControlPlane', schema: rosaControlPlaneSchema, primary: true },
+    { kind: 'ManagedCluster', schema: managedClusterSchema },
+    { kind: 'Cluster', schema: capiClusterSchema },
+    { kind: 'ROSACluster', schema: rosaClusterSchema },
+  ]),
 };
 
 export type RosaHcpWizardBodyMountProps = Partial<RosaHCPWizardProps>;

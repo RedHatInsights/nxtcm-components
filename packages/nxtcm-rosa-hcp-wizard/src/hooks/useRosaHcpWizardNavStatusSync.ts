@@ -14,7 +14,10 @@ import { unvisitWizardNavStepsAfterSourcePfIndex } from './unvisitWizardNavSteps
 import { useRosaHcpWizardNavStepStatuses } from './useRosaHcpWizardNavStepStatuses';
 
 /** Pushes nav status, visit, and validation-disable state onto PatternFly wizard steps. */
-export function useRosaHcpWizardNavStatusSync(includeClusterWideProxy: boolean): void {
+export function useRosaHcpWizardNavStatusSync(
+  includeClusterWideProxy: boolean,
+  enableAllWizardNavSteps = false
+): void {
   const navStepStatuses = useRosaHcpWizardNavStepStatuses(includeClusterWideProxy);
   const reviewSections = useRosaHcpWizardReviewSections();
   const { validationAttemptedStepIds, asyncValidatingStepIds, registerNavUnvisitApplier } =
@@ -72,6 +75,10 @@ export function useRosaHcpWizardNavStatusSync(includeClusterWideProxy: boolean):
 
   const applyNavUnvisit = useCallback(
     (sourceStepIds: readonly string[]) => {
+      if (enableAllWizardNavSteps) {
+        return;
+      }
+
       const sourcePfIndices = sourceStepIds
         .map((stepId) => wizardSteps.find((step) => step.id === stepId)?.index ?? -1)
         .filter((index) => index > 0);
@@ -86,7 +93,7 @@ export function useRosaHcpWizardNavStatusSync(includeClusterWideProxy: boolean):
         prevVisitedStepIdsRef.current.delete(unvisitStepId);
       });
     },
-    [setStep, wizardSteps]
+    [enableAllWizardNavSteps, setStep, wizardSteps]
   );
 
   useEffect(() => {
@@ -117,9 +124,23 @@ export function useRosaHcpWizardNavStatusSync(includeClusterWideProxy: boolean):
 
   useEffect(() => {
     for (const wizardStep of wizardSteps) {
+      const stepId = String(wizardStep.id);
+
+      if (enableAllWizardNavSteps) {
+        maxVisitedPfStepIndexRef.current = Math.max(
+          maxVisitedPfStepIndexRef.current,
+          wizardStep.index
+        );
+        if (!wizardStep.isVisited) {
+          prevVisitedStepIdsRef.current.add(stepId);
+          setStep({ id: stepId, isVisited: true });
+        }
+        continue;
+      }
+
       if (wizardStep.index > maxVisitedPfStepIndexRef.current && wizardStep.isVisited) {
-        setStep({ id: String(wizardStep.id), isVisited: false });
-        prevVisitedStepIdsRef.current.delete(String(wizardStep.id));
+        setStep({ id: stepId, isVisited: false });
+        prevVisitedStepIdsRef.current.delete(stepId);
       }
     }
 
@@ -131,7 +152,7 @@ export function useRosaHcpWizardNavStatusSync(includeClusterWideProxy: boolean):
 
     for (const stepId of stepIds) {
       const status = navStepStatuses[stepId];
-      const isDisabled = navStepDisabledByValidation[stepId];
+      const isDisabled = enableAllWizardNavSteps ? false : navStepDisabledByValidation[stepId];
 
       if (
         prevNavSyncRef.current.statuses[stepId] === status &&
@@ -149,5 +170,12 @@ export function useRosaHcpWizardNavStatusSync(includeClusterWideProxy: boolean):
         ...(isDisabled !== undefined ? { isDisabled } : {}),
       });
     }
-  }, [navStepDisabledByValidation, navStepStatuses, orderedStepIds, setStep, wizardSteps]);
+  }, [
+    enableAllWizardNavSteps,
+    navStepDisabledByValidation,
+    navStepStatuses,
+    orderedStepIds,
+    setStep,
+    wizardSteps,
+  ]);
 }
