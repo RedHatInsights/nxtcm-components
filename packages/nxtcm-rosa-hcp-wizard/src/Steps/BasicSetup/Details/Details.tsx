@@ -116,7 +116,7 @@ export const Details = ({
       >
         <NestedFields>
           <FieldWrapper
-            additionalContent={
+            footer={
               <AssociateNewAccountLink
                 label={d.associateNewAccount}
                 setIsDrawerExpanded={setIsDrawerExpanded}
@@ -140,7 +140,7 @@ export const Details = ({
           </FieldWrapper>
 
           <FieldWrapper
-            additionalContent={
+            footer={
               <ExternalLink
                 variant="secondary"
                 className="pf-v6-u-mt-md"
