@@ -231,7 +231,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     advancedToggle: 'Advanced networking configuration (optional)',
     proxyCheckboxLabel: 'Configure a cluster-wide proxy',
     proxyCheckboxHelp:
-      'Enable an HTTP or HTTPS proxy to deny direct access to the internet from your cluster.',
+      'Enable an HTTP or HTTPS proxy to deny direct access to the internet from your cluster on the next step.',
     proxyNextStepInfo: 'You will be able to configure cluster-wide proxy details in the next step',
     cidrAlertTitle: 'CIDR ranges cannot be changed after you create your cluster',
     cidrAlertBody:
