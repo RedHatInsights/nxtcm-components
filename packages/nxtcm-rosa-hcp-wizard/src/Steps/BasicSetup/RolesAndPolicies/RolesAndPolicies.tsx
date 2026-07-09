@@ -1,4 +1,11 @@
-import { ClipboardCopy, ExpandableSection } from '@patternfly/react-core';
+import {
+  ClipboardCopyVariant,
+  Content,
+  ContentVariants,
+  ExpandableSection,
+  Stack,
+  StackItem,
+} from '@patternfly/react-core';
 import { Section } from '../../../components/Section';
 import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
@@ -17,6 +24,8 @@ import { useUpdateOperatorPrefix } from './useUpdateOperatorPrefix';
 import { useInstallerRoleOptions } from './useInstallerRoleOptions';
 import { useRosaCommand } from './useRosaCommand';
 import { RolesAlert } from '../../../components/RolesErrorAlert';
+import { RosaLoginInstruction } from '../../../components/RosaLoginInstruction';
+import { CopyInstruction } from '../../../components/CopyInstruction';
 
 type RolesAndPoliciesStepProps = Pick<ROSAHCPWizardData, 'roles' | 'oidcConfig'> & {
   /** The consuming product. Determines which ROSA login command is shown. Defaults to 'acm'. */
@@ -141,15 +150,6 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
                     helperText={rp.operatorPrefixHelper}
                   />
                 </FieldWrapper>
-                <ClipboardCopy
-                  variant="expansion"
-                  copyAriaLabel={rp.clipboardCopyAria}
-                  isReadOnly
-                  hoverTip={rp.copyHover}
-                  clickTip={rp.copyClicked}
-                >
-                  {rosaCommand}
-                </ClipboardCopy>
               </NestedFields>
             </ExpandableSection>
           }
@@ -167,6 +167,26 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
             data-testid="oidc-config-select"
           />
         </FieldWrapper>
+
+        <span className="pf-v6-c-form__label pf-v6-u-display-block pf-v6-u-mb-sm">
+          <span className="pf-v6-c-form__label-text">{rp.operatorRolesCreateLabel}</span>
+        </span>
+        <Stack hasGutter>
+          <StackItem>
+            <Content component={ContentVariants.p}>{rp.operatorRolesCreateInstructions}</Content>
+          </StackItem>
+          <StackItem>
+            <RosaLoginInstruction product={product} showInstructions={false} />
+          </StackItem>
+          <StackItem>
+            <CopyInstruction
+              variant={ClipboardCopyVariant.expansion}
+              textAriaLabel={rp.operatorRolesCreateCommandAriaLabel}
+            >
+              {rosaCommand}
+            </CopyInstruction>
+          </StackItem>
+        </Stack>
       </Section>
     </>
   );
