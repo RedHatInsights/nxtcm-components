@@ -22,6 +22,13 @@ const defaultMinReplicas = String(minReplicasSchema.getDefault());
 const defaultMaxReplicas = String(maxReplicasSchema.getDefault());
 const defaultNodesCompute = String(nodesComputeSchema.getDefault());
 
+const vpcRefreshFormDefaults = {
+  associated_aws_id: '123456789012',
+  installer_role_arn: 'arn:aws:iam::123456789012:role/installer',
+  region: 'us-east-1',
+  cluster_version: '4.16.2',
+} as const;
+
 /** Plain (non-typeahead) Select: toggle shows explicit {@link MachinePools} `placeholder` (not derived from label). */
 const ctRegion = 'us-east-1';
 const vpcSelectMenuName = `${mp.vpcPlaceholder} ${ctRegion}`;
@@ -221,6 +228,91 @@ test.describe('MachinePools (ROSA HCP)', () => {
     await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
 
     await expect(component.getByText(sg.incompatibleVersion, { exact: true })).toBeVisible();
+  });
+
+  test('should refetch vpc list when security groups refresh is pressed', async ({ mount }) => {
+    let fetchCount = 0;
+    const vpcList = makeVpcListResource({
+      fetch: () => {
+        fetchCount += 1;
+        return Promise.resolve();
+      },
+    });
+
+    const component = await mount(
+      <MachinePoolsMount
+        vpcList={vpcList}
+        defaultValues={{
+          ...vpcRefreshFormDefaults,
+          selected_vpc: fixtureVpc1.id,
+        }}
+      />
+    );
+
+    await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
+
+    const advancedSection = component.getByRole('region', { name: mp.advancedToggle });
+    const refreshButton = advancedSection.getByTestId('multiselect-refresh');
+
+    await expect(refreshButton).toBeVisible();
+    const fetchCountBeforeRefresh = fetchCount;
+    await refreshButton.click();
+
+    await expect.poll(() => fetchCount).toBe(fetchCountBeforeRefresh + 1);
+  });
+
+  test('should refetch vpc list from empty security groups refresh control', async ({ mount }) => {
+    let fetchCount = 0;
+    const vpcList = makeVpcListResource({
+      fetch: () => {
+        fetchCount += 1;
+        return Promise.resolve();
+      },
+    });
+
+    const component = await mount(
+      <MachinePoolsMount
+        vpcList={vpcList}
+        defaultValues={{
+          ...vpcRefreshFormDefaults,
+          selected_vpc: fixtureVpc2.id,
+        }}
+      />
+    );
+
+    await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
+
+    const refreshButton = component.getByTestId('security-groups-refresh');
+    await expect(refreshButton).toBeVisible();
+    const fetchCountBeforeRefresh = fetchCount;
+    await refreshButton.click();
+
+    await expect.poll(() => fetchCount).toBe(fetchCountBeforeRefresh + 1);
+  });
+
+  test('should disable security groups refresh while vpc list is fetching', async ({ mount }) => {
+    const vpcList = makeVpcListResource({
+      isFetching: true,
+      fetch: () => Promise.resolve(),
+    });
+
+    const component = await mount(
+      <MachinePoolsMount
+        vpcList={vpcList}
+        defaultValues={{
+          ...vpcRefreshFormDefaults,
+          selected_vpc: fixtureVpc1.id,
+        }}
+      />
+    );
+
+    await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
+
+    const advancedSection = component.getByRole('region', { name: mp.advancedToggle });
+    const refreshButton = advancedSection.getByTestId('multiselect-refresh');
+
+    await expect(refreshButton).toBeVisible();
+    await expect(refreshButton).toBeDisabled();
   });
 
   test('should show loading state on VPC select when vpc list is fetching', async ({ mount }) => {

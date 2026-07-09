@@ -93,7 +93,7 @@ export const Networking = (props: NetworkingStepProps) => {
           <FieldWrapperBlock>
             <Alert
               isExpandable
-              variant="warning"
+              variant="info"
               title={n.cidrAlertTitle}
               ouiaId="networkingCidrAlert"
             >
