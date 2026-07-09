@@ -263,7 +263,7 @@ export type RosaHCPWizardProps = {
    * - `validateYaml` — validate a YAML string and return structured errors
    */
   resourceGenerator: YamlResourceGenerator;
-  
+
   /** Optional wizard configuration for host-application-specific customisation. */
   config?: WizardConfig;
 };
