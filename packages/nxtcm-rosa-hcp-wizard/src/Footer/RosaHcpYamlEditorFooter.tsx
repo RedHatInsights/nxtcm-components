@@ -43,7 +43,7 @@ export function RosaHcpYamlEditorFooter({
   const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
 
   const handleApply = useCallback(() => {
-    if (editorRef.current?.hasSchemaErrors()) return;
+    if (!editorRef.current || editorRef.current.hasSchemaErrors()) return;
 
     void (async () => {
       try {
