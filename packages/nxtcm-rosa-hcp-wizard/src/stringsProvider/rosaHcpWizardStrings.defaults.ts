@@ -335,7 +335,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     httpsLabel: 'HTTPS proxy URL',
     httpsHelp: 'Specify a proxy URL to use for HTTPS connections outside the cluster.',
     httpsPlaceholder: 'Enter the HTTPS proxy URL',
-    noProxyLabel: 'No Proxy domains',
+    noProxyLabel: 'No proxy domains',
     noProxyPlaceholder: 'Enter the no proxy domains',
     noProxyHelp:
       'Preface a domain with . to match subdomains only. For example, .y.com matches x.y.com, but not y.com. Use * to bypass proxy for all destinations.',
