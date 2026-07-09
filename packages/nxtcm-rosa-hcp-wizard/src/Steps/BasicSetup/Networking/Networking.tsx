@@ -105,12 +105,7 @@ export const Networking = (props: NetworkingStepProps) => {
             </FieldWrapper>
           )}
 
-          <Alert
-            isExpandable
-            variant="info"
-            title={n.cidrAlertTitle}
-            ouiaId="networkingCidrAlert"
-          >
+          <Alert isExpandable variant="info" title={n.cidrAlertTitle} ouiaId="networkingCidrAlert">
             <Content component={ContentVariants.p}>{n.cidrAlertBody}</Content>
 
             <Content component={ContentVariants.p}>
