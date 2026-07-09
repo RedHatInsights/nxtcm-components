@@ -22,11 +22,14 @@ import {
   buildMachinePoolsReviewSelectOptions,
   resolveSelectedVpc,
 } from '../../../utilities/helpers';
+import { STEP_IDS } from '../../../constants';
+import { useIsStepHidden } from '../../../WizardConfigContext';
 
 type NetworkingStepProps = Pick<ROSAHCPWizardData, 'vpcList' | 'subnets'>;
 
 export const Networking = (props: NetworkingStepProps) => {
   const { networking: n } = useRosaHcpWizardStrings();
+  const isProxyStepHidden = useIsStepHidden(STEP_IDS.CLUSTER_WIDE_PROXY);
 
   const cidrDefaultChecked = useWatch({ name: 'cidr_default' });
   const selectedVPCRaw = useWatch({ name: 'selected_vpc' });
@@ -86,9 +89,11 @@ export const Networking = (props: NetworkingStepProps) => {
 
       <ExpandableSection isIndented toggleText={n.advancedToggle}>
         <FieldWrapperStack>
-          <FieldWrapper>
-            <WizCheckbox name="configure_proxy" schema={clusterValidationSchema} />
-          </FieldWrapper>
+          {!isProxyStepHidden && (
+            <FieldWrapper>
+              <WizCheckbox name="configure_proxy" schema={clusterValidationSchema} />
+            </FieldWrapper>
+          )}
 
           <FieldWrapperBlock>
             <Alert

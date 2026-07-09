@@ -7,12 +7,14 @@ import { ROSAHCPWizardBody } from './ROSAHCPWizardBody';
 import { RosaHcpWizardValidationProvider } from './rosaHcpWizardValidationContext';
 import { useRosaHcpWizardValidators } from './stringsProvider/RosaHcpWizardStringsContext';
 import { clusterValidationSchema, getClusterValidationSchemaDefaultValues } from './yupSchemas';
+import { WizardConfigProvider } from './WizardConfigContext';
 
 const clusterYupResolver = yupResolver(clusterValidationSchema) as Resolver<
   Partial<ROSAHCPCluster>
 >;
 
 export function RosaHcpWizardFormProvider(props: RosaHCPWizardProps) {
+  const { config = {}, ...restProps } = props;
   const msgs = useRosaHcpWizardValidators();
 
   const resolver = useCallback<Resolver<Partial<ROSAHCPCluster>>>(
@@ -30,10 +32,12 @@ export function RosaHcpWizardFormProvider(props: RosaHCPWizardProps) {
   });
 
   return (
-    <FormProvider {...methods}>
-      <RosaHcpWizardValidationProvider>
-        <ROSAHCPWizardBody {...props} />
-      </RosaHcpWizardValidationProvider>
-    </FormProvider>
+    <WizardConfigProvider config={config}>
+      <FormProvider {...methods}>
+        <RosaHcpWizardValidationProvider>
+          <ROSAHCPWizardBody {...restProps} />
+        </RosaHcpWizardValidationProvider>
+      </FormProvider>
+    </WizardConfigProvider>
   );
 }
