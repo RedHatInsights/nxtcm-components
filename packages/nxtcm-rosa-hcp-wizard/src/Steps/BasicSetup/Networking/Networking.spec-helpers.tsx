@@ -14,7 +14,9 @@ import {
   type ROSAHCPCluster,
   type SubnetsResource,
   type VpcListResource,
+  type WizardConfig,
 } from '../../../types';
+import { WizardConfigProvider } from '../../../WizardConfigContext';
 import { Networking } from './Networking';
 import { mockSubnets, mockVpcList } from './Networking.fixtures';
 import { clusterValidationSchema } from '../../../yupSchemas';
@@ -57,6 +59,7 @@ export type NetworkingMountProps = {
   vpcList?: VpcListResource;
   subnets?: SubnetsResource;
   defaultValues?: Partial<ROSAHCPCluster>;
+  config?: WizardConfig;
 };
 
 const CT_WIZARD_DATA = makeDefaultRosaHcpCtWizardData();
@@ -65,6 +68,7 @@ export const NetworkingMount: React.FC<NetworkingMountProps> = ({
   vpcList,
   subnets,
   defaultValues = {},
+  config = {},
 }) => {
   const validationContext = useMemo<ValidationSchemaContext>(
     () => ({
@@ -98,11 +102,13 @@ export const NetworkingMount: React.FC<NetworkingMountProps> = ({
   };
 
   return withRosaCt(
-    <FormProvider {...methods}>
-      <Form>
-        <WizardFieldMetaChangeEffectsCtHarness wizardData={CT_WIZARD_DATA} />
-        <Networking vpcList={vpcListProps} subnets={subnetsProps} />
-      </Form>
-    </FormProvider>
+    <WizardConfigProvider config={config}>
+      <FormProvider {...methods}>
+        <Form>
+          <WizardFieldMetaChangeEffectsCtHarness wizardData={CT_WIZARD_DATA} />
+          <Networking vpcList={vpcListProps} subnets={subnetsProps} />
+        </Form>
+      </FormProvider>
+    </WizardConfigProvider>
   );
 };

@@ -101,7 +101,12 @@ const EditSecurityGroups = ({
   };
 
   if (showEmptyAlert && !apiError) {
-    return <SecurityGroupsEmptyAlert refreshVPCCallback={refreshVPCCallback} />;
+    return (
+      <SecurityGroupsEmptyAlert
+        refreshVPCCallback={refreshVPCCallback}
+        isVPCLoading={isVPCLoading}
+      />
+    );
   }
 
   if (incompatibleClusterVersion) {

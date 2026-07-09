@@ -234,8 +234,8 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     proxyNextStepInfo: 'You will be able to configure cluster-wide proxy details in the next step',
     cidrAlertTitle: 'CIDR ranges cannot be changed after you create your cluster',
     cidrAlertBody:
-      "Specify non-overlapping ranges for machine, service, and pod ranges. Make sure that your internal organization's networking ranges do not overlap with ours, which are Kubernetes. Each range should correspond to the first IP address in their subnet.",
-    cidrLearnMoreLink: 'Learn more about configuring network settings',
+      'Specify non-overlapping CIDR ranges for the machine, service, and pod fields. Enter the network address for each range—the first IP address in the subnet (for example, 10.0.0.0/16, not 10.0.0.1/16). Ensure these ranges do not overlap with each other or with networks already in use in your environment, including your VPC subnets.',
+    cidrLearnMoreLink: 'Learn more about CIDR range definitions',
     useDefaultsLabel: 'Use default values',
     useDefaultsHelp:
       'The values are safe defaults. However, you must ensure that the Machine CIDR matches the selected VPC subnets.',
