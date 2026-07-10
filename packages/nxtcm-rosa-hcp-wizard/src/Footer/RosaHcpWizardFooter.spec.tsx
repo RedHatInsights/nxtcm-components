@@ -437,6 +437,35 @@ test.describe('RosaHcpWizardFooter — Review Submit validation alert', () => {
   });
 });
 
+test.describe('RosaHcpWizardFooter — submission payload', () => {
+  test('calls onSubmit with a YAML string when the Review step passes validation', async ({
+    mount,
+  }) => {
+    let receivedPayload: unknown;
+    const component = await mount(
+      <RosaHcpWizardValidationMount
+        defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES}
+        onSubmit={(yamlString) => {
+          receivedPayload = yamlString;
+          return Promise.resolve();
+        }}
+      />
+    );
+
+    await advanceToReviewStep(component);
+    await expect(component.getByText(review.sectionLabel, { exact: true })).toBeVisible();
+
+    await component.getByRole('button', { name: FOOTER_SUBMIT }).click();
+
+    // onSubmit must receive a non-empty string, not an empty string, undefined, or a JSON object
+    expect(typeof receivedPayload).toBe('string');
+    expect(receivedPayload).not.toBe('');
+    expect(typeof receivedPayload === 'string' && receivedPayload.trimStart().startsWith('{')).toBe(
+      false
+    );
+  });
+});
+
 test.describe('RosaHcpWizardFooter — validation alert after failed Review Submit', () => {
   test('hides the alert on Roles and policies when derived prefix and role ARNs become valid', async ({
     mount,

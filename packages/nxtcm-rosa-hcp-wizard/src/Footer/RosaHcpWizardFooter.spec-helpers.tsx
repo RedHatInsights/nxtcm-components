@@ -2,7 +2,7 @@
  * Playwright CT mount target for footer step-validation tests.
  * Keep a single mount export in this file (see Details.spec-helpers / NumberInput.spec).
  */
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { FormProvider, useForm, type Resolver } from 'react-hook-form';
 import { Wizard, WizardStep } from '@patternfly/react-core';
 
@@ -30,7 +30,7 @@ import {
   mockRoles,
 } from '../Steps/BasicSetup/Details/Details.fixtures';
 import { STEP_IDS } from '../constants';
-import { rosaHcpWizardFooter } from './RosaHcpWizardFooter';
+import { createRosaHcpWizardFooter, rosaHcpWizardFooter } from './RosaHcpWizardFooter';
 import { FOOTER_CT_BASE_FORM_VALUES } from './rosaHcpWizardFooter.ctDefaults';
 import { RosaHcpWizardValidationProvider } from '../rosaHcpWizardValidationContext';
 import fixtures from '../ROSAHCPWizard.fixtures';
@@ -49,14 +49,25 @@ import {
 
 export type RosaHcpWizardValidationMountProps = {
   defaultValues?: Partial<ROSAHCPCluster>;
+  /** When provided, a real footer is wired so onSubmit receives the YAML string. */
+  onSubmit?: (yamlString: string) => Promise<void>;
 };
+
+/** Minimal YAML stub returned by getYaml when onSubmit is wired in tests. */
+const STUB_FORM_YAML = 'kind: ROSAControlPlane\nmetadata:\n  name: stub';
 
 export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMountProps> = ({
   defaultValues = {},
+  onSubmit,
 }) => {
   const resolver = useMemo(
     () => createClusterValidationResolver(defaultRosaHcpWizardValidatorStrings),
     []
+  );
+  const getFormYaml = useCallback(() => STUB_FORM_YAML, []);
+  const footer = useMemo(
+    () => (onSubmit ? createRosaHcpWizardFooter(onSubmit, getFormYaml) : rosaHcpWizardFooter),
+    [onSubmit, getFormYaml]
   );
 
   const methods = useForm<ROSAHCPCluster>({
@@ -171,7 +182,7 @@ export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMount
     <FormProvider {...methods}>
       <RosaHcpWizardValidationProvider>
         <WizardFieldMetaChangeEffectsRunner wizardData={wizardData} />
-        <Wizard height={720} footer={rosaHcpWizardFooter} isVisitRequired>
+        <Wizard height={720} footer={footer} isVisitRequired>
           <WizardStep
             isExpandable
             name={sl.basicSetup}
