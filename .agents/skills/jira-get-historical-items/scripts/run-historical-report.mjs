@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { DEFAULT_STORY_POINTS_FIELD } from './lib/constants.mjs';
 /**
  * Validate fetch JSON, process historical rows, and write a single report JSON.
  *
@@ -6,7 +7,7 @@
  *   node run-historical-report.mjs \
  *     --input /abs/path/.jira-historical-issues.json \
  *     --workspace /abs/path/to/workspace \
- *     --jql 'parent = FCN-41 AND created >= -20d'
+ *     --jql 'parent = <PROJECT>-41 AND created >= -20d'
  *
  * Writes:
  *   {workspace}/.jira-historical-report.json
@@ -23,7 +24,7 @@ function parseArgs(argv) {
     workspace: '',
     jql: '',
     reportOutput: '',
-    storyPointsField: 'customfield_10028',
+    storyPointsField: DEFAULT_STORY_POINTS_FIELD,
     stdout: false,
   };
 
@@ -45,7 +46,7 @@ Options:
   --jql                    JQL used for the search (stored in report)
   --report-output          Override report JSON path
   --stdout                 Print full report JSON to stdout
-  --story-points-field     Story points custom field id (default: customfield_10028)`);
+  --story-points-field     Story points custom field id (see constants.mjs DEFAULT_STORY_POINTS_FIELD)`);
       process.exit(0);
     }
   }

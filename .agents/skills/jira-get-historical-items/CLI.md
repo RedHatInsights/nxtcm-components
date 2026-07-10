@@ -17,7 +17,7 @@ If the user did **not** pick a route, the agent must **ask first** — see [SKIL
 
 Do **not** use CLI because MCP was slow, Write was awkward, or env vars happen to exist — those are not reasons to break route lock.
 
-The agent **stops after giving the command** unless asked to run it or the output file already exists. By default the fetch script also writes `.jira-historical-report.json` in the same workspace — the agent can read that file after the user confirms fetch is done.
+The agent **stops after giving the command** unless asked to run it or the output file already exists. By default the fetch script also writes the report artifact in the same `{workspace}` — see [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact write paths.
 
 ---
 
@@ -46,7 +46,7 @@ chmod 600 ~/.config/jira-fetch.env
 ```bash
 # ~/.config/jira-fetch.env
 JIRA_SITE=redhat.atlassian.net
-JIRA_EMAIL=you@redhat.com
+JIRA_EMAIL=your-jira-email@example.com
 JIRA_API_TOKEN=your-api-token
 ```
 
@@ -69,7 +69,7 @@ JIRA_API_TOKEN=your-api-token
 Export before running, or inline on the command:
 
 ```bash
-export JIRA_EMAIL='you@redhat.com'
+export JIRA_EMAIL='your-jira-email@example.com'
 export JIRA_API_TOKEN='your-api-token'
 ```
 
@@ -77,14 +77,16 @@ export JIRA_API_TOKEN='your-api-token'
 
 ## Command
 
-Use **absolute** `--output`. Replace `{workspace}` with the Cursor workspace root (or wherever artifacts should live).
+Resolve `{workspace}` and artifact paths per [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact write paths. Use **absolute** `--output` and `--workspace` — do not ask the user where to save.
 
 ```bash
-node .agents/skills/jira-get-historical-items/scripts/fetch-historical-items.mjs \
-  --jql 'parent = FCN-41 AND created >= -20d' \
-  --output /absolute/path/to/workspace/.jira-historical-issues.json \
+node scripts/fetch-historical-items.mjs \
+  --jql 'parent = <PROJECT>-41 AND created >= -20d' \
+  --output {absolute-fetch-artifact-path} \
   --env-file ~/.config/jira-fetch.env
 ```
+
+`{absolute-fetch-artifact-path}` — fetch artifact from CONVENTIONS § Historical artifact write paths.
 
 With env vars instead of `--env-file`, omit that flag after `export JIRA_EMAIL` / `JIRA_API_TOKEN`.
 
@@ -96,11 +98,13 @@ With env vars instead of `--env-file`, omit that flag after `export JIRA_EMAIL` 
 | `--output`, `-o` | *(required)* | Output JSON path |
 | `--env-file` | — | `.env` file with `JIRA_EMAIL`, `JIRA_API_TOKEN`, optional `JIRA_SITE` |
 | `--site` | `redhat.atlassian.net` | Jira hostname |
-| `--story-points-field` | `customfield_10028` | FCN story points field |
+| `--story-points-field` | from report or constants | Story points custom field id |
 | `--concurrency` | `10` | Parallel issue fetches |
 | `--max-results` | `100` | Cap on issues returned — wider date windows may need a narrower JQL instead of raising this |
-| `--workspace`, `-w` | output file directory | Where `.jira-historical-report.json` is written |
+| `--workspace`, `-w` | output file directory | Same `{workspace}` as CONVENTIONS — report artifact directory |
 | `--skip-report` | off | Fetch only; skip report pipeline |
+
+Artifact paths: [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact write paths.
 
 ### 0 results
 
@@ -110,19 +114,19 @@ Writes `[]` to the output file and an empty report JSON. The agent should post J
 
 ## Output format
 
-Same as MCP `getJiraIssue` with `expand=changelog`:
+Same as MCP `mcp__jira-mcp-server__getJiraIssue` with `expand=changelog`:
 
 ```json
 [
   {
-    "key": "FCN-533",
+    "key": "<PROJECT>-533",
     "fields": {
       "summary": "…",
       "description": "…",
       "status": { "name": "Closed" },
       "resolution": { "name": "Done" },
       "issuetype": { "name": "Story" },
-      "customfield_10028": 3
+      "<storyPointsField>": 3
     },
     "changelog": {
       "histories": [ … ]
@@ -137,17 +141,17 @@ Array of issues. Each must have non-empty `changelog.histories` (the script pagi
 
 ## After fetch
 
-By default the script also runs the report pipeline and writes `{workspace}/.jira-historical-report.json` next to the fetch file (same artifact as the MCP path after step 4).
+By default the script also runs the report pipeline in the same `{workspace}` per [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact write paths.
 
 Tell the agent fetch is done (e.g. "continue") so it can post JQL + report + **Saved files** links in chat. Use `--skip-report` only if you want fetch JSON without the report.
 
 To re-run the report from an existing fetch file:
 
 ```bash
-node .agents/skills/jira-get-historical-items/scripts/run-historical-report.mjs \
-  --input /absolute/path/to/workspace/.jira-historical-issues.json \
-  --workspace /absolute/path/to/workspace \
-  --jql 'parent = FCN-41 AND created >= -20d'
+node scripts/run-historical-report.mjs \
+  --input {absolute-fetch-artifact-path} \
+  --workspace {workspace} \
+  --jql 'parent = <PROJECT>-41 AND created >= -20d'
 ```
 
 ---
@@ -160,7 +164,7 @@ node .agents/skills/jira-get-historical-items/scripts/run-historical-report.mjs 
 | `fetch is not defined` / syntax errors on `.mjs` | Upgrade to **Node.js 18+** — check with `node --version` |
 | HTTP 401 | Bad email/token; regenerate API token |
 | HTTP 400 on JQL | Fix JQL syntax; use `created >= -20d` not `createdDate` |
-| `field 'customfield_10028' is not allowed` on search | Should not happen — script requests fields on issue fetch, not search-only |
-| Permission denied writing output | Use a workspace path you can write to; prefer absolute paths |
+| `field '<storyPointsField>' is not allowed` on search | Should not happen — script requests fields on issue fetch, not search-only |
+| Permission denied writing output | Resolve `{workspace}` per CONVENTIONS; use absolute paths the host can write |
 
 **Do not use** the Atlassian CLI (`acli`) for this skill — `acli jira workitem view` returns `"changelog": null`. Use `fetch-historical-items.mjs` (this path) or MCP instead.

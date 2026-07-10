@@ -6,9 +6,9 @@
  *   node summarize-cycle-times.mjs --input /abs/path/.jira-historical-report.json
  */
 
+import { readFileSync } from 'fs';
 import { buildSummaryReport } from './lib/summarize.mjs';
 import { resolveInputPath } from './lib/paths.mjs';
-import { readJsonFile } from './lib/read-json.mjs';
 
 function parseArgs(argv) {
   const opts = { input: '' };
@@ -31,8 +31,8 @@ function parseArgs(argv) {
 }
 
 function readItems(opts) {
-  const inputPath = resolveInputPath(opts.input);
-  const parsed = readJsonFile(inputPath);
+  const raw = readFileSync(resolveInputPath(opts.input), 'utf8');
+  const parsed = JSON.parse(raw);
   if (Array.isArray(parsed)) return parsed;
   if (parsed && Array.isArray(parsed.items)) return parsed.items;
   throw new Error(

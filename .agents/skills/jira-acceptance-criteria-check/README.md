@@ -1,6 +1,6 @@
 # jira-acceptance-criteria-check
 
-A [Cursor Agent Skill](https://cursor.com/docs/agent/skills) that classifies Jira work items by type, scores description and type-specific content 1–5, drafts suggested ticket content for low scores, and reports **Ready** / **Needs review** / **Needs Refinement**. One issue → chat; two or more → markdown file. Optionally posts Needs review drafts to Jira via MCP.
+A Fleet **agent skill** that classifies Jira work items by type, scores description and type-specific content 1–5, drafts suggested ticket content for low scores, and reports **Ready** / **Needs review** / **Needs Refinement**. One issue → chat; two or more → markdown file. Optionally posts Needs review drafts to Jira via MCP.
 
 Use before sprint planning or backlog grooming — not a one-off “looks fine” pass.
 
@@ -8,7 +8,7 @@ Use before sprint planning or backlog grooming — not a one-off “looks fine�
 
 ### Atlassian Jira MCP (required)
 
-This skill **requires** the **Atlassian MCP server** (`user-atlassian-mcp-server`) to be enabled and authenticated in Cursor.
+This skill **requires** the **Atlassian MCP server** (Atlassian MCP server) to be enabled and authenticated in the agent host.
 
 | Capability | MCP required? |
 |------------|---------------|
@@ -18,9 +18,9 @@ This skill **requires** the **Atlassian MCP server** (`user-atlassian-mcp-server
 
 **Setup:**
 
-1. Cursor → **Settings → MCP** — enable the **Atlassian** server.
-2. Complete auth when prompted (`mcp_auth` for `user-atlassian-mcp-server`).
-3. Confirm tools such as `getJiraIssue`, `searchJiraIssuesUsingJql`, and `addCommentToJiraIssue` are available.
+1. Enable the **Atlassian MCP server** in the host's MCP settings.
+2. Complete auth when prompted (re-authenticate the Atlassian MCP server).
+3. Confirm Jira MCP tools are available — **prefer** Fleet-standard `mcp__jira-mcp-server__*`; on Cursor, **fallback** to bare tool names on `user-atlassian-mcp-server` (see [CONVENTIONS.md](CONVENTIONS.md) § MCP transport).
 
 Without MCP, the skill **cannot** fetch Jira issues or post suggestions. Pasted draft bodies ([DRAFT_INPUT.md](DRAFT_INPUT.md)) can still be scored in isolation, but that is not the primary workflow.
 
@@ -47,23 +47,25 @@ Type mismatch (Jira issuetype vs ticket content) is flagged as **Recommend chang
 
 ### Install the skill
 
-Copy this folder into a skills location Cursor reads:
+Install per host (see [Host compatibility](../jira-acceptance-criteria-check/CONVENTIONS.md#host-compatibility)):
 
-| Location | Scope |
-|----------|-------|
-| `~/.cursor/skills/jira-acceptance-criteria-check/` | Personal — all projects |
-| `.cursor/skills/jira-acceptance-criteria-check/` | Project — shared with the repo |
+| Host | Install path |
+|------|--------------|
+| **Fleet repo** | `skills/jira-acceptance-criteria-check/` — run `make install-opencode`, `make install-claude`, or `make install-cursor` from [agentic-sdlc](https://github.com/OpenShift-Fleet/agentic-sdlc) |
+| **OpenCode** | `~/.config/opencode/skills/jira-acceptance-criteria-check/` |
+| **Cursor** | `~/.cursor/skills/jira-acceptance-criteria-check/` or `.cursor/skills/jira-acceptance-criteria-check/` in the project |
+| **Claude Code** | Fleet plugin via `make install-claude` (skills ship in the plugin) |
 
-Ensure **Atlassian MCP** is configured (see [Requirements](#requirements)).
+Ensure **Atlassian MCP** is configured when using Jira fetch or writes (see [Requirements](#requirements) where present).
 
-### Trigger in Cursor
+### Trigger the skill
 
 Ask the agent to run the skill — for example:
 
-- “Run jira-acceptance-criteria-check on `FCN-232`”
-- “Check acceptance criteria for my open stories in FCN”
+- “Run jira-acceptance-criteria-check on `<PROJECT>-232`”
+- “Check acceptance criteria for my open stories in <PROJECT>”
 - “Score these draft tickets before I create them in Jira” (paste bodies — no fetch)
-- “JQL: `parent = FCN-100 AND status != Done` — acceptance criteria check”
+- “JQL: `parent = <PROJECT>-100 AND status != Done` — acceptance criteria check”
 
 The skill is **user-invocable** (`SKILL.md` frontmatter). The description helps the agent auto-select it for ticket-quality tasks.
 
@@ -165,7 +167,7 @@ Full scale and combination rules → [SCORING.md](SCORING.md). Per-type weak/str
 
 | Problem | What to check |
 |---------|----------------|
-| Fetch fails | Atlassian MCP enabled and authenticated; retry `mcp_auth` |
+| Fetch fails | Atlassian MCP enabled and authenticated; retry Atlassian MCP authentication |
 | No issues returned | JQL too narrow; verify keys exist and you have access |
 | Post step skipped | No Needs review items, draft-only ids, or duplicate suggestion comment already on issue |
 | Wrong type assigned | Edit **Definition** / **Quick signals** in the relevant `JIRA_TYPE/*.md` file |

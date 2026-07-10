@@ -76,7 +76,7 @@ When the epic wires **multiple backend calls** (REST, GraphQL, fetches, etc.):
 When epic **Out of scope** lists related work or exclusions, **do not** re-slice owned scope:
 
 - Skip child items for excluded work entirely
-- Note `Excluded — epic Out of scope (FCN-200)` in report optional notes when helpful
+- Note `Excluded — epic Out of scope (<PROJECT>-200)` in report optional notes when helpful
 - This epic’s items only cover its AC
 
 ### 4. Test Plan → tasks

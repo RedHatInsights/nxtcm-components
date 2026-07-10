@@ -1,6 +1,6 @@
 # jira-epic-breakdown
 
-A [Cursor Agent Skill](https://cursor.com/docs/agent/skills) that decomposes a **Jira epic** into child work items — type, summary, dependencies, and **paste-ready ticket bodies** — with jira-acceptance-criteria-check-style review before delivery. Prints the full breakdown in chat, then asks whether to create children in Jira (MCP only) or do nothing.
+A Fleet **agent skill** that decomposes a **Jira epic** into child work items — type, summary, dependencies, and **paste-ready ticket bodies** — with jira-acceptance-criteria-check-style review before delivery. Prints the full breakdown in chat, then asks whether to create children in Jira (MCP only) or do nothing.
 
 Use when an epic is ready to slice into stories, tasks, spikes, or bugs — not when you still need to draft the epic.
 
@@ -22,9 +22,9 @@ You can run the full breakdown flow **without MCP** if you paste the epic body a
 
 **Setup (when using Jira fetch or creates):**
 
-1. Cursor → **Settings → MCP** — enable the **Atlassian** server (`user-atlassian-mcp-server`).
-2. Complete auth when prompted (`mcp_auth` for `user-atlassian-mcp-server`).
-3. Confirm tools such as `getJiraIssue` and `createJiraIssue` are available.
+1. Enable the **Atlassian MCP server** in the host's MCP settings.
+2. Complete auth when prompted (re-authenticate the Atlassian MCP server).
+3. Confirm Jira MCP tools are available — **prefer** Fleet-standard `mcp__jira-mcp-server__*`; on Cursor, **fallback** to bare tool names on `user-atlassian-mcp-server` (see [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § MCP transport).
 
 Without MCP, the agent can still break down from pasted text; failed fetch → ask you to paste the epic or fix auth.
 
@@ -58,22 +58,24 @@ The agent follows [SKILL.md](SKILL.md) in order:
 
 ### Install the skill
 
-Copy this folder into a skills location Cursor reads:
+Install per host (see [Host compatibility](../jira-acceptance-criteria-check/CONVENTIONS.md#host-compatibility)):
 
-| Location | Scope |
-|----------|-------|
-| `~/.cursor/skills/jira-epic-breakdown/` | Personal — all projects |
-| `.cursor/skills/jira-epic-breakdown/` | Project — shared with the repo |
+| Host | Install path |
+|------|--------------|
+| **Fleet repo** | `skills/jira-epic-breakdown/` — run `make install-opencode`, `make install-claude`, or `make install-cursor` from [agentic-sdlc](https://github.com/OpenShift-Fleet/agentic-sdlc) |
+| **OpenCode** | `~/.config/opencode/skills/jira-epic-breakdown/` |
+| **Cursor** | `~/.cursor/skills/jira-epic-breakdown/` or `.cursor/skills/jira-epic-breakdown/` in the project |
+| **Claude Code** | Fleet plugin via `make install-claude` (skills ship in the plugin) |
 
-Enable **Atlassian MCP** when you want Jira fetch or create ([Requirements](#requirements)).
+Ensure **Atlassian MCP** is configured when using Jira fetch or writes (see [Requirements](#requirements) where present).
 
-### Trigger in Cursor
+### Trigger the skill
 
 Ask the agent to run the skill — for example:
 
-- “Break down epic FCN-123 into stories and tasks”
+- “Break down epic <PROJECT>-123 into stories and tasks”
 - “Decompose this epic — [paste Description + Acceptance criteria]”
-- “Split FCN-456; frontend/backend split, no spikes”
+- “Split <PROJECT>-456; frontend/backend split, no spikes”
 - “Break down only — table and bodies, skip review” (skips draft review step)
 
 The skill is **user-invocable** (`SKILL.md` frontmatter). The description helps the agent auto-select it for epic decomposition tasks.
@@ -98,7 +100,7 @@ The agent asks what to do with the child items:
 
 | Choice | Behavior |
 |--------|----------|
-| **Create in Jira** | MCP `createJiraIssue` per item in suggested order; parent = epic |
+| **Create in Jira** | MCP `mcp__jira-mcp-server__createJiraIssue` per item in suggested order; parent = epic |
 | **Do nothing** | Breakdown stays in chat for manual filing |
 
 Optional follow-ups (only if **you** ask in a later turn):
@@ -197,7 +199,7 @@ Edit the type rubrics under `jira-acceptance-criteria-check/JIRA_TYPE/` — not 
 |---------|----------------|
 | Agent asked create/do-nothing without showing items | §6 skipped — full breakdown must appear in chat first ([REPORT.md](REPORT.md)) |
 | Agent tried to create without epic key | Epic key required for §7 — paste key or fetch epic first |
-| Fetch or create failed | MCP required for all Jira access — no `acli` fallback; retry `mcp_auth` or paste epic |
+| Fetch or create failed | MCP required for all Jira access — no `acli` fallback; retry Atlassian MCP authentication or paste epic |
 | Spike filed as wrong Jira type | Must be **Story** with `Spike` in summary ([JIRA.md](JIRA.md) § Write) |
 | Bug items for missing features | Net-new work → **story**, not bug ([SKILL.md](SKILL.md) anti-patterns) |
 | Child items don’t match epic sections | Registry **Heading** must match exactly — see [jira-epic-create/SECTIONS/](../jira-epic-create/SECTIONS/) |

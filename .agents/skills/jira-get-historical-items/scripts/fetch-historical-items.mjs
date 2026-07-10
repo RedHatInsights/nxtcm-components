@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { DEFAULT_STORY_POINTS_FIELD } from './lib/constants.mjs';
 /**
  * Fetch Jira issues with changelog via REST API.
  * Writes the same JSON shape as MCP getJiraIssue (array of { key, fields, changelog }).
@@ -7,7 +8,7 @@
  * Usage:
  *   JIRA_EMAIL=user@example.com JIRA_API_TOKEN=... \
  *   node fetch-historical-items.mjs \
- *     --jql 'parent = FCN-41 AND created >= -20d' \
+ *     --jql 'parent = <PROJECT>-41 AND created >= -20d' \
  *     --output /abs/path/.jira-historical-issues.json
  */
 
@@ -36,7 +37,7 @@ function parseArgs(argv) {
     email: '',
     token: '',
     envFile: '',
-    storyPointsField: 'customfield_10028',
+    storyPointsField: DEFAULT_STORY_POINTS_FIELD,
     concurrency: 10,
     maxResults: 100,
     workspace: '',
@@ -72,7 +73,7 @@ Auth:
 Options:
   --jql                    JQL query (required)
   --output, -o             Output JSON path (required; use absolute path)
-  --story-points-field     Story points field id (default: customfield_10028)
+  --story-points-field     Story points field id (see constants.mjs DEFAULT_STORY_POINTS_FIELD)
   --concurrency            Parallel issue fetches (default: 10)
   --max-results            Max issues to fetch (default: 100)
   --workspace, -w          Workspace for report output (default: output file directory)

@@ -12,7 +12,7 @@ Collect the epic to decompose and any constraints. Prefer **conversation history
 
 If neither key nor pasted epic → **ask**:
 
-> Which epic should I break down? Provide a Jira key (e.g. `FCN-123`) or paste the epic Description and Acceptance criteria.
+> Which epic should I break down? Provide a Jira key (e.g. `<PROJECT>-123`) or paste the epic Description and Acceptance criteria.
 
 ---
 
@@ -32,7 +32,7 @@ If neither key nor pasted epic → **ask**:
 ## Infer before asking
 
 1. **Same thread** — epic body from **jira-epic-create** in this conversation
-2. **Jira key** in prompt or branch name (`FCN-123`, `FCN-1234-rosa-hcp`)
+2. **Jira key** in prompt or branch name (`<PROJECT>-123`, `<PROJECT>-1234-rosa-hcp`)
 3. **User pasted** markdown with registry section headings from [jira-epic-create/TEMPLATE.md](../jira-epic-create/TEMPLATE.md) — at minimum **Description** and **Acceptance criteria**
 
 ---

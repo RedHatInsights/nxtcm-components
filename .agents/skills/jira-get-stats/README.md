@@ -1,6 +1,6 @@
 # jira-get-stats
 
-A [Cursor Agent Skill](https://cursor.com/docs/agent/skills) that summarizes `.jira-historical-report.json` into readable stats — date ranges, issue counts, cycle time distribution, throughput, outliers, and an items table. **Read-only** — no Jira fetch.
+A Fleet **agent skill** that summarizes `.jira-historical-report.json` into readable stats — date ranges, issue counts, cycle time distribution, throughput, outliers, and an items table. **Read-only** — no Jira fetch.
 
 Use when you want to understand a historical baseline — volume, timing, and data quality — without re-fetching Jira or sizing new tickets.
 
@@ -28,7 +28,7 @@ This skill **does not fetch historical data on its own**. It reads an existing `
 
 | Requirement | Details |
 |-------------|---------|
-| **Historical report** | `.jira-historical-report.json` — lookup order: active workspace, then `~/.cursor/skills/` (see [jira-acceptance-criteria-check/CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md)); or a path you provide |
+| **Historical report** | `.jira-historical-report.json` — [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact read lookup; or a path you provide |
 | **Optional fetch file** | `.jira-historical-issues.json` in the same directory — adds Jira **created** date range (auto-detected when present) |
 | **No report yet?** | The agent **stops** and asks you to provide a file **or** run [jira-get-historical-items](../jira-get-historical-items/SKILL.md) |
 
@@ -106,17 +106,23 @@ After each run, chat includes scope, counts, cycle time, throughput, and either 
 
 ### Install the skill
 
-| Location | Scope |
-|----------|-------|
-| `~/.cursor/skills/jira-get-stats/` | Personal — all projects |
-| `.cursor/skills/jira-get-stats/` | Project — shared with the repo |
+Install per host (see [Host compatibility](../jira-acceptance-criteria-check/CONVENTIONS.md#host-compatibility)):
 
-### Trigger in Cursor
+| Host | Install path |
+|------|--------------|
+| **Fleet repo** | `skills/jira-get-stats/` — run `make install-opencode`, `make install-claude`, or `make install-cursor` from [agentic-sdlc](https://github.com/OpenShift-Fleet/agentic-sdlc) |
+| **OpenCode** | `~/.config/opencode/skills/jira-get-stats/` |
+| **Cursor** | `~/.cursor/skills/jira-get-stats/` or `.cursor/skills/jira-get-stats/` in the project |
+| **Claude Code** | Fleet plugin via `make install-claude` (skills ship in the plugin) |
+
+Ensure **Atlassian MCP** is configured when using Jira fetch or writes (see [Requirements](#requirements) where present).
+
+### Trigger the skill
 
 Ask the agent — for example:
 
-- “Show stats from the FCN historical report”
-- “Run jira-get-stats on `~/.cursor/skills/.jira-historical-report.json`”
+- “Show stats from the `<PROJECT>` historical report”
+- “Run jira-get-stats — resolve the report per CONVENTIONS read lookup”
 - “Summarize closed work — counts, cycle time, and throughput”
 
 **Not this skill:** fetching Jira or building `.jira-historical-report.json` → use [jira-get-historical-items](../jira-get-historical-items/SKILL.md) first.
@@ -130,7 +136,7 @@ The skill is **user-invocable** (`SKILL.md` frontmatter).
 | Input | When |
 |-------|------|
 | **Historical report** path or prior jira-get-historical-items run | Always — agent stops if missing |
-| **Report path override** | When the report is not in the workspace or skills dir |
+| **Report path override** | When the report is not found via [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact read lookup |
 
 ### No report yet?
 
@@ -216,8 +222,8 @@ jira-acceptance-criteria-check/CONVENTIONS.md
 | Huge items table in chat | Expected for ≤15 items; >15 uses canvas — see [SKILL.md](SKILL.md) step 4 |
 | `Input file not found` | Use **absolute paths** for `--input` and `--issues-input` |
 
-Site default: **redhat.atlassian.net**. Story points field default (FCN): `customfield_10028` (or `meta.storyPointsField` from the report).
+Site default: **redhat.atlassian.net**. Story points field: load `meta.storyPointsField` from the report when present.
 
 ---
 
-*Created by Kim Doberstein.*
+*Originally created by Kim Doberstein.*

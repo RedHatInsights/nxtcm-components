@@ -81,7 +81,7 @@ The example below shows **structure only**. `###` headings and mismatch lines mu
 ```markdown
 # Acceptance criteria check report
 
-**JQL:** `project = fcn AND …`
+**JQL:** `project = <PROJECT> AND …`
 **Issues:** 4
 **Transport:** MCP
 
@@ -89,16 +89,16 @@ The example below shows **structure only**. `###` headings and mismatch lines mu
 
 # Ready
 
-- FCN-217 - Implement data ownership handoff between wizard form and YAML review step
+- <PROJECT>-217 - Implement data ownership handoff between wizard form and YAML review step
 
-- FCN-999 - Backend config for feature flags
+- <PROJECT>-999 - Backend config for feature flags
   **Recommend change to task**
 
 ---
 
 # Needs review
 
-## FCN-232 - Implement versions in ACM
+## <PROJECT>-232 - Implement versions in ACM
 
 **Recommend change to story**
 
@@ -120,7 +120,7 @@ The example below shows **structure only**. `###` headings and mismatch lines mu
 
 ---
 
-## FCN-500 - Login fails after password reset
+## <PROJECT>-500 - Login fails after password reset
 
 ### Description
 
@@ -143,7 +143,7 @@ The example below shows **structure only**. `###` headings and mismatch lines mu
 
 # Needs Refinement
 
-- FCN-245 - Prerequisites page for ACM
+- <PROJECT>-245 - Prerequisites page for ACM
 
 - ABC-3 - Summary only ticket with no context
 ```

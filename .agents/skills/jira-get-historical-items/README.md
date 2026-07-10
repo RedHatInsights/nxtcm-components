@@ -1,6 +1,6 @@
 # jira-get-historical-items
 
-A [Cursor Agent Skill](https://cursor.com/docs/agent/skills) that builds a historical baseline from Jira work — fetch issues with changelog (CLI or MCP), compute cycle time and p75 percentiles, and write `.jira-historical-report.json` for sizing calibration.
+A Fleet **agent skill** that builds a historical baseline from Jira work — fetch issues with changelog (CLI or MCP), compute cycle time and p75 percentiles, and write `.jira-historical-report.json` for sizing calibration.
 
 Use when you need data from real team work — closed items for cycle time, and pointed Done items (including bugs still in flight) for story-point calibration — not to look up a single ticket.
 
@@ -24,12 +24,12 @@ Historical data is most useful when the window is **narrow and recent**. Asking 
 
 **Done but not Closed:** pointed stories, tasks, and bugs with Done resolution can appear in the report even when status is still open or in progress. They contribute **`storyPoints`** for [jira-get-estimates](../jira-get-estimates/SKILL.md) calibration; **`completionDate`** and **`cycleTime`** are filled only when status is **Closed**. That is intentional — pointed work without cycle time still helps humans and bots size new items.
 
-Looser JQL is fine when you want that pointing signal — e.g. `project = FCN AND updated >= -90d` fetches open tickets too; only **resolution Done** items land in `.jira-historical-report.json`. They still cost fetch time and count toward the **100-issue cap**, so narrowing JQL is a performance tip, not a hard requirement.
+Looser JQL is fine when you want that pointing signal — e.g. `project = <PROJECT> AND updated >= -90d` fetches open tickets too; only **resolution Done** items land in `.jira-historical-report.json`. They still cost fetch time and count toward the **100-issue cap**, so narrowing JQL is a performance tip, not a hard requirement.
 
 **Example JQL** for cycle-time calibration (adjust project and window):
 
 ```text
-project = FCN AND status = Closed AND resolution = Done AND type in (Story, Task) AND updated >= -90d
+project = <PROJECT> AND status = Closed AND resolution = Done AND type in (Story, Task) AND updated >= -90d
 ```
 
 Items **closed without** Done resolution (won’t fix, duplicate, cancelled) are skipped at processing — add `resolution = Done` in JQL to avoid fetching them.
@@ -59,8 +59,9 @@ The agent asks how to fetch unless you already said **CLI** or **MCP**.
 
 **MCP setup:**
 
-1. Cursor → **Settings → MCP** — enable **Atlassian** (`user-atlassian-mcp-server`).
-2. Complete auth when prompted (`mcp_auth`).
+1. Enable the **Atlassian MCP server** in the host's MCP settings.
+2. Complete MCP authentication when prompted.
+3. Confirm Jira MCP tools are available — **prefer** Fleet-standard `mcp__jira-mcp-server__*`; on Cursor, **fallback** to bare tool names on `user-atlassian-mcp-server` (see [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § MCP transport).
 
 Once you pick a path, the agent **locks** to it for that run — no silent switching if something fails.
 
@@ -72,15 +73,15 @@ Once you pick a path, the agent **locks** to it for that run — no silent switc
 
 1. **Discovery** — confirm what to include (project, types, status, date window) and **CLI vs MCP** ([SKILL.md](SKILL.md) §0).
 2. **Build JQL** — from your filters or paste JQL as-is.
-3. **Fetch** — save raw issues + changelog to `.jira-historical-issues.json`.
+3. **Fetch** — save raw issues + changelog to the fetch artifact ([CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact write paths).
 4. **Process** — keep resolution **Done**; compute dates and cycle time (cycle time only when status is **Closed**).
-5. **Report** — write `.jira-historical-report.json`; post JQL, counts, summary, and **clickable file links** in chat ([REPORT.md](REPORT.md)).
+5. **Report** — write the report artifact; post JQL, counts, summary, and **clickable file links** in chat ([REPORT.md](REPORT.md)).
 
 ---
 
 ## Output
 
-Two JSON files in your **workspace** (absolute paths posted in chat after each successful run):
+Both JSON artifacts are written under the resolved **`{workspace}`** for the run — see [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact write paths. The agent posts **absolute paths** in chat after each successful run; it does not ask where to save.
 
 | File | Contents |
 |------|----------|
@@ -112,19 +113,25 @@ The report also includes **75th-percentile cycle time** grouped by issue type an
 
 ### Install the skill
 
-| Location | Scope |
-|----------|-------|
-| `~/.cursor/skills/jira-get-historical-items/` | Personal — all projects |
-| `.cursor/skills/jira-get-historical-items/` | Project — shared with the repo |
+Install per host (see [Host compatibility](../jira-acceptance-criteria-check/CONVENTIONS.md#host-compatibility)):
 
-### Trigger in Cursor
+| Host | Install path |
+|------|--------------|
+| **Fleet repo** | `skills/jira-get-historical-items/` — run `make install-opencode`, `make install-claude`, or `make install-cursor` from [agentic-sdlc](https://github.com/OpenShift-Fleet/agentic-sdlc) |
+| **OpenCode** | `~/.config/opencode/skills/jira-get-historical-items/` |
+| **Cursor** | `~/.cursor/skills/jira-get-historical-items/` or `.cursor/skills/jira-get-historical-items/` in the project |
+| **Claude Code** | Fleet plugin via `make install-claude` (skills ship in the plugin) |
+
+Ensure **Atlassian MCP** is configured when using Jira fetch or writes (see [Requirements](#requirements) where present).
+
+### Trigger the skill
 
 Ask the agent — for example:
 
-- “Get historical Jira items for project FCN — closed stories and tasks, last 90 days”
-- “Build a cycle-time report for parent FCN-41, resolution Done, updated last 6 months”
+- “Get historical Jira items for project `<PROJECT>` — closed stories and tasks, last 90 days”
+- “Build a cycle-time report for parent <PROJECT>-41, resolution Done, updated last 6 months”
 - “Generate `.jira-historical-report.json` for sizing — use the CLI command”
-- Paste exact JQL: `project = FCN AND status = Closed AND resolution = Done AND updated >= -180d`
+- Paste exact JQL: `project = <PROJECT> AND status = Closed AND resolution = Done AND updated >= -180d`
 
 The skill is **user-invocable** (`SKILL.md` frontmatter).
 
@@ -192,7 +199,7 @@ jira-get-historical-items/
 | Empty `completionDate` / missing `cycleTime` on some rows | Item has Done resolution but status is not **Closed** (expected for pointing-only rows), or changelog missing a **To Do → …** or **Closed** transition |
 | CLI: missing credentials | [CLI.md](CLI.md) — create `~/.config/jira-fetch.env` |
 | CLI: `fetch is not defined` | Upgrade to **Node.js 18+** |
-| MCP auth failed | Settings → MCP → Atlassian; run `mcp_auth`; or switch to CLI |
+| MCP auth failed | host MCP settings → Atlassian server; re-authenticate; or switch to CLI |
 | Want estimates from the report | Run [jira-get-estimates](../jira-get-estimates/SKILL.md) with the saved report path |
 
 Site and story-points defaults: [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md#jira-site-defaults).

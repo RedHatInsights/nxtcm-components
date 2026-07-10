@@ -27,7 +27,7 @@ Parent / related are **resolved** only when the user, in this thread:
 |----|--------|
 | Acknowledge what you understood (1–2 sentences) | Output any registry section heading or paste-ready epic |
 | Ask parent + related questions ([§ Ask — parent and related epics](#ask--parent-and-related-epics-mandatory)) | Run repo research or subagents |
-| Use **AskQuestion** when the tool is available | Fetch Jira (no keys yet) |
+| Use a **structured choice prompt** when the host supports multiple-choice UI | Fetch Jira (no keys yet) |
 | Ask other **unresolved** gaps in the same message if known | Use `(add …)`, `TBD`, or “confirm later” in required sections |
 
 **Wait for the user’s reply.** Draft only on a **later turn** after hierarchy is resolved.
@@ -144,9 +144,9 @@ Check in order:
 
 If the user did **not** supply parent or related epic information, **stop and ask** — do not skip silently and do not draft first.
 
-### Prefer AskQuestion
+### Prefer structured choice prompt
 
-When **AskQuestion** is available, use it for structured answers:
+When the host supports multiple-choice UI, use a structured choice prompt:
 
 **Question 1 — Parent epic**
 
@@ -160,7 +160,7 @@ When **AskQuestion** is available, use it for structured answers:
 
 If the user picks “I’ll paste the key,” wait for keys in chat before drafting.
 
-### Fallback (no AskQuestion)
+### Fallback (no multiple-choice UI)
 
 One short message — **only** discovery, no epic body:
 
@@ -169,7 +169,7 @@ One short message — **only** discovery, no epic body:
 > 1. **Parent epic** — issue key, or “none / standalone”?
 > 2. **Related epics** — issue key(s), or “none”?
 >
-> Optional: paste keys like `FCN-100` and I’ll pull context from Jira before drafting.
+> Optional: paste keys like `<PROJECT>-100` and I’ll pull context from Jira before drafting.
 
 Proceed to [JIRA.md](JIRA.md) fetch when keys are given. Record “no parent” / “no related” when user says none.
 
@@ -179,7 +179,7 @@ Do **not** ask again if the user already answered in the same thread.
 
 ## Ask — other gaps (mandatory when unresolved)
 
-Use **AskQuestion** or a numbered list whenever the [Completeness gate](#completeness-gate-mandatory--before-drafting) audit finds a gap. Include in the **same discovery-only message** as parent/related when both are open:
+Use a **structured choice prompt** or a numbered list whenever the [Completeness gate](#completeness-gate-mandatory--before-drafting) audit finds a gap. Include in the **same discovery-only message** as parent/related when both are open:
 
 | Gap | Example question |
 |-----|------------------|
@@ -233,7 +233,7 @@ I can draft the epic once a few items are clear:
 
 Include additional questions only when the user's prompt or research already implies them — e.g. submit resources when submit behavior is in scope but kinds are unknown; parity link when the user said to mirror an existing screen but did not paste the URL.
 
-[AskQuestion UI when available]
+[structured choice prompt when the host supports it]
 ```
 
 **Wrong:** full epic body with registry headings + “placeholders to confirm” at the bottom.

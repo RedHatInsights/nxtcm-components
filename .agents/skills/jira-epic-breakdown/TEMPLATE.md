@@ -1,6 +1,6 @@
 # Output template
 
-Deliver in this order **in chat** — the user reads this before any “create in Jira?” prompt. Do not wrap the full breakdown in one outer code fence. Do not replace this with a summary, file path only, or AskQuestion without the sections below.
+Deliver in this order **in chat** — the user reads this before any “create in Jira?” prompt. Do not wrap the full breakdown in one outer code fence. Do not replace this with a summary, file path only, or a structured choice prompt without the sections below.
 
 ---
 
@@ -111,7 +111,7 @@ When the user asked to check existing children ([JIRA.md](JIRA.md) § Existing c
 ```markdown
 ### Already filed under epic
 
-* FCN-210 — … (story, In Progress) — overlaps #3; do not duplicate
+* <PROJECT>-210 — … (story, In Progress) — overlaps #3; do not duplicate
 ```
 
 **Do not** include this section by default — assume child items are not created yet.

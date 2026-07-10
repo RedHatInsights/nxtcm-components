@@ -10,26 +10,26 @@ Shared MCP rules: [jira-acceptance-criteria-check/CONVENTIONS.md](../jira-accept
 
 ## MCP server
 
-`user-atlassian-mcp-server`
+Use Fleet-standard Jira MCP tools (`mcp__jira-mcp-server__*`). If unavailable, fall back to Cursor's `user-atlassian-mcp-server` equivalents — see [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § MCP transport.
 
-Read tool schema JSON in the MCP descriptors folder **before** calling.
+Read MCP tool schemas before calling — prefer `mcp__jira-mcp-server__*` (Claude Code, OpenCode); else `user-atlassian-mcp-server` (Cursor).
 
 | | Value |
 |--|--------|
-| Cloud ID | `redhat.atlassian.net` or value from [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) |
-| Story points field (FCN) | `customfield_10028` (or `meta.storyPointsField` from the report) |
+| Cloud ID | `<JIRA-SITE>` or value from [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) |
+| Story points field | `meta.storyPointsField` from the historical report when present; otherwise discover via project metadata |
 
 ---
 
 ## Fetch target issues
 
-Call `searchJiraIssuesUsingJql` with:
+Call `mcp__jira-mcp-server__searchJiraIssuesUsingJql` (or `searchJiraIssuesUsingJql`) with:
 
-- `cloudId`: `redhat.atlassian.net`
+- `cloudId`: `<JIRA-SITE>`
 - `jql`: exact JQL from step 2
 - `maxResults`: 50 (raise if user expects more; paginate with `nextPageToken` when needed)
 - `responseContentFormat`: `markdown`
-- `fields`: `summary`, `description`, `issuetype`, `status`, `customfield_10028` (or `meta.storyPointsField` from the report), `comment`
+- `fields`: `summary`, `description`, `issuetype`, `status`, story points field from report metadata, `comment`
 
 **0 results:** post the JQL, say no issues matched, **stop**.
 
@@ -41,8 +41,8 @@ For each returned issue, read `key`, `summary`, issue type, full `description`, 
 
 | Code / situation | Action |
 |------------------|--------|
-| **401** | `mcp_auth` on `user-atlassian-mcp-server`, retry once |
-| **-32601** | Wrong tool name — re-read schema; use `searchJiraIssuesUsingJql` exactly |
+| **401** | re-authenticate the Atlassian MCP server, retry once |
+| **-32601** | Wrong tool name — re-read schema; use `mcp__jira-mcp-server__searchJiraIssuesUsingJql` (or `searchJiraIssuesUsingJql`) exactly |
 | 0 issues matched | Show JQL + stop |
 
 ---

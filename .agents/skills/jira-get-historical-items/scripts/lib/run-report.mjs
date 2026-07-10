@@ -1,10 +1,10 @@
-import { writeFileSync, mkdirSync } from 'fs';
+import { DEFAULT_STORY_POINTS_FIELD } from './constants.mjs';
+import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join, resolve, sep, dirname } from 'path';
 import { processHistoricalIssues } from './process.mjs';
 import { buildHistoricalReport } from './report.mjs';
 import { buildSummaryReport } from './summarize.mjs';
 import { defaultWorkspaceDir, resolvePath } from './paths.mjs';
-import { readJsonFile } from './read-json.mjs';
 import { validateFetchIssues } from './validate-fetch.mjs';
 
 function assertPathWithinWorkspace(resolvedPath, workspaceDir) {
@@ -33,7 +33,7 @@ export function runHistoricalReport({
   inputPath,
   workspace,
   jql = '',
-  storyPointsField = 'customfield_10028',
+  storyPointsField = DEFAULT_STORY_POINTS_FIELD,
   site,
   maxResults = 100,
   reportOutput,
@@ -48,7 +48,7 @@ export function runHistoricalReport({
 
   assertPathWithinWorkspace(reportPath, workspaceDir);
 
-  const issues = issuesOverride ?? validateFetchIssues(readJsonFile(inputPath));
+  const issues = issuesOverride ?? validateFetchIssues(JSON.parse(readFileSync(inputPath, 'utf8')));
   const rows = processHistoricalIssues(issues, storyPointsField);
   const report = buildHistoricalReport({
     jql,

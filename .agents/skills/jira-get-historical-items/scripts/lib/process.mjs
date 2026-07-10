@@ -1,6 +1,7 @@
+import { DEFAULT_STORY_POINTS_FIELD } from './constants.mjs';
 import { analyzeHistoricalItem } from './analyze.mjs';
 
-export function processHistoricalIssues(issues, storyPointsFieldId = 'customfield_10028') {
+export function processHistoricalIssues(issues, storyPointsFieldId = DEFAULT_STORY_POINTS_FIELD) {
   const rows = issues
     .map((issue) => analyzeHistoricalItem(issue, storyPointsFieldId))
     .filter(Boolean);

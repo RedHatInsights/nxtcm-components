@@ -1,11 +1,6 @@
 ---
 name: jira-get-historical-items
-description: >-
-  Jira historical items and cycle time: discovery for scope and fetch route (CLI vs MCP),
-  build JQL, fetch issues with changelog, save .jira-historical-issues.json, run
-  run-historical-report.mjs, print JQL + results in chat. Use for historical Jira items,
-  75th-percentile cycle time, closed-item analysis on redhat.atlassian.net. Asks what to
-  include and CLI vs MCP unless the user already specified.
+description: Use for historical Jira items and 75th-percentile cycle time — discovery for scope and fetch route (CLI vs MCP), build JQL, fetch with changelog, save JSON artifacts, run report pipeline. NOT for estimating unpointed backlog (jira-get-estimates) or read-only stats from an existing report (jira-get-stats).
 user-invocable: true
 ---
 
@@ -13,9 +8,9 @@ user-invocable: true
 
 **JQL → fetch JSON → pipeline script → print in chat.**
 
-Two fetch paths produce the **same** artifact: `{workspace}/.jira-historical-issues.json`. After that, the workflow is identical.
+Artifact paths: [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact write paths — resolve `{workspace}` once; do not ask the user where to save.
 
-Shared paths and MCP rules: [jira-acceptance-criteria-check/CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md).
+Shared MCP rules: [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md).
 
 ---
 
@@ -24,7 +19,8 @@ Shared paths and MCP rules: [jira-acceptance-criteria-check/CONVENTIONS.md](../j
 | Do | Do not |
 |----|--------|
 | Save fetch JSON before running the pipeline | Run the pipeline without a fetch file |
-| Write both artifacts under one resolved **`{workspace}`** — same path for CLI `--output`/`--workspace`, MCP **Write**, pipeline, and step 5 links | Save to skill dir, script dir, or a different folder per step |
+| Write both artifacts under one resolved **`{workspace}`** per [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact write paths | Save to skill dir, script dir, global skills dirs, or a different folder per step |
+| **Do not ask** the user where to save JSON artifacts | Prompt for a save directory or offer alternate locations |
 | **Absolute paths** for `--input`, `--output`, `--workspace`, and MCP **Write** | Relative paths when cwd is unknown |
 | Scripts in `jira-get-historical-items/scripts/` only — see [SCRIPTS.md](SCRIPTS.md) | Ad-hoc node one-liners or new scripts elsewhere |
 | Post JQL + report in chat — shape in [REPORT.md](REPORT.md) | Ask the user to hand-parse JSON |
@@ -41,12 +37,12 @@ Once the user picks a fetch path, **stay on it** for the rest of the run.
 
 | User chose | Fetch (step 2) | Report (step 4) |
 |------------|----------------|-----------------|
-| **MCP** | `user-atlassian-mcp-server` only — [JIRA.md](JIRA.md) | `run-historical-report.mjs` (local; no Jira network) |
+| **MCP** | Atlassian MCP server only — [JIRA.md](JIRA.md) | `run-historical-report.mjs` (local; no Jira network) |
 | **CLI** | `fetch-historical-items.mjs` only — [CLI.md](CLI.md) | Usually already written by fetch script; re-run pipeline only if needed |
 
 **MCP path — never for Jira data:** `fetch-historical-items.mjs`, Jira REST/curl, Atlassian CLI, env-file probes, or silent CLI fallback. If MCP fetch or save fails, **stop** and ask whether to **switch to CLI** (new run).
 
-**CLI path — never for Jira data:** MCP `searchJiraIssuesUsingJql` / `getJiraIssue`. If CLI fetch fails, **stop**; do not silently switch to MCP.
+**CLI path — never for Jira data:** MCP `mcp__jira-mcp-server__searchJiraIssuesUsingJql` / `mcp__jira-mcp-server__getJiraIssue`. If CLI fetch fails, **stop**; do not silently switch to MCP.
 
 `run-historical-report.mjs` reads local JSON only — required after MCP save; not a fetch path.
 
@@ -56,10 +52,8 @@ Once the user picks a fetch path, **stay on it** for the rest of the run.
 
 | | Value |
 |--|--------|
-| **`{workspace}`**, site, cloud ID, story points field | [jira-acceptance-criteria-check/CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) |
-| Scripts dir | `scripts/` (under this skill — not the artifact workspace) |
-| Fetch artifact | `{workspace}/.jira-historical-issues.json` |
-| Report artifact | `{workspace}/.jira-historical-report.json` |
+| **`{workspace}`**, artifact write paths, site, cloud ID, story points field | [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) |
+| Scripts dir | `scripts/` (under this skill — not `{workspace}`) |
 | Recommended date window | **3–6 months** of closed work (`updated >= -90d` to `-180d`) for sizing / cycle-time calibration |
 | Date range warning | When scope exceeds **~6 months**, post a heads-up before fetch — **do not block** |
 | Min Node.js (CLI path) | **18** — see [CLI.md](CLI.md) |
@@ -73,9 +67,9 @@ Once the user picks a fetch path, **stay on it** for the rest of the run.
 Progress:
 - [ ] Step 0 — Discovery gate (scope + CLI/MCP unless user specified)
 - [ ] Step 1 — Build JQL
-- [ ] Step 2 — Fetch → `.jira-historical-issues.json`
+- [ ] Step 2 — Fetch → fetch JSON artifact ([CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact write paths)
 - [ ] Step 3 — Confirm fetch JSON
-- [ ] Step 4 — Run pipeline → `.jira-historical-report.json`
+- [ ] Step 4 — Run pipeline → report JSON artifact
 - [ ] Step 5 — Print in chat → [REPORT.md](REPORT.md)
 ```
 
@@ -100,7 +94,7 @@ Route is **resolved** when the user said **CLI** (command, terminal, script) or 
 
 #### If scope or route is not resolved → ask
 
-Post one short message. Prefer **AskQuestion** when available. Example:
+Post one short message. Prefer a **structured choice prompt** when the host supports multiple-choice UI. Example:
 
 > I can build `.jira-historical-report.json` once two things are clear:
 >
@@ -111,7 +105,7 @@ Post one short message. Prefer **AskQuestion** when available. Example:
 
 Wait for answers. If only one slot is missing, ask only that slot.
 
-**Do not** default to a project (e.g. FCN), parent list, or date range (e.g. 180 days) the user did not state.
+**Do not** default to a project (e.g. `<PROJECT>`), parent list, or date range (e.g. 180 days) the user did not state.
 
 ---
 
@@ -122,8 +116,8 @@ Only after step 0 scope is resolved.
 From user scope, or use their JQL as-is. Examples:
 
 ```text
-parent = FCN-41 AND created >= -20d
-project = FCN AND status = Closed AND type in (Story, Task) AND updated >= -90d
+parent = <EPIC-KEY> AND created >= -20d
+project = <PROJECT> AND status = Closed AND type in (Story, Task) AND updated >= -90d
 ```
 
 Use `created >= -20d` or `updated >= -90d` (not `createdDate`). When the user picked a date range in step 0, reflect it in JQL. Suggest **3–6 months** only when asking in step 0 — do not apply that window unless the user confirmed it.
@@ -144,14 +138,14 @@ When the user's JQL or stated scope covers **more than ~6 months**, post a short
 
 If they already acknowledged the tradeoff in this thread, skip repeating the full note.
 
-### 2. Fetch → `.jira-historical-issues.json`
+### 2. Fetch
 
 Only after step 0 route is resolved.
 
 **Skip fetch** (go to step 3) when:
 
 - User says the JSON is ready, fetch is done, or to continue from the file
-- `{workspace}/.jira-historical-issues.json` already exists and the user only wants a re-run of the report
+- The fetch artifact already exists at `{workspace}` and the user only wants a re-run of the report
 
 **If route is not resolved:** return to step 0 — ask only the fetch question; do not fetch.
 
@@ -163,41 +157,45 @@ Only after step 0 route is resolved.
 
 #### Path A — CLI
 
-Full procedure: [CLI.md](CLI.md). Give the user a command with **absolute** `--output` and the exact JQL from step 1:
+Full procedure: [CLI.md](CLI.md). Give the user a command with **absolute** `--output`/`--workspace` per [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) and the exact JQL from step 1:
 
 ```bash
 node scripts/fetch-historical-items.mjs \
   --jql '{exact JQL}' \
-  --output {workspace}/.jira-historical-issues.json \
+  --output {absolute-fetch-artifact-path} \
   --env-file ~/.config/jira-fetch.env
 ```
+
+Use `{absolute-fetch-artifact-path}` from CONVENTIONS § Historical artifact write paths.
 
 **Stop after giving the command** unless the user asked the agent to run it or both output files already exist.
 
 #### Path B — MCP
 
-Follow [JIRA.md](JIRA.md). Save full issue+changelog payloads to `{workspace}/.jira-historical-issues.json`, then continue automatically to steps 3–5.
+Follow [JIRA.md](JIRA.md). Save full issue+changelog payloads to the fetch artifact path from CONVENTIONS, then continue automatically to steps 3–5.
 
 **0 results:** post JQL in chat, say no issues matched, **stop**.
 
 ### 3. Confirm fetch JSON
 
-Verify `{workspace}/.jira-historical-issues.json` exists. Each element must have `key`, `fields`, and `changelog.histories`.
+Verify the fetch artifact exists at `{workspace}`. Each element must have `key`, `fields`, and `changelog.histories`.
 
 If the user resumed after CLI fetch and the file is missing, say so and stop.
 
 ### 4. Run pipeline
 
-**CLI path:** skip when `.jira-historical-report.json` already exists from `fetch-historical-items.mjs` (default).
+**CLI path:** skip when the report artifact already exists from `fetch-historical-items.mjs` (default).
 
 **MCP path** (or re-run):
 
 ```bash
 node scripts/run-historical-report.mjs \
-  --input {workspace}/.jira-historical-issues.json \
+  --input {absolute-fetch-artifact-path} \
   --workspace {workspace} \
   --jql '{exact JQL}'
 ```
+
+Paths from [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact write paths.
 
 Optional: add `--stdout` for one-shot chat output. See [SCRIPTS.md](SCRIPTS.md) for alternatives if the pipeline fails.
 
@@ -216,15 +214,39 @@ Follow [REPORT.md](REPORT.md) for section order, JSON shape, and **Saved files**
 | CLI missing credentials | [CLI.md](CLI.md) first-time setup |
 | Node too old / not installed | CLI path needs **Node.js 18+** |
 | User asked for > 6 months of history | Post step 1 date-range heads-up; proceed unless they narrow scope |
-| MCP **-32601** | Wrong tool name — read MCP schema; use `searchJiraIssuesUsingJql` and `getJiraIssue` exactly |
-| MCP **401** | `mcp_auth` on `user-atlassian-mcp-server`, retry once |
+| MCP **-32601** | Wrong tool name — read MCP schema; use `mcp__jira-mcp-server__searchJiraIssuesUsingJql` and `mcp__jira-mcp-server__getJiraIssue` exactly |
+| MCP **401** | re-authenticate the Atlassian MCP server, retry once |
 | Empty dates / no cycle time | Fetch used search only — need per-issue changelog |
 | Script exit 1, no output | Use **absolute** `--input` paths; read stderr |
 | `Input file not found` | Complete fetch first; path must match `--input` |
 | `missing changelog histories` | Save full issue+changelog payloads, not search-only rows |
 | Used Atlassian CLI (`acli`) for fetch | Changelog is null — use `fetch-historical-items.mjs` or MCP |
-| Slow MCP changelog fetch | Issue all `getJiraIssue` calls in one parallel batch — [JIRA.md](JIRA.md) |
+| Slow MCP changelog fetch | Issue all `mcp__jira-mcp-server__getJiraIssue` calls in one parallel batch — [JIRA.md](JIRA.md) |
 | User ran CLI, agent continued too early | Wait for user confirmation or verify the file exists |
-| Reconstructed/trimmed MCP JSON | Save full `getJiraIssue` responses — [JIRA.md](JIRA.md) |
+| Reconstructed/trimmed MCP JSON | Save full `mcp__jira-mcp-server__getJiraIssue` responses — [JIRA.md](JIRA.md) |
 
 Scope, route, and artifact-path mistakes → see **Hard rules** and step 0.
+
+---
+
+## Dependencies
+
+### MCP tools
+
+Prefer Fleet-standard `mcp__jira-mcp-server__*`; fallback to Cursor `user-atlassian-mcp-server` bare tool names — [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § MCP transport.
+
+- `mcp__jira-mcp-server__getAccessibleAtlassianResources` — resolve cloud ID
+- `mcp__jira-mcp-server__searchJiraIssuesUsingJql` — issue search (MCP fetch path)
+- `mcp__jira-mcp-server__getJiraIssue` — per-issue changelog (MCP fetch path)
+
+### CLI (alternative fetch path)
+- `scripts/fetch-historical-items.mjs` — Jira REST fetch with changelog ([CLI.md](CLI.md))
+- `scripts/run-historical-report.mjs` — build `.jira-historical-report.json` from fetch JSON
+
+### Related skills
+- `jira-get-stats` — summarize an existing report (read-only)
+- `jira-get-estimates` — recommend story points from report data
+
+### Supporting files
+- [CLI.md](CLI.md), [JIRA.md](JIRA.md), [REPORT.md](REPORT.md), [SCRIPTS.md](SCRIPTS.md)
+- [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) — shared paths and MCP rules

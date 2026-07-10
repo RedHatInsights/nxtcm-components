@@ -1,13 +1,6 @@
 ---
 name: jira-acceptance-criteria-check
-description: >-
-  Fetches Jira work items, classifies by work type using rubrics in JIRA_TYPE/,
-  scores description and type-specific content 1–5, drafts suggested ticket content
-  for low scores when enough context exists, and reports Ready / Needs review /
-  Needs Refinement (chat for one issue; markdown file for two or more). After the
-  report, optionally posts Needs review suggestions (scores 1–3 with a draft) as
-  Jira comments via MCP when the user agrees. Supports synthetic draft input from
-  jira-epic-breakdown or pasted bodies without Jira fetch.
+description: Use when evaluating Jira ticket quality before sprint planning or grooming — classifies by work type, scores description 1–5, drafts improvements for low scores, and reports Ready / Needs review / Needs Refinement. NOT for creating new issues (jira-create), drafting epics (jira-epic-create), or general Jira triage (jira-specialist).
 user-invocable: true
 ---
 
@@ -118,7 +111,29 @@ Follow [POST_JIRA.md](POST_JIRA.md):
 
 - **Ask** once after the report — do not post without clear user agreement.
 - **Post only** Needs review items (scores 1–3 **with** suggestions) — not Ready, not Needs Refinement.
-- **Use MCP** (`addCommentToJiraIssue`).
+- **Use MCP** (`mcp__jira-mcp-server__addCommentToJiraIssue`).
 - **Skip** synthetic/draft-only IDs and keys that already have a prior `Suggested …` comment from this run’s enrichment.
 
 If nothing qualifies for posting, skip this step.
+
+---
+
+## Dependencies
+
+### MCP tools
+
+Prefer Fleet-standard `mcp__jira-mcp-server__*`; fallback to Cursor `user-atlassian-mcp-server` bare tool names — [CONVENTIONS.md](CONVENTIONS.md) § MCP transport.
+
+- `mcp__jira-mcp-server__getAccessibleAtlassianResources` — resolve cloud ID
+- `mcp__jira-mcp-server__getJiraIssue` — fetch single issues
+- `mcp__jira-mcp-server__searchJiraIssuesUsingJql` — fetch by JQL
+- `mcp__jira-mcp-server__addCommentToJiraIssue` — post Needs review suggestions (user consent only)
+
+### Related skills
+- `jira-epic-breakdown` — synthetic draft input via [DRAFT_INPUT.md](DRAFT_INPUT.md)
+- `jira-epic-create` — epic drafts may be scored after authoring
+
+### Supporting files
+- [JIRA_TYPE/](JIRA_TYPE/README.md) — type rubrics and classification
+- [JIRA.md](JIRA.md), [REPORT.md](REPORT.md), [POST_JIRA.md](POST_JIRA.md) — fetch, report, and optional Jira writes
+- [CONVENTIONS.md](CONVENTIONS.md) — shared MCP rules and artifact paths

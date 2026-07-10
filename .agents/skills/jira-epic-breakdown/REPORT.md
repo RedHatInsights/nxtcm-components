@@ -39,7 +39,7 @@ In **one chat message**, in this order:
 1. **Post the full breakdown** — [TEMPLATE.md](TEMPLATE.md) header, table, epic AC coverage, review flags (when review ran), and ticket bodies (unless user asked for titles only).
 2. **Then** ask §7 — **Create in Jira** vs **Do nothing right now** ([SKILL.md](SKILL.md) §7).
 
-The user must see every suggested item before choosing. **Never** ask §7 in a message that does not include the breakdown. **Never** use **AskQuestion** as a shortcut that hides the item list — the breakdown text comes **first** in the message; the ask comes **after**.
+The user must see every suggested item before choosing. **Never** ask §7 in a message that does not include the breakdown. **Never** use a **structured choice prompt** as a shortcut that hides the item list — the breakdown text comes **first** in the message; the ask comes **after**.
 
 Do not create issues in the same turn as delivery.
 

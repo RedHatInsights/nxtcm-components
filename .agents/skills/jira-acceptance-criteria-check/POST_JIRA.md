@@ -12,7 +12,7 @@ Ask **only when all** are true:
 |-----------|-------|
 | Step 5 report is complete | Chat (1 issue) or `jira-acceptance-criteria-check-report.md` + chat pointer (2+) |
 | At least one **Needs review** item | Score **1–3** **and** a draft was produced ([DRAFT.md](DRAFT.md)) |
-| At least one postable key | Real Jira key (e.g. `FCN-232`) — not `DRAFT-*`, `#n`, or synthetic-only ids ([DRAFT_INPUT.md](DRAFT_INPUT.md)) |
+| At least one postable key | Real Jira key (e.g. `<KEY>`) — not `DRAFT-*`, `#n`, or synthetic-only ids ([DRAFT_INPUT.md](DRAFT_INPUT.md)) |
 
 If **no** item qualifies → **do not ask**; end the skill after the report.
 
@@ -20,7 +20,7 @@ If **no** item qualifies → **do not ask**; end the skill after the report.
 
 > Post **N** suggestion(s) as Jira comment(s) using MCP? (yes / no)
 
-Replace **N** with the count of postable **Needs review** keys. If the user restricts keys in their reply (“only FCN-100”), honor that subset.
+Replace **N** with the count of postable **Needs review** keys. If the user restricts keys in their reply (“only `<KEY>`”), honor that subset.
 
 **Do not post** unless the user clearly agrees (**yes**, **y**, **post**, **save**, etc.). **No** or silence → stop; no Jira writes.
 
@@ -52,21 +52,23 @@ Before posting a key, check whether this run already found an existing Jira comm
 
 If a prior suggested comment exists for a key → **skip** that key. Tell the user Jira already has a suggested comment; they can edit or delete it in Jira if they want a new one.
 
-If **every** postable key is skipped → summarize; run **no** `addCommentToJiraIssue` calls.
+If **every** postable key is skipped → summarize; run **no** `mcp__jira-mcp-server__addCommentToJiraIssue` calls.
 
 ---
 
 ## MCP transport
 
-1. Read MCP tool schemas under `user-atlassian-mcp-server` before calling.
-2. If only **`mcp_auth`** is listed → call `mcp_auth` for `user-atlassian-mcp-server` with `{}`, then re-check tools.
-3. Resolve `cloudId` via `getAccessibleAtlassianResources` (or pass `redhat.atlassian.net` per tool docs).
-4. For each key **not** skipped, call **`addCommentToJiraIssue`**:
+Use Fleet-standard Jira MCP tools (`mcp__jira-mcp-server__*`). If unavailable, fall back to Cursor's `user-atlassian-mcp-server` equivalents — see [CONVENTIONS.md](CONVENTIONS.md) § MCP transport.
+
+1. Read MCP tool schemas — prefer `mcp__jira-mcp-server__*` (Claude Code, OpenCode); else `user-atlassian-mcp-server` (Cursor).
+2. If only `mcp_auth` is exposed → call `mcp_auth` for the Atlassian server with `{}`, then re-check tools.
+3. Resolve `cloudId` via `mcp__jira-mcp-server__getAccessibleAtlassianResources` (or `getAccessibleAtlassianResources`; or pass `<JIRA-SITE>` per tool docs).
+4. For each key **not** skipped, call **`mcp__jira-mcp-server__addCommentToJiraIssue`** (or `addCommentToJiraIssue`):
    - `issueIdOrKey`: the Jira key
    - `commentBody`: built per [Comment body](#comment-body) below
    - `contentFormat`: `"markdown"`
 
-**On MCP failure** (auth, server missing, API error): report the **full error** for that key. Tell the user to fix MCP in **Settings → MCP** (Atlassian server enabled; complete `mcp_auth` if prompted) and re-run the post step if they want.
+**On MCP failure** (auth, server missing, API error): report the **full error** for that key. Tell the user to fix MCP in **Settings → MCP** (Atlassian server enabled; complete the host MCP auth flow if prompted) and re-run the post step if they want.
 
 After **each** successful post, confirm in chat: key + “comment posted”. On failure, show the error and continue or stop per user preference.
 

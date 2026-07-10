@@ -47,7 +47,7 @@ After posting results, continue to step 6 in [SKILL.md](SKILL.md) — ask whethe
 **Story or task:**
 
 ```text
-FCN-600 - Add validation to subnet step
+<PROJECT>-600 - Add validation to subnet step
 
 Issue type: Story
 Estimated points: 3
@@ -57,7 +57,7 @@ Estimated cycletime: 6 business days (p75)
 **Bug:**
 
 ```text
-FCN-601 - Submit button disabled after YAML edit
+<PROJECT>-601 - Submit button disabled after YAML edit
 
 Issue type: Bug
 Estimated points: n/a
@@ -67,7 +67,7 @@ Estimated cycletime: 4.2 business days (p75, all bugs)
 **Spike:**
 
 ```text
-FCN-602 - [SPIKE] Compare subnet validation APIs
+<PROJECT>-602 - [SPIKE] Compare subnet validation APIs
 
 Issue type: Spike
 Estimated points: n/a

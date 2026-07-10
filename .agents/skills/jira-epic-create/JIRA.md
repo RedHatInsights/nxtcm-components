@@ -53,14 +53,16 @@ Use `responseContentFormat: "markdown"` for descriptions when MCP supports it.
 
 ## Transport — MCP only
 
-1. Read MCP tool schemas under `user-atlassian-mcp-server` before calling.
-2. If only `mcp_auth` is listed → authenticate, re-check tools.
-3. `getAccessibleAtlassianResources` → `cloudId` for `redhat.atlassian.net`.
-4. `getJiraIssue` per key with `responseContentFormat: "markdown"` when available.
+Use Fleet-standard Jira MCP tools (`mcp__jira-mcp-server__*`). If unavailable, fall back to Cursor's `user-atlassian-mcp-server` equivalents — see [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § MCP transport.
+
+1. Read MCP tool schemas — prefer `mcp__jira-mcp-server__*` (Claude Code, OpenCode); else `user-atlassian-mcp-server` (Cursor).
+2. If only `mcp_auth` is exposed → call `mcp_auth` for the Atlassian server with `{}`, then re-check tools.
+3. `mcp__jira-mcp-server__getAccessibleAtlassianResources` (or `getAccessibleAtlassianResources`) → `cloudId` for `redhat.atlassian.net`.
+4. `mcp__jira-mcp-server__getJiraIssue` (or `getJiraIssue`) per key with `responseContentFormat: "markdown"` when available.
 
 **If MCP fails** for a **user-supplied key** (server missing, tools unavailable after auth, or fetch error):
 
-- Tell the user how to fix MCP (Cursor → **Settings → MCP** → enable Atlassian; `mcp_auth` for `user-atlassian-mcp-server`).
+- Tell the user how to fix MCP (enable the Atlassian MCP server in the host's MCP settings and complete authentication).
 - Continue drafting from conversation only — note unfetched keys in **More information needed**.
 - Do **not** use `acli`, Jira REST, or curl.
 - Do **not** stop the whole skill unless the user said drafting depends on Jira.
@@ -87,7 +89,7 @@ Do **not** paste parent/related descriptions verbatim into the draft. Synthesize
 Before the epic body, one line when hierarchy exists:
 
 ```markdown
-**Context:** Parent [FCN-100](https://redhat.atlassian.net/browse/FCN-100); related [FCN-200](https://redhat.atlassian.net/browse/FCN-200), [FCN-201](https://redhat.atlassian.net/browse/FCN-201).
+**Context:** Parent [<PROJECT>-100](https://<JIRA-SITE>/browse/<PROJECT>-100); related [<PROJECT>-200](https://<JIRA-SITE>/browse/<PROJECT>-200), [<PROJECT>-201](https://<JIRA-SITE>/browse/<PROJECT>-201).
 ```
 
 Omit when standalone with no related epics.
@@ -100,30 +102,30 @@ Parent/related links may also appear in **Implementation notes** when coordinati
 
 Run only when the user chose **update existing** or **create new** in [SKILL.md](SKILL.md) §6.
 
-**MCP only** — `user-atlassian-mcp-server`. Do **not** use `acli`, Jira REST, or curl.
+**MCP only** — Atlassian MCP server. Do **not** use `acli`, Jira REST, or curl.
 
 | Do | Do not |
 |----|--------|
-| `editJiraIssue` / `createJiraIssue` via MCP | `acli`, Jira REST, or curl for any Jira call |
+| `mcp__jira-mcp-server__editJiraIssue` / `mcp__jira-mcp-server__createJiraIssue` (or `editJiraIssue` / `createJiraIssue`) via MCP | `acli`, Jira REST, or curl for any Jira call |
 | Read MCP tool schemas before calling | Fall back to another transport when MCP fails |
-| `mcp_auth` on **401**, retry once | Silent switch to another transport |
+| re-authenticate the Atlassian MCP server on **401**, retry once | Silent switch to another transport |
 
-**Cloud ID:** `2b9e35e3-6bd3-4cec-b838-f4249ee02432` or `redhat.atlassian.net`
+**Cloud ID:** `<cloud-id>` or `redhat.atlassian.net`
 
-1. Read MCP tool schemas under `user-atlassian-mcp-server`.
-2. If only `mcp_auth` is listed → authenticate, re-check tools.
-3. `getAccessibleAtlassianResources` → `cloudId` when needed.
+1. Read MCP tool schemas — prefer `mcp__jira-mcp-server__*` (Claude Code, OpenCode); else `user-atlassian-mcp-server` (Cursor).
+2. If only `mcp_auth` is exposed → call `mcp_auth` for the Atlassian server with `{}`, then re-check tools.
+3. `mcp__jira-mcp-server__getAccessibleAtlassianResources` (or `getAccessibleAtlassianResources`) → `cloudId` when needed.
 
 ### Update existing epic
 
 **Prerequisite:** **Target epic key** is known ([SKILL.md](SKILL.md) §6 — if not, ask the user; do not use parent/related keys by default).
 
-1. Optionally `getJiraIssue` to confirm type is Epic (or note if not).
+1. Optionally `mcp__jira-mcp-server__getJiraIssue` (or `getJiraIssue`) to confirm type is Epic (or note if not).
 2. Post the full draft body (all registry sections) as the issue **description** — markdown, same order as [TEMPLATE.md](TEMPLATE.md) § Section registry.
 3. Confirm success in chat with issue link: `https://redhat.atlassian.net/browse/<KEY>`.
 
 ```text
-editJiraIssue
+mcp__jira-mcp-server__editJiraIssue
   cloudId, issueIdOrKey: <TARGET_KEY>
   fields: { "description": "<full epic markdown>" }
   contentFormat: "markdown"
@@ -137,13 +139,13 @@ Gather if missing:
 
 | Field | Source |
 |-------|--------|
-| **Project key** | User stated, or prefix from parent epic key (e.g. FCN-100 → `FCN`), or ask |
+| **Project key** | User stated, or prefix from parent epic key (e.g. `<PROJECT>-100` → `<PROJECT>`), or ask |
 | **Summary** | Working title from draft, or ask |
 | **Description** | Full paste-ready epic body from §5 |
 | **Parent** (optional) | Parent epic key from discovery, if user wants hierarchy set on create |
 
 ```text
-createJiraIssue
+mcp__jira-mcp-server__createJiraIssue
   cloudId, projectKey, issueTypeName: "Epic"
   summary: "<title>"
   description: "<full epic markdown>"
@@ -151,7 +153,7 @@ createJiraIssue
   additional_fields: { "parent": { "key": "<PARENT_KEY>" } }  # only when user confirmed parent on create
 ```
 
-Epic parent/link field names vary by site — use `getJiraIssueTypeMetaWithFields` when `additional_fields` fails.
+Epic parent/link field names vary by site — use `mcp__jira-mcp-server__getJiraIssueTypeMetaWithFields` (or `getJiraIssueTypeMetaWithFields`) when `additional_fields` fails.
 
 Confirm created key in chat with browse link.
 
@@ -159,7 +161,7 @@ Confirm created key in chat with browse link.
 
 | Situation | Action |
 |-----------|--------|
-| **401** | `mcp_auth` for `user-atlassian-mcp-server`, retry once |
+| **401** | re-authenticate the Atlassian MCP server, retry once |
 | Still failing after auth | **Stop** — report error; paste-ready draft stays in chat |
 | **-32601** | Wrong tool name — re-read MCP schema |
 | Create/update rejected | Show MCP error; ask user to fix fields or paste manually |

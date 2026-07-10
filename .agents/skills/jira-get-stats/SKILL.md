@@ -1,12 +1,6 @@
 ---
 name: jira-get-stats
-description: >-
-  Summarize `.jira-historical-report.json` into readable stats: date ranges, issue
-  counts by type and story points, cycle time distribution, throughput, outliers,
-  and an items table. Resolves the report from user path, active workspace, or
-  ~/.cursor/skills fallback. Read-only — no Jira fetch. Use when the user asks for Jira
-  historical stats, report summary, cycle time breakdown, throughput metrics, or
-  a table of closed items from an existing historical report.
+description: Use when the user asks for Jira historical stats, cycle time breakdown, throughput metrics, or a closed-items table from an existing `.jira-historical-report.json` — read-only, no Jira fetch. NOT for building the report (jira-get-historical-items) or recommending story points (jira-get-estimates).
 user-invocable: true
 ---
 
@@ -38,7 +32,7 @@ Read-only summary of `.jira-historical-report.json` — no Jira fetch.
 | Write stats JSON to `{report-dir}/.jira-historical-stats.json` (script default) | Save JSON to skill dir or a different folder |
 | Write optional markdown to `{report-dir}/.jira-historical-stats.md` when asked — **absolute path** | Save markdown to cwd or an unstated path |
 | **Post absolute artifact paths** under `## Saved files` after success (step 3) | Omit where JSON (or optional markdown) was saved |
-| Use **canvas** for the items table when **>15 rows** | Paste a 50+ row markdown table in chat |
+| Use an interactive table view when **>15 rows** (fallback to full chat table when the host has no table UI) | Paste a 50+ row markdown table in chat |
 | Auto-detect sibling `.jira-historical-issues.json` for created dates | Re-fetch Jira for created dates |
 
 ---
@@ -63,7 +57,7 @@ Progress:
 - [ ] Step 1 — Resolve historical report file → [RESOLVE_REPORT.md](../jira-get-historical-items/RESOLVE_REPORT.md)
 - [ ] Step 2 — Run stats script
 - [ ] Step 3 — Post summary in chat
-- [ ] Step 4 — Canvas for large item table (when applicable)
+- [ ] Step 4 — Interactive table for large item lists (when applicable)
 ```
 
 ### Step 1 — Resolve historical report file
@@ -99,9 +93,9 @@ When the user asked for a **markdown file**, write the same summary to `{report-
 
 Always post **`## Saved files`** (OUTPUT.md §10) after a successful run: clickable **absolute** links to `.jira-historical-stats.json` and the report file used; add `.jira-historical-stats.md` when written. Paths only — do not re-paste file contents.
 
-### Step 4 — Canvas for large item table
+### Step 4 — Interactive table for large item lists
 
-When `items.length > 15`, create a sortable items table canvas (`.canvas.tsx` in the workspace `canvases/` directory). Embed data from `.jira-historical-stats.json` `items` array; columns per [OUTPUT.md](OUTPUT.md) §9. Skip the full markdown items table in chat — post a one-line item count and link to the canvas.
+When `items.length > 15`, use an interactive table view when the host supports it; embed data from `.jira-historical-stats.json` `items` array. Skip the full markdown items table in chat when linking to that view. If the host has no interactive table support, include the full items table from `--stdout` in chat instead.
 
 When `items.length ≤ 15`, include the items table from `--stdout` in chat.
 
@@ -111,7 +105,7 @@ When `items.length ≤ 15`, include the items table from `--stdout` in chat.
 
 | Problem | Fix |
 |---------|-----|
-| No report file | [RESOLVE_REPORT.md](../jira-get-historical-items/RESOLVE_REPORT.md) step 1c — stop; workspace then `~/.cursor/skills/` |
+| No report file | [RESOLVE_REPORT.md](../jira-get-historical-items/RESOLVE_REPORT.md) step 1c — stop; [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact read lookup |
 | Report in workspace but agent checked skills dir only | RESOLVE_REPORT step 1b — workspace first |
 | Agent omitted artifact paths | Step 3 — always post `## Saved files` with absolute links after success |
 | User asked for markdown file | Step 3 — write `{report-dir}/.jira-historical-stats.md`; link in `## Saved files` |
@@ -119,4 +113,20 @@ When `items.length ≤ 15`, include the items table from `--stdout` in chat.
 | Invalid or unparsable report JSON | RESOLVE_REPORT step 1d — tell user; treat as not found unless they fix the file |
 | Created date range shows `—` | Pass `--issues-input` when fetch JSON lives elsewhere |
 | Fetch cap warning in output | Report JQL matched ≥100 issues — mention incomplete data |
-| Huge chat table | Step 4 — use canvas when >15 items |
+| Huge chat table | Step 4 — use an interactive table when >15 items; fall back to chat table if the host has no table UI |
+
+---
+
+## Dependencies
+
+### MCP tools
+- None — read-only; operates on local JSON artifacts only
+
+### Related skills
+- `jira-get-historical-items` — generate `.jira-historical-report.json` (user consent only)
+- `jira-get-estimates` — story point recommendations from the same report
+
+### Supporting files
+- `jira-get-historical-items/scripts/summarize-report-stats.mjs` — stats pipeline
+- [OUTPUT.md](OUTPUT.md), [jira-get-historical-items/RESOLVE_REPORT.md](../jira-get-historical-items/RESOLVE_REPORT.md)
+- [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) — shared artifact paths

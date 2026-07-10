@@ -33,7 +33,7 @@ What should be **excluded** for this feature — explicit boundaries so implemen
 
 | Include | Example |
 |---------|---------|
-| Work owned by **related epics** | Wizard npm publish (FCN-200); service account UX (FCN-201) |
+| Work owned by **related epics** | Wizard npm publish (<PROJECT>-200); service account UX (<PROJECT>-201) |
 | **Parent epic** scope handled elsewhere | Full ROSA HCP backend provisioning — existing ACM process |
 | **Future phases** user named but deferred | Multi-cloud support; edit-in-place after create |
 | **Alternative surfaces** | CLI-only path; same flow in another product the user named |

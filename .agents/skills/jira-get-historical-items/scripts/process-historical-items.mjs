@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { DEFAULT_STORY_POINTS_FIELD } from './lib/constants.mjs';
 /**
  * Process fetched Jira issue JSON into historical item rows (no auth).
  *
@@ -10,9 +11,8 @@
  *        { "issues": [...] } from searchJiraIssuesUsingJql merged with changelogs.
  */
 
-import { writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { loadIssuesFromJson } from './lib/load-issues.mjs';
-import { readJsonFile } from './lib/read-json.mjs';
 import { resolveInputPath, resolvePath } from './lib/paths.mjs';
 import { processHistoricalIssues } from './lib/process.mjs';
 import { validateFetchIssues } from './lib/validate-fetch.mjs';
@@ -27,7 +27,7 @@ function parseArgs(argv) {
   const opts = {
     input: '',
     output: '',
-    storyPointsField: 'customfield_10028',
+    storyPointsField: DEFAULT_STORY_POINTS_FIELD,
   };
 
   for (let i = 2; i < argv.length; i++) {
@@ -57,10 +57,10 @@ function parseArgs(argv) {
 }
 
 function readIssues(opts) {
-  const inputPath = opts.input ? resolveInputPath(opts.input) : 0;
-  const label = opts.input ? inputPath : '<stdin>';
-  const parsed = readJsonFile(inputPath, { label });
-  return validateFetchIssues(loadIssuesFromJson(parsed));
+  const raw = opts.input
+    ? readFileSync(resolveInputPath(opts.input), 'utf8')
+    : readFileSync(0, 'utf8');
+  return validateFetchIssues(loadIssuesFromJson(JSON.parse(raw)));
 }
 
 function main() {

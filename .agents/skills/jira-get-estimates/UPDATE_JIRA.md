@@ -22,8 +22,8 @@ Use the estimates from **this run's** step 5 output — not existing Jira values
 
 | Field | Apply when | Skip when |
 |-------|------------|-----------|
-| **Story points** (`editJiraIssue`) | Issue type is **Story** or **Task** **and** `Estimated points` is a definite number (`1`, `2`, `3`, `5`, `8`) | `n/a`, `cannot determine`, **Bug**, **Spike** |
-| **Cycle-time comment** (`addCommentToJiraIssue`) | `Estimated cycletime` is a definite value (e.g. `6 business days (p75)`) | `n/a`, `cannot determine` |
+| **Story points** (`mcp__jira-mcp-server__editJiraIssue` or `editJiraIssue`) | Issue type is **Story** or **Task** **and** `Estimated points` is a definite number (`1`, `2`, `3`, `5`, `8`) | `n/a`, `cannot determine`, **Bug**, **Spike** |
+| **Cycle-time comment** (`mcp__jira-mcp-server__addCommentToJiraIssue` or `addCommentToJiraIssue`) | `Estimated cycletime` is a definite value (e.g. `6 business days (p75)`) | `n/a`, `cannot determine` |
 
 An issue may get **story points only**, **comment only**, **both**, or **neither** — depending on which values exist for that issue.
 
@@ -35,21 +35,23 @@ An issue may get **story points only**, **comment only**, **both**, or **neither
 
 **MCP only** — do **not** use `acli` or direct REST for this step.
 
-1. Read MCP tool schemas under `user-atlassian-mcp-server` before calling.
-2. If only **`mcp_auth`** is listed → call `mcp_auth` for `user-atlassian-mcp-server` with `{}`, then re-check tools.
-3. Use `cloudId`: `redhat.atlassian.net` (or `2b9e35e3-6bd3-4cec-b838-f4249ee02432`).
-4. Story points field: `meta.storyPointsField` from the historical report when present; otherwise `customfield_10028`.
+Use Fleet-standard Jira MCP tools (`mcp__jira-mcp-server__*`). If unavailable, fall back to Cursor's `user-atlassian-mcp-server` equivalents — see [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § MCP transport.
+
+1. Read MCP tool schemas — prefer `mcp__jira-mcp-server__*` (Claude Code, OpenCode); else `user-atlassian-mcp-server` (Cursor).
+2. If only `mcp_auth` is exposed → call `mcp_auth` for the Atlassian server with `{}`, then re-check tools.
+3. Use `cloudId`: `<JIRA-SITE>` (resolve via `mcp__jira-mcp-server__getAccessibleAtlassianResources` or `getAccessibleAtlassianResources`).
+4. Story points field: `meta.storyPointsField` from the historical report when present; otherwise discover via project metadata.
 
 ### Set story points
 
-For each issue that qualifies, call **`editJiraIssue`**:
+For each issue that qualifies, call **`mcp__jira-mcp-server__editJiraIssue`** (or `editJiraIssue`):
 
 - `issueIdOrKey`: the Jira key
 - `fields`: `{ "<storyPointsField>": <number> }` — use the numeric estimate from this run
 
 ### Post cycle-time comment
 
-For each issue that qualifies, call **`addCommentToJiraIssue`**:
+For each issue that qualifies, call **`mcp__jira-mcp-server__addCommentToJiraIssue`** (or `addCommentToJiraIssue`):
 
 - `issueIdOrKey`: the Jira key
 - `commentBody`: built per [Comment body](#comment-body) below
@@ -57,7 +59,7 @@ For each issue that qualifies, call **`addCommentToJiraIssue`**:
 
 Run story-point updates and comments in any sensible order per issue (e.g. points first, then comment).
 
-**On MCP failure** (auth, server missing, API error): report the **full error** for that key; do **not** fall back to acli. Tell the user to fix MCP in **Settings → MCP** (Atlassian server enabled; complete `mcp_auth` if prompted) and re-run the update step if they want.
+**On MCP failure** (auth, server missing, API error): report the **full error** for that key; do **not** fall back to acli. Tell the user to fix MCP in **Settings → MCP** (Atlassian server enabled; complete the host MCP auth flow if prompted) and re-run the update step if they want.
 
 After **each** successful write, confirm in chat: key + what was updated (`story points set to N`, `cycle-time comment posted`, or both). On failure, show the error and continue or stop per user preference.
 

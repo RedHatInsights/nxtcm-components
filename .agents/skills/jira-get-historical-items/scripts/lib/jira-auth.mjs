@@ -5,6 +5,7 @@
 import { existsSync, readFileSync } from 'fs';
 import { homedir } from 'os';
 import { resolve } from 'path';
+import { JIRA_SITE } from './constants.mjs';
 
 const SITE_ENV_KEYS = ['JIRA_SITE', 'ATLASSIAN_SITE'];
 const EMAIL_ENV_KEYS = ['JIRA_EMAIL', 'ATLASSIAN_EMAIL'];
@@ -75,7 +76,7 @@ export function resolveJiraAuth(options = {}) {
     options.site?.trim() ||
     firstEnv(SITE_ENV_KEYS) ||
     pickFromMap(fromEnvFile, SITE_ENV_KEYS) ||
-    'redhat.atlassian.net';
+    JIRA_SITE;
 
   const email =
     options.email?.trim() || firstEnv(EMAIL_ENV_KEYS) || pickFromMap(fromEnvFile, EMAIL_ENV_KEYS);

@@ -14,7 +14,7 @@ Same rules as **jira-epic-create** [WRITING.md](../jira-epic-create/WRITING.md):
 | Epic owns | Child ticket owns |
 |-----------|-------------------|
 | Full journey, full AC set, Out of scope, Test Plan | One slice WHAT/WHY + slice AC |
-| Platform rationale | One-line link to epic in Description ("Part of FCN-XXX") |
+| Platform rationale | One-line link to epic in Description ("Part of `<EPIC-KEY>`") |
 | Mockups/Design (Figma) | Figma link only when this slice needs it |
 | Implementation notes (repos, packages) | Only references **this slice** needs |
 
@@ -38,7 +38,7 @@ Do **not** paste the epic Description into every child.
 Start each child Description with one line when epic key is known:
 
 ```markdown
-Part of epic [FCN-123 Summary](https://redhat.atlassian.net/browse/FCN-123).
+Part of epic [<PROJECT>-123 Summary](https://<JIRA-SITE>/browse/<PROJECT>-123).
 ```
 
 ---

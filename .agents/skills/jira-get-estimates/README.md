@@ -1,6 +1,6 @@
 # jira-get-estimates
 
-A [Cursor Agent Skill](https://cursor.com/docs/agent/skills) that recommends **story points** and **p75 cycle time** for Jira issues from `.jira-historical-report.json` — stories and tasks get both; bugs get time only; spikes get neither. After reporting, asks whether to update Jira or do nothing.
+A Fleet **agent skill** that recommends **story points** and **p75 cycle time** for Jira issues from `.jira-historical-report.json` — stories and tasks get both; bugs get time only; spikes get neither. After reporting, asks whether to update Jira or do nothing.
 
 Use when you want data-backed sizing for a backlog slice — unpointed stories, epic children, or a sprint candidate list.
 
@@ -12,8 +12,8 @@ This skill **does not fetch historical data on its own**. It reads an existing `
 
 | Requirement | Details |
 |-------------|---------|
-| **Historical report** | `.jira-historical-report.json` — lookup order: active workspace, then `~/.cursor/skills/` (see [jira-acceptance-criteria-check/CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md)); or a path you provide |
-| **Target scope** | JQL, issue keys, or natural language (“unpointed FCN stories under FCN-41”) |
+| **Historical report** | `.jira-historical-report.json` — [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact read lookup; or a path you provide |
+| **Target scope** | JQL, issue keys, or natural language (“unpointed stories under <PROJECT>-41”) |
 | **Atlassian MCP** | Required to **fetch** target issues and **optionally update** Jira — see [JIRA.md](JIRA.md) |
 | **No report yet?** | The agent stops and offers to generate one via jira-get-historical-items (with your consent) |
 
@@ -57,7 +57,7 @@ Together, you get a **point recommendation** and a **“how long similar work to
 After each run, chat includes the exact JQL and a block per issue ([OUTPUT.md](OUTPUT.md)):
 
 ```text
-FCN-600 - Add validation to subnet step
+<PROJECT>-600 - Add validation to subnet step
 
 Issue type: Story
 Estimated points: 3
@@ -78,19 +78,25 @@ The agent then asks whether to **update Jira** (story points + cycle-time commen
 
 ### Install the skill
 
-| Location | Scope |
-|----------|-------|
-| `~/.cursor/skills/jira-get-estimates/` | Personal — all projects |
-| `.cursor/skills/jira-get-estimates/` | Project — shared with the repo |
+Install per host (see [Host compatibility](../jira-acceptance-criteria-check/CONVENTIONS.md#host-compatibility)):
 
-### Trigger in Cursor
+| Host | Install path |
+|------|--------------|
+| **Fleet repo** | `skills/jira-get-estimates/` — run `make install-opencode`, `make install-claude`, or `make install-cursor` from [agentic-sdlc](https://github.com/OpenShift-Fleet/agentic-sdlc) |
+| **OpenCode** | `~/.config/opencode/skills/jira-get-estimates/` |
+| **Cursor** | `~/.cursor/skills/jira-get-estimates/` or `.cursor/skills/jira-get-estimates/` in the project |
+| **Claude Code** | Fleet plugin via `make install-claude` (skills ship in the plugin) |
+
+Ensure **Atlassian MCP** is configured when using Jira fetch or writes (see [Requirements](#requirements) where present).
+
+### Trigger the skill
 
 Ask the agent — for example:
 
-- “Estimate story points and cycle time for unpointed FCN stories under parent FCN-41”
-- “Size these keys from historical data: FCN-600, FCN-601, FCN-602”
-- “Run jira-get-estimates on `project = FCN AND \"Story Points[Number]\" IS EMPTY AND type in (Story, Task)`”
-- “Give me point and p75 time estimates for the open backlog in FCN phase 2 epics”
+- “Estimate story points and cycle time for unpointed stories under parent <PROJECT>-41”
+- “Size these keys from historical data: <PROJECT>-600, <PROJECT>-601, <PROJECT>-602”
+- “Run jira-get-estimates on `project = <PROJECT> AND \"Story Points[Number]\" IS EMPTY AND type in (Story, Task)`”
+- “Give me point and p75 time estimates for the open backlog in <PROJECT> phase 2 epics”
 
 **Not this skill:** building the historical baseline → use [jira-get-historical-items](../jira-get-historical-items/SKILL.md) first; summarizing closed work stats → [jira-get-stats](../jira-get-stats/SKILL.md).
 
@@ -152,11 +158,11 @@ jira-acceptance-criteria-check/CONVENTIONS.md                      # Paths, MCP,
 | Bug cycle time `cannot determine` | Historical report has no closed bugs with cycle time — widen bug history in the report JQL |
 | Spike shows `n/a` for both fields | Expected — spikes get no points or time estimate |
 | Estimates feel off | Tighten historical report scope (project, 3–6 months, Done) and re-run upstream skill |
-| MCP auth failed | Settings → MCP → Atlassian; `mcp_auth`; see [JIRA.md](JIRA.md) |
+| MCP auth failed | host MCP settings → Atlassian server; re-authenticate; see [JIRA.md](JIRA.md) |
 | Jira not updated | Agent waits for explicit **Update Jira** choice — see [UPDATE_JIRA.md](UPDATE_JIRA.md) |
 | Duplicate cycle-time comments skipped | Prior comment starting with “Estimated cycle time” — edit in Jira or delete before re-posting |
 
-Site default: **redhat.atlassian.net**. Story points field default (FCN): `customfield_10028` (or `meta.storyPointsField` from the report).
+Site default: **redhat.atlassian.net**. Story points field: load `meta.storyPointsField` from the report when present.
 
 ---
 

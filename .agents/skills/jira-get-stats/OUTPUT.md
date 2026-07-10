@@ -67,11 +67,11 @@ Columns: Key (linked), Type, Points, Created, Started, Closed, Cycle time, Outli
 ```markdown
 ## Saved files
 
-- [.jira-historical-stats.json](/absolute/path/to/.jira-historical-stats.json)
-- [.jira-historical-report.json](/absolute/path/to/.jira-historical-report.json)
+- [.jira-historical-stats.json]({absolute-stats-artifact-path})
+- [.jira-historical-report.json]({absolute-report-artifact-path})
 ```
 
-Paths only — do not re-paste JSON contents.
+Paths only — do not re-paste JSON contents. Stats JSON defaults to `{report-dir}/.jira-historical-stats.json` (parent of the resolved report).
 
 ---
 

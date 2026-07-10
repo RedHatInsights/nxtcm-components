@@ -1,7 +1,8 @@
+import { JIRA_SITE } from './constants.mjs';
 import { buildCycleTimeData } from './summarize.mjs';
 
 export const REPORT_VERSION = 1;
-export const JIRA_SITE = 'redhat.atlassian.net';
+export { JIRA_SITE };
 
 /**
  * @param {object} options
@@ -15,7 +16,7 @@ export function buildHistoricalReport({
   jql = '',
   issues,
   rows,
-  storyPointsField = 'customfield_10028',
+  storyPointsField = DEFAULT_STORY_POINTS_FIELD,
   site = JIRA_SITE,
   maxResults = 100,
   runAt = new Date().toISOString(),

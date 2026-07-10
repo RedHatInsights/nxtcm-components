@@ -1,4 +1,4 @@
-import { readJsonFile } from './read-json.mjs';
+import { readFileSync } from 'fs';
 
 /**
  * Normalize CLI, MCP, or REST issue JSON into an array of issue objects.
@@ -13,5 +13,5 @@ export function loadIssuesFromJson(parsed) {
 }
 
 export function readIssuesFromPath(path) {
-  return loadIssuesFromJson(readJsonFile(path));
+  return loadIssuesFromJson(JSON.parse(readFileSync(path, 'utf8')));
 }

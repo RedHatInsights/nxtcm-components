@@ -24,14 +24,16 @@ Fetch the **parent epic** for decomposition via **Atlassian MCP only** — no CL
 
 ## Transport — MCP only
 
-1. Read MCP tool schemas under `user-atlassian-mcp-server` before calling.
-2. If only `mcp_auth` is listed → authenticate, re-check tools.
-3. `getAccessibleAtlassianResources` → `cloudId` for `redhat.atlassian.net`.
-4. `getJiraIssue` with `responseContentFormat: "markdown"`.
+Use Fleet-standard Jira MCP tools (`mcp__jira-mcp-server__*`). If unavailable, fall back to Cursor's `user-atlassian-mcp-server` equivalents — see [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § MCP transport.
+
+1. Read MCP tool schemas — prefer `mcp__jira-mcp-server__*` (Claude Code, OpenCode); else `user-atlassian-mcp-server` (Cursor).
+2. If only `mcp_auth` is exposed → call `mcp_auth` for the Atlassian server with `{}`, then re-check tools.
+3. `mcp__jira-mcp-server__getAccessibleAtlassianResources` (or `getAccessibleAtlassianResources`) → `cloudId` for `redhat.atlassian.net`.
+4. `mcp__jira-mcp-server__getJiraIssue` (or `getJiraIssue`) with `responseContentFormat: "markdown"`.
 
 **If MCP fails** (server missing, tools unavailable after auth, or fetch error):
 
-- Ask the user to paste the epic body **or** fix MCP (Cursor → **Settings → MCP** → enable Atlassian; `mcp_auth` for `user-atlassian-mcp-server`).
+- Ask the user to paste the epic body **or** fix MCP (enable the Atlassian MCP server in the host's MCP settings and complete authentication).
 - Do **not** use `acli`, Jira REST, or curl.
 
 There is **no** acli or other CLI fallback for this skill.
@@ -46,7 +48,7 @@ When the user wants to **dedupe** against work already filed, search:
 parent = <EPIC_KEY> OR "Epic Link" = <EPIC_KEY>
 ```
 
-**MCP:** `searchJiraIssuesUsingJql` with the JQL above.
+**MCP:** `mcp__jira-mcp-server__searchJiraIssuesUsingJql` (or `searchJiraIssuesUsingJql`) with the JQL above.
 
 List matches in **Already filed** ([TEMPLATE.md](TEMPLATE.md) §6). Do **not** run this search by default.
 
@@ -104,20 +106,20 @@ Pass to [DECOMPOSE.md](DECOMPOSE.md):
 
 Run only when the user chose **Create in Jira** in [SKILL.md](SKILL.md) §7.
 
-**MCP only** — `user-atlassian-mcp-server`. Do **not** use `acli`, Jira REST, or curl.
+**MCP only** — Atlassian MCP server. Do **not** use `acli`, Jira REST, or curl.
 
 | Do | Do not |
 |----|--------|
-| `createJiraIssue` per breakdown item via MCP | `acli`, Jira REST, or curl for any Jira call |
+| `mcp__jira-mcp-server__createJiraIssue` (or `createJiraIssue`) per breakdown item via MCP | `acli`, Jira REST, or curl for any Jira call |
 | Set **parent** to the **epic key** on every child | Create without parent |
 | Read MCP tool schemas before calling | Fall back to another transport when MCP fails |
 
 **Prerequisites**
 
 1. **Epic key** is known — if not, ask the user ([SKILL.md](SKILL.md) §7).
-2. `mcp_auth` on **401**, retry once; if still failing, **stop** and leave breakdown in chat.
+2. re-authenticate the Atlassian MCP server on **401**, retry once; if still failing, **stop** and leave breakdown in chat.
 
-**Cloud ID:** `2b9e35e3-6bd3-4cec-b838-f4249ee02432` or `redhat.atlassian.net`
+**Cloud ID:** `<cloud-id>` or `redhat.atlassian.net`
 
 ### Per-item create
 
@@ -130,10 +132,10 @@ Create in **suggested order** from the breakdown table. For each row:
 | bug | `Bug` | Breakdown summary as drafted |
 | spike | **`Story`** | **Must include `Spike`** — e.g. `Spike: <summary>` if not already present |
 
-**Project key:** prefix from epic key (e.g. `FCN-100` → `FCN`).
+**Project key:** prefix from epic key (e.g. `<PROJECT>-100` → `<PROJECT>`).
 
 ```text
-createJiraIssue
+mcp__jira-mcp-server__createJiraIssue
   cloudId, projectKey, issueTypeName: <Story|Task|Bug>
   summary: "<title — Spike prefix for spikes>"
   description: "<paste-ready ticket body from breakdown>"
@@ -141,7 +143,7 @@ createJiraIssue
   additional_fields: { "parent": { "key": "<EPIC_KEY>" } }
 ```
 
-If `parent` fails (site-specific epic link), use `getJiraIssueTypeMetaWithFields` for the correct parent/epic-link field.
+If `parent` fails (site-specific epic link), use `mcp__jira-mcp-server__getJiraIssueTypeMetaWithFields` (or `getJiraIssueTypeMetaWithFields`) for the correct parent/epic-link field.
 
 ### After create
 
@@ -149,7 +151,7 @@ Post a table in chat:
 
 | # | Key | Type | Summary |
 |---|-----|------|---------|
-| 1 | FCN-501 | Task | … |
+| 1 | <PROJECT>-501 | Task | … |
 
 Link each key to `https://redhat.atlassian.net/browse/<KEY>`.
 

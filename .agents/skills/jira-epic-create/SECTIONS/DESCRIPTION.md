@@ -73,7 +73,7 @@ When a **parent epic** was fetched:
 When **related epics** exist:
 
 - Do not claim scope owned by a related epic
-- Mention coordination in flow or a brief note only when dependency affects this epic’s narrative (e.g. “wizard package publish tracked in FCN-200”)
+- Mention coordination in flow or a brief note only when dependency affects this epic’s narrative (e.g. “wizard package publish tracked in <PROJECT>-200”)
 
 Do **not** paste parent or related descriptions verbatim.
 

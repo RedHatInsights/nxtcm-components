@@ -35,7 +35,7 @@ export function closedDateRange(items) {
   const dates = items
     .map((item) => item.completionDate)
     .filter(Boolean)
-    .sort((a, b) => new Date(a) - new Date(b));
+    .sort();
   if (dates.length === 0) return null;
   return { earliest: dates[0], latest: dates[dates.length - 1] };
 }

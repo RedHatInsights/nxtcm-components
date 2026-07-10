@@ -1,6 +1,6 @@
 # Jira fetch (MCP)
 
-Supplement to [SKILL.md](SKILL.md). Agent-driven fetch via `user-atlassian-mcp-server` **only**.
+Supplement to [SKILL.md](SKILL.md). Agent-driven fetch via the **Atlassian MCP server** only.
 
 Shared MCP rules: [jira-acceptance-criteria-check/CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md).
 
@@ -22,7 +22,7 @@ If the user did **not** pick a route, the agent must **ask first** — see [SKIL
 
 ## MCP-only (route lock)
 
-When the user chose **MCP**, Jira issue data comes **only** from `user-atlassian-mcp-server`. Until the user explicitly starts over with **CLI**, do not:
+When the user chose **MCP**, Jira issue data comes **only** from the Atlassian MCP server. Until the user explicitly starts over with **CLI**, do not:
 
 | Forbidden on MCP path | Why |
 |-----------------------|-----|
@@ -37,17 +37,19 @@ When the user chose **MCP**, Jira issue data comes **only** from `user-atlassian
 
 ## MCP tools (exact names)
 
-Read the tool schema JSON in the MCP descriptors folder **before** calling. Typos cause JSON-RPC **-32601** (method not found).
+Use Fleet-standard Jira MCP tools (`mcp__jira-mcp-server__*`). If unavailable, fall back to Cursor's `user-atlassian-mcp-server` equivalents — see [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § MCP transport.
 
-| Step | Tool | Required args |
-|------|------|----------------|
-| Auth check | `getAccessibleAtlassianResources` | — |
-| Search | `searchJiraIssuesUsingJql` | `cloudId`, `jql`, `maxResults`, `fields` |
-| Changelog | `getJiraIssue` | `cloudId`, `issueIdOrKey`, `expand=changelog`, `fields` |
+Read the tool schema JSON in the MCP descriptors folder **before** calling. Typos cause JSON-RPC **-32601** (method not found). Prefer `mcp__jira-mcp-server__*` (Claude Code, OpenCode); else bare tool names on `user-atlassian-mcp-server` (Cursor).
 
-**Changelog fetch:** one `getJiraIssue` per key. Issue **all** calls in **one parallel batch** (same tool-use turn).
+| Step | Tool (prefer) | Fallback (Cursor) | Required args |
+|------|---------------|-------------------|---------------|
+| Auth check | `mcp__jira-mcp-server__getAccessibleAtlassianResources` | `getAccessibleAtlassianResources` | — |
+| Search | `mcp__jira-mcp-server__searchJiraIssuesUsingJql` | `searchJiraIssuesUsingJql` | `cloudId`, `jql`, `maxResults`, `fields` |
+| Changelog | `mcp__jira-mcp-server__getJiraIssue` | `getJiraIssue` | `cloudId`, `issueIdOrKey`, `expand=changelog`, `fields` |
 
-On **401**: `mcp_auth` for `user-atlassian-mcp-server`, retry once. **Stop** if MCP still fails — say MCP auth failed; ask if the user wants to **start over with CLI** ([CLI.md](CLI.md)). Do not run CLI fetch without that explicit switch.
+**Changelog fetch:** one `getJiraIssue` call per key (Fleet-standard or fallback name). Issue **all** calls in **one parallel batch** (same tool-use turn).
+
+On **401**: re-authenticate the Atlassian MCP server, retry once. **Stop** if MCP still fails — say MCP auth failed; ask if the user wants to **start over with CLI** ([CLI.md](CLI.md)). Do not run CLI fetch without that explicit switch.
 
 ---
 
@@ -56,20 +58,20 @@ On **401**: `mcp_auth` for `user-atlassian-mcp-server`, retry once. **Stop** if 
 | Code | Meaning | Action |
 |------|---------|--------|
 | **-32601** | Method not found | Verify exact tool name in schema |
-| **401** | Not authenticated | `mcp_auth` on `user-atlassian-mcp-server`, retry |
+| **401** | Not authenticated | Re-authenticate the Atlassian MCP server, retry once |
 | Empty / invalid payload | Wrong args | Re-read schema; ensure `cloudId` and required fields are set |
 
 ---
 
 ## Fields to request
 
-`summary`, `description`, `status`, `resolution`, `issuetype`, `customfield_10028`
+`summary`, `description`, `status`, `resolution`, `issuetype`, `<storyPointsField>`
 
 ---
 
 ## Save format
 
-Array of `getJiraIssue` objects → `{workspace}/.jira-historical-issues.json`
+Array of `mcp__jira-mcp-server__getJiraIssue` objects → fetch artifact path from [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact write paths.
 
 Each element must include:
 
@@ -88,7 +90,7 @@ The pipeline rejects search-only payloads with a clear error per key.
 - ≤100 keys: single parallel batch
 - More than 100 keys: parallel batches of ~15–20 keys per turn until all keys are fetched
 
-Search results alone have **no changelog** — you must call `getJiraIssue` per key.
+Search results alone have **no changelog** — you must call `mcp__jira-mcp-server__getJiraIssue` per key.
 
 If the user's scope covers **more than ~6 months**, post the date-range heads-up from [SKILL.md](SKILL.md) §1 before fetching — do not block.
 
@@ -99,17 +101,17 @@ If the user's scope covers **more than ~6 months**, post the date-range heads-up
 | Use | Avoid |
 |-----|-------|
 | `created >= -20d` | `createdDate > -20d` (non-standard) |
-| `parent = FCN-41` | unquoted keys are usually fine; match project key casing in links |
+| `parent = <PROJECT>-41` | unquoted keys are usually fine; match project key casing in links |
 
 ---
 
 ## Run pipeline after save
 
-See [SKILL.md](SKILL.md) step 4 — **`run-historical-report.mjs` only** (not `fetch-historical-items.mjs`).
+See [SKILL.md](SKILL.md) step 4 — **`run-historical-report.mjs` only** (not `fetch-historical-items.mjs`). Paths from [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact write paths.
 
 ```bash
 node scripts/run-historical-report.mjs \
-  --input {workspace}/.jira-historical-issues.json \
+  --input {absolute-fetch-artifact-path} \
   --workspace {workspace} \
   --jql '{exact JQL}'
 ```

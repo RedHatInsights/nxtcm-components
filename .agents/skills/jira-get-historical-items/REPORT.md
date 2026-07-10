@@ -29,7 +29,7 @@ One short paragraph:
 
 Heading: **`## Historical report`**
 
-Paste the **full** `.jira-historical-report.json` as a JSON code block (or stdout from `run-historical-report.mjs --stdout` before the `---CYCLE_TIME_SUMMARY---` delimiter).
+Paste the **full** report JSON as a code block (or stdout from `run-historical-report.mjs --stdout` before the `---CYCLE_TIME_SUMMARY---` delimiter). Filename: `.jira-historical-report.json` per [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md).
 
 Do **not** omit or summarize this JSON unless the user asked for summary only.
 
@@ -41,8 +41,10 @@ Paste human-readable text from:
 
 ```bash
 node scripts/summarize-cycle-times.mjs \
-  --input {workspace}/.jira-historical-report.json
+  --input {absolute-report-artifact-path}
 ```
+
+Report artifact path: [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact write paths.
 
 Or use the text after `---CYCLE_TIME_SUMMARY---` when using `--stdout`.
 
@@ -56,16 +58,16 @@ No items with measurable cycle time — summary not produced.
 
 Heading: **`## Saved files`**
 
-**Always** post after a successful run (including 0-issue fetches that still wrote empty artifact files). Use **absolute paths** from this run as markdown links so the user can open them in the editor:
+**Always** post after a successful run (including 0-issue fetches that still wrote empty artifact files). Use **absolute paths** from this run as markdown links — paths from [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact write paths:
 
 ```markdown
 ## Saved files
 
-- [.jira-historical-issues.json](/absolute/path/to/workspace/.jira-historical-issues.json)
-- [.jira-historical-report.json](/absolute/path/to/workspace/.jira-historical-report.json)
+- [.jira-historical-issues.json]({absolute-fetch-artifact-path})
+- [.jira-historical-report.json]({absolute-report-artifact-path})
 ```
 
-- Link **label** = filename; link **target** = full absolute path (not `{workspace}` placeholders).
+- Link **label** = filename; link **target** = full absolute path resolved this run.
 - **Paths and links only** — do not paste file contents again under this heading (the report JSON already appears in §3).
 - Skip this section when fetch or the report pipeline failed.
 
@@ -77,10 +79,10 @@ Heading: **`## Saved files`**
 {
   "version": 1,
   "runAt": "2026-06-24T15:30:00.000Z",
-  "jql": "parent = FCN-41 AND created >= -20d",
+  "jql": "parent = <PROJECT>-41 AND created >= -20d",
   "meta": {
     "site": "redhat.atlassian.net",
-    "storyPointsField": "customfield_10028",
+    "storyPointsField": "<storyPointsField>",
     "counts": {
       "fetched": 12,
       "included": 10,
@@ -89,7 +91,7 @@ Heading: **`## Saved files`**
   },
   "items": [
     {
-      "key": "FCN-533",
+      "key": "<PROJECT>-533",
       "summary": "…",
       "description": "…",
       "issueType": "Story",
@@ -123,7 +125,7 @@ Heading: **`## Saved files`**
 ## JQL
 
 ```text
-parent = FCN-41 AND created >= -20d
+parent = <PROJECT>-41 AND created >= -20d
 ```
 
 Fetched **12** issues; **10** included (resolution Done); **2** skipped.
@@ -134,7 +136,7 @@ Fetched **12** issues; **10** included (resolution Done); **2** skipped.
 {
   "version": 1,
   "runAt": "2026-06-24T15:30:00.000Z",
-  "jql": "parent = FCN-41 AND created >= -20d",
+  "jql": "parent = <PROJECT>-41 AND created >= -20d",
   "meta": { "counts": { "fetched": 12, "included": 10, "skipped": 2 } },
   "items": [ … ],
   "cycleTime": { … }
@@ -154,8 +156,8 @@ All stories (6): 3.5 days
 
 ## Saved files
 
-- [.jira-historical-issues.json](/Users/you/project/.jira-historical-issues.json)
-- [.jira-historical-report.json](/Users/you/project/.jira-historical-report.json)
+- [.jira-historical-issues.json]({absolute-fetch-artifact-path})
+- [.jira-historical-report.json]({absolute-report-artifact-path})
 
 ---
 
@@ -166,7 +168,7 @@ Respect **route lock** ([SKILL.md](SKILL.md)): on MCP path, never auto-run CLI f
 | Situation | Chat response |
 |-----------|----------------|
 | Scope or fetch route unknown | **Stop** — [SKILL.md](SKILL.md) §0; ask what to include and CLI vs MCP; do not infer project or date range |
-| MCP auth failed | Say so; run `mcp_auth` once; if still failing, **stop** — ask if user wants to switch to CLI ([CLI.md](CLI.md)) |
+| MCP auth failed | Say so; re-authenticate the Atlassian MCP server once; if still failing, **stop** — ask if user wants to switch to CLI ([CLI.md](CLI.md)) |
 | MCP fetch/save failed (MCP path) | **Stop** — do not run `fetch-historical-items.mjs`; ask user to fix MCP or switch to CLI |
 | JQL returned 0 issues | Show JQL + "No issues matched." Still post **Saved files** links if empty artifacts were written |
 | All issues skipped (non-Done) | Show JQL, fetch count, report with `items: []` and `cycleTime: null` |

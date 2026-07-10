@@ -1,15 +1,6 @@
 ---
 name: jira-epic-breakdown
-description: >-
-  Breaks a Jira epic into logical child work items with recommended type (from
-  jira-acceptance-criteria-check/JIRA_TYPE rubrics), summary, dependencies, and paste-ready
-  ticket bodies. Runs jira-acceptance-criteria-check-style review on drafts before delivery and flags items
-  needing human review. Always prints the full breakdown to chat before asking
-  whether to create child items in Jira (MCP only) or do nothing. Spikes file as Stories with Spike in the title; all
-  children set parent to the epic. Uses jira-acceptance-criteria-check type definitions
-  and templates. Fetches epic from Jira or uses pasted epic text. Use when the
-  user asks to break down, decompose, or split an epic into stories, tasks, spikes,
-  or child tickets.
+description: Use when an epic is ready to slice into stories, tasks, spikes, or bugs — decomposes into typed child items with dependencies and paste-ready bodies, runs quality review on drafts, then asks before creating in Jira (MCP). NOT for drafting the epic itself (jira-epic-create) or general backlog triage (jira-specialist).
 user-invocable: true
 ---
 
@@ -40,7 +31,6 @@ Decompose one **epic** into child Jira items with the correct **type** (from [JI
 | Pre-delivery draft review | [REVIEW.md](REVIEW.md) |
 | Output shape | [TEMPLATE.md](TEMPLATE.md) |
 | Delivery rules | [REPORT.md](REPORT.md) |
-| Worked example | [EXAMPLE.md](EXAMPLE.md) |
 
 ---
 
@@ -129,7 +119,7 @@ Run [TEMPLATE.md](TEMPLATE.md) § Quality check before sending.
 
 ### 7. Jira next step (mandatory — only after §6 is in chat)
 
-**Only after** the full §6 breakdown is posted in the message, ask what the user wants to do with the child items. Prefer **AskQuestion** when available — but **never** call AskQuestion (or any §7 prompt) **without** the complete §6 content in the same message above it.
+**Only after** the full §6 breakdown is posted in the message, ask what the user wants to do with the child items. Prefer a **structured choice prompt** when the host supports multiple-choice UI — but **never** call structured choice prompt (or any §7 prompt) **without** the complete §6 content in the same message above it.
 
 > **What would you like to do with these work items?**
 > 1. **Create them in Jira** under the epic (MCP)
@@ -169,7 +159,7 @@ Planning type **spike** → Jira **`Story`** with **`Spike`** in the summary (e.
 
 ## Anti-patterns
 
-Workflow violations (skipping §6/§7, AskQuestion without breakdown, creating without epic key, spike as Jira Spike type, using `acli`) → see §6, §7, and [JIRA.md](JIRA.md) § Write.
+Workflow violations (skipping §6/§7, structured choice prompt without breakdown, creating without epic key, spike as Jira Spike type, using `acli`) → see §6, §7, and [JIRA.md](JIRA.md) § Write.
 
 **Content and slicing:**
 
@@ -183,3 +173,25 @@ Workflow violations (skipping §6/§7, AskQuestion without breakdown, creating w
 - Re-slicing work listed in epic **Out of scope**
 - Inventing scope not in the epic
 - Verbose ticket bodies ([WRITING.md](WRITING.md))
+
+---
+
+## Dependencies
+
+### MCP tools
+
+Prefer Fleet-standard `mcp__jira-mcp-server__*`; fallback to Cursor `user-atlassian-mcp-server` bare tool names — [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § MCP transport.
+
+- `mcp__jira-mcp-server__getAccessibleAtlassianResources` — resolve cloud ID
+- `mcp__jira-mcp-server__getJiraIssue` — fetch epic (when key provided)
+- `mcp__jira-mcp-server__searchJiraIssuesUsingJql` — dedupe against existing children (when user asks)
+- `mcp__jira-mcp-server__createJiraIssue` — create child items (user consent only)
+
+### Related skills
+- `jira-epic-create` — upstream epic authoring; paste epic body when no key
+- `jira-acceptance-criteria-check` — rubrics in [JIRA_TYPE/](../jira-acceptance-criteria-check/JIRA_TYPE/README.md); optional post-create scoring
+
+### Supporting files
+- [DISCOVERY.md](DISCOVERY.md), [DECOMPOSE.md](DECOMPOSE.md), [TICKETS.md](TICKETS.md), [REVIEW.md](REVIEW.md) — decomposition and pre-delivery review
+- [JIRA.md](JIRA.md), [TEMPLATE.md](TEMPLATE.md), [REPORT.md](REPORT.md) — fetch, output shape, delivery
+- [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) — shared MCP rules

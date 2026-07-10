@@ -1,15 +1,6 @@
 ---
 name: jira-get-estimates
-description: >-
-  Recommend Jira story point estimates using historical closed-item data from
-  .jira-historical-report.json. Resolves the report from user path, active
-  workspace, or ~/.cursor/skills fallback; fetches target issues via JQL, builds effort profiles from
-  historical story-point groups, and maps each issue to the closest point bucket.
-  Stories and tasks only for points; bugs get p75 cycle time from bug history (no
-  points); spikes get no points or time estimate. After reporting, asks whether to
-  update Jira (story points + cycle-time comments) or do nothing. Use when the user
-  asks for Jira estimates, story point sizing, or estimate recommendations from
-  historical cycle time data.
+description: Use when the user asks for Jira estimates, story point sizing, or cycle-time recommendations from team history — resolves `.jira-historical-report.json`, fetches target issues via JQL, maps effort to point buckets, asks before updating Jira. NOT for generating the historical report (jira-get-historical-items) or read-only stats from an existing report (jira-get-stats).
 user-invocable: true
 ---
 
@@ -105,9 +96,9 @@ Translate intent into **exact JQL**. Common patterns:
 
 | User intent | JQL pattern |
 |-------------|-------------|
-| Specific keys | `key in (FCN-123, FCN-456)` |
-| Unpointed items in a project | `project = FCN AND "Story Points[Number]" IS EMPTY AND type in (Story, Task)` |
-| Items under parent epics | add `AND parent in (FCN-41, FCN-100, ...)` |
+| Specific keys | `key in (<KEY-1>, <KEY-2>)` |
+| Unpointed items in a project | `project = <PROJECT> AND "Story Points[Number]" IS EMPTY AND type in (Story, Task)` |
+| Items under parent epics | add `AND parent in (<EPIC-KEY-1>, <EPIC-KEY-2>, ...)` |
 | Open backlog | add `AND status not in (Closed, Done)` |
 | Closed items for review | add `AND status in (Closed, Done)` |
 
@@ -160,7 +151,7 @@ Wait for the user's choice before any Jira writes.
 
 Treat clear agreement (**yes**, **y**, **update**, **post**, option **1**) as **Update Jira**. **No** or option **2** → **do nothing**. **Implicit default: do nothing** (including silence).
 
-If the user restricts keys in their reply (“only FCN-100”), honor that subset.
+If the user restricts keys in their reply (“only `<KEY>`”), honor that subset.
 
 ---
 
@@ -168,16 +159,37 @@ If the user restricts keys in their reply (“only FCN-100”), honor that subse
 
 | Problem | Fix |
 |---------|-----|
-| No report file | [RESOLVE_REPORT.md](../jira-get-historical-items/RESOLVE_REPORT.md) step 1c — stop; workspace then `~/.cursor/skills/` |
+| No report file | [RESOLVE_REPORT.md](../jira-get-historical-items/RESOLVE_REPORT.md) step 1c — stop; [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § Historical artifact read lookup |
 | Report in workspace but agent checked skills dir only | RESOLVE_REPORT step 1b — workspace first |
 | User asked for markdown file | Step 5 — write `{report-dir}/.jira-estimates-report.md`; post `## Saved files` |
-| Generate report handoff | Follow jira-get-historical-items §0 — ask scope + CLI/MCP; don't infer FCN or date range |
+| Generate report handoff | Follow jira-get-historical-items §0 — ask scope + CLI/MCP; don't infer project or date range |
 | User gave no scope (estimates) | Ask for keys, JQL, or a natural-language filter before fetching |
 | Historical report missing some point values | [SIZING.md](SIZING.md) — ordered scale + neighbors |
-| MCP 401 | [JIRA.md](JIRA.md) — `mcp_auth`, retry once |
+| MCP 401 | [JIRA.md](JIRA.md) — re-authenticate the Atlassian MCP server, retry once |
 | Empty description, vague summary | **cannot determine** for that story/task only — [SIZING.md](SIZING.md) |
 | Bug or spike in scope | No story points — bugs use bug p75 only; spikes get `n/a` for both |
 | No bugs in historical report | Bug cycle time **cannot determine** — do not fall back to all-items p75 |
 | **Skipping step 6** | Delivering estimates without asking update vs do nothing |
-| **Updating without consent** | Calling `editJiraIssue` or `addCommentToJiraIssue` before the user chooses **Update Jira** |
+| **Updating without consent** | Calling `mcp__jira-mcp-server__editJiraIssue` or `mcp__jira-mcp-server__addCommentToJiraIssue` before the user chooses **Update Jira** |
 | **acli for writes** | Step 6 uses MCP only — [UPDATE_JIRA.md](UPDATE_JIRA.md) |
+
+---
+
+## Dependencies
+
+### MCP tools
+
+Prefer Fleet-standard `mcp__jira-mcp-server__*`; fallback to Cursor `user-atlassian-mcp-server` bare tool names — [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § MCP transport.
+
+- `mcp__jira-mcp-server__searchJiraIssuesUsingJql` — fetch target issues
+- `mcp__jira-mcp-server__editJiraIssue` — set story points (user consent only)
+- `mcp__jira-mcp-server__addCommentToJiraIssue` — post cycle-time comments (user consent only)
+
+### Related skills
+- `jira-get-historical-items` — generate `.jira-historical-report.json` (user consent only)
+- `jira-get-stats` — read-only report summary without estimating
+
+### Supporting files
+- [SIZING.md](SIZING.md), [OUTPUT.md](OUTPUT.md), [UPDATE_JIRA.md](UPDATE_JIRA.md)
+- [jira-get-historical-items/RESOLVE_REPORT.md](../jira-get-historical-items/RESOLVE_REPORT.md) — resolve report file
+- [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) — shared paths and MCP rules

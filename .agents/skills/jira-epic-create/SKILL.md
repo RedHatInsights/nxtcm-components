@@ -1,17 +1,6 @@
 ---
 name: jira-epic-create
-description: >-
-  Drafts concise Jira epic descriptions for project owners and management —
-  from user context, parent/related Jira epics, and optional codebase research.
-  Sections defined in TEMPLATE.md § Section registry (default: Description,
-  Acceptance criteria, Mockups/Design, Out of scope, Test Plan, Implementation
-  notes, More information needed). Plain language; no repeat, expand, or
-  extrapolate. **Stops for discovery first:** asks for all missing facts
-  (parent/related epics, Figma for UI, parity links, submit artifacts, scope,
-  etc.) before research or drafting — never delivers placeholders in required
-  sections. After delivery, asks whether to update an existing epic, create a new
-  one, or do nothing; Jira access MCP only. Use when the user asks to write,
-  draft, or create a Jira epic, epic description, or high-level feature epic.
+description: Use when you need a complete paste-ready Jira epic description for PMs or management — discovery-first, structured sections, optional codebase research, then ask before create or update in Jira (MCP). NOT for breaking an epic into child tickets (jira-epic-breakdown) or creating single stories/tasks (jira-create).
 user-invocable: true
 ---
 
@@ -33,7 +22,6 @@ Draft a **paste-ready Jira epic body** for **project owners, PMs, and management
 | Gather input | [DISCOVERY.md](DISCOVERY.md) |
 | Parent / related epics | [JIRA.md](JIRA.md) |
 | Explore repos (optional) | [RESEARCH.md](RESEARCH.md) |
-| Worked example | [EXAMPLE.md](EXAMPLE.md) |
 
 ---
 
@@ -52,7 +40,7 @@ Draft a **paste-ready Jira epic body** for **project owners, PMs, and management
 
 1. Briefly acknowledge what you understood (1–2 sentences).
 2. Ask every **unresolved** item in one message — numbered, specific ([DISCOVERY.md](DISCOVERY.md) § Ask).
-3. Prefer **AskQuestion** when available.
+3. Prefer a **structured choice prompt** when the host supports multiple-choice UI.
 4. **Do not** output any registry section heading or paste-ready epic body.
 5. **Do not** run repo research until hierarchy is resolved; after research, run completeness audit before drafting.
 
@@ -122,7 +110,7 @@ If any gap remains that blocks **required** registry sections → **discovery-on
 
 ### 6. Jira next step (mandatory after delivery)
 
-After the paste-ready epic body is delivered (§5), **always** ask what the user wants to do with it. Prefer **AskQuestion** when available.
+After the paste-ready epic body is delivered (§5), **always** ask what the user wants to do with it. Prefer a **structured choice prompt** when the host supports multiple-choice UI.
 
 > **What would you like to do with this epic?**
 > 1. **Update an existing epic** in Jira with this description
@@ -133,8 +121,8 @@ Wait for the user's choice before Jira writes or other follow-up skills.
 
 | Choice | Action |
 |--------|--------|
-| **Update existing** | Follow [JIRA.md](JIRA.md) § Write — **MCP only** (`editJiraIssue`). If **target epic key** is unknown, **stop and ask** for the key — do not guess from parent/related keys. |
-| **Create new** | Follow [JIRA.md](JIRA.md) § Write — **MCP only** (`createJiraIssue`). Ask for **project key** and **summary** when not already clear from the draft. |
+| **Update existing** | Follow [JIRA.md](JIRA.md) § Write — **MCP only** (`mcp__jira-mcp-server__editJiraIssue`). If **target epic key** is unknown, **stop and ask** for the key — do not guess from parent/related keys. |
+| **Create new** | Follow [JIRA.md](JIRA.md) § Write — **MCP only** (`mcp__jira-mcp-server__createJiraIssue`). Ask for **project key** and **summary** when not already clear from the draft. |
 | **Do nothing** | Acknowledge briefly. Do not write to Jira. Optional follow-ups (jira-epic-breakdown, etc.) only if the user asks in a later turn. |
 
 #### Target epic key (update path)
@@ -143,7 +131,7 @@ The **target** is the Jira issue that receives this draft — not the parent or 
 
 | Known | Unknown → ask |
 |-------|----------------|
-| User named the epic key for this work (e.g. “update FCN-500”, “draft for FCN-500”) | User chose update but never gave which epic |
+| User named the epic key for this work (e.g. “update `<PROJECT>-500`”, “draft for `<EPIC-KEY>`”) | User chose update but never gave which epic |
 | User pasted the key when picking update | |
 
 Do **not** assume the parent epic is the update target unless the user said so.
@@ -190,3 +178,26 @@ Workflow violations (drafting before discovery, skipping §6, updating without t
 - Skipping **why not alternatives** when the user explained platform-specific rationale
 - Claiming repo research was done without reading named paths
 - Duplicating parent epic AC or scope instead of scoping this epic as a distinct slice
+
+---
+
+## Dependencies
+
+### MCP tools
+
+Prefer Fleet-standard `mcp__jira-mcp-server__*`; fallback to Cursor `user-atlassian-mcp-server` bare tool names — [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § MCP transport.
+
+- `mcp__jira-mcp-server__getAccessibleAtlassianResources` — resolve cloud ID
+- `mcp__jira-mcp-server__getJiraIssue` — fetch parent/related epics (when keys provided)
+- `mcp__jira-mcp-server__editJiraIssue` — update existing epic (user consent only)
+- `mcp__jira-mcp-server__createJiraIssue` — create new epic (user consent only)
+- `mcp__jira-mcp-server__getJiraIssueTypeMetaWithFields` — site-specific parent/epic-link fields
+
+### Related skills
+- `jira-epic-breakdown` — optional follow-up to decompose the epic
+- `jira-acceptance-criteria-check` — optional quality scoring on the draft
+
+### Supporting files
+- [TEMPLATE.md](TEMPLATE.md), [SECTIONS/](SECTIONS/README.md) — section registry and per-section guides
+- [DISCOVERY.md](DISCOVERY.md), [WRITING.md](WRITING.md), [RESEARCH.md](RESEARCH.md), [JIRA.md](JIRA.md)
+- [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) — shared MCP rules

@@ -1,3 +1,4 @@
+import { DEFAULT_STORY_POINTS_FIELD } from './constants.mjs';
 import { businessDaysBetween, formatDate, parseDate, plainDescription } from './metrics.mjs';
 
 const DONE_RESOLUTION = 'Done';
@@ -11,7 +12,7 @@ function historyTimestamp(iso) {
  * @param {object} issue Jira issue with fields + changelog
  * @returns {object|null} Output row, or null when resolution is not Done
  */
-export function analyzeHistoricalItem(issue, storyPointsFieldId = 'customfield_10028') {
+export function analyzeHistoricalItem(issue, storyPointsFieldId = DEFAULT_STORY_POINTS_FIELD) {
   const resolutionName = issue.fields?.resolution?.name ?? '';
   if (resolutionName !== DONE_RESOLUTION) return null;
 
@@ -28,7 +29,7 @@ export function analyzeHistoricalItem(issue, storyPointsFieldId = 'customfield_1
   let startDate = null;
   let completionDate = null;
 
-  // Workflow-specific status names (Red Hat FCN default workflow).
+  // Workflow-specific status names (site-specific default workflow).
   for (const h of histories) {
     for (const item of h.items ?? []) {
       if (item.field !== 'status') continue;

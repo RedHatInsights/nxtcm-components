@@ -34,7 +34,7 @@ Some good things to know about the **hiccups** someone may experience while impl
 | Release coordination | Pin npm package version between library publish and consumer |
 | Epic dependencies | Related epic KEY owns X; this epic owns Y |
 | **Repos / packages** | `@scope/package` in `repo` → `path/`; props in `types.ts` |
-| **Parent / related Jira** | [FCN-100](https://redhat.atlassian.net/browse/FCN-100) — parent; coordinate with FCN-200 for npm publish |
+| **Parent / related Jira** | [<PROJECT>-100](https://<JIRA-SITE>/browse/<PROJECT>-100) — parent; coordinate with <PROJECT>-200 for npm publish |
 
 Use bullet list. Technical names (npm, CRD kinds, paths) belong here — not in Description or AC.
 

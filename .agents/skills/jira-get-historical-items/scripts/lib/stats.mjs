@@ -1,3 +1,4 @@
+import { JIRA_SITE } from './constants.mjs';
 import { percentile } from './metrics.mjs';
 import {
   buildCycleTimeData,
@@ -8,8 +9,6 @@ import {
   pointSizes,
   roundDays,
 } from './summarize.mjs';
-
-const JIRA_SITE = 'redhat.atlassian.net';
 const FETCH_CAP = 100;
 
 const CYCLE_TIME_BUCKETS = [
@@ -251,7 +250,7 @@ export function buildReportStats(report, rawIssues = null) {
       jql: report.jql ?? '',
       reportRunAt: report.runAt ?? '',
       site: report.meta?.site ?? JIRA_SITE,
-      storyPointsField: report.meta?.storyPointsField ?? 'customfield_10028',
+      storyPointsField: report.meta?.storyPointsField ?? DEFAULT_STORY_POINTS_FIELD,
     },
     counts: {
       fetched,

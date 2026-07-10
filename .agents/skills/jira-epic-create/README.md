@@ -1,6 +1,6 @@
 # jira-epic-create
 
-A [Cursor Agent Skill](https://cursor.com/docs/agent/skills) that drafts **paste-ready Jira epic descriptions** for project owners and management — from conversation, parent/related epics, and optional codebase research. Stops for discovery first; no placeholders in required sections. After delivery, asks whether to create or update in Jira (MCP only) or do nothing.
+A Fleet **agent skill** that drafts **paste-ready Jira epic descriptions** for project owners and management — from conversation, parent/related epics, and optional codebase research. Stops for discovery first; no placeholders in required sections. After delivery, asks whether to create or update in Jira (MCP only) or do nothing.
 
 Use when you need a complete epic body — not a rough outline you still have to fill in.
 
@@ -23,9 +23,9 @@ You can run the full drafting flow **without MCP** if you supply context in chat
 
 **Setup (when using Jira fetch or writes):**
 
-1. Cursor → **Settings → MCP** — enable the **Atlassian** server (`user-atlassian-mcp-server`).
-2. Complete auth when prompted (`mcp_auth` for `user-atlassian-mcp-server`).
-3. Confirm tools such as `getJiraIssue`, `editJiraIssue`, and `createJiraIssue` are available.
+1. Enable the **Atlassian MCP server** in the host's MCP settings.
+2. Complete auth when prompted (re-authenticate the Atlassian MCP server).
+3. Confirm Jira MCP tools are available — **prefer** Fleet-standard `mcp__jira-mcp-server__*`; on Cursor, **fallback** to bare tool names on `user-atlassian-mcp-server` (see [CONVENTIONS.md](../jira-acceptance-criteria-check/CONVENTIONS.md) § MCP transport).
 
 Without MCP, the agent can still draft from conversation; unfetched parent/related keys are noted in **More information needed** if fetch was attempted and failed.
 
@@ -52,23 +52,25 @@ The agent follows [SKILL.md](SKILL.md) in order (§0–§6). The README step lis
 
 ### Install the skill
 
-Copy this folder into a skills location Cursor reads:
+Install per host (see [Host compatibility](../jira-acceptance-criteria-check/CONVENTIONS.md#host-compatibility)):
 
-| Location | Scope |
-|----------|-------|
-| `~/.cursor/skills/jira-epic-create/` | Personal — all projects |
-| `.cursor/skills/jira-epic-create/` | Project — shared with the repo |
+| Host | Install path |
+|------|--------------|
+| **Fleet repo** | `skills/jira-epic-create/` — run `make install-opencode`, `make install-claude`, or `make install-cursor` from [agentic-sdlc](https://github.com/OpenShift-Fleet/agentic-sdlc) |
+| **OpenCode** | `~/.config/opencode/skills/jira-epic-create/` |
+| **Cursor** | `~/.cursor/skills/jira-epic-create/` or `.cursor/skills/jira-epic-create/` in the project |
+| **Claude Code** | Fleet plugin via `make install-claude` (skills ship in the plugin) |
 
-Enable **Atlassian MCP** when you want Jira fetch or create/update (see [Requirements](#requirements)).
+Ensure **Atlassian MCP** is configured when using Jira fetch or writes (see [Requirements](#requirements) where present).
 
-### Trigger in Cursor
+### Trigger the skill
 
 Ask the agent to run the skill — for example:
 
 - “Create an epic for integrating the ROSA HCP wizard into ACM”
-- “Draft a Jira epic — parent FCN-100, related FCN-200”
+- “Draft a Jira epic — parent <PROJECT>-100, related <PROJECT>-200”
 - “Write an epic description for [feature]; I’ll paste into Jira myself”
-- “Update epic FCN-500 with this draft” (after delivery, choose update at §6)
+- “Update epic <PROJECT>-500 with this draft” (after delivery, choose update at §6)
 
 The skill is **user-invocable** (`SKILL.md` frontmatter). The description helps the agent auto-select it for epic-drafting tasks.
 
@@ -91,8 +93,8 @@ The agent asks what to do with the draft:
 
 | Choice | Behavior |
 |--------|----------|
-| **Update existing** | MCP `editJiraIssue` — asks for target key if unknown |
-| **Create new** | MCP `createJiraIssue` — asks for project key and summary if needed |
+| **Update existing** | MCP `mcp__jira-mcp-server__editJiraIssue` — asks for target key if unknown |
+| **Create new** | MCP `mcp__jira-mcp-server__createJiraIssue` — asks for project key and summary if needed |
 | **Do nothing** | Draft stays in chat for manual paste |
 
 Optional follow-ups (only if **you** ask in a later turn):
@@ -113,7 +115,6 @@ jira-epic-create/
 ├── DISCOVERY.md          # Discovery and completeness gates
 ├── JIRA.md               # MCP-only fetch (parent/related) and writes
 ├── RESEARCH.md           # Optional codebase research
-├── EXAMPLE.md            # Worked two-turn example (ROSA HCP wizard)
 └── SECTIONS/             # ← customize: one guide file per epic section
     ├── README.md         # Add/remove/rename sections
     ├── SECTION_SKELETON.md
@@ -135,7 +136,7 @@ jira-epic-create/
 These files discover sections from the registry and delegate — they do **not** define section content or headings:
 
 - `SKILL.md`
-- `DISCOVERY.md`, `WRITING.md`, `RESEARCH.md`, `JIRA.md`, `EXAMPLE.md`
+- `DISCOVERY.md`, `WRITING.md`, `RESEARCH.md`, `JIRA.md`
 - `SECTIONS/README.md` (orchestration within the section folder)
 
 ### Customize (your epic template)
@@ -197,7 +198,7 @@ Full registry and paste skeleton → [TEMPLATE.md](TEMPLATE.md).
 | Agent drafted with `(add link)` placeholders | Discovery gate skipped — required facts were missing; reply to discovery questions first |
 | Agent asks for parent/related before every draft | Expected — hierarchy is mandatory unless you said “standalone” / “none” |
 | Parent epic fetch fails | Atlassian MCP auth; or paste parent description manually and continue |
-| Fetch or create/update fails | MCP required for all Jira access — no `acli` fallback; retry `mcp_auth` |
+| Fetch or create/update fails | MCP required for all Jira access — no `acli` fallback; retry Atlassian MCP authentication |
 | Agent used wrong epic key on update | Target key must be explicit — parent/related keys are context only ([SKILL.md](SKILL.md) §6) |
 | **jira-epic-breakdown** missed a section | Heading must match registry exactly; see [SECTIONS/](SECTIONS/) metadata |
 | UI epic blocked on Figma | Required for UI changes — paste link or confirm non-UI scope |
