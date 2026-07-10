@@ -12,8 +12,9 @@ import {
   buildRosaHcpWizardNavStepStatuses,
   buildVisibleWizardStepIds,
   findActiveWizardNavStepIndexWithPendingValidation,
-  findFirstWizardNavStepIndexWithVisibleErrors,
+  findFirstWizardNavStepIndexWithBlockingErrors,
   stepHasAsyncValidationInProgress,
+  stepHasNavBlockingValidationErrors,
   stepHasPendingAsyncValidation,
   stepHasVisibleValidationErrors,
 } from './rosaHcpWizardNavStepStatus';
@@ -104,6 +105,33 @@ describe('stepHasVisibleValidationErrors', () => {
     ).toBe(false);
   });
 
+  it('returns false for touched invalid selects before validation is revealed', () => {
+    const getFieldState = mockGetFieldState((path) => ({
+      invalid: path === 'region',
+      isTouched: path === 'region',
+    }));
+
+    expect(
+      stepHasVisibleValidationErrors(['region'], STEP_IDS.DETAILS, getFieldState, new Set())
+    ).toBe(false);
+  });
+
+  it('defers nav-visible errors for machine_pools_subnets until validation is revealed', () => {
+    const getFieldState = mockGetFieldState((path) => ({
+      invalid: path === 'machine_pools_subnets',
+      isTouched: path === 'machine_pools_subnets',
+    }));
+
+    expect(
+      stepHasVisibleValidationErrors(
+        ['machine_pools_subnets'],
+        STEP_IDS.MACHINE_POOLS,
+        getFieldState,
+        new Set()
+      )
+    ).toBe(false);
+  });
+
   it('returns true when validation was attempted on the step', () => {
     const getFieldState = mockGetFieldState(() => ({ invalid: true, isTouched: false }));
 
@@ -114,6 +142,19 @@ describe('stepHasVisibleValidationErrors', () => {
         getFieldState,
         new Set([STEP_IDS.DETAILS])
       )
+    ).toBe(true);
+  });
+});
+
+describe('stepHasNavBlockingValidationErrors', () => {
+  it('returns true for touched invalid selects before validation is revealed', () => {
+    const getFieldState = mockGetFieldState((path) => ({
+      invalid: path === 'region',
+      isTouched: path === 'region',
+    }));
+
+    expect(
+      stepHasNavBlockingValidationErrors(['region'], STEP_IDS.DETAILS, getFieldState, new Set())
     ).toBe(true);
   });
 });
@@ -228,8 +269,8 @@ describe('findActiveWizardNavStepIndexWithPendingValidation', () => {
   });
 });
 
-describe('findFirstWizardNavStepIndexWithVisibleErrors', () => {
-  it('returns the earliest ordered step index with a visible error', () => {
+describe('findFirstWizardNavStepIndexWithBlockingErrors', () => {
+  it('returns the earliest ordered step index with a blocking select error', () => {
     const getFieldState = mockGetFieldState((path) => ({
       invalid: path === 'region',
       isTouched: path === 'region',
@@ -237,7 +278,7 @@ describe('findFirstWizardNavStepIndexWithVisibleErrors', () => {
     const orderedStepIds = buildOrderedWizardNavStepIds(allReviewSections, false);
 
     expect(
-      findFirstWizardNavStepIndexWithVisibleErrors({
+      findFirstWizardNavStepIndexWithBlockingErrors({
         orderedStepIds,
         sections,
         getFieldState,

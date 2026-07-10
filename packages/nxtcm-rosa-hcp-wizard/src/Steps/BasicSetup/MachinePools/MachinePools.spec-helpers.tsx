@@ -2,9 +2,8 @@
  * Playwright CT mount target. Components from *.story.tsx cannot be mounted (see playwright.dev/test-components#test-stories).
  */
 import React, { useMemo } from 'react';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { Form } from '@patternfly/react-core';
-import { FormProvider, useForm, type Resolver } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 
 import type { MachineTypesResource, ROSAHCPCluster, VpcListResource } from '../../../types';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
@@ -15,11 +14,8 @@ import {
   WizardFieldMetaChangeEffectsCtHarness,
 } from '../../../test/rosaHcpWizardCtSpecHelpers';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import {
-  clusterValidationSchema,
-  getClusterValidationSchemaDefaultValues,
-} from '../../../yupSchemas';
-import type { ValidationSchemaContext } from '../../../yupSchemas/types';
+import { createClusterValidationResolver } from '../../../utilities/clusterValidationResolver';
+import { getClusterValidationSchemaDefaultValues } from '../../../yupSchemas';
 
 import { MachinePools } from './MachinePools';
 
@@ -34,13 +30,8 @@ export const MachinePoolsMount: React.FC<MachinePoolsMountProps> = ({
   machineTypes,
   defaultValues = {},
 }) => {
-  const validationContext = useMemo<ValidationSchemaContext>(
-    () => ({
-      msgs: defaultRosaHcpWizardValidatorStrings,
-      maxRootDiskSize: 16384,
-      maxAutoscalingNodes: 500,
-      machinePoolsNumber: 1,
-    }),
+  const resolver = useMemo(
+    () => createClusterValidationResolver(defaultRosaHcpWizardValidatorStrings),
     []
   );
 
@@ -53,8 +44,7 @@ export const MachinePoolsMount: React.FC<MachinePoolsMountProps> = ({
       cluster_version: '4.16.2',
       ...defaultValues,
     },
-    resolver: yupResolver(clusterValidationSchema) as Resolver<Partial<ROSAHCPCluster>>,
-    context: validationContext,
+    resolver,
     mode: 'onTouched',
   });
 

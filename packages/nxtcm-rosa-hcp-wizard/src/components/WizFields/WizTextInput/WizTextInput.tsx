@@ -269,6 +269,7 @@ export function WizTextInput<TFieldValues extends FieldValues = FieldValues>(
 
   const validateOnBlur = useMemo(
     () => resolveValidateOnBlur({ ...props, validateOnBlur: validateOnBlurProp }, name),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- resolveValidateOnBlur reads props; listing `props` would recompute every render
     [name, schema, validateOnBlurProp]
   );
 
