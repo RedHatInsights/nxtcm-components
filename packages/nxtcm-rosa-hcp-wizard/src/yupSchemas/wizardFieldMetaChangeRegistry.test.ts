@@ -1,6 +1,7 @@
 import { STEP_IDS } from '../constants';
 import {
   getFieldPathsByStepId,
+  getWizardSelectFieldPaths,
   getWizardFieldDerivedSyncKeyForSourceField,
   getWizardFieldResetsForSourceField,
   getWizardFieldSyncsForSourceField,
@@ -13,6 +14,12 @@ import {
 } from './wizardFieldMetaChangeRegistry';
 
 describe('wizardFieldMetaChangeRegistry', () => {
+  describe('getWizardSelectFieldPaths', () => {
+    it('includes machine_pools_subnets for nav-visible select deferral', () => {
+      expect(getWizardSelectFieldPaths().has('machine_pools_subnets')).toBe(true);
+    });
+  });
+
   describe('getFieldPathsByStepId', () => {
     it('assigns each schema field to exactly one step', () => {
       const fieldPathsByStepId = getFieldPathsByStepId();

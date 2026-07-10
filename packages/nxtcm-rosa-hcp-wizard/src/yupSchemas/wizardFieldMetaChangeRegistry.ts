@@ -30,6 +30,8 @@ export type WizardFieldDerivedSyncEntry = {
 type WizardFieldMetaChangeRegistry = {
   /** Top-level form field paths grouped by {@link WizardFieldMeta.stepId}. */
   fieldPathsByStepId: Readonly<Record<string, readonly string[]>>;
+  /** Top-level paths with Yup `.meta({ fieldType: 'select' })` (WizSelect / WizMultiSelect). */
+  selectFieldPaths: ReadonlySet<string>;
   sourceFields: WizardFormFieldName[];
   resets: Map<WizardFormFieldName, readonly WizardFormFieldName[]>;
   refetches: Map<WizardFormFieldName, readonly WizardResourceRefetchOnChange[]>;
@@ -43,6 +45,7 @@ type WizardFieldMetaChangeRegistry = {
 
 function buildWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
   const fieldPathsByStep: Record<string, string[]> = {};
+  const selectFieldPaths = new Set<string>();
   const resets = new Map<WizardFormFieldName, readonly WizardFormFieldName[]>();
   const refetches = new Map<WizardFormFieldName, readonly WizardResourceRefetchOnChange[]>();
   const syncs = new Map<WizardFormFieldName, readonly WizardFieldSyncOnChange[]>();
@@ -64,6 +67,10 @@ function buildWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
         fieldPathsByStep[meta.stepId] = [];
       }
       fieldPathsByStep[meta.stepId].push(fieldName);
+    }
+
+    if (meta.fieldType === 'select') {
+      selectFieldPaths.add(fieldName);
     }
 
     const sourceField = fieldName as WizardFormFieldName;
@@ -97,6 +104,7 @@ function buildWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
     fieldPathsByStepId: Object.fromEntries(
       Object.entries(fieldPathsByStep).map(([stepId, paths]) => [stepId, paths] as const)
     ),
+    selectFieldPaths,
     sourceFields: [...sourceFieldSet].sort((a, b) => a.localeCompare(b)),
     resets,
     refetches,
@@ -122,6 +130,11 @@ function getWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
  */
 export function getFieldPathsByStepId(): Readonly<Record<string, readonly string[]>> {
   return getWizardFieldMetaChangeRegistry().fieldPathsByStepId;
+}
+
+/** Top-level form paths rendered as {@link WizSelect} or {@link WizMultiSelect}. */
+export function getWizardSelectFieldPaths(): ReadonlySet<string> {
+  return getWizardFieldMetaChangeRegistry().selectFieldPaths;
 }
 
 /** Sorted form fields that declare reset, refetch, sync, or derived-sync metadata in Yup `.meta()`. */

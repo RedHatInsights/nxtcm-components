@@ -49,6 +49,7 @@ import {
   getClusterValidationSchemaDefaultValues,
   wizardFieldMetaByPath,
 } from './index';
+import { coerceAbsentRequiredFieldValues } from '../utilities/clusterValidationResolver';
 import type { ValidationSchemaContext } from './types';
 import { defaultRosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
@@ -112,7 +113,8 @@ async function validate(
   field: keyof ROSAHCPCluster
 ): Promise<string | null> {
   try {
-    await clusterValidationSchema.validateAt(field, data, { context });
+    const coerced = coerceAbsentRequiredFieldValues(data);
+    await clusterValidationSchema.validateAt(field, coerced, { context });
     return null;
   } catch (err) {
     if (err instanceof yup.ValidationError) {
@@ -312,6 +314,56 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
         buildFormData({ machine_pools_subnets: [] }),
         'machine_pools_subnets'
       );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
+    it('machine_pools_subnets rejects empty subnet row with common required message', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({ machine_pools_subnets: [{ machine_pool_subnet: '' }] }),
+        'machine_pools_subnets'
+      );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
+    it('machine_type rejects undefined with common required message', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({ machine_type: undefined }),
+        'machine_type'
+      );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
+    it('machine_type rejects empty string with common required message', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({ machine_type: '' }),
+        'machine_type'
+      );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
+    it('selected_vpc rejects undefined with common required message', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({ selected_vpc: undefined }),
+        'selected_vpc'
+      );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
+    it('selected_vpc rejects null with common required message', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({ selected_vpc: null as unknown as ROSAHCPCluster['selected_vpc'] }),
+        'selected_vpc'
+      );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
+    it('region rejects undefined with common required message', async () => {
+      const error = await validate(buildContext(), buildFormData({ region: undefined }), 'region');
       expect(error).toBe(msgs.commonRequired);
     });
   });

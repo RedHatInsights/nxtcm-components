@@ -1,4 +1,5 @@
 import { Flex, FlexItem } from '@patternfly/react-core';
+import { useFormContext, useWatch } from 'react-hook-form';
 import type { ROSAHCPCluster } from '../../../types';
 import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../constants/links';
@@ -26,6 +27,16 @@ export interface MachinePoolsAutoscalingReplicasProps {
 export const MachinePoolsAutoscalingReplicas = (props: MachinePoolsAutoscalingReplicasProps) => {
   const { maxAutoscalingNodes } = props;
   const a = useRosaHcpWizardStrings().autoscaling;
+  const { control } = useFormContext<ROSAHCPCluster>();
+  const minReplicas = useWatch({ control, name: 'min_replicas' });
+  const maxReplicas = useWatch({ control, name: 'max_replicas' });
+
+  const minReplicasMax =
+    typeof maxReplicas === 'number' && Number.isFinite(maxReplicas)
+      ? Math.min(maxReplicas, maxAutoscalingNodes)
+      : maxAutoscalingNodes;
+  const maxReplicasMin =
+    typeof minReplicas === 'number' && Number.isFinite(minReplicas) ? minReplicas : 1;
 
   return (
     <Flex>
@@ -34,7 +45,7 @@ export const MachinePoolsAutoscalingReplicas = (props: MachinePoolsAutoscalingRe
           name="min_replicas"
           schema={clusterValidationSchema}
           min={minReplicasUiMin}
-          max={maxAutoscalingNodes}
+          max={minReplicasMax}
           labelHelp={<AutoscalingReplicasLabelHelp helpText={a.minHelp} />}
         />
       </FlexItem>
@@ -42,7 +53,7 @@ export const MachinePoolsAutoscalingReplicas = (props: MachinePoolsAutoscalingRe
         <WizNumberInput<ROSAHCPCluster>
           name="max_replicas"
           schema={clusterValidationSchema}
-          min={1}
+          min={maxReplicasMin}
           max={maxAutoscalingNodes}
           labelHelp={<AutoscalingReplicasLabelHelp helpText={a.maxHelp} />}
         />
