@@ -19,7 +19,6 @@
     "**/*.test.tsx",
     "**/*.test-data.ts",
     "**/*StorybookHelpers.tsx",
-    "**/yupDescribeOptionsExample.tsx",
     "**/test/**"
   ]
 }

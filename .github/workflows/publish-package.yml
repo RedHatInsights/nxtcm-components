@@ -1,0 +1,132 @@
+name: Publish Package
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  resolve:
+    name: Resolve package from release tag
+    if: github.event.release.target_commitish == 'main'
+    runs-on: ubuntu-latest
+    outputs:
+      package-dir: ${{ steps.resolve.outputs.package-dir }}
+      display-name: ${{ steps.resolve.outputs.display-name }}
+      tag-prefix: ${{ steps.resolve.outputs.tag-prefix }}
+    steps:
+      - name: Map tag prefix to workspace package
+        id: resolve
+        run: |
+          case "${{ github.event.release.tag_name }}" in
+            nxtcm-dashboard-v*)
+              echo "package-dir=packages/nxtcm-dashboard" >> "$GITHUB_OUTPUT"
+              echo "display-name=Dashboard" >> "$GITHUB_OUTPUT"
+              echo "tag-prefix=nxtcm-dashboard-v" >> "$GITHUB_OUTPUT"
+              ;;
+            nxtcm-rosa-hcp-wizard-v*)
+              echo "package-dir=packages/nxtcm-rosa-hcp-wizard" >> "$GITHUB_OUTPUT"
+              echo "display-name=ROSA HCP Wizard" >> "$GITHUB_OUTPUT"
+              echo "tag-prefix=nxtcm-rosa-hcp-wizard-v" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "::error::Unrecognized release tag '${{ github.event.release.tag_name }}'. Expected nxtcm-dashboard-v* or nxtcm-rosa-hcp-wizard-v*."
+              exit 1
+              ;;
+          esac
+
+  quality-gates:
+    name: ${{ needs.resolve.outputs.display-name }} Quality Gates
+    needs: resolve
+    if: needs.resolve.outputs.package-dir != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+
+      - name: Verify release tag is reachable from main
+        run: |
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" refs/remotes/origin/main; then
+            echo "::error::Release tag $GITHUB_REF_NAME ($GITHUB_SHA) is not reachable from main"
+            exit 1
+          fi
+
+      - name: Verify release tag matches package version
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          PACKAGE_DIR: ${{ needs.resolve.outputs.package-dir }}
+          TAG_PREFIX: ${{ needs.resolve.outputs.tag-prefix }}
+        run: |
+          expected="${TAG_PREFIX}$(node -p "require('./${PACKAGE_DIR}/package.json').version")"
+          if [ "$RELEASE_TAG" != "$expected" ]; then
+            echo "::error::Release tag $RELEASE_TAG does not match expected $expected"
+            exit 1
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: 'package.json'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check lockfile for git-based dependencies
+        run: |
+          if grep -qE '"resolved":\s*"(git\+|git:|github:)' package-lock.json; then
+            echo "::error::git-based dependency found in lockfile (supply chain risk)"
+            exit 1
+          fi
+
+      - name: Run package lint
+        run: npm run lint -w ${{ needs.resolve.outputs.package-dir }}
+
+      - name: Run package type-check
+        run: npm run type-check -w ${{ needs.resolve.outputs.package-dir }}
+
+      - name: Run package unit tests
+        run: npm run test -w ${{ needs.resolve.outputs.package-dir }}
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run package component tests
+        run: npm run test:ct -w ${{ needs.resolve.outputs.package-dir }}
+
+      - name: Build package
+        run: npm run build -w ${{ needs.resolve.outputs.package-dir }}
+
+  publish:
+    name: Publish to npm
+    needs: [resolve, quality-gates]
+    if: github.repository == 'RedHatInsights/nxtcm-components' && needs.resolve.outputs.package-dir != ''
+    runs-on: ubuntu-latest
+    environment: npm-publish
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: 'package.json'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build package
+        run: npm run build -w ${{ needs.resolve.outputs.package-dir }}
+
+      - name: Publish package
+        run: npm publish -w ${{ needs.resolve.outputs.package-dir }} --provenance --access public
