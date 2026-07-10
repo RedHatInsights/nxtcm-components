@@ -365,7 +365,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     versionIntroSuffix: 'that you selected in the',
     detailsStepLink: 'Details step',
     midSentence: 'will apply to the managed control plane and the machine pools configured in the',
-    networkingStepLink: 'Networking step',
+    networkingStepLink: 'Networking step.',
     afterCreation:
       'After cluster creation, you can update the managed control plane and machine pools independently.',
     cveLead: 'In the event of',
