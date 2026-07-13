@@ -84,8 +84,11 @@ export async function fillMachinePoolsStep(page: Page): Promise<void> {
 }
 
 /**
- * Fill Networking step (use defaults)
+ * Fill Networking step (select public subnet for public endpoint access)
  */
 export async function fillNetworkingStep(page: Page): Promise<void> {
+  // Public endpoint access is selected by default, need to select public subnet
+  await page.getByRole('button', { name: 'Select public subnet name' }).click();
+  await page.getByRole('option', { name: 'test-1-subnet-public1-us-east-1a' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
 }
