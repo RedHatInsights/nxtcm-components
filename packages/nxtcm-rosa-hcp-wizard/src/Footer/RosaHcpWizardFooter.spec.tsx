@@ -457,7 +457,7 @@ test.describe('RosaHcpWizardFooter — submission payload', () => {
 
     await component.getByRole('button', { name: FOOTER_SUBMIT }).click();
 
-    expect(receivedPayload).toBe(STUB_FORM_YAML);
+    await expect.poll(() => receivedPayload).toBe(STUB_FORM_YAML);
   });
 });
 
