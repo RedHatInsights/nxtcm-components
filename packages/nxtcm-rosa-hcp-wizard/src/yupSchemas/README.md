@@ -194,6 +194,48 @@ import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
 
 `fieldRequiredUi: true` tells `Wiz*` fields to show as required without relying on `.required()` alone. Pass the same `yupDescribeOptions` / form values to presentation and required helpers so `.when()` branches resolve consistently.
 
+Example wiring in a step form:
+
+```tsx
+import { useMemo } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { WizCheckbox } from '../components/WizFields/WizCheckbox';
+
+const schema = yup.object({
+  enableAdvanced: yup.boolean().required(),
+  acceptTerms: yup
+    .boolean()
+    .when('enableAdvanced', {
+      is: true,
+      then: (s) => s.oneOf([true], 'You must accept terms when Advanced is enabled.'),
+      otherwise: (s) => s.notRequired(),
+    })
+    .meta({
+      label: 'I accept the terms',
+      helperText: 'Required only when Advanced mode is on.',
+    }),
+});
+
+function ExampleForm() {
+  const methods = useForm({ defaultValues: { enableAdvanced: false, acceptTerms: false } });
+  const enableAdvanced = methods.watch('enableAdvanced');
+
+  // Pass current form values so Yup resolves `.when(...)` correctly.
+  const yupDescribeOptions = useMemo(
+    () => ({ value: methods.getValues() }),
+    [enableAdvanced, methods]
+  );
+
+  return (
+    <FormProvider {...methods}>
+      <WizCheckbox name="enableAdvanced" label="Enable advanced mode" schema={schema} />
+      <WizCheckbox name="acceptTerms" schema={schema} yupDescribeOptions={yupDescribeOptions} />
+    </FormProvider>
+  );
+}
+```
+
 ---
 
 ## How meta is consumed
