@@ -105,7 +105,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
 
   return (
     <div
-      className={`rosa-hcp-wizard${isYamlEditorOpen ? ' rosa-hcp-wizard--yaml-editor-open' : ''}`}
+      className={`rosa-hcp-wizard${isYamlEditorOpen && !onSubmitError ? ' rosa-hcp-wizard--yaml-editor-open' : ''}`}
     >
       {onSubmitError ? (
         <RosaWizardSubmitError
