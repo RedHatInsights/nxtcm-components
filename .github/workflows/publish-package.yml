@@ -19,8 +19,10 @@ jobs:
     steps:
       - name: Map tag prefix to workspace package
         id: resolve
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          case "${{ github.event.release.tag_name }}" in
+          case "$RELEASE_TAG" in
             nxtcm-dashboard-v*)
               echo "package-dir=packages/nxtcm-dashboard" >> "$GITHUB_OUTPUT"
               echo "display-name=Dashboard" >> "$GITHUB_OUTPUT"
@@ -32,7 +34,7 @@ jobs:
               echo "tag-prefix=nxtcm-rosa-hcp-wizard-v" >> "$GITHUB_OUTPUT"
               ;;
             *)
-              echo "::error::Unrecognized release tag '${{ github.event.release.tag_name }}'. Expected nxtcm-dashboard-v* or nxtcm-rosa-hcp-wizard-v*."
+              echo "::error::Unrecognized release tag '${RELEASE_TAG}'. Expected nxtcm-dashboard-v* or nxtcm-rosa-hcp-wizard-v*."
               exit 1
               ;;
           esac
@@ -46,6 +48,7 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Verify release tag is reachable from main
         run: |
