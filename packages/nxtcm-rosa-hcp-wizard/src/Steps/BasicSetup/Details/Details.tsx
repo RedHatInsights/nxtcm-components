@@ -173,6 +173,12 @@ export const Details = ({
               options={regions.data}
               isLoading={regions.isFetching}
               apiError={regions.error}
+              labelHelp={
+                <>
+                  {d.regionHelpLead}{' '}
+                  <ExternalLink href={links.AWS_REGIONS}>{d.regionLearnMoreLink}</ExternalLink>
+                </>
+              }
               onRefresh={
                 associatedAwsIdForRegions
                   ? () => void regions.fetch(associatedAwsIdForRegions)

@@ -270,7 +270,8 @@ export type RosaHcpWizardStrings = {
     connectBillingLink: string;
     regionLabel: string;
     regionPlaceholder: string;
-    regionHelp: string;
+    regionHelpLead: string;
+    regionLearnMoreLink: string;
   };
   rolesAndPolicies: {
     accountRolesSection: string;
@@ -329,15 +330,20 @@ export type RosaHcpWizardStrings = {
     cidrAlertTitle: string;
     cidrAlertBody: string;
     cidrLearnMoreLink: string;
+    cidrFieldLearnMoreLink: string;
     useDefaultsLabel: string;
     useDefaultsHelp: string;
     machineCidrLabel: string;
+    machineCidrHelpLead: string;
     machineCidrHelp: string;
     serviceCidrLabel: string;
+    serviceCidrHelpLead: string;
     serviceCidrHelp: string;
     podCidrLabel: string;
+    podCidrHelpLead: string;
     podCidrHelp: string;
     hostPrefixLabel: string;
+    hostPrefixHelpLead: string;
     hostPrefixHelp: string;
   };
   machinePools: {

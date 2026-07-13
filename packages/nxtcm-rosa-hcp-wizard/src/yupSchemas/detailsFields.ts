@@ -73,7 +73,6 @@ export const billingAccountIdSchema = rosaRequiredStringField().meta({
 export const regionSchema = rosaRequiredStringField().meta({
   id: 'region',
   labelKey: 'details.regionLabel',
-  labelHelpKey: 'details.regionHelp',
   placeholderKey: 'details.regionPlaceholder',
   stepId: STEP_IDS.DETAILS,
   fieldType: 'select',
