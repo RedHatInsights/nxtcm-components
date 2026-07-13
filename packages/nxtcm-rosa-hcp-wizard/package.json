@@ -4,9 +4,14 @@
   "description": "PatternFly wizard component for ROSA HCP cluster creation in ACM and OCM",
   "author": "Red Hat",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RedHatInsights/nxtcm-components.git",
+    "directory": "packages/nxtcm-rosa-hcp-wizard"
+  },
   "main": "dist/index.umd.js",
   "module": "dist/index.js",
-  "types": "dist/src/index.d.ts",
+  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "README.md",
@@ -23,11 +28,20 @@
     "typescript",
     "ui"
   ],
-  "private": true,
+  "peerDependencies": {
+    "@patternfly/react-code-editor": "^6.5.1",
+    "@patternfly/react-core": "^6.0.0",
+    "@patternfly/react-icons": "^6.3.1",
+    "js-yaml": "^4.1.0",
+    "monaco-editor": ">=0.36.0",
+    "monaco-yaml": "^5.4.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
   "scripts": {
     "prepack": "cp ../../LICENSE LICENSE",
     "postpack": "rm -f LICENSE",
-    "build": "tsc && NXTCM_LIB_NAME=NXTCM-ROSA-HCP-WIZARD vite build --config ../../vite.config.ts",
+    "build": "rm -rf dist && tsc && NXTCM_LIB_NAME=NXTCM-ROSA-HCP-WIZARD vite build --config ../../vite.config.ts",
     "type-check": "tsc --noEmit",
     "lint": "eslint --config ../../.eslintrc.json 'src/**/*.{ts,tsx}'",
     "lint:fix": "eslint --config ../../.eslintrc.json 'src/**/*.{ts,tsx}' --fix",
@@ -36,5 +50,14 @@
     "test": "jest --config ../../jest.config.js packages/nxtcm-rosa-hcp-wizard",
     "test:ct": "playwright test -c ../../playwright-ct.config.ts packages/nxtcm-rosa-hcp-wizard",
     "allthethings": "npm run prettier:fix && npm run lint:fix && npm run type-check && npm run test && npm run test:ct"
+  },
+  "devDependencies": {
+    "monaco-types": "^0.1.2"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "publishConfig": {
+    "access": "public"
   }
 }

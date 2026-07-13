@@ -2,7 +2,6 @@
  * Playwright CT mount target. Components from *.story.tsx cannot be mounted (see playwright.dev/test-components#test-stories).
  */
 import React, { useMemo } from 'react';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { Form } from '@patternfly/react-core';
 import { FormProvider, useForm, useWatch, type Resolver } from 'react-hook-form';
 
@@ -20,7 +19,7 @@ import {
   mockRegions,
   mockRoles,
 } from './Details.fixtures';
-import { clusterValidationSchema } from '../../../yupSchemas';
+import { createClusterValidationResolver } from '../../../utilities/clusterValidationResolver';
 import type { CheckClusterNameUniqueness } from '../../../types';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { RosaHcpWizardValidationProvider } from '../../../rosaHcpWizardValidationContext';
@@ -124,15 +123,14 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
     return undefined;
   }, [checkClusterNameUniqueness, clusterNameUniquenessError, onClusterNameUniquenessCheck]);
 
+  const resolver = useMemo(
+    () => createClusterValidationResolver(defaultRosaHcpWizardValidatorStrings),
+    []
+  );
+
   const methods = useForm<ROSAHCPCluster>({
     defaultValues: { ...DEFAULT_ROSA_HCP_CT_FORM_VALUES, ...defaultValues },
-    resolver: yupResolver(clusterValidationSchema) as Resolver<ROSAHCPCluster>,
-    context: {
-      msgs: defaultRosaHcpWizardValidatorStrings,
-      maxRootDiskSize: 16384,
-      maxAutoscalingNodes: 500,
-      machinePoolsNumber: 1,
-    },
+    resolver: resolver as Resolver<ROSAHCPCluster>,
     mode: 'onTouched',
   });
 

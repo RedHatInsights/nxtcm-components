@@ -22,11 +22,28 @@ import {
   buildMachinePoolsReviewSelectOptions,
   resolveSelectedVpc,
 } from '../../../utilities/helpers';
+import { STEP_IDS } from '../../../constants';
+import { useIsStepHidden } from '../../../WizardConfigContext';
 
 type NetworkingStepProps = Pick<ROSAHCPWizardData, 'vpcList' | 'subnets'>;
 
+type CidrFieldLabelHelpProps = {
+  helpLead: string;
+  href: string;
+  learnMoreLink: string;
+};
+
+function CidrFieldLabelHelp({ helpLead, href, learnMoreLink }: CidrFieldLabelHelpProps) {
+  return (
+    <>
+      {helpLead} <ExternalLink href={href}>{learnMoreLink}</ExternalLink>
+    </>
+  );
+}
+
 export const Networking = (props: NetworkingStepProps) => {
   const { networking: n } = useRosaHcpWizardStrings();
+  const isProxyStepHidden = useIsStepHidden(STEP_IDS.CLUSTER_WIDE_PROXY);
 
   const cidrDefaultChecked = useWatch({ name: 'cidr_default' });
   const selectedVPCRaw = useWatch({ name: 'selected_vpc' });
@@ -86,14 +103,16 @@ export const Networking = (props: NetworkingStepProps) => {
 
       <ExpandableSection isIndented toggleText={n.advancedToggle}>
         <FieldWrapperStack>
-          <FieldWrapper>
-            <WizCheckbox name="configure_proxy" schema={clusterValidationSchema} />
-          </FieldWrapper>
+          {!isProxyStepHidden && (
+            <FieldWrapper>
+              <WizCheckbox name="configure_proxy" schema={clusterValidationSchema} />
+            </FieldWrapper>
+          )}
 
           <FieldWrapperBlock>
             <Alert
               isExpandable
-              variant="warning"
+              variant="info"
               title={n.cidrAlertTitle}
               ouiaId="networkingCidrAlert"
             >
@@ -116,6 +135,13 @@ export const Networking = (props: NetworkingStepProps) => {
                 name="network_machine_cidr"
                 schema={clusterValidationSchema}
                 isDisabled={cidrDefaultChecked}
+                labelHelp={
+                  <CidrFieldLabelHelp
+                    helpLead={n.machineCidrHelpLead}
+                    href={links.CIDR_MACHINE}
+                    learnMoreLink={n.cidrFieldLearnMoreLink}
+                  />
+                }
               />
             </FieldWrapper>
             <FieldWrapper width="large">
@@ -123,6 +149,13 @@ export const Networking = (props: NetworkingStepProps) => {
                 name="network_service_cidr"
                 schema={clusterValidationSchema}
                 isDisabled={cidrDefaultChecked}
+                labelHelp={
+                  <CidrFieldLabelHelp
+                    helpLead={n.serviceCidrHelpLead}
+                    href={links.CIDR_SERVICE}
+                    learnMoreLink={n.cidrFieldLearnMoreLink}
+                  />
+                }
               />
             </FieldWrapper>
             <FieldWrapper width="large">
@@ -130,6 +163,13 @@ export const Networking = (props: NetworkingStepProps) => {
                 name="network_pod_cidr"
                 schema={clusterValidationSchema}
                 isDisabled={cidrDefaultChecked}
+                labelHelp={
+                  <CidrFieldLabelHelp
+                    helpLead={n.podCidrHelpLead}
+                    href={links.CIDR_POD}
+                    learnMoreLink={n.cidrFieldLearnMoreLink}
+                  />
+                }
               />
             </FieldWrapper>
             <FieldWrapper width="large">
@@ -137,6 +177,13 @@ export const Networking = (props: NetworkingStepProps) => {
                 name="network_host_prefix"
                 schema={clusterValidationSchema}
                 isDisabled={cidrDefaultChecked}
+                labelHelp={
+                  <CidrFieldLabelHelp
+                    helpLead={n.hostPrefixHelpLead}
+                    href={links.CIDR_HOST_PREFIX}
+                    learnMoreLink={n.cidrFieldLearnMoreLink}
+                  />
+                }
               />
             </FieldWrapper>
           </FieldWrapperStack>

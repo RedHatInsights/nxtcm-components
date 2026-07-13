@@ -20,16 +20,17 @@ const PopoverHintWithTitle = ({
   footer,
   isErrorHint,
   displayHintIcon,
+  maxWidth = '25rem',
   ...popoverProps
 }: PopoverHintProps) => (
   <div className="popover-with-title-div">
     <span>
       <Popover
+        {...popoverProps}
         bodyContent={bodyContent}
         footerContent={footer}
         aria-label="help"
-        maxWidth="25rem"
-        {...popoverProps}
+        maxWidth={maxWidth}
       >
         <Button
           icon={

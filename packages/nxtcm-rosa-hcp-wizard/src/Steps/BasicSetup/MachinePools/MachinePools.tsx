@@ -160,7 +160,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
               min={1}
               labelHelp={
                 <>
-                  {a.computeCountHelp}
+                  {a.computeCountHelp}{' '}
                   <ExternalLink href={links.ROSA_WORKER_NODE_COUNT}>
                     {a.learnMoreNodeCount}
                   </ExternalLink>

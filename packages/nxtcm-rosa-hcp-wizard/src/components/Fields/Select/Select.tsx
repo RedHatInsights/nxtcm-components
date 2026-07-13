@@ -43,6 +43,8 @@ export interface SelectProps<T = unknown> {
   placeholder?: string;
   labelHelp?: ReactNode;
   labelHelpTitle?: string;
+  /** Passed to the label help {@link Popover} as `maxWidth`. */
+  labelHelpMaxWidth?: string;
   helperText?: ReactNode;
   errorMessage?: ReactNode | string;
   isError?: boolean;
@@ -90,6 +92,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     placeholder,
     labelHelp,
     labelHelpTitle,
+    labelHelpMaxWidth,
     helperText,
     errorMessage,
     isError,
@@ -413,7 +416,12 @@ export function Select<T = unknown>(props: SelectProps<T>) {
 
   const labelHelpEl =
     labelHelp || labelHelpTitle ? (
-      <LabelHelp id={id} labelHelp={labelHelp} labelHelpTitle={labelHelpTitle} />
+      <LabelHelp
+        id={id}
+        labelHelp={labelHelp}
+        labelHelpTitle={labelHelpTitle}
+        maxWidth={labelHelpMaxWidth}
+      />
     ) : undefined;
 
   const inner = (

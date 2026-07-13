@@ -159,12 +159,33 @@ export function useRosaHcpWizardValidation(): RosaHcpWizardValidationContextValu
   return context;
 }
 
+/**
+ * Resolves the wizard step that owns a form field path.
+ * Nested RHF paths (e.g. `machine_pools_subnets.0.machine_pool_subnet`) fall back to the nearest
+ * registered ancestor path (e.g. `machine_pools_subnets`).
+ */
+export function resolveWizardFieldPathStepId(
+  fieldName: string,
+  fieldPathToStepId: Readonly<Record<string, string>>
+): string | undefined {
+  const parts = fieldName.split('.');
+  while (parts.length > 0) {
+    const candidate = parts.join('.');
+    const stepId = fieldPathToStepId[candidate];
+    if (stepId !== undefined) {
+      return stepId;
+    }
+    parts.pop();
+  }
+  return undefined;
+}
+
 /** True when Next or Skip to review failed validation on the step that owns this field. */
 export function useWizStepValidationRevealed(fieldName: string): boolean {
   const context = useContext(RosaHcpWizardValidationContext);
   if (context === null) {
     return false;
   }
-  const stepId = context.fieldPathToStepId[fieldName];
+  const stepId = resolveWizardFieldPathStepId(fieldName, context.fieldPathToStepId);
   return stepId !== undefined && context.validationAttemptedStepIds.has(stepId);
 }

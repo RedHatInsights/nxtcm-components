@@ -206,6 +206,7 @@ export type RosaHcpWizardStrings = {
     panelTitle: string;
     introSts: string;
     cliVersion: string;
+    stepLoginTitle: string;
     step1Title: string;
     step2Title: string;
     step3Title: string;
@@ -269,7 +270,8 @@ export type RosaHcpWizardStrings = {
     connectBillingLink: string;
     regionLabel: string;
     regionPlaceholder: string;
-    regionHelp: string;
+    regionHelpLead: string;
+    regionLearnMoreLink: string;
   };
   rolesAndPolicies: {
     accountRolesSection: string;
@@ -288,14 +290,15 @@ export type RosaHcpWizardStrings = {
     operatorRolesSection: string;
     oidcLabel: string;
     oidcPlaceholder: string;
-    oidcHelp: string;
     oidcPopoverTitle: string;
     operatorPrefixToggle: string;
     operatorPrefixLabel: string;
     operatorPrefixHelpLead: string;
     operatorPrefixLearnMoreLink: string;
     operatorPrefixHelper: string;
-    clipboardCopyAria: string;
+    operatorRolesCreateLabel: string;
+    operatorRolesCreateInstructions: string;
+    operatorRolesCreateCommandAriaLabel: string;
     copyHover: string;
     copyClicked: string;
     rolesAlertTitle: string;
@@ -304,6 +307,11 @@ export type RosaHcpWizardStrings = {
   };
   oidcHint: {
     instructions: string;
+  };
+  rosaLogin: {
+    instructions: string;
+    instructionsService: string;
+    copyAriaLabel: string;
   };
   networking: {
     sectionLabel: string;
@@ -322,15 +330,20 @@ export type RosaHcpWizardStrings = {
     cidrAlertTitle: string;
     cidrAlertBody: string;
     cidrLearnMoreLink: string;
+    cidrFieldLearnMoreLink: string;
     useDefaultsLabel: string;
     useDefaultsHelp: string;
     machineCidrLabel: string;
+    machineCidrHelpLead: string;
     machineCidrHelp: string;
     serviceCidrLabel: string;
+    serviceCidrHelpLead: string;
     serviceCidrHelp: string;
     podCidrLabel: string;
+    podCidrHelpLead: string;
     podCidrHelp: string;
     hostPrefixLabel: string;
+    hostPrefixHelpLead: string;
     hostPrefixHelp: string;
   };
   machinePools: {

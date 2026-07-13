@@ -1,4 +1,6 @@
 import { TooltipProps, useWizardContext } from '@patternfly/react-core';
+import type { YamlResourceGenerator } from './Steps/YamlEditor/types';
+import { STEP_IDS } from './constants';
 
 // -- dropdown / select option types --
 
@@ -207,17 +209,71 @@ export type ROSAHCPWizardData = {
   checkClusterNameUniqueness?: CheckClusterNameUniqueness;
 };
 
+export type { YamlResourceGenerator };
+
+/**
+ * Step IDs that can be optionally hidden via {@link WizardConfig.hiddenSteps}.
+ * Use the exported `STEP_IDS` constants for type-safe values.
+ */
+export type HideableWizardStepId =
+  | typeof STEP_IDS.CLUSTER_WIDE_PROXY
+  | typeof STEP_IDS.CLUSTER_UPDATES;
+
+/**
+ * Configuration for the ROSA HCP wizard.
+ * Pass via the `config` prop on `RosaHCPWizard` to customise behaviour
+ * for different host applications (e.g. ACM vs OCM).
+ */
+export interface WizardConfig {
+  /**
+   * Steps to completely remove from the wizard navigation and the Review summary.
+   * When a step is hidden it is also excluded from the footer's "Skip to review" list.
+   *
+   * Supported values (use `STEP_IDS` constants):
+   * - `STEP_IDS.CLUSTER_WIDE_PROXY` – hides the Cluster-wide proxy step and its
+   *   trigger checkbox in the Networking step.
+   * - `STEP_IDS.CLUSTER_UPDATES` – hides the Cluster update strategy step.
+   *
+   * @example
+   * // In ACM, where CAPI CRs don't support proxy or update strategy:
+   * config={{ hiddenSteps: [STEP_IDS.CLUSTER_WIDE_PROXY, STEP_IDS.CLUSTER_UPDATES] }}
+   */
+  hiddenSteps?: ReadonlyArray<HideableWizardStepId>;
+}
+
 export type RosaHCPWizardProps = {
   wizardData: ROSAHCPWizardData;
-  onSubmit: (data: ROSAHCPCluster) => Promise<void>;
+  /**
+   * Receives the raw YAML string as the single source of truth. This covers both
+   * the standard Review-step path (YAML rendered from validated form values via
+   * `resourceGenerator.renderYaml`) and the YAML-editor path (live editor content,
+   * including any advanced fields the user added that are not mapped by the form).
+   */
+  onSubmit: (yamlString: string) => Promise<void>;
   onSubmitError?: string | boolean;
   onCancel: () => void;
   title: string;
   onBackToReviewStep?: () => void | Promise<void>;
-  yamlEditor?: () => React.ReactNode;
-  yaml?: boolean;
-  /** The consuming product. */
   product?: 'acm' | 'ocm' | 'oem';
+  /**
+   * When true, all wizard nav steps stay enabled regardless of visit history or validation.
+   * Intended for Storybook and local development only — do not use in production UIs.
+   */
+  enableAllWizardNavSteps?: boolean;
+  /**
+   * Required. The consuming application is responsible for supplying this implementation.
+   * The wizard has no built-in knowledge of any specific template, schema, or
+   * generation logic — it only calls the three methods defined by YamlResourceGenerator:
+   * - `renderYaml` — produce the YAML string from current form values
+   * - `validateYaml` — validate a YAML string and return structured errors
+   *
+   * **Must be referentially stable**. If the reference changes after the YAML editor has opened, the Monaco schema
+   * worker will be re-initialised and any unsaved YAML edits the user has made will be lost.
+   */
+  resourceGenerator: YamlResourceGenerator;
+
+  /** Optional wizard configuration for host-application-specific customisation. */
+  config?: WizardConfig;
 };
 
 export type WizardNavigationContext = ReturnType<typeof useWizardContext>;

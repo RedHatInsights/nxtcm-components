@@ -1,19 +1,11 @@
-import { ClipboardCopyVariant, Content, ContentVariants } from '@patternfly/react-core';
+import { Content, ContentVariants } from '@patternfly/react-core';
 import { CopyInstruction } from './CopyInstruction';
+import { RosaLoginInstruction } from './RosaLoginInstruction';
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
-import {
-  DEFAULT_HOST_PRODUCT,
-  ROSA_LOGIN_COMMAND_DEFAULT,
-  ROSA_LOGIN_COMMAND_SERVICE,
-} from '../constants';
+import { DEFAULT_HOST_PRODUCT } from '../constants';
+import type { RosaLoginProduct } from './rosaLoginCommand';
 
-export type OIDCConfigHintProduct = 'acm' | 'ocm' | 'oem';
-
-const PRODUCT_LOGIN_COMMANDS: Record<OIDCConfigHintProduct, string> = {
-  acm: ROSA_LOGIN_COMMAND_SERVICE,
-  ocm: ROSA_LOGIN_COMMAND_DEFAULT,
-  oem: ROSA_LOGIN_COMMAND_DEFAULT,
-};
+export type OIDCConfigHintProduct = RosaLoginProduct;
 
 export interface OIDCConfigHintProps {
   /** The consuming product. Defaults to 'acm'. */
@@ -22,14 +14,11 @@ export interface OIDCConfigHintProps {
 
 export const OIDCConfigHint = ({ product = DEFAULT_HOST_PRODUCT }: OIDCConfigHintProps) => {
   const { oidcHint } = useRosaHcpWizardStrings();
-  const loginCommand = PRODUCT_LOGIN_COMMANDS[product];
 
   return (
     <>
       <Content component={ContentVariants.p}>{oidcHint.instructions}</Content>
-      <CopyInstruction variant={ClipboardCopyVariant.expansion} className="pf-v6-u-text-wrap">
-        {loginCommand}
-      </CopyInstruction>
+      <RosaLoginInstruction product={product} showInstructions={false} />
       <CopyInstruction>rosa create oidc-config</CopyInstruction>
     </>
   );

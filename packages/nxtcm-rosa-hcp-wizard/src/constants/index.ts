@@ -9,7 +9,7 @@ export const STEP_IDS = {
   ENCRYPTION: 'encryption-step',
   CLUSTER_UPDATES: 'cluster-updates-step',
   REVIEW: 'review-step',
-};
+} as const;
 
 export const AWS_KMS_SERVICE_ACCOUNT_REGEX =
   /^arn:aws([-\w]+)?:kms:[\w-]+:\d{12}:key\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;

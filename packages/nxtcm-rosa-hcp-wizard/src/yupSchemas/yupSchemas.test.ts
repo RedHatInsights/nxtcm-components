@@ -49,6 +49,7 @@ import {
   getClusterValidationSchemaDefaultValues,
   wizardFieldMetaByPath,
 } from './index';
+import { coerceAbsentRequiredFieldValues } from '../utilities/clusterValidationResolver';
 import type { ValidationSchemaContext } from './types';
 import { defaultRosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
@@ -62,7 +63,13 @@ import {
   POD_CIDR_MAX,
   MAX_CA_SIZE_BYTES,
 } from '../constants';
-import { CIDRSubnet, ClusterEncryptionKeys, ClusterUpgrade, ROSAHCPCluster } from '../types';
+import {
+  CIDRSubnet,
+  ClusterEncryptionKeys,
+  ClusterNetwork,
+  ClusterUpgrade,
+  ROSAHCPCluster,
+} from '../types';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -96,6 +103,7 @@ function buildFormData(overrides: Partial<ROSAHCPCluster> = {}): Partial<ROSAHCP
     machine_pools_subnets: [{ machine_pool_subnet: 'subnet-123' }],
     machine_type: 'm5.xlarge',
     cluster_privacy: 'external' as ROSAHCPCluster['cluster_privacy'],
+    cluster_privacy_public_subnet_id: 'subnet-public-123',
     network_machine_cidr: '10.0.0.0/16',
     network_service_cidr: '172.30.0.0/16',
     network_pod_cidr: '10.128.0.0/14',
@@ -112,7 +120,8 @@ async function validate(
   field: keyof ROSAHCPCluster
 ): Promise<string | null> {
   try {
-    await clusterValidationSchema.validateAt(field, data, { context });
+    const coerced = coerceAbsentRequiredFieldValues(data);
+    await clusterValidationSchema.validateAt(field, coerced, { context });
     return null;
   } catch (err) {
     if (err instanceof yup.ValidationError) {
@@ -312,6 +321,56 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
         buildFormData({ machine_pools_subnets: [] }),
         'machine_pools_subnets'
       );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
+    it('machine_pools_subnets rejects empty subnet row with common required message', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({ machine_pools_subnets: [{ machine_pool_subnet: '' }] }),
+        'machine_pools_subnets'
+      );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
+    it('machine_type rejects undefined with common required message', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({ machine_type: undefined }),
+        'machine_type'
+      );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
+    it('machine_type rejects empty string with common required message', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({ machine_type: '' }),
+        'machine_type'
+      );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
+    it('selected_vpc rejects undefined with common required message', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({ selected_vpc: undefined }),
+        'selected_vpc'
+      );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
+    it('selected_vpc rejects null with common required message', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({ selected_vpc: null as unknown as ROSAHCPCluster['selected_vpc'] }),
+        'selected_vpc'
+      );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
+    it('region rejects undefined with common required message', async () => {
+      const error = await validate(buildContext(), buildFormData({ region: undefined }), 'region');
       expect(error).toBe(msgs.commonRequired);
     });
   });
@@ -558,6 +617,49 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
       const error = await validate(
         buildContext(),
         buildFormData({ min_replicas: 5, max_replicas: 5 }),
+        field
+      );
+      expect(error).toBeNull();
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // Public subnet (conditional on cluster privacy)
+  // -----------------------------------------------------------------------
+  describe('cluster_privacy_public_subnet_id', () => {
+    const field = 'cluster_privacy_public_subnet_id' as const;
+
+    it('accepts undefined when cluster privacy is private', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({
+          cluster_privacy: ClusterNetwork.internal,
+          cluster_privacy_public_subnet_id: undefined,
+        }),
+        field
+      );
+      expect(error).toBeNull();
+    });
+
+    it('rejects undefined when cluster privacy is public', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({
+          cluster_privacy: ClusterNetwork.external,
+          cluster_privacy_public_subnet_id: undefined,
+        }),
+        field
+      );
+      expect(error).toBe(msgs.commonRequired);
+    });
+
+    it('accepts a subnet id when cluster privacy is public', async () => {
+      const error = await validate(
+        buildContext(),
+        buildFormData({
+          cluster_privacy: ClusterNetwork.external,
+          cluster_privacy_public_subnet_id: 'subnet-public-123',
+        }),
         field
       );
       expect(error).toBeNull();

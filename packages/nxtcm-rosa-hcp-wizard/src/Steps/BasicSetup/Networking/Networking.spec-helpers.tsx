@@ -3,7 +3,6 @@
  * Components from *.story.tsx cannot be mounted (see playwright.dev/test-components#test-stories).
  */
 import React, { useMemo } from 'react';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { Form } from '@patternfly/react-core';
 import { FormProvider, useForm, type Resolver } from 'react-hook-form';
 
@@ -14,11 +13,12 @@ import {
   type ROSAHCPCluster,
   type SubnetsResource,
   type VpcListResource,
+  type WizardConfig,
 } from '../../../types';
+import { WizardConfigProvider } from '../../../WizardConfigContext';
 import { Networking } from './Networking';
 import { mockSubnets, mockVpcList } from './Networking.fixtures';
-import { clusterValidationSchema } from '../../../yupSchemas';
-import type { ValidationSchemaContext } from '../../../yupSchemas/types';
+import { createClusterValidationResolver } from '../../../utilities/clusterValidationResolver';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
 import {
@@ -57,6 +57,7 @@ export type NetworkingMountProps = {
   vpcList?: VpcListResource;
   subnets?: SubnetsResource;
   defaultValues?: Partial<ROSAHCPCluster>;
+  config?: WizardConfig;
 };
 
 const CT_WIZARD_DATA = makeDefaultRosaHcpCtWizardData();
@@ -65,21 +66,16 @@ export const NetworkingMount: React.FC<NetworkingMountProps> = ({
   vpcList,
   subnets,
   defaultValues = {},
+  config = {},
 }) => {
-  const validationContext = useMemo<ValidationSchemaContext>(
-    () => ({
-      msgs: defaultRosaHcpWizardValidatorStrings,
-      maxRootDiskSize: 16384,
-      maxAutoscalingNodes: 500,
-      machinePoolsNumber: 1,
-    }),
+  const resolver = useMemo(
+    () => createClusterValidationResolver(defaultRosaHcpWizardValidatorStrings),
     []
   );
 
   const methods = useForm<ROSAHCPCluster>({
     defaultValues: { ...DEFAULT_ROSA_HCP_CT_FORM_VALUES, ...defaultValues },
-    resolver: yupResolver(clusterValidationSchema) as Resolver<ROSAHCPCluster>,
-    context: validationContext,
+    resolver: resolver as Resolver<ROSAHCPCluster>,
     mode: 'onTouched',
   });
 
@@ -98,11 +94,13 @@ export const NetworkingMount: React.FC<NetworkingMountProps> = ({
   };
 
   return withRosaCt(
-    <FormProvider {...methods}>
-      <Form>
-        <WizardFieldMetaChangeEffectsCtHarness wizardData={CT_WIZARD_DATA} />
-        <Networking vpcList={vpcListProps} subnets={subnetsProps} />
-      </Form>
-    </FormProvider>
+    <WizardConfigProvider config={config}>
+      <FormProvider {...methods}>
+        <Form>
+          <WizardFieldMetaChangeEffectsCtHarness wizardData={CT_WIZARD_DATA} />
+          <Networking vpcList={vpcListProps} subnets={subnetsProps} />
+        </Form>
+      </FormProvider>
+    </WizardConfigProvider>
   );
 };

@@ -3,13 +3,9 @@ import { type FieldValues, useController } from 'react-hook-form';
 import { requiredFromYup } from '../../../utilities/yupFieldRequired';
 import { FieldWithAPIErrorAlert } from '../../FieldWithAPIErrorAlert';
 import { MultiSelect, type MultiSelectProps } from '../../Fields/MultiSelect';
+import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
-import {
-  useWizRhfControl,
-  useWizMenuFieldBlur,
-  wizFieldShowsError,
-  type WizRhfBoundFieldProps,
-} from '../wizFieldRhf';
+import { useWizRhfControl, useWizMenuFieldBlur, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizMultiSelectControlledKeys = 'value' | 'onChange' | 'onBlur' | 'errorMessage' | 'isError';
 
@@ -93,11 +89,13 @@ export function WizMultiSelect<TFieldValues extends FieldValues = FieldValues, T
 
   const {
     field,
-    fieldState: { invalid, isTouched, error },
+    fieldState: { invalid, error },
     formState: { isSubmitted },
   } = useController({ name, control });
 
-  const showError = wizFieldShowsError(invalid, isTouched, isSubmitted);
+  const stepValidationRevealed = useWizStepValidationRevealed(String(name));
+  // Defer inline required errors until Next / step validation; nav still uses touched+invalid.
+  const showError = invalid && (isSubmitted || stepValidationRevealed);
   const handleBlur = useWizMenuFieldBlur(field.onBlur, isMenuOpen);
 
   const raw = field.value;

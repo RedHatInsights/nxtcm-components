@@ -9,8 +9,19 @@ import {
 
 export type { YupFieldDescribeOptions } from './yupFieldDescribe';
 
-/** {@link rosaCommonRequiredNonEmptyTest} / {@link rosaCommonRequiredNonEmptyIncludingAbsentTest} name. */
+/** {@link rosaCommonRequiredNonEmptyTest} name. */
 export const ROSA_COMMON_REQUIRED_NONEMPTY_TEST_NAME = 'rosa-common-required-nonempty';
+
+/** Whether a Yup schema uses {@link ROSA_COMMON_REQUIRED_NONEMPTY_TEST_NAME}. */
+export function schemaHasRosaRequiredPresentTest(schema: yup.Schema): boolean {
+  return descriptionHasRosaRequiredPresentTest(schema.describe());
+}
+
+export function descriptionHasRosaRequiredPresentTest(description: unknown): boolean {
+  return testsFromDescription(description).some(
+    (test) => test.name === ROSA_COMMON_REQUIRED_NONEMPTY_TEST_NAME
+  );
+}
 
 /** Set on Yup `.when()` `then` branches so {@link isYupFieldRequired} can show required UI without `.required()`. */
 export const YUP_FIELD_REQUIRED_UI_META_KEY = 'fieldRequiredUi';
@@ -33,11 +44,7 @@ function descriptionIsRequired(description: yup.SchemaFieldDescription): boolean
   if (metaFromDescription(description)[YUP_FIELD_REQUIRED_UI_META_KEY] === true) {
     return true;
   }
-  if (
-    testsFromDescription(description).some(
-      (test) => test.name === ROSA_COMMON_REQUIRED_NONEMPTY_TEST_NAME
-    )
-  ) {
+  if (descriptionHasRosaRequiredPresentTest(description)) {
     return true;
   }
   return false;

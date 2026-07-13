@@ -2,16 +2,17 @@
  * Playwright CT mount target for footer step-validation tests.
  * Keep a single mount export in this file (see Details.spec-helpers / NumberInput.spec).
  */
-import React, { useMemo } from 'react';
-import { yupResolver } from '@hookform/resolvers/yup';
+import React, { useCallback, useMemo } from 'react';
 import { FormProvider, useForm, type Resolver } from 'react-hook-form';
 import { Wizard, WizardStep } from '@patternfly/react-core';
 
 import {
-  ClusterEncryptionKeys,
-  ClusterNetwork,
-  ClusterUpgrade,
+  type AwsBillingAccountsResource,
+  type AwsInfrastructureAccountsResource,
+  type RegionsResource,
+  type RolesResource,
   type ROSAHCPCluster,
+  type VersionsResource,
 } from '../types';
 import { Details } from '../Steps/BasicSetup/Details/Details';
 import { MachinePools } from '../Steps/BasicSetup/MachinePools/MachinePools';
@@ -29,11 +30,11 @@ import {
   mockRoles,
 } from '../Steps/BasicSetup/Details/Details.fixtures';
 import { STEP_IDS } from '../constants';
-import { rosaHcpWizardFooter } from './RosaHcpWizardFooter';
+import { createRosaHcpWizardFooter, rosaHcpWizardFooter } from './RosaHcpWizardFooter';
+import { FOOTER_CT_BASE_FORM_VALUES } from './rosaHcpWizardFooter.ctDefaults';
 import { RosaHcpWizardValidationProvider } from '../rosaHcpWizardValidationContext';
 import fixtures from '../ROSAHCPWizard.fixtures';
-import { clusterValidationSchema } from '../yupSchemas';
-import type { ValidationSchemaContext } from '../yupSchemas/types';
+import { createClusterValidationResolver } from '../utilities/clusterValidationResolver';
 import {
   defaultRosaHcpWizardStrings,
   defaultRosaHcpWizardValidatorStrings,
@@ -45,61 +46,33 @@ import {
   makeVpcListResource,
   WizardFieldMetaChangeEffectsRunner,
 } from '../test/rosaHcpWizardCtSpecHelpers';
-import type {
-  AwsBillingAccountsResource,
-  AwsInfrastructureAccountsResource,
-  RegionsResource,
-  RolesResource,
-  VersionsResource,
-} from '../types';
-
-const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ROSAHCPCluster> = {
-  associated_aws_id: '',
-  byo_oidc_config_id: '',
-  custom_operator_roles_prefix: '',
-  encryption_keys: ClusterEncryptionKeys.default,
-  etcd_encryption: false,
-  configure_proxy: false,
-  cidr_default: true,
-  network_machine_cidr: '10.0.0.0/16',
-  network_service_cidr: '172.30.0.0/16',
-  network_pod_cidr: '10.128.0.0/14',
-  network_host_prefix: '/23',
-  autoscaling: false,
-  nodes_compute: 2,
-  upgrade_policy: ClusterUpgrade.automatic,
-  cluster_privacy: ClusterNetwork.external,
-  compute_root_volume: 300,
-  billing_account_id: '',
-  region: '',
-  name: '',
-  cluster_version: '',
-  installer_role_arn: '',
-  support_role_arn: '',
-  worker_role_arn: '',
-};
 
 export type RosaHcpWizardValidationMountProps = {
   defaultValues?: Partial<ROSAHCPCluster>;
+  /** When provided, a real footer is wired so onSubmit receives the YAML string. */
+  onSubmit?: (yamlString: string) => Promise<void>;
 };
+
+/** Minimal YAML stub returned by getYaml when onSubmit is wired in tests. */
+export const STUB_FORM_YAML = 'kind: ROSAControlPlane\nmetadata:\n  name: stub';
 
 export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMountProps> = ({
   defaultValues = {},
+  onSubmit,
 }) => {
-  const validationContext = useMemo<ValidationSchemaContext>(
-    () => ({
-      msgs: defaultRosaHcpWizardValidatorStrings,
-      maxRootDiskSize: 16384,
-      maxAutoscalingNodes: 500,
-      machinePoolsNumber: 1,
-    }),
+  const resolver = useMemo(
+    () => createClusterValidationResolver(defaultRosaHcpWizardValidatorStrings),
     []
+  );
+  const getFormYaml = useCallback(() => STUB_FORM_YAML, []);
+  const footer = useMemo(
+    () => (onSubmit ? createRosaHcpWizardFooter(onSubmit, getFormYaml) : rosaHcpWizardFooter),
+    [onSubmit, getFormYaml]
   );
 
   const methods = useForm<ROSAHCPCluster>({
-    defaultValues: { ...DEFAULT_ROSA_HCP_CT_FORM_VALUES, ...defaultValues },
-    resolver: yupResolver(clusterValidationSchema) as Resolver<ROSAHCPCluster>,
-    context: validationContext,
+    defaultValues: { ...FOOTER_CT_BASE_FORM_VALUES, ...defaultValues },
+    resolver: resolver as Resolver<ROSAHCPCluster>,
     mode: 'onTouched',
   });
 
@@ -209,7 +182,7 @@ export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMount
     <FormProvider {...methods}>
       <RosaHcpWizardValidationProvider>
         <WizardFieldMetaChangeEffectsRunner wizardData={wizardData} />
-        <Wizard height={720} footer={rosaHcpWizardFooter} isVisitRequired>
+        <Wizard height={720} footer={footer} isVisitRequired>
           <WizardStep
             isExpandable
             name={sl.basicSetup}

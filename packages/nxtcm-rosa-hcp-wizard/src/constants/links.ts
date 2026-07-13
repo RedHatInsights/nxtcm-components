@@ -13,6 +13,10 @@ const links = {
   AWS_DATA_PROTECTION: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/data-protection.html',
   ROSA_SERVICE_ETCD_ENCRYPTION: `${redHatRosaDocsBaseUrl}/introduction_to_rosa/policies-and-service-definition#rosa-sdpolicy-etcd-encryption_rosa-hcp-service-definition`,
   CIDR_RANGE_DEFINITIONS_ROSA: `${redHatRosaDocsBaseUrl}/networking_overview/cidr-range-definitions`,
+  CIDR_MACHINE: `${redHatRosaDocsBaseUrl}/networking_overview/cidr-range-definitions#machine-cidr-description`,
+  CIDR_SERVICE: `${redHatRosaDocsBaseUrl}/networking_overview/cidr-range-definitions#service-cidr-description`,
+  CIDR_POD: `${redHatRosaDocsBaseUrl}/networking_overview/cidr-range-definitions#pod-cidr-description`,
+  CIDR_HOST_PREFIX: `${redHatRosaDocsBaseUrl}/networking_overview/cidr-range-definitions#host-prefix-description`,
   CONFIGURE_PROXY_URL: `${redHatRosaDocsBaseUrl}/ovn-kubernetes_network_plugin/configuring-a-cluster-wide-proxy`,
   SECURITY_CLASSIFICATION_CRITICAL: `${redHatSecurityBaseUrl}updates/classification/#critical`,
   ROSA_Z_STREAM: `${redHatRosaDocsBaseUrl}/introduction_to_rosa/policies-and-service-definition#rosa-patch-versions_rosa-hcp-life-cycle`,
@@ -25,5 +29,7 @@ const links = {
   ROSA_OIDC_LEARN_MORE: `${redHatRosaDocsBaseUrl}/introduction_to_rosa/rosa-hcp-about-iam-resources#rosa-sts-oidc-provider-requirements-for-operators_rosa-sts-about-iam-resources`,
   AWS_CONSOLE_SECURITY_GROUPS: 'https://console.aws.amazon.com/ec2/home#SecurityGroups',
   ROSA_SECURITY_GROUPS: `${redHatRosaDocsBaseUrl}/prepare_your_environment/rosa-hcp-prereqs#rosa-security-groups_rosa-hcp-prereqs`,
+  AWS_REGIONS:
+    'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html',
 };
 export default links;

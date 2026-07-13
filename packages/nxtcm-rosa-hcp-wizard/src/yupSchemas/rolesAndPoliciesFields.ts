@@ -1,98 +1,73 @@
-import * as yup from 'yup';
-
 import { DNS_LABEL_REGEXP, MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH, STEP_IDS } from '../constants';
 import type { WizardFieldMeta } from './types';
-import { ctx, rosaCommonRequiredNonEmptyTest } from './helpers';
+import { ctx, rosaRequiredStringField } from './helpers';
 
-export const installerRoleArnSchema = yup
-  .string()
-  .default('')
-  .test(rosaCommonRequiredNonEmptyTest)
-  .required()
-  .meta({
-    id: 'installer_role_arn',
-    labelKey: 'rolesAndPolicies.installerRoleLabel',
-    labelHelpKey: 'rolesAndPolicies.installerRoleHelp',
-    placeholderKey: 'rolesAndPolicies.installerRolePlaceholder',
-    stepId: STEP_IDS.ROLES_AND_POLICIES,
-    fieldType: 'select',
-    optionsWizardDataResource: 'roles',
-    refetchesResourcesOnChange: [
-      {
-        resource: 'vpcList',
-        argsFromFields: {
-          account_id: 'associated_aws_id',
-          role_arn: 'installer_role_arn',
-          region: 'region',
-        },
+export const installerRoleArnSchema = rosaRequiredStringField().meta({
+  id: 'installer_role_arn',
+  labelKey: 'rolesAndPolicies.installerRoleLabel',
+  labelHelpKey: 'rolesAndPolicies.installerRoleHelp',
+  placeholderKey: 'rolesAndPolicies.installerRolePlaceholder',
+  stepId: STEP_IDS.ROLES_AND_POLICIES,
+  fieldType: 'select',
+  optionsWizardDataResource: 'roles',
+  refetchesResourcesOnChange: [
+    {
+      resource: 'vpcList',
+      argsFromFields: {
+        account_id: 'associated_aws_id',
+        role_arn: 'installer_role_arn',
+        region: 'region',
       },
-      {
-        resource: 'machineTypes',
-        argsFromFields: {
-          role_arn: 'installer_role_arn',
-          region: 'region',
-          availability_zones: 'selected_vpc',
-        },
+    },
+    {
+      resource: 'machineTypes',
+      argsFromFields: {
+        role_arn: 'installer_role_arn',
+        region: 'region',
+        availability_zones: 'selected_vpc',
       },
-    ],
-    reconcileValueWithOptions: true,
-    derivedFieldsSyncOnChange: 'installerRoleDependentRoles',
-  } satisfies WizardFieldMeta);
+    },
+  ],
+  reconcileValueWithOptions: true,
+  derivedFieldsSyncOnChange: 'installerRoleDependentRoles',
+} satisfies WizardFieldMeta);
 
-export const supportRoleArnSchema = yup
-  .string()
-  .default('')
-  .test(rosaCommonRequiredNonEmptyTest)
-  .required()
-  .meta({
-    id: 'support_role_arn',
-    labelKey: 'rolesAndPolicies.supportRoleLabel',
-    labelHelpKey: 'rolesAndPolicies.supportHelp',
-    placeholderKey: 'rolesAndPolicies.supportPlaceholder',
-    stepId: STEP_IDS.ROLES_AND_POLICIES,
-    fieldType: 'select',
-    optionsWizardDataResource: 'roles',
-    reconcileValueWithOptions: true,
-  } satisfies WizardFieldMeta);
+export const supportRoleArnSchema = rosaRequiredStringField().meta({
+  id: 'support_role_arn',
+  labelKey: 'rolesAndPolicies.supportRoleLabel',
+  labelHelpKey: 'rolesAndPolicies.supportHelp',
+  placeholderKey: 'rolesAndPolicies.supportPlaceholder',
+  stepId: STEP_IDS.ROLES_AND_POLICIES,
+  fieldType: 'select',
+  optionsWizardDataResource: 'roles',
+  reconcileValueWithOptions: true,
+} satisfies WizardFieldMeta);
 
-export const workerRoleArnSchema = yup
-  .string()
-  .default('')
-  .test(rosaCommonRequiredNonEmptyTest)
-  .required()
-  .meta({
-    id: 'worker_role_arn',
-    labelKey: 'rolesAndPolicies.workerRoleLabel',
-    labelHelpKey: 'rolesAndPolicies.workerHelp',
-    placeholderKey: 'rolesAndPolicies.workerPlaceholder',
-    stepId: STEP_IDS.ROLES_AND_POLICIES,
-    fieldType: 'select',
-    optionsWizardDataResource: 'roles',
-    reconcileValueWithOptions: true,
-  } satisfies WizardFieldMeta);
+export const workerRoleArnSchema = rosaRequiredStringField().meta({
+  id: 'worker_role_arn',
+  labelKey: 'rolesAndPolicies.workerRoleLabel',
+  labelHelpKey: 'rolesAndPolicies.workerHelp',
+  placeholderKey: 'rolesAndPolicies.workerPlaceholder',
+  stepId: STEP_IDS.ROLES_AND_POLICIES,
+  fieldType: 'select',
+  optionsWizardDataResource: 'roles',
+  reconcileValueWithOptions: true,
+} satisfies WizardFieldMeta);
 
-export const byoOidcConfigIdSchema = yup
-  .string()
-  .default('')
-  .test(rosaCommonRequiredNonEmptyTest)
-  .required()
-  .meta({
-    id: 'byo_oidc_config_id',
-    labelKey: 'rolesAndPolicies.oidcLabel',
-    labelHelpKey: 'rolesAndPolicies.oidcHelp',
-    placeholderKey: 'rolesAndPolicies.oidcPlaceholder',
-    labelHelpTitleKey: 'rolesAndPolicies.oidcPopoverTitle',
-    stepId: STEP_IDS.ROLES_AND_POLICIES,
-    fieldType: 'select',
-    optionsWizardDataResource: 'oidcConfig',
-    reconcileValueWithOptions: true,
-  } satisfies WizardFieldMeta);
+export const byoOidcConfigIdSchema = rosaRequiredStringField().meta({
+  id: 'byo_oidc_config_id',
+  labelKey: 'rolesAndPolicies.oidcLabel',
+  labelHelpKey: 'rolesAndPolicies.oidcHelp',
+  placeholderKey: 'rolesAndPolicies.oidcPlaceholder',
+  labelHelpTitleKey: 'rolesAndPolicies.oidcPopoverTitle',
+  stepId: STEP_IDS.ROLES_AND_POLICIES,
+  fieldType: 'select',
+  optionsWizardDataResource: 'oidcConfig',
+  reconcileValueWithOptions: true,
+} satisfies WizardFieldMeta);
 
-export const customOperatorRolesPrefixSchema = yup
-  .string()
+export const customOperatorRolesPrefixSchema = rosaRequiredStringField()
   .default('')
-  .test(rosaCommonRequiredNonEmptyTest)
-  .required()
   .meta({
     id: 'custom_operator_roles_prefix',
     labelKey: 'rolesAndPolicies.operatorPrefixLabel',
