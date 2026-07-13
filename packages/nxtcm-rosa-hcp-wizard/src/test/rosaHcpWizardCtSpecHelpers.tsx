@@ -1,10 +1,14 @@
+import type { ReactElement } from 'react';
 import rosaHcpWizardFixtures from '../ROSAHCPWizard.fixtures';
 import { useWizardFieldMetaChangeEffects } from '../fieldMetaChangeEffects/useWizardFieldMetaChangeEffects';
+import { RosaHcpWizardValidationProvider } from '../rosaHcpWizardValidationContext';
 
 import type { MachineTypesResource, ROSAHCPWizardData, VpcListResource } from '../types';
 
 const noopFetch = async (): Promise<void> => {};
-const defaultMachineTypesFetch = async (_region: string): Promise<void> => {};
+const defaultMachineTypesFetch = async (
+  _args: import('../types').MachineTypesArgs
+): Promise<void> => {};
 
 /** Minimal {@link ROSAHCPWizardData} for step-isolated Playwright CT mounts using meta change effects. */
 export function makeDefaultRosaHcpCtWizardData(
@@ -21,7 +25,15 @@ export function makeDefaultRosaHcpCtWizardData(
       isFetching: false,
       fetch: defaultMachineTypesFetch,
     },
-    roles: { data: [], error: null, isFetching: false, fetch: noopFetch },
+    roles: {
+      data: [],
+      error: null,
+      isFetching: false,
+      fetch: noopFetch,
+      ocmRoleARN: null,
+      userRoleError: null,
+      ocmRoleError: null,
+    },
     oidcConfig: { data: [], error: null, isFetching: false, fetch: noopFetch },
     vpcList: { data: [], error: null, isFetching: false, fetch: noopFetch },
     subnets: { data: [], error: null, isFetching: false },
@@ -57,13 +69,27 @@ type WizardFieldMetaChangeEffectsCtHarnessProps = {
   wizardData: ROSAHCPWizardData;
 };
 
-/**
- * Playwright CT only: mounts {@link useWizardFieldMetaChangeEffects} for step-isolated tests.
- * Production uses the hook directly in {@link ROSAHCPWizardBody}.
- */
-export function WizardFieldMetaChangeEffectsCtHarness({
+/** Runs meta change effects; requires an ancestor {@link RosaHcpWizardValidationProvider}. */
+export function WizardFieldMetaChangeEffectsRunner({
   wizardData,
 }: WizardFieldMetaChangeEffectsCtHarnessProps): null {
   useWizardFieldMetaChangeEffects(wizardData);
   return null;
+}
+
+/**
+ * Playwright CT only: mounts {@link useWizardFieldMetaChangeEffects} for step-isolated tests.
+ * Production uses the hook directly in {@link ROSAHCPWizardBody}.
+ *
+ * Wraps {@link WizardFieldMetaChangeEffectsRunner} with {@link RosaHcpWizardValidationProvider}.
+ * When a parent already provides validation context (Footer/Details CT), use the runner instead.
+ */
+export function WizardFieldMetaChangeEffectsCtHarness({
+  wizardData,
+}: WizardFieldMetaChangeEffectsCtHarnessProps): ReactElement {
+  return (
+    <RosaHcpWizardValidationProvider>
+      <WizardFieldMetaChangeEffectsRunner wizardData={wizardData} />
+    </RosaHcpWizardValidationProvider>
+  );
 }

@@ -1,10 +1,37 @@
 import { expect, test } from '@playwright/experimental-ct-react';
+import type { Locator } from '@playwright/test';
 import { checkAccessibility } from '../../../test-helpers';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { ClusterNetwork } from '../../../types';
+import { STEP_IDS } from '../../../constants';
 import { NetworkingMount } from './Networking.spec-helpers';
 
 const n = defaultRosaHcpWizardStrings.networking;
+
+type NetworkingCtRoot = {
+  getByText(text: string | RegExp, options?: { exact?: boolean }): Locator;
+  getByRole(role: 'checkbox' | 'textbox', options: { name: string | RegExp }): Locator;
+};
+
+type AdvancedCidrFields = {
+  useDefaultsCheckbox: Locator;
+  machineInput: Locator;
+  serviceInput: Locator;
+  podInput: Locator;
+  hostInput: Locator;
+};
+
+async function openAdvancedCidrFields(component: NetworkingCtRoot): Promise<AdvancedCidrFields> {
+  await component.getByText(n.advancedToggle).click();
+
+  return {
+    useDefaultsCheckbox: component.getByRole('checkbox', { name: n.useDefaultsLabel }),
+    machineInput: component.getByRole('textbox', { name: n.machineCidrLabel }),
+    serviceInput: component.getByRole('textbox', { name: n.serviceCidrLabel }),
+    podInput: component.getByRole('textbox', { name: n.podCidrLabel }),
+    hostInput: component.getByRole('textbox', { name: n.hostPrefixLabel }),
+  };
+}
 
 test.describe('Networking (ROSA HCP)', () => {
   test('should pass accessibility tests', async ({ mount }) => {
@@ -163,6 +190,28 @@ test.describe('Networking (ROSA HCP)', () => {
       await expect(component.getByRole('textbox', { name: n.hostPrefixLabel })).toBeEnabled();
     });
 
+    test('should restore default CIDR values when "Use default values" is re-checked', async ({
+      mount,
+    }) => {
+      const component = await mount(<NetworkingMount />);
+      const { useDefaultsCheckbox, machineInput, serviceInput, podInput, hostInput } =
+        await openAdvancedCidrFields(component);
+
+      await useDefaultsCheckbox.uncheck();
+      await machineInput.fill('10.1.0.0/16');
+      await serviceInput.fill('172.31.0.0/16');
+      await podInput.fill('10.129.0.0/14');
+      await hostInput.fill('/24');
+
+      await useDefaultsCheckbox.check();
+
+      await expect(machineInput).toHaveValue('10.0.0.0/16');
+      await expect(serviceInput).toHaveValue('172.30.0.0/16');
+      await expect(podInput).toHaveValue('10.128.0.0/14');
+      await expect(hostInput).toHaveValue('/23');
+      await expect(machineInput).toBeDisabled();
+    });
+
     test('should show default value for Machine CIDR', async ({ mount }) => {
       const component = await mount(<NetworkingMount />);
 
@@ -261,6 +310,32 @@ test.describe('Networking (ROSA HCP)', () => {
 
       await expect(machineInput).toHaveValue('10.1.0.0/16');
     });
+
+    test('should clear CIDR validation errors when "Use default values" is re-checked', async ({
+      mount,
+    }) => {
+      const component = await mount(<NetworkingMount />);
+      const { useDefaultsCheckbox, machineInput, serviceInput, podInput, hostInput } =
+        await openAdvancedCidrFields(component);
+
+      await useDefaultsCheckbox.uncheck();
+      await machineInput.fill('invalid-cidr');
+      await machineInput.blur();
+      await serviceInput.fill('not-a-cidr');
+      await serviceInput.blur();
+      await podInput.fill('bad-value');
+      await podInput.blur();
+      await hostInput.fill('abc');
+      await hostInput.blur();
+
+      await expect(component.getByText(/isn.t valid CIDR notation/)).toHaveCount(3);
+      await expect(component.getByText(/isn.t a valid subnet mask/)).toHaveCount(1);
+
+      await useDefaultsCheckbox.check();
+
+      await expect(component.getByText(/isn.t valid CIDR notation/)).toHaveCount(0);
+      await expect(component.getByText(/isn.t a valid subnet mask/)).toHaveCount(0);
+    });
   });
 
   test.describe('Networking — configure proxy checkbox', () => {
@@ -292,6 +367,36 @@ test.describe('Networking (ROSA HCP)', () => {
       await component.getByText(n.advancedToggle).click();
 
       await expect(component.getByRole('checkbox', { name: n.proxyCheckboxLabel })).toBeChecked();
+    });
+  });
+
+  test.describe('Networking — configure proxy checkbox with hiddenSteps config', () => {
+    test('should hide the proxy checkbox when CLUSTER_WIDE_PROXY is in hiddenSteps', async ({
+      mount,
+    }) => {
+      const component = await mount(
+        <NetworkingMount config={{ hiddenSteps: [STEP_IDS.CLUSTER_WIDE_PROXY] }} />
+      );
+
+      await component.getByText(n.advancedToggle).click();
+
+      await expect(component.getByRole('checkbox', { name: n.proxyCheckboxLabel })).toHaveCount(0);
+    });
+
+    test('should show the proxy checkbox when hiddenSteps is empty', async ({ mount }) => {
+      const component = await mount(<NetworkingMount config={{ hiddenSteps: [] }} />);
+
+      await component.getByText(n.advancedToggle).click();
+
+      await expect(component.getByRole('checkbox', { name: n.proxyCheckboxLabel })).toBeVisible();
+    });
+
+    test('should show the proxy checkbox when config is not provided', async ({ mount }) => {
+      const component = await mount(<NetworkingMount />);
+
+      await component.getByText(n.advancedToggle).click();
+
+      await expect(component.getByRole('checkbox', { name: n.proxyCheckboxLabel })).toBeVisible();
     });
   });
 

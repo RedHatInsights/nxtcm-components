@@ -1,0 +1,11 @@
+.associate-aws-account-info .pf-v6-c-expandable-section__toggle {
+  margin: 0;
+  font-family: var(--pf-t--global--font--family--heading);
+  font-size: var(--pf-t--global--font--size--heading--xs);
+  font-weight: var(--pf-t--global--font--weight--heading--default);
+  line-height: var(--pf-t--global--font--line-height--heading);
+}
+
+.associate-aws-account-info .pf-v6-c-expandable-section__toggle .pf-v6-c-button.pf-m-link {
+  font: inherit;
+}

@@ -1,9 +1,10 @@
 import {
-  Button,
   EmptyState,
   EmptyStateBody,
   Flex,
   FlexItem,
+  Pagination,
+  PaginationVariant,
   Panel,
   PanelHeader,
   PanelMain,
@@ -13,7 +14,7 @@ import {
 } from '@patternfly/react-core';
 import BellIcon from '@patternfly/react-icons/dist/esm/icons/bell-icon';
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './NotificationsPanel.module.scss';
 
 export type NotificationType = 'Security' | 'Advisor' | 'Update risks' | 'Status';
@@ -44,12 +45,21 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
   isLoading,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(itemsPerPage);
 
   const totalItems = notifications?.length ?? 0;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(totalItems / perPage));
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+  useEffect(() => {
+    setPerPage(itemsPerPage);
+  }, [itemsPerPage]);
+
+  useEffect(() => {
+    setCurrentPage((prev) => Math.min(prev, totalPages));
+  }, [totalPages]);
+
+  const startIndex = (currentPage - 1) * perPage;
+  const endIndex = Math.min(startIndex + perPage, totalItems);
   const currentNotifications =
     notifications && (enablePagination ? notifications.slice(startIndex, endIndex) : notifications);
 
@@ -59,18 +69,6 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
     }
     if (onNotificationClick) {
       onNotificationClick(notification);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
     }
   };
 
@@ -84,7 +82,7 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
             </span>
           </div>
           <div className={styles.headerBadge}>
-            <BellIcon />
+            <BellIcon aria-hidden="true" />
             &nbsp;
             <Skeleton width="24px" height="16px" />
           </div>
@@ -132,7 +130,7 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
   const renderBody = () => {
     if (currentNotifications && currentNotifications.length > 0) {
       return (
-        <Table variant="compact" borders={false}>
+        <Table variant="compact" borders={false} aria-label="Notifications">
           <Thead>
             <Tr>
               <Th>Notification</Th>
@@ -190,7 +188,7 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
           </span>
         </div>
         <div className={styles.headerBadge}>
-          <BellIcon />
+          <BellIcon aria-hidden="true" />
           &nbsp;
           <span data-testid="notification-count">{totalItems}</span>
         </div>
@@ -198,29 +196,20 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
       <PanelMain>
         <PanelMainBody>
           {renderBody()}
-          {enablePagination && totalPages > 1 && (
-            <div className={styles.paginationContainer}>
-              <span className={styles.paginationText}>
-                {startIndex + 1} - {endIndex} of {totalItems}
-              </span>
-              <Button
-                variant="plain"
-                aria-label="Previous page"
-                isDisabled={currentPage === 1}
-                onClick={handlePrevPage}
-                className={styles.paginationButton}
-              >
-                &#9650;
-              </Button>
-              <Button
-                variant="plain"
-                aria-label="Next page"
-                isDisabled={currentPage === totalPages}
-                onClick={handleNextPage}
-                className={styles.paginationButton}
-              >
-                &#9660;
-              </Button>
+          {enablePagination && totalItems > perPage && (
+            <div className={styles.paginationWrapper}>
+              <Pagination
+                itemCount={totalItems}
+                perPage={perPage}
+                page={currentPage}
+                onSetPage={(_evt, page) => setCurrentPage(page)}
+                onPerPageSelect={(_evt, newPerPage) => {
+                  setPerPage(newPerPage);
+                  setCurrentPage(1);
+                }}
+                variant={PaginationVariant.bottom}
+                isCompact
+              />
             </div>
           )}
         </PanelMainBody>

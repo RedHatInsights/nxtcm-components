@@ -1,6 +1,7 @@
 import { Content, ContentVariants, ExpandableSection } from '@patternfly/react-core';
 
 import { Radio } from '../../../components/Fields/RadioGroup';
+import { FieldWrapper, FieldWrapperStack } from '../../../components/FieldWrapper';
 import { WizNumberInput, WizRadioGroup } from '../../../components/WizFields';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { type CloudVpc, type ROSAHCPCluster, type VpcListResource } from '../../../types';
@@ -31,37 +32,40 @@ export const MachinePoolsAdvancedSection = (props: MachinePoolsAdvancedSectionPr
 
   return (
     <ExpandableSection toggleText={mp.advancedToggle} isIndented>
-      <WizRadioGroup<ROSAHCPCluster>
-        name="imds"
-        schema={clusterValidationSchema}
-        label={mp.imdsLabel}
-        isDisabled={wrongVersionForIMDS}
-        labelHelpTitle={mp.imdsHelpTitle}
-        labelHelp={<Content component={ContentVariants.p}>{mp.imdsHelpP1}</Content>}
-      >
-        <Radio
-          id="cluster-metadata-service-imdsv1-imdsv2-btn"
-          label={mp.imdsBothLabel}
-          value="imdsv1andimdsv2"
-          description={mp.imdsBothDescription}
-        />
-        <Radio
-          id="cluster-metadata-service-imdsv2-only-btn"
-          label={mp.imdsV2Label}
-          value="imdsv2only"
-          description={mp.imdsV2Description}
-        />
-      </WizRadioGroup>
+      <FieldWrapperStack>
+        <FieldWrapper>
+          <WizRadioGroup<ROSAHCPCluster>
+            name="imds"
+            schema={clusterValidationSchema}
+            label={mp.imdsLabel}
+            isDisabled={wrongVersionForIMDS}
+            labelHelpTitle={mp.imdsHelpTitle}
+            labelHelp={<Content component={ContentVariants.p}>{mp.imdsHelpP1}</Content>}
+          >
+            <Radio
+              id="cluster-metadata-service-imdsv1-imdsv2-btn"
+              label={mp.imdsBothLabel}
+              value="imdsv1andimdsv2"
+              description={mp.imdsBothDescription}
+            />
+            <Radio
+              id="cluster-metadata-service-imdsv2-only-btn"
+              label={mp.imdsV2Label}
+              value="imdsv2only"
+              description={mp.imdsV2Description}
+            />
+          </WizRadioGroup>
+        </FieldWrapper>
 
-      <div className="pf-v6-u-mt-md">
-        <WizNumberInput<ROSAHCPCluster>
-          name="compute_root_volume"
-          schema={clusterValidationSchema}
-          min={75}
-          max={maxRootDiskSize}
-        />
-      </div>
-      <div className="pf-v6-u-mt-md">
+        <FieldWrapper width="medium">
+          <WizNumberInput<ROSAHCPCluster>
+            name="compute_root_volume"
+            schema={clusterValidationSchema}
+            min={75}
+            max={maxRootDiskSize}
+          />
+        </FieldWrapper>
+
         <EditSecurityGroups
           selectedVPC={selectedVPC}
           isReadOnly={false}
@@ -70,7 +74,7 @@ export const MachinePoolsAdvancedSection = (props: MachinePoolsAdvancedSectionPr
           isVPCLoading={vpcList?.isFetching}
           clusterVersion={clusterVersion}
         />
-      </div>
+      </FieldWrapperStack>
     </ExpandableSection>
   );
 };

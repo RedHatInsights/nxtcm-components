@@ -9,7 +9,7 @@ export const STEP_IDS = {
   ENCRYPTION: 'encryption-step',
   CLUSTER_UPDATES: 'cluster-updates-step',
   REVIEW: 'review-step',
-};
+} as const;
 
 export const AWS_KMS_SERVICE_ACCOUNT_REGEX =
   /^arn:aws([-\w]+)?:kms:[\w-]+:\d{12}:key\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
@@ -55,3 +55,10 @@ export const DNS_END_ALPHANUMERIC = /[a-z0-9]$/;
 export const MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH = 32;
 
 export const MAX_CA_SIZE_BYTES = 4 * 1024 * 1024;
+
+export const ROSA_LOGIN_COMMAND_DEFAULT =
+  'rosa login --use-auth-code --url https://api.openshift.com';
+export const ROSA_LOGIN_COMMAND_SERVICE =
+  'rosa login --client-id <CLIENT_ID> --client-secret <CLIENT_SECRET>';
+
+export const DEFAULT_HOST_PRODUCT = 'acm' as const;

@@ -76,8 +76,10 @@ export const Subscriptions = ({
           <FlexItem>
             {onSubscriptionsClick ? (
               <Button
-                variant="plain"
-                className={`${styles.count} ${styles.clickableCount}`}
+                variant="link"
+                isInline
+                className={styles.count}
+                aria-label={`View ${subscriptionCount ?? 0} subscriptions`}
                 onClick={onSubscriptionsClick}
               >
                 {subscriptionCount}
@@ -91,7 +93,7 @@ export const Subscriptions = ({
               alignItems={{ default: 'alignItemsCenter' }}
               spaceItems={{ default: 'spaceItemsXs' }}
             >
-              <FolderIcon className={styles.icon} />
+              <FolderIcon className={styles.icon} aria-hidden="true" />
               <span className={styles.label}>Subscriptions</span>
             </Flex>
           </FlexItem>
@@ -106,8 +108,10 @@ export const Subscriptions = ({
           <FlexItem>
             {onInstancesClick ? (
               <Button
-                variant="plain"
-                className={`${styles.count} ${styles.clickableCount}`}
+                variant="link"
+                isInline
+                className={styles.count}
+                aria-label={`View ${instanceCount ?? 0} instances`}
                 onClick={onInstancesClick}
               >
                 {instanceCount ?? 0}
@@ -121,7 +125,7 @@ export const Subscriptions = ({
               alignItems={{ default: 'alignItemsCenter' }}
               spaceItems={{ default: 'spaceItemsXs' }}
             >
-              <ServerIcon className={styles.icon} />
+              <ServerIcon className={styles.icon} aria-hidden="true" />
               <span className={styles.label}>Instances</span>
             </Flex>
           </FlexItem>

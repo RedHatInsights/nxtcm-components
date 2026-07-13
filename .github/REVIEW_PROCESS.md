@@ -2,12 +2,17 @@
 
 ## Overview
 
-This repository does not use CODEOWNERS. **All team members have the authority to add any reviewer they need for their PRs.**
+**All team members have the authority to add any reviewer they need for their PRs.**
+
+All PRs require **2 approvals** to merge.
 
 ## 🎯 How to Request Reviews
 
 ### When Opening a PR
 
+When you open a PR, CODEOWNERS automatically requests `@RedHatInsights/console-next` as a reviewer. For changes to the GitHub configuration it will require a review from `@RedHatInsights/console-next-admins`. 
+
+You should still:
 1. **Add reviewers manually** based on the expertise needed
 2. **Use the "Reviewers" section** in the GitHub PR sidebar
 3. **Tag people in comments** if you need specific input
@@ -45,7 +50,7 @@ Specifically, I'd like you to verify:
 ### For PR Authors
 
 **DO:**
-- ✅ Add at least 1-2 reviewers when opening a PR
+- ✅ Add at least 2 reviewers when opening a PR
 - ✅ Add more reviewers if the change is complex or cross-cutting
 - ✅ Tag specific people in comments for questions
 - ✅ Be clear in the PR description about what kind of review you need
@@ -76,7 +81,7 @@ Specifically, I'd like you to verify:
 ### Simple Changes
 ```
 Small bug fix / style change / doc update
-→ Add 1 reviewer with relevant context
+→ Add 2 reviewers with relevant context
 → Get approval
 → Merge
 ```

@@ -43,6 +43,8 @@ export interface SelectProps<T = unknown> {
   placeholder?: string;
   labelHelp?: ReactNode;
   labelHelpTitle?: string;
+  /** Passed to the label help {@link Popover} as `maxWidth`. */
+  labelHelpMaxWidth?: string;
   helperText?: ReactNode;
   errorMessage?: ReactNode | string;
   isError?: boolean;
@@ -79,6 +81,8 @@ export interface SelectProps<T = unknown> {
   maxMenuHeight?: string;
   /** When `true`, constrains the menu height and scrolls overflow (requires `maxMenuHeight`). */
   isScrollable?: boolean;
+  /** Optional test ID for the menu toggle button (for E2E testing). */
+  'data-testid'?: string;
 }
 
 export function Select<T = unknown>(props: SelectProps<T>) {
@@ -88,6 +92,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     placeholder,
     labelHelp,
     labelHelpTitle,
+    labelHelpMaxWidth,
     helperText,
     errorMessage,
     isError,
@@ -109,6 +114,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     onMenuOpenChange,
     maxMenuHeight,
     isScrollable,
+    'data-testid': dataTestId,
   } = props;
 
   const disabled = isDisabled;
@@ -321,6 +327,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
       status={getStatus(!!isError, !!isSuccess)}
       aria-label={plainToggleAriaLabel}
       aria-describedby={describedBy || undefined}
+      data-testid={dataTestId}
     >
       {isLoading && !toggleLabel ? 'Loading...' : toggleLabel || placeholderText}
     </MenuToggle>
@@ -408,7 +415,12 @@ export function Select<T = unknown>(props: SelectProps<T>) {
 
   const labelHelpEl =
     labelHelp || labelHelpTitle ? (
-      <LabelHelp id={id} labelHelp={labelHelp} labelHelpTitle={labelHelpTitle} />
+      <LabelHelp
+        id={id}
+        labelHelp={labelHelp}
+        labelHelpTitle={labelHelpTitle}
+        maxWidth={labelHelpMaxWidth}
+      />
     ) : undefined;
 
   const inner = (

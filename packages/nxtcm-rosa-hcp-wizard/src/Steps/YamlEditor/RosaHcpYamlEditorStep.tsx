@@ -11,93 +11,43 @@ import { CodeEditor, Language } from '@patternfly/react-code-editor';
 import type { EditorDidMount } from '@patternfly/react-code-editor';
 import type * as MonacoTypes from 'monaco-editor';
 import OpenDrawerRightIcon from '@patternfly/react-icons/dist/esm/icons/open-drawer-right-icon';
-import Handlebars from 'handlebars';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster } from '../../types';
 import { RosaHcpYamlMonacoLoader } from './RosaHcpYamlMonacoLoader';
 import { RosaHcpSchemaPanel } from './RosaHcpSchemaPanel';
-import { setupMonacoEnvironmentIfNeeded } from './monacoYamlSetup';
-import { validateYaml } from './yamlValidation';
-import { parseRosaControlPlaneYaml } from './yamlUtils';
-import rosaHcpTemplateRaw from './templates/rosa-hcp-template.hbs?raw';
+import type { YamlResourceGenerator } from './types';
+import './RosaHcpYamlEditorStep.css';
 
-Handlebars.registerHelper(
-  'eq',
-  function (this: unknown, a: unknown, b: unknown, options: Handlebars.HelperOptions) {
-    return a === b ? options.fn(this) : options.inverse(this);
-  }
-);
-Handlebars.registerHelper('stripSlash', function (value: string) {
-  if (typeof value === 'string' && value.startsWith('/')) {
-    return value.slice(1);
-  }
-  return value;
-});
-
-const compiledTemplate = Handlebars.compile(rosaHcpTemplateRaw);
 const YAML_MODEL_PATH = 'rosa-hcp-control-plane.yaml';
 const YAML_VALIDATION_OWNER = 'yaml-hcp-validation';
 
-const YAML_PARSER_FIELDS = [
-  'name',
-  'cluster_version',
-  'region',
-  'billing_account_id',
-  'cluster_privacy',
-  'installer_role_arn',
-  'support_role_arn',
-  'worker_role_arn',
-  'byo_oidc_config_id',
-  'network_machine_cidr',
-  'network_service_cidr',
-  'network_pod_cidr',
-  'network_host_prefix',
-  'machine_type',
-  'compute_root_volume',
-  'autoscaling',
-  'min_replicas',
-  'max_replicas',
-  'etcd_encryption',
-  'etcd_key_arn',
-] as const satisfies ReadonlyArray<keyof ROSAHCPCluster>;
-
-function renderTemplate(data: Record<string, unknown>): string {
-  try {
-    const raw = compiledTemplate(data);
-    return raw
-      .split('\n')
-      .filter((line) => line.trim() !== '')
-      .join('\n');
-  } catch {
-    return '';
-  }
-}
-
 export type YamlEditorHandle = {
-  applyToForm: () => void;
   discard: () => void;
   hasSchemaErrors: () => boolean;
+  getYaml: () => string;
 };
 
 export type RosaHcpYamlEditorStepProps = {
   onClose?: () => void;
   onCancel?: () => void;
+  resourceGenerator: YamlResourceGenerator;
 };
 
 export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEditorStepProps>(
-  ({ onClose, onCancel: _onCancel }, ref) => {
-    const { setValue } = useFormContext<Partial<ROSAHCPCluster>>();
+  ({ onClose, onCancel: _onCancel, resourceGenerator }, ref) => {
     const watchedValues = useWatch<Partial<ROSAHCPCluster>>();
 
     const { yamlEditor: yamlStrings } = useRosaHcpWizardStrings();
 
+    const generator = resourceGenerator;
+
     const [yamlContent, setYamlContent] = useState(() =>
-      renderTemplate({ cluster: watchedValues })
+      generator.renderYaml(watchedValues as Partial<ROSAHCPCluster>)
     );
     const [parseError, setParseError] = useState('');
-    const [showSchema, setShowSchema] = useState(false);
+    const [showSchema, setShowSchema] = useState(true);
 
     const editorRef = useRef<MonacoTypes.editor.IStandaloneCodeEditor | null>(null);
     const monacoRef = useRef<typeof MonacoTypes | null>(null);
@@ -110,45 +60,48 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
     const userHasEditedRef = useRef(false);
     const hasSchemaErrorsRef = useRef(false);
 
-    const setEditorMarkers = useCallback((yamlStr: string, showBanner = true) => {
-      const editor = editorRef.current;
-      const monaco = monacoRef.current;
-      const model = editor?.getModel();
-      if (!model || !monaco) return;
+    const setEditorMarkers = useCallback(
+      (yamlStr: string, showBanner = true) => {
+        const editor = editorRef.current;
+        const monaco = monacoRef.current;
+        const model = editor?.getModel();
+        if (!model || !monaco) return;
 
-      const errors = validateYaml(yamlStr);
-      const markers = errors.map((err) => {
-        const lineNumber = Math.min(Math.max(err.line, 1), model.getLineCount());
-        const startColumn = Math.max(err.column, 1);
-        const endColumn = Math.max(startColumn + 1, model.getLineMaxColumn(lineNumber));
-        return {
-          severity:
-            err.severity === 'error' ? monaco.MarkerSeverity.Error : monaco.MarkerSeverity.Warning,
-          message: err.message,
-          startLineNumber: lineNumber,
-          startColumn,
-          endLineNumber: lineNumber,
-          endColumn,
-        };
-      });
+        const errors = generator.validateYaml(yamlStr);
+        const markers = errors.map((err) => {
+          const lineNumber = Math.min(Math.max(err.line, 1), model.getLineCount());
+          const startColumn = Math.max(err.column, 1);
+          const endColumn = Math.max(startColumn + 1, model.getLineMaxColumn(lineNumber));
+          return {
+            severity:
+              err.severity === 'error'
+                ? monaco.MarkerSeverity.Error
+                : monaco.MarkerSeverity.Warning,
+            message: err.message,
+            startLineNumber: lineNumber,
+            startColumn,
+            endLineNumber: lineNumber,
+            endColumn,
+          };
+        });
 
-      monaco.editor.setModelMarkers(model, YAML_VALIDATION_OWNER, markers);
-      const errorCount = errors.filter((e) => e.severity === 'error').length;
-      hasSchemaErrorsRef.current = errorCount > 0;
-      if (showBanner) {
-        setParseError(
-          errorCount > 0 ? `${errorCount} validation error${errorCount !== 1 ? 's' : ''} found` : ''
-        );
-      }
-    }, []);
-
-    useEffect(() => {
-      setupMonacoEnvironmentIfNeeded();
-    }, []);
+        monaco.editor.setModelMarkers(model, YAML_VALIDATION_OWNER, markers);
+        const errorCount = errors.filter((e) => e.severity === 'error').length;
+        hasSchemaErrorsRef.current = errorCount > 0;
+        if (showBanner) {
+          setParseError(
+            errorCount > 0
+              ? `${errorCount} validation error${errorCount !== 1 ? 's' : ''} found`
+              : ''
+          );
+        }
+      },
+      [generator]
+    );
 
     useEffect(() => {
       if (!hasFocusRef.current && !userHasEditedRef.current) {
-        const rendered = renderTemplate({ cluster: watchedValues });
+        const rendered = generator.renderYaml(watchedValues as Partial<ROSAHCPCluster>);
         if (rendered === pendingYamlRef.current) {
           return;
         }
@@ -160,8 +113,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
           setEditorMarkers(rendered, false);
         }
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [watchedValues, setEditorMarkers]);
+    }, [watchedValues, generator, setEditorMarkers]);
 
     const handleCodeChange = useCallback(
       (value: string) => {
@@ -194,10 +146,10 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         };
 
         if (!isInitializedRef.current) {
-          setupMonacoEnvironmentIfNeeded();
           monacoYamlDisposeRef.current?.();
           monacoYamlDisposeRef.current = new RosaHcpYamlMonacoLoader().configure(
-            monaco as Parameters<RosaHcpYamlMonacoLoader['configure']>[0]
+            monaco as Parameters<RosaHcpYamlMonacoLoader['configure']>[0],
+            generator.resourceSchemas
           );
           isInitializedRef.current = true;
         }
@@ -205,7 +157,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         pendingYamlRef.current = editor.getValue();
         setEditorMarkers(editor.getValue(), false);
       },
-      [setEditorMarkers]
+      [setEditorMarkers, generator]
     );
 
     useEffect(() => {
@@ -224,23 +176,17 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
     useImperativeHandle(
       ref,
       () => ({
-        applyToForm() {
-          const parsed = parseRosaControlPlaneYaml(pendingYamlRef.current);
-          if (parsed?.cluster) {
-            const cluster = parsed.cluster as Record<string, unknown>;
-            for (const key of YAML_PARSER_FIELDS) {
-              setValue(key, cluster[key] as ROSAHCPCluster[typeof key]);
-            }
-          }
-        },
         discard() {
           onClose?.();
         },
         hasSchemaErrors() {
           return hasSchemaErrorsRef.current;
         },
+        getYaml() {
+          return pendingYamlRef.current;
+        },
       }),
-      [onClose, setValue]
+      [onClose]
     );
 
     const schemaToggleControl = (
@@ -255,8 +201,11 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
       </Tooltip>
     );
 
+    const primarySchema = generator.resourceSchemas?.find((s) => s.primary)?.schema;
+    const hasResourceSchemas = (generator.resourceSchemas?.length ?? 0) > 0;
+
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <div className="rosa-hcp-yaml-editor-step">
         {parseError && (
           <Alert
             variant="danger"
@@ -268,44 +217,45 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
           </Alert>
         )}
 
-        <div style={{ flex: '1 1 auto', minHeight: 0 }}>
-          <Drawer isExpanded={showSchema} position="right">
-            <DrawerContent
-              panelContent={
-                showSchema ? <RosaHcpSchemaPanel onClose={() => setShowSchema(false)} /> : undefined
-              }
-            >
-              <DrawerContentBody style={{ height: '100%' }}>
-                <CodeEditor
-                  language={Language.yaml}
-                  code={yamlContent}
-                  onCodeChange={handleCodeChange}
-                  onEditorDidMount={handleEditorDidMount}
-                  isFullHeight
-                  isCopyEnabled
-                  isDownloadEnabled
-                  customControls={schemaToggleControl}
-                  options={{
-                    minimap: { enabled: false },
-                    scrollBeyondLastLine: false,
-                    fontSize: 14,
-                    tabSize: 2,
-                    automaticLayout: true,
-                    wordWrap: 'wordWrapColumn',
-                    wordWrapColumn: 256,
-                    glyphMargin: true,
-                    quickSuggestions: { other: true, comments: true, strings: true },
-                    scrollbar: {
-                      verticalScrollbarSize: 17,
-                      horizontalScrollbarSize: 17,
-                    },
-                  }}
-                  editorProps={{ path: YAML_MODEL_PATH }}
-                />
-              </DrawerContentBody>
-            </DrawerContent>
-          </Drawer>
-        </div>
+        <Drawer isInline isExpanded={showSchema} position="end">
+          <DrawerContent
+            panelContent={
+              showSchema && primarySchema ? (
+                <RosaHcpSchemaPanel onClose={() => setShowSchema(false)} schema={primarySchema} />
+              ) : undefined
+            }
+          >
+            <DrawerContentBody>
+              <CodeEditor
+                language={Language.yaml}
+                code={yamlContent}
+                onCodeChange={handleCodeChange}
+                onEditorDidMount={handleEditorDidMount}
+                isFullHeight
+                isCopyEnabled
+                isDownloadEnabled
+                customControls={hasResourceSchemas ? schemaToggleControl : undefined}
+                options={{
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                  fontSize: 14,
+                  tabSize: 2,
+                  automaticLayout: true,
+                  wordWrap: 'wordWrapColumn',
+                  wordWrapColumn: 256,
+                  glyphMargin: true,
+                  quickSuggestions: { other: true, comments: true, strings: true },
+                  fixedOverflowWidgets: true,
+                  scrollbar: {
+                    verticalScrollbarSize: 17,
+                    horizontalScrollbarSize: 17,
+                  },
+                }}
+                editorProps={{ path: YAML_MODEL_PATH }}
+              />
+            </DrawerContentBody>
+          </DrawerContent>
+        </Drawer>
       </div>
     );
   }

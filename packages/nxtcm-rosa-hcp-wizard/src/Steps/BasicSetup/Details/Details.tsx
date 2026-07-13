@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Stack } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core';
 import semver from 'semver';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { clusterValidationSchema } from '../../../yupSchemas';
@@ -9,10 +9,10 @@ import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../constants/links';
-import { ROSAHCPWizardData, type ROSAHCPCluster } from '../../../types';
+import { ROSAHCPWizardData, type RosaHCPWizardProps, type ROSAHCPCluster } from '../../../types';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
-import { FieldWrapper } from '../../../components/FieldWrapper';
+import { FieldWrapper, FieldWrapperStack } from '../../../components/FieldWrapper';
 import { useClusterNameUniquenessValidation } from '../../../hooks/useClusterNameUniquenessValidation';
 
 type DetailsStepProps = Pick<
@@ -23,22 +23,15 @@ type DetailsStepProps = Pick<
   | 'versions'
   | 'roles'
   | 'checkClusterNameUniqueness'
->;
+> &
+  Pick<RosaHCPWizardProps, 'product'>;
 
 type AssociateNewAccountLinkProps = {
   label: string;
-  isDrawerExpanded: boolean;
   setIsDrawerExpanded: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-function AssociateNewAccountLink({
-  label,
-  isDrawerExpanded,
-  setIsDrawerExpanded,
-}: AssociateNewAccountLinkProps) {
-  if (isDrawerExpanded) {
-    return null;
-  }
+function AssociateNewAccountLink({ label, setIsDrawerExpanded }: AssociateNewAccountLinkProps) {
   return (
     <Button
       isInline
@@ -57,6 +50,7 @@ export const Details = ({
   versions,
   roles,
   checkClusterNameUniqueness,
+  product,
 }: DetailsStepProps) => {
   const d = useRosaHcpWizardStrings().details;
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
@@ -118,13 +112,13 @@ export const Details = ({
         isDrawerExpanded={isDrawerExpanded}
         setIsDrawerExpanded={setIsDrawerExpanded}
         onWizardExpand={onWizardExpand}
+        product={product}
       >
-        <Stack hasGutter>
+        <FieldWrapperStack>
           <FieldWrapper
-            AdditionalContent={
+            additionalContent={
               <AssociateNewAccountLink
                 label={d.associateNewAccount}
-                isDrawerExpanded={isDrawerExpanded}
                 setIsDrawerExpanded={setIsDrawerExpanded}
               />
             }
@@ -146,7 +140,7 @@ export const Details = ({
           </FieldWrapper>
 
           <FieldWrapper
-            AdditionalContent={
+            additionalContent={
               <ExternalLink
                 variant="secondary"
                 className="pf-v6-u-mt-md"
@@ -179,6 +173,12 @@ export const Details = ({
               options={regions.data}
               isLoading={regions.isFetching}
               apiError={regions.error}
+              labelHelp={
+                <>
+                  {d.regionHelpLead}{' '}
+                  <ExternalLink href={links.AWS_REGIONS}>{d.regionLearnMoreLink}</ExternalLink>
+                </>
+              }
               onRefresh={
                 associatedAwsIdForRegions
                   ? () => void regions.fetch(associatedAwsIdForRegions)
@@ -208,7 +208,7 @@ export const Details = ({
               apiError={versions.error}
             />
           </FieldWrapper>
-        </Stack>
+        </FieldWrapperStack>
       </DetailsStepDrawer>
     </Section>
   );

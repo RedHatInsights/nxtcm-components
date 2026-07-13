@@ -22,6 +22,13 @@ const defaultMinReplicas = String(minReplicasSchema.getDefault());
 const defaultMaxReplicas = String(maxReplicasSchema.getDefault());
 const defaultNodesCompute = String(nodesComputeSchema.getDefault());
 
+const vpcRefreshFormDefaults = {
+  associated_aws_id: '123456789012',
+  installer_role_arn: 'arn:aws:iam::123456789012:role/installer',
+  region: 'us-east-1',
+  cluster_version: '4.16.2',
+} as const;
+
 /** Plain (non-typeahead) Select: toggle shows explicit {@link MachinePools} `placeholder` (not derived from label). */
 const ctRegion = 'us-east-1';
 const vpcSelectMenuName = `${mp.vpcPlaceholder} ${ctRegion}`;
@@ -106,13 +113,21 @@ test.describe('MachinePools (ROSA HCP)', () => {
   test('should fetch machine types when region is present', async ({ mount }) => {
     const fetchedRegions: string[] = [];
     const machineTypes = makeMachineTypesResource({
-      fetch: (region: string) => {
-        fetchedRegions.push(region);
+      fetch: (args) => {
+        fetchedRegions.push(args.region);
         return Promise.resolve();
       },
     });
 
-    await mount(<MachinePoolsMount machineTypes={machineTypes} />);
+    await mount(
+      <MachinePoolsMount
+        machineTypes={machineTypes}
+        defaultValues={{
+          installer_role_arn: 'arn:aws:iam::role/test-installer',
+          selected_vpc: fixtureVpc1.id,
+        }}
+      />
+    );
 
     await expect
       .poll(() => fetchedRegions.length > 0 && fetchedRegions.every((r) => r === 'us-east-1'))
@@ -142,6 +157,30 @@ test.describe('MachinePools (ROSA HCP)', () => {
     await expect(
       component.getByRole('spinbutton', { name: a.computeCountLabel, exact: true })
     ).not.toBeVisible();
+  });
+
+  test('should disable min replica plus button at max replica bound', async ({ mount }) => {
+    const component = await mount(<MachinePoolsMount />);
+
+    await component.getByRole('checkbox', { name: a.enableLabel, exact: true }).click();
+
+    const minField = component.locator('#min_replicas-form-group');
+    await minField.getByRole('button', { name: 'Plus' }).click();
+    await minField.getByRole('button', { name: 'Plus' }).click();
+    await expect(minField.getByRole('spinbutton')).toHaveValue(defaultMaxReplicas);
+    await expect(minField.getByRole('button', { name: 'Plus' })).toBeDisabled();
+  });
+
+  test('should disable max replica minus button at min replica bound', async ({ mount }) => {
+    const component = await mount(<MachinePoolsMount />);
+
+    await component.getByRole('checkbox', { name: a.enableLabel, exact: true }).click();
+
+    const maxField = component.locator('#max_replicas-form-group');
+    await maxField.getByRole('button', { name: 'Minus' }).click();
+    await maxField.getByRole('button', { name: 'Minus' }).click();
+    await expect(maxField.getByRole('spinbutton')).toHaveValue(defaultMinReplicas);
+    await expect(maxField.getByRole('button', { name: 'Minus' })).toBeDisabled();
   });
 
   test('should set replica defaults when autoscaling is enabled and restore compute count when disabled', async ({
@@ -213,6 +252,91 @@ test.describe('MachinePools (ROSA HCP)', () => {
     await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
 
     await expect(component.getByText(sg.incompatibleVersion, { exact: true })).toBeVisible();
+  });
+
+  test('should refetch vpc list when security groups refresh is pressed', async ({ mount }) => {
+    let fetchCount = 0;
+    const vpcList = makeVpcListResource({
+      fetch: () => {
+        fetchCount += 1;
+        return Promise.resolve();
+      },
+    });
+
+    const component = await mount(
+      <MachinePoolsMount
+        vpcList={vpcList}
+        defaultValues={{
+          ...vpcRefreshFormDefaults,
+          selected_vpc: fixtureVpc1.id,
+        }}
+      />
+    );
+
+    await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
+
+    const advancedSection = component.getByRole('region', { name: mp.advancedToggle });
+    const refreshButton = advancedSection.getByTestId('multiselect-refresh');
+
+    await expect(refreshButton).toBeVisible();
+    const fetchCountBeforeRefresh = fetchCount;
+    await refreshButton.click();
+
+    await expect.poll(() => fetchCount).toBe(fetchCountBeforeRefresh + 1);
+  });
+
+  test('should refetch vpc list from empty security groups refresh control', async ({ mount }) => {
+    let fetchCount = 0;
+    const vpcList = makeVpcListResource({
+      fetch: () => {
+        fetchCount += 1;
+        return Promise.resolve();
+      },
+    });
+
+    const component = await mount(
+      <MachinePoolsMount
+        vpcList={vpcList}
+        defaultValues={{
+          ...vpcRefreshFormDefaults,
+          selected_vpc: fixtureVpc2.id,
+        }}
+      />
+    );
+
+    await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
+
+    const refreshButton = component.getByTestId('security-groups-refresh');
+    await expect(refreshButton).toBeVisible();
+    const fetchCountBeforeRefresh = fetchCount;
+    await refreshButton.click();
+
+    await expect.poll(() => fetchCount).toBe(fetchCountBeforeRefresh + 1);
+  });
+
+  test('should disable security groups refresh while vpc list is fetching', async ({ mount }) => {
+    const vpcList = makeVpcListResource({
+      isFetching: true,
+      fetch: () => Promise.resolve(),
+    });
+
+    const component = await mount(
+      <MachinePoolsMount
+        vpcList={vpcList}
+        defaultValues={{
+          ...vpcRefreshFormDefaults,
+          selected_vpc: fixtureVpc1.id,
+        }}
+      />
+    );
+
+    await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
+
+    const advancedSection = component.getByRole('region', { name: mp.advancedToggle });
+    const refreshButton = advancedSection.getByTestId('multiselect-refresh');
+
+    await expect(refreshButton).toBeVisible();
+    await expect(refreshButton).toBeDisabled();
   });
 
   test('should show loading state on VPC select when vpc list is fetching', async ({ mount }) => {

@@ -28,12 +28,16 @@ import {
 import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
 import { useRosaHcpWizardSubmit } from './useRosaHcpWizardSubmit';
+import { useRosaHcpWizardNavStatusSync } from '../hooks/useRosaHcpWizardNavStatusSync';
 
 type RosaHcpWizardFooterProps = Pick<
   WizardFooterProps,
   'activeStep' | 'onNext' | 'onBack' | 'onClose'
 > & {
-  onSubmit: (data: ROSAHCPCluster) => Promise<void>;
+  onSubmit: (yamlString: string) => Promise<void>;
+  /** Produces the YAML string to pass to onSubmit. Renders current form values via resourceGenerator.renderYaml. */
+  getYaml: () => string;
+  enableAllWizardNavSteps?: boolean;
 };
 
 /**
@@ -46,6 +50,8 @@ export function RosaHcpWizardFooter({
   onBack,
   onClose,
   onSubmit,
+  getYaml,
+  enableAllWizardNavSteps = false,
 }: RosaHcpWizardFooterProps) {
   const { goToStepById } = useWizardContext();
   const reviewSections = useRosaHcpWizardReviewSections();
@@ -64,9 +70,13 @@ export function RosaHcpWizardFooter({
     getFieldState,
     formState: { errors },
   } = useFormContext<Partial<ROSAHCPCluster>>();
-  const { isSubmitting, submitWizard } = useRosaHcpWizardSubmit({ onSubmit });
+  const { isSubmitting, submitWizard } = useRosaHcpWizardSubmit({ onSubmit, getYaml });
+
+  const clusterWideProxySelected = useWatch({ name: 'configure_proxy' });
+  useRosaHcpWizardNavStatusSync(!!clusterWideProxySelected, enableAllWizardNavSteps);
 
   const activeStepId = String(activeStep.id);
+
   const getCurrentStepId = useCallback(() => String(activeStep.id), [activeStep.id]);
   const isReviewStep = activeStepId === STEP_IDS.REVIEW;
   const showSkipToReview = isRosaHcpWizardSkipToReviewVisible(activeStepId);
@@ -210,7 +220,7 @@ export function RosaHcpWizardFooter({
   }, [submitWizard]);
 
   const handlePrimaryAction = isReviewStep ? handleSubmit : handleNext;
-  const primaryButtonLabel = isReviewStep ? wizard.submit : wizard.next;
+  const primaryButtonLabel = isReviewStep ? wizard.createCluster : wizard.next;
 
   const handleSkipToReview = useCallback(() => {
     void (async () => {
@@ -291,13 +301,17 @@ export function RosaHcpWizardFooter({
 
 /** Footer factory wired to {@link RosaHCPWizardProps.onSubmit}. */
 export function createRosaHcpWizardFooter(
-  onSubmit: (data: ROSAHCPCluster) => Promise<void>
+  onSubmit: (yamlString: string) => Promise<void>,
+  getYaml: () => string,
+  enableAllWizardNavSteps = false
 ): CustomWizardFooterFunction {
   return function RosaHcpWizardFooterSlot(activeStep, onNext, onBack, onClose) {
     return (
       <RosaHcpWizardFooter
         activeStep={activeStep}
         onSubmit={onSubmit}
+        getYaml={getYaml}
+        enableAllWizardNavSteps={enableAllWizardNavSteps}
         onNext={(event) => {
           void onNext(event);
         }}
@@ -313,4 +327,7 @@ export function createRosaHcpWizardFooter(
 }
 
 /** No-op submit for tests and mounts that do not wire {@link RosaHCPWizardProps.onSubmit}. */
-export const rosaHcpWizardFooter = createRosaHcpWizardFooter(async () => {});
+export const rosaHcpWizardFooter = createRosaHcpWizardFooter(
+  async () => {},
+  () => ''
+);

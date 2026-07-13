@@ -24,13 +24,12 @@ import {
   isCidrSubnetAddress,
   isValidCidr,
   rosaCommonRequiredNonEmptyTest,
+  rosaRequiredStringField,
 } from './helpers';
+import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
 
-export const clusterPrivacySchema = yup
-  .string()
+export const clusterPrivacySchema = rosaRequiredStringField()
   .default(ClusterNetwork.external)
-  .test(rosaCommonRequiredNonEmptyTest)
-  .required()
   .meta({
     id: 'cluster_privacy',
     labelKey: 'networking.clusterPrivacyLabel',
@@ -43,15 +42,21 @@ export const clusterPrivacySchema = yup
 
 export const clusterPrivacyPublicSubnetIdSchema = yup
   .string()
-  .optional()
   .meta({
     id: 'cluster_privacy_public_subnet_id',
     labelKey: 'networking.publicSubnetLabel',
+    placeholderKey: 'networking.publicSubnetPlaceholder',
     stepId: STEP_IDS.NETWORKING,
     fieldType: 'select',
     optionsWizardDataResource: 'vpcList',
     reconcileValueWithOptions: true,
-  } satisfies WizardFieldMeta);
+  } satisfies WizardFieldMeta)
+  .when('cluster_privacy', {
+    is: ClusterNetwork.external,
+    then: (schema) =>
+      schema.test(rosaCommonRequiredNonEmptyTest).meta({ [YUP_FIELD_REQUIRED_UI_META_KEY]: true }),
+    otherwise: (schema) => schema.optional(),
+  });
 
 export const cidrDefaultSchema = yup
   .boolean()
@@ -65,6 +70,17 @@ export const cidrDefaultSchema = yup
     fieldType: 'checkbox',
     advanced: true,
     hideInReview: true,
+    syncsFieldsOnChange: [
+      {
+        when: true,
+        setDefaults: [
+          'network_machine_cidr',
+          'network_service_cidr',
+          'network_pod_cidr',
+          'network_host_prefix',
+        ],
+      },
+    ],
   } satisfies WizardFieldMeta);
 
 export const networkMachineCidrSchema = yup

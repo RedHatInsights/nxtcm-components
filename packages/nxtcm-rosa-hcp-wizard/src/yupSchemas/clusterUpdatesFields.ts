@@ -3,7 +3,7 @@ import * as yup from 'yup';
 import { STEP_IDS } from '../constants';
 import { ClusterUpgrade } from '../types';
 import type { WizardFieldMeta } from './types';
-import { rosaCommonRequiredNonEmptyIncludingAbsentTest } from './helpers';
+import { rosaCommonRequiredNonEmptyTest } from './helpers';
 import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
 
 export const upgradePolicySchema = yup
@@ -30,9 +30,7 @@ export const upgradeScheduleSchema = yup
   .when('upgrade_policy', {
     is: ClusterUpgrade.automatic,
     then: (schema) =>
-      schema
-        .test(rosaCommonRequiredNonEmptyIncludingAbsentTest)
-        .meta({ [YUP_FIELD_REQUIRED_UI_META_KEY]: true }),
+      schema.test(rosaCommonRequiredNonEmptyTest).meta({ [YUP_FIELD_REQUIRED_UI_META_KEY]: true }),
     otherwise: (schema) => schema.optional(),
   });
 

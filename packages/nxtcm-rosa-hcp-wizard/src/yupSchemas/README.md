@@ -13,16 +13,12 @@ Attach metadata to a field schema and type-check it with `satisfies WizardFieldM
 ```ts
 import { STEP_IDS } from '../constants';
 import type { WizardFieldMeta } from './types';
+import { rosaRequiredStringField } from './helpers';
 
-export const regionSchema = yup
-  .string()
-  .default('')
-  .required()
-  .meta({
+export const regionSchema = rosaRequiredStringField().meta({
     id: 'region',
     labelKey: 'details.regionLabel',
     placeholderKey: 'details.regionPlaceholder',
-    labelHelpKey: 'details.regionHelp',
     stepId: STEP_IDS.DETAILS,
     fieldType: 'select',
     optionsWizardDataResource: 'regions',
@@ -153,6 +149,32 @@ Add new keys in [`types.ts`](./types.ts) and implement the handler in [`wizardFi
 
 ---
 
+## Required fields
+
+Use the helpers in [`helpers.ts`](./helpers.ts) — each includes transform (where needed), `commonRequired` test, and `.required()`:
+
+| Helper | Use for |
+|--------|---------|
+| `rosaRequiredStringField()` | String selects and text inputs |
+| `rosaRequiredMixedField()` | Object selects (e.g. VPC) |
+| `rosaRequiredArrayField(of, defaultValue?)` | Non-empty arrays; optional default for row shape |
+
+```ts
+export const machineTypeSchema = rosaRequiredStringField().meta({ ... } satisfies WizardFieldMeta);
+
+export const machinePoolsSubnetsSchema = rosaRequiredArrayField(
+  machinePoolSubnetEntrySchema,
+  [{ machine_pool_subnet: '' }]
+).meta({ ... });
+```
+
+Untouched top-level `undefined` on string/mixed fields is coerced in {@link coerceAbsentRequiredFieldValues}
+(`clusterValidationResolver.ts`) before the resolver runs (Yup skips transforms on `undefined`). Array fields rely on `.default([...])` passed to
+`rosaRequiredArrayField` instead of a string transform. Do **not** add `.default('')` on string selects only
+for validation. Keep `.default(...)` on text inputs or real initial values (e.g. `nameSchema.default('')`).
+
+---
+
 ## Conditional schemas and required UI
 
 Some fields are required only in certain modes (e.g. KMS ARN when custom encryption is selected). Validation uses Yup `.when()` branches; the UI asterisk uses a separate meta flag on the **active branch**:
@@ -164,13 +186,55 @@ import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
   is: ClusterEncryptionKeys.custom,
   then: (schema) =>
     schema
-      .test(rosaCommonRequiredNonEmptyIncludingAbsentTest)
+      .test(rosaCommonRequiredNonEmptyTest)
       .meta({ [YUP_FIELD_REQUIRED_UI_META_KEY]: true }),
   otherwise: (schema) => schema.optional(),
 });
 ```
 
 `fieldRequiredUi: true` tells `Wiz*` fields to show as required without relying on `.required()` alone. Pass the same `yupDescribeOptions` / form values to presentation and required helpers so `.when()` branches resolve consistently.
+
+Example wiring in a step form:
+
+```tsx
+import { useMemo } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { WizCheckbox } from '../components/WizFields/WizCheckbox';
+
+const schema = yup.object({
+  enableAdvanced: yup.boolean().required(),
+  acceptTerms: yup
+    .boolean()
+    .when('enableAdvanced', {
+      is: true,
+      then: (s) => s.oneOf([true], 'You must accept terms when Advanced is enabled.'),
+      otherwise: (s) => s.notRequired(),
+    })
+    .meta({
+      label: 'I accept the terms',
+      helperText: 'Required only when Advanced mode is on.',
+    }),
+});
+
+function ExampleForm() {
+  const methods = useForm({ defaultValues: { enableAdvanced: false, acceptTerms: false } });
+  const enableAdvanced = methods.watch('enableAdvanced');
+
+  // Pass current form values so Yup resolves `.when(...)` correctly.
+  const yupDescribeOptions = useMemo(
+    () => ({ value: methods.getValues() }),
+    [enableAdvanced, methods]
+  );
+
+  return (
+    <FormProvider {...methods}>
+      <WizCheckbox name="enableAdvanced" label="Enable advanced mode" schema={schema} />
+      <WizCheckbox name="acceptTerms" schema={schema} yupDescribeOptions={yupDescribeOptions} />
+    </FormProvider>
+  );
+}
+```
 
 ---
 

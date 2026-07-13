@@ -1,11 +1,4 @@
-import {
-  Alert,
-  Content,
-  ContentVariants,
-  ExpandableSection,
-  Stack,
-  StackItem,
-} from '@patternfly/react-core';
+import { Alert, Content, ContentVariants, ExpandableSection } from '@patternfly/react-core';
 import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
@@ -14,7 +7,11 @@ import { ClusterNetwork, ROSAHCPCluster, ROSAHCPWizardData } from '../../../type
 import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
 import { Radio } from '../../../components/Fields/RadioGroup';
 import { clusterValidationSchema } from '../../../yupSchemas';
-import { FieldWrapper } from '../../../components/FieldWrapper';
+import {
+  FieldWrapper,
+  FieldWrapperBlock,
+  FieldWrapperStack,
+} from '../../../components/FieldWrapper';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
@@ -25,11 +22,28 @@ import {
   buildMachinePoolsReviewSelectOptions,
   resolveSelectedVpc,
 } from '../../../utilities/helpers';
+import { STEP_IDS } from '../../../constants';
+import { useIsStepHidden } from '../../../WizardConfigContext';
 
 type NetworkingStepProps = Pick<ROSAHCPWizardData, 'vpcList' | 'subnets'>;
 
+type CidrFieldLabelHelpProps = {
+  helpLead: string;
+  href: string;
+  learnMoreLink: string;
+};
+
+function CidrFieldLabelHelp({ helpLead, href, learnMoreLink }: CidrFieldLabelHelpProps) {
+  return (
+    <>
+      {helpLead} <ExternalLink href={href}>{learnMoreLink}</ExternalLink>
+    </>
+  );
+}
+
 export const Networking = (props: NetworkingStepProps) => {
   const { networking: n } = useRosaHcpWizardStrings();
+  const isProxyStepHidden = useIsStepHidden(STEP_IDS.CLUSTER_WIDE_PROXY);
 
   const cidrDefaultChecked = useWatch({ name: 'cidr_default' });
   const selectedVPCRaw = useWatch({ name: 'selected_vpc' });
@@ -88,15 +102,17 @@ export const Networking = (props: NetworkingStepProps) => {
       </FieldWrapper>
 
       <ExpandableSection isIndented toggleText={n.advancedToggle}>
-        <Stack hasGutter>
-          <StackItem>
-            <WizCheckbox name="configure_proxy" schema={clusterValidationSchema} />
-          </StackItem>
+        <FieldWrapperStack>
+          {!isProxyStepHidden && (
+            <FieldWrapper>
+              <WizCheckbox name="configure_proxy" schema={clusterValidationSchema} />
+            </FieldWrapper>
+          )}
 
-          <StackItem>
+          <FieldWrapperBlock>
             <Alert
               isExpandable
-              variant="warning"
+              variant="info"
               title={n.cidrAlertTitle}
               ouiaId="networkingCidrAlert"
             >
@@ -108,45 +124,70 @@ export const Networking = (props: NetworkingStepProps) => {
                 </ExternalLink>
               </Content>
             </Alert>
-          </StackItem>
+          </FieldWrapperBlock>
 
-          <StackItem>
+          <FieldWrapper>
             <WizCheckbox name="cidr_default" schema={clusterValidationSchema} />
-          </StackItem>
-          <StackItem>
-            <Stack hasGutter>
-              <StackItem>
-                <WizTextInput<ROSAHCPCluster>
-                  name="network_machine_cidr"
-                  schema={clusterValidationSchema}
-                  isDisabled={cidrDefaultChecked}
-                />
-              </StackItem>
-              <StackItem>
-                <WizTextInput<ROSAHCPCluster>
-                  name="network_service_cidr"
-                  schema={clusterValidationSchema}
-                  isDisabled={cidrDefaultChecked}
-                />
-              </StackItem>
-              <StackItem>
-                <WizTextInput<ROSAHCPCluster>
-                  name="network_pod_cidr"
-                  schema={clusterValidationSchema}
-                  isDisabled={cidrDefaultChecked}
-                />
-              </StackItem>
-
-              <StackItem>
-                <WizTextInput<ROSAHCPCluster>
-                  name="network_host_prefix"
-                  schema={clusterValidationSchema}
-                  isDisabled={cidrDefaultChecked}
-                />
-              </StackItem>
-            </Stack>
-          </StackItem>
-        </Stack>
+          </FieldWrapper>
+          <FieldWrapperStack>
+            <FieldWrapper width="large">
+              <WizTextInput<ROSAHCPCluster>
+                name="network_machine_cidr"
+                schema={clusterValidationSchema}
+                isDisabled={cidrDefaultChecked}
+                labelHelp={
+                  <CidrFieldLabelHelp
+                    helpLead={n.machineCidrHelpLead}
+                    href={links.CIDR_MACHINE}
+                    learnMoreLink={n.cidrFieldLearnMoreLink}
+                  />
+                }
+              />
+            </FieldWrapper>
+            <FieldWrapper width="large">
+              <WizTextInput<ROSAHCPCluster>
+                name="network_service_cidr"
+                schema={clusterValidationSchema}
+                isDisabled={cidrDefaultChecked}
+                labelHelp={
+                  <CidrFieldLabelHelp
+                    helpLead={n.serviceCidrHelpLead}
+                    href={links.CIDR_SERVICE}
+                    learnMoreLink={n.cidrFieldLearnMoreLink}
+                  />
+                }
+              />
+            </FieldWrapper>
+            <FieldWrapper width="large">
+              <WizTextInput<ROSAHCPCluster>
+                name="network_pod_cidr"
+                schema={clusterValidationSchema}
+                isDisabled={cidrDefaultChecked}
+                labelHelp={
+                  <CidrFieldLabelHelp
+                    helpLead={n.podCidrHelpLead}
+                    href={links.CIDR_POD}
+                    learnMoreLink={n.cidrFieldLearnMoreLink}
+                  />
+                }
+              />
+            </FieldWrapper>
+            <FieldWrapper width="large">
+              <WizTextInput<ROSAHCPCluster>
+                name="network_host_prefix"
+                schema={clusterValidationSchema}
+                isDisabled={cidrDefaultChecked}
+                labelHelp={
+                  <CidrFieldLabelHelp
+                    helpLead={n.hostPrefixHelpLead}
+                    href={links.CIDR_HOST_PREFIX}
+                    learnMoreLink={n.cidrFieldLearnMoreLink}
+                  />
+                }
+              />
+            </FieldWrapper>
+          </FieldWrapperStack>
+        </FieldWrapperStack>
       </ExpandableSection>
     </Section>
   );

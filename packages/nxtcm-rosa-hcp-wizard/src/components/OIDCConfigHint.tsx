@@ -1,17 +1,24 @@
-import { ClipboardCopyVariant, Content, ContentVariants } from '@patternfly/react-core';
+import { Content, ContentVariants } from '@patternfly/react-core';
 import { CopyInstruction } from './CopyInstruction';
+import { RosaLoginInstruction } from './RosaLoginInstruction';
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
+import { DEFAULT_HOST_PRODUCT } from '../constants';
+import type { RosaLoginProduct } from './rosaLoginCommand';
 
-export const OIDCConfigHint = () => {
+export type OIDCConfigHintProduct = RosaLoginProduct;
+
+export interface OIDCConfigHintProps {
+  /** The consuming product. Defaults to 'acm'. */
+  product?: OIDCConfigHintProduct;
+}
+
+export const OIDCConfigHint = ({ product = DEFAULT_HOST_PRODUCT }: OIDCConfigHintProps) => {
   const { oidcHint } = useRosaHcpWizardStrings();
 
   return (
     <>
       <Content component={ContentVariants.p}>{oidcHint.instructions}</Content>
-      <CopyInstruction variant={ClipboardCopyVariant.expansion} className="pf-v6-u-text-wrap">
-        rosa login --use-auth-code --url https://api.stage.openshift.com
-        {/* TODO: This should be at least production */}
-      </CopyInstruction>
+      <RosaLoginInstruction product={product} showInstructions={false} />
       <CopyInstruction>rosa create oidc-config</CopyInstruction>
     </>
   );

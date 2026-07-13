@@ -1,5 +1,9 @@
 import { test, expect, Page } from './fixtures';
 
+async function expandOperatorPrefixSection(page: Page) {
+  await page.getByRole('button', { name: 'Operator role prefix', exact: true }).click();
+}
+
 async function fillDetailsStep(page: Page) {
   await page.getByRole('textbox', { name: 'Cluster name' }).fill('test-cluster');
   await page.getByRole('textbox', { name: 'Cluster name' }).press('Tab');
@@ -15,9 +19,9 @@ async function fillDetailsStep(page: Page) {
 }
 
 async function fillRolesStep(page: Page) {
-  await page.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
+  await page.getByTestId('installer-role-select').click();
   await page.getByRole('option', { name: /ManagedOpenShift-HCP-ROSA-Installer-Role/ }).click();
-  await page.locator('#byo_oidc_config_id-form-group .pf-v6-c-menu-toggle').click();
+  await page.getByTestId('oidc-config-select').click();
   await page.getByRole('option', { name: '2kl4t2st8eg2u5jppv8kjeemkvimfm99' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
 }
@@ -35,6 +39,8 @@ async function fillMachinePoolsStep(page: Page) {
 }
 
 async function fillNetworkingStep(page: Page) {
+  await page.getByRole('button', { name: /public subnet name/i }).click();
+  await page.getByRole('option', { name: 'test-1-subnet-public1-us-east-1a' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
 }
 
@@ -74,12 +80,12 @@ test.describe('ROSA Wizard', () => {
 
     await page.getByRole('button', { name: 'Next' }).click();
 
-    await expect(page.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle')).toBeVisible();
+    await expect(page.getByTestId('installer-role-select')).toBeVisible();
 
-    await page.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
+    await page.getByTestId('installer-role-select').click();
     await page.getByRole('option', { name: /ManagedOpenShift-HCP-ROSA-Installer-Role/ }).click();
 
-    await page.locator('#byo_oidc_config_id-form-group .pf-v6-c-menu-toggle').click();
+    await page.getByTestId('oidc-config-select').click();
     await page.getByRole('option', { name: '2kl4t2st8eg2u5jppv8kjeemkvimfm99' }).click();
 
     await page.getByRole('button', { name: 'Next' }).click();
@@ -101,7 +107,7 @@ test.describe('ROSA Wizard', () => {
 
     await page.getByRole('button', { name: 'Next' }).click();
 
-    await page.getByRole('button', { name: 'Next' }).click();
+    await fillNetworkingStep(page);
 
     await expect(page.getByRole('radio', { name: 'Use default AWS KMS key' })).toBeVisible();
 
@@ -111,7 +117,7 @@ test.describe('ROSA Wizard', () => {
 
     await page.getByRole('button', { name: 'Next' }).click();
 
-    await expect(page.getByRole('button', { name: 'Submit' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Create cluster' })).toBeVisible();
 
     await expect(page.getByText('test-cluster', { exact: true }).first()).toBeVisible();
     await expect(page.getByText('4.12.0', { exact: true }).first()).toBeVisible();
@@ -170,6 +176,7 @@ test.describe('ROSA Wizard', () => {
     test.describe('Roles and policies - operator prefix', () => {
       test('"a b" rejects invalid characters', async ({ page }) => {
         await fillDetailsStep(page);
+        await expandOperatorPrefixSection(page);
         const input = page.getByRole('textbox', { name: 'Operator roles prefix' });
         await input.fill('a b');
         await input.press('Tab');
@@ -180,6 +187,7 @@ test.describe('ROSA Wizard', () => {
 
       test('more than 32 characters is rejected', async ({ page }) => {
         await fillDetailsStep(page);
+        await expandOperatorPrefixSection(page);
         const input = page.getByRole('textbox', { name: 'Operator roles prefix' });
         await input.fill('a'.repeat(33));
         await input.press('Tab');

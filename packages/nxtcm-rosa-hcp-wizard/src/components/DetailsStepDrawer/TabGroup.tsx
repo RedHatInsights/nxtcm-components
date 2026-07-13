@@ -26,7 +26,7 @@ export const TabGroup: React.FunctionComponent<ToggleGroupTabsProps> = ({ tabs }
   };
 
   return (
-    <Stack hasGutter>
+    <Stack hasGutter className="pf-v6-u-mt-md">
       <StackItem>
         <ToggleGroup>
           {tabs.map((tab) => (

@@ -2,7 +2,6 @@
  * Playwright CT mount target. Components from *.story.tsx cannot be mounted (see playwright.dev/test-components#test-stories).
  */
 import React, { useMemo } from 'react';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { Form } from '@patternfly/react-core';
 import { FormProvider, useForm, useWatch, type Resolver } from 'react-hook-form';
 
@@ -20,14 +19,15 @@ import {
   mockRegions,
   mockRoles,
 } from './Details.fixtures';
-import { clusterValidationSchema } from '../../../yupSchemas';
+import { createClusterValidationResolver } from '../../../utilities/clusterValidationResolver';
 import type { CheckClusterNameUniqueness } from '../../../types';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { RosaHcpWizardValidationProvider } from '../../../rosaHcpWizardValidationContext';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
 import {
   makeDefaultRosaHcpCtWizardData,
   makeVpcListResource,
-  WizardFieldMetaChangeEffectsCtHarness,
+  WizardFieldMetaChangeEffectsRunner,
 } from '../../../test/rosaHcpWizardCtSpecHelpers';
 import type {
   AwsBillingAccountsResource,
@@ -70,7 +70,7 @@ export type DetailsMountProps = {
   awsInfrastructureAccounts?: AwsInfrastructureAccountsResource;
   awsBillingAccounts?: AwsBillingAccountsResource;
   regions?: RegionsResource;
-  roles?: RolesResource;
+  roles?: Partial<RolesResource>;
   vpcList?: VpcListResource;
   defaultValues?: Partial<ROSAHCPCluster>;
   checkClusterNameUniqueness?: CheckClusterNameUniqueness;
@@ -123,15 +123,14 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
     return undefined;
   }, [checkClusterNameUniqueness, clusterNameUniquenessError, onClusterNameUniquenessCheck]);
 
+  const resolver = useMemo(
+    () => createClusterValidationResolver(defaultRosaHcpWizardValidatorStrings),
+    []
+  );
+
   const methods = useForm<ROSAHCPCluster>({
     defaultValues: { ...DEFAULT_ROSA_HCP_CT_FORM_VALUES, ...defaultValues },
-    resolver: yupResolver(clusterValidationSchema) as Resolver<ROSAHCPCluster>,
-    context: {
-      msgs: defaultRosaHcpWizardValidatorStrings,
-      maxRootDiskSize: 16384,
-      maxAutoscalingNodes: 500,
-      machinePoolsNumber: 1,
-    },
+    resolver: resolver as Resolver<ROSAHCPCluster>,
     mode: 'onTouched',
   });
 
@@ -181,6 +180,9 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
       isFetching: roles?.isFetching ?? false,
       fetch: roles?.fetch ?? (async (_awsAccount: string) => {}),
       error: roles?.error ?? null,
+      ocmRoleError: roles?.ocmRoleError ?? null,
+      userRoleError: roles?.userRoleError ?? null,
+      ocmRoleARN: roles?.ocmRoleARN ?? null,
     }),
     [roles]
   );
@@ -201,19 +203,21 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
   );
 
   return withRosaCt(
-    <FormProvider {...methods}>
-      <Form>
-        <WizardFieldMetaChangeEffectsCtHarness wizardData={wizardData} />
-        <Details
-          awsInfrastructureAccounts={awsInfra}
-          awsBillingAccounts={awsBilling}
-          regions={regionsProps}
-          versions={versionsProps}
-          roles={rolesProps}
-          checkClusterNameUniqueness={resolvedCheckClusterNameUniqueness}
-        />
-        <DetailsFormValuesProbe />
-      </Form>
-    </FormProvider>
+    <RosaHcpWizardValidationProvider>
+      <FormProvider {...methods}>
+        <Form>
+          <WizardFieldMetaChangeEffectsRunner wizardData={wizardData} />
+          <Details
+            awsInfrastructureAccounts={awsInfra}
+            awsBillingAccounts={awsBilling}
+            regions={regionsProps}
+            versions={versionsProps}
+            roles={rolesProps}
+            checkClusterNameUniqueness={resolvedCheckClusterNameUniqueness}
+          />
+          <DetailsFormValuesProbe />
+        </Form>
+      </FormProvider>
+    </RosaHcpWizardValidationProvider>
   );
 };

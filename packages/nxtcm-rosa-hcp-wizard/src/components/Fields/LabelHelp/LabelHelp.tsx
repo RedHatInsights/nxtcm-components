@@ -22,16 +22,18 @@ export function LabelHelp(props: LabelHelpProps): JSX.Element | null {
     labelHelp,
     labelHelpTitle,
     useButton,
+    maxWidth,
     ...popoverRest
   } = props;
   const labelHelpRef = useRef(null);
   return labelHelp ? (
     <Popover
-      triggerRef={labelHelpRef}
       {...popoverRest}
+      triggerRef={labelHelpRef}
       id={`${id}-label-help-popover`}
       headerContent={labelHelpTitle}
       bodyContent={labelHelp}
+      maxWidth={maxWidth}
     >
       {useButton ? (
         <Button

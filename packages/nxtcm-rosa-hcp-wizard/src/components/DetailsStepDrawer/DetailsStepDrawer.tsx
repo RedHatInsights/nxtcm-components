@@ -18,20 +18,24 @@ import { OCMRole } from './OCMRole';
 import { AccountRoles } from './AccountRoles';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { UserRole } from './UserRole';
-import { AssociateAWSAccountInfo } from '../AssociateAWSAccountInfo';
+import { AssociateAWSAccountInfo } from './AssociateAWSAccountInfo';
+import { LoginStep } from './LoginStep';
+import type { RosaLoginProduct } from '../rosaLoginCommand';
 
 type StepDrawerProps = {
   isDrawerExpanded: boolean;
   setIsDrawerExpanded: (expanded: boolean) => void;
   onWizardExpand: () => void;
+  /** The consuming product. Determines which ROSA login command is shown. Defaults to 'acm'. */
+  product?: RosaLoginProduct;
   children: React.ReactNode;
 };
 
 export const DetailsStepDrawer = (props: StepDrawerProps) => {
-  const { isDrawerExpanded, onWizardExpand, setIsDrawerExpanded } = props;
+  const { isDrawerExpanded, onWizardExpand, setIsDrawerExpanded, product } = props;
   const d = useRosaHcpWizardStrings().associateAwsDrawer;
   return (
-    <Drawer isInline isExpanded={isDrawerExpanded} onExpand={onWizardExpand}>
+    <Drawer isExpanded={isDrawerExpanded} onExpand={onWizardExpand}>
       <DrawerContent
         panelContent={
           <DrawerPanelContent isResizable={true} defaultSize="40%">
@@ -49,7 +53,12 @@ export const DetailsStepDrawer = (props: StepDrawerProps) => {
                     <Content component={ContentVariants.p}>{d.cliVersion}</Content>
                   </StackItem>
                   <StackItem>
-                    <AssociateAWSAccountInfo title={d.step1Title} initiallyExpanded>
+                    <AssociateAWSAccountInfo title={d.stepLoginTitle} initiallyExpanded>
+                      <LoginStep product={product} />
+                    </AssociateAWSAccountInfo>
+                  </StackItem>
+                  <StackItem>
+                    <AssociateAWSAccountInfo title={d.step1Title}>
                       <OCMRole />
                     </AssociateAWSAccountInfo>
                   </StackItem>
