@@ -54,9 +54,7 @@ export const clusterPrivacyPublicSubnetIdSchema = yup
   .when('cluster_privacy', {
     is: ClusterNetwork.external,
     then: (schema) =>
-      schema
-        .test(rosaCommonRequiredNonEmptyTest)
-        .meta({ [YUP_FIELD_REQUIRED_UI_META_KEY]: true }),
+      schema.test(rosaCommonRequiredNonEmptyTest).meta({ [YUP_FIELD_REQUIRED_UI_META_KEY]: true }),
     otherwise: (schema) => schema.optional(),
   });
 
