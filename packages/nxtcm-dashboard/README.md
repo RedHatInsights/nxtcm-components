@@ -53,3 +53,7 @@ export const DashboardSummary = () => (
 - `UpgradeRisks` - upgrade risk severity card
 - `LoadingPanel` - generic loading state panel
 - `NotificationsPanel` - notifications table card
+
+## Publishing
+
+This package is published when a GitHub Release is created on `main` with tag `nxtcm-dashboard-v{version}` matching `package.json`. See the [repository publishing guide](../../README.md#publishing-packages).

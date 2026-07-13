@@ -83,3 +83,7 @@ export const CreateClusterWizard = ({ wizardData }: { wizardData: ROSAHCPWizardD
 - `clusterWideProxyFields` - Cluster-wide proxy step field schemas
 - `encryptionFields` - Encryption step field schemas
 - `clusterUpdatesFields` - Cluster updates step field schemas
+
+## Publishing
+
+This package is published when a GitHub Release is created on `main` with tag `nxtcm-rosa-hcp-wizard-v{version}` matching `package.json`. See the [repository publishing guide](../../README.md#publishing-packages).
