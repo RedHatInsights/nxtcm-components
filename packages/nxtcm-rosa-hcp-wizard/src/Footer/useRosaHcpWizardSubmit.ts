@@ -12,7 +12,9 @@ import {
 } from './rosaHcpWizardFooter.validation';
 
 type UseRosaHcpWizardSubmitOptions = {
-  onSubmit: (data: ROSAHCPCluster) => Promise<void>;
+  onSubmit: (yamlString: string) => Promise<void>;
+  getYaml: () => string;
+  skipFormValidation?: boolean;
 };
 
 type UseRosaHcpWizardSubmitResult = {
@@ -23,6 +25,8 @@ type UseRosaHcpWizardSubmitResult = {
 
 export function useRosaHcpWizardSubmit({
   onSubmit,
+  getYaml,
+  skipFormValidation = false,
 }: UseRosaHcpWizardSubmitOptions): UseRosaHcpWizardSubmitResult {
   const reviewSections = useRosaHcpWizardReviewSections();
   const {
@@ -99,13 +103,13 @@ export function useRosaHcpWizardSubmit({
     if (inFlightRef.current) return false;
     inFlightRef.current = true;
     try {
-      if (!(await validateEntireForm())) {
+      if (!skipFormValidation && !(await validateEntireForm())) {
         return false;
       }
 
       setIsSubmitting(true);
       try {
-        await onSubmit(getValues() as ROSAHCPCluster);
+        await onSubmit(getYaml());
         return true;
       } finally {
         setIsSubmitting(false);
@@ -113,7 +117,7 @@ export function useRosaHcpWizardSubmit({
     } finally {
       inFlightRef.current = false;
     }
-  }, [getValues, onSubmit, validateEntireForm]);
+  }, [getYaml, onSubmit, skipFormValidation, validateEntireForm]);
 
   const showValidationAlert = validationAlertStepId === STEP_IDS.REVIEW;
 

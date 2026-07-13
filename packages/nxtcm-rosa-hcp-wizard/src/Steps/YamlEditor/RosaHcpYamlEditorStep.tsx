@@ -26,6 +26,7 @@ const YAML_VALIDATION_OWNER = 'yaml-hcp-validation';
 export type YamlEditorHandle = {
   discard: () => void;
   hasSchemaErrors: () => boolean;
+  getYaml: () => string;
 };
 
 export type RosaHcpYamlEditorStepProps = {
@@ -180,6 +181,9 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         },
         hasSchemaErrors() {
           return hasSchemaErrorsRef.current;
+        },
+        getYaml() {
+          return pendingYamlRef.current;
         },
       }),
       [onClose]

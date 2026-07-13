@@ -4,6 +4,7 @@ import {
   defaultRosaHcpWizardStrings,
   defaultRosaHcpWizardValidatorStrings,
 } from '../stringsProvider/rosaHcpWizardStrings.defaults';
+import * as yaml from 'js-yaml';
 import { RosaHcpWizardValidationMount } from './RosaHcpWizardFooter.spec-helpers';
 import fixtures from '../ROSAHCPWizard.fixtures';
 import { mockRoles } from '../Steps/BasicSetup/Details/Details.fixtures';
@@ -14,6 +15,7 @@ import {
 import { STEP_IDS } from '../constants';
 
 const INSTALLER_ROLE_LABEL = mockRoles[0].installerRole.label;
+const EXPECTED_SUBMIT_YAML = 'kind: ROSAControlPlane\nmetadata:\n  name: stub';
 
 const w = defaultRosaHcpWizardStrings.wizard;
 const d = defaultRosaHcpWizardStrings.details;
@@ -434,6 +436,35 @@ test.describe('RosaHcpWizardFooter — Review Submit validation alert', () => {
     await nameInput.fill('mycluster');
 
     await expect(component.getByRole('heading', validationAlertHeading)).not.toBeVisible();
+  });
+});
+
+test.describe('RosaHcpWizardFooter — submission payload', () => {
+  test('calls onSubmit with a parseable YAML string when the Review step passes validation', async ({
+    mount,
+  }) => {
+    let receivedPayload: string | undefined;
+    const component = await mount(
+      <RosaHcpWizardValidationMount
+        defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES}
+        onSubmit={(yamlString) => {
+          receivedPayload = yamlString;
+          return Promise.resolve();
+        }}
+      />
+    );
+
+    await advanceToReviewStep(component);
+    await expect(component.getByText(review.sectionLabel, { exact: true })).toBeVisible();
+
+    await component.getByRole('button', { name: FOOTER_SUBMIT }).click();
+
+    await expect.poll(() => receivedPayload).toBe(EXPECTED_SUBMIT_YAML);
+
+    // Verify consuming applications receive valid, parseable YAML.
+    const parsed = yaml.load(receivedPayload as string) as Record<string, unknown>;
+    expect(typeof parsed).toBe('object');
+    expect(typeof parsed['kind']).toBe('string');
   });
 });
 

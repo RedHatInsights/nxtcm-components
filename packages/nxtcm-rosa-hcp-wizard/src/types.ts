@@ -243,12 +243,17 @@ export interface WizardConfig {
 
 export type RosaHCPWizardProps = {
   wizardData: ROSAHCPWizardData;
-  onSubmit: (data: ROSAHCPCluster) => Promise<void>;
+  /**
+   * Receives the raw YAML string as the single source of truth. This covers both
+   * the standard Review-step path (YAML rendered from validated form values via
+   * `resourceGenerator.renderYaml`) and the YAML-editor path (live editor content,
+   * including any advanced fields the user added that are not mapped by the form).
+   */
+  onSubmit: (yamlString: string) => Promise<void>;
   onSubmitError?: string | boolean;
   onCancel: () => void;
   title: string;
   onBackToReviewStep?: () => void | Promise<void>;
-  yamlEditor?: () => React.ReactNode;
   product?: 'acm' | 'ocm' | 'oem';
   /**
    * When true, all wizard nav steps stay enabled regardless of visit history or validation.
@@ -256,11 +261,14 @@ export type RosaHCPWizardProps = {
    */
   enableAllWizardNavSteps?: boolean;
   /**
-   * The consuming application is responsible for supplying this implementation.
+   * Required. The consuming application is responsible for supplying this implementation.
    * The wizard has no built-in knowledge of any specific template, schema, or
    * generation logic — it only calls the three methods defined by YamlResourceGenerator:
    * - `renderYaml` — produce the YAML string from current form values
    * - `validateYaml` — validate a YAML string and return structured errors
+   *
+   * **Must be referentially stable**. If the reference changes after the YAML editor has opened, the Monaco schema
+   * worker will be re-initialised and any unsaved YAML edits the user has made will be lost.
    */
   resourceGenerator: YamlResourceGenerator;
 

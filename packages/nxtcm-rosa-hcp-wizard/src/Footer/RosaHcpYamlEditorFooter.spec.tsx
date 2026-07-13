@@ -69,6 +69,36 @@ test.describe('RosaHcpYamlEditorFooter', () => {
     expect(cancelled).toBe(true);
   });
 
+  test('calls onSubmit with the exact YAML string returned by the editor, including advanced fields not mapped by the form', async ({
+    mount,
+    page,
+  }) => {
+    const EDITOR_YAML = [
+      'kind: ROSAControlPlane',
+      'metadata:',
+      '  name: mycluster',
+      'spec:',
+      '  region: us-east-1',
+      '  auditLog:',
+      '    enabled: true',
+    ].join('\n');
+    let receivedYaml: string | undefined;
+
+    await mount(
+      <YamlEditorFooterMount
+        yamlContent={EDITOR_YAML}
+        onSubmit={(yamlString) => {
+          receivedYaml = yamlString;
+          return Promise.resolve();
+        }}
+      />
+    );
+
+    await page.getByRole('button', { name: w.createCluster }).click();
+
+    expect(receivedYaml).toBe(EDITOR_YAML);
+  });
+
   test('does not call onSubmit when the editor has schema errors', async ({ mount, page }) => {
     let submitted = false;
     await mount(

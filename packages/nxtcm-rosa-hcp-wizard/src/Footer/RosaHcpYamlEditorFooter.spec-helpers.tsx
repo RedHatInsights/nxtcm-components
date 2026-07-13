@@ -9,13 +9,15 @@ import { RosaHcpYamlEditorFooter } from './RosaHcpYamlEditorFooter';
 
 export type YamlEditorFooterMountProps = {
   hasSchemaErrors?: boolean;
+  yamlContent?: string;
   onClose?: () => void;
   onCancel?: () => void;
-  onSubmit?: (data: ROSAHCPCluster) => Promise<void>;
+  onSubmit?: (yamlString: string) => Promise<void>;
 };
 
 export function YamlEditorFooterMount({
   hasSchemaErrors = false,
+  yamlContent = '',
   onClose = () => {},
   onCancel = () => {},
   onSubmit = async () => {},
@@ -24,6 +26,7 @@ export function YamlEditorFooterMount({
     <RosaHcpWizardStringsProvider>
       <YamlEditorFooterMountInner
         hasSchemaErrors={hasSchemaErrors}
+        yamlContent={yamlContent}
         onClose={onClose}
         onCancel={onCancel}
         onSubmit={onSubmit}
@@ -34,6 +37,7 @@ export function YamlEditorFooterMount({
 
 function YamlEditorFooterMountInner({
   hasSchemaErrors,
+  yamlContent,
   onClose,
   onCancel,
   onSubmit,
@@ -43,6 +47,7 @@ function YamlEditorFooterMountInner({
   const editorRef = useRef<YamlEditorHandle>({
     discard: () => {},
     hasSchemaErrors: () => hasSchemaErrors,
+    getYaml: () => yamlContent,
   });
 
   return (
