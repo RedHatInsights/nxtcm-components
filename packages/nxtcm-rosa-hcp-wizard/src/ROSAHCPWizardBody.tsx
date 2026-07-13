@@ -19,6 +19,7 @@ import type { RosaHCPWizardProps, ROSAHCPCluster } from './types';
 import { useIsStepHidden } from './WizardConfigContext';
 import { RosaWizardSubmitError } from './RosaWizardSubmitError';
 import './ROSAHCPWizardBody.css';
+// Eager load so layout applies during Suspense fallback before the lazy step chunk loads.
 import './Steps/YamlEditor/RosaHcpYamlEditorStep.css';
 
 const RosaHcpYamlEditorStep = lazy(() =>
