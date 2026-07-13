@@ -2,8 +2,6 @@ import {
   ActionList,
   ActionListGroup,
   ActionListItem,
-  Alert,
-  AlertVariant,
   Button,
   ButtonVariant,
   Modal,
@@ -34,7 +32,7 @@ export function RosaHcpYamlEditorFooter({
   onSubmit,
 }: RosaHcpYamlEditorFooterProps) {
   const getYaml = useCallback(() => editorRef.current?.getYaml() ?? '', [editorRef]);
-  const { isSubmitting, showValidationAlert, submitWizard } = useRosaHcpWizardSubmit({
+  const { isSubmitting, submitWizard } = useRosaHcpWizardSubmit({
     onSubmit,
     getYaml,
     skipFormValidation: true,
@@ -69,15 +67,6 @@ export function RosaHcpYamlEditorFooter({
 
   return (
     <WizardFooterWrapper>
-      {showValidationAlert ? (
-        <Alert
-          className="pf-v6-u-mb-md"
-          title={wizard.fixValidationErrors}
-          isInline
-          variant={AlertVariant.danger}
-          role="alert"
-        />
-      ) : null}
       <ActionList>
         <ActionListGroup>
           <ActionListItem>

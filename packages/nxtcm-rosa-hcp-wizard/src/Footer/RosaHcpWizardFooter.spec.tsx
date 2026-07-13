@@ -4,7 +4,7 @@ import {
   defaultRosaHcpWizardStrings,
   defaultRosaHcpWizardValidatorStrings,
 } from '../stringsProvider/rosaHcpWizardStrings.defaults';
-import { RosaHcpWizardValidationMount } from './RosaHcpWizardFooter.spec-helpers';
+import { RosaHcpWizardValidationMount, STUB_FORM_YAML } from './RosaHcpWizardFooter.spec-helpers';
 import fixtures from '../ROSAHCPWizard.fixtures';
 import { mockRoles } from '../Steps/BasicSetup/Details/Details.fixtures';
 import {
@@ -438,10 +438,10 @@ test.describe('RosaHcpWizardFooter — Review Submit validation alert', () => {
 });
 
 test.describe('RosaHcpWizardFooter — submission payload', () => {
-  test('calls onSubmit with a YAML string when the Review step passes validation', async ({
+  test('calls onSubmit with the YAML string from getYaml when the Review step passes validation', async ({
     mount,
   }) => {
-    let receivedPayload: unknown;
+    let receivedPayload: string | undefined;
     const component = await mount(
       <RosaHcpWizardValidationMount
         defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES}
@@ -457,12 +457,7 @@ test.describe('RosaHcpWizardFooter — submission payload', () => {
 
     await component.getByRole('button', { name: FOOTER_SUBMIT }).click();
 
-    // onSubmit must receive a non-empty string, not an empty string, undefined, or a JSON object
-    expect(typeof receivedPayload).toBe('string');
-    expect(receivedPayload).not.toBe('');
-    expect(typeof receivedPayload === 'string' && receivedPayload.trimStart().startsWith('{')).toBe(
-      false
-    );
+    expect(receivedPayload).toBe(STUB_FORM_YAML);
   });
 });
 
