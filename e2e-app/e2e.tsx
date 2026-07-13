@@ -214,7 +214,6 @@ if (rootEl) {
       onSubmit={async () => {}}
       onCancel={() => {}}
       wizardData={mockWizardData}
-      yaml={true}
       resourceGenerator={createAcmCapaGenerator([
         { kind: 'ROSAControlPlane', schema: rosaControlPlaneSchema, primary: true },
         { kind: 'ManagedCluster', schema: managedClusterSchema },
