@@ -28,8 +28,8 @@ Counts and categorizes all selectors in E2E tests:
 - **`getByText()`** - Semantic selector (GOOD)
 - **`getByAltText()`** - Semantic selector (GOOD)
 - **`getByTitle()`** - Semantic selector (GOOD)
-- **`getByTestId()`** - Implementation detail (AVOID)
-- **`locator()` with CSS** - Brittle selector (AVOID)
+- **`getByTestId()`** - Approved fallback when component exposes stable test ID (ACCEPTABLE)
+- **`locator()` with CSS** - Last resort only (AVOID)
 - **`locator()` with XPath** - Very brittle (AVOID)
 
 ### 2. Accessibility Best Practices
@@ -44,11 +44,11 @@ Checks tests for:
 
 ### 3. Component Accessibility Gaps
 
-Identifies when tests **must** use CSS selectors due to missing accessible names in components:
-- Components without proper `aria-label` or visible labels
-- Dropdowns/selects without accessible names on toggle buttons
-- Custom widgets that don't expose semantic roles
-- PatternFly components missing accessibility props
+Identifies when tests **must** use fallback selectors (test IDs or CSS) due to missing accessible names:
+- Components without proper `aria-label` or visible labels → use `data-testid` if provided
+- Dropdowns/selects without accessible names on toggle buttons → use `data-testid` if provided
+- Custom widgets that don't expose semantic roles → use `data-testid` if provided
+- PatternFly components missing accessibility props → prefer `data-testid` over CSS when available
 
 ### 4. Comparison with Best Practices
 
@@ -156,11 +156,11 @@ npm run test:e2e
 # Generate selector usage report
 for file in playwright/e2e/**/*.spec.ts; do
   echo "=== $file ==="
-  echo "getByRole: $(grep -c "getByRole" "$file" || echo 0)"
-  echo "getByLabel: $(grep -c "getByLabel" "$file" || echo 0)"
-  echo "getByText: $(grep -c "getByText" "$file" || echo 0)"
-  echo "locator(): $(grep -c "locator(" "$file" || echo 0)"
-  echo "getByTestId: $(grep -c "getByTestId" "$file" || echo 0)"
+  echo "getByRole: $(grep -c 'getByRole' "$file" || echo 0)"
+  echo "getByLabel: $(grep -c 'getByLabel' "$file" || echo 0)"
+  echo "getByText: $(grep -c 'getByText' "$file" || echo 0)"
+  echo "locator(): $(grep -c 'locator(' "$file" || echo 0)"
+  echo "getByTestId: $(grep -c 'getByTestId' "$file" || echo 0)"
   echo ""
 done
 ```
@@ -254,15 +254,15 @@ const plainToggleAriaLabel = !toggleLabel && !isLoading ? placeholderText : unde
    page.getByText('Submit')
    ```
 
-5. **`getByTestId()`** - ONLY when no semantic alternative exists
+5. **`getByTestId()`** - Approved fallback when component provides stable test ID
    ```typescript
-   // Avoid this if possible
-   page.getByTestId('submit-button')
+   // Acceptable when semantic selector not available
+   page.getByTestId('installer-role-select')
    ```
 
-6. **`locator()`** - LAST RESORT for CSS/XPath
+6. **`locator()`** - LAST RESORT for CSS/XPath (only when no test ID available)
    ```typescript
-   // Avoid - tied to implementation
+   // Avoid - use only when semantic and test ID options exhausted
    page.locator('#form-group-id .submit-button')
    ```
 
@@ -362,9 +362,9 @@ Nodes:
 
 A well-tested E2E suite should have:
 
-- ✅ **≥90%** accessibility-first selectors (`getByRole`, `getByLabel`, etc.)
-- ✅ **<5%** CSS `locator()` usage (only for documented component gaps)
-- ✅ **0** `getByTestId()` usage (unless absolutely necessary)
+- ✅ **≥80%** accessibility-first selectors (`getByRole`, `getByLabel`, etc.)
+- ✅ **`getByTestId()`** usage only for components with stable, documented test IDs
+- ✅ **<5%** CSS `locator()` usage (only when semantic and test ID options exhausted)
 - ✅ Human-readable assertions based on visible text
 - ✅ Automated axe-core accessibility scans on all major flows
 - ✅ Documentation of any necessary CSS selectors with links to component issues

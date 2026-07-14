@@ -46,7 +46,7 @@ Run a small subset of CT tests **without** coverage to verify basic test infrast
 
 ```bash
 rm -rf playwright/.cache && \
-npx playwright test -c playwright-ct.config.ts --grep "CVECard.*should render the card with default title" 2>&1 | tail -20
+npx playwright test -c playwright-ct.config.ts --grep "CVECard.*should render the card with default title"
 ```
 
 **Expected**: Test passes in 1-3 seconds, no errors.
@@ -62,7 +62,7 @@ Run the same test **with** coverage and verify Istanbul instruments code:
 
 ```bash
 rm -rf playwright/.cache .nyc_output && \
-COVERAGE=true npx playwright test -c playwright-ct.config.ts --grep "CVECard.*should render the card with default title" 2>&1 | tail -30
+COVERAGE=true npx playwright test -c playwright-ct.config.ts --grep "CVECard.*should render the card with default title"
 ```
 
 **Expected**:
@@ -79,7 +79,7 @@ COVERAGE=true npx playwright test -c playwright-ct.config.ts --grep "CVECard.*sh
 
 ```bash
 ls -la .nyc_output/ && echo "---" && \
-cat .nyc_output/*.json | jq 'keys | length' 2>/dev/null || echo "Coverage file is not valid JSON"
+jq -s '.[0] | keys | length' .nyc_output/*.json 2>/dev/null || echo "Coverage file is not valid JSON"
 ```
 
 **Expected**: Directory exists, contains JSON files with coverage data (non-zero key count).
