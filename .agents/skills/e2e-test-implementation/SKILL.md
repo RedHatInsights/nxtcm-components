@@ -7,12 +7,12 @@ tags: [testing, e2e, playwright, implementation, rosa-wizard]
 
 # E2E Test Implementation Guide
 
-Systematic guide for implementing E2E tests identified in the test gap analysis (`E2E-TEST-GAPS.md`), with reusable patterns for complex validation scenarios.
+Systematic guide for implementing E2E tests identified in the test gap analysis (`packages/nxtcm-rosa-hcp-wizard/docs/testing/E2E-TEST-GAPS.md`), with reusable patterns for complex validation scenarios.
 
 ## When to Use This Skill
 
 Invoke this skill when:
-- Implementing E2E tests from `E2E-TEST-GAPS.md`
+- Implementing E2E tests from `packages/nxtcm-rosa-hcp-wizard/docs/testing/E2E-TEST-GAPS.md`
 - Adding tests for cross-field validation (CIDR overlaps, VPC/subnet dependencies)
 - Testing state management and navigation workflows
 - Writing helper functions for wizard test automation
@@ -20,7 +20,7 @@ Invoke this skill when:
 
 ## Test Implementation Priority
 
-From `E2E-TEST-GAPS.md`, tests are classified:
+From `packages/nxtcm-rosa-hcp-wizard/docs/testing/E2E-TEST-GAPS.md`, tests are classified:
 
 ### HIGH Priority ⚠️
 Add these first - critical user workflows and complex business logic:
@@ -351,7 +351,7 @@ For each implemented test:
 
 ## Coverage Targets
 
-From `E2E-TEST-GAPS.md`:
+From `packages/nxtcm-rosa-hcp-wizard/docs/testing/E2E-TEST-GAPS.md`:
 
 **Phase 1 (Critical):** 5 tests
 - Coverage: ~50% of High Priority gaps
@@ -367,8 +367,8 @@ From `E2E-TEST-GAPS.md`:
 
 ## Related References
 
-- **E2E-TEST-GAPS.md** - comprehensive gap analysis with test IDs and priorities
-- **MANUAL-TEST-PLAN.md** - manual test scenarios (source for E2E tests)
+- **packages/nxtcm-rosa-hcp-wizard/docs/testing/E2E-TEST-GAPS.md** - comprehensive gap analysis with test IDs and priorities
+- **packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md** - manual test scenarios (source for E2E tests)
 - **playwright/e2e/rosa-wizard.spec.ts** - existing E2E tests (patterns to follow)
 - **packages/nxtcm-rosa-hcp-wizard/src/yupSchemas/networkingFields.ts** - CIDR validation logic
 - **.agents/skills/cidr-validation-testing/SKILL.md** - CIDR domain expertise
@@ -414,7 +414,7 @@ test.describe('ROSA Wizard - CIDR Validation', () => {
 
 ## Implementation Workflow
 
-1. **Select test from E2E-TEST-GAPS.md** (start with High Priority)
+1. **Select test from packages/nxtcm-rosa-hcp-wizard/docs/testing/E2E-TEST-GAPS.md** (start with High Priority)
 2. **Read test description** and understand validation logic
 3. **Check if helper functions exist** for this pattern
 4. **Write test** following pattern from this skill

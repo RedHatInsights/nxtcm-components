@@ -42,7 +42,7 @@ Open browser DevTools (F12) with these tabs visible:
 
 ### 3. Test Data Preparation
 
-Reference `MANUAL-TEST-PLAN.md` Appendix A for test data:
+Reference `packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md` Appendix A for test data:
 
 **Valid Cluster Names:**
 - `test-cluster`
@@ -76,7 +76,7 @@ Reference `MANUAL-TEST-PLAN.md` Appendix A for test data:
 
 ### 4. Test Execution Log
 
-Create execution log (copy from `MANUAL-TEST-PLAN.md` Appendix C):
+Create execution log (copy from `packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md` Appendix C):
 
 | Test ID | Result | Notes | Tester | Date |
 |---------|--------|-------|--------|------|
@@ -96,7 +96,7 @@ Legend:
 Execute these high-priority tests first to verify core functionality:
 
 #### 1.1 Happy Path Flow
-**Reference:** `MANUAL-TEST-PLAN.md` Section 1 (full wizard flow)
+**Reference:** `packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md` Section 1 (full wizard flow)
 
 **Steps:**
 1. Fill all wizard steps with valid values
@@ -113,7 +113,7 @@ Execute these high-priority tests first to verify core functionality:
 - Review page displays all entered data
 
 #### 1.2 CIDR Validation (HIGH PRIORITY - User Confusion Area)
-**Reference:** `MANUAL-TEST-PLAN.md` Section 4
+**Reference:** `packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md` Section 4
 
 **Focus on these scenarios:**
 - Test ID 4.2: Machine CIDR invalid notation (`a b`)
@@ -124,7 +124,7 @@ Execute these high-priority tests first to verify core functionality:
 **Why critical:** CIDR validation is most complex, highest user confusion
 
 #### 1.3 VPC/Subnet Interaction
-**Reference:** `MANUAL-TEST-PLAN.md` Section 3
+**Reference:** `packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md` Section 3
 
 **Focus:**
 - Test ID 3.2: VPC change resets subnet selection
@@ -143,7 +143,7 @@ Execute these high-priority tests first to verify core functionality:
 Systematic validation testing for each step:
 
 #### 2.1 Details Step - Cluster Name
-**Reference:** `MANUAL-TEST-PLAN.md` Section 1
+**Reference:** `packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md` Section 1
 
 Execute test IDs: 1.1 - 1.6
 
@@ -152,12 +152,12 @@ Execute test IDs: 1.1 - 1.6
 - Exactly 55 chars (should fail)
 
 #### 2.2 Roles & Policies - Operator Prefix
-**Reference:** `MANUAL-TEST-PLAN.md` Section 2
+**Reference:** `packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md` Section 2
 
 Execute test IDs: 2.1 - 2.2
 
 #### 2.3 Encryption - KMS ARN
-**Reference:** `MANUAL-TEST-PLAN.md` Section 5
+**Reference:** `packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md` Section 5
 
 Execute test IDs: 5.1 - 5.5
 
@@ -169,7 +169,7 @@ Execute test IDs: 5.1 - 5.5
 ### Phase 3: Navigation & State (10 min)
 
 #### 3.1 Back Button
-**Reference:** `MANUAL-TEST-PLAN.md` Section 8.1
+**Reference:** `packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md` Section 8.1
 
 **Steps:**
 1. Fill Details step completely
@@ -183,7 +183,7 @@ Execute test IDs: 5.1 - 5.5
 **Expected:** No data loss when navigating back/forward
 
 #### 3.2 Edit from Review
-**Reference:** `MANUAL-TEST-PLAN.md` Section 6.2
+**Reference:** `packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md` Section 6.2
 
 **Steps:**
 1. Complete full wizard
@@ -196,7 +196,7 @@ Execute test IDs: 5.1 - 5.5
 
 ### Phase 4: YAML Editor (5 min)
 
-**Reference:** `MANUAL-TEST-PLAN.md` Section 7
+**Reference:** `packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md` Section 7
 
 #### 4.1 YAML Editor Workflow
 - Open YAML editor from Review
@@ -212,7 +212,7 @@ Execute test IDs: 5.1 - 5.5
 ### Phase 5: Edge Cases (5 min)
 
 #### 5.1 Rapid VPC Changes
-**Reference:** `MANUAL-TEST-PLAN.md` Section 11.1
+**Reference:** `packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md` Section 11.1
 
 **Steps:**
 1. Rapidly select VPC 1 → VPC 2 → VPC 3
@@ -223,7 +223,7 @@ Execute test IDs: 5.1 - 5.5
 **Expected:** No race condition errors, final state correct
 
 #### 5.2 Default CIDR Values
-**Reference:** `MANUAL-TEST-PLAN.md` Section 11.3
+**Reference:** `packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md` Section 11.3
 
 **Steps:**
 1. Navigate to Networking step
@@ -300,7 +300,7 @@ Severity: [High/Medium/Low]
 ## Accessibility Spot Checks
 
 ### Keyboard Navigation
-**Reference:** `MANUAL-TEST-PLAN.md` Section 10
+**Reference:** `packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md` Section 10
 
 **Test:**
 1. Use Tab key to navigate through Details step
@@ -347,7 +347,7 @@ Between runs, test:
 - Session storage behavior (if implemented)
 - Local storage behavior (if implemented)
 
-## Known Gotchas (from `MANUAL-TEST-PLAN.md` Appendix C)
+## Known Gotchas (from `packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md` Appendix C)
 
 Be aware of these expected behaviors (not bugs):
 
@@ -441,8 +441,8 @@ Manual testing is successful if:
 
 ## Related References
 
-- **MANUAL-TEST-PLAN.md** - Full test plan with all test cases
-- **E2E-TEST-GAPS.md** - Comparison of manual vs automated coverage
+- **packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md** - Full test plan with all test cases
+- **packages/nxtcm-rosa-hcp-wizard/docs/testing/E2E-TEST-GAPS.md** - Comparison of manual vs automated coverage
 - **.agents/skills/cidr-validation-testing/SKILL.md** - CIDR validation domain knowledge
 - **playwright/e2e/rosa-wizard.spec.ts** - Automated E2E tests (reference for expected behavior)
 
@@ -454,7 +454,7 @@ Before beginning manual test session:
 Pre-Test Setup:
 - [ ] Dev server running (npm run dev)
 - [ ] DevTools open (Console + Network tabs)
-- [ ] Test data prepared (see Appendix A of MANUAL-TEST-PLAN.md)
+- [ ] Test data prepared (see Appendix A of packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md)
 - [ ] Execution log ready
 - [ ] Timer set for each phase
 

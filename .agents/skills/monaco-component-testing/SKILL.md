@@ -693,7 +693,7 @@ Error banner never appears after setting content
 
 ## Related References
 
-- **MONACO-INTEGRATION-TESTS.md** - Comprehensive summary of Monaco testing work
+- **packages/nxtcm-rosa-hcp-wizard/docs/testing/MONACO-INTEGRATION-TESTS.md** - Comprehensive summary of Monaco testing work
 - **yamlValidation.test.ts** - Example unit tests for validation logic
 - **RosaHcpYamlEditorStep.spec.tsx** - Example component tests for Monaco
 - **MANUAL-TEST-PLAN.md** Section 7 - Manual YAML editor test scenarios

@@ -499,8 +499,8 @@ const context = {
 - **constants.ts**: `packages/nxtcm-rosa-hcp-wizard/src/constants.ts`
 - **cidr-tools library**: https://www.npmjs.com/package/cidr-tools
 - **E2E tests**: `playwright/e2e/rosa-wizard.spec.ts` (lines 190-223)
-- **E2E-TEST-GAPS.md**: Section 4 - Networking CIDR validation gaps
-- **MANUAL-TEST-PLAN.md**: Section 4 - CIDR field manual test cases
+- **packages/nxtcm-rosa-hcp-wizard/docs/testing/E2E-TEST-GAPS.md**: Section 4 - Networking CIDR validation gaps
+- **packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md**: Section 4 - CIDR field manual test cases
 
 ## Quick Reference: Validation Constants
 

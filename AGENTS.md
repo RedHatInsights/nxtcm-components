@@ -51,11 +51,11 @@ for test infrastructure, coverage, and E2E patterns:
 
 ### test planning
 
-comprehensive test planning documents:
+comprehensive test planning documents (ROSA HCP Wizard):
 
-- **manual test plan** → [MANUAL-TEST-PLAN.md](MANUAL-TEST-PLAN.md) - comprehensive manual test scenarios for ROSA HCP Wizard
-- **E2E test coverage gaps** → [E2E-TEST-GAPS.md](E2E-TEST-GAPS.md) - analysis of what's missing from automated E2E tests
-- **Monaco integration tests** → [MONACO-INTEGRATION-TESTS.md](MONACO-INTEGRATION-TESTS.md) - summary of Monaco editor integration testing approach
+- **manual test plan** → [packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md](packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md) - comprehensive manual test scenarios
+- **E2E test coverage gaps** → [packages/nxtcm-rosa-hcp-wizard/docs/testing/E2E-TEST-GAPS.md](packages/nxtcm-rosa-hcp-wizard/docs/testing/E2E-TEST-GAPS.md) - analysis of what's missing from automated E2E tests
+- **Monaco integration tests** → [packages/nxtcm-rosa-hcp-wizard/docs/testing/MONACO-INTEGRATION-TESTS.md](packages/nxtcm-rosa-hcp-wizard/docs/testing/MONACO-INTEGRATION-TESTS.md) - summary of Monaco editor integration testing approach
 
 ---
 
