@@ -1,12 +1,18 @@
-# JS_SECURITY.md Updates
+# Language checklists
 
-## Changes made
+Documentation for the [LANGUAGE/](.) folder — **not** a review checklist. [SKILL.md](../SKILL.md) skips every `README.md` in customizable directories (§7–§10).
+
+## Purpose
+
+Use `LANGUAGE/` for language- and stack-specific checks (Go, Python, JS/TS security, etc.). Add any `*.md` checklist here except `README.md`. Remove files you do not need — absent or empty folders are skipped during review.
+
+## JS_SECURITY.md updates
 
 Enhanced the JavaScript/TypeScript security checklist to make critical security rules more prominent and explicit.
 
-## What was added
+### What was added
 
-### 1. Prominent warning section at the top
+#### 1. Prominent warning section at the top
 
 Added **"⚠️ Absolute security rules (NEVER allow)"** section immediately after the introduction:
 
@@ -21,7 +27,7 @@ These patterns are **always major findings** — no exceptions:
 Even with sanitization, these APIs create unacceptable risk in this codebase. Recommend alternative approaches.
 ```
 
-### 2. Strengthened checklist items
+#### 2. Strengthened checklist items
 
 **JS1 (XSS / DOM injection):**
 - Before: "flag raw `dangerouslySetInnerHTML`"
@@ -31,32 +37,34 @@ Even with sanitization, these APIs create unacceptable risk in this codebase. Re
 - Before: "no unsanitized user input in... template strings executed as code (`eval`, `new Function`)"
 - After: "**NEVER use `eval()` or `new Function()`** — flag any usage as **major** finding; no unsanitized user input in shell commands..."
 
-### 3. Explicit severity mapping
+#### 3. Explicit severity mapping
 
 Updated severity guidance to explicitly list the prohibited APIs:
 
 ```markdown
-**JS security severity (map to SKILL.md §11):** 
-- **major** — `dangerouslySetInnerHTML` usage (JS1), `eval()` or `new Function()` usage (JS6), 
+**JS security severity (map to SKILL.md §11):**
+- **major** — `dangerouslySetInnerHTML` usage (JS1), `eval()` or `new Function()` usage (JS6),
              exploitable XSS/injection, exposed secrets, client-only auth for protected actions
-- **medium** — unsafe patterns with unclear sanitization, type bypass at boundaries, 
+- **medium** — unsafe patterns with unclear sanitization, type bypass at boundaries,
                new dep with known advisory (§2)
 - **minor** — defense-in-depth nits, logging hygiene
 ```
 
-## Why these changes matter
+### Why these changes matter
 
-### dangerouslySetInnerHTML
+#### dangerouslySetInnerHTML
+
 - **Risk:** Direct XSS vector if any user-controlled content reaches it
 - **Why no exceptions:** Even with sanitization, this API is too risky in a component library that other apps consume
 - **Alternative:** Use React's built-in XSS protection (children, text rendering)
 
-### eval() and new Function()
+#### eval() and new Function()
+
 - **Risk:** Arbitrary code execution
 - **Why no exceptions:** No legitimate use case in a modern React component library
 - **Alternative:** Use proper data structures, JSON parsing, or configuration objects
 
-## Impact on reviews
+### Impact on reviews
 
 When pr-review-detailed (or pr-scored-review via delegation) runs:
 
@@ -65,7 +73,7 @@ When pr-review-detailed (or pr-scored-review via delegation) runs:
 3. **Blocks LGTM verdict** in pr-scored-review (any major finding → NEEDS_CHANGES)
 4. **Clear message** to developers that these patterns are not acceptable
 
-## Example finding
+### Example finding
 
 ```markdown
 ### Finding: Prohibited API usage - dangerouslySetInnerHTML
@@ -74,7 +82,7 @@ When pr-review-detailed (or pr-scored-review via delegation) runs:
 **File:** src/components/Widget/Widget.tsx:42
 **Checklist:** LANGUAGE/JS_SECURITY.md
 
-**Issue:** 
+**Issue:**
 Code uses `dangerouslySetInnerHTML`, which is prohibited in this codebase (see JS_SECURITY.md absolute rules).
 
 **Current code:**
@@ -96,7 +104,7 @@ Even with sanitization, `dangerouslySetInnerHTML` creates an XSS attack surface 
 
 ## Integration with other skills
 
-- **pr-review-detailed:** Applies this checklist in §7 (Language checklists)
+- **pr-review-detailed:** Applies `JS_SECURITY.md` in §7 (Language checklists)
 - **pr-scored-review:** Maps major findings from JS_SECURITY.md to the Security lens (2 points)
 - **SECURITY.md:** JS_SECURITY.md is applied after the language-agnostic SECURITY.md (S1-S8)
 
@@ -104,7 +112,7 @@ Even with sanitization, `dangerouslySetInnerHTML` creates an XSS attack surface 
 
 | File | Purpose |
 |------|---------|
-| `JS_SECURITY.md` | This file - JavaScript/TypeScript security checklist |
+| `JS_SECURITY.md` | JavaScript/TypeScript security checklist |
 | `../SECURITY.md` | Language-agnostic security checklist (applied first) |
 | `../SKILL.md` | pr-review-detailed orchestrator (runs this in §7) |
 | `../../pr-scored-review/SKILL.md` | Scores findings from this checklist |

@@ -1,10 +1,16 @@
-# PatternFly Integration Notes
+# UI checklists
 
-## Cross-skill reference
+Documentation for the [UI/](.) folder — **not** a review checklist. [SKILL.md](../SKILL.md) skips every `README.md` in customizable directories (§7–§10).
 
-The `UI/PATTERNFLY.md` checklist in pr-review-detailed **references** the repo's comprehensive [patternfly skill](../../patternfly/SKILL.md) as the authoritative source.
+## Purpose
 
-## Why this approach?
+Use `UI/` for frontend checklists when the diff includes UI changes (React, CSS, design system, accessibility). Add any `*.md` checklist here except `README.md`. Remove files you do not need — absent or empty folders are skipped during review.
+
+## PatternFly integration
+
+The `UI/PATTERNFLY.md` checklist **references** the repo's comprehensive [patternfly skill](../../patternfly/SKILL.md) as the authoritative source.
+
+### Why this approach?
 
 Instead of duplicating PatternFly rules across multiple files, we:
 
@@ -21,14 +27,14 @@ Instead of duplicating PatternFly rules across multiple files, we:
    - Severity mapping for findings
    - Quick reference during PR reviews
 
-## Benefits
+### Benefits
 
 - **Single source of truth:** PatternFly rules in one place
 - **No duplication:** Updates to PatternFly skill automatically apply to reviews
 - **Clear hierarchy:** Implementation guide → review checklist
 - **Easier maintenance:** Update one file, not multiple
 
-## Usage in reviews
+### Usage in reviews
 
 When reviewing PatternFly changes:
 
@@ -37,7 +43,7 @@ When reviewing PatternFly changes:
 3. For detailed guidance, reviewers/agents read the main PatternFly skill
 4. Findings cite both the checklist item (e.g., `P3`) and the skill reference
 
-## Example finding
+### Example finding
 
 ```markdown
 ### Finding: Magic string instead of enum constant
@@ -65,14 +71,14 @@ Enum constants provide type safety and prevent typos
 | File | Purpose |
 |------|---------|
 | `../../patternfly/SKILL.md` | **Authoritative source** — full PatternFly implementation guide |
-| `UI/PATTERNFLY.md` | Review checklist that references the skill |
-| `UI/REACT.md` | React-specific review checklist (may overlap with PF for React components) |
-| `UI/ACCESSIBILITY.md` | Accessibility checklist (referenced by PatternFly checklist for a11y) |
+| `PATTERNFLY.md` | Review checklist that references the skill |
+| `REACT.md` | React-specific review checklist (may overlap with PF for React components) |
+| `ACCESSIBILITY.md` | Accessibility checklist (referenced by PatternFly checklist for a11y) |
 
 ## Customization for other repos
 
 If adopting pr-review-detailed in a non-PatternFly repo:
 
-1. **Remove or replace** `UI/PATTERNFLY.md` with your design system checklist
+1. **Remove or replace** `PATTERNFLY.md` with your design system checklist
 2. **Keep the pattern:** reference a comprehensive skill/guide instead of duplicating rules
-3. **Update README.md** to note which UI framework checklists are included
+3. **Update [README.md](../README.md)** to note which UI framework checklists are included

@@ -191,7 +191,7 @@ Use when you want detailed findings without scoring overhead, or exploratory ana
 - Consistent enforcement across all PR reviews
 - Developers get clear guidance on prohibited patterns
 
-**Documentation:** See `.agents/skills/pr-review-detailed/LANGUAGE/JS_SECURITY_UPDATES.md` for rationale and examples
+**Documentation:** See `.agents/skills/pr-review-detailed/LANGUAGE/README.md` for rationale and examples
 
 ---
 
@@ -212,7 +212,7 @@ Use when you want detailed findings without scoring overhead, or exploratory ana
 **Files:**
 - Updated: `.agents/skills/pr-review-detailed/UI/PATTERNFLY.md` (now references patternfly/SKILL.md)
 - Updated: `.agents/skills/pr-review-detailed/README.md` (notes PatternFly integration)
-- Created: `.agents/skills/pr-review-detailed/UI/PATTERNFLY_INTEGRATION.md` (explains cross-skill reference)
+- Created: `.agents/skills/pr-review-detailed/UI/README.md` (explains cross-skill reference; not executed as a checklist)
 
 ## Next steps
 
