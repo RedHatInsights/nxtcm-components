@@ -1,8 +1,8 @@
 import type { JSONSchema } from 'monaco-yaml';
-import type { ValidationError } from './yamlValidation';
+import type { ValidationError, YamlDocumentChunk } from './yamlValidation';
 import type { ROSAHCPCluster } from '../../types';
 
-export type { ValidationError };
+export type { ValidationError, YamlDocumentChunk };
 export interface ResourceSchema {
   kind: string;
   schema: JSONSchema;

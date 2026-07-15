@@ -36,14 +36,27 @@ The `?url` import syntax is supported by Vite out of the box. For webpack, use `
 
 ### Resource generator
 
-The wizard requires a `resourceGenerator` prop that implements `YamlResourceGenerator` (renders YAML from form values and validates it). The wizard has no built-in template or schema — consuming applications supply the generator. See `createTemplateBasedGenerator` in the test fixtures for a reference implementation.
+The wizard requires a `resourceGenerator` prop that implements `YamlResourceGenerator` (renders YAML from form values and validates it). The wizard has no built-in template or schema - consuming applications supply the generator.
+
+`resourceGenerator.resourceSchemas` typically describes several Kubernetes resources rendered as one multi-document YAML string (separated by `---`), with exactly one marked `primary` (only the primary resource's schema is shown in the YAML editor's schema drawer). `validateYaml` is expected to validate **every** resource against its own schema.
+
+To help with that, the package exports a few schema-library-agnostic helpers for splitting a multi-document YAML string and mapping validation errors back to accurate line numbers:
+
+- `splitYamlDocuments(yamlStr)` — splits on `---` separators, returning each document's content plus its starting line number.
+- `findLineForPath(content, instancePath)` — resolves a JSON-pointer-style path to a line number within a single document.
+- `yamlExceptionToValidationError(error, lineOffset?)` — converts a caught `js-yaml` parse exception into a `ValidationError`.
+
+See `createTemplateBasedGenerator` in the test fixtures for a full reference implementation that pairs these with Ajv (one compiled validator per resource `kind`) — that file itself isn't published, but the pattern is meant to be adapted, e.g. with whatever JSON schema validation library the consuming app already uses.
 
 ## Usage
 
 ```tsx
 import '@redhat-cloud-services/nxtcm-rosa-hcp-wizard/dist/nxtcm-rosa-hcp-wizard.css';
 import { RosaHCPWizard } from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
-import type { ROSAHCPCluster, ROSAHCPWizardData } from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
+import type {
+  ROSAHCPCluster,
+  ROSAHCPWizardData,
+} from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
 
 export const CreateClusterWizard = ({ wizardData }: { wizardData: ROSAHCPWizardData }) => (
   <RosaHCPWizard

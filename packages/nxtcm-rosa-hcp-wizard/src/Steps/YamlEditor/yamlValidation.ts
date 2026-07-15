@@ -1,4 +1,5 @@
 import { type ErrorObject } from 'ajv';
+import * as yaml from 'js-yaml';
 
 export interface ValidationError {
   message: string;
@@ -6,6 +7,58 @@ export interface ValidationError {
   column: number;
   severity: 'error' | 'warning';
   path?: string;
+}
+
+/** A single `---`-delimited document within a multi-document YAML string. */
+export interface YamlDocumentChunk {
+  content: string;
+  /** 1-indexed line number where this chunk starts within the full YAML string. */
+  startLine: number;
+}
+
+/**
+ * Splits a multi-document YAML string on `---` document separators, tracking the
+ * starting line of each chunk. Useful when building a `YamlResourceGenerator.validateYaml`
+ * that validates each Kubernetes resource in a multi-doc YAML string against its own schema
+ * while still reporting accurate line numbers.
+ */
+export function splitYamlDocuments(yamlStr: string): YamlDocumentChunk[] {
+  const lines = yamlStr.split('\n');
+  const chunks: YamlDocumentChunk[] = [];
+  let currentLines: string[] = [];
+  let currentStart = 1;
+
+  lines.forEach((line, i) => {
+    if (/^---\s*$/.test(line)) {
+      chunks.push({ content: currentLines.join('\n'), startLine: currentStart });
+      currentLines = [];
+      currentStart = i + 2;
+    } else {
+      currentLines.push(line);
+    }
+  });
+  chunks.push({ content: currentLines.join('\n'), startLine: currentStart });
+
+  return chunks;
+}
+
+/**
+ * Converts a caught YAML parse exception into a {@link ValidationError}, offsetting the
+ * reported line by `lineOffset` (the start line of the chunk being parsed, minus one, when
+ * parsing an individual document produced by {@link splitYamlDocuments}). Returns `undefined`
+ * for anything that isn't a `js-yaml` parse error.
+ */
+export function yamlExceptionToValidationError(
+  e: unknown,
+  lineOffset = 0
+): ValidationError | undefined {
+  if (!(e instanceof yaml.YAMLException)) return undefined;
+  return {
+    message: e.message.split('\n')[0],
+    line: lineOffset + (e.mark?.line ?? 0) + 1,
+    column: (e.mark?.column ?? 0) + 1,
+    severity: 'error',
+  };
 }
 
 export function detectChildIndent(lines: string[], fromLine: number, parentIndent: number): number {
