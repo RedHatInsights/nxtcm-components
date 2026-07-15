@@ -62,6 +62,12 @@ describe('wizardFieldMetaChangeRegistry', () => {
       );
     });
 
+    it('lists cluster_version-dependent resets from Yup meta', () => {
+      expect(getWizardFieldResetsForSourceField('cluster_version')).toEqual(
+        expect.arrayContaining(['imds', 'security_groups_worker'])
+      );
+    });
+
     it('returns an entry per source field with reset metadata', () => {
       const entries = listWizardFieldResetEntries();
       expect(entries.some((entry) => entry.sourceField === 'region')).toBe(true);

@@ -36,22 +36,22 @@ export const supportRoleArnSchema = rosaRequiredStringField().meta({
   id: 'support_role_arn',
   labelKey: 'rolesAndPolicies.supportRoleLabel',
   labelHelpKey: 'rolesAndPolicies.supportHelp',
-  placeholderKey: 'rolesAndPolicies.supportPlaceholder',
+  placeholderKey: 'rolesAndPolicies.installerPlaceholder',
   stepId: STEP_IDS.ROLES_AND_POLICIES,
-  fieldType: 'select',
+  fieldType: 'text',
   optionsWizardDataResource: 'roles',
-  reconcileValueWithOptions: true,
+  reconcileValueWithOptions: false,
 } satisfies WizardFieldMeta);
 
 export const workerRoleArnSchema = rosaRequiredStringField().meta({
   id: 'worker_role_arn',
   labelKey: 'rolesAndPolicies.workerRoleLabel',
   labelHelpKey: 'rolesAndPolicies.workerHelp',
-  placeholderKey: 'rolesAndPolicies.workerPlaceholder',
+  placeholderKey: 'rolesAndPolicies.installerPlaceholder',
   stepId: STEP_IDS.ROLES_AND_POLICIES,
-  fieldType: 'select',
+  fieldType: 'text',
   optionsWizardDataResource: 'roles',
-  reconcileValueWithOptions: true,
+  reconcileValueWithOptions: false,
 } satisfies WizardFieldMeta);
 
 export const byoOidcConfigIdSchema = rosaRequiredStringField().meta({

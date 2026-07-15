@@ -29,7 +29,7 @@ export const clusterVersionSchema = rosaRequiredStringField().meta({
   fieldType: 'select',
   optionsWizardDataResource: 'versions',
   reconcileValueWithOptions: true,
-  resetsFieldsToDefaultOnChange: ['security_groups_worker'],
+  resetsFieldsToDefaultOnChange: ['imds', 'security_groups_worker'],
 } satisfies WizardFieldMeta);
 
 export const associatedAwsIdSchema = rosaRequiredStringField().meta({
