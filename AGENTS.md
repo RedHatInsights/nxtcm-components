@@ -27,10 +27,10 @@ this repo provides UI components, types, and integration shapes. consuming apps 
 
 these are hard constraints. violating them will break builds, fail reviews, or produce incorrect output.
 
-1. **never make HTTP calls from components** — use injected callbacks. consuming apps supply data via the `Resource<T>` pattern (data + loading + error + optional fetch).
+1. **never make HTTP calls from components** — components must not own API clients or network calls. consuming apps own backend calls and supply data via `Resource<T>` (including optional `fetch` callbacks), and components may invoke those injected callbacks when selection changes require refetch.
 2. **always co-locate component files** — component, stories, spec, and tests live together in one directory (see [file conventions](#file-conventions)).
 3. **always run verification before committing** — see [verifying changes](#verifying-changes).
-4. **jest does NOT run in CI** — a green CI doesn't mean jest tests passed. always run `npm run test:all` locally.
+4. **always run `npm run test:all` locally** — CI runs Jest (`unit-test` job) and Playwright CT/E2E, but local runs catch issues faster and include coverage output. don't skip local testing just because CI exists.
 
 ---
 
@@ -138,7 +138,7 @@ after making code changes, run these commands from the repo root:
 
 | type | command | config | runs in CI? |
 |------|---------|--------|-------------|
-| unit | `npm test` | jest.config.js | no |
+| unit | `npm test` | jest.config.js | yes |
 | component | `npm run test:ct` | playwright-ct.config.ts | yes |
 | E2E | `npm run test:e2e` | playwright.config.ts | yes |
 | all local | `npm run test:all` | — | — |
@@ -168,7 +168,8 @@ defined in `.github/workflows/ci.yml`. runs on push to `main` and on PRs.
 
 ### react patterns
 
-- prefer `onValueChange` over useEffect for reacting to form value changes (react-form-wizard pattern)
+- prefer `setValue` + `useWatch` over useEffect for form value side effects (react-hook-form pattern)
+- cascade field resets go in `fieldMetaChangeEffects/` (ROSA HCP wizard) or equivalent centralized logic
 - custom hooks for business logic separation
 
 other react best practices (dependency arrays, key props, memoization) are enforced by eslint via `react-hooks/recommended`.
@@ -285,6 +286,26 @@ non-obvious rules worth knowing upfront:
 | Playwright E2E config | `playwright.config.ts` |
 | Jest config | `jest.config.js` |
 | Node version | via `package.json` `engines.node` |
+
+---
+
+## task routing
+
+use this table to decide which docs/skills to load before starting a task. don't skip — loading the wrong context leads to wrong output.
+
+| task type | load before starting | notes |
+|-----------|---------------------|-------|
+| new component (shared `src/`) | [docs/agent-rules/new-component.md](docs/agent-rules/new-component.md), [.agents/skills/patternfly/SKILL.md](.agents/skills/patternfly/SKILL.md) | co-location, prop interfaces, stories, CT spec |
+| new component (`packages/nxtcm-dashboard`) | [docs/agent-rules/new-component.md](docs/agent-rules/new-component.md), [packages/nxtcm-dashboard/AGENTS.md](packages/nxtcm-dashboard/AGENTS.md), [.agents/skills/patternfly/SKILL.md](.agents/skills/patternfly/SKILL.md) | must load package AGENTS.md to apply dashboard required states, resource handling, and story title contracts |
+| new component (`packages/nxtcm-rosa-hcp-wizard`) | [docs/agent-rules/new-component.md](docs/agent-rules/new-component.md), [packages/nxtcm-rosa-hcp-wizard/AGENTS.md](packages/nxtcm-rosa-hcp-wizard/AGENTS.md), [.agents/skills/patternfly/SKILL.md](.agents/skills/patternfly/SKILL.md) | must load package AGENTS.md to apply wizard field contracts, resource handling, and story title contracts |
+| playwright CT test | [docs/agent-rules/playwright-ct.md](docs/agent-rules/playwright-ct.md) | role/testid selectors, spec-helpers pattern, no CSS classes |
+| storybook story | [docs/agent-rules/storybook.md](docs/agent-rules/storybook.md) | CSF3, autodocs, title conventions |
+| ROSA HCP wizard work | [packages/nxtcm-rosa-hcp-wizard/AGENTS.md](packages/nxtcm-rosa-hcp-wizard/AGENTS.md) | form state, yup schemas, Resource<T> pattern |
+| dashboard widget work | [packages/nxtcm-dashboard/AGENTS.md](packages/nxtcm-dashboard/AGENTS.md) | PatternFly cards, chart tokens, loading/error states |
+| PR creation | [.agents/skills/pr-release-agent/SKILL.md](.agents/skills/pr-release-agent/SKILL.md) | author-scoped, PR template, gh CLI |
+| mutation testing | [.agents/skills/stryker-mutation-test/SKILL.md](.agents/skills/stryker-mutation-test/SKILL.md) | command builder only, never execute |
+| CI / workflow changes | [docs/agent-rules/ci-workflows.md](docs/agent-rules/ci-workflows.md) | pinned actions, coverage contract, ct-triage |
+| type refactoring | [docs/agent-rules/typescript.md](docs/agent-rules/typescript.md) | Resource<T>, wizard types, no `any` in new code |
 
 ---
 
