@@ -1,7 +1,7 @@
 import { Content, ContentVariants, ExpandableSection } from '@patternfly/react-core';
 
 import { Radio } from '../../../components/Fields/RadioGroup';
-import { FieldWrapper, FieldWrapperStack } from '../../../components/FieldWrapper';
+import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
 import { WizNumberInput, WizRadioGroup } from '../../../components/WizFields';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { type CloudVpc, type ROSAHCPCluster, type VpcListResource } from '../../../types';
@@ -32,7 +32,7 @@ export const MachinePoolsAdvancedSection = (props: MachinePoolsAdvancedSectionPr
 
   return (
     <ExpandableSection toggleText={mp.advancedToggle} isIndented>
-      <FieldWrapperStack>
+      <NestedFields>
         <FieldWrapper>
           <WizRadioGroup<ROSAHCPCluster>
             name="imds"
@@ -57,7 +57,7 @@ export const MachinePoolsAdvancedSection = (props: MachinePoolsAdvancedSectionPr
           </WizRadioGroup>
         </FieldWrapper>
 
-        <FieldWrapper width="medium">
+        <FieldWrapper size="md">
           <WizNumberInput<ROSAHCPCluster>
             name="compute_root_volume"
             schema={clusterValidationSchema}
@@ -74,7 +74,7 @@ export const MachinePoolsAdvancedSection = (props: MachinePoolsAdvancedSectionPr
           isVPCLoading={vpcList?.isFetching}
           clusterVersion={clusterVersion}
         />
-      </FieldWrapperStack>
+      </NestedFields>
     </ExpandableSection>
   );
 };

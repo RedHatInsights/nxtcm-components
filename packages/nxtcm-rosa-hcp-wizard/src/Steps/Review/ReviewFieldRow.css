@@ -1,3 +1,7 @@
+.review-field-row__label {
+  font-weight: var(--pf-t--global--font--weight--body--bold);
+}
+
 .review-field-row__expandable-toggle .pf-v6-c-button.pf-m-link {
   margin-inline-end: calc(-1 * var(--pf-v6-c-button--PaddingInlineEnd));
   margin-block-start: calc(-1 * var(--pf-v6-c-button--PaddingBlockStart));

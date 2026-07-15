@@ -115,7 +115,7 @@ const EditSecurityGroups = ({
 
   return (
     <FieldWrapper
-      width="medium"
+      size="md"
       additionalContent={
         <>
           <SecurityGroupsViewList securityGroups={selectedOptions} onCloseItem={onDeleteGroup} />

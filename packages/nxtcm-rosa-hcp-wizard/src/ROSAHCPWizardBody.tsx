@@ -115,7 +115,6 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
         />
       ) : null}
       <Wizard
-        height="100vh"
         footer={footer}
         onClose={onCancel}
         onStepChange={handleWizardStepChange}

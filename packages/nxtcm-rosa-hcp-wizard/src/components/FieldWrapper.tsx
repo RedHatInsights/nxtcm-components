@@ -1,47 +1,42 @@
-import { Stack, StackItem, Grid, GridItem, type gridSpans } from '@patternfly/react-core';
+import { Stack } from '@patternfly/react-core';
 import type { ReactNode } from 'react';
+import './FieldWrapper.css';
 
-export type FieldWrapperWidth = 'small' | 'medium' | 'large';
-
-const FIELD_WRAPPER_WIDTH_SPANS: Record<FieldWrapperWidth, gridSpans> = {
-  small: 4,
-  medium: 6,
-  large: 8,
-};
+export type FieldWrapperSize = 'sm' | 'md' | 'lg' | 'full';
 
 export type FieldWrapperProps = {
   children: ReactNode;
-  /** Optional content rendered below the field grid (links, actions, etc.). */
+  /** Optional content rendered below the field (links, actions, etc.). */
   additionalContent?: ReactNode;
-  /** Semantic field width on the 12-column grid. Defaults to `small`. */
-  width?: FieldWrapperWidth;
+  /** Optional content rendered inside the field wrapper, directly below the field control. */
+  footer?: ReactNode;
+  /** Max width of the field. Defaults to `sm`. */
+  size?: FieldWrapperSize;
 };
 
-export const FieldWrapper = ({ children, additionalContent, width }: FieldWrapperProps) => {
-  return (
-    <StackItem>
-      <Grid>
-        <GridItem span={FIELD_WRAPPER_WIDTH_SPANS[width ?? 'small']}>{children}</GridItem>
-      </Grid>
-      {additionalContent}
-    </StackItem>
-  );
-};
-
-export type FieldWrapperStackProps = {
-  children: ReactNode;
-};
-
-/** Vertical stack for wizard fields; pairs with {@link FieldWrapper}. */
-export const FieldWrapperStack = ({ children }: FieldWrapperStackProps) => (
-  <Stack hasGutter>{children}</Stack>
+export const FieldWrapper = ({
+  children,
+  additionalContent,
+  footer,
+  size = 'sm',
+}: FieldWrapperProps) => (
+  <>
+    <div
+      data-testid="rosa-hcp-field-wrapper"
+      className={
+        size === 'full'
+          ? 'rosa-hcp-field-wrapper'
+          : `rosa-hcp-field-wrapper rosa-hcp-field-wrapper--${size}`
+      }
+    >
+      {children}
+      {footer}
+    </div>
+    {additionalContent}
+  </>
 );
 
-export type FieldWrapperBlockProps = {
-  children: ReactNode;
-};
-
-/** Full-width stack row for non-field content (intro text, alerts) inside {@link FieldWrapperStack}. */
-export const FieldWrapperBlock = ({ children }: FieldWrapperBlockProps) => (
-  <StackItem>{children}</StackItem>
+/** Vertical spacing for fields nested inside Drawer or ExpandableSection (not direct Form children). */
+export const NestedFields = ({ children }: { children: ReactNode }) => (
+  <Stack hasGutter>{children}</Stack>
 );

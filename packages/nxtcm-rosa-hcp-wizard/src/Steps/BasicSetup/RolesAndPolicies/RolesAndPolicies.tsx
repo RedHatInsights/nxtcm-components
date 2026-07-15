@@ -7,11 +7,7 @@ import {
   StackItem,
 } from '@patternfly/react-core';
 import { Section } from '../../../components/Section';
-import {
-  FieldWrapper,
-  FieldWrapperBlock,
-  FieldWrapperStack,
-} from '../../../components/FieldWrapper';
+import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import React from 'react';
 import PopoverHintWithTitle from '../../../components/PopoverHintWithTitle';
@@ -59,145 +55,138 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   return (
     <>
       <Section label={rp.accountRolesSection}>
-        <FieldWrapperStack>
-          {showMissingArnsError || roles.ocmRoleError || roles.userRoleError ? (
-            <FieldWrapperBlock>
-              <RolesAlert
-                showMissingArnsError={showMissingArnsError}
-                ocmRoleError={roles.ocmRoleError}
-                userRoleError={roles.userRoleError}
-              />
-            </FieldWrapperBlock>
-          ) : null}
-          <FieldWrapper width="large">
-            <WizSelect<ROSAHCPCluster>
-              schema={clusterValidationSchema}
-              apiError={roles.error}
-              isLoading={roles.isFetching}
-              onRefresh={() =>
-                void (awsInfrastructureAccount && roles.fetch(awsInfrastructureAccount))
-              }
-              labelHelp={
-                <>
-                  {rp.installerHelpLead}{' '}
-                  <ExternalLink href={links.ROSA_ROLES_LEARN_MORE}>
-                    {rp.installerLearnMoreLink}
-                  </ExternalLink>
-                </>
-              }
-              name="installer_role_arn"
-              options={installerRoleOptions}
-              data-testid="installer-role-select"
-            />
-          </FieldWrapper>
-        </FieldWrapperStack>
-        <ExpandableSection
-          isExpanded={isArnsOpen}
-          onToggle={() => setIsArnsOpen(!isArnsOpen)}
-          toggleText={rp.arnsToggle}
-          className="pf-v6-u-mb-lg"
+        {showMissingArnsError || roles.ocmRoleError || roles.userRoleError ? (
+          <RolesAlert
+            showMissingArnsError={showMissingArnsError}
+            ocmRoleError={roles.ocmRoleError}
+            userRoleError={roles.userRoleError}
+          />
+        ) : null}
+        <FieldWrapper
+          size="lg"
+          footer={
+            <ExpandableSection
+              isExpanded={isArnsOpen}
+              onToggle={() => setIsArnsOpen(!isArnsOpen)}
+              toggleText={rp.arnsToggle}
+              className="rosa-hcp-field-wrapper__expandable pf-v6-u-mb-lg"
+            >
+              <NestedFields>
+                <FieldWrapper size="lg">
+                  <WizSelect<ROSAHCPCluster>
+                    isRequired
+                    schema={clusterValidationSchema}
+                    name="support_role_arn"
+                    options={supportRoleOptions}
+                    isDisabled
+                  />
+                </FieldWrapper>
+                <FieldWrapper size="lg">
+                  <WizSelect<ROSAHCPCluster>
+                    isRequired
+                    schema={clusterValidationSchema}
+                    name="worker_role_arn"
+                    options={workerRoleOptions}
+                    isDisabled
+                  />
+                </FieldWrapper>
+              </NestedFields>
+            </ExpandableSection>
+          }
         >
-          <FieldWrapperStack>
-            <FieldWrapper width="large">
-              <WizSelect<ROSAHCPCluster>
-                isRequired
-                schema={clusterValidationSchema}
-                name="support_role_arn"
-                options={supportRoleOptions}
-                isDisabled
-              />
-            </FieldWrapper>
-            <FieldWrapper width="large">
-              <WizSelect<ROSAHCPCluster>
-                isRequired
-                schema={clusterValidationSchema}
-                name="worker_role_arn"
-                options={workerRoleOptions}
-                isDisabled
-              />
-            </FieldWrapper>
-          </FieldWrapperStack>
-        </ExpandableSection>
+          <WizSelect<ROSAHCPCluster>
+            schema={clusterValidationSchema}
+            apiError={roles.error}
+            isLoading={roles.isFetching}
+            onRefresh={() =>
+              void (awsInfrastructureAccount && roles.fetch(awsInfrastructureAccount))
+            }
+            labelHelp={
+              <>
+                {rp.installerHelpLead}{' '}
+                <ExternalLink href={links.ROSA_ROLES_LEARN_MORE}>
+                  {rp.installerLearnMoreLink}
+                </ExternalLink>
+              </>
+            }
+            name="installer_role_arn"
+            options={installerRoleOptions}
+            data-testid="installer-role-select"
+          />
+        </FieldWrapper>
       </Section>
       <Section label={rp.operatorRolesSection}>
-        <FieldWrapperStack>
-          <FieldWrapper width="large">
-            <Stack>
-              <StackItem>
-                <WizSelect<ROSAHCPCluster>
-                  onRefresh={() => void oidcConfig.fetch(awsInfrastructureAccount)}
-                  apiError={oidcConfig.error}
-                  isLoading={oidcConfig.isFetching}
-                  schema={clusterValidationSchema}
-                  name="byo_oidc_config_id"
-                  isRequired
-                  options={oidcConfig.data}
-                  labelHelp={oidcConfigHintContent}
-                  labelHelpMaxWidth={oidcConfigHintMaxWidth}
-                  data-testid="oidc-config-select"
-                />
-              </StackItem>
-              <StackItem>
-                <PopoverHintWithTitle
-                  displayHintIcon
-                  title={rp.oidcPopoverTitle}
-                  bodyContent={oidcConfigHintContent}
-                  maxWidth={oidcConfigHintMaxWidth}
-                />
-              </StackItem>
-            </Stack>
-          </FieldWrapper>
-        </FieldWrapperStack>
-
-        <ExpandableSection
-          isExpanded={isOperatorRolesOpen}
-          onToggle={() => setIsOperatorRolesOpen(!isOperatorRolesOpen)}
-          toggleText={rp.operatorPrefixToggle}
-          className="pf-v6-u-mb-lg"
-        >
-          <FieldWrapper width="small">
-            <WizTextInput<ROSAHCPCluster>
-              name="custom_operator_roles_prefix"
-              schema={clusterValidationSchema}
-              label={rp.operatorPrefixLabel}
-              labelHelp={
-                <>
-                  {rp.operatorPrefixHelpLead}{' '}
-                  <ExternalLink href={links.ROSA_OIDC_LEARN_MORE}>
-                    {rp.operatorPrefixLearnMoreLink}
-                  </ExternalLink>
-                </>
-              }
-              helperText={rp.operatorPrefixHelper}
+        <FieldWrapper
+          size="lg"
+          additionalContent={
+            <PopoverHintWithTitle
+              displayHintIcon
+              title={rp.oidcPopoverTitle}
+              bodyContent={oidcConfigHintContent}
+              maxWidth={oidcConfigHintMaxWidth}
             />
-          </FieldWrapper>
-        </ExpandableSection>
+          }
+          footer={
+            <ExpandableSection
+              isExpanded={isOperatorRolesOpen}
+              onToggle={() => setIsOperatorRolesOpen(!isOperatorRolesOpen)}
+              toggleText={rp.operatorPrefixToggle}
+              className="rosa-hcp-field-wrapper__expandable"
+            >
+              <NestedFields>
+                <FieldWrapper size="sm">
+                  <WizTextInput<ROSAHCPCluster>
+                    name="custom_operator_roles_prefix"
+                    schema={clusterValidationSchema}
+                    label={rp.operatorPrefixLabel}
+                    labelHelp={
+                      <>
+                        {rp.operatorPrefixHelpLead}{' '}
+                        <ExternalLink href={links.ROSA_OIDC_LEARN_MORE}>
+                          {rp.operatorPrefixLearnMoreLink}
+                        </ExternalLink>
+                      </>
+                    }
+                    helperText={rp.operatorPrefixHelper}
+                  />
+                </FieldWrapper>
+              </NestedFields>
+            </ExpandableSection>
+          }
+        >
+          <WizSelect<ROSAHCPCluster>
+            onRefresh={() => void oidcConfig.fetch(awsInfrastructureAccount)}
+            apiError={oidcConfig.error}
+            isLoading={oidcConfig.isFetching}
+            schema={clusterValidationSchema}
+            name="byo_oidc_config_id"
+            isRequired
+            options={oidcConfig.data}
+            labelHelp={oidcConfigHintContent}
+            labelHelpMaxWidth={oidcConfigHintMaxWidth}
+            data-testid="oidc-config-select"
+          />
+        </FieldWrapper>
 
-        <FieldWrapperStack>
-          <FieldWrapperBlock>
-            <span className="pf-v6-c-form__label pf-v6-u-display-block pf-v6-u-mb-sm">
-              <span className="pf-v6-c-form__label-text">{rp.operatorRolesCreateLabel}</span>
-            </span>
-            <Stack hasGutter>
-              <StackItem>
-                <Content component={ContentVariants.p}>
-                  {rp.operatorRolesCreateInstructions}
-                </Content>
-              </StackItem>
-              <StackItem>
-                <RosaLoginInstruction product={product} showInstructions={false} />
-              </StackItem>
-              <StackItem>
-                <CopyInstruction
-                  variant={ClipboardCopyVariant.expansion}
-                  textAriaLabel={rp.operatorRolesCreateCommandAriaLabel}
-                >
-                  {rosaCommand}
-                </CopyInstruction>
-              </StackItem>
-            </Stack>
-          </FieldWrapperBlock>
-        </FieldWrapperStack>
+        <span className="pf-v6-c-form__label pf-v6-u-display-block pf-v6-u-mb-sm">
+          <span className="pf-v6-c-form__label-text">{rp.operatorRolesCreateLabel}</span>
+        </span>
+        <Stack hasGutter>
+          <StackItem>
+            <Content component={ContentVariants.p}>{rp.operatorRolesCreateInstructions}</Content>
+          </StackItem>
+          <StackItem>
+            <RosaLoginInstruction product={product} showInstructions={false} />
+          </StackItem>
+          <StackItem>
+            <CopyInstruction
+              variant={ClipboardCopyVariant.expansion}
+              textAriaLabel={rp.operatorRolesCreateCommandAriaLabel}
+            >
+              {rosaCommand}
+            </CopyInstruction>
+          </StackItem>
+        </Stack>
       </Section>
     </>
   );

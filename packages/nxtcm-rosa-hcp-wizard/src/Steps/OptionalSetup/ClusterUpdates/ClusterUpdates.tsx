@@ -19,24 +19,26 @@ export const ClusterUpdates = () => {
 
   return (
     <Section label={cu.sectionLabel}>
-      <Content component={ContentVariants.p}>
-        {cu.versionIntroPrefix} {clusterVersion} {cu.versionIntroSuffix}{' '}
-        <Button onClick={() => goToStepById?.(STEP_IDS.DETAILS)} variant="link" isInline>
-          {cu.detailsStepLink}
-        </Button>{' '}
-        {cu.midSentence}{' '}
-        <Button onClick={() => goToStepById?.(STEP_IDS.NETWORKING)} variant="link" isInline>
-          {cu.networkingStepLink}
-        </Button>{' '}
-        {cu.afterCreation}
-      </Content>
-      <Content component={ContentVariants.p}>
-        {cu.cveLead}{' '}
-        <ExternalLink href={links.SECURITY_CLASSIFICATION_CRITICAL}>
-          {cu.criticalConcernsLink}
-        </ExternalLink>{' '}
-        {cu.cveTail}
-      </Content>
+      <div className="rosa-hcp-section__copy">
+        <Content component={ContentVariants.p}>
+          {cu.versionIntroPrefix} {clusterVersion} {cu.versionIntroSuffix}{' '}
+          <Button onClick={() => goToStepById?.(STEP_IDS.DETAILS)} variant="link" isInline>
+            {cu.detailsStepLink}
+          </Button>{' '}
+          {cu.midSentence}{' '}
+          <Button onClick={() => goToStepById?.(STEP_IDS.NETWORKING)} variant="link" isInline>
+            {cu.networkingStepLink}
+          </Button>{' '}
+          {cu.afterCreation}
+        </Content>
+        <Content component={ContentVariants.p}>
+          {cu.cveLead}{' '}
+          <ExternalLink href={links.SECURITY_CLASSIFICATION_CRITICAL}>
+            {cu.criticalConcernsLink}
+          </ExternalLink>{' '}
+          {cu.cveTail}
+        </Content>
+      </div>
 
       <WizRadioGroup<ROSAHCPCluster>
         name="upgrade_policy"

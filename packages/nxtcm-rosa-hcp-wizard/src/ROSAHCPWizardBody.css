@@ -1,3 +1,16 @@
+.rosa-hcp-wizard {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: var(--pf-v6-c-wizard__outer-wrap--MinHeight);
+  height: 100%;
+}
+
+.rosa-hcp-wizard > .pf-v6-c-wizard {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 .rosa-hcp-wizard--yaml-editor-open .pf-v6-c-wizard__nav {
   display: none;
 }
