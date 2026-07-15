@@ -34,7 +34,9 @@ type RosaHcpWizardFooterProps = Pick<
   WizardFooterProps,
   'activeStep' | 'onNext' | 'onBack' | 'onClose'
 > & {
-  onSubmit: (data: ROSAHCPCluster) => Promise<void>;
+  onSubmit: (yamlString: string) => Promise<void>;
+  /** Produces the YAML string to pass to onSubmit. Renders current form values via resourceGenerator.renderYaml. */
+  getYaml: () => string;
   enableAllWizardNavSteps?: boolean;
 };
 
@@ -48,6 +50,7 @@ export function RosaHcpWizardFooter({
   onBack,
   onClose,
   onSubmit,
+  getYaml,
   enableAllWizardNavSteps = false,
 }: RosaHcpWizardFooterProps) {
   const { goToStepById } = useWizardContext();
@@ -67,7 +70,7 @@ export function RosaHcpWizardFooter({
     getFieldState,
     formState: { errors },
   } = useFormContext<Partial<ROSAHCPCluster>>();
-  const { isSubmitting, submitWizard } = useRosaHcpWizardSubmit({ onSubmit });
+  const { isSubmitting, submitWizard } = useRosaHcpWizardSubmit({ onSubmit, getYaml });
 
   const clusterWideProxySelected = useWatch({ name: 'configure_proxy' });
   useRosaHcpWizardNavStatusSync(!!clusterWideProxySelected, enableAllWizardNavSteps);
@@ -298,7 +301,8 @@ export function RosaHcpWizardFooter({
 
 /** Footer factory wired to {@link RosaHCPWizardProps.onSubmit}. */
 export function createRosaHcpWizardFooter(
-  onSubmit: (data: ROSAHCPCluster) => Promise<void>,
+  onSubmit: (yamlString: string) => Promise<void>,
+  getYaml: () => string,
   enableAllWizardNavSteps = false
 ): CustomWizardFooterFunction {
   return function RosaHcpWizardFooterSlot(activeStep, onNext, onBack, onClose) {
@@ -306,6 +310,7 @@ export function createRosaHcpWizardFooter(
       <RosaHcpWizardFooter
         activeStep={activeStep}
         onSubmit={onSubmit}
+        getYaml={getYaml}
         enableAllWizardNavSteps={enableAllWizardNavSteps}
         onNext={(event) => {
           void onNext(event);
@@ -322,4 +327,7 @@ export function createRosaHcpWizardFooter(
 }
 
 /** No-op submit for tests and mounts that do not wire {@link RosaHCPWizardProps.onSubmit}. */
-export const rosaHcpWizardFooter = createRosaHcpWizardFooter(async () => {});
+export const rosaHcpWizardFooter = createRosaHcpWizardFooter(
+  async () => {},
+  () => ''
+);

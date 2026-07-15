@@ -26,6 +26,7 @@ const YAML_VALIDATION_OWNER = 'yaml-hcp-validation';
 export type YamlEditorHandle = {
   discard: () => void;
   hasSchemaErrors: () => boolean;
+  getYaml: () => string;
 };
 
 export type RosaHcpYamlEditorStepProps = {
@@ -131,6 +132,11 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         editorRef.current = editor;
         monacoRef.current = monaco as unknown as typeof MonacoTypes;
 
+        // Expose editor for E2E testing
+        if (import.meta.env.DEV) {
+          (window as typeof window & { monacoEditor?: typeof editor }).monacoEditor = editor;
+        }
+
         editorListenersDisposeRef.current?.();
         const focusDisposable = editor.onDidFocusEditorWidget(() => {
           hasFocusRef.current = true;
@@ -180,6 +186,9 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         },
         hasSchemaErrors() {
           return hasSchemaErrorsRef.current;
+        },
+        getYaml() {
+          return pendingYamlRef.current;
         },
       }),
       [onClose]

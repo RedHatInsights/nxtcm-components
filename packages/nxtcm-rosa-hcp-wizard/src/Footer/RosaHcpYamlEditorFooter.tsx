@@ -2,8 +2,6 @@ import {
   ActionList,
   ActionListGroup,
   ActionListItem,
-  Alert,
-  AlertVariant,
   Button,
   ButtonVariant,
   Modal,
@@ -16,7 +14,6 @@ import {
 import { useCallback, useState } from 'react';
 import type React from 'react';
 
-import type { ROSAHCPCluster } from '../types';
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
 import type { YamlEditorHandle } from '../Steps/YamlEditor/RosaHcpYamlEditorStep';
 import { useRosaHcpWizardSubmit } from './useRosaHcpWizardSubmit';
@@ -25,7 +22,7 @@ export type RosaHcpYamlEditorFooterProps = {
   editorRef: React.RefObject<YamlEditorHandle>;
   onClose: () => void;
   onCancel?: () => void;
-  onSubmit: (data: ROSAHCPCluster) => Promise<void>;
+  onSubmit: (yamlString: string) => Promise<void>;
 };
 
 export function RosaHcpYamlEditorFooter({
@@ -34,12 +31,17 @@ export function RosaHcpYamlEditorFooter({
   onCancel,
   onSubmit,
 }: RosaHcpYamlEditorFooterProps) {
-  const { isSubmitting, showValidationAlert, submitWizard } = useRosaHcpWizardSubmit({ onSubmit });
+  const getYaml = useCallback(() => editorRef.current?.getYaml() ?? '', [editorRef]);
+  const { isSubmitting, submitWizard } = useRosaHcpWizardSubmit({
+    onSubmit,
+    getYaml,
+    skipFormValidation: true,
+  });
   const { wizard, yamlEditor: yamlStrings } = useRosaHcpWizardStrings();
   const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
 
   const handleApply = useCallback(() => {
-    if (editorRef.current?.hasSchemaErrors()) return;
+    if (!editorRef.current || editorRef.current.hasSchemaErrors()) return;
 
     void (async () => {
       try {
@@ -65,15 +67,6 @@ export function RosaHcpYamlEditorFooter({
 
   return (
     <WizardFooterWrapper>
-      {showValidationAlert ? (
-        <Alert
-          className="pf-v6-u-mb-md"
-          title={wizard.fixValidationErrors}
-          isInline
-          variant={AlertVariant.danger}
-          role="alert"
-        />
-      ) : null}
       <ActionList>
         <ActionListGroup>
           <ActionListItem>

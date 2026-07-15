@@ -23,7 +23,7 @@ This package expects these dependencies to be provided by the consuming applicat
 ## Usage
 
 ```tsx
-import '@redhat-cloud-services/nxtcm-dashboard/dist/index.css';
+import '@redhat-cloud-services/nxtcm-dashboard/dist/nxtcm-dashboard.css';
 import { TotalClusters, AdvisorSeverity } from '@redhat-cloud-services/nxtcm-dashboard';
 
 export const DashboardSummary = () => (
@@ -53,3 +53,7 @@ export const DashboardSummary = () => (
 - `UpgradeRisks` - upgrade risk severity card
 - `LoadingPanel` - generic loading state panel
 - `NotificationsPanel` - notifications table card
+
+## Publishing
+
+This package is published when a GitHub Release is created on `main` with tag `nxtcm-dashboard-v{version}` matching `package.json`. See the [repository publishing guide](../../README.md#publishing-packages).

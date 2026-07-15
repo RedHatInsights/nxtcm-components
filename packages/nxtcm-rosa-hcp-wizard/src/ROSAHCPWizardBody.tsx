@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, useRef, Suspense, lazy } from 'react';
 import { Spinner, Wizard, WizardStep } from '@patternfly/react-core';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { Details } from './Steps/BasicSetup/Details/Details';
 import { RolesAndPolicies } from './Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies';
 import { MachinePools } from './Steps/BasicSetup/MachinePools/MachinePools';
@@ -15,7 +15,7 @@ import { RosaHcpYamlEditorFooter } from './Footer/RosaHcpYamlEditorFooter';
 import { useWizardFieldMetaChangeEffects } from './fieldMetaChangeEffects/useWizardFieldMetaChangeEffects';
 import { useRosaHcpWizardStrings } from './stringsProvider/RosaHcpWizardStringsContext';
 import { STEP_IDS } from './constants';
-import type { RosaHCPWizardProps } from './types';
+import type { RosaHCPWizardProps, ROSAHCPCluster } from './types';
 import { useIsStepHidden } from './WizardConfigContext';
 import { RosaWizardSubmitError } from './RosaWizardSubmitError';
 import './ROSAHCPWizardBody.css';
@@ -39,9 +39,15 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
     enableAllWizardNavSteps = false,
   } = props;
 
+  const { getValues } = useFormContext<Partial<ROSAHCPCluster>>();
   const [isNavigatingToReview, setIsNavigatingToReview] = useState(false);
   const [isYamlEditorOpen, setIsYamlEditorOpen] = useState(false);
   const yamlEditorRef = useRef<YamlEditorHandle>(null);
+
+  const getFormYaml = useCallback(
+    () => resourceGenerator.renderYaml(getValues()),
+    [getValues, resourceGenerator]
+  );
 
   const handleBackToReviewStep = useCallback(async () => {
     if (!onBackToReviewStep) return;
@@ -68,8 +74,8 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
   );
 
   const footer = useMemo(
-    () => createRosaHcpWizardFooter(onSubmit, enableAllWizardNavSteps),
-    [enableAllWizardNavSteps, onSubmit]
+    () => createRosaHcpWizardFooter(onSubmit, getFormYaml, enableAllWizardNavSteps),
+    [enableAllWizardNavSteps, getFormYaml, onSubmit]
   );
 
   useWizardFieldMetaChangeEffects(wizardData);
