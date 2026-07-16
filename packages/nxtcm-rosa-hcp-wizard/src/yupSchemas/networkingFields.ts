@@ -48,6 +48,7 @@ export const clusterPrivacyPublicSubnetIdSchema = yup
     placeholderKey: 'networking.publicSubnetPlaceholder',
     stepId: STEP_IDS.NETWORKING,
     fieldType: 'select',
+    noEditAfterSubmit: true,
     optionsWizardDataResource: 'vpcList',
     reconcileValueWithOptions: true,
   } satisfies WizardFieldMeta)

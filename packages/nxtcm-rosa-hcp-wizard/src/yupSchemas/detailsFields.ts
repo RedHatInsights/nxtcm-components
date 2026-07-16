@@ -11,6 +11,7 @@ export const nameSchema = rosaRequiredStringField()
     labelHelpKey: 'details.clusterNameHelp',
     stepId: STEP_IDS.DETAILS,
     fieldType: 'text',
+    noEditAfterSubmit: true,
     validateOnBlur: true,
   } satisfies WizardFieldMeta)
   .test('cluster-name-sync', '', function (value) {
@@ -64,7 +65,6 @@ export const billingAccountIdSchema = rosaRequiredStringField().meta({
   placeholderKey: 'details.billingPlaceholder',
   stepId: STEP_IDS.DETAILS,
   fieldType: 'select',
-  noEditAfterSubmit: true,
   optionsWizardDataResource: 'awsBillingAccounts',
   reconcileValueWithOptions: true,
   reviewLabel: 'AWS billing account',

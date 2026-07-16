@@ -9,6 +9,7 @@ export const installerRoleArnSchema = rosaRequiredStringField().meta({
   placeholderKey: 'rolesAndPolicies.installerRolePlaceholder',
   stepId: STEP_IDS.ROLES_AND_POLICIES,
   fieldType: 'select',
+  noEditAfterSubmit: true,
   optionsWizardDataResource: 'roles',
   refetchesResourcesOnChange: [
     {
@@ -39,6 +40,7 @@ export const supportRoleArnSchema = rosaRequiredStringField().meta({
   placeholderKey: 'rolesAndPolicies.installerPlaceholder',
   stepId: STEP_IDS.ROLES_AND_POLICIES,
   fieldType: 'text',
+  noEditAfterSubmit: true,
   optionsWizardDataResource: 'roles',
   reconcileValueWithOptions: false,
 } satisfies WizardFieldMeta);
@@ -50,6 +52,7 @@ export const workerRoleArnSchema = rosaRequiredStringField().meta({
   placeholderKey: 'rolesAndPolicies.installerPlaceholder',
   stepId: STEP_IDS.ROLES_AND_POLICIES,
   fieldType: 'text',
+  noEditAfterSubmit: true,
   optionsWizardDataResource: 'roles',
   reconcileValueWithOptions: false,
 } satisfies WizardFieldMeta);
@@ -62,6 +65,7 @@ export const byoOidcConfigIdSchema = rosaRequiredStringField().meta({
   labelHelpTitleKey: 'rolesAndPolicies.oidcPopoverTitle',
   stepId: STEP_IDS.ROLES_AND_POLICIES,
   fieldType: 'select',
+  noEditAfterSubmit: true,
   optionsWizardDataResource: 'oidcConfig',
   reconcileValueWithOptions: true,
 } satisfies WizardFieldMeta);
@@ -73,6 +77,7 @@ export const customOperatorRolesPrefixSchema = rosaRequiredStringField()
     labelKey: 'rolesAndPolicies.operatorPrefixLabel',
     stepId: STEP_IDS.ROLES_AND_POLICIES,
     fieldType: 'text',
+    noEditAfterSubmit: true,
   } satisfies WizardFieldMeta)
   .test('operator-roles-prefix', '', function (value) {
     if (!value) return true;
