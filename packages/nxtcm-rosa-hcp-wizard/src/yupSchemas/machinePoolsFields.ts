@@ -59,6 +59,7 @@ export const machinePoolsSubnetsSchema = rosaRequiredArrayField(machinePoolSubne
   stepId: STEP_IDS.MACHINE_POOLS,
   /** UI is a {@link WizSelect} on `machine_pools_subnets.0.machine_pool_subnet`; top-level path drives nav validation. */
   fieldType: 'select',
+  noEditAfterSubmit: true,
 } satisfies WizardFieldMeta);
 
 export const machineTypeSchema = rosaRequiredStringField().meta({
@@ -66,6 +67,7 @@ export const machineTypeSchema = rosaRequiredStringField().meta({
   labelKey: 'machinePools.instanceTypeLabel',
   stepId: STEP_IDS.MACHINE_POOLS,
   fieldType: 'select',
+  noEditAfterSubmit: true,
   optionsWizardDataResource: 'machineTypes',
   reconcileValueWithOptions: true,
 } satisfies WizardFieldMeta);
@@ -186,6 +188,7 @@ export const computeRootVolumeSchema = yup
     labelKey: 'machinePools.rootDiskLabel',
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'number',
+    noEditAfterSubmit: true,
     unit: 'GiB',
     advanced: true,
   } satisfies WizardFieldMeta)
@@ -215,6 +218,7 @@ export const imdsSchema = yup
     labelKey: 'machinePools.imdsLabel',
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'radio',
+    noEditAfterSubmit: true,
     advanced: true,
   } satisfies WizardFieldMeta);
 
@@ -237,6 +241,7 @@ export const securityGroupsWorkerSchema = yup
     labelKey: 'securityGroups.formLabel',
     stepId: STEP_IDS.MACHINE_POOLS,
     fieldType: 'select',
+    noEditAfterSubmit: true,
     /** Reconciled via {@link WizMultiSelect} derived sync, not {@link WizSelect}. */
     reconcileValueWithOptions: false,
   } satisfies WizardFieldMeta);
