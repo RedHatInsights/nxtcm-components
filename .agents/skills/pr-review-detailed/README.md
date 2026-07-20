@@ -20,7 +20,7 @@ Missing or weak test coverage is reported as a finding — it does **not** block
 
 ## Directory layout
 
-```
+```text
 pr-review-detailed/
 ├── SKILL.md              # Orchestrator — workflow, report format, cleanup rules
 ├── README.md             # This file

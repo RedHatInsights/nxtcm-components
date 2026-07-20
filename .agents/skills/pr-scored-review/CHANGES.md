@@ -75,7 +75,7 @@ User-facing documentation:
 
 ## Architecture
 
-```
+```text
 pr-scored-review (orchestrator)
     ↓ delegates analysis to
 pr-review-detailed (analysis engine)

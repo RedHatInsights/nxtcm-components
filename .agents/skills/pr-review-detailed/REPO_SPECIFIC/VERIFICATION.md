@@ -2,7 +2,7 @@
 
 Repo-specific commands for this skill's default JS/TS/npm workspaces. Run as SKILL.md **§1** (optional gate) before §2–§10.
 
-Resolve script names from **repo-team-standards** ([../../commands/repo-team-standards.md](../../commands/repo-team-standards.md)) or `package.json`. **Skip** any step with no matching script — list skipped steps in SKILL.md §12 **Verification**. Missing or weak test coverage → [TESTING.md](../TESTING.md) (§6 only).
+Resolve script names from **repo-team-standards** ([../../commands/repo-team-standards.md](../../commands/repo-team-standards.md)) or `package.json`. **Skip** any step with no matching script — list skipped steps in SKILL.md §12 **Verification**. Missing or weak test coverage → report as a **finding** per [TESTING.md](../TESTING.md) (§1) — **not** a reason to stop verification.
 
 | Step | Default command | Notes |
 |------|-----------------|-------|

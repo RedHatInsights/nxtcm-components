@@ -69,7 +69,7 @@ Missing or weak test **coverage** is never a §1 stop — see [TESTING.md](TESTI
 
 Run the **repo-team-standards** command ([../../commands/repo-team-standards.md](../../commands/repo-team-standards.md)) or follow its steps inline.
 
-**Pattern priority** for review/fix (§5): (1) this skill → (2) repo-team-standards findings → (3) same feature area / neighbors / existing helpers. Else infer from (3).
+**Pattern priority** for review/fix (§5): (1) this skill → (2) repo-team-standards findings → (3) same feature area / neighbors / existing helpers. Else infer from repository context.
 
 ---
 

@@ -104,6 +104,8 @@ Invoke the **pr-review-detailed** skill to perform comprehensive checklist-drive
 - Jira alignment report (if applicable)
 - Architecture/API change signals
 
+**Verification gate (before scoring):** Inspect `verification.status` from pr-review-detailed. When it is `"fail"`, emit a **blocked** scored review — skip Steps 5–8 (findings-based scoring). Output the Step 9 template with `Verification: fail` and the verification details as findings, set verdict to **NEEDS_CHANGES**, and do not derive scores from an empty findings list (empty findings must not produce 10/10 or LGTM). Proceed to Step 11 next steps only.
+
 See [../pr-review-detailed/SKILL.md](../pr-review-detailed/SKILL.md) for full details.
 
 ---
@@ -184,13 +186,13 @@ marks something as medium, and it fails silently, treat it as 2 points (major/cr
 
 For each lens (functionality, security, quality):
 
-```
+```text
 lens_score = max(1, 10 - sum(deduction_points))
 ```
 
 Sum the points for all findings categorized to that lens (using Step 5 mapping and Step 6 point values).
 
-```
+```text
 overall = average(functionality, security, quality)
 ```
 
@@ -272,7 +274,8 @@ Even if pr-review-detailed reports them, don't score:
 [findings mapped to this lens, ordered by severity (major → medium → minor)]
 
 **Format per finding:**
-```
+
+```text
 N. [major/medium/minor] [file:line] title
    - Issue: description from pr-review-detailed
    - Fix: concrete fix proposal

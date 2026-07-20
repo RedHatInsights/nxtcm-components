@@ -28,7 +28,7 @@ Use **pr-review-detailed** instead when you want:
 
 ## How it works
 
-```
+```text
 ┌─────────────────────────────────────┐
 │ pr-scored-review                    │
 │                                      │
@@ -68,12 +68,14 @@ See [INTEGRATION.md](INTEGRATION.md) for detailed architecture and data flow.
 ### Scoring formula
 
 For each lens:
-```
+
+```text
 lens_score = max(1, 10 - sum(finding_points))
 ```
 
 Overall:
-```
+
+```text
 overall_score = (functionality + security + quality) / 3
 ```
 
@@ -105,7 +107,7 @@ overall_score = (functionality + security + quality) / 3
 | Quality | 8.5/10 | 2 (1 medium, 1 minor) |
 | **Overall** | **8.83/10** | **3 total findings** |
 
-### Verdict: MINOR ISSUES
+### Verdict: NEEDS_CHANGES
 
 ---
 
@@ -145,7 +147,7 @@ No findings ✓
 
 ---
 
-3 findings (1 major, 1 medium, 1 minor). Want me to fix these before pushing, or push as-is?
+3 findings (1 major, 1 medium, 1 minor). There are major findings — want me to fix them before pushing?
 ```
 
 ## Integration with pr-review-detailed
@@ -193,7 +195,7 @@ When the diff includes UI changes (`.tsx`, `.css`, style files):
 
 In your AI tool:
 
-```
+```text
 "Review this PR and score it"
 "Score the current branch against main"
 "Run scored review on PR #299"
@@ -237,7 +239,7 @@ Edit [SKILL.md](SKILL.md) Step 5 to change how checklist findings map to lenses 
 
 ## Files
 
-```
+```text
 pr-scored-review/
 ├── SKILL.md          # Main skill workflow (read by AI agents)
 ├── README.md         # This file (documentation)

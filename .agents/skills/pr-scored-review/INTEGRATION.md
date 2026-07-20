@@ -4,7 +4,7 @@ This document defines how **pr-scored-review** orchestrates **pr-review-detailed
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │ pr-scored-review (orchestrator)                             │
 │                                                               │
@@ -94,6 +94,8 @@ interface Finding {
   issue: string;
   fix: string;
   source: string; // which checklist file (e.g., "GENERAL.md", "SECURITY.md")
+  lens?: 'functionality' | 'security' | 'quality'; // set by pr-scored-review Step 5
+  points?: number; // set by pr-scored-review Step 6 (severity → points; apply silent failure rule)
 }
 
 interface ReviewResult {
@@ -117,6 +119,8 @@ interface ReviewResult {
   };
 }
 ```
+
+**Normalization (pr-scored-review Steps 5–6):** pr-review-detailed returns raw findings (`severity`, `source`, etc.). Before scoring, pr-scored-review must populate `lens` (from the Findings Mapping table below) and `points` (from severity: major=2, medium=1, minor=0.5, with silent-failure promotion). Lens filters and point aggregation consume only normalized findings — do not score findings missing `lens` or `points`.
 
 ## Findings Mapping
 
@@ -154,7 +158,7 @@ interface ReviewResult {
 
 For each lens (functionality, security, quality):
 
-```
+```text
 lens_findings = findings.filter(f => f.lens === current_lens)
 lens_points = sum(lens_findings.map(f => f.points))
 lens_score = max(1, 10 - lens_points)
@@ -162,13 +166,13 @@ lens_score = max(1, 10 - lens_points)
 
 Overall score:
 
-```
+```text
 overall_score = (functionality_score + security_score + quality_score) / 3
 ```
 
 Verdict:
 
-```
+```text
 if (any finding has 2 points) → NEEDS_CHANGES
 else if (any finding has 1 point) → MINOR ISSUES (at most)
 else if (overall_score >= 9.9) → LGTM
@@ -193,7 +197,8 @@ else → NEEDS_CHANGES
 - Categories: 3 components changed, 2 test files, 1 story
 
 **Step 4:** Delegates to pr-review-detailed
-```
+
+```text
 Invoke pr-review-detailed with:
   - diff scope: upstream/main...HEAD
   - CI status: green
@@ -262,10 +267,10 @@ Invoke pr-review-detailed with:
 - Quality: 10 - 1.5 = **8.5/10** (1 medium + 1 minor)
 - Overall: (8 + 10 + 8.5) / 3 = **8.83/10**
 
-**Verdict:** MINOR ISSUES (has 1 major finding → can't be LGTM, but score > 8.0)
+**Verdict:** NEEDS_CHANGES (1 major finding → hard rule overrides score)
 
 **Step 11:** Next steps
-> "3 findings (1 major, 1 medium, 1 minor). Want me to fix these before pushing, or push as-is?"
+> "3 findings (1 major, 1 medium, 1 minor). There are major findings — want me to fix them before pushing?"
 
 ## Standalone Usage
 
