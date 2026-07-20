@@ -220,4 +220,4 @@ Use when you want detailed findings without scoring overhead, or exploratory ana
 2. Test the integrated workflow on a real PR
 3. Verify both skills work standalone
 4. Verify PatternFly checklist correctly references the main PatternFly skill
-5. Update any documentation that references the old scored-code-review skill
+5. ~~Update any documentation that references the old scored-code-review skill~~ — frontmatter `name` aligned to `pr-scored-review` (directory name). Legacy identifier `scored-code-review` from `.claude/skills/` migration is not a supported alias; invoke as **pr-scored-review**.

@@ -68,9 +68,12 @@ If audit fails to run (offline registry, no lockfile), note in findings and cont
 node scripts/filter-audit.js
 ```
 
+`filter-audit.js` always exits 0. If `.security-changed-packages.txt` is empty, it writes `{ "changed": [], "hits": [] }` and skips reading the audit file. If `.security-audit.json` is missing, empty, or invalid JSON (common when §2b’s `npm audit ... || true` fails), it writes a well-formed `.security-audit-filtered.json` with `"auditStatus": "skipped"`, empty `hits`, and a `reason` — then continues so §1 and §3 are not blocked.
+
 ### 2d. Report
 
-- **0 hits** — one line in the report: dependency audit clean for changed packages.
+- **`auditStatus: "skipped"`** in `.security-audit-filtered.json` — note in findings that dependency audit did not run; do not treat as a clean audit.
+- **0 hits** (valid audit output) — one line in the report: dependency audit clean for changed packages.
 - **≥1 hit** — one finding per advisory in SKILL.md **§12**:
   - Map npm severity → §11: `critical`/`high` → **major**, `moderate` → **medium**, `low`/`info` → **minor**
   - Include package name, semver range, npm severity, and whether it is a direct or transitive dep

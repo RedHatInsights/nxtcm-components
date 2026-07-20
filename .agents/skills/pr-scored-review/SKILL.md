@@ -1,5 +1,5 @@
 ---
-name: scored-code-review
+name: pr-scored-review
 description: Review PRs using a three-lens scored methodology with evidence-gated findings. Orchestrates pr-review-detailed for comprehensive analysis, then scores findings across functionality, security, and quality lenses.
 tags: [review, quality, testing]
 ---
