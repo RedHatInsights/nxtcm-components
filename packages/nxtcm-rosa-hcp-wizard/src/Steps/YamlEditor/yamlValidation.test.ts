@@ -75,7 +75,7 @@ describe('yamlExceptionToValidationError', () => {
 
     const error = yamlExceptionToValidationError(caught);
     expect(error).toEqual({
-      message: 'bad indentation of a mapping entry (2:13)',
+      message: 'bad indentation of a mapping entry',
       line: 2,
       column: 13,
       severity: 'error',

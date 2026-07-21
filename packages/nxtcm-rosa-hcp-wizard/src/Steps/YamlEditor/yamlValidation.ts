@@ -54,7 +54,7 @@ export function yamlExceptionToValidationError(
 ): ValidationError | undefined {
   if (!(e instanceof yaml.YAMLException)) return undefined;
   return {
-    message: e.message.split('\n')[0],
+    message: e.reason,
     line: lineOffset + (e.mark?.line ?? 0) + 1,
     column: (e.mark?.column ?? 0) + 1,
     severity: 'error',
