@@ -87,6 +87,7 @@ export function createTemplateBasedGenerator(
 
       const errors: ValidationError[] = [];
       const seenKinds = new Set<string>();
+      let hasParseError = false;
 
       for (const { content, startLine } of splitYamlDocuments(yamlStr)) {
         if (!content.trim()) continue;
@@ -95,6 +96,7 @@ export function createTemplateBasedGenerator(
         try {
           document = yaml.load(content);
         } catch (e) {
+          hasParseError = true;
           const parseError = yamlExceptionToValidationError(e, startLine - 1);
           if (parseError) errors.push(parseError);
           continue;
@@ -123,7 +125,7 @@ export function createTemplateBasedGenerator(
         );
       }
 
-      if (primaryKind && !seenKinds.has(primaryKind)) {
+      if (primaryKind && !hasParseError && !seenKinds.has(primaryKind)) {
         errors.unshift({
           message: `Missing ${primaryKind} document`,
           line: 1,

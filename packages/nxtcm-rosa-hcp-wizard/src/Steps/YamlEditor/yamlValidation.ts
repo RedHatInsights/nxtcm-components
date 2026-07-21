@@ -29,7 +29,7 @@ export function splitYamlDocuments(yamlStr: string): YamlDocumentChunk[] {
   let currentStart = 1;
 
   lines.forEach((line, i) => {
-    if (/^---\s*$/.test(line)) {
+    if (/^---\s*(#.*)?$/.test(line)) {
       chunks.push({ content: currentLines.join('\n'), startLine: currentStart });
       currentLines = [];
       currentStart = i + 2;
