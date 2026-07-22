@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Filter npm audit JSON to advisories affecting changed packages only.
- * Usage: node scripts/filter-audit.js
+ * Usage: node scripts/filter-audit.js (must be run from the repository root)
  * Reads: .security-changed-packages.txt, .security-audit.json
  * Writes: .security-audit-filtered.json
  */

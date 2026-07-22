@@ -4,6 +4,8 @@ A Fleet Engineering skill for end-to-end PR, branch, and commit review — optio
 
 Use when you want thorough, repeatable review feedback before merge or push. For a GitHub PR review with a numeric score and verdict, use **pr-scored-review** — it delegates analysis to this skill.
 
+**Report and fix by default:** this skill doesn't just produce a findings list — it fixes the in-scope issues it finds (§5) in the same pass, then reports what it fixed and what's left. Ask explicitly for a read-only report if you don't want code changes.
+
 ## What it does
 
 The agent follows [SKILL.md](SKILL.md) in order:
@@ -13,8 +15,9 @@ The agent follows [SKILL.md](SKILL.md) in order:
 3. **Diff scope** — review changed files vs `main` (or a user-specified base)
 4. **Jira alignment** (optional) — fetch ticket + acceptance criteria via Jira MCP when available
 5. **Layered checklists** — general, architecture, security, testing, then language, repo, UI, and other customizable layers
-6. **Report** — severity, change scope, file/line, concrete fixes
-7. **Cleanup** — delete temporary log files created during the review
+6. **Fix in scope** — apply fixes for in-scope findings (§5); out-of-scope items are listed, not changed
+7. **Report** — severity, change scope, file/line, what was fixed vs what remains
+8. **Cleanup** — delete temporary log files created during the review
 
 Missing or weak test coverage is reported as a finding — it does **not** block verification unless a test command actually failed.
 
@@ -35,7 +38,7 @@ pr-review-detailed/
 └── OTHER/                # ← customize: checklists that don't fit the folders above
 ```
 
-Every `*.md` checklist in those four folders runs when files are present (UI only when the diff includes UI changes). `README.md` files in those folders are documentation only — the skill skips them. Skip absent or empty directories.
+Every `*.md` checklist runs when applicable, except `README.md` and `REPO_SPECIFIC/VERIFICATION.md` (the latter is handled separately by the verification gate in §1, not by checklist execution). UI checklists run only when the diff includes UI changes. Skip absent or empty directories.
 
 ### Do not edit (core files)
 
@@ -56,7 +59,7 @@ These files are stack-agnostic. Leave them unchanged when adopting the skill for
 | **`UI/`** | Frontend checklists (skipped when diff has no UI) | `REACT.md`, `ACCESSIBILITY.md`, `VUE.md` |
 | **`OTHER/`** | Checklists that do not fit `LANGUAGE/`, `REPO_SPECIFIC/`, or `UI/` | compliance, license headers, release notes |
 
-Add, modify, or remove any `*.md` checklist file in those four folders. When checklist files are present, the skill runs them (UI checklists only when the diff includes UI changes). `README.md` in those folders is never run as a checklist. Skip absent or empty directories.
+Add, modify, or remove any `*.md` checklist file in those four folders. When checklist files are present, the skill runs them (UI checklists only when the diff includes UI changes). `README.md` files and `REPO_SPECIFIC/VERIFICATION.md` are never run as checklists — the latter is consumed by the verification gate in §1. Skip absent or empty directories.
 
 ## Getting started
 
@@ -100,7 +103,7 @@ This repo ships example companions for Red Hat–style npm/TypeScript/React work
 - `REPO_SPECIFIC/UNIT_TESTS.md` — Playwright CT and Jest conventions
 - `UI/REACT.md`, `UI/PATTERNFLY.md`, `UI/ACCESSIBILITY.md` — React/PatternFly/a11y
 
-**Note:** `UI/PATTERNFLY.md` is a review checklist that references the repo's comprehensive [patternfly skill](../patternfly/SKILL.md) as the authoritative source for PatternFly rules and workflows.
+**Note:** `UI/PATTERNFLY.md` is a review checklist that references this repository's comprehensive [patternfly skill](../patternfly/SKILL.md) as the authoritative source for PatternFly rules and workflows. That link is repository-specific — if you copy only `pr-review-detailed/` into another repo, either bring the sibling `patternfly/` skill along too or replace the reference in `UI/PATTERNFLY.md` with your own PatternFly guidance.
 
 Treat these as **starting templates**, not requirements. Delete or replace them for other stacks.
 
@@ -132,6 +135,8 @@ The skill description in `SKILL.md` frontmatter helps the agent auto-select it f
 - "Review this branch against main"
 - "PR review — fix what you can in scope"
 - "Verify and review before I push"
+
+All three trigger the same default: findings get fixed in scope (§5) and reported. To get a read-only report with no code changes, say so explicitly — e.g. "Review this branch against main, report only, don't change anything."
 
 For a GitHub PR review with a numeric score and verdict, use **pr-scored-review** instead — it runs this skill as its analysis engine.
 

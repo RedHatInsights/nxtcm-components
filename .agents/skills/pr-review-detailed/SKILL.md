@@ -1,26 +1,27 @@
 ---
 name: pr-review-detailed
-description: Layered checklist PR analysis engine — optional verification gate, team standards discovery, diff scoping, optional Jira alignment via MCP, structured findings with severity and fix scope, and cleanup. Use standalone for branch/diff review, or composed from pr-review for GitHub PR analysis.
+description: Layered checklist PR analysis engine — optional verification gate, team standards discovery, diff scoping, optional Jira alignment via MCP, structured findings with severity and fix scope, and cleanup. Use standalone for branch/diff review, or as the analysis engine for pr-scored-review.
 ---
 
 # PR review (detailed)
 
 PR/branch/commit review: verification (when configured) + layered checklists + structured findings.
 
-**Dual-use:** Works **standalone** (review a branch or local diff before push) or as the **analysis engine within `pr-review`** — which handles GitHub PR summary, worktree setup, context gathering, and posting inline comments. When invoked from `pr-review`, **skip §1–§2** and begin at **§3** (worktree and diff scope are already established); run §4–§13 as usual.
+**Default behavior — report and fix, not report-only:** This skill both finds issues and fixes the in-scope ones (§5) in the same pass — it does not wait for a separate "please fix" request. Verification failures (§1) and checklist findings (§6–§10) within scope get fixed directly; everything else is listed as a finding for the user to act on. If the user wants a read-only report with no code changes, they must say so explicitly — note that in §12 as **Fixes applied: none (report-only requested)**.
+
+**Standalone workflow:** Review a branch or local diff before push. Run §1–§13 in order.
 
 **Relationship to other review skills:**
 
 | Skill | Role |
 |-------|------|
-| **pr-review** | User-facing GitHub PR review — worktree, context, inline comments; delegates code analysis here |
 | **pr-review-detailed** | This skill — checklist-driven analysis and findings report |
 | **pr-scored-review** | Orchestrates this skill for analysis, then scores findings across three lenses (functionality, security, quality) to produce a numeric verdict |
+| **pr-review** | *Not available in this repository.* If a future GitHub-PR-specific skill (worktree setup, context gathering, inline comment posting) is added, it would delegate code analysis here; treat any reference to it elsewhere as an external/optional integration, not a supported entry point today. |
 
 **When to use which:**
 - **pr-review-detailed** (this skill) — detailed findings without numeric scoring; exploratory analysis
 - **pr-scored-review** — numeric score + verdict (LGTM / MINOR ISSUES / NEEDS_CHANGES); delegates to this skill for analysis
-- **pr-review** — GitHub PR with inline comments; delegates to this skill for analysis
 
 ## Supporting files
 
@@ -34,7 +35,7 @@ PR/branch/commit review: verification (when configured) + layered checklists + s
 - [LANGUAGE/JS_SECURITY.md](LANGUAGE/JS_SECURITY.md) — JS/TS security checklist (customize `LANGUAGE/` for your stack)
 - [REPO_SPECIFIC/VERIFICATION.md](REPO_SPECIFIC/VERIFICATION.md) — optional verification gate (§1)
 - [REPO_SPECIFIC/UNIT_TESTS.md](REPO_SPECIFIC/UNIT_TESTS.md) — repo test conventions
-- [UI/REACT.md](UI/REACT.md) — React checklist (conditional on UI diff)
+- [UI/REACT.md](UI/REACT.md) — React checklist: rerenders, hooks, effects, state (conditional on UI diff); does **not** cover security — `dangerouslySetInnerHTML` and `eval`/`new Function` are owned by [SECURITY.md](SECURITY.md) (S1, S5) and [LANGUAGE/JS_SECURITY.md](LANGUAGE/JS_SECURITY.md) (JS1, JS6)
 - [UI/PATTERNFLY.md](UI/PATTERNFLY.md) — PatternFly checklist (conditional on UI diff)
 - [UI/ACCESSIBILITY.md](UI/ACCESSIBILITY.md) — accessibility checklist (conditional on UI diff)
 

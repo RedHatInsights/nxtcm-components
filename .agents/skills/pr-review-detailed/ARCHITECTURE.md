@@ -62,7 +62,7 @@ When AR1–AR13 fire, add an **Architecture & API** subsection in SKILL.md **§1
 ```text
 Architecture & API:
   - [large] AR4: New peer dependency on @scope/pkg from service-foo — host-app contract; trace integrators
-  - [medium] AR9: CreateUserRequest.email now required — additive for callers that already send it
+  - [medium] AR9: CreateUserRequest.email now required — compatibility break; validate callers that omit it and require a migration plan
   - [small] AR1: New util folder under existing package — matches neighbor layout
 ```
 

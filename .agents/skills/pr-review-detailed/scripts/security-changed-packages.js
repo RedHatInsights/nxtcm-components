@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Collect npm package names newly added or version-bumped vs merge base.
- * Usage: BASE=main node scripts/security-changed-packages.js
+ * Usage: BASE=main node scripts/security-changed-packages.js (must be run from the repository root)
  * Output: one package name per line (stdout).
  */
 const { execFileSync } = require('child_process');

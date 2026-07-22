@@ -81,12 +81,12 @@ False positives happen. Only flag **ancestor wraps descendant** — not siblings
 ```bash
 BASE="${BASE:-main}"
 
-git diff "$BASE" --name-only --diff-filter=ACMRT -- '*.tsx' '*.jsx' > .a11y-diff-tsx.txt
+git diff "$BASE"...HEAD --name-only --diff-filter=ACMRT -- '*.tsx' '*.jsx' > .a11y-diff-tsx.txt
 
 rg -n 'onRowClick|isClickable|isSelectable|isSelected|onClick=\{' \
-  -f .a11y-diff-tsx.txt > .a11y-row-click-hits.txt 2>/dev/null || true
+  $(cat .a11y-diff-tsx.txt) > .a11y-row-click-hits.txt 2>/dev/null || true
 
-rg -n 'onClick' -f .a11y-diff-tsx.txt \
+rg -n 'onClick' $(cat .a11y-diff-tsx.txt) \
   | rg '<(div|span|li|tr|td)' > .a11y-div-click-hits.txt 2>/dev/null || true
 ```
 
@@ -124,7 +124,7 @@ Compare before vs after in the PR — flag when the control got smaller but the 
 **Agent command:**
 
 ```bash
-git diff "$BASE" -U0 -- '*.tsx' '*.scss' '*.css' \
+git diff "$BASE"...HEAD -U0 -- '*.tsx' '*.scss' '*.css' \
   | rg -n 'variant="plain"|variant="link"|size="sm"|padding: 0|min-height: 0|pointer-events: none' \
   > .a11y-target-shrink-hits.txt 2>/dev/null || true
 ```
@@ -184,13 +184,13 @@ If props are spread (`{...alertProps}`), trace the spread source — do not assu
 **Agent commands:**
 
 ```bash
-rg -n 'variant="danger"|AlertVariant\.danger' -f .a11y-diff-tsx.txt \
+rg -n 'variant="danger"|AlertVariant\.danger' $(cat .a11y-diff-tsx.txt) \
   | rg '<Alert' > .a11y-danger-alert-hits.txt 2>/dev/null || true
 
-rg -n '<Alert[^>]*variant="danger"' -f .a11y-diff-tsx.txt \
+rg -n '<Alert[^>]*variant="danger"' $(cat .a11y-diff-tsx.txt) \
   | rg -v 'role="alert"' > .a11y-danger-alert-missing-role.txt 2>/dev/null || true
 
-rg -n '<Alert[^>]*variant=\{[^}]*AlertVariant\.danger' -f .a11y-diff-tsx.txt \
+rg -n '<Alert[^>]*variant=\{[^}]*AlertVariant\.danger' $(cat .a11y-diff-tsx.txt) \
   | rg -v 'role="alert"' >> .a11y-danger-alert-missing-role.txt 2>/dev/null || true
 ```
 
@@ -271,16 +271,16 @@ Same-line labels matching common boilerplate → `.a11y-generic-label-hits.txt`.
 **Agent commands:**
 
 ```bash
-rg -n 'aria-label=' -f .a11y-diff-tsx.txt > .a11y-aria-label-hits.txt 2>/dev/null || true
+rg -n 'aria-label=' $(cat .a11y-diff-tsx.txt) > .a11y-aria-label-hits.txt 2>/dev/null || true
 
-rg -n 'toggleAriaLabel=|paginationAriaLabel|bodyAriaLabel=' -f .a11y-diff-tsx.txt \
+rg -n 'toggleAriaLabel=|paginationAriaLabel|bodyAriaLabel=' $(cat .a11y-diff-tsx.txt) \
   > .a11y-pf-label-props-hits.txt 2>/dev/null || true
 
 rg -n '<Modal|<Pagination|<AlertActionCloseButton|<MenuToggle|<Dropdown|<OptionsMenu|<ExpandableSection|<Wizard' \
-  -f .a11y-diff-tsx.txt > .a11y-pf-labeled-components.txt 2>/dev/null || true
+  $(cat .a11y-diff-tsx.txt) > .a11y-pf-labeled-components.txt 2>/dev/null || true
 
 rg -n 'aria-label="(Close|Menu|Actions|Options|More|Edit|Delete|Remove|Expand|Collapse|Toggle|Open|Next|Previous|Search|Filter|Sort|Select|Button|Icon)"' \
-  -f .a11y-diff-tsx.txt > .a11y-generic-label-hits.txt 2>/dev/null || true
+  $(cat .a11y-diff-tsx.txt) > .a11y-generic-label-hits.txt 2>/dev/null || true
 ```
 
 ---
