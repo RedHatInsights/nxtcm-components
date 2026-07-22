@@ -54,29 +54,11 @@ export const MyComponent = ({ title, onSave }: MyComponentProps): React.ReactEle
 
 ## async data pattern
 
-components must not own API clients or direct network calls. consuming apps own fetching and pass data down.
+components must not own api clients or direct network calls. consuming apps own fetching and pass data down.
+for package-specific async contracts, load the package overlay first:
 
-**ROSA HCP wizard** uses `Resource<T>` with `isFetching` + optional `fetch` callback:
-
-```tsx
-interface Resource<T> {
-  data: T;
-  error: string | null;
-  isFetching: boolean;
-  fetch?: (...args: unknown[]) => Promise<void>;
-}
-```
-
-**Dashboard widgets** use simpler `data` + `isLoading` props (no Resource wrapper):
-
-```tsx
-interface WidgetProps {
-  data?: WidgetData;
-  isLoading?: boolean;
-}
-```
-
-check the relevant package AGENTS.md for which pattern applies to your component.
+- `packages/nxtcm-dashboard/AGENTS.md`
+- `packages/nxtcm-rosa-hcp-wizard/AGENTS.md`
 
 ## story (same directory)
 

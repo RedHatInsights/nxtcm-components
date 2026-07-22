@@ -1,34 +1,6 @@
 # typescript conventions
 
-rules for TypeScript in this repo, especially around types that affect multiple packages.
-
-## the Resource<T> pattern
-
-this is the core integration contract with consuming apps. components receive async data via:
-
-```tsx
-interface Resource<TData, TArgs extends unknown[] = []> {
-  data: TData;
-  error: string | null;
-  isFetching: boolean;
-  fetch?: (...args: TArgs) => Promise<void>;
-}
-```
-
-components must handle all three states: loading, error, and data-ready. consuming apps (ACM console, OCM portal) own the fetch logic and pass the resource down.
-
-## wizard form types
-
-the ROSA HCP wizard's main shapes are in `packages/nxtcm-rosa-hcp-wizard/src/types.ts`:
-
-- `ROSAHCPWizardData` — async resources and validation resources passed into the wizard
-- `ROSAHCPCluster` — submit payload shape collected from the wizard form
-- `Resource<TData, TArgs>` — generic async resource contract used across wizard fields
-
-when modifying wizard types:
-1. check all substeps that use the field
-2. verify yup schema wiring in `packages/nxtcm-rosa-hcp-wizard/src/yupSchemas/` still validates
-3. check that the review step displays the field correctly
+repo-wide typescript rules for writing and refactoring code.
 
 ## no `any` in new code
 
@@ -39,7 +11,7 @@ when modifying wizard types:
 const handleData = (data: any) => { ... }
 
 // do
-const handleData = (data: ROSAHCPCluster) => { ... }
+const handleData = (data: ClusterPayload) => { ... }
 // or if truly unknown:
 const handleData = (data: unknown) => { ... }
 ```
@@ -92,27 +64,15 @@ use generics when a component works with multiple data shapes:
 
 ```tsx
 interface DataTableProps<T> {
-  data: Resource<T[]>;
+  data: T[];
   columns: Column<T>[];
   onRowClick?: (row: T) => void;
 }
 ```
 
-## path aliases
+## package-specific type contracts
 
-these resolve at build time (vite) and type-check time (tsc):
+this file stays generic on purpose. for package-level contracts and domain types, load:
 
-- `@/` → `src/`
-- `@redhat-cloud-services/nxtcm-dashboard` → `packages/nxtcm-dashboard/src`
-- `@redhat-cloud-services/nxtcm-rosa-hcp-wizard` → `packages/nxtcm-rosa-hcp-wizard/src`
-- `@patternfly-labs/react-form-wizard` → `packages/react-form-wizard/src`
-
-use the alias in imports, not relative paths across package boundaries.
-
-## tsconfig structure
-
-- root `tsconfig.json` — includes `src/` and workspace packages
-- `packages/nxtcm-dashboard/tsconfig.json` — extends root, sets `rootDir` and `outDir`
-- `packages/nxtcm-rosa-hcp-wizard/tsconfig.json` — same pattern
-
-when adding a new package, extend root tsconfig and add to root's `references` array.
+- `packages/nxtcm-dashboard/AGENTS.md`
+- `packages/nxtcm-rosa-hcp-wizard/AGENTS.md`
