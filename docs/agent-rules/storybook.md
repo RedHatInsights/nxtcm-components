@@ -21,19 +21,19 @@ type Story = StoryObj<typeof ComponentName>;
 
 ## title conventions
 
-| package | title pattern | example |
-|---------|---------------|---------|
-| root `src/` | `Components/<Category>/<Name>` | `Components/Navigation/ConsoleBreadcrumbs` |
-| nxtcm-dashboard | `Components/Dashboard/<Name>` | `Components/Dashboard/TotalClusters` |
-| nxtcm-rosa-hcp-wizard fields | `Form Elements/<Name>` | `Form Elements/Select` |
-| nxtcm-rosa-hcp-wizard connected fields | `Form Elements/Connected Form Elements/<Name>` | `Form Elements/Connected Form Elements/WizSelect` |
-| nxtcm-rosa-hcp-wizard full wizard | `Wizards/RosaHCPWizard` | `Wizards/RosaHCPWizard` |
+use a stable path-style title: `<Area>/<Category>/<Name>`.
+
+for root `src/` components, use `Components/<Category>/<Name>` (e.g. `Components/Navigation/ConsoleBreadcrumbs`).
+
+for package-specific prefixes, check the relevant package overlay:
+- `packages/nxtcm-dashboard/AGENTS.md`
+- `packages/nxtcm-rosa-hcp-wizard/AGENTS.md`
 
 ## required elements
 
 - `tags: ['autodocs']` — generates docs page automatically
 - at least one `Default` story with typical props
-- additional stories for states: `Loading`, `Error`, `Empty`, `WithData`
+- add state stories (`Loading`, `Error`, `Empty`, `WithData`) when the component supports those states
 
 ## args and argTypes
 

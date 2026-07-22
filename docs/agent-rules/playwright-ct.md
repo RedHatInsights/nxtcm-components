@@ -36,7 +36,11 @@ export const defaultProps: MyComponentProps = {
   isLoading: false,
 };
 
-export const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+interface TestWrapperProps {
+  children: React.ReactNode;
+}
+
+export const TestWrapper = ({ children }: TestWrapperProps) => (
   <SomeProvider value={mockValue}>
     {children}
   </SomeProvider>
