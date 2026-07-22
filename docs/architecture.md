@@ -330,7 +330,10 @@ stories: [
 ]
 ```
 
-Storybook uses the same Vite resolve aliases as the main build, so package imports resolve correctly during development.
+Storybook has its own alias map in `.storybook/main.ts` (via `viteFinal`). The package aliases are aligned with the main build, but `@` is intentionally different (`src/` in Storybook vs repo root in main Vite/TS config). Use package aliases for cross-package imports:
+
+- `@redhat-cloud-services/nxtcm-dashboard`
+- `@redhat-cloud-services/nxtcm-rosa-hcp-wizard`
 
 ---
 
