@@ -11,14 +11,13 @@ nxtcm-components/
 ├── packages/
 │   ├── nxtcm-dashboard/          @redhat-cloud-services/nxtcm-dashboard
 │   ├── nxtcm-rosa-hcp-wizard/    @redhat-cloud-services/nxtcm-rosa-hcp-wizard
-│   └── react-form-wizard/         internal, NOT published
 ├── src/                           root library (nxtcm-components)
 ├── .storybook/                    Storybook 9 config (covers all packages)
 ├── playwright/                    CT + E2E infrastructure
 └── utils/                         CI helper scripts
 ```
 
-The repo uses **npm workspaces** (declared in root `package.json` → `workspaces`). Only the two `nxtcm-*` packages are workspace members; `react-form-wizard` is a legacy internal package with its own `node_modules`.
+The repo uses **npm workspaces** (declared in root `package.json` → `workspaces`). Current workspace members are `nxtcm-dashboard` and `nxtcm-rosa-hcp-wizard`.
 
 ### Why separate packages?
 
@@ -35,6 +34,27 @@ The root `src/` still exists but is being phased out. New work goes into the wor
 ## Build system
 
 The two workspace packages (dashboard, wizard) are built with **one shared `vite.config.ts`**. The differentiation happens via the `NXTCM_LIB_NAME` environment variable. The root library (`src/`) uses the same vite config but is being phased out and is not included in `npm run build`.
+
+### npm workspaces in this repo
+
+Current workspaces from root `package.json`:
+
+- `packages/nxtcm-dashboard`
+- `packages/nxtcm-rosa-hcp-wizard`
+
+Running `npm ci` at the repo root installs dependencies once and wires workspace package links so package imports resolve locally across the monorepo.
+
+Run workspace-scoped scripts from the repo root with `-w`:
+
+```bash
+npm run build -w @redhat-cloud-services/nxtcm-dashboard
+npm run build -w @redhat-cloud-services/nxtcm-rosa-hcp-wizard
+```
+
+Why this setup exists:
+
+- shared tooling/config at root (lint, type-check, Playwright, Storybook, Vite)
+- independent package outputs and release boundaries for dashboard and wizard
 
 ### How it works
 
@@ -112,7 +132,7 @@ The `@/` alias is **not consistent** across tools:
 | `playwright-ct.config.ts` | `src/` |
 | `jest.config.js` | `src/` |
 
-Because of this inconsistency, prefer the package aliases above for new code. `@/` works in practice because most imports that use it target `src/` paths, and the root-vs-src difference only matters for files outside `src/`.
+Because of this inconsistency, prefer the package aliases above for new code. Imports like `@/packages/...` can resolve in Vite/TypeScript but fail in Jest/Storybook/Playwright CT where `@/` resolves to `src/`.
 
 ---
 
