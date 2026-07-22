@@ -14,6 +14,7 @@ const TRIAGE_HINTS = {
 const MAX_SUMMARY_BYTES = 1_000_000;
 const MAX_TESTS = 1_000;
 const MAX_FAILURE_MESSAGE_LENGTH = 8_000;
+const MAX_REPORTED_COUNT = 1_000_000;
 
 const ALLOWED_FAILURE_CATEGORIES = new Set([
   'timeout',
@@ -43,7 +44,10 @@ function parseArgs(argv) {
 }
 
 function asNonNegativeInt(value, fallback = 0) {
-  return Number.isInteger(value) && value >= 0 ? value : fallback;
+  if (!Number.isSafeInteger(value) || value < 0) {
+    return fallback;
+  }
+  return Math.min(value, MAX_REPORTED_COUNT);
 }
 
 function safeInline(value, maxLength = 250) {

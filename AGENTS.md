@@ -6,9 +6,10 @@ repo context for ai coding agents. this file is intentionally thin: routing + re
 
 npm workspaces monorepo of shared react component libraries for Red Hat ACM (Advanced Cluster Management) and OCM (OpenShift Cluster Manager) console UIs.
 
-publishable packages:
-- `@redhat-cloud-services/nxtcm-dashboard` (`packages/nxtcm-dashboard`)
-- `@redhat-cloud-services/nxtcm-rosa-hcp-wizard` (`packages/nxtcm-rosa-hcp-wizard`)
+workspace packages:
+
+- `@redhat-cloud-services/nxtcm-dashboard` (`packages/nxtcm-dashboard`) — published package
+- `@redhat-cloud-services/nxtcm-rosa-hcp-wizard` (`packages/nxtcm-rosa-hcp-wizard`) — private workspace package (`"private": true`)
 
 ## hard constraints
 
@@ -76,4 +77,3 @@ load these docs before writing code:
 ## known quirks
 
 - `prettier:check` still includes legacy cypress references.
-

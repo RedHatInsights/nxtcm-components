@@ -99,4 +99,35 @@ describe('ct-triage-comment script', () => {
     expect(output).not.toContain('@user');
     expect(output).toContain('@\u200b');
   });
+
+  test('caps large but safe totals and category counts', () => {
+    const output = runCommentScript({
+      totals: { total: 2_000_000, failed: 2_000_000, flaky: 0, passed: 0, skipped: 0, timedOut: 0 },
+      failedByCategory: { assertion: 2_000_000 },
+      tests: [
+        {
+          file: 'oversized-counts.spec.tsx',
+          name: 'handles huge numeric counters',
+          finalStatus: 'failed',
+          failureCategory: 'assertion',
+          failureMessage: 'Expected 1, Received 2',
+        },
+      ],
+    });
+
+    // safe integers above the cap should clamp to MAX_REPORTED_COUNT.
+    expect(output).toContain('**1000000 failures** detected across 1000000 tests.');
+    expect(output).toContain('| assertion | 1000000 |');
+  });
+
+  test('drops non-safe integer totals to fallback values', () => {
+    const output = runCommentScript({
+      totals: { total: 1e100, failed: 1e100, flaky: 0, passed: 0, skipped: 0, timedOut: 0 },
+      failedByCategory: { assertion: 1e100 },
+      tests: [],
+    });
+
+    // non-safe counters are treated as invalid and do not produce triage output.
+    expect(output).toBe('');
+  });
 });
