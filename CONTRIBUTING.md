@@ -184,6 +184,7 @@ export const Default: Story = {
 | full wizard             | `Wizards/RosaHCPWizard`                        |
 
 include at least a `Default` story. add `Loading`, `Error`, and `Empty` stories for components that handle those states.
+note: current Storybook globs include package stories only; root `src/` stories are legacy and generally not added for new work.
 
 ### Verification
 
@@ -258,12 +259,11 @@ both packages use the shared `vite.config.ts` with `NXTCM_LIB_NAME` to different
 
 this repo includes a root [AGENTS.md](AGENTS.md) for AI coding agents (Cursor, Claude Code, OpenCode, and similar tools). it covers:
 
-- what the repo is and what it does not own (no HTTP clients, no routing, no auth)
-- critical rules (no network calls from components, co-location, verification before commit)
-- project layout, file conventions, tech stack
-- coding standards, testing expectations, and common mistakes
+- routing to task-specific rulebooks in `docs/agent-rules/`
+- pointers to package overlays (`packages/*/AGENTS.md`) for domain-specific behavior
+- repo-wide constraints that always apply
 
-if you're using an AI tool, it will pick up `AGENTS.md` automatically. keep that file accurate when conventions change — agents treat it as the source of truth.
+if you're using an AI tool, it will pick up `AGENTS.md` automatically. keep routing accurate when conventions change so agents load the right context.
 
 ---
 
