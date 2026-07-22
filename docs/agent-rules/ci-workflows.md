@@ -93,6 +93,7 @@ current implementation expectation:
   - `npm run lint`
   - `npm run type-check`
   - `npm run test:all` (runs Jest + Playwright CT locally; CI also runs both, but local runs are faster feedback)
+  - `npm run test:e2e` (runs separately from `test:all`)
   - `npm run build`
   - `npm run build -w <changed-workspace-package>` for each changed workspace package
 - use `act` as supplemental workflow validation, not a replacement for the required local checks

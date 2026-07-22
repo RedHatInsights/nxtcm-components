@@ -28,6 +28,7 @@ complex components that need providers or mock data use a `*.spec-helpers.tsx` f
 
 ```tsx
 // MyComponent.spec-helpers.tsx
+import type { ReactElement, ReactNode } from 'react';
 import { MyComponent, MyComponentProps } from './MyComponent';
 
 export const defaultProps: MyComponentProps = {
@@ -37,10 +38,10 @@ export const defaultProps: MyComponentProps = {
 };
 
 interface TestWrapperProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-export const TestWrapper = ({ children }: TestWrapperProps) => (
+export const TestWrapper = ({ children }: TestWrapperProps): ReactElement => (
   <SomeProvider value={mockValue}>
     {children}
   </SomeProvider>

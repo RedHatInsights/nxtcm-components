@@ -12,7 +12,9 @@ ComponentName/
   ComponentName.stories.tsx   # storybook story (CSF3)
   ComponentName.spec.tsx      # playwright CT test
   ComponentName.test.ts       # jest unit test (only if complex logic)
-  index.ts                    # barrel: export { ComponentName } from './ComponentName'
+  index.ts                    # barrel:
+                              # export { ComponentName } from './ComponentName';
+                              # export type { ComponentNameProps } from './ComponentName';
 ```
 
 place it under:
