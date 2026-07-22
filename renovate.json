@@ -18,13 +18,24 @@
       "groupName": "react"
     }
   ],
-  "reviewers": ["nitin-dhevar", "kdoberst", "davidaznaur", "jloss-redhat", "vishsanghishetty", "brandonthanhnguyen"],
+  "reviewers": [
+    "nitin-dhevar",
+    "kdoberst",
+    "davidaznaur",
+    "jloss-redhat",
+    "vishsanghishetty",
+    "brandonthanhnguyen",
+    "kelvah"
+  ],
   "reviewersSampleSize": 2,
   "dependencyDashboard": true,
   "minimumReleaseAge": "4 days",
-  "prConcurrentLimit": 5,
-  "prHourlyLimit": 2,
+  "prConcurrentLimit": 10,
+  "prHourlyLimit": 4,
   "labels": ["dependencies"],
+  "lockFileMaintenance": {
+    "enabled": true
+  },
   "vulnerabilityAlerts": {
     "enabled": true,
     "labels": ["security"],
