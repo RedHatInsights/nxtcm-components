@@ -75,8 +75,64 @@ describe('ct-triage-comment script', () => {
       tests,
     });
 
-    // overflow uses totals.failed (1200) minus the 25 shown, not the capped list length
+    // tests are capped at MAX_TESTS, but overflow still uses normalized totals.failed.
     expect(output).toContain('- ... 1175 more (see full report artifact)');
+  });
+
+  test('bounds rendered failures and categories to normalized failed total', () => {
+    const output = runCommentScript({
+      totals: { total: 50, failed: 1, flaky: 0, passed: 49, skipped: 0, timedOut: 0 },
+      failedByCategory: { assertion: 10, timeout: 3, unknown: 2 },
+      tests: [
+        {
+          file: 'first.spec.tsx',
+          name: 'first failure',
+          finalStatus: 'failed',
+          failureCategory: 'assertion',
+          failureMessage: 'Expected 1, Received 2',
+        },
+        {
+          file: 'second.spec.tsx',
+          name: 'second failure',
+          finalStatus: 'failed',
+          failureCategory: 'timeout',
+          failureMessage: 'timed out',
+        },
+      ],
+    });
+
+    expect(output).toContain('**1 failure** detected across 50 tests.');
+    expect(output).toContain('| assertion | 1 |');
+    expect(output).not.toContain('| timeout |');
+    expect(output).toContain('first\\.spec\\.tsx > first failure');
+    expect(output).not.toContain('second\\.spec\\.tsx > second failure');
+  });
+
+  test('bounds rendered flaky records to normalized flaky total', () => {
+    const output = runCommentScript({
+      totals: { total: 20, failed: 0, flaky: 1, passed: 19, skipped: 0, timedOut: 0 },
+      failedByCategory: {},
+      tests: [
+        {
+          file: 'first-flaky.spec.tsx',
+          name: 'first flaky',
+          finalStatus: 'flaky',
+          failureCategory: 'unknown',
+          failureMessage: 'flaky 1',
+        },
+        {
+          file: 'second-flaky.spec.tsx',
+          name: 'second flaky',
+          finalStatus: 'flaky',
+          failureCategory: 'unknown',
+          failureMessage: 'flaky 2',
+        },
+      ],
+    });
+
+    expect(output).toContain('**1 flaky test** (passed on retry):');
+    expect(output).toContain('first\\-flaky\\.spec\\.tsx > first flaky');
+    expect(output).not.toContain('second\\-flaky\\.spec\\.tsx > second flaky');
   });
 
   test('neutralizes @ mentions in untrusted artifact content', () => {

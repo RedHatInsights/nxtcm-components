@@ -12,7 +12,7 @@ ComponentName/
   ComponentName.stories.tsx   # storybook story (CSF3)
   ComponentName.spec.tsx      # playwright CT test
   ComponentName.test.ts       # jest unit test (only if complex logic)
-  index.ts                    # barrel:
+  index.ts                    # local barrel in this folder:
                               # export { ComponentName } from './ComponentName';
                               # export type { ComponentNameProps } from './ComponentName';
 ```
@@ -98,9 +98,26 @@ test('renders title', async ({ mount }) => {
 
 ## exports
 
-add to the package's `index.ts`:
+both barrel exports are required:
+- update the component's local barrel (`ComponentName/index.ts`)
+- update the package/root barrel where the folder is exported:
+  - `packages/nxtcm-dashboard/src/index.ts`
+  - `packages/nxtcm-rosa-hcp-wizard/src/index.ts`
+  - `src/index.ts` (for shared root components)
+
+component local barrel (`ComponentName/index.ts`):
 
 ```tsx
+// in ComponentName/index.ts
+export { MyComponent } from './MyComponent';
+export type { MyComponentProps } from './MyComponent';
+```
+
+package/root barrel example:
+
+```tsx
+// in packages/.../src/index.ts or src/index.ts
+// this imports the folder and resolves through ComponentName/index.ts
 export { MyComponent } from './MyComponent';
 export type { MyComponentProps } from './MyComponent';
 ```
@@ -110,5 +127,5 @@ export type { MyComponentProps } from './MyComponent';
 - [ ] prop interface exported with JSDoc
 - [ ] story renders in storybook (verify in browser)
 - [ ] CT spec covers happy path + at least one edge case
-- [ ] barrel export added to package index
+- [ ] local barrel and package/root barrel both updated
 - [ ] no `any`, no inline types, no CSS class selectors in tests

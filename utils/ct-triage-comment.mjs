@@ -93,8 +93,21 @@ function normalizeSummary(summary) {
       ? summary.failedByCategory
       : {};
   const failedByCategory = {};
-  for (const category of ALLOWED_FAILURE_CATEGORIES) {
-    failedByCategory[category] = asNonNegativeInt(failedByCategoryRaw[category]);
+  let remainingFailures = totals.failed;
+  const orderedCategories = [...ALLOWED_FAILURE_CATEGORIES].sort((left, right) => {
+    const leftCount = asNonNegativeInt(failedByCategoryRaw[left]);
+    const rightCount = asNonNegativeInt(failedByCategoryRaw[right]);
+    if (rightCount !== leftCount) {
+      return rightCount - leftCount;
+    }
+    return left.localeCompare(right);
+  });
+
+  for (const category of orderedCategories) {
+    const count = asNonNegativeInt(failedByCategoryRaw[category]);
+    const boundedCount = Math.min(count, remainingFailures);
+    failedByCategory[category] = boundedCount;
+    remainingFailures -= boundedCount;
   }
 
   const testsRaw = Array.isArray(summary.tests) ? summary.tests : [];
@@ -178,9 +191,10 @@ function buildComment(summary) {
     }
 
     const failedTests = tests.filter((t) => t.finalStatus === 'failed');
+    const displayedFailedTests = failedTests.slice(0, Math.min(25, totals.failed));
     if (failedTests.length > 0) {
       lines.push('**Failed tests:**');
-      for (const test of failedTests.slice(0, 25)) {
+      for (const test of displayedFailedTests) {
         lines.push(
           `- ${safeInline(test.file, 220)} > ${safeInline(test.name, 240)} | ${test.failureCategory}`
         );
@@ -189,7 +203,7 @@ function buildComment(summary) {
           lines.push(`  > ${safeInline(snippet, 250)}`);
         }
       }
-      const remainingFailed = totals.failed - Math.min(failedTests.length, 25);
+      const remainingFailed = totals.failed - displayedFailedTests.length;
       if (remainingFailed > 0) {
         lines.push(`- ... ${remainingFailed} more (see full report artifact)`);
       }
@@ -199,11 +213,12 @@ function buildComment(summary) {
 
   if (totals.flaky > 0) {
     const flakyTests = tests.filter((t) => t.finalStatus === 'flaky');
+    const displayedFlakyTests = flakyTests.slice(0, Math.min(10, totals.flaky));
     lines.push(`**${totals.flaky} flaky test${totals.flaky === 1 ? '' : 's'}** (passed on retry):`);
-    for (const test of flakyTests.slice(0, 10)) {
+    for (const test of displayedFlakyTests) {
       lines.push(`- ${safeInline(test.file, 220)} > ${safeInline(test.name, 240)}`);
     }
-    const remainingFlaky = totals.flaky - Math.min(flakyTests.length, 10);
+    const remainingFlaky = totals.flaky - displayedFlakyTests.length;
     if (remainingFlaky > 0) {
       lines.push(`- ... ${remainingFlaky} more`);
     }
