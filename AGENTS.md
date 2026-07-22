@@ -39,7 +39,7 @@ docs/agent-rules/         # task-type rulebooks
 
 - dashboard widget work: `packages/nxtcm-dashboard/src/`
 - rosa hcp wizard work: `packages/nxtcm-rosa-hcp-wizard/src/`
-- shared/legacy console ui: `src/components/` or `src/utilities/`
+- shared/legacy console ui: `src/components/` (legacy, only when genuinely shared)
 - co-location contract details: `docs/agent-rules/new-component.md`
 
 ## path aliases
