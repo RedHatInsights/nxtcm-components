@@ -57,6 +57,7 @@ Add, modify, or remove `*.md` checklist files in those folders. Skip directories
 
 If [REPO_SPECIFIC/VERIFICATION.md](REPO_SPECIFIC/VERIFICATION.md) **exists**, run it **first**.
 
+- **If invoked with `skipVerification: true`** (e.g. from **pr-scored-review** when required CI checks are already green) — skip §1 entirely; note **Verification: skipped (CI green)** in §12. Only run §1 anyway if the user explicitly asks for local verification.
 - **On failure** — fix per that file, re-run affected commands, **stop** (do not proceed to §2–§10). Report in §12 **Verification**.
 - **If the file is absent** — skip; note **Verification: skipped (no REPO_SPECIFIC/VERIFICATION.md)** in §12.
 - **On success** — continue to §2.
@@ -177,6 +178,8 @@ Run **every `*.md` checklist file** in [UI/](UI/) when §3 diff includes **UI ch
 If no UI signal in the diff, skip §8 and note **UI checklists: skipped (no UI changes)** in §12.
 
 Teams customize [UI/](UI/) for their frontend stack; run whatever checklist `*.md` files are present when §8 applies (skip `README.md`). Skip the directory if absent, empty, or it contains only `README.md`.
+
+**Token cost:** only read `UI/*.md` files (e.g. [UI/ACCESSIBILITY.md](UI/ACCESSIBILITY.md), which is long) when §8's UI signal check above actually applies. Don't prefetch or load them speculatively for diffs with no UI changes — including when this skill is composed from an orchestrator like **pr-scored-review**.
 
 ---
 

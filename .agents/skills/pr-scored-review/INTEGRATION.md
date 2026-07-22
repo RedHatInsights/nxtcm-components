@@ -20,7 +20,7 @@ This document defines how **pr-scored-review** orchestrates **pr-review-detailed
          ┌────────────────────────────────────────────────────┐
          │ pr-review-detailed (analysis engine)               │
          │                                                     │
-         │ §1: Verification gate (optional)                   │
+         │ §1: Verification gate (optional; see note below)   │
          │ §2: Discover team standards                        │
          │ §3: Determine diff scope                           │
          │ §4: Jira alignment (optional MCP)                  │
@@ -79,6 +79,9 @@ pr-scored-review passes:
 | CI status | Step 2 | `green`, `red`, or check details |
 | Base branch | User or default | `main`, `upstream/main` |
 | Commit range | User or detected | `abc123..def456` |
+| `skipVerification` | Step 2 (required CI checks) | `true` when required checks are green — `false`/omitted when red, unknown, or the user asks for local verification |
+
+**Verification skip contract:** when pr-scored-review has **required CI checks green**, it passes `skipVerification: true` and pr-review-detailed's §1 defaults to **skipped** — report `verification.status: "skipped"` with reason `"CI green"` — instead of re-running lint/prettier/type-check/CT/E2E locally. This avoids double-running the whole pipeline on every scored review.
 
 ### Output from pr-review-detailed
 

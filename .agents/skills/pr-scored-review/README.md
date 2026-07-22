@@ -251,7 +251,6 @@ pr-scored-review/
 | Skill | Purpose |
 |-------|---------|
 | **pr-review-detailed** | Detailed findings without scoring |
-| **pr-review** | GitHub PR review with inline comments |
 | **/code-review** | Built-in Claude Code review skill |
 
 ---

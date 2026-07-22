@@ -7,7 +7,7 @@ Resolve script names from **repo-team-standards** ([../../commands/repo-team-sta
 | Step | Default command | Notes |
 |------|-----------------|-------|
 | Lint | `npm run lint` | Required when script exists — if terminal output is empty, capture to `.eslint-run.log` and parse there |
-| Format | `npm run prettier:fix` | Required when script exists |
+| Format | `npm run prettier:check` | Required when script exists — use `prettier:check`, not `prettier:fix`, during an automated review; `fix` reformats unrelated files. Only run `prettier:fix` when the user explicitly asks to auto-format |
 | Types | `npm run type-check` | Required when script exists — if terminal output is empty, capture to `.typecheck-run.log` and parse there |
 | Build | `npm run build` | Run when script exists |
 | Unit tests | `npm test` or `npm run test` | Jest — `*.test.ts` for TS logic; skip when no script |

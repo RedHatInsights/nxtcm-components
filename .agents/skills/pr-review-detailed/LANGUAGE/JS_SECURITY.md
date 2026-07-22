@@ -45,11 +45,11 @@ Goal: warn on advisories for packages **newly added or version-bumped in this di
 
 ### 2a. Collect changed package names
 
-From the **workspace repo root** (`BASE` = merge base / default branch from §3). Run scripts from the **pr-review-detailed skill root**:
+From the **repository root** (`BASE` = merge base / default branch from §3). The scripts read `package.json` / `package-lock.json` from **cwd**, so run them with the full path from the repository root — running them from the skill directory fails with `ENOENT`:
 
 ```bash
 BASE="${BASE:-main}"
-node scripts/security-changed-packages.js > .security-changed-packages.txt
+node .agents/skills/pr-review-detailed/scripts/security-changed-packages.js > .security-changed-packages.txt
 ```
 
 If `.security-changed-packages.txt` is empty, skip §2b–§2c.
@@ -65,7 +65,7 @@ If audit fails to run (offline registry, no lockfile), note in findings and cont
 ### 2c. Filter to changed packages only
 
 ```bash
-node scripts/filter-audit.js
+node .agents/skills/pr-review-detailed/scripts/filter-audit.js
 ```
 
 `filter-audit.js` always exits 0. If `.security-changed-packages.txt` is empty, it writes `{ "changed": [], "hits": [] }` and skips reading the audit file. If `.security-audit.json` is missing, empty, or invalid JSON (common when §2b’s `npm audit ... || true` fails), it writes a well-formed `.security-audit-filtered.json` with `"auditStatus": "skipped"`, empty `hits`, and a `reason` — then continues so §1 and §3 are not blocked.
@@ -138,3 +138,5 @@ For each flagged `.md` file, confirm code blocks match repo conventions:
 Delete §2–§3 artifacts in SKILL.md **§13** alongside other review logs:
 
 `.security-changed-packages.txt`, `.security-audit.json`, `.security-audit-stderr.log`, `.security-audit-filtered.json`, `.security-diff-files.txt`, `.security-diff-md.txt`, `.security-foreign-hits.txt`, `.security-long-lines.txt`, `.security-binary.txt`
+
+These land at the **repository root** by design (scripts run from cwd — see §2a). They're also covered by `.gitignore` (`.security-*`, along with the other review skills' log patterns) as a safety net, but §13 cleanup should still remove them so a review session doesn't leave stray files in the workspace.

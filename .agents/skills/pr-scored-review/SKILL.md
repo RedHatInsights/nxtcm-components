@@ -47,12 +47,20 @@ Record: files changed, lines added/removed, PR description.
 
 Before reviewing code, check the project's automated gates:
 
-1. **CI status:** confirm all checks pass on the PR (lint, type-check, CT, E2E,
-   build, storybook). If CI is red, that's a blocking finding — don't proceed
-   with a scored review until CI is green.
-2. **Jest (local only):** jest doesn't run in CI (see AGENTS.md). If the PR
-   changes logic, confirm `npm test` passes locally. If you can't run it, note
-   the gap in the output.
+1. **CI status:** confirm the **required** checks pass on the PR — the jobs
+   defined in `.github/workflows/ci.yml` (lint, type-check, unit tests, CT,
+   E2E, build, storybook). Use `gh pr checks <number>` and filter to required
+   checks rather than treating every check as blocking — advisory/non-required
+   bots (e.g. CodeRabbit) can be red for reasons unrelated to this repo's CI
+   and shouldn't block a scored review. If a required check is red, that's a
+   blocking finding — don't proceed with a scored review until required
+   checks are green.
+2. **Jest:** the `unit-test` job in `ci.yml` already runs `npm test --
+   --coverage`, so it's covered by the required-checks confirmation above. If
+   you want an extra local signal before pushing, run `npm test` too. (Note:
+   AGENTS.md currently says "jest does NOT run in CI" — that's stale relative
+   to `ci.yml`; worth a follow-up fix there so repo-team-standards stops
+   repeating the old story.)
 
 If CI is red or local tests can't run, produce a **blocked review** — skip
 Steps 3–8, output the Step 9 template with `CI: red` or `Jest: blocked`, set
@@ -97,6 +105,11 @@ Invoke the **pr-review-detailed** skill to perform comprehensive checklist-drive
 - The diff scope from Step 3
 - CI status from Step 2
 - Any user-specified base branch or commit range
+- `skipVerification: true` when required CI checks are green (Step 2) — this
+  tells pr-review-detailed to skip its own §1 verification gate (full lint,
+  `prettier:fix`/`prettier:check`, CT, E2E) instead of re-running the whole
+  pipeline locally. Omit (or set `false`) when CI is red/unknown, or when the
+  user explicitly asks for local verification.
 
 **Receive back:**
 - Structured findings list with severity, file/line, concrete fixes

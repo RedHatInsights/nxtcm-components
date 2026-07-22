@@ -2,7 +2,7 @@
 
 A Fleet Engineering skill for end-to-end PR, branch, and commit review — optional verification gate, team standards discovery, diff scoping, optional Jira alignment, layered checklists, and findings with severity and fix scope.
 
-Use when you want thorough, repeatable review feedback before merge or push. For GitHub PR review with worktree isolation and inline comments, use **pr-review** — it delegates analysis to this skill.
+Use when you want thorough, repeatable review feedback before merge or push. For a GitHub PR review with a numeric score and verdict, use **pr-scored-review** — it delegates analysis to this skill.
 
 ## What it does
 
@@ -133,7 +133,7 @@ The skill description in `SKILL.md` frontmatter helps the agent auto-select it f
 - "PR review — fix what you can in scope"
 - "Verify and review before I push"
 
-For GitHub PRs with inline comments, use **pr-review** instead — it runs this skill as its analysis engine.
+For a GitHub PR review with a numeric score and verdict, use **pr-scored-review** instead — it runs this skill as its analysis engine.
 
 ## Findings format
 

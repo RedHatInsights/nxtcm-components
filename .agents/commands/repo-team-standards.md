@@ -29,12 +29,17 @@ Record:
 ### 2. Code organization patterns
 
 ```bash
-# Find common directory structures
+# Find common directory structures — root src/ AND workspace packages
 find src -type d -maxdepth 3 | head -20
+find packages -path '*/src' -type d
 
 # Check for workspace packages
 cat package.json | jq '.workspaces'
 ```
+
+In a workspaces monorepo (e.g. nxtcm-components), most of the real surface
+area often lives under `packages/*/src`, not only root `src/` — don't skip
+it, or discovery ends up thin.
 
 Record:
 - Directory structure conventions (e.g., component co-location)
@@ -46,8 +51,9 @@ Record:
 For React/UI repos:
 
 ```bash
-# Sample a few components to understand structure
+# Sample a few components to understand structure — include workspace packages
 find src -name "*.tsx" -type f | head -5
+find packages -path '*/src/*.tsx' -type f | head -5
 ```
 
 Look for:
