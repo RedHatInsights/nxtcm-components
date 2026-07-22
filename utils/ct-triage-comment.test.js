@@ -60,23 +60,26 @@ describe('ct-triage-comment script', () => {
     expect(output).toBe('');
   });
 
-  test('caps parsed tests at MAX_TESTS before rendering counts', () => {
+  test('caps parsed tests at MAX_TESTS before rendering records', () => {
     const tests = Array.from({ length: 1_200 }, (_, index) => ({
       file: `file-${index}.spec.tsx`,
       name: `test-${index}`,
-      finalStatus: 'failed',
+      finalStatus: index < 1_000 ? 'passed' : 'failed',
       failureCategory: 'assertion',
       failureMessage: 'Expected: 1, Received: 2',
     }));
 
     const output = runCommentScript({
-      totals: { total: 1200, failed: 1200, flaky: 0, passed: 0, skipped: 0, timedOut: 0 },
-      failedByCategory: { assertion: 1200 },
+      totals: { total: 1200, failed: 200, flaky: 0, passed: 1000, skipped: 0, timedOut: 0 },
+      failedByCategory: { assertion: 200 },
       tests,
     });
 
-    // tests are capped at MAX_TESTS, but overflow still uses normalized totals.failed.
-    expect(output).toContain('- ... 1175 more (see full report artifact)');
+    // failures start after MAX_TESTS, so they are excluded from rendered failed records.
+    expect(output).toContain('**200 failures** detected across 1200 tests.');
+    expect(output).toContain('| assertion | 200 |');
+    expect(output).not.toContain('**Failed tests:**');
+    expect(output).not.toContain('file-1000\\.spec\\.tsx');
   });
 
   test('bounds rendered failures and categories to normalized failed total', () => {
