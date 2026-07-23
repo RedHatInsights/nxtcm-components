@@ -27,7 +27,6 @@ export class RosaHcpYamlMonacoLoader {
       schemas,
       ...options,
     });
-
     return () => {
       monacoYaml.dispose();
     };
