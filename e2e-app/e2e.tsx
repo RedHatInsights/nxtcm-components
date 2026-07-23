@@ -1,6 +1,10 @@
 import '@patternfly/react-core/dist/styles/base.css';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import * as monaco from 'monaco-editor';
+import { loader } from '@monaco-editor/react';
+import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker.js?worker';
+import YamlWorker from 'monaco-yaml/yaml.worker.js?worker';
 import { RosaHCPWizard } from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
 import type { ROSAHCPWizardData } from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
 import { createAcmCapaGenerator } from '../packages/nxtcm-rosa-hcp-wizard/src/test/acmGeneratorFixtures/acmCapaGenerator';
@@ -8,6 +12,18 @@ import rosaControlPlaneSchema from '../packages/nxtcm-rosa-hcp-wizard/src/test/a
 import managedClusterSchema from '../packages/nxtcm-rosa-hcp-wizard/src/test/acmGeneratorFixtures/schemas/managedClusterSchema.json';
 import capiClusterSchema from '../packages/nxtcm-rosa-hcp-wizard/src/test/acmGeneratorFixtures/schemas/capiClusterSchema.json';
 import rosaClusterSchema from '../packages/nxtcm-rosa-hcp-wizard/src/test/acmGeneratorFixtures/schemas/rosaClusterSchema.json';
+
+// Required before the wizard is rendered - see packages/nxtcm-rosa-hcp-wizard/README.md#monaco-worker-setup
+window.MonacoEnvironment = {
+  getWorker(_moduleId: string, label: string): Worker {
+    if (label === 'yaml') {
+      return new YamlWorker();
+    }
+    return new EditorWorker();
+  },
+};
+
+loader.config({ monaco });
 
 const noopFetch = async (): Promise<void> => {};
 
