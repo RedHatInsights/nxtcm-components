@@ -24,7 +24,6 @@ import { join } from 'node:path';
 import semver from 'semver';
 
 function isCompatible(rootRange, wsRange) {
-  if (rootRange === wsRange) return true;
   if (!semver.validRange(rootRange) || !semver.validRange(wsRange)) return false;
   return semver.subset(rootRange, wsRange);
 }
