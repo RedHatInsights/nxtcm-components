@@ -43,14 +43,12 @@ if all five pass, you're good to go.
 
 ## Where to put new code
 
-| what you're building                         | where it goes                         |
-| -------------------------------------------- | ------------------------------------- |
-| dashboard widget (card, chart, panel)        | `packages/nxtcm-dashboard/src/`       |
-| ROSA wizard step, field, or validation       | `packages/nxtcm-rosa-hcp-wizard/src/` |
-| shared console UI (breadcrumbs, page header) | `src/components/`                     |
-| shared utilities or types                    | `src/utilities/` or `src/types/`      |
+| what you're building                   | where it goes                         |
+| -------------------------------------- | ------------------------------------- |
+| dashboard widget (card, chart, panel)  | `packages/nxtcm-dashboard/src/`       |
+| ROSA wizard step, field, or validation | `packages/nxtcm-rosa-hcp-wizard/src/` |
 
-new features go into the workspace packages. the root `src/` is being phased out — only add shared code there if it's genuinely consumed by both packages.
+new features go into the workspace packages. the root `src/` is legacy and currently empty, do not target it for new work.
 
 ### File structure
 
@@ -152,6 +150,8 @@ npm run storybook     # dev server on port 6006
 npm run build-storybook  # static build
 ```
 
+storybook is also published on github pages for external viewing: [redhatinsights.github.io/nxtcm-components](https://redhatinsights.github.io/nxtcm-components/?path=/docs/components-dashboard-advisorcategories--docs).
+
 ### Writing stories
 
 use CSF3 format (the only format used here):
@@ -177,14 +177,13 @@ export const Default: Story = {
 
 | package                 | title pattern                                  |
 | ----------------------- | ---------------------------------------------- |
-| root `src/`             | `Components/<Category>/<Name>`                 |
 | dashboard               | `Components/Dashboard/<Name>`                  |
 | wizard fields           | `Form Elements/<Name>`                         |
 | wizard connected fields | `Form Elements/Connected Form Elements/<Name>` |
 | full wizard             | `Wizards/RosaHCPWizard`                        |
 
 include at least a `Default` story. add `Loading`, `Error`, and `Empty` stories for components that handle those states.
-note: current Storybook globs include package stories only; root `src/` stories are legacy and generally not added for new work.
+note: current Storybook globs actively target package stories. keep new stories in package paths.
 
 ### Verification
 
