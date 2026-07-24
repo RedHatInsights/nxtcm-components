@@ -56,12 +56,20 @@ import { RosaHCPWizard } from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
 import type {
   ROSAHCPCluster,
   ROSAHCPWizardData,
+  YamlResourceGenerator,
 } from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
+
+const resourceGenerator: YamlResourceGenerator = {
+  renderYaml: (formValues) => JSON.stringify(formValues, null, 2),
+  validateYaml: () => [],
+  resourceSchemas: [],
+};
 
 export const CreateClusterWizard = ({ wizardData }: { wizardData: ROSAHCPWizardData }) => (
   <RosaHCPWizard
     title="Create ROSA HCP cluster"
     wizardData={wizardData}
+    resourceGenerator={resourceGenerator}
     onSubmit={async (cluster: ROSAHCPCluster) => {
       // host app calls its cluster creation API
     }}
