@@ -70,9 +70,8 @@ interface DataTableProps<T> {
 }
 ```
 
-## package-specific type contracts
+## type assertions
 
-this file stays generic on purpose. for package-level contracts and domain types, load:
+avoid `as` type assertions by default. prefer narrowing, guards, or better function signatures first.
 
-- `packages/nxtcm-dashboard/AGENTS.md`
-- `packages/nxtcm-rosa-hcp-wizard/AGENTS.md`
+use assertions only as an escape hatch when a boundary is untyped and you cannot improve the source type. keep assertions local and specific (`as SpecificType`), never broad (`as any`).

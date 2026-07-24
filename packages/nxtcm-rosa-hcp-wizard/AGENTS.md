@@ -6,21 +6,19 @@ package-level context for `@redhat-cloud-services/nxtcm-rosa-hcp-wizard`. read t
 
 multi-step wizard for creating ROSA HCP (Hosted Control Plane) clusters. uses PatternFly `Wizard` + `react-hook-form` (`FormProvider` + yup resolver). consumed by ACM console and OCM portal (uhc-portal).
 
-## wizard structure
+## package structure
 
 ```text
-Steps/
-  BasicSetup/
-    Details/              # cluster name, version, region
-    RolesAndPolicies/     # AWS IAM roles, OIDC config
-    Networking/           # VPC, subnets, security groups, CIDR
-    MachinePools/         # worker node config, instance type, autoscaling
-    ClusterWideProxy/     # optional HTTP/HTTPS proxy settings
-  OptionalSetup/
-    Encryption/           # KMS key, etcd encryption
-    ClusterUpdates/       # upgrade schedule, maintenance window
-  Review/                 # summary of all selections before submit
-  YamlEditor/            # Monaco-based YAML view (CAPA CRD output)
+src/
+  Steps/                    # wizard step implementations (basic setup, optional setup, review, yaml editor)
+  components/               # shared form/field building blocks
+  fieldMetaChangeEffects/   # cascade reset + dependency side effects
+  yupSchemas/               # validation schemas
+  stringsProvider/          # UI/validator string bundles and context
+  hooks/                    # package hooks
+  types/ and types.ts       # domain/resource contract types
+  utilities/                # helpers
+  test/ and *.spec.tsx      # fixtures and component tests
 ```
 
 ## key types
@@ -122,19 +120,10 @@ machineTypes.fetch?.({
 - spec-helpers provide `FormWrapper` that wraps component in `FormProvider` with default values
 - test: rendering, validation messages, field interactions, cascade behavior
 
-## building
-
-```bash
-npm run build -w @redhat-cloud-services/nxtcm-rosa-hcp-wizard
-# or from this directory:
-npm run build
-```
-
-note: this package is `"private": true` — not published to npm yet. consumed via workspace resolution.
-
 ## storybook
 
 stories currently use these title groups:
+
 - `Wizards/RosaHCPWizard` for full wizard flows
 - `Form Elements/*` for base field components
 - `Form Elements/Connected Form Elements/*` for wiz field wrappers
