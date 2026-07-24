@@ -56,3 +56,22 @@ fix-all.sh
 .stryker-ct-cache
 .stryker-pwtest-cache
 /reports/mutation/
+
+# PR review skill temp artifacts (pr-review-detailed / pr-scored-review)
+.security-*
+.a11y-*
+.eslint-run.log
+.eslint-exit.txt
+.eslint-run.json
+.eslint-full.log
+.eslint-full-exit.txt
+.prettier-run.log
+.prettier-exit.txt
+.prettier-check.log
+.typecheck-run.log
+.typecheck-exit.txt
+.ct-test-run.log
+.ct-test-exit.txt
+.playwright-install.log
+.jest-run.log
+.git-diff.txt
