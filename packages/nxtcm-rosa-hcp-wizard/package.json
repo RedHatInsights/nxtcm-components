@@ -37,8 +37,7 @@
     "monaco-editor": ">=0.36.0 <0.55.0",
     "monaco-yaml": "^5.4.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "semver": "^7.7.4"
+    "react-dom": "^18.2.0"
   },
   "scripts": {
     "prepack": "cp ../../LICENSE LICENSE",
@@ -54,7 +53,8 @@
     "allthethings": "npm run prettier:fix && npm run lint:fix && npm run type-check && npm run test && npm run test:ct"
   },
   "devDependencies": {
-    "monaco-types": "^0.1.2"
+    "monaco-types": "^0.1.2",
+    "semver": "^7.7.4"
   },
   "sideEffects": [
     "*.css"

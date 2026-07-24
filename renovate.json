@@ -16,6 +16,18 @@
       "description": "Group React packages across all workspaces",
       "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
       "groupName": "react"
+    },
+    {
+      "description": "Group Monaco editor + YAML LSP packages so version-coupled updates land in one reviewable PR",
+      "matchPackageNames": ["monaco-editor", "monaco-yaml", "@monaco-editor/react", "monaco-types"],
+      "groupName": "monaco"
+    },
+    {
+      "description": "Treat 0.x minor updates as major breaking changes for monaco-editor",
+      "matchPackageNames": ["monaco-editor"],
+      "matchCurrentVersion": "/^0\\./",
+      "matchUpdateTypes": ["minor"],
+      "enabled": false
     }
   ],
   "reviewers": ["nitin-dhevar", "kdoberst", "davidaznaur", "jloss-redhat", "vishsanghishetty", "brandonthanhnguyen"],
