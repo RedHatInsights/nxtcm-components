@@ -98,7 +98,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['monaco-editor', 'monaco-yaml'],
+    include: ['monaco-editor', 'monaco-yaml', 'path-browserify'],
   },
   server: {
     port: 4004,

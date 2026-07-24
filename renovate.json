@@ -16,6 +16,11 @@
       "description": "Group React packages across all workspaces",
       "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
       "groupName": "react"
+    },
+    {
+      "description": "monaco-editor/monaco-yaml are tightly version-coupled. Require manual, deliberate upgrades.",
+      "matchPackageNames": ["monaco-editor", "monaco-yaml", "@monaco-editor/react"],
+      "enabled": false
     }
   ],
   "reviewers": [

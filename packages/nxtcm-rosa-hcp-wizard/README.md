@@ -14,25 +14,46 @@ npm install @redhat-cloud-services/nxtcm-rosa-hcp-wizard
 
 See [`peerDependencies` in `package.json`](./package.json) for the full list and required version ranges.
 
+**`monaco-editor` must be `<0.55.0`.** Monaco 0.55 made a breaking change to `editor.createWebWorker()`: it dropped the `moduleId`/`label`/`createData` options and now requires the caller to construct and pass a `Worker` instance directly. `monaco-yaml`'s worker manager (as of `monaco-yaml@5.4.1`/`monaco-worker-manager@2.0.1`) hasn't been updated for this yet, so pairing it with Monaco `>=0.55` doesn't throw — it silently falls back to Monaco's generic in-process worker, which lacks YAML-specific RPC methods.
+
 ### Monaco worker setup
 
 `monaco-editor` and `monaco-yaml` run language features in web workers. You **must** configure `window.MonacoEnvironment` in your application entry point **before** this wizard is imported or rendered. Omitting this will cause the YAML editor to fail silently or throw at runtime.
 
 ```ts
-import editorWorkerUrl from 'monaco-editor/esm/vs/editor/editor.worker.js?url';
-import yamlWorkerUrl from 'monaco-yaml/yaml.worker.js?url';
+import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker.js?worker';
+import YamlWorker from 'monaco-yaml/yaml.worker.js?worker';
 
 window.MonacoEnvironment = {
   getWorker(_moduleId: string, label: string): Worker {
     if (label === 'yaml') {
-      return new Worker(yamlWorkerUrl, { type: 'module' });
+      return new YamlWorker();
     }
-    return new Worker(editorWorkerUrl, { type: 'module' });
+    return new EditorWorker();
   },
 };
 ```
 
-The `?url` import syntax is supported by Vite out of the box. For webpack, use `new URL('...', import.meta.url)` or a dedicated worker loader instead. See the [monaco-yaml worker setup docs](https://www.npmjs.com/package/monaco-yaml#usage) for more details.
+Use Vite's `?worker` import syntax. `monaco-yaml`'s worker bundle pulls in `path-browserify`, a plain-CommonJS dependency; `?worker` routes the whole worker module graph through Vite's bundler. You'll also need `path-browserify` in `optimizeDeps.include` in your Vite config so it's pre-bundled correctly:
+
+```ts
+export default defineConfig({
+  optimizeDeps: {
+    include: ['monaco-editor', 'monaco-yaml', 'path-browserify'],
+  },
+});
+```
+
+For webpack, use `new URL('...', import.meta.url)` with `import.meta.webpackHot` worker handling or a dedicated worker loader instead. See the [monaco-yaml worker setup docs](https://www.npmjs.com/package/monaco-yaml#usage) for more details.
+
+**You must also point `@monaco-editor/react` at your local `monaco-editor` install.**
+
+```ts
+import * as monaco from 'monaco-editor';
+import { loader } from '@monaco-editor/react';
+
+loader.config({ monaco });
+```
 
 ### Resource generator
 
