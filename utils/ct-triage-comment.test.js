@@ -79,7 +79,7 @@ describe('ct-triage-comment script', () => {
     expect(output).toContain('**200 failures** detected across 1200 tests.');
     expect(output).toContain('| assertion | 200 |');
     expect(output).not.toContain('**Failed tests:**');
-    expect(output).not.toContain('file-1000\\.spec\\.tsx');
+    expect(output).not.toContain('file\\-1000\\.spec\\.tsx');
   });
 
   test('bounds rendered failures and categories to normalized failed total', () => {
