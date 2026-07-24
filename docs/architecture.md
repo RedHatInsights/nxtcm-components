@@ -11,7 +11,7 @@ nxtcm-components/
 ├── packages/
 │   ├── nxtcm-dashboard/          @redhat-cloud-services/nxtcm-dashboard
 │   ├── nxtcm-rosa-hcp-wizard/    @redhat-cloud-services/nxtcm-rosa-hcp-wizard
-├── src/                           root library (nxtcm-components)
+├── src/                           legacy root source folder (currently empty)
 ├── .storybook/                    Storybook 9 config (covers all packages)
 ├── playwright/                    CT + E2E infrastructure
 └── utils/                         CI helper scripts
@@ -27,13 +27,13 @@ Dashboard widgets and the ROSA wizard serve different consumer apps with differe
 - each package can be versioned and published independently
 - CI can scope lint/test/build to the changed package
 
-The root `src/` still exists but is being phased out. New work goes into the workspace packages.
+The root `src/` still exists but is currently empty. New work goes into the workspace packages.
 
 ---
 
 ## Build system
 
-The two workspace packages (dashboard, wizard) are built with **one shared `vite.config.ts`**. The differentiation happens via the `NXTCM_LIB_NAME` environment variable. The root library (`src/`) uses the same vite config but is being phased out and is not included in `npm run build`.
+The two workspace packages (dashboard, wizard) are built with **one shared `vite.config.ts`**. The differentiation happens via the `NXTCM_LIB_NAME` environment variable.
 
 ### npm workspaces in this repo
 
@@ -82,7 +82,7 @@ The root `npm run build` runs the two workspace builds in sequence:
 npm run build -w @redhat-cloud-services/nxtcm-dashboard && npm run build -w @redhat-cloud-services/nxtcm-rosa-hcp-wizard
 ```
 
-The root library can still be built separately by running `vite build` from the repo root (defaults `NXTCM_LIB_NAME` to `NXTCM-COMPONENTS`), but new work should go into the workspace packages.
+`npm run build` intentionally runs only the two workspace package builds.
 
 ### Output per package
 
@@ -100,6 +100,7 @@ Each build produces:
 PatternFly, React, and utility libraries are externalized, not bundled. Consumers supply their own copies via `peerDependencies`. The peer contract differs by package:
 
 - **root**: `@patternfly/react-core`, `react`, `react-dom`, `js-yaml`, `yaml`, `semver`
+- **dashboard** (additional): `@patternfly/react-charts`, `@patternfly/react-table`, `@patternfly/widgetized-dashboard`, `@patternfly/react-icons`
 - **wizard** (additional): `monaco-editor`, `monaco-yaml`, `@patternfly/react-code-editor`, `@patternfly/react-icons`
 
 Monaco is only a peer dep of the wizard package, not the root or dashboard.
@@ -136,178 +137,27 @@ Because of this inconsistency, prefer the package aliases above for new code. Im
 
 ---
 
-## Component architecture
+## Scope of this document
 
-### Shared vs package-specific
+This doc is intentionally narrow. It covers the mechanics shared across packages: build plumbing, alias behavior, and CI/test orchestration.
 
-| location | what goes here | examples |
-|----------|---------------|----------|
-| `packages/nxtcm-dashboard/src/` | dashboard home widgets (cards, charts, panels) | CVECard, TotalClusters, CostManagement |
-| `packages/nxtcm-rosa-hcp-wizard/src/` | ROSA HCP cluster creation wizard (steps, fields, validation) | Steps/BasicSetup, Steps/Networking, yupSchemas |
-| root `src/` (legacy) | shared console UI used by both consumer apps | ConsoleBreadcrumbs, PageHeader |
+It does not try to re-explain package internals (component structure, field contracts, feature behavior). That detail belongs in package docs and overlays.
 
-### Co-location pattern
-
-Every component lives in its own directory with all related files:
-
-```text
-ComponentName/
-├── ComponentName.tsx              the component
-├── ComponentName.stories.tsx      Storybook story (CSF3)
-├── ComponentName.spec.tsx         Playwright CT test
-├── ComponentName.spec-helpers.tsx test setup, mock data, wrappers
-├── ComponentName.test.ts          Jest unit test (for logic-heavy code)
-├── ComponentName.module.scss      scoped styles (if needed)
-└── index.ts                       barrel export
-```
-
-### No HTTP calls from components
-
-Components never own API clients. Consuming apps (ACM console, OCM portal) handle all backend communication and pass data down via props. This is a hard boundary.
+The root `src/` folder is currently empty and treated as legacy. New work should go into workspace packages.
 
 ---
 
-## Data contracts
+## Testing strategy
 
-### Dashboard widgets: `data` + `isLoading`
+This repo is a component library, so the main signal should come from **unit tests** (logic) and **component tests** (rendering and interaction). We keep a small E2E slice here for smoke coverage, but full user journeys belong in consumer repos (ACM console and OCM portal), where routing, API wiring, and auth actually live.
 
-Dashboard widgets receive flat props. The host app fetches data and passes results directly:
-
-```tsx
-type ClustersWithIssuesProps = {
-  data?: ClustersWithIssuesData;
-  isLoading?: boolean;
-  onClusterClick?: (cluster: ClusterIssue) => void;
-};
-```
-
-When `isLoading` is true, the widget renders PatternFly `Skeleton` placeholders. When data arrives, skeletons swap to real content. No `fetch` callback, no error prop handling in most widgets (the host app handles retries).
-
-### ROSA wizard: `Resource<T>`
-
-The wizard uses a richer contract because fields have interdependencies (selecting a region triggers refetch of VPCs, subnets, etc.):
-
-```tsx
-type Resource<TData, TArgs extends unknown[] = []> = {
-  data: TData;
-  error: string | null;
-  isFetching: boolean;
-  fetch?: (...args: TArgs) => Promise<void>;
-};
-```
-
-Key points:
-
-- `fetch` is optional and typed with specific args (e.g., `fetch: (awsAccount: string) => Promise<void>`)
-- the wizard calls `fetch` when a dependent field changes (cascade reset pattern)
-- `isFetching` drives inline loading spinners on selects/dropdowns
-- `error` drives inline error alerts below the field
-
-Specialized resource types extend the base:
-
-```tsx
-type RolesResource = Resource<Role[], [awsAccount: string]> & {
-  ocmRoleError: string | null;
-  userRoleError: string | null;
-  ocmRoleARN: string | null;
-  fetch: (awsAccount: string) => Promise<void>;
-};
-```
-
-### Why two different patterns?
-
-Dashboard widgets are simple read-only displays, no user-triggered refetches needed. The wizard is a multi-step form where each selection can invalidate downstream data, so it needs the `fetch` callback to let the host app reload dependent resources.
-
----
-
-## Test pyramid
-
-```text
-                    ┌─────────┐
-                    │   E2E   │  few, integration flows
-                    ├─────────┤
-              ┌─────┤   CT    ├─────┐  component rendering + interaction
-              │     ├─────────┤     │
-              │     │  Jest   │     │  pure logic, utilities, hooks
-              └─────┴─────────┴─────┘
-```
-
-### Jest (unit tests)
-
-- config: `jest.config.js`
-- matches: `**/*.test.[jt]s?(x)` (explicitly excludes `*.spec.*`)
-- environment: jsdom
-- use for: pure functions, hooks, utilities, validation logic, data transformations
-- does NOT mount React components to a real DOM
-
-### Playwright CT (component tests)
-
-- config: `playwright-ct.config.ts`
-- matches: `src/**/*.spec.tsx`, `packages/nxtcm-*/src/**/*.spec.tsx`
-- browser: Chromium (real browser, real DOM)
-- use for: component rendering, user interactions, visual states, accessibility assertions
-- mock data goes in `*.spec-helpers.tsx` files
-- selectors: role-based (`getByRole`) or `data-testid`, never CSS classes
-
-### Playwright E2E (end-to-end)
-
-- config: `playwright.config.ts`
-- directory: `playwright/e2e/`
-- use for: full app integration flows (Storybook or dev server as test target)
-- currently minimal coverage
+Storybook is the shared visual dev/review surface. It is the quickest way to validate states and catch visual regressions before integration.
 
 ### What runs in CI
 
-| layer | CI job | command |
-|-------|--------|---------|
-| Jest | `unit-test` | `npm test -- --coverage` |
-| Playwright CT | `test` | `npx playwright test -c playwright-ct.config.ts` |
-| Playwright E2E | `e2e` | `npx playwright test` |
+Main CI runs lint, type-check, unit tests, CT, E2E, build, and storybook in parallel. `coverage-contract` waits for unit/CT/E2E, then combines their outputs into `test-coverage-data.json`.
 
-All three run in CI. A `coverage-contract` job assembles results from all three into a single `test-coverage-data.json` artifact.
-
-### When to use which
-
-| scenario | test layer |
-|----------|-----------|
-| validating a yup schema produces correct errors | Jest |
-| a utility function transforms data correctly | Jest |
-| a component renders loading skeletons when `isLoading=true` | Playwright CT |
-| clicking a dropdown opens options and selecting one updates form state | Playwright CT |
-| navigating through all wizard steps end-to-end | E2E |
-| verifying Storybook stories render without console errors | E2E |
-
-### Mutation testing (Stryker)
-
-Stryker runs on top of Playwright CT specs. It mutates a component's source and re-runs the co-located `.spec.tsx` to measure test effectiveness. Not part of CI, run locally on demand:
-
-```bash
-npm run test:stryker -- path/to/Component.tsx
-```
-
----
-
-## CI pipeline
-
-Defined in `.github/workflows/ci.yml`. Lint, type-check, unit-test, CT, E2E, build, and storybook jobs run independently in parallel. The `coverage-contract` job waits for the three test jobs (`unit-test`, `test`, `e2e`) to finish, then assembles their results:
-
-```text
-┌──────┐ ┌────────────┐ ┌───────────┐ ┌──────┐ ┌─────┐ ┌───────┐ ┌───────────┐
-│ Lint │ │ Type Check │ │ Unit Test │ │  CT  │ │ E2E │ │ Build │ │ Storybook │
-└──────┘ └────────────┘ └───────────┘ └──────┘ └─────┘ └───────┘ └───────────┘
-                              │             │       │
-                              └─────────────┴───────┘
-                                        │
-                             ┌──────────────────────┐
-                             │ Coverage Contract    │
-                             │ needs: unit-test,    │
-                             │        test, e2e     │
-                             └──────────────────────┘
-```
-
-After those test jobs complete, `coverage-contract` downloads their artifacts and builds `test-coverage-data.json`, a normalized summary of test results across all layers.
-
-Additional workflows beyond the main CI:
+Additional workflows:
 
 | workflow | trigger | purpose |
 |----------|---------|---------|
@@ -320,30 +170,13 @@ Additional workflows beyond the main CI:
 
 ## Storybook
 
-Storybook 9 with `@storybook/react-vite`. Stories live co-located with components in both workspace packages. The `.storybook/main.ts` globs cover:
+Storybook 9 (`@storybook/react-vite`) is the shared component docs and visual QA surface for this repo.
 
-```ts
-stories: [
-  '../src/**/*.mdx',
-  '../packages/nxtcm-dashboard/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
-  '../packages/nxtcm-rosa-hcp-wizard/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
-]
-```
+- audience: package contributors and reviewers validating behavior before integration
+- source: co-located stories in workspace packages plus root-level MDX docs (the `../src/**/*.mdx` glob is configured, but there are currently no `src/**/*.mdx` files)
+- guidance: Storybook has its own alias map in `.storybook/main.ts`; package aliases align with the main build, while `@` intentionally differs (`src/` in Storybook vs repo root in Vite/TS)
 
-Storybook has its own alias map in `.storybook/main.ts` (via `viteFinal`). The package aliases are aligned with the main build, but `@` is intentionally different (`src/` in Storybook vs repo root in main Vite/TS config). Use package aliases for cross-package imports:
+For cross-package imports, prefer:
 
 - `@redhat-cloud-services/nxtcm-dashboard`
 - `@redhat-cloud-services/nxtcm-rosa-hcp-wizard`
-
----
-
-## Key decisions and rationale
-
-| decision | why |
-|----------|-----|
-| single vite config with env var | avoids config duplication across packages; one place to maintain externals, globals, and output format |
-| `Resource<T>` with typed fetch args | lets the wizard trigger refetches with correct parameters while keeping the host app in control of actual API calls |
-| flat `data + isLoading` for dashboard | widgets are simpler, no cascading dependencies, host app handles all fetch logic |
-| Playwright CT over RTL for component tests | real browser rendering catches CSS/layout issues that jsdom misses; aligns with PatternFly's visual component model |
-| co-location (component + story + spec + helpers) | everything about a component lives together, no hunting across directories |
-| workspaces over separate repos | shared tooling (lint, prettier, jest, playwright, vite) without duplication, single PR for cross-package changes |
