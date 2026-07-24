@@ -18,15 +18,8 @@
       "groupName": "react"
     },
     {
-      "description": "Group Monaco editor + YAML LSP packages so version-coupled updates land in one reviewable PR",
-      "matchPackageNames": ["monaco-editor", "monaco-yaml", "@monaco-editor/react", "monaco-types"],
-      "groupName": "monaco"
-    },
-    {
-      "description": "Treat 0.x minor updates as major breaking changes for monaco-editor",
-      "matchPackageNames": ["monaco-editor"],
-      "matchCurrentVersion": "/^0\\./",
-      "matchUpdateTypes": ["minor"],
+      "description": "monaco-editor/monaco-yaml are tightly version-coupled. Require manual, deliberate upgrades.",
+      "matchPackageNames": ["monaco-editor", "monaco-yaml", "@monaco-editor/react"],
       "enabled": false
     }
   ],
