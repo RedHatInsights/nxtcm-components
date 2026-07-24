@@ -72,19 +72,6 @@ const meta: Meta<typeof ComponentName> = {
 };
 ```
 
-## where stories live
-
-co-located next to the component:
-
-```text
-ComponentName/
-  ComponentName.tsx
-  ComponentName.stories.tsx   <-- here
-  ComponentName.spec.tsx
-```
-
-legacy dashboard and wizard stories under `src/components/dashboard/` and `src/components/Wizards/ROSAHCPWizard/` are excluded from Storybook. new stories go in `packages/nxtcm-dashboard/src/` and `packages/nxtcm-rosa-hcp-wizard/src/`.
-
 ## console.log
 
 `no-console: error` is the lint rule, but it's relaxed in `*.stories.tsx` files. you can use `console.log` in action handlers for stories.

@@ -8,8 +8,8 @@ npm workspaces monorepo of shared react component libraries for Red Hat ACM (Adv
 
 workspace packages:
 
-- `@redhat-cloud-services/nxtcm-dashboard` (`packages/nxtcm-dashboard`) — published package
-- `@redhat-cloud-services/nxtcm-rosa-hcp-wizard` (`packages/nxtcm-rosa-hcp-wizard`) — private workspace package (`"private": true`)
+- `@redhat-cloud-services/nxtcm-dashboard` (`packages/nxtcm-dashboard`) — workspace package
+- `@redhat-cloud-services/nxtcm-rosa-hcp-wizard` (`packages/nxtcm-rosa-hcp-wizard`) — workspace package
 
 ## hard constraints
 
@@ -31,7 +31,7 @@ workspace packages:
 packages/
   nxtcm-dashboard/
   nxtcm-rosa-hcp-wizard/
-src/                      # legacy shared library, being phased out
+src/components/           # legacy folder, currently empty
 docs/agent-rules/         # task-type rulebooks
 .github/workflows/        # ci workflows
 ```
@@ -40,7 +40,6 @@ docs/agent-rules/         # task-type rulebooks
 
 - dashboard widget work: `packages/nxtcm-dashboard/src/`
 - rosa hcp wizard work: `packages/nxtcm-rosa-hcp-wizard/src/`
-- shared/legacy console ui: `src/components/` (legacy, only when genuinely shared)
 - co-location contract details: `docs/agent-rules/new-component.md`
 
 ## path aliases
@@ -61,18 +60,15 @@ run from repo root:
 
 ## task routing
 
-load these docs before writing code:
+load the relevant doc before writing or reviewing code:
 
-- new component: `docs/agent-rules/new-component.md` + relevant package overlay
+- ui component work: `docs/agent-rules/new-component.md`
 - playwright CT: `docs/agent-rules/playwright-ct.md`
 - storybook: `docs/agent-rules/storybook.md`
 - ci/workflow: `docs/agent-rules/ci-workflows.md`
-- typescript refactor: `docs/agent-rules/typescript.md`
-- patternfly usage: `.agents/skills/patternfly/SKILL.md`
-- PR creation: `.agents/skills/pr-release-agent/SKILL.md`
-- mutation testing: `.agents/skills/stryker-mutation-test/SKILL.md`
-- dashboard domain behavior: `packages/nxtcm-dashboard/AGENTS.md`
-- wizard domain behavior: `packages/nxtcm-rosa-hcp-wizard/AGENTS.md`
+- typescript: `docs/agent-rules/typescript.md`
+
+after picking a task doc, load the relevant package overlay when the task is package-specific.
 
 ## known quirks
 

@@ -6,25 +6,11 @@ package-level context for `@redhat-cloud-services/nxtcm-dashboard`. read the roo
 
 PatternFly 6 dashboard widget components for the ACM and OCM console home page. each widget is a self-contained card that shows a specific metric, chart, or data view.
 
-## widgets
+## package structure
 
-| component | what it shows |
-|-----------|---------------|
-| TotalClusters | cluster count with breakdown by provider |
-| CVECard | critical CVEs affecting managed clusters |
-| AdvisorRecommendations | Insights advisor findings by category/severity |
-| ClusterRecommendations | per-cluster advisor recommendations |
-| ClustersWithIssues | clusters with active issues |
-| CostManagement | cloud spend breakdown |
-| ExpiredTrials | trial subscriptions nearing/past expiry |
-| ResourceUtilization | CPU/memory/storage usage charts |
-| StorageCard | storage utilization |
-| Subscriptions | subscription status and counts |
-| Telemetry | telemetry opt-in/out status |
-| UpdateStatus | cluster update availability |
-| UpgradeRisks | risks associated with pending upgrades |
-| NotificationsPanel | recent notification feed |
-| LoadingPanel | reusable loading-state utility component (not a data-bearing widget) |
+dashboard widgets live in `packages/nxtcm-dashboard/src/`, one directory per widget/component.
+
+top-level examples include `TotalClusters`, `CVECard`, `AdvisorRecommendations`, `ClustersWithIssues`, `CostManagement`, and `LoadingPanel`.
 
 ## data contract
 
@@ -78,16 +64,6 @@ use PatternFly chart color tokens, not hardcoded colors. charts must work in bot
 - CT specs live next to each widget: `WidgetName.spec.tsx`
 - spec-helpers provide mock props for each state (loading, error, empty, with-data)
 - test all four states: loading (`isLoading: true`) → error → empty → populated
-
-## building
-
-```bash
-npm run build -w @redhat-cloud-services/nxtcm-dashboard
-# or from this directory:
-npm run build
-```
-
-output goes to `dist/` (UMD + ESM + types).
 
 ## storybook
 

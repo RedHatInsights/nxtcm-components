@@ -17,14 +17,7 @@ ComponentName/
                               # export type { ComponentNameProps } from './ComponentName';
 ```
 
-place it under:
-- `packages/nxtcm-dashboard/src/` for dashboard widgets
-- `packages/nxtcm-rosa-hcp-wizard/src/` for wizard steps/fields
-- `src/components/` for shared console UI
-
-if the component is under a package, load the package overlay first:
-- `packages/nxtcm-dashboard/AGENTS.md`
-- `packages/nxtcm-rosa-hcp-wizard/AGENTS.md`
+placement rules live in root `AGENTS.md` (`## where to add code`).
 
 ## prop interface
 
@@ -54,47 +47,10 @@ export const MyComponent = ({ title, onSave }: MyComponentProps): React.ReactEle
 - explicit return type
 - named export (not default)
 
-## async data pattern
+## story + CT
 
-components must not own api clients or direct network calls. consuming apps own fetching and pass data down.
-for package-specific async contracts, load the package overlay first:
-
-- `packages/nxtcm-dashboard/AGENTS.md`
-- `packages/nxtcm-rosa-hcp-wizard/AGENTS.md`
-
-## story (same directory)
-
-```tsx
-import type { Meta, StoryObj } from '@storybook/react';
-import { MyComponent } from './MyComponent';
-
-const meta: Meta<typeof MyComponent> = {
-  title: 'Components/Category/MyComponent',
-  component: MyComponent,
-  tags: ['autodocs'],
-};
-export default meta;
-type Story = StoryObj<typeof MyComponent>;
-
-export const Default: Story = {
-  args: { title: 'Example' },
-};
-```
-
-## CT spec (same directory)
-
-```tsx
-import { test, expect } from '@playwright/experimental-ct-react';
-import { MyComponent } from './MyComponent';
-
-test('renders title', async ({ mount }) => {
-  const component = await mount(<MyComponent title="Hello" />);
-  await expect(component.getByRole('heading', { name: /hello/i })).toBeVisible();
-});
-```
-
-- use role/testid selectors, never CSS classes
-- use spec-helpers for complex setup (providers, mock data)
+- story conventions and title guidance: `docs/agent-rules/storybook.md`
+- CT conventions, selectors, and spec-helpers: `docs/agent-rules/playwright-ct.md`
 
 ## exports
 
@@ -103,7 +59,6 @@ both barrel exports are required:
 - update the package/root barrel where the folder is exported:
   - `packages/nxtcm-dashboard/src/index.ts`
   - `packages/nxtcm-rosa-hcp-wizard/src/index.ts`
-  - `src/index.ts` (for shared root components)
 
 component local barrel (`ComponentName/index.ts`):
 
@@ -116,7 +71,7 @@ export type { MyComponentProps } from './MyComponent';
 package/root barrel example:
 
 ```tsx
-// in packages/.../src/index.ts or src/index.ts
+// in packages/.../src/index.ts
 // this imports the folder and resolves through ComponentName/index.ts
 export { MyComponent } from './MyComponent';
 export type { MyComponentProps } from './MyComponent';

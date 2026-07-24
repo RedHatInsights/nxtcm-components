@@ -89,13 +89,7 @@ current implementation expectation:
 
 ## testing workflow changes
 
-- always run all required local validation commands before commit:
-  - `npm run lint`
-  - `npm run type-check`
-  - `npm run test:all` (runs Jest + Playwright CT locally; CI also runs both, but local runs are faster feedback)
-  - `npm run test:e2e` (runs separately from `test:all`)
-  - `npm run build`
-  - `npm run build -w <changed-workspace-package>` for each changed workspace package
+- always run the root `AGENTS.md` verification commands before commit
 - use `act` as supplemental workflow validation, not a replacement for the required local checks
 - for `workflow_run` triggers, the workflow file must exist on the default branch (main) before it fires
 - test on a branch first, then merge the workflow file to main
