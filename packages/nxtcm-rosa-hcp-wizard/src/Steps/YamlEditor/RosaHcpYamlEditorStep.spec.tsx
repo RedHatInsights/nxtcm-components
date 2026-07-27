@@ -1,10 +1,9 @@
 import { test, expect } from '@playwright/experimental-ct-react';
-
+import type { Locator } from '@playwright/test';
 import { YamlEditorStepMount } from './RosaHcpYamlEditorStep.spec-helpers';
 
 // Helper to wait for Monaco editor to be ready
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function waitForMonaco(component: any) {
+async function waitForMonaco(component: Locator) {
   // Wait for CodeEditor to render
   await component.locator('.monaco-editor').waitFor({ timeout: 10000 });
   // Give Monaco time to fully initialize
