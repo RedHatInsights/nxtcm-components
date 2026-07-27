@@ -8,6 +8,23 @@
       "enabled": false
     },
     {
+      "description": "Group ESLint ecosystem packages into a single PR",
+      "matchPackageNames": ["eslint", "@eslint/**", "@typescript-eslint/**", "eslint-*"],
+      "groupName": "eslint packages"
+    },
+    {
+      "description": "Group test framework packages into a single PR",
+      "matchPackageNames": [
+        "jest",
+        "jest-*",
+        "@jest/**",
+        "@playwright/**",
+        "@axe-core/**",
+        "@stryker-mutator/**"
+      ],
+      "groupName": "test frameworks"
+    },
+    {
       "description": "Group PatternFly packages across all workspaces",
       "matchPackageNames": ["@patternfly/**"],
       "groupName": "patternfly"
@@ -39,7 +56,7 @@
   "prHourlyLimit": 4,
   "labels": ["dependencies"],
   "lockFileMaintenance": {
-    "enabled": true
+    "enabled": false
   },
   "vulnerabilityAlerts": {
     "enabled": true,
