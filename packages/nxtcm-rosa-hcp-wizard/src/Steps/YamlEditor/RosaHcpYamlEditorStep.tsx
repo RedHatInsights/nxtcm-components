@@ -191,13 +191,16 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
           onClose?.();
         },
         hasSchemaErrors() {
+          if (hasSchemaErrorsRef.current && !bannerShownRef.current) {
+            setEditorMarkers(pendingYamlRef.current, true);
+          }
           return hasSchemaErrorsRef.current;
         },
         getYaml() {
           return pendingYamlRef.current;
         },
       }),
-      [onClose]
+      [onClose, setEditorMarkers]
     );
 
     const schemaToggleControl = (
