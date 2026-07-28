@@ -1,4 +1,4 @@
-import { Flex, FlexItem } from '@patternfly/react-core';
+import { Split, SplitItem } from '@patternfly/react-core';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { ROSAHCPCluster } from '../../../types';
 import ExternalLink from '../../../components/ExternalLink';
@@ -39,8 +39,8 @@ export const MachinePoolsAutoscalingReplicas = (props: MachinePoolsAutoscalingRe
     typeof minReplicas === 'number' && Number.isFinite(minReplicas) ? minReplicas : 1;
 
   return (
-    <Flex>
-      <FlexItem>
+    <Split hasGutter isWrappable>
+      <SplitItem>
         <WizNumberInput<ROSAHCPCluster>
           name="min_replicas"
           schema={clusterValidationSchema}
@@ -48,8 +48,8 @@ export const MachinePoolsAutoscalingReplicas = (props: MachinePoolsAutoscalingRe
           max={minReplicasMax}
           labelHelp={<AutoscalingReplicasLabelHelp helpText={a.minHelp} />}
         />
-      </FlexItem>
-      <FlexItem>
+      </SplitItem>
+      <SplitItem>
         <WizNumberInput<ROSAHCPCluster>
           name="max_replicas"
           schema={clusterValidationSchema}
@@ -57,7 +57,7 @@ export const MachinePoolsAutoscalingReplicas = (props: MachinePoolsAutoscalingRe
           max={maxAutoscalingNodes}
           labelHelp={<AutoscalingReplicasLabelHelp helpText={a.maxHelp} />}
         />
-      </FlexItem>
-    </Flex>
+      </SplitItem>
+    </Split>
   );
 };

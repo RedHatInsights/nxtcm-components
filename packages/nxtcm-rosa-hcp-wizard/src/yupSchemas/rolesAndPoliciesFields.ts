@@ -9,6 +9,7 @@ export const installerRoleArnSchema = rosaRequiredStringField().meta({
   placeholderKey: 'rolesAndPolicies.installerRolePlaceholder',
   stepId: STEP_IDS.ROLES_AND_POLICIES,
   fieldType: 'select',
+  noEditAfterSubmit: true,
   optionsWizardDataResource: 'roles',
   refetchesResourcesOnChange: [
     {
@@ -36,22 +37,24 @@ export const supportRoleArnSchema = rosaRequiredStringField().meta({
   id: 'support_role_arn',
   labelKey: 'rolesAndPolicies.supportRoleLabel',
   labelHelpKey: 'rolesAndPolicies.supportHelp',
-  placeholderKey: 'rolesAndPolicies.supportPlaceholder',
+  placeholderKey: 'rolesAndPolicies.installerPlaceholder',
   stepId: STEP_IDS.ROLES_AND_POLICIES,
-  fieldType: 'select',
+  fieldType: 'text',
+  noEditAfterSubmit: true,
   optionsWizardDataResource: 'roles',
-  reconcileValueWithOptions: true,
+  reconcileValueWithOptions: false,
 } satisfies WizardFieldMeta);
 
 export const workerRoleArnSchema = rosaRequiredStringField().meta({
   id: 'worker_role_arn',
   labelKey: 'rolesAndPolicies.workerRoleLabel',
   labelHelpKey: 'rolesAndPolicies.workerHelp',
-  placeholderKey: 'rolesAndPolicies.workerPlaceholder',
+  placeholderKey: 'rolesAndPolicies.installerPlaceholder',
   stepId: STEP_IDS.ROLES_AND_POLICIES,
-  fieldType: 'select',
+  fieldType: 'text',
+  noEditAfterSubmit: true,
   optionsWizardDataResource: 'roles',
-  reconcileValueWithOptions: true,
+  reconcileValueWithOptions: false,
 } satisfies WizardFieldMeta);
 
 export const byoOidcConfigIdSchema = rosaRequiredStringField().meta({
@@ -62,6 +65,7 @@ export const byoOidcConfigIdSchema = rosaRequiredStringField().meta({
   labelHelpTitleKey: 'rolesAndPolicies.oidcPopoverTitle',
   stepId: STEP_IDS.ROLES_AND_POLICIES,
   fieldType: 'select',
+  noEditAfterSubmit: true,
   optionsWizardDataResource: 'oidcConfig',
   reconcileValueWithOptions: true,
 } satisfies WizardFieldMeta);
@@ -73,6 +77,7 @@ export const customOperatorRolesPrefixSchema = rosaRequiredStringField()
     labelKey: 'rolesAndPolicies.operatorPrefixLabel',
     stepId: STEP_IDS.ROLES_AND_POLICIES,
     fieldType: 'text',
+    noEditAfterSubmit: true,
   } satisfies WizardFieldMeta)
   .test('operator-roles-prefix', '', function (value) {
     if (!value) return true;

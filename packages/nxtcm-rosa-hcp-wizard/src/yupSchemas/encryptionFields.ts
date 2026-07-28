@@ -31,6 +31,7 @@ export const encryptionKeysSchema = yup
     labelKey: 'encryption.keysGroupLabel',
     stepId: STEP_IDS.ENCRYPTION,
     fieldType: 'radio',
+    noEditAfterSubmit: true,
     resetsFieldsToDefaultOnChange: ['kms_key_arn'],
   } satisfies WizardFieldMeta);
 
@@ -42,6 +43,7 @@ export const kmsKeyArnSchema = yup
     labelHelpKey: 'encryption.keyArnHelp',
     stepId: STEP_IDS.ENCRYPTION,
     fieldType: 'text',
+    noEditAfterSubmit: true,
   } satisfies WizardFieldMeta)
   .when('encryption_keys', {
     is: ClusterEncryptionKeys.custom,
@@ -63,6 +65,7 @@ export const etcdEncryptionSchema = yup
     title: 'etcd encryption',
     stepId: STEP_IDS.ENCRYPTION,
     fieldType: 'checkbox',
+    noEditAfterSubmit: true,
     reviewLabel: 'Additional etcd encryption',
     resetsFieldsToDefaultOnChange: ['etcd_key_arn'],
   } satisfies WizardFieldMeta);
@@ -75,6 +78,7 @@ export const etcdKeyArnSchema = yup
     labelHelpKey: 'encryption.keyArnHelp',
     stepId: STEP_IDS.ENCRYPTION,
     fieldType: 'text',
+    noEditAfterSubmit: true,
   } satisfies WizardFieldMeta)
   .when('etcd_encryption', {
     is: true,

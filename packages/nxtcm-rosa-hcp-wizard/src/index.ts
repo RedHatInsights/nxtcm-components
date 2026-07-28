@@ -12,6 +12,12 @@ export type {
   YamlResourceGenerator,
   ResourceSchema,
   ValidationError,
+  YamlDocumentChunk,
 } from './Steps/YamlEditor/types';
 export { RosaHcpYamlMonacoLoader } from './Steps/YamlEditor/RosaHcpYamlMonacoLoader';
 export type { MonacoYamlOptions } from 'monaco-yaml';
+export {
+  splitYamlDocuments,
+  yamlExceptionToValidationError,
+  findLineForPath,
+} from './Steps/YamlEditor/yamlValidation';

@@ -8,6 +8,23 @@
       "enabled": false
     },
     {
+      "description": "Group ESLint ecosystem packages into a single PR",
+      "matchPackageNames": ["eslint", "@eslint/**", "@typescript-eslint/**", "eslint-*"],
+      "groupName": "eslint packages"
+    },
+    {
+      "description": "Group test framework packages into a single PR",
+      "matchPackageNames": [
+        "jest",
+        "jest-*",
+        "@jest/**",
+        "@playwright/**",
+        "@axe-core/**",
+        "@stryker-mutator/**"
+      ],
+      "groupName": "test frameworks"
+    },
+    {
       "description": "Group PatternFly packages across all workspaces",
       "matchPackageNames": ["@patternfly/**"],
       "groupName": "patternfly"
@@ -16,15 +33,31 @@
       "description": "Group React packages across all workspaces",
       "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
       "groupName": "react"
+    },
+    {
+      "description": "monaco-editor/monaco-yaml are tightly version-coupled. Require manual, deliberate upgrades.",
+      "matchPackageNames": ["monaco-editor", "monaco-yaml", "@monaco-editor/react"],
+      "enabled": false
     }
   ],
-  "reviewers": ["nitin-dhevar", "kdoberst", "davidaznaur", "jloss-redhat", "vishsanghishetty", "brandonthanhnguyen"],
+  "reviewers": [
+    "nitin-dhevar",
+    "kdoberst",
+    "davidaznaur",
+    "jloss-redhat",
+    "vishsanghishetty",
+    "brandonthanhnguyen",
+    "kelvah"
+  ],
   "reviewersSampleSize": 2,
   "dependencyDashboard": true,
   "minimumReleaseAge": "4 days",
-  "prConcurrentLimit": 5,
-  "prHourlyLimit": 2,
+  "prConcurrentLimit": 10,
+  "prHourlyLimit": 4,
   "labels": ["dependencies"],
+  "lockFileMaintenance": {
+    "enabled": false
+  },
   "vulnerabilityAlerts": {
     "enabled": true,
     "labels": ["security"],
