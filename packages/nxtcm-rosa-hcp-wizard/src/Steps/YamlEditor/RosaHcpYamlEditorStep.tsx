@@ -59,6 +59,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
     const pendingYamlRef = useRef(yamlContent);
     const userHasEditedRef = useRef(false);
     const hasSchemaErrorsRef = useRef(false);
+    const bannerShownRef = useRef(false);
 
     const setEditorMarkers = useCallback(
       (yamlStr: string, showBanner = true) => {
@@ -88,7 +89,10 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         monaco.editor.setModelMarkers(model, YAML_VALIDATION_OWNER, markers);
         const errorCount = errors.filter((e) => e.severity === 'error').length;
         hasSchemaErrorsRef.current = errorCount > 0;
-        if (showBanner) {
+        if (showBanner || bannerShownRef.current) {
+          if (errorCount > 0) {
+            bannerShownRef.current = true;
+          }
           setParseError(
             errorCount > 0
               ? `${errorCount} validation error${errorCount !== 1 ? 's' : ''} found`
@@ -109,6 +113,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         setYamlContent(rendered);
         setParseError('');
         hasSchemaErrorsRef.current = false;
+        bannerShownRef.current = false;
         if (editorRef.current) {
           setEditorMarkers(rendered, false);
         }
@@ -175,6 +180,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         isInitializedRef.current = false;
         userHasEditedRef.current = false;
         hasSchemaErrorsRef.current = false;
+        bannerShownRef.current = false;
       };
     }, []);
 
@@ -185,13 +191,16 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
           onClose?.();
         },
         hasSchemaErrors() {
+          if (hasSchemaErrorsRef.current && !bannerShownRef.current) {
+            setEditorMarkers(pendingYamlRef.current, true);
+          }
           return hasSchemaErrorsRef.current;
         },
         getYaml() {
           return pendingYamlRef.current;
         },
       }),
-      [onClose]
+      [onClose, setEditorMarkers]
     );
 
     const schemaToggleControl = (
