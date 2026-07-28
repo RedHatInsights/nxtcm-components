@@ -6,6 +6,10 @@ import { YamlEditorStepMount } from './RosaHcpYamlEditorStep.spec-helpers';
 async function waitForMonaco(component: Locator) {
   // Wait for CodeEditor to render
   await component.locator('.monaco-editor').waitFor({ timeout: 10000 });
+  // Wait for view-lines to be visible (Monaco's content area)
+  await component.locator('.view-lines').waitFor({ timeout: 10000 });
+  // If content is expected, wait for it to appear
+  await expect(component.locator('.view-lines')).toContainText('test-cluster');
   // Give Monaco time to fully initialize
   await component.page().waitForTimeout(1000);
 }
@@ -28,6 +32,31 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
 
     // Verify PatternFly CodeEditor wrapper is present
     await expect(component.locator('.pf-v6-c-code-editor')).toBeVisible();
+  });
+
+  test('handles empty YAML state without crashing', async ({ mount }) => {
+    const component = await mount(
+      <YamlEditorStepMount
+        resourceGenerator={{
+          renderYaml: () => '',
+          validateYaml: () => [],
+          resourceSchemas: [],
+        }}
+      />
+    );
+
+    // Wait for Monaco editor to initialize even with empty content
+    // Monaco may or may not render when content is empty, but component shouldn't crash
+    await component.locator('.pf-v6-c-code-editor').waitFor({ timeout: 10000 });
+
+    // Verify the component wrapper is present (Monaco might be hidden but wrapper should exist)
+    await expect(component.locator('.pf-v6-c-code-editor')).toBeVisible();
+
+    // Ensure no error alerts or crashes occurred
+    const errorAlerts = component.getByRole('alert');
+    const alertCount = await errorAlerts.count();
+    // No error alerts should be present (component handles empty state gracefully)
+    expect(alertCount).toBe(0);
   });
 
   test.describe('Schema Panel Toggle', () => {
@@ -106,7 +135,7 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
       await waitForMonaco(component);
 
       // CodeEditor should have copy button
-      const copyButton = component.locator('button[aria-label*="Copy"]');
+      const copyButton = component.getByRole('button', { name: /copy/i });
       await expect(copyButton).toBeVisible();
     });
 
@@ -116,7 +145,7 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
       await waitForMonaco(component);
 
       // CodeEditor should have download button
-      const downloadButton = component.locator('button[aria-label*="Download"]');
+      const downloadButton = component.getByRole('button', { name: /download/i });
       await expect(downloadButton).toBeVisible();
     });
   });
