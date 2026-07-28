@@ -11,7 +11,6 @@ nxtcm-components/
 ├── packages/
 │   ├── nxtcm-dashboard/          @redhat-cloud-services/nxtcm-dashboard
 │   ├── nxtcm-rosa-hcp-wizard/    @redhat-cloud-services/nxtcm-rosa-hcp-wizard
-├── src/                           legacy root source folder (currently empty)
 ├── .storybook/                    Storybook 9 config (covers all packages)
 ├── playwright/                    CT + E2E infrastructure
 └── utils/                         CI helper scripts
@@ -25,7 +24,6 @@ Dashboard widgets and the ROSA wizard serve different consumer apps with differe
 
 - consumers install only what they need (`@redhat-cloud-services/nxtcm-dashboard` or `@redhat-cloud-services/nxtcm-rosa-hcp-wizard`)
 - each package can be versioned and published independently
-- CI can scope lint/test/build to the changed package
 
 ---
 
@@ -97,9 +95,9 @@ Each build produces:
 
 PatternFly, React, and utility libraries are externalized, not bundled. Consumers supply their own copies via `peerDependencies`. The peer contract differs by package:
 
-- **root**: `@patternfly/react-core`, `react`, `react-dom`, `js-yaml`, `yaml`, `semver`
+- **root**: `@patternfly/react-core`, `react`, `react-dom`, `js-yaml`, `yaml`
 - **dashboard** (additional): `@patternfly/react-charts`, `@patternfly/react-table`, `@patternfly/widgetized-dashboard`, `@patternfly/react-icons`
-- **wizard** (additional): `monaco-editor`, `monaco-yaml`, `@patternfly/react-code-editor`, `@patternfly/react-icons`
+- **wizard** (additional): `@monaco-editor/react`, `monaco-editor`, `monaco-yaml`, `@patternfly/react-code-editor`, `@patternfly/react-icons`
 
 Monaco is only a peer dep of the wizard package, not the root or dashboard.
 
@@ -140,8 +138,6 @@ Because of this inconsistency, prefer the package aliases above for new code. Im
 This doc is intentionally narrow. It covers the mechanics shared across packages: build plumbing, alias behavior, and CI/test orchestration.
 
 It does not try to re-explain package internals (component structure, field contracts, feature behavior). That detail belongs in package docs and overlays.
-
-The root `src/` folder is currently empty and treated as legacy. New work should go into workspace packages.
 
 ---
 

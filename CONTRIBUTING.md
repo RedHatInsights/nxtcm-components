@@ -2,7 +2,7 @@
 
 how to set up the repo, make changes, and get them merged.
 
-for architecture details (monorepo structure, build system, data contracts, test pyramid), see [docs/architecture.md](docs/architecture.md).
+for architecture details (monorepo structure, build system, testing strategy), see [docs/architecture.md](docs/architecture.md).
 
 ---
 
