@@ -10,8 +10,6 @@ PatternFly 6 dashboard widget components for the ACM and OCM console home page. 
 
 dashboard widgets live in `packages/nxtcm-dashboard/src/`, one directory per widget/component.
 
-top-level examples include `TotalClusters`, `CVECard`, `AdvisorRecommendations`, `ClustersWithIssues`, `CostManagement`, and `LoadingPanel`.
-
 ## data contract
 
 widgets never make API calls. consuming apps own data fetching and pass view-model props into widgets.

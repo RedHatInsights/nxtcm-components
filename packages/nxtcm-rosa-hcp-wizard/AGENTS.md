@@ -23,12 +23,7 @@ src/
 
 ## key types
 
-all in `src/types.ts`:
-
-- `ROSAHCPWizardData` — async resources + validation resources passed into the wizard
-- `ROSAHCPCluster` — wizard submit payload shape
-- `Resource<TData, TArgs>` — async data container passed by consuming apps
-- `VPC`, `Subnet`, `SecurityGroup`, `Role`, `OIDCConfig` — AWS resource types
+domain and resource contract types live in `src/types.ts`. the main integration shape is `Resource<TData, TArgs>` (async data container from consuming apps), documented in the section below.
 
 ## form state management
 
@@ -66,12 +61,7 @@ consuming apps provide the `fetch` implementation. this package only calls it vi
 two layers of form field components:
 
 1. **Base fields** (`src/components/Fields/`) — presentational, no form awareness
-   - `Select`, `TextInput`, `NumberInput`, `Radio`, `Checkbox`, `MultiSelect`, `FileUpload`
-
-2. **Wiz fields** (`src/components/WizFields/`) — form-connected wrappers
-   - `WizSelect`, `WizTextInput`, `WizNumberInput`, `WizRadioGroup`, `WizMultiSelect`, `WizFileUpload`, `WizCheckbox`
-   - use `useFormContext()` + `Controller` to bind to form state
-   - handle validation display, helper text, label help
+2. **Wiz fields** (`src/components/WizFields/`) — form-connected wrappers using `useFormContext()` + `Controller` to bind to form state, handle validation display, helper text, and label help
 
 ## patterns to follow
 

@@ -23,8 +23,6 @@ type Story = StoryObj<typeof ComponentName>;
 
 use a stable path-style title: `<Area>/<Category>/<Name>`.
 
-for root `src/` components, use `Components/<Category>/<Name>` (e.g. `Components/Navigation/ConsoleBreadcrumbs`).
-
 for package-specific prefixes, check the relevant package overlay:
 - `packages/nxtcm-dashboard/AGENTS.md`
 - `packages/nxtcm-rosa-hcp-wizard/AGENTS.md`

@@ -31,7 +31,6 @@ workspace packages:
 packages/
   nxtcm-dashboard/
   nxtcm-rosa-hcp-wizard/
-src/components/           # legacy folder, currently empty
 docs/agent-rules/         # task-type rulebooks
 .github/workflows/        # ci workflows
 ```
@@ -40,7 +39,6 @@ docs/agent-rules/         # task-type rulebooks
 
 - dashboard widget work: `packages/nxtcm-dashboard/src/`
 - rosa hcp wizard work: `packages/nxtcm-rosa-hcp-wizard/src/`
-- co-location contract details: `docs/agent-rules/new-component.md`
 
 ## path aliases
 

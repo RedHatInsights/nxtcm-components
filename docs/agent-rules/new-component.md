@@ -80,7 +80,6 @@ export type { MyComponentProps } from './MyComponent';
 ## checklist before done
 
 - [ ] prop interface exported with JSDoc
-- [ ] story renders in storybook (verify in browser)
-- [ ] CT spec covers happy path + at least one edge case
 - [ ] local barrel and package/root barrel both updated
 - [ ] no `any`, no inline types, no CSS class selectors in tests
+- [ ] story and CT spec pass (see `storybook.md` and `playwright-ct.md`)
