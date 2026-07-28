@@ -27,8 +27,6 @@ Dashboard widgets and the ROSA wizard serve different consumer apps with differe
 - each package can be versioned and published independently
 - CI can scope lint/test/build to the changed package
 
-The root `src/` still exists but is currently empty. New work goes into the workspace packages.
-
 ---
 
 ## Build system
@@ -92,7 +90,7 @@ Each build produces:
 |------|--------|---------|
 | `dist/index.js` | ESM | tree-shakeable import for modern bundlers |
 | `dist/index.umd.js` | UMD | legacy/CDN consumption |
-| `dist/index.css` | CSS | component styles (Vite renames `style.css` → `index.css`) |
+| `dist/<kebab-lib-name>.css` | CSS | component styles (e.g. `nxtcm-dashboard.css`) |
 | `dist/index.d.ts` (+ co-located `*.d.ts`) | types | TypeScript declarations (via `tsc`) |
 
 ### What gets externalized
@@ -174,9 +172,4 @@ Storybook 9 (`@storybook/react-vite`) is the shared component docs and visual QA
 
 - audience: package contributors and reviewers validating behavior before integration
 - source: co-located stories in workspace packages plus root-level MDX docs (the `../src/**/*.mdx` glob is configured, but there are currently no `src/**/*.mdx` files)
-- guidance: Storybook has its own alias map in `.storybook/main.ts`; package aliases align with the main build, while `@` intentionally differs (`src/` in Storybook vs repo root in Vite/TS)
-
-For cross-package imports, prefer:
-
-- `@redhat-cloud-services/nxtcm-dashboard`
-- `@redhat-cloud-services/nxtcm-rosa-hcp-wizard`
+- aliases: see [Path aliases](#path-aliases) above for the per-tool breakdown; prefer the package aliases for cross-package imports
