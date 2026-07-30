@@ -17,7 +17,7 @@ all `uses:` references must pin to a full commit SHA, not a tag or branch:
 
 ```yaml
 # correct
-- uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+- uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
 # wrong — supply chain risk
 - uses: actions/checkout@v4
