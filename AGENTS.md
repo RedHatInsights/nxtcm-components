@@ -40,6 +40,25 @@ this repo uses PatternFly for UI. for design system rules, styling, accessibilit
 
 ---
 
+## testing
+
+for test infrastructure, coverage, and E2E patterns:
+
+- **E2E test implementation** → [.agents/skills/e2e-test-implementation/SKILL.md](.agents/skills/e2e-test-implementation/SKILL.md) - guide for implementing E2E tests from test gap analysis
+- **Monaco component testing** → [.agents/skills/monaco-component-testing/SKILL.md](.agents/skills/monaco-component-testing/SKILL.md) - testing Monaco editor components in Playwright CT with known limitations
+- **CIDR validation testing** → [.agents/skills/cidr-validation-testing/SKILL.md](.agents/skills/cidr-validation-testing/SKILL.md) - domain expertise for testing complex CIDR validation logic
+- **manual test execution** → [.agents/skills/manual-testing/SKILL.md](.agents/skills/manual-testing/SKILL.md) - systematic manual testing before releases
+
+### test planning
+
+comprehensive test planning documents (ROSA HCP Wizard):
+
+- **manual test plan** → [packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md](packages/nxtcm-rosa-hcp-wizard/docs/testing/MANUAL-TEST-PLAN.md) - comprehensive manual test scenarios
+- **E2E test coverage gaps** → [packages/nxtcm-rosa-hcp-wizard/docs/testing/E2E-TEST-GAPS.md](packages/nxtcm-rosa-hcp-wizard/docs/testing/E2E-TEST-GAPS.md) - analysis of what's missing from automated E2E tests
+- **Monaco integration tests** → [packages/nxtcm-rosa-hcp-wizard/docs/testing/MONACO-INTEGRATION-TESTS.md](packages/nxtcm-rosa-hcp-wizard/docs/testing/MONACO-INTEGRATION-TESTS.md) - summary of Monaco editor integration testing approach
+
+---
+
 ## project layout
 
 ```text
