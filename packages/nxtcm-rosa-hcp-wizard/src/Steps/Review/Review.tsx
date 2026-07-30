@@ -89,19 +89,21 @@ export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
   const rosaStrings = useRosaHcpWizardStrings();
   const { review } = rosaStrings;
 
-  return (
-    <Section
-      label={review.sectionLabel}
-      id={STEP_IDS.REVIEW}
-      isForm={false}
-      labelActions={
-        onOpenYamlEditor ? (
+  const Label = (
+    <Split hasGutter>
+      <SplitItem isFilled>{review.sectionLabel}</SplitItem>
+      {onOpenYamlEditor ? (
+        <SplitItem>
           <Button variant="secondary" icon={<PencilAltIcon />} onClick={onOpenYamlEditor}>
             {review.editInYaml}
           </Button>
-        ) : undefined
-      }
-    >
+        </SplitItem>
+      ) : null}
+    </Split>
+  );
+
+  return (
+    <Section label={Label} id={STEP_IDS.REVIEW}>
       <Alert
         variant={AlertVariant.info}
         title={
