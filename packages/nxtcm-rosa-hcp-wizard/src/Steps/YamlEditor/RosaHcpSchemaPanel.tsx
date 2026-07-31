@@ -182,7 +182,7 @@ export const RosaHcpSchemaPanel = ({ onClose, schema }: RosaHcpSchemaPanelProps)
           <StackItem>
             <Stack>
               {Object.entries(filteredProperties).map(([fieldName, fieldProp]) => (
-                <SchemaField key={fieldName} name={fieldName} prop={fieldProp} /> // eslint-disable-line prettier/prettier
+                <SchemaField key={fieldName} name={fieldName} prop={fieldProp} />
               ))}
             </Stack>
           </StackItem>
