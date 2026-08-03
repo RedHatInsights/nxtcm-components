@@ -110,6 +110,30 @@ npx playwright test -c playwright-ct.config.ts path/to/Component.spec.tsx
 npm run test:ct:coverage
 ```
 
+## fixing flaky a11y tests caused by CSS transitions
+
+PatternFly v6 components (e.g. `ExpandableSection`) use CSS transitions on `opacity`, `translate`, `visibility`, and `max-height`. When axe-core scans the DOM mid-transition, partially faded text can fail WCAG contrast-ratio checks, producing **flaky false positives**.
+
+`page.emulateMedia({ reducedMotion: 'reduce' })` does **not** help — PF v6 only gates the slide transition on `prefers-reduced-motion`, not the opacity fade.
+
+**fix:** after triggering the transition (e.g. clicking an expand toggle), wait for all CSS animations to finish using the browser-native `getAnimations()` API:
+
+```tsx
+// click the toggle that starts the transition
+await component.getByRole('button', { name: /advanced/i }).click();
+
+// wait for all CSS transitions/animations on the component subtree to settle
+await component.evaluate(async (el) => {
+  await new Promise(requestAnimationFrame); // yield so transitions start
+  await Promise.allSettled(
+    el.getAnimations({ subtree: true }).map((a) => a.finished)
+  );
+});
+
+// now safe to run axe-core
+await checkAccessibility({ component });
+```
+
 ## common pitfalls
 
 - **CSS class selectors** — will break on PF upgrade. use role-based.
@@ -117,3 +141,4 @@ npm run test:ct:coverage
 - **inline mock data** — extract to spec-helpers for reuse and readability.
 - **missing `await`** on assertions — playwright assertions are async, always await.
 - **testing component from wrong package** — verify import path matches the package the component lives in.
+- **a11y scan during CSS transition** — axe-core flags intermediate opacity as contrast failure. use `getAnimations()` pattern above.
