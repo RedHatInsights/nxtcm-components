@@ -134,24 +134,6 @@ await component.evaluate(async (el) => {
 await checkAccessibility({ component });
 ```
 
-**why each line matters:**
-
-- `requestAnimationFrame` — ensures the browser has started the transition before we query for running animations.
-- `getAnimations({ subtree: true })` — returns all CSS transitions and Web Animations on the element and its descendants.
-- `Promise.allSettled` (not `Promise.all`) — handles animations that are cancelled mid-flight without throwing.
-
-extract the wait into a helper when multiple tests in the same spec need it:
-
-```tsx
-async function expandAndWait(component: MountResult) {
-  await component.getByRole('button', { name: /toggle/i }).click();
-  await component.evaluate(async (el) => {
-    await new Promise(requestAnimationFrame);
-    await Promise.allSettled(el.getAnimations({ subtree: true }).map((a) => a.finished));
-  });
-}
-```
-
 ## common pitfalls
 
 - **CSS class selectors** — will break on PF upgrade. use role-based.
