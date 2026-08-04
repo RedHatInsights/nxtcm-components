@@ -33,6 +33,24 @@ test.describe('Select', () => {
     await expect(page.getByRole('option', { name: 'other-net' })).toBeVisible();
   });
 
+  test('re-selecting the same typeahead option keeps the selection', async ({ mount, page }) => {
+    await mount(<TypeaheadHarness />);
+    const combo = page.getByRole('combobox', { name: /select the subnet/i });
+
+    // Select an option
+    await combo.click();
+    await page.getByRole('option', { name: 'subnet-a' }).click();
+    await expect(page.getByTestId('ta-val')).toHaveText('subnet-a');
+
+    // Re-select the same option — value must stay
+    await combo.click();
+    await page.getByRole('option', { name: 'subnet-a' }).click();
+    await expect(page.getByTestId('ta-val')).toHaveText('subnet-a');
+
+    // Toggle text must still show the selected label (not empty)
+    await expect(combo).toHaveValue('subnet-a');
+  });
+
   test('invokes onRefresh when the refresh control is pressed', async ({ mount, page }) => {
     await mount(<RefreshHarness />);
     await page.getByRole('button', { name: 'Refresh' }).click();
