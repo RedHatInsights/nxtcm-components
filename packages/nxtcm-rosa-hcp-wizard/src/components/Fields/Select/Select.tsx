@@ -303,7 +303,19 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     [onChange]
   );
 
-  const toggleOpen = useCallback(() => setOpen((o) => !o), []);
+  /**
+   * Clears the typeahead filter when opening so all options are visible.
+   * Restores the selected label when closing without a new selection.
+   */
+  const toggleOpen = useCallback(() => {
+    setOpen((prev) => {
+      const next = !prev;
+      if (isTypeAhead) {
+        setTypeaheadQuery(next ? '' : toggleLabel || '');
+      }
+      return next;
+    });
+  }, [isTypeAhead, toggleLabel]);
 
   const describedBy = helperTextId({
     id,
@@ -376,6 +388,17 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     </MenuToggle>
   );
 
+  /** Handles PF-initiated open-change (click-outside, Escape). */
+  const handleOpenChange = useCallback(
+    (isOpen: boolean) => {
+      setOpen(isOpen);
+      if (isTypeAhead) {
+        setTypeaheadQuery(isOpen ? '' : toggleLabel || '');
+      }
+    },
+    [isTypeAhead, toggleLabel]
+  );
+
   useEffect(() => {
     if (!isTypeAhead) return;
     /** Keeps query text in sync when the controlled selection (`value`) changes. Typing filters without changing selection leaves `toggleLabel` stable, so the input is not reset. */
@@ -390,7 +413,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
           isOpen={open}
           selected={selectedForMenu}
           onSelect={onPfSelect}
-          onOpenChange={setOpen}
+          onOpenChange={handleOpenChange}
           toggle={isTypeAhead ? typeaheadToggle : plainToggle}
           variant={isTypeAhead ? 'typeahead' : undefined}
           shouldFocusToggleOnSelect={!isTypeAhead}

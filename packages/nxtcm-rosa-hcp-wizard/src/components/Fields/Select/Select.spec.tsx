@@ -18,6 +18,21 @@ test.describe('Select', () => {
     await expect(page.getByRole('option', { name: 'other-net' })).toHaveCount(0);
   });
 
+  test('shows all options when reopening a typeahead after selection', async ({ mount, page }) => {
+    await mount(<TypeaheadHarness />);
+    const combo = page.getByRole('combobox', { name: /select the subnet/i });
+
+    // Select an option
+    await combo.click();
+    await page.getByRole('option', { name: 'subnet-a' }).click();
+
+    // Reopen — all options should be visible (no leftover filter)
+    await combo.click();
+    await expect(page.getByRole('option', { name: 'subnet-a' })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'subnet-b' })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'other-net' })).toBeVisible();
+  });
+
   test('invokes onRefresh when the refresh control is pressed', async ({ mount, page }) => {
     await mount(<RefreshHarness />);
     await page.getByRole('button', { name: 'Refresh' }).click();
