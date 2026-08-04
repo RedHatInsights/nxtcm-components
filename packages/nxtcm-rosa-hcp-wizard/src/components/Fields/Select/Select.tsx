@@ -307,15 +307,20 @@ export function Select<T = unknown>(props: SelectProps<T>) {
    * Clears the typeahead filter when opening so all options are visible.
    * Restores the selected label when closing without a new selection.
    */
-  const toggleOpen = useCallback(() => {
-    setOpen((prev) => {
-      const next = !prev;
+  const syncTypeaheadQueryForOpenState = useCallback(
+    (isOpen: boolean) => {
       if (isTypeAhead) {
-        setTypeaheadQuery(next ? '' : toggleLabel || '');
+        setTypeaheadQuery(isOpen ? '' : toggleLabel || '');
       }
-      return next;
-    });
-  }, [isTypeAhead, toggleLabel]);
+    },
+    [isTypeAhead, toggleLabel]
+  );
+
+  const toggleOpen = useCallback(() => {
+    const next = !open;
+    setOpen(next);
+    syncTypeaheadQueryForOpenState(next);
+  }, [open, syncTypeaheadQueryForOpenState]);
 
   const describedBy = helperTextId({
     id,
@@ -373,7 +378,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
           id={`${id}-typeahead-input`}
         />
         <TextInputGroupUtilities
-          {...(!typeaheadQuery || typeaheadToggleDisplay === 'Loading...'
+          {...((!typeaheadQuery && !toggleLabel) || typeaheadToggleDisplay === 'Loading...'
             ? { style: { display: 'none' } }
             : {})}
         >
@@ -392,11 +397,9 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   const handleOpenChange = useCallback(
     (isOpen: boolean) => {
       setOpen(isOpen);
-      if (isTypeAhead) {
-        setTypeaheadQuery(isOpen ? '' : toggleLabel || '');
-      }
+      syncTypeaheadQueryForOpenState(isOpen);
     },
-    [isTypeAhead, toggleLabel]
+    [syncTypeaheadQueryForOpenState]
   );
 
   useEffect(() => {
