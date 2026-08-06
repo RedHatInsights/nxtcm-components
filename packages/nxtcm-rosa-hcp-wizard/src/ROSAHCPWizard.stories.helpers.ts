@@ -238,14 +238,6 @@ export function createMockRosaHcpWizardDataWithFetchLogging(
       ...base.vpcList,
       fetch: storyFetchWithLogging<[args: import('./types').VPCRefetchArgs]>('vpcList'),
     },
-    subnets: {
-      ...base.subnets,
-      fetch: storyFetchWithLogging('subnets'),
-    },
-    securityGroups: {
-      ...base.securityGroups,
-      fetch: storyFetchWithLogging('securityGroups'),
-    },
   };
 }
 
@@ -303,18 +295,6 @@ export function createMockRosaHcpWizardData(
     },
     vpcList: {
       data: fixtures.mockVPCs,
-      error: null,
-      isFetching: false,
-      fetch: noopFetch,
-    },
-    subnets: {
-      data: getMockStoryPrivateSubnets(),
-      error: null,
-      isFetching: false,
-      fetch: noopFetch,
-    },
-    securityGroups: {
-      data: fixtures.mockSecurityGroups,
       error: null,
       isFetching: false,
       fetch: noopFetch,

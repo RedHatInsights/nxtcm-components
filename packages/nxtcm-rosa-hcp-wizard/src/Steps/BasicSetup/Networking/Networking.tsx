@@ -21,7 +21,7 @@ import {
 import { STEP_IDS } from '../../../constants';
 import { useIsStepHidden } from '../../../WizardConfigContext';
 
-type NetworkingStepProps = Pick<ROSAHCPWizardData, 'vpcList' | 'subnets'>;
+type NetworkingStepProps = Pick<ROSAHCPWizardData, 'vpcList'>;
 
 type CidrFieldLabelHelpProps = {
   helpLead: string;
