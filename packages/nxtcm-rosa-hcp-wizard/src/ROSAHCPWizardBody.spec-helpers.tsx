@@ -43,8 +43,6 @@ export function makeMinimalRosaHcpWizardData(
       fetch: noopFetch,
     },
     vpcList: makeVpcListResource(),
-    subnets: fixtures.mockResource([]),
-    securityGroups: fixtures.mockResource(fixtures.mockSecurityGroups),
     clusterNameValidation: fixtures.mockValidationResource(),
     ...overrides,
   };
