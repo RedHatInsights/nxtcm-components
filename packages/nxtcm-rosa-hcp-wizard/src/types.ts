@@ -189,8 +189,6 @@ export type VPCRefetchArgs = {
 export type VpcListResource = Resource<VPC[], [args: VPCRefetchArgs]> & {
   fetch: (args: VPCRefetchArgs) => Promise<void>;
 };
-export type SubnetsResource = Resource<Subnet[]>;
-export type SecurityGroupsResource = Resource<SecurityGroup[]>;
 
 export type CheckClusterNameUniqueness = (name: string, region?: string) => Promise<string | null>;
 
@@ -203,8 +201,6 @@ export type ROSAHCPWizardData = {
   roles: RolesResource;
   oidcConfig: OidcConfigResource;
   vpcList: VpcListResource;
-  subnets: SubnetsResource;
-  securityGroups: SecurityGroupsResource;
   clusterNameValidation: ValidationResource;
   checkClusterNameUniqueness?: CheckClusterNameUniqueness;
 };
@@ -252,7 +248,7 @@ export type RosaHCPWizardProps = {
   onSubmit: (yamlString: string) => Promise<void>;
   onSubmitError?: string | boolean;
   onCancel: () => void;
-  title: string;
+  title?: string;
   onBackToReviewStep?: () => void | Promise<void>;
   product?: 'acm' | 'ocm' | 'oem';
   /**
