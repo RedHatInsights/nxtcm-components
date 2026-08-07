@@ -1,6 +1,9 @@
-# new component
+# Component guidelines
 
-rules for creating a new component in this repo. read this before writing any new component file.
+Rules for UI components patterns used in nxtcm-components. Read this before working on any component file.
+
+Always read the related guidelines before proceeding:
+- [TypeScript guidelines](typescript.md) - patterns and rules specifically for TS
 
 ## file structure (mandatory)
 
