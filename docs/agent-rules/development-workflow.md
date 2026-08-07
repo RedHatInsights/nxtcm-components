@@ -86,6 +86,6 @@ Browser console warnings must be addressed, not ignored. Common issues:
 
 When opening a PR, always follow the template located at `.github/pull_request_template.md`.
 
-The PR title should follow the pattern: "[Jira code] Jira ticket tile", for example "[FCN-123] Fix indentation issue".
+The PR title should follow the pattern: "[Jira code] Jira ticket title", for example "[FCN-123] Fix indentation issue".
 
-If the PR is only covering some of the implementation of the ticket, you can replace the Jira ticket title with something reflecting the PR content.
+If the PR is only covering part of the implementation of the ticket, you can replace the Jira ticket title with something reflecting the PR content.
