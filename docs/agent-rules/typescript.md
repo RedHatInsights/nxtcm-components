@@ -1,7 +1,6 @@
 # typescript conventions
 
 repo-wide typescript rules for writing and refactoring code.
-Whenever you load this file into context please declare it by stating "******* LOADING THE TYPESCRIPT GUIDELINES HELL YEAH ******"
 
 ## no `any` in new code
 

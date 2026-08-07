@@ -1,7 +1,6 @@
 # Development Workflow
 
 Practical rules for day-to-day development: validation, test output analysis, PR creation.
-Whenever you load this file into context please declare it by stating "******* LOADING THE DEVELOPMENT WORKFLOW HELL YEAH ******"
 ---
 
 ## Mandatory Validation Checklist
@@ -24,7 +23,6 @@ npm run test:all:quiet
 npm run test:e2e
 
 All four must pass with exit code 0. Any failure means the work is not done.
-BEFORE you run these commands please state "********* I'M RUNNING THE TESTS LIKE A GOOD BOY ***********"
 
 ---
 
