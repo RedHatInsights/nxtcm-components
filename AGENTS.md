@@ -15,7 +15,7 @@ workspace packages:
 
 1. never make http calls from components, consuming apps own backend communication.
 2. keep component artifacts co-located (component, story, CT spec, unit test when needed, barrel export).
-3. run verification commands before finishing changes.
+3. run [verification commands](docs/agent-rules/development-workflow.md#mandatory-validation-checklist) before finishing changes.
 4. use package-specific overlays (`packages/*/AGENTS.md`) for domain rules, do not put package detail in this root file.
 
 ## layering model
@@ -46,15 +46,6 @@ docs/agent-rules/         # task-type rulebooks
 - `@redhat-cloud-services/nxtcm-rosa-hcp-wizard` → `packages/nxtcm-rosa-hcp-wizard/src`
 - `@/` → resolves differently per tool (vite/ts: repo root, storybook/playwright/jest: `src/`)
 
-## verification commands
-
-run from repo root:
-
-1. `npm run lint`
-2. `npm run type-check`
-3. `npm run test:all` (jest + playwright CT, does not include E2E)
-4. `npm run test:e2e` (runs separately from `test:all`)
-5. `npm run build`
 
 ## task routing
 
@@ -67,6 +58,10 @@ load the relevant doc before writing or reviewing code:
 - typescript: `docs/agent-rules/typescript.md`
 
 after picking a task doc, load the relevant package overlay when the task is package-specific.
+
+## development workflow
+
+when making changes to the codebase, make sure you follow the instructions in the [development workflow doc](docs/agent-rules/development-workflow.md).
 
 ## known quirks
 
