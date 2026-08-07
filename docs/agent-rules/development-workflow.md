@@ -5,8 +5,6 @@ Practical rules for day-to-day development: validation, test output analysis, PR
 
 ## Mandatory Validation Checklist
 
-**Run these commands exactly as written — do not append `| tail`, `| head`, or any other output-truncating pipes.** The output is already concise.
-
 **Never claim a task is complete without running all of these:**
 
 ```bash
