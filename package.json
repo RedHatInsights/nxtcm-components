@@ -52,7 +52,7 @@
     "prettier:fix": "prettier --write '{scripts,packages}/**/*.{js,ts,mjs,jsx,tsx}'",
     "test": "jest",
     "test:all": "npm run test && npm run test:ct",
-    "test:all:quiet": "npm test && QUIET=true playwright test -c playwright-ct.config.ts --reporter=dot",
+    "test:all:quiet": "npm test && QUIET=true playwright test -c playwright-ct.config.ts --reporter=line",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:e2e": "playwright test",

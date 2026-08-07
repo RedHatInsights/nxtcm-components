@@ -71,17 +71,6 @@ npm run test:all:quiet 2>&1 | grep -i "fail"   # don't do this
 
 ---
 
-## Console Warnings
-
-Browser console warnings must be addressed, not ignored. Common issues:
-
-| Warning                            | Fix                                         |
-|------------------------------------|---------------------------------------------|
-| Missing ARIA label on table header | Add `aria-label` or `screenReaderText` prop |
-| React key prop missing             | Add `key` to JSX elements in arrays         |
-
----
-
 ## PRs rules
 
 When opening a PR, always follow the template located at `.github/pull_request_template.md`.
