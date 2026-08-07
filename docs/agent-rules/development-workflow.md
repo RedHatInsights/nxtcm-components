@@ -1,6 +1,6 @@
 # Development Workflow
 
-Practical rules for day-to-day development: validation, test output analysis, PR creation.
+Practical rules for day-to-day development: validation, targeted test runs, PR creation.
 
 ## Mandatory Validation Checklist
 
@@ -50,24 +50,6 @@ npm run lint -- packages/nxtcm-rosa-hcp-wizard/src/Footer/RosaHcpWizardFooter.ts
 ```
 
 For final validation before pushing, use `npm run test:all:quiet` and `npm run test:e2e`.
-
----
-
-## Test Output Analysis
-    
-Run the test suite once and pipe output to a file. Analyze the file — don't re-run for each grep:
-
-```bash
-# ✅ Run once, save, analyze many times
-npm run test:all:quiet 2>&1 | tee /tmp/test-output.txt
-grep -i "error" /tmp/test-output.txt
-grep -i "fail"  /tmp/test-output.txt
-grep -i "skip"  /tmp/test-output.txt
-
-# ❌ Running the suite multiple times wastes ~1 minute per each run
-npm run test:all:quiet 2>&1 | grep -i "error"
-npm run test:all:quiet 2>&1 | grep -i "fail"   # don't do this
-```
 
 ---
 
