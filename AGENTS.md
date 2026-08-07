@@ -14,7 +14,8 @@ workspace packages:
 ## hard constraints
 
 1. never make http calls from components, consuming apps own backend communication.
-2. keep component artifacts co-located (component, story, CT spec, unit test when needed, barrel export).
+2. before writing or modifying any component file, you MUST read the task-type doc from `docs/agent-rules/` that matches the work (e.g., `ui-component.md` for
+   component code). Do not skip this step. Refer to the #[task routing section](#task-routing) for a list of docs. 
 3. run [verification commands](docs/agent-rules/development-workflow.md#mandatory-validation-checklist) before finishing changes.
 4. use package-specific overlays (`packages/*/AGENTS.md`) for domain rules, do not put package detail in this root file.
 
@@ -51,7 +52,7 @@ docs/agent-rules/         # task-type rulebooks
 
 load the relevant doc before writing or reviewing code:
 
-- ui component work: `docs/agent-rules/new-component.md`
+- ui component work: `docs/agent-rules/ui-component.md`
 - playwright CT: `docs/agent-rules/playwright-ct.md`
 - storybook: `docs/agent-rules/storybook.md`
 - ci/workflow: `docs/agent-rules/ci-workflows.md`

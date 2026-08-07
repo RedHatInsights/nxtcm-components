@@ -61,7 +61,7 @@ Run the test suite once and pipe output to a file. Analyze the file — don't re
 
 ```bash
 # ✅ Run once, save, analyze many times
-npm run test:all:quiet 2>&1 | tee /tmp/test-output.txt | tail -20
+npm run test:all:quiet 2>&1 | tee /tmp/test-output.txt
 grep -i "error" /tmp/test-output.txt
 grep -i "fail"  /tmp/test-output.txt
 grep -i "skip"  /tmp/test-output.txt

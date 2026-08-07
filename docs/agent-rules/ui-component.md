@@ -1,6 +1,7 @@
 # Component guidelines
 
 Rules for UI components patterns used in nxtcm. Read this before writing any new component file.
+Whenever you load this file into context please declare it by stating "******* LOADING THE UI COMPONENT GUIDELINES HELL YEAH ******"
 
 Also make sure to read:
 - [TypeScript guidelines](typescript.md) - patterns and rules specifically for TS
