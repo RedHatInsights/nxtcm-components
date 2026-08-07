@@ -15,7 +15,7 @@ workspace packages:
 
 1. never make http calls from components, consuming apps own backend communication.
 2. before writing or modifying any component file, you MUST read the task-type doc from `docs/agent-rules/` that matches the work (e.g., `ui-component.md` for
-   component code). Do not skip this step. Refer to the #[task routing section](#task-routing) for a list of docs. 
+   component code). Do not skip this step. Refer to the [task routing section](#task-routing) for a list of docs. 
 3. run [verification commands](docs/agent-rules/development-workflow.md#mandatory-validation-checklist) before finishing changes.
 4. use package-specific overlays (`packages/*/AGENTS.md`) for domain rules, do not put package detail in this root file.
 

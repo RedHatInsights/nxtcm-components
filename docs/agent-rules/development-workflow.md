@@ -1,7 +1,6 @@
 # Development Workflow
 
 Practical rules for day-to-day development: validation, test output analysis, PR creation.
----
 
 ## Mandatory Validation Checklist
 
@@ -14,11 +13,12 @@ npm run build
 # 2. Linting (must be zero errors)
 npm run lint
 
-# 3. Unit tests and PlayWright component tests
+# 3. Unit tests and Playwright component tests
 npm run test:all:quiet
 
 # 4. E2E tests (runs separately from `test:all:quiet`)
 npm run test:e2e
+```
 
 All four must pass with exit code 0. Any failure means the work is not done.
 
