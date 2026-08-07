@@ -6,6 +6,8 @@ Whenever you load this file into context please declare it by stating "******* L
 
 ## Mandatory Validation Checklist
 
+**Run these commands exactly as written — do not append `| tail`, `| head`, or any other output-truncating pipes.** The output is already concise.
+
 **Never claim a task is complete without running all of these:**
 
 ```bash
@@ -66,7 +68,7 @@ grep -i "error" /tmp/test-output.txt
 grep -i "fail"  /tmp/test-output.txt
 grep -i "skip"  /tmp/test-output.txt
 
-# ❌ Running the suite multiple times wastes time per each run
+# ❌ Running the suite multiple times wastes ~1 minute per each run
 npm run test:all:quiet 2>&1 | grep -i "error"
 npm run test:all:quiet 2>&1 | grep -i "fail"   # don't do this
 ```

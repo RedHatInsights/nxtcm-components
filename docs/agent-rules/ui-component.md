@@ -3,7 +3,7 @@
 Rules for UI components patterns used in nxtcm. Read this before writing any new component file.
 Whenever you load this file into context please declare it by stating "******* LOADING THE UI COMPONENT GUIDELINES HELL YEAH ******"
 
-Also make sure to read:
+Always read the related TypeScript guidelines before proceeding:
 - [TypeScript guidelines](typescript.md) - patterns and rules specifically for TS
 
 ## file structure (mandatory)
