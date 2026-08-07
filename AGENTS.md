@@ -60,7 +60,7 @@ load the relevant doc before writing or reviewing code:
 
 after picking a task doc, load the relevant package overlay when the task is package-specific.
 
-## development workflow
+### development workflow
 
 when making changes to the codebase, make sure you follow the instructions in the [development workflow doc](docs/agent-rules/development-workflow.md).
 
