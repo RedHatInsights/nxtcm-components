@@ -46,6 +46,7 @@ export default defineConfig({
     ctPort: strykerCtPort ?? 3100,
     ...(strykerCacheDir ? { ctCacheDir: strykerCacheDir } : {}),
     ctViteConfig: {
+      logLevel: process.env.QUIET === 'true' ? 'warn' : 'info',
       plugins: [...(istanbulPlugin ? [istanbulPlugin] : [])],
       ...(strykerCacheDir
         ? {

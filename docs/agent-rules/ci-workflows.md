@@ -89,7 +89,6 @@ current implementation expectation:
 
 ## testing workflow changes
 
-- always run the root `AGENTS.md` verification commands before commit
 - use `act` as supplemental workflow validation, not a replacement for the required local checks
 - for `workflow_run` triggers, the workflow file must exist on the default branch (main) before it fires
 - test on a branch first, then merge the workflow file to main

@@ -8,13 +8,13 @@ the [task routing table](../../AGENTS.md#task-routing) in the root AGENTS.md map
 
 ## files
 
-| file | covers |
-|------|--------|
-| [new-component.md](new-component.md) | creating a new component (file structure, props, story, spec, exports) |
-| [playwright-ct.md](playwright-ct.md) | writing Playwright component tests (selectors, spec-helpers, what to test) |
-| [storybook.md](storybook.md) | writing Storybook stories (CSF3, state stories, verification) |
-| [ci-workflows.md](ci-workflows.md) | modifying GitHub Actions workflows (pinning, CT triage pipeline, permissions) |
-| [typescript.md](typescript.md) | repo-wide TypeScript conventions (typing patterns, callbacks, generics) |
+| file                                 | covers                                                                        |
+|--------------------------------------|-------------------------------------------------------------------------------|
+| [ui-component.md](ui-component.md)   | working on UI components (file structure, props, story, spec, exports)        |
+| [playwright-ct.md](playwright-ct.md) | writing Playwright component tests (selectors, spec-helpers, what to test)    |
+| [storybook.md](storybook.md)         | writing Storybook stories (CSF3, state stories, verification)                 |
+| [ci-workflows.md](ci-workflows.md)   | modifying GitHub Actions workflows (pinning, CT triage pipeline, permissions) |
+| [typescript.md](typescript.md)       | repo-wide TypeScript conventions (typing patterns, callbacks, generics)       |
 
 ## adding a new rulebook
 
