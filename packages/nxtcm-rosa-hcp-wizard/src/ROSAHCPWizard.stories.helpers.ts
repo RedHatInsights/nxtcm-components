@@ -6,7 +6,6 @@ import type {
   OpenShiftVersionsData,
   Region,
   ROSAHCPWizardData,
-  Subnet,
   ValidationResource,
 } from './types';
 /** Storybook refetch delay (matches {@link fixtures} `REFETCH_ALL_DELAY_MS`). */
@@ -113,18 +112,6 @@ export function createSelectOptionsReconcileDemoWizardData(): ROSAHCPWizardData 
       data: fixtures.mockRegions,
     },
   };
-}
-
-/** Private subnets from the first HCP wizard fixture VPC (names include `private`, matching `subnetsFilter`). */
-export function getMockStoryPrivateSubnets(): Subnet[] {
-  return (fixtures.mockVPCs?.[0]?.aws_subnets ?? [])
-    .filter((s) => s.public === false)
-    .map(({ subnet_id, name, availability_zone, public: isPublic }) => ({
-      subnet_id,
-      name,
-      availability_zone,
-      public: isPublic,
-    }));
 }
 
 const noopFetch = async (): Promise<void> => {

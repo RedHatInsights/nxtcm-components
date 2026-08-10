@@ -42,8 +42,6 @@ function CreateRosaHcpCluster() {
       oidcConfig: { data: [], error: null, isFetching: false },
       machineTypes: { data: [], error: null, isFetching: false },
       vpcList: { data: [], error: null, isFetching: false },
-      subnets: { data: [], error: null, isFetching: false },
-      securityGroups: { data: [], error: null, isFetching: false },
     },
   };
 
