@@ -56,16 +56,6 @@ export const mockWizardData: ROSAHCPWizardData = {
     isFetching: false,
     fetch: async () => {},
   },
-  subnets: {
-    data: [],
-    error: null,
-    isFetching: false,
-  },
-  securityGroups: {
-    data: [],
-    error: null,
-    isFetching: false,
-  },
   clusterNameValidation: {
     error: null,
     isFetching: false,

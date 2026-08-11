@@ -5,7 +5,6 @@ import {
   createMockRosaHcpWizardData,
   createMockRosaHcpWizardDataWithFetchLogging,
   createSelectOptionsReconcileDemoWizardData,
-  getMockStoryPrivateSubnets,
   rosaHcpWizardDetailsFieldsAllApiErrorsData,
   storyAwsInfrastructureAccountRefetchCycle,
   storyFetchWithLogging,
@@ -69,8 +68,6 @@ const mockWizardData: ROSAHCPWizardData = {
     fetch: async () => {},
   },
   vpcList: { ...fixtures.mockResource(fixtures.mockVPCs), fetch: async () => {} },
-  subnets: fixtures.mockResource(getMockStoryPrivateSubnets()),
-  securityGroups: fixtures.mockResource(fixtures.mockSecurityGroups),
   clusterNameValidation: fixtures.mockValidationResource(),
 };
 

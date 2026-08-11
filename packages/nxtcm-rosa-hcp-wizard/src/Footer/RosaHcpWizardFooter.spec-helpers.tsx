@@ -17,7 +17,6 @@ import {
 import { Details } from '../Steps/BasicSetup/Details/Details';
 import { MachinePools } from '../Steps/BasicSetup/MachinePools/MachinePools';
 import { Networking } from '../Steps/BasicSetup/Networking/Networking';
-import { mockSubnets } from '../Steps/BasicSetup/Networking/Networking.fixtures';
 import { RolesAndPolicies } from '../Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies';
 import { Encryption } from '../Steps/OptionalSetup/Encryption/Encryption';
 import { ClusterUpdates } from '../Steps/OptionalSetup/ClusterUpdates/ClusterUpdates';
@@ -143,14 +142,6 @@ export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMount
 
   const vpcListProps = useMemo(() => makeVpcListResource(), []);
   const machineTypesProps = useMemo(() => makeMachineTypesResource(), []);
-  const subnetsProps = useMemo(
-    () => ({
-      data: mockSubnets,
-      error: null,
-      isFetching: false,
-    }),
-    []
-  );
 
   const wizardData = useMemo(
     () =>
@@ -163,7 +154,6 @@ export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMount
         oidcConfig: oidcProps,
         machineTypes: machineTypesProps,
         vpcList: vpcListProps,
-        subnets: subnetsProps,
       }),
     [
       awsBilling,
@@ -172,7 +162,6 @@ export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMount
       oidcProps,
       regionsProps,
       rolesProps,
-      subnetsProps,
       versionsProps,
       vpcListProps,
     ]
@@ -212,7 +201,7 @@ export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMount
                 <MachinePools vpcList={vpcListProps} machineTypes={machineTypesProps} />
               </WizardStep>,
               <WizardStep name={sl.networking} id={STEP_IDS.NETWORKING} key={STEP_IDS.NETWORKING}>
-                <Networking vpcList={vpcListProps} subnets={subnetsProps} />
+                <Networking vpcList={vpcListProps} />
               </WizardStep>,
             ]}
           />
