@@ -30,6 +30,7 @@ export function TypeaheadHarness() {
         options={['subnet-a', 'subnet-b', 'other-net']}
         isTypeAhead
       />
+      <span data-testid="ta-val">{value === undefined ? 'none' : String(value)}</span>
     </Form>
   );
 }

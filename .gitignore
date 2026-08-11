@@ -4,22 +4,21 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.js
 
 # testing
 /coverage
 /.nyc_output
-test-report.xml
 
 # production
-/build
 /dist
-/plugins/**/package.json
-/packages/rect-form-wizard
 /packages/nxtcm-dashboard/dist
 /packages/nxtcm-rosa-hcp-wizard/dist
+
+# IDE
+.idea/
 
 # misc
 .DS_Store
@@ -36,19 +35,13 @@ npm-debug.log*
 storybook-static
 
 # Playwright
-node_modules/
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
-packages/*/node_modules
-docs/
 test-ci-local.sh
 fix-all.sh
-/packages/*/node_modules
-
-/packages/*/lib/
 
 # stryker temp files
 .stryker-tmp

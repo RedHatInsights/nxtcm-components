@@ -12,6 +12,14 @@ const [fixtureVpc1] = rosaHcpWizardFixtures.mockVPCs;
 
 async function expandAdvancedSection(component: MountResult) {
   await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
+
+  // Wait for PF v6 ExpandableSection CSS transitions (opacity 200ms, translate)
+  // to finish. Without this, axe-core can scan mid-fade and flag false
+  // contrast-ratio violations.
+  await component.evaluate(async (el) => {
+    await new Promise(requestAnimationFrame);
+    await Promise.allSettled(el.getAnimations({ subtree: true }).map((a) => a.finished));
+  });
 }
 
 test.describe('MachinePoolsAdvancedSection (ROSA HCP)', () => {

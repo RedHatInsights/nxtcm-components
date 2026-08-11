@@ -155,6 +155,19 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   const placeholderText =
     placeholder ?? (label?.length ? `Select the ${lowercaseFirst(label)}` : 'Select an option');
 
+  /**
+   * Clears the typeahead filter when opening so all options are visible.
+   * Restores the selected label when closing without a new selection.
+   */
+  const syncTypeaheadQueryForOpenState = useCallback(
+    (isOpen: boolean) => {
+      if (isTypeAhead) {
+        setTypeaheadQuery(isOpen ? '' : toggleLabel || '');
+      }
+    },
+    [isTypeAhead, toggleLabel]
+  );
+
   const handleSelectById = useCallback(
     (optionId: string | undefined) => {
       if (isSyntheticOptionId(optionId)) {
@@ -171,6 +184,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
           onChange(undefined as T | string | number | undefined);
         }
         setOpen(false);
+        syncTypeaheadQueryForOpenState(false);
         return;
       }
       const opt = flatForLookup.find((o) => o.id === optionId);
@@ -178,8 +192,9 @@ export function Select<T = unknown>(props: SelectProps<T>) {
         onChange(opt.value as T | string | number | undefined);
       }
       setOpen(false);
+      syncTypeaheadQueryForOpenState(false);
     },
-    [flatForLookup, isTypeAhead, onChange]
+    [flatForLookup, isTypeAhead, onChange, syncTypeaheadQueryForOpenState]
   );
 
   const onPfSelect = useCallback(
@@ -303,7 +318,11 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     [onChange]
   );
 
-  const toggleOpen = useCallback(() => setOpen((o) => !o), []);
+  const toggleOpen = useCallback(() => {
+    const next = !open;
+    setOpen(next);
+    syncTypeaheadQueryForOpenState(next);
+  }, [open, syncTypeaheadQueryForOpenState]);
 
   const describedBy = helperTextId({
     id,
@@ -361,7 +380,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
           id={`${id}-typeahead-input`}
         />
         <TextInputGroupUtilities
-          {...(!typeaheadQuery || typeaheadToggleDisplay === 'Loading...'
+          {...((!typeaheadQuery && !toggleLabel) || typeaheadToggleDisplay === 'Loading...'
             ? { style: { display: 'none' } }
             : {})}
         >
@@ -374,6 +393,15 @@ export function Select<T = unknown>(props: SelectProps<T>) {
         </TextInputGroupUtilities>
       </TextInputGroup>
     </MenuToggle>
+  );
+
+  /** Handles PF-initiated open-change (click-outside, Escape). */
+  const handleOpenChange = useCallback(
+    (isOpen: boolean) => {
+      setOpen(isOpen);
+      syncTypeaheadQueryForOpenState(isOpen);
+    },
+    [syncTypeaheadQueryForOpenState]
   );
 
   useEffect(() => {
@@ -390,7 +418,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
           isOpen={open}
           selected={selectedForMenu}
           onSelect={onPfSelect}
-          onOpenChange={setOpen}
+          onOpenChange={handleOpenChange}
           toggle={isTypeAhead ? typeaheadToggle : plainToggle}
           variant={isTypeAhead ? 'typeahead' : undefined}
           shouldFocusToggleOnSelect={!isTypeAhead}

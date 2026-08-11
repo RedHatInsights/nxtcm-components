@@ -6,7 +6,6 @@ import type {
   OpenShiftVersionsData,
   Region,
   ROSAHCPWizardData,
-  Subnet,
   ValidationResource,
 } from './types';
 /** Storybook refetch delay (matches {@link fixtures} `REFETCH_ALL_DELAY_MS`). */
@@ -113,18 +112,6 @@ export function createSelectOptionsReconcileDemoWizardData(): ROSAHCPWizardData 
       data: fixtures.mockRegions,
     },
   };
-}
-
-/** Private subnets from the first HCP wizard fixture VPC (names include `private`, matching `subnetsFilter`). */
-export function getMockStoryPrivateSubnets(): Subnet[] {
-  return (fixtures.mockVPCs?.[0]?.aws_subnets ?? [])
-    .filter((s) => s.public === false)
-    .map(({ subnet_id, name, availability_zone, public: isPublic }) => ({
-      subnet_id,
-      name,
-      availability_zone,
-      public: isPublic,
-    }));
 }
 
 const noopFetch = async (): Promise<void> => {
@@ -238,14 +225,6 @@ export function createMockRosaHcpWizardDataWithFetchLogging(
       ...base.vpcList,
       fetch: storyFetchWithLogging<[args: import('./types').VPCRefetchArgs]>('vpcList'),
     },
-    subnets: {
-      ...base.subnets,
-      fetch: storyFetchWithLogging('subnets'),
-    },
-    securityGroups: {
-      ...base.securityGroups,
-      fetch: storyFetchWithLogging('securityGroups'),
-    },
   };
 }
 
@@ -303,18 +282,6 @@ export function createMockRosaHcpWizardData(
     },
     vpcList: {
       data: fixtures.mockVPCs,
-      error: null,
-      isFetching: false,
-      fetch: noopFetch,
-    },
-    subnets: {
-      data: getMockStoryPrivateSubnets(),
-      error: null,
-      isFetching: false,
-      fetch: noopFetch,
-    },
-    securityGroups: {
-      data: fixtures.mockSecurityGroups,
       error: null,
       isFetching: false,
       fetch: noopFetch,
