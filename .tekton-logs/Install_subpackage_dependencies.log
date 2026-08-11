@@ -1,0 +1,23 @@
+[0;34m[Install subpackage dependencies][0m Starting...
+npm warn deprecated @types/css-minimizer-webpack-plugin@3.2.4: This is a stub types definition. css-minimizer-webpack-plugin provides its own type definitions, so you do not need this installed.
+npm warn deprecated stable@0.1.8: Modern JS already guarantees Array#sort() is a stable sort, so this library is deprecated. See the compatibility table on MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#browser_compatibility
+npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+npm warn deprecated core-js@2.6.12: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
+
+added 1116 packages, and audited 1117 packages in 22s
+
+240 packages are looking for funding
+  run `npm fund` for details
+
+11 vulnerabilities (1 low, 4 moderate, 6 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+[0;32m[Install subpackage dependencies][0m ✓ Passed

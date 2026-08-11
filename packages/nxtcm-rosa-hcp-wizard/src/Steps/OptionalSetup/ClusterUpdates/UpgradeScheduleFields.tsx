@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormGroup, Grid, GridItem, Split, SplitItem } from '@patternfly/react-core';
+import { FormGroup, Split, SplitItem } from '@patternfly/react-core';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { HelperText } from '../../../components/Fields/HelperText';
 import { Select } from '../../../components/Fields/Select';
@@ -86,42 +86,34 @@ export const UpgradeScheduleFields = () => {
   };
 
   return (
-    <FormGroup
-      label={cu.dayTimeLabel}
-      className="pf-v6-u-ml-xl"
-      fieldId={UPGRADE_SCHEDULE_FIELDS_ID}
-      isRequired
-    >
-      <Grid>
-        <GridItem span={7}>
-          <Split hasGutter isWrappable>
-            <SplitItem>
-              <Select
-                id="upgrade-schedule-day"
-                placeholder={cu.selectDayPlaceholder}
-                value={selectedDay}
-                onChange={onDayChange}
-                options={dayOptions}
-                isFill
-                isError={showError}
-              />
-            </SplitItem>
-            <SplitItem>
-              <Select
-                id="upgrade-schedule-hour"
-                placeholder={cu.selectTimePlaceholder}
-                value={selectedHour}
-                onChange={onHourChange}
-                options={hourSelectOptions}
-                isFill
-                maxMenuHeight="20em"
-                isScrollable
-                isError={showError}
-              />
-            </SplitItem>
-          </Split>
-        </GridItem>
-      </Grid>
+    <FormGroup label={cu.dayTimeLabel} fieldId={UPGRADE_SCHEDULE_FIELDS_ID} isRequired>
+      <Split hasGutter isWrappable>
+        <SplitItem>
+          <Select
+            id="upgrade-schedule-day"
+            placeholder={cu.selectDayPlaceholder}
+            value={selectedDay}
+            onChange={onDayChange}
+            options={dayOptions}
+            isFill
+            isError={showError}
+          />
+        </SplitItem>
+        <SplitItem>
+          <Select
+            id="upgrade-schedule-hour"
+            placeholder={cu.selectTimePlaceholder}
+            value={selectedHour}
+            onChange={onHourChange}
+            options={hourSelectOptions}
+            isFill
+            maxMenuHeight="20em"
+            isScrollable
+            isError={showError}
+          />
+        </SplitItem>
+      </Split>
+
       <HelperText
         id={UPGRADE_SCHEDULE_FIELDS_ID}
         errorMessage={scheduleFieldState.error?.message}

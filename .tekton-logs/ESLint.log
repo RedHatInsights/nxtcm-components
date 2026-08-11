@@ -1,0 +1,6 @@
+[0;34m[ESLint][0m Starting...
+
+> nxtcm-components@0.0.1 lint
+> eslint 'src/**/*.{ts,tsx}'
+
+[0;32m[ESLint][0m ✓ Passed

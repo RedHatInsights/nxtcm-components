@@ -1,0 +1,13 @@
+[0;34m[E2E tests][0m Starting...
+
+> nxtcm-components@0.0.1 test:e2e
+> playwright test --reporter=list
+
+
+Running 2 tests using 1 worker
+
+  ✓  1 [chromium] › playwright/e2e/placeholder.spec.ts:10:7 › Placeholder E2E Tests › placeholder - should pass until real E2E tests are added (7ms)
+  ✓  2 [chromium] › playwright/e2e/placeholder.spec.ts:15:7 › Placeholder E2E Tests › placeholder - verify basic Playwright setup (44ms)
+
+  2 passed (620ms)
+[0;32m[E2E tests][0m ✓ Passed

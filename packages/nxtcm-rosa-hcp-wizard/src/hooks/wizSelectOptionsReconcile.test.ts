@@ -16,8 +16,6 @@ const RECONCILE_ENABLED_SELECT_PATHS = [
   'billing_account_id',
   'region',
   'installer_role_arn',
-  'support_role_arn',
-  'worker_role_arn',
   'byo_oidc_config_id',
   'selected_vpc',
   'machine_pools_subnets.0.machine_pool_subnet',
@@ -39,6 +37,10 @@ describe('wizSelectOptionsReconcile', () => {
 
     it('returns false for non-select fields', () => {
       expect(shouldReconcileWizSelectValue(clusterValidationSchema, 'name')).toBe(false);
+      expect(shouldReconcileWizSelectValue(clusterValidationSchema, 'support_role_arn')).toBe(
+        false
+      );
+      expect(shouldReconcileWizSelectValue(clusterValidationSchema, 'worker_role_arn')).toBe(false);
     });
 
     it('requires optionsWizardDataResource when reconcile is enabled', () => {

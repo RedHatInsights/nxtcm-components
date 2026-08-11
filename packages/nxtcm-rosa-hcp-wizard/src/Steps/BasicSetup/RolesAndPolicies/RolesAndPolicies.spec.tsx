@@ -174,7 +174,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
       await expect(component.getByText(rp.arnsToggle, { exact: true })).toBeVisible();
     });
 
-    test('should show support and worker role selects after expanding ARNs', async ({ mount }) => {
+    test('should show support and worker role fields after expanding ARNs', async ({ mount }) => {
       const component = await mount(
         <RolesAndPoliciesMount defaultValues={{ installer_role_arn: INSTALLER_ARN }} />
       );
@@ -196,9 +196,9 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
 
       await component.getByText(rp.arnsToggle, { exact: true }).click();
 
-      await expect(
-        component.locator('#support_role_arn-form-group .pf-v6-c-menu-toggle')
-      ).toContainText(mockRoles[0].supportRole[0].label);
+      await expect(component.locator('#support_role_arn')).toHaveValue(
+        mockRoles[0].supportRole[0].value
+      );
     });
 
     test('should auto-populate worker role when installer role is selected', async ({
@@ -212,33 +212,40 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
 
       await component.getByText(rp.arnsToggle, { exact: true }).click();
 
-      await expect(
-        component.locator('#worker_role_arn-form-group .pf-v6-c-menu-toggle')
-      ).toContainText(mockRoles[0].workerRole[0].label);
+      await expect(component.locator('#worker_role_arn')).toHaveValue(
+        mockRoles[0].workerRole[0].value
+      );
     });
 
-    test('should have support role select disabled', async ({ mount }) => {
+    test('should show installer role placeholder when support role is empty', async ({ mount }) => {
+      const component = await mount(<RolesAndPoliciesMount />);
+
+      await component.getByText(rp.arnsToggle, { exact: true }).click();
+
+      await expect(component.locator('#support_role_arn')).toHaveAttribute(
+        'placeholder',
+        rp.installerPlaceholder
+      );
+    });
+
+    test('should have support role field read-only', async ({ mount }) => {
       const component = await mount(
         <RolesAndPoliciesMount defaultValues={{ installer_role_arn: INSTALLER_ARN }} />
       );
 
       await component.getByText(rp.arnsToggle, { exact: true }).click();
 
-      await expect(
-        component.locator('#support_role_arn-form-group .pf-v6-c-menu-toggle')
-      ).toBeDisabled();
+      await expect(component.locator('#support_role_arn')).toHaveAttribute('readonly', '');
     });
 
-    test('should have worker role select disabled', async ({ mount }) => {
+    test('should have worker role field read-only', async ({ mount }) => {
       const component = await mount(
         <RolesAndPoliciesMount defaultValues={{ installer_role_arn: INSTALLER_ARN }} />
       );
 
       await component.getByText(rp.arnsToggle, { exact: true }).click();
 
-      await expect(
-        component.locator('#worker_role_arn-form-group .pf-v6-c-menu-toggle')
-      ).toBeDisabled();
+      await expect(component.locator('#worker_role_arn')).toHaveAttribute('readonly', '');
     });
   });
 

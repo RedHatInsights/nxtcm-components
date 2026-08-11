@@ -23,6 +23,9 @@ export default defineConfig({
     },
     dedupe: ['react', 'react-dom'],
   },
+  optimizeDeps: {
+    include: ['monaco-editor', 'monaco-yaml', 'path-browserify'],
+  },
   server: {
     port: 3200,
     strictPort: true,

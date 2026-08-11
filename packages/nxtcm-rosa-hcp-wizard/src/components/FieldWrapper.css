@@ -1,0 +1,24 @@
+.rosa-hcp-field-wrapper {
+  width: 100%;
+}
+
+.rosa-hcp-field-wrapper--sm {
+  max-width: 20rem;
+}
+
+.rosa-hcp-field-wrapper--md {
+  max-width: 30rem;
+}
+
+.rosa-hcp-field-wrapper--lg {
+  max-width: 40rem;
+}
+
+/* Expandable sections nested under a field (e.g. ARNs below installer role). */
+.rosa-hcp-field-wrapper__expandable {
+  margin-block-start: var(--pf-t--global--spacer--xs);
+}
+
+.rosa-hcp-field-wrapper__expandable:not(.pf-m-expanded) > .pf-v6-c-expandable-section__content {
+  display: none;
+}

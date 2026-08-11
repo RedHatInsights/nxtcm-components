@@ -1,0 +1,18 @@
+0 verbose cli /usr/local/bin/node /usr/local/bin/npm
+1 info using npm@10.8.2
+2 info using node@v20.19.5
+3 silly config load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config load:file:/workspace/.npmrc
+5 silly config load:file:/usr/local/etc/npmrc
+6 verbose title npm run prettier:check
+7 verbose argv "run" "prettier:check"
+8 verbose logfile logs-max:10 dir:/workspace/.npm/_logs/2025-11-10T20_23_08_011Z-
+9 verbose logfile /workspace/.npm/_logs/2025-11-10T20_23_08_011Z-debug-0.log
+10 silly logfile start cleaning logs, removing 1 files
+11 silly logfile done cleaning log files
+12 verbose cwd /workspace
+13 verbose os Linux 6.16.7-200.fc42.x86_64
+14 verbose node v20.19.5
+15 verbose npm  v10.8.2
+16 verbose exit 0
+17 info ok

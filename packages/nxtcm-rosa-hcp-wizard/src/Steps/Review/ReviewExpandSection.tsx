@@ -14,7 +14,6 @@ export const ReviewExpandSection = (props: {
     <ExpandableSection
       isExpanded={isExpanded}
       isIndented
-      isWidthLimited
       onToggle={onToggle}
       toggleText={props.label}
     >

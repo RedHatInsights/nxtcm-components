@@ -78,11 +78,11 @@ test.describe('Review', () => {
     await expect(c.getByText(/-----BEGIN CERTIFICATE-----/)).toBeVisible();
   });
 
-  test('renders one Edit Step control per visible review section', async ({ mount }) => {
+  test('renders one Edit step control per visible review section', async ({ mount }) => {
     const c = await mount(<ReviewHarness />);
 
     // Seven configured sections; cluster-wide proxy is omitted when unchanged.
-    await expect(c.getByRole('button', { name: 'Edit Step' })).toHaveCount(6);
+    await expect(c.getByRole('button', { name: reviewStrings.editStep })).toHaveCount(6);
   });
 
   test('machine pools review shows selected VPC label and private subnet label', async ({

@@ -1,7 +1,38 @@
-.rosa-hcp-wizard--yaml-editor-open .pf-v6-c-wizard__nav {
+.rosa-hcp-wizard {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: var(--pf-v6-c-wizard__outer-wrap--MinHeight);
+  height: 100%;
+}
+
+.rosa-hcp-wizard > .pf-v6-c-wizard {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* Wizard shell adjustments when the YAML editor replaces the review step content. */
+.rosa-hcp-wizard--yaml-editor-open .pf-v6-c-wizard__nav,
+.rosa-hcp-wizard--yaml-editor-open .pf-v6-c-wizard__toggle {
   display: none;
 }
 
 .rosa-hcp-wizard--yaml-editor-open .pf-v6-c-wizard__outer-wrap {
   padding-left: 0;
+  min-height: 0;
+}
+
+.rosa-hcp-wizard--yaml-editor-open {
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+.rosa-hcp-wizard--yaml-editor-open .pf-v6-c-wizard,
+.rosa-hcp-wizard--yaml-editor-open .pf-v6-c-wizard__outer-wrap,
+.rosa-hcp-wizard--yaml-editor-open .pf-v6-c-wizard__inner-wrap,
+.rosa-hcp-wizard--yaml-editor-open .pf-v6-c-wizard__main {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: hidden;
 }

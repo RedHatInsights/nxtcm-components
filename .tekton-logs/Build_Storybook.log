@@ -1,0 +1,87 @@
+[0;34m[Build Storybook][0m Starting...
+
+> nxtcm-components@0.0.1 build-storybook
+> storybook build
+
+[1mstorybook v9.1.16
+[22m
+info => Cleaning outputDir: [36mstorybook-static[39m
+info => Loading presets
+info => Building manager..
+info => Building preview..
+No story files found for the specified pattern: [34msrc/**/*.mdx[39m
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+info Using tsconfig paths for react-docgen
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+[34mAttention:[39m Storybook now collects completely anonymous telemetry regarding usage. This information is used to shape Storybook's roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+[36mhttps://storybook.js.org/telemetry[39m
+
+transforming...
+[32m✓[39m 5933 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mstorybook-static/[22m[32miframe.html                                        [39m[1m[2m   18.32 kB[22m[1m[22m[2m │ gzip:   5.15 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[32mpf-v6-pficon-Dy6oiu9u.woff2                 [39m[1m[2m   18.45 kB[22m[1m[22m
+[2mstorybook-static/[22m[2massets/[22m[32mRedHatMonoVF-C4fMH6Vz.woff2                 [39m[1m[2m   29.14 kB[22m[1m[22m
+[2mstorybook-static/[22m[2massets/[22m[32mRedHatMonoVF-Italic-DGQo2ogW.woff2          [39m[1m[2m   32.67 kB[22m[1m[22m
+[2mstorybook-static/[22m[2massets/[22m[32mRedHatTextVF-wYvZ7prR.woff2                 [39m[1m[2m   38.46 kB[22m[1m[22m
+[2mstorybook-static/[22m[2massets/[22m[32mRedHatDisplayVF-CYDHf1NI.woff2              [39m[1m[2m   39.76 kB[22m[1m[22m
+[2mstorybook-static/[22m[2massets/[22m[32mRedHatTextVF-Italic-Dkj_WqbA.woff2          [39m[1m[2m   41.17 kB[22m[1m[22m
+[2mstorybook-static/[22m[2massets/[22m[32mRedHatDisplayVF-Italic-CRpusWc8.woff2       [39m[1m[2m   41.54 kB[22m[1m[22m
+[2mstorybook-static/[22m[2massets/[22m[32mfa-solid-900-DguXoeIz.woff2                 [39m[1m[2m   79.10 kB[22m[1m[22m
+[2mstorybook-static/[22m[2massets/[22m[35mCVECard-CYqmjEUq.css                        [39m[1m[2m    0.57 kB[22m[1m[22m[2m │ gzip:   0.25 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[35mClusterRecommendations-C35tp1Ju.css         [39m[1m[2m    0.69 kB[22m[1m[22m[2m │ gzip:   0.32 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[35mStorageCard-BAVT91AF.css                    [39m[1m[2m    2.20 kB[22m[1m[22m[2m │ gzip:   0.69 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[35mCheckbox-Brll2NCM.css                       [39m[1m[2m    2.86 kB[22m[1m[22m[2m │ gzip:   0.67 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[35mYamlCodeEditor-ATTmKmb6.css                 [39m[1m[2m    3.67 kB[22m[1m[22m[2m │ gzip:   0.91 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[35mUpgradeRisks-CluW3CsB.css                   [39m[1m[2m    4.37 kB[22m[1m[22m[2m │ gzip:   1.09 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[35mbreadcrumb-BmBRJSPI.css                     [39m[1m[2m    4.59 kB[22m[1m[22m[2m │ gzip:   0.84 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[35mTooltip-BO_qgvPD.css                        [39m[1m[2m    5.91 kB[22m[1m[22m[2m │ gzip:   0.98 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[35mPopover-CPoyY56t.css                        [39m[1m[2m   15.85 kB[22m[1m[22m[2m │ gzip:   1.92 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[35mCardTitle-CEwFqKuA.css                      [39m[1m[2m   19.37 kB[22m[1m[22m[2m │ gzip:   2.42 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[35mActionDropdown-BJrP003K.css                 [39m[1m[2m   46.59 kB[22m[1m[22m[2m │ gzip:   4.00 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[35mButton-B2DZWT9u.css                         [39m[1m[2m   66.80 kB[22m[1m[22m[2m │ gzip:   6.57 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[35mFlexItem-C5EuqcHm.css                       [39m[1m[2m   69.46 kB[22m[1m[22m[2m │ gzip:   4.87 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[35mellipsis-v-icon-CMcS5tQ9.css                [39m[1m[2m   73.31 kB[22m[1m[22m[2m │ gzip:   7.44 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[35mNotificationsPanel-Ckw-upM5.css             [39m[1m[2m  208.93 kB[22m[1m[22m[2m │ gzip:  14.41 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[35mRosaWizard-DjjdWTc3.css                     [39m[1m[2m  593.63 kB[22m[1m[22m[2m │ gzip:  54.80 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[35miframe-C0Mfzth4.css                         [39m[1m[2m1,824.01 kB[22m[1m[22m[2m │ gzip: 160.22 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mbreadcrumb-ByodIBcb.js                      [39m[1m[2m    0.33 kB[22m[1m[22m[2m │ gzip:   0.16 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mangle-right-icon-Du7IMPX3.js                [39m[1m[2m    0.36 kB[22m[1m[22m[2m │ gzip:   0.25 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mindex-WZf7MyfA.js                           [39m[1m[2m    0.46 kB[22m[1m[22m[2m │ gzip:   0.30 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mGenerateId-D0VWLGuN.js                      [39m[1m[2m    0.47 kB[22m[1m[22m[2m │ gzip:   0.33 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mreact-18-DWopnS1q.js                        [39m[1m[2m    0.84 kB[22m[1m[22m[2m │ gzip:   0.49 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mcreateIcon-iwOsS8sW.js                      [39m[1m[2m    0.85 kB[22m[1m[22m[2m │ gzip:   0.55 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mjsx-runtime-xKQNbAfS.js                     [39m[1m[2m    0.92 kB[22m[1m[22m[2m │ gzip:   0.58 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mpreload-helper-C1FmrZbK.js                  [39m[1m[2m    1.14 kB[22m[1m[22m[2m │ gzip:   0.68 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mouia-DW9nSfiV.js                            [39m[1m[2m    1.24 kB[22m[1m[22m[2m │ gzip:   0.65 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mCheckbox-D6pHciKb.js                        [39m[1m[2m    2.34 kB[22m[1m[22m[2m │ gzip:   1.07 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mCardTitle-D0v6sleh.js                       [39m[1m[2m    3.02 kB[22m[1m[22m[2m │ gzip:   1.13 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mConsoleBreadcrumbs.stories-CtEnvUQ6.js      [39m[1m[2m    5.89 kB[22m[1m[22m[2m │ gzip:   2.05 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mStorageCard.stories-BVPgfhDi.js             [39m[1m[2m    6.75 kB[22m[1m[22m[2m │ gzip:   2.07 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mClusterRecommendations.stories-DxGl4IZB.js  [39m[1m[2m    8.57 kB[22m[1m[22m[2m │ gzip:   2.34 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mCVECard.stories-CltfFn3e.js                 [39m[1m[2m    9.15 kB[22m[1m[22m[2m │ gzip:   2.31 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mUpgradeRisks.stories-D1cDEaMa.js            [39m[1m[2m   11.46 kB[22m[1m[22m[2m │ gzip:   3.50 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mActionDropdown.stories-CCRrHxxN.js          [39m[1m[2m   12.83 kB[22m[1m[22m[2m │ gzip:   4.38 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mButton-BLZ9bz8l.js                          [39m[1m[2m   15.25 kB[22m[1m[22m[2m │ gzip:   6.06 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mFlexItem-C4Fi2kHB.js                        [39m[1m[2m   24.32 kB[22m[1m[22m[2m │ gzip:   4.28 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mellipsis-v-icon-C1Hp0gUI.js                 [39m[1m[2m   26.30 kB[22m[1m[22m[2m │ gzip:   8.53 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mPopover-ILmngcMs.js                         [39m[1m[2m   27.08 kB[22m[1m[22m[2m │ gzip:   9.24 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mTooltip-Asiyqu2E.js                         [39m[1m[2m   28.62 kB[22m[1m[22m[2m │ gzip:  10.40 kB[22m
+[2mstorybook-static/[22m[36mvite-inject-mocker-entry.js                        [39m[1m[2m   29.18 kB[22m[1m[22m[2m │ gzip:  10.13 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mColor-AVL7NMMY-DH9tGdDB.js                  [39m[1m[2m   29.44 kB[22m[1m[22m[2m │ gzip:  11.09 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mYamlCodeEditor.stories-eTvbN5PC.js          [39m[1m[2m   50.98 kB[22m[1m[22m[2m │ gzip:  17.05 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mNotificationsPanel.stories-WfGWRHf6.js      [39m[1m[2m   61.75 kB[22m[1m[22m[2m │ gzip:  20.22 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mindex-DEPz_NlL.js                           [39m[1m[2m  133.96 kB[22m[1m[22m[2m │ gzip:  43.15 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mRosaWizard.stories-yiPIR9jV.js              [39m[1m[33m  642.19 kB[39m[22m[2m │ gzip: 181.62 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36mDocsRenderer-PQXLIZUC-4zYwb8TV.js           [39m[1m[33m  667.67 kB[39m[22m[2m │ gzip: 218.93 kB[22m
+[2mstorybook-static/[22m[2massets/[22m[36miframe-DazSHQRH.js                          [39m[1m[33m1,233.45 kB[39m[22m[2m │ gzip: 343.79 kB[22m
+[33m
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[32m✓ built in 20.06s[39m
+info => Output directory: /workspace/storybook-static
+[0;32m[Build Storybook][0m ✓ Passed

@@ -1,0 +1,71 @@
+[0;34m[Component tests][0m Starting...
+
+> nxtcm-components@0.0.1 test:ct
+> playwright test -c playwright-ct.config.ts --reporter=list
+
+
+Running 36 tests using 1 worker
+
+[36mvite v6.4.1 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 812 modules transformed.
+rendering chunks...
+computing gzip size...
+[2m.cache/[22m[32mindex.html                                    [39m[1m[2m    0.40 kB[22m[1m[22m[2m │ gzip:   0.27 kB[22m
+[2m.cache/[22m[2massets/[22m[32mpf-v6-pficon-Dy6oiu9u.woff2            [39m[1m[2m   18.45 kB[22m[1m[22m
+[2m.cache/[22m[2massets/[22m[32mRedHatMonoVF-C4fMH6Vz.woff2            [39m[1m[2m   29.14 kB[22m[1m[22m
+[2m.cache/[22m[2massets/[22m[32mRedHatMonoVF-Italic-DGQo2ogW.woff2     [39m[1m[2m   32.67 kB[22m[1m[22m
+[2m.cache/[22m[2massets/[22m[32mRedHatTextVF-wYvZ7prR.woff2            [39m[1m[2m   38.46 kB[22m[1m[22m
+[2m.cache/[22m[2massets/[22m[32mRedHatDisplayVF-CYDHf1NI.woff2         [39m[1m[2m   39.76 kB[22m[1m[22m
+[2m.cache/[22m[2massets/[22m[32mRedHatTextVF-Italic-Dkj_WqbA.woff2     [39m[1m[2m   41.17 kB[22m[1m[22m
+[2m.cache/[22m[2massets/[22m[32mRedHatDisplayVF-Italic-CRpusWc8.woff2  [39m[1m[2m   41.54 kB[22m[1m[22m
+[2m.cache/[22m[2massets/[22m[35mCVECard-CPYKlbVU.css                   [39m[1m[2m    0.64 kB[22m[1m[22m[2m │ gzip:   0.26 kB[22m
+[2m.cache/[22m[2massets/[22m[35mindex-YjmNfab6.css                     [39m[1m[2m  227.58 kB[22m[1m[22m[2m │ gzip:  19.47 kB[22m
+[2m.cache/[22m[2massets/[22m[35mindex-BIFqp29q.css                     [39m[1m[2m1,280.91 kB[22m[1m[22m[2m │ gzip: 109.29 kB[22m
+[2m.cache/[22m[2massets/[22m[36mTranslationContext-DFI11kvC.js         [39m[1m[2m    0.68 kB[22m[1m[22m[2m │ gzip:   0.34 kB[22m[2m │ map:     1.94 kB[22m
+[2m.cache/[22m[2massets/[22m[36mConsoleBreadcrumbs-BSbbYpGL.js         [39m[1m[2m    1.53 kB[22m[1m[22m[2m │ gzip:   0.63 kB[22m[2m │ map:     3.41 kB[22m
+[2m.cache/[22m[2massets/[22m[36mjsx-runtime-BsOANfAM.js                [39m[1m[2m    1.98 kB[22m[1m[22m[2m │ gzip:   0.87 kB[22m[2m │ map:     2.83 kB[22m
+[2m.cache/[22m[2massets/[22m[36mCVECard-sLdaM7GW.js                    [39m[1m[2m    3.89 kB[22m[1m[22m[2m │ gzip:   1.12 kB[22m[2m │ map:     5.77 kB[22m
+[2m.cache/[22m[2massets/[22m[36mActionsDropdown-CGHDTSMy.js            [39m[1m[2m    5.90 kB[22m[1m[22m[2m │ gzip:   1.86 kB[22m[2m │ map:    12.38 kB[22m
+[2m.cache/[22m[2massets/[22m[36mindex-Bg-At7xi.js                      [39m[1m[2m  161.24 kB[22m[1m[22m[2m │ gzip:  50.91 kB[22m[2m │ map:   447.10 kB[22m
+[2m.cache/[22m[2massets/[22m[36mindex-DyM4LTcZ.js                      [39m[1m[33m1,165.46 kB[39m[22m[2m │ gzip: 241.07 kB[22m[2m │ map: 2,400.11 kB[22m
+[32m✓ built in 5.03s[39m
+  ✓   1 [chromium] › src/components/ActionsDropdown/ActionsDropdown.spec.tsx:20:7 › ActionsDropdown › should render the toggle button with the provided text (446ms)
+  ✓   2 [chromium] › src/components/ActionsDropdown/ActionsDropdown.spec.tsx:27:7 › ActionsDropdown › should render as a kebab toggle when isKebab is true (305ms)
+  ✓   3 [chromium] › src/components/ActionsDropdown/ActionsDropdown.spec.tsx:34:7 › ActionsDropdown › should allow overriding the kebab aria-label (199ms)
+  ✓   4 [chromium] › src/components/ActionsDropdown/ActionsDropdown.spec.tsx:46:7 › ActionsDropdown › should render a disabled toggle when isDisabled is true (182ms)
+  ✓   5 [chromium] › src/components/ActionsDropdown/ActionsDropdown.spec.tsx:53:7 › ActionsDropdown › should open and close the menu on toggle click (316ms)
+  ✓   6 [chromium] › src/components/ActionsDropdown/ActionsDropdown.spec.tsx:68:7 › ActionsDropdown › should call onSelect with the correct item id and close the menu (410ms)
+  ✓   7 [chromium] › src/components/ActionsDropdown/ActionsDropdown.spec.tsx:92:7 › ActionsDropdown › should call the item's specific onSelect handler (376ms)
+  ✓   8 [chromium] › src/components/ActionsDropdown/ActionsDropdown.spec.tsx:119:7 › ActionsDropdown › should close the menu when Escape key is pressed and focus the toggle (338ms)
+  ✓   9 [chromium] › src/components/ActionsDropdown/ActionsDropdown.spec.tsx:135:7 › ActionsDropdown › should close the menu on an outside click (296ms)
+  ✓  10 [chromium] › src/components/ActionsDropdown/ActionsDropdown.spec.tsx:153:7 › ActionsDropdown › should not be clickable for a disabled item (314ms)
+  ✓  11 [chromium] › src/components/ActionsDropdown/ActionsDropdown.spec.tsx:182:9 › ActionsDropdown › when dealing with flyout menus › should show the flyout menu on hover/click and handle selection (444ms)
+  ✓  12 [chromium] › src/components/ActionsDropdown/ActionsDropdown.spec.tsx:212:9 › ActionsDropdown › when dealing with flyout menus › should not call onSelect when a flyout parent is clicked (343ms)
+  ✓  13 [chromium] › src/components/ActionsDropdown/ActionsDropdown.spec.tsx:238:9 › ActionsDropdown › translation support › should use default English text when no translation provider is used (203ms)
+  ✓  14 [chromium] › src/components/ActionsDropdown/ActionsDropdown.spec.tsx:247:9 › ActionsDropdown › translation support › should use custom translation function when provided (162ms)
+  ✓  15 [chromium] › src/components/ActionsDropdown/ActionsDropdown.spec.tsx:274:9 › ActionsDropdown › translation support › should allow kebabAriaLabel to override translation (181ms)
+  ✓  16 [chromium] › src/components/ConsoleBreadcrumbs/ConsoleBreadcrumbs.spec.tsx:28:7 › ConsoleBreadcrumbs › should render null if the items array is empty (236ms)
+  ✓  17 [chromium] › src/components/ConsoleBreadcrumbs/ConsoleBreadcrumbs.spec.tsx:33:7 › ConsoleBreadcrumbs › should render breadcrumb navigation with correct structure (278ms)
+  ✓  18 [chromium] › src/components/ConsoleBreadcrumbs/ConsoleBreadcrumbs.spec.tsx:58:7 › ConsoleBreadcrumbs › should handle complex object transformation (175ms)
+  ✓  19 [chromium] › src/components/ConsoleBreadcrumbs/ConsoleBreadcrumbs.spec.tsx:86:7 › ConsoleBreadcrumbs › should render correct number of items for different scenarios (221ms)
+  ✓  20 [chromium] › src/components/dashboard/CVECard/CVECard.spec.tsx:22:7 › CVECard › should render the card with default title (245ms)
+  ✓  21 [chromium] › src/components/dashboard/CVECard/CVECard.spec.tsx:27:7 › CVECard › should render custom title when provided (242ms)
+  ✓  22 [chromium] › src/components/dashboard/CVECard/CVECard.spec.tsx:34:7 › CVECard › should render the default description (180ms)
+  ✓  23 [chromium] › src/components/dashboard/CVECard/CVECard.spec.tsx:39:7 › CVECard › should render custom description when provided (151ms)
+  ✓  24 [chromium] › src/components/dashboard/CVECard/CVECard.spec.tsx:47:7 › CVECard › should render the correct count for critical CVEs (143ms)
+  ✓  25 [chromium] › src/components/dashboard/CVECard/CVECard.spec.tsx:52:7 › CVECard › should render the correct count for important CVEs (172ms)
+  ✓  26 [chromium] › src/components/dashboard/CVECard/CVECard.spec.tsx:57:7 › CVECard › should render severity labels correctly (153ms)
+  ✓  27 [chromium] › src/components/dashboard/CVECard/CVECard.spec.tsx:63:7 › CVECard › should render view links when onViewClick is provided (156ms)
+  ✓  28 [chromium] › src/components/dashboard/CVECard/CVECard.spec.tsx:69:7 › CVECard › should call onViewClick when critical CVE link is clicked (196ms)
+  ✓  29 [chromium] › src/components/dashboard/CVECard/CVECard.spec.tsx:91:7 › CVECard › should call onViewClick when important CVE link is clicked (160ms)
+  ✓  30 [chromium] › src/components/dashboard/CVECard/CVECard.spec.tsx:113:7 › CVECard › should not render view link when onViewClick is not provided (230ms)
+  ✓  31 [chromium] › src/components/dashboard/CVECard/CVECard.spec.tsx:126:7 › CVECard › should render multiple CVE severities (158ms)
+  ✓  32 [chromium] › src/components/dashboard/CVECard/CVECard.spec.tsx:132:7 › CVECard › should use default view link text when not provided (135ms)
+  ✓  33 [chromium] › src/components/dashboard/CVECard/CVECard.spec.tsx:146:7 › CVECard › should render with single CVE severity (165ms)
+  ✓  34 [chromium] › src/components/dashboard/CVECard/CVECard.spec.tsx:161:7 › CVECard › should render with empty cveData array (152ms)
+  ✓  35 [chromium] › src/components/dashboard/CVECard/CVECard.spec.tsx:167:7 › CVECard › should render CVE with count of 0 (132ms)
+  ✓  36 [chromium] › src/components/dashboard/CVECard/CVECard.spec.tsx:180:7 › CVECard › should render links as buttons with correct role (153ms)
+
+  36 passed (16.6s)
+[0;32m[Component tests][0m ✓ Passed

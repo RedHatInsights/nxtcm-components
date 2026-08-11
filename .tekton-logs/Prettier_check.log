@@ -1,0 +1,8 @@
+[0;34m[Prettier check][0m Starting...
+
+> nxtcm-components@0.0.1 prettier:check
+> prettier --check '{src,cypress,scripts}/**/*.{js,ts,mjs,jsx,tsx}'
+
+Checking formatting...
+All matched files use Prettier code style!
+[0;32m[Prettier check][0m ✓ Passed
