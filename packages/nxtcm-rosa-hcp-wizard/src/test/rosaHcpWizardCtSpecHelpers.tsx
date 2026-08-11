@@ -36,8 +36,6 @@ export function makeDefaultRosaHcpCtWizardData(
     },
     oidcConfig: { data: [], error: null, isFetching: false, fetch: noopFetch },
     vpcList: { data: [], error: null, isFetching: false, fetch: noopFetch },
-    subnets: { data: [], error: null, isFetching: false },
-    securityGroups: { data: [], error: null, isFetching: false },
     clusterNameValidation: { error: null, isFetching: false },
     ...overrides,
   };

@@ -79,8 +79,6 @@ function makeWizardData(
       isFetching: false,
       fetch: overrides.vpcListFetch ?? jest.fn(),
     },
-    subnets: { data: [], error: null, isFetching: false },
-    securityGroups: { data: [], error: null, isFetching: false },
     clusterNameValidation: { error: null, isFetching: false },
   };
 }
