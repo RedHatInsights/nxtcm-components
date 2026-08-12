@@ -189,8 +189,8 @@ test('changing VPC resets subnet selection', async ({ page }) => {
 #### 4.3 Machine CIDR - Prefix Size Constraints
 **Gap:** No tests for prefix min/max boundaries:
 - Too large mask: `/9` (prefix < AWS_MACHINE_CIDR_MIN)
-- Too small mask multi-AZ: `/17` (prefix > 16)
-- Too small mask single-AZ: `/25` (prefix > 24)
+- Too small mask multi-AZ: `/25` (prefix > 24)
+- Too small mask single-AZ: `/26` (prefix > 25)
 
 **Why add:**
 - Complex business logic validation
@@ -204,7 +204,7 @@ test('changing VPC resets subnet selection', async ({ page }) => {
 test('Machine CIDR - rejects mask too small for multi-AZ', async ({ page }) => {
   await openCidrFields(page);
   const input = page.getByRole('textbox', { name: 'Machine CIDR' });
-  await input.fill('10.0.0.0/17'); // prefix > 16 for multi-AZ
+  await input.fill('10.0.0.0/25'); // prefix > 24 for multi-AZ
   await input.press('Tab');
   await expect(page.getByText(/mask too small.*multi.*az/i)).toBeVisible();
 });
@@ -247,9 +247,9 @@ test('Machine CIDR - must contain selected subnet', async ({ page }) => {
 ---
 
 #### 4.5 Service CIDR - Prefix Constraints
-**Gap:** No test for Service CIDR prefix max (SERVICE_CIDR_MAX = 12)
-- Invalid: `172.30.0.0/13` (prefix > 12)
-- Valid: `172.30.0.0/12`
+**Gap:** No test for Service CIDR prefix max (SERVICE_CIDR_MAX = 24)
+- Invalid: `172.30.0.0/25` (prefix > 24)
+- Valid: `172.30.0.0/16`
 
 **Why add:**
 - Business rule validation
