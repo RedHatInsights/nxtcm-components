@@ -135,7 +135,11 @@ export function Select<T = unknown>(props: SelectProps<T>) {
 
   const [open, setOpen] = useState(false);
   const [typeaheadQuery, setTypeaheadQuery] = useState('');
+  const [tooltipVisible, setTooltipVisible] = useState(false);
   const textInputRef = useRef<HTMLInputElement>(null);
+
+  const showTooltip = useCallback(() => setTooltipVisible(true), []);
+  const hideTooltip = useCallback(() => setTooltipVisible(false), []);
 
   useEffect(() => {
     onMenuOpenChange?.(open);
@@ -355,11 +359,22 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   const tooltipContent = toggleLabel || placeholderText;
 
   const plainToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <Tooltip content={tooltipContent} aria="none" trigger={open ? 'manual' : 'mouseenter focus'}>
+    <Tooltip
+      content={tooltipContent}
+      aria="none"
+      trigger="manual"
+      isVisible={tooltipVisible && !open}
+    >
       <MenuToggle
         ref={toggleRef}
         onClick={toggleOpen}
-        onBlur={onBlur}
+        onBlur={(e: React.FocusEvent<HTMLElement>) => {
+          hideTooltip();
+          onBlur?.(e);
+        }}
+        onFocus={showTooltip}
+        onMouseEnter={showTooltip}
+        onMouseLeave={hideTooltip}
         isExpanded={open}
         isDisabled={!!disabled}
         isFullWidth
@@ -374,12 +389,23 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   );
 
   const typeaheadToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <Tooltip content={tooltipContent} aria="none" trigger={open ? 'manual' : 'mouseenter focus'}>
+    <Tooltip
+      content={tooltipContent}
+      aria="none"
+      trigger="manual"
+      isVisible={tooltipVisible && !open}
+    >
       <MenuToggle
         variant="typeahead"
         ref={toggleRef}
         onClick={toggleOpen}
-        onBlur={onBlur}
+        onBlur={(e: React.FocusEvent<HTMLElement>) => {
+          hideTooltip();
+          onBlur?.(e);
+        }}
+        onFocus={showTooltip}
+        onMouseEnter={showTooltip}
+        onMouseLeave={hideTooltip}
         isExpanded={open}
         isDisabled={!!disabled}
         isFullWidth
