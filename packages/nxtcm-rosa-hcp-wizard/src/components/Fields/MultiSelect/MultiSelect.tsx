@@ -325,6 +325,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
       aria-label={plainToggleAriaLabel}
       aria-describedby={describedBy || undefined}
       badge={toggleBadge}
+      title={toggleMainText}
     >
       {toggleMainText}
     </MenuToggle>
