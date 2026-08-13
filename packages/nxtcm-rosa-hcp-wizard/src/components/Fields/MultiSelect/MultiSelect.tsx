@@ -145,6 +145,10 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
   });
 
   const [open, setOpen] = useState(false);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+
+  const showTooltip = useCallback(() => setTooltipVisible(true), []);
+  const hideTooltip = useCallback(() => setTooltipVisible(false), []);
 
   useEffect(() => {
     onMenuOpenChange?.(open);
@@ -317,11 +321,22 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
   const tooltipContent = legacyToggleLabel || placeholderText;
 
   const plainToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <Tooltip content={tooltipContent} aria="none" trigger={open ? 'manual' : 'mouseenter focus'}>
+    <Tooltip
+      content={tooltipContent}
+      aria="none"
+      trigger="manual"
+      isVisible={tooltipVisible && !open}
+    >
       <MenuToggle
         ref={toggleRef}
         onClick={handleToggle}
-        onBlur={onBlur}
+        onBlur={(e: React.FocusEvent<HTMLElement>) => {
+          hideTooltip();
+          onBlur?.(e);
+        }}
+        onFocus={showTooltip}
+        onMouseEnter={showTooltip}
+        onMouseLeave={hideTooltip}
         isExpanded={open}
         isDisabled={!!disabled}
         isFullWidth
