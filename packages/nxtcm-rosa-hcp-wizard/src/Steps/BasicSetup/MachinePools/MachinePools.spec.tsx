@@ -134,6 +134,60 @@ test.describe('MachinePools (ROSA HCP)', () => {
       .toBe(true);
   });
 
+  test('should sort General Purpose machine types to the top while preserving group-internal order', async ({
+    mount,
+    page,
+  }) => {
+    const machineTypes = makeMachineTypesResource({
+      data: [
+        {
+          id: 'c5.2xlarge',
+          label: 'c5.2xlarge',
+          description: '8 vCPU',
+          value: 'c5.2xlarge',
+          category: 'RAM optimized',
+        },
+        {
+          id: 'm5a.xlarge',
+          label: 'm5a.xlarge',
+          description: '4 vCPU',
+          value: 'm5a.xlarge',
+          category: 'General Purpose',
+        },
+        {
+          id: 'r5.xlarge',
+          label: 'r5.xlarge',
+          description: '4 vCPU',
+          value: 'r5.xlarge',
+          category: 'Storage optimized',
+        },
+        {
+          id: 'm6a.xlarge',
+          label: 'm6a.xlarge',
+          description: '4 vCPU',
+          value: 'm6a.xlarge',
+          category: 'General Purpose',
+        },
+      ],
+    });
+
+    const component = await mount(
+      <MachinePoolsMount machineTypes={machineTypes} defaultValues={{ selected_vpc: '' }} />
+    );
+
+    const instanceTypeToggle = component.getByRole('button', {
+      name: 'Select the compute node instance type',
+      exact: true,
+    });
+    await instanceTypeToggle.click();
+
+    const options = page.getByRole('option');
+    await expect(options.nth(0)).toHaveText(/m5a\.xlarge/);
+    await expect(options.nth(1)).toHaveText(/m6a\.xlarge/);
+    await expect(options.nth(2)).toHaveText(/c5\.2xlarge/);
+    await expect(options.nth(3)).toHaveText(/r5\.xlarge/);
+  });
+
   test('should show compute node count by default and min/max when autoscaling is enabled', async ({
     mount,
   }) => {
