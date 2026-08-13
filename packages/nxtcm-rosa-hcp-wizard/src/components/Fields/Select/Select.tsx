@@ -129,9 +129,19 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   const [typeaheadQuery, setTypeaheadQuery] = useState('');
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const textInputRef = useRef<HTMLInputElement>(null);
+  const tooltipTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const showTooltip = useCallback(() => setTooltipVisible(true), []);
-  const hideTooltip = useCallback(() => setTooltipVisible(false), []);
+  const showTooltip = useCallback(() => {
+    tooltipTimerRef.current = setTimeout(() => setTooltipVisible(true), 300);
+  }, []);
+  const hideTooltip = useCallback(() => {
+    clearTimeout(tooltipTimerRef.current);
+    setTooltipVisible(false);
+  }, []);
+
+  useEffect(() => {
+    return () => clearTimeout(tooltipTimerRef.current);
+  }, []);
 
   useEffect(() => {
     onMenuOpenChange?.(open);
