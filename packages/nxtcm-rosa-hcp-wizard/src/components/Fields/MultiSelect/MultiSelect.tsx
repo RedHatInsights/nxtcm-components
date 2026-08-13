@@ -6,6 +6,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -146,9 +147,19 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
 
   const [open, setOpen] = useState(false);
   const [tooltipVisible, setTooltipVisible] = useState(false);
+  const tooltipTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const showTooltip = useCallback(() => setTooltipVisible(true), []);
-  const hideTooltip = useCallback(() => setTooltipVisible(false), []);
+  const showTooltip = useCallback(() => {
+    tooltipTimerRef.current = setTimeout(() => setTooltipVisible(true), 300);
+  }, []);
+  const hideTooltip = useCallback(() => {
+    clearTimeout(tooltipTimerRef.current);
+    setTooltipVisible(false);
+  }, []);
+
+  useEffect(() => {
+    return () => clearTimeout(tooltipTimerRef.current);
+  }, []);
 
   useEffect(() => {
     onMenuOpenChange?.(open);
