@@ -317,7 +317,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
   const tooltipContent = legacyToggleLabel || placeholderText;
 
   const plainToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <Tooltip content={tooltipContent} aria="none">
+    <Tooltip content={tooltipContent} aria="none" trigger={open ? 'manual' : 'mouseenter focus'}>
       <MenuToggle
         ref={toggleRef}
         onClick={handleToggle}
