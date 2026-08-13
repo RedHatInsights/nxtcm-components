@@ -347,6 +347,9 @@ export function Select<T = unknown>(props: SelectProps<T>) {
 
   const plainToggleAriaLabel = !toggleLabel && !isLoading ? placeholderText : undefined;
 
+  /** Text shown inside the plain (non-typeahead) toggle button. */
+  const plainToggleText = isLoading && !toggleLabel ? 'Loading...' : toggleLabel || placeholderText;
+
   const plainToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
     <MenuToggle
       ref={toggleRef}
@@ -359,8 +362,9 @@ export function Select<T = unknown>(props: SelectProps<T>) {
       aria-label={plainToggleAriaLabel}
       aria-describedby={describedBy || undefined}
       data-testid={dataTestId}
+      title={plainToggleText}
     >
-      {isLoading && !toggleLabel ? 'Loading...' : toggleLabel || placeholderText}
+      {plainToggleText}
     </MenuToggle>
   );
 
@@ -390,6 +394,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
           role="combobox"
           aria-controls={`${id}-listbox`}
           id={`${id}-typeahead-input`}
+          title={!toggleLabel && !isLoading ? placeholderText : toggleLabel || undefined}
         />
         <TextInputGroupUtilities
           {...((!typeaheadQuery && !toggleLabel) || typeaheadToggleDisplay === 'Loading...'
