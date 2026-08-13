@@ -10,7 +10,6 @@ import { Section } from '../../../components/Section';
 import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import React from 'react';
-import PopoverHintWithTitle from '../../../components/PopoverHintWithTitle';
 import { OIDCConfigHint, OIDCConfigHintProduct } from '../../../components/OIDCConfigHint';
 import { useWatch } from 'react-hook-form';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
