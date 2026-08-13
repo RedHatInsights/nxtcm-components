@@ -28,6 +28,7 @@ import {
   SelectOption,
 } from '@patternfly/react-core/dist/dynamic/components/Select';
 import { Spinner } from '@patternfly/react-core/dist/dynamic/components/Spinner';
+import { Tooltip } from '@patternfly/react-core/dist/dynamic/components/Tooltip';
 import { Flex } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 import RedoIcon from '@patternfly/react-icons/dist/esm/icons/redo-icon';
 
@@ -318,23 +319,27 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
     return !legacyToggleLabel && !isLoading ? placeholderText : undefined;
   }, [menuToggleAriaLabel, checkboxMenuToggle, legacyToggleLabel, isLoading, placeholderText]);
 
+  /** Full text for the PF tooltip — shows the selected label(s) or placeholder. */
+  const tooltipContent = legacyToggleLabel || placeholderText;
+
   const plainToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <MenuToggle
-      ref={toggleRef}
-      onClick={handleToggle}
-      onBlur={onBlur}
-      isExpanded={open}
-      isDisabled={!!disabled}
-      isFullWidth
-      isPlaceholder={checkboxMenuToggle && toggleMainText === placeholderText}
-      status={getStatus(!!isError, !!isSuccess)}
-      aria-label={plainToggleAriaLabel}
-      aria-describedby={describedBy || undefined}
-      badge={toggleBadge}
-      title={toggleMainText}
-    >
-      {toggleMainText}
-    </MenuToggle>
+    <Tooltip content={tooltipContent} aria="none">
+      <MenuToggle
+        ref={toggleRef}
+        onClick={handleToggle}
+        onBlur={onBlur}
+        isExpanded={open}
+        isDisabled={!!disabled}
+        isFullWidth
+        isPlaceholder={checkboxMenuToggle && toggleMainText === placeholderText}
+        status={getStatus(!!isError, !!isSuccess)}
+        aria-label={plainToggleAriaLabel}
+        aria-describedby={describedBy || undefined}
+        badge={toggleBadge}
+      >
+        {toggleMainText}
+      </MenuToggle>
+    </Tooltip>
   );
 
   const selectBlock = (
