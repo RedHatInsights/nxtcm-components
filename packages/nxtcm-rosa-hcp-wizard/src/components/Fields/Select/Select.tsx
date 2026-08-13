@@ -26,6 +26,7 @@ import {
   TextInputGroup,
   TextInputGroupMain,
   TextInputGroupUtilities,
+  Tooltip,
 } from '@patternfly/react-core';
 import { RedoIcon, TimesIcon } from '@patternfly/react-icons';
 import { toDisplayString } from './SelectOptions';
@@ -338,68 +339,71 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   /** Text shown inside the plain (non-typeahead) toggle button. */
   const plainToggleText = isLoading && !toggleLabel ? 'Loading...' : toggleLabel || placeholderText;
 
+  /** Full text for the PF tooltip — shows the selected label or placeholder. */
+  const tooltipContent = toggleLabel || placeholderText;
+
   const plainToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <MenuToggle
-      ref={toggleRef}
-      onClick={toggleOpen}
-      onBlur={onBlur}
-      isExpanded={open}
-      isDisabled={!!disabled}
-      isFullWidth
-      status={getStatus(!!isError, !!isSuccess)}
-      aria-label={plainToggleAriaLabel}
-      aria-describedby={describedBy || undefined}
-      data-testid={dataTestId}
-      title={plainToggleText}
-    >
-      {plainToggleText}
-    </MenuToggle>
+    <Tooltip content={tooltipContent} aria="none">
+      <MenuToggle
+        ref={toggleRef}
+        onClick={toggleOpen}
+        onBlur={onBlur}
+        isExpanded={open}
+        isDisabled={!!disabled}
+        isFullWidth
+        status={getStatus(!!isError, !!isSuccess)}
+        aria-label={plainToggleAriaLabel}
+        aria-describedby={describedBy || undefined}
+        data-testid={dataTestId}
+      >
+        {plainToggleText}
+      </MenuToggle>
+    </Tooltip>
   );
 
   const typeaheadToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <MenuToggle
-      variant="typeahead"
-      ref={toggleRef}
-      onClick={toggleOpen}
-      onBlur={onBlur}
-      isExpanded={open}
-      isDisabled={!!disabled}
-      isFullWidth
-      status={getStatus(!!isError, !!isSuccess)}
-      data-testid={dataTestId}
-    >
-      <TextInputGroup isPlain>
-        <TextInputGroupMain
-          value={typeaheadToggleDisplay}
-          onClick={toggleOpen}
-          onChange={onTypeaheadInputChange}
-          innerRef={textInputRef}
-          placeholder={isLoading ? undefined : placeholderText}
-          isExpanded={open}
-          autoComplete="off"
-          aria-label={placeholderText}
-          aria-describedby={describedBy || undefined}
-          role="combobox"
-          aria-controls={`${id}-listbox`}
-          id={`${id}-typeahead-input`}
-          inputProps={{
-            title: typeaheadToggleDisplay || (!isLoading ? placeholderText : undefined),
-          }}
-        />
-        <TextInputGroupUtilities
-          {...((!typeaheadQuery && !toggleLabel) || typeaheadToggleDisplay === 'Loading...'
-            ? { style: { display: 'none' } }
-            : {})}
-        >
-          <Button
-            variant="plain"
-            onClick={onClearTypeahead}
-            aria-label="Clear selection"
-            icon={<TimesIcon aria-hidden />}
+    <Tooltip content={tooltipContent} aria="none">
+      <MenuToggle
+        variant="typeahead"
+        ref={toggleRef}
+        onClick={toggleOpen}
+        onBlur={onBlur}
+        isExpanded={open}
+        isDisabled={!!disabled}
+        isFullWidth
+        status={getStatus(!!isError, !!isSuccess)}
+        data-testid={dataTestId}
+      >
+        <TextInputGroup isPlain>
+          <TextInputGroupMain
+            value={typeaheadToggleDisplay}
+            onClick={toggleOpen}
+            onChange={onTypeaheadInputChange}
+            innerRef={textInputRef}
+            placeholder={isLoading ? undefined : placeholderText}
+            isExpanded={open}
+            autoComplete="off"
+            aria-label={placeholderText}
+            aria-describedby={describedBy || undefined}
+            role="combobox"
+            aria-controls={`${id}-listbox`}
+            id={`${id}-typeahead-input`}
           />
-        </TextInputGroupUtilities>
-      </TextInputGroup>
-    </MenuToggle>
+          <TextInputGroupUtilities
+            {...((!typeaheadQuery && !toggleLabel) || typeaheadToggleDisplay === 'Loading...'
+              ? { style: { display: 'none' } }
+              : {})}
+          >
+            <Button
+              variant="plain"
+              onClick={onClearTypeahead}
+              aria-label="Clear selection"
+              icon={<TimesIcon aria-hidden />}
+            />
+          </TextInputGroupUtilities>
+        </TextInputGroup>
+      </MenuToggle>
+    </Tooltip>
   );
 
   /** Handles PF-initiated open-change (click-outside, Escape). */
