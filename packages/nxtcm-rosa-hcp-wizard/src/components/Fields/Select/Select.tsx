@@ -347,7 +347,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   const tooltipContent = toggleLabel || placeholderText;
 
   const plainToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <Tooltip content={tooltipContent} aria="none">
+    <Tooltip content={tooltipContent} aria="none" trigger={open ? 'manual' : 'mouseenter focus'}>
       <MenuToggle
         ref={toggleRef}
         onClick={toggleOpen}
@@ -366,7 +366,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   );
 
   const typeaheadToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <Tooltip content={tooltipContent} aria="none">
+    <Tooltip content={tooltipContent} aria="none" trigger={open ? 'manual' : 'mouseenter focus'}>
       <MenuToggle
         variant="typeahead"
         ref={toggleRef}
