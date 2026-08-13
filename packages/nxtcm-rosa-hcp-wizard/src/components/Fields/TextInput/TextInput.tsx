@@ -13,6 +13,7 @@ import {
   Spinner,
   TextInput as PfTextInput,
   type TextInputProps as PfTextInputProps,
+  Tooltip,
 } from '@patternfly/react-core';
 import EyeIcon from '@patternfly/react-icons/dist/esm/icons/eye-icon';
 import EyeSlashIcon from '@patternfly/react-icons/dist/esm/icons/eye-slash-icon';
@@ -82,30 +83,33 @@ export const TextInput: ForwardRefExoticComponent<
   const placeholderText =
     placeholder ?? (label && label.length ? `Enter the ${lowercaseFirst(label)}` : '');
 
+  const tooltipContent = placeholderText || undefined;
+
   const input = (
     <InputGroup>
       <InputGroupItem isFill={isFill}>
-        <PfTextInput
-          ref={ref}
-          id={id}
-          placeholder={placeholderText}
-          title={placeholderText || undefined}
-          validated={getValidated(isError, isSuccess)}
-          spellCheck={false}
-          aria-describedby={helperTextId({
-            id,
-            errorMessage,
-            helperText,
-            isError,
-            isSuccess,
-            successMessage,
-          })}
-          {...textInputRest}
-          type={inputType}
-          isDisabled={isDisabled}
-          required={isRequired || required}
-          customIcon={isLoading ? <Spinner size="sm" /> : undefined}
-        />
+        <Tooltip content={tooltipContent || ''} aria="none">
+          <PfTextInput
+            ref={ref}
+            id={id}
+            placeholder={placeholderText}
+            validated={getValidated(isError, isSuccess)}
+            spellCheck={false}
+            aria-describedby={helperTextId({
+              id,
+              errorMessage,
+              helperText,
+              isError,
+              isSuccess,
+              successMessage,
+            })}
+            {...textInputRest}
+            type={inputType}
+            isDisabled={isDisabled}
+            required={isRequired || required}
+            customIcon={isLoading ? <Spinner size="sm" /> : undefined}
+          />
+        </Tooltip>
       </InputGroupItem>
       {isSecret && showSecretButton ? (
         <InputGroupItem>
