@@ -88,6 +88,7 @@ export const TextInput: ForwardRefExoticComponent<
           ref={ref}
           id={id}
           placeholder={placeholderText}
+          title={placeholderText || undefined}
           validated={getValidated(isError, isSuccess)}
           spellCheck={false}
           aria-describedby={helperTextId({
