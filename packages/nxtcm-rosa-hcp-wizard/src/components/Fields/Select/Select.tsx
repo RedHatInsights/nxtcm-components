@@ -382,7 +382,9 @@ export function Select<T = unknown>(props: SelectProps<T>) {
           role="combobox"
           aria-controls={`${id}-listbox`}
           id={`${id}-typeahead-input`}
-          title={!toggleLabel && !isLoading ? placeholderText : toggleLabel || undefined}
+          inputProps={{
+            title: typeaheadToggleDisplay || (!isLoading ? placeholderText : undefined),
+          }}
         />
         <TextInputGroupUtilities
           {...((!typeaheadQuery && !toggleLabel) || typeaheadToggleDisplay === 'Loading...'
