@@ -118,14 +118,6 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
       <Section label={rp.operatorRolesSection}>
         <FieldWrapper
           size="lg"
-          additionalContent={
-            <PopoverHintWithTitle
-              displayHintIcon
-              title={rp.oidcPopoverTitle}
-              bodyContent={oidcConfigHintContent}
-              maxWidth={oidcConfigHintMaxWidth}
-            />
-          }
           footer={
             <ExpandableSection
               isExpanded={isOperatorRolesOpen}
@@ -165,6 +157,12 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
             labelHelp={oidcConfigHintContent}
             labelHelpMaxWidth={oidcConfigHintMaxWidth}
             data-testid="oidc-config-select"
+          />
+          <PopoverHintWithTitle
+            displayHintIcon
+            title={rp.oidcPopoverTitle}
+            bodyContent={oidcConfigHintContent}
+            maxWidth={oidcConfigHintMaxWidth}
           />
         </FieldWrapper>
 
