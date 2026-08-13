@@ -29,6 +29,7 @@ test.describe('ROSAHCPWizardReviewSections', () => {
     const filteredCountText = await filteredSections.getByTestId('sections-count').textContent();
     const filteredCount = parseInt(filteredCountText || '0');
 
+    // Overall count should be less when a step is hidden
     expect(filteredCount).toBeLessThan(allCount);
     expect(filteredCount).toBeGreaterThan(0);
   });

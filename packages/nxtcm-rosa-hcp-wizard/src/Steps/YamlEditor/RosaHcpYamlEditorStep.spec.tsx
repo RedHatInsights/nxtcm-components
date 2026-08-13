@@ -5,10 +5,10 @@ import { YamlEditorStepMount } from './RosaHcpYamlEditorStep.spec-helpers';
 // Helper to wait for Monaco editor to be ready
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function waitForMonaco(component: any) {
-  // Wait for CodeEditor to render
+  // Wait for Monaco editor and its content to render
   await component.locator('.monaco-editor').waitFor({ timeout: 10000 });
-  // Give Monaco time to fully initialize
-  await component.page().waitForTimeout(1000);
+  // Wait for view-lines (Monaco's content area) to be visible
+  await component.locator('.view-lines').waitFor({ timeout: 10000 });
 }
 
 test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {

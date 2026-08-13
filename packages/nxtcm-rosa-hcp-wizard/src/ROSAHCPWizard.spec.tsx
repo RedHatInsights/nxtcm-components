@@ -48,7 +48,7 @@ test.describe('ROSAHCPWizard', () => {
         }}
       />
     );
-    // Wizard should still render
+    // Wizard should still render even with hidden steps configured
     await expect(component.locator('.pf-v6-c-wizard')).toBeVisible();
   });
 

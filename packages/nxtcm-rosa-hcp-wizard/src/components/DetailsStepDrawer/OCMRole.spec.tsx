@@ -62,11 +62,17 @@ test.describe('OCMRole', () => {
 
   test('should render external link to AWS account association docs', async ({ mount }) => {
     const component = await mount(<OCMRoleMount />);
-    const hintButton = component.getByRole('button', { name: /why link/i });
+    const hintButton = component.getByRole('button', {
+      name: /why do i need to link my account/i,
+    });
     await hintButton.click();
 
-    const link = component.getByRole('link');
+    const link = component.getByRole('link', { name: /review.*permissions/i });
     await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute(
+      'href',
+      expect.stringContaining('rosa-cloud-expert-prereq-checklist')
+    );
   });
 
   test('should pass accessibility tests', async ({ mount }) => {

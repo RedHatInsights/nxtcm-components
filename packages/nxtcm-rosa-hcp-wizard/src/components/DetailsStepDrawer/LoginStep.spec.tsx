@@ -11,12 +11,22 @@ test.describe('LoginStep', () => {
 
   test('should render for ACM product by default', async ({ mount }) => {
     const component = await mount(<LoginStepMount product="acm" />);
-    await expect(component.locator('.pf-v6-c-clipboard-copy')).toBeVisible();
+    const copyInstruction = component.locator('.pf-v6-c-clipboard-copy');
+    await expect(copyInstruction).toBeVisible();
+    const textbox = copyInstruction.getByRole('textbox');
+    await expect(textbox).toBeVisible();
+    await expect(textbox).toHaveValue(/rosa login --client-id.*--client-secret/);
   });
 
   test('should render for OCM product', async ({ mount }) => {
     const component = await mount(<LoginStepMount product="ocm" />);
-    await expect(component.locator('.pf-v6-c-clipboard-copy')).toBeVisible();
+    const copyInstruction = component.locator('.pf-v6-c-clipboard-copy');
+    await expect(copyInstruction).toBeVisible();
+    const textbox = copyInstruction.getByRole('textbox');
+    await expect(textbox).toBeVisible();
+    await expect(textbox).toHaveValue(
+      /rosa login --use-auth-code --url https:\/\/api\.openshift\.com/
+    );
   });
 
   test('should pass accessibility tests', async ({ mount }) => {
