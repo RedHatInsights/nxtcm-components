@@ -5,9 +5,12 @@ import { AccountRolesMount } from './AccountRoles.spec-helpers';
 test.describe('AccountRoles', () => {
   test('should render account roles copy instruction', async ({ mount }) => {
     const component = await mount(<AccountRolesMount />);
-    await expect(component.getByTestId('copy-rosa-create-account-role')).toBeVisible();
+    const copyInstruction = component.getByTestId('copy-rosa-create-account-role');
+    await expect(copyInstruction).toBeVisible();
     await expect(
-      component.getByText('rosa create account-roles --hosted-cp --mode auto')
+      copyInstruction.getByRole('textbox', {
+        name: /rosa create account-roles --hosted-cp --mode auto/i,
+      })
     ).toBeVisible();
   });
 
