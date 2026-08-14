@@ -42,7 +42,7 @@ export const Networking = (props: NetworkingStepProps) => {
   const isProxyStepHidden = useIsStepHidden(STEP_IDS.CLUSTER_WIDE_PROXY);
 
   const cidrDefaultChecked = useWatch({ name: FIELD_NAME.CIDR_DEFAULT });
-  const selectedVPCRaw = useWatch({ name: 'selected_vpc' });
+  const selectedVPCRaw = useWatch({ name: FIELD_NAME.SELECTED_VPC });
 
   const selectedVPC = resolveSelectedVpc(selectedVPCRaw, props.vpcList.data);
 

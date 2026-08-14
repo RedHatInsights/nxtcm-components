@@ -22,6 +22,11 @@ export const BASE_DOMAIN_REGEXP = /^([a-z]([-a-z0-9]*[a-z0-9])?\.)+[a-z]([-a-z0-
 
 // Maximum length for a cluster name
 export const MAX_CLUSTER_NAME_LENGTH = 54;
+
+export const MACHINE_CIDR_DEFAULT = '10.0.0.0/16';
+export const SERVICE_CIRD_DEFAULT = '172.30.0.0/16';
+export const POD_CIDR_DEFAULT = '10.128.0.0/14';
+export const HOST_PREFIX_DEFAULT = '/23';
 // Regular expression used to check whether input is a valid IPv4 CIDR range
 export const CIDR_REGEXP =
   /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(3[0-2]|[1-2][0-9]|[1-9]))$/;
@@ -81,6 +86,9 @@ export const DEFAULT_HOST_PRODUCT = 'acm' as const;
 export const YAML_MODEL_PATH = 'rosa-hcp-control-plane.yaml';
 export const YAML_VALIDATION_OWNER = 'yaml-hcp-validation';
 
+export const UPGRADE_SCHEDULE_FIELDS_ID = 'upgrade-schedule-fields';
+export const MACHINE_POOLS_SUBNET_DEFAULT = '';
+
 export const FIELD_NAME = {
   ASSOCIATED_AWS_ACCOUNT_ID: 'associated_aws_id',
   BILLING_ACCOUNT_ID: 'billing_account_id',
@@ -105,6 +113,7 @@ export const FIELD_NAME = {
   NETWORK_POD_CIDR: 'network_pod_cidr',
   NETWORK_HOST_PREFIX: 'network_host_prefix',
   SELECTED_VPC: 'selected_vpc',
+  MACHINE_POOLS_SUBNETS: 'machine_pools_subnets',
   SELECTED_MACHINE_POOL: 'machine_pools_subnets.0.machine_pool_subnet',
   MACHINE_TYPE: 'machine_type',
   AUTOSCALING: 'autoscaling',
@@ -119,6 +128,11 @@ export const FIELD_NAME = {
   NO_PROXY_DOMAINS: 'no_proxy_domains',
   ADDITIONAL_TRUST_BUNDLE: 'additional_trust_bundle',
   UPGRADE_POLICY: 'upgrade_policy',
+  UPGRADE_SCHEDULE: {
+    NAME: 'upgrade_schedule',
+    HOUR: 'upgrade-schedule-hour',
+    DAY: 'upgrade-schedule-day',
+  },
   ENCRYPTION: {
     ENCRYPTION_KEYS: 'encryption_keys',
     KMS_KEY_ARN: 'kms_key_arn',

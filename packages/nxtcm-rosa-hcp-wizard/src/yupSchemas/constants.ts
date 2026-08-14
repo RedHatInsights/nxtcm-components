@@ -1,4 +1,11 @@
-import { STEP_IDS } from '../constants';
+import {
+  FIELD_NAME,
+  HOST_PREFIX_DEFAULT,
+  MACHINE_CIDR_DEFAULT,
+  POD_CIDR_DEFAULT,
+  SERVICE_CIRD_DEFAULT,
+  STEP_IDS,
+} from '../constants';
 import { ClusterEncryptionKeys, ClusterNetwork, ClusterUpgrade } from '../types';
 
 export const YUP = {
@@ -6,18 +13,18 @@ export const YUP = {
     CLUSTER_PRIVACY_SCHEMA: {
       DEFAULT: ClusterNetwork.external,
       META: {
-        ID: 'cluster_privacy',
+        ID: FIELD_NAME.CLUSTER_PRIVACY_FIELD.NAME,
         LABEL_KEY: 'networking.clusterPrivacyLabel',
         STEP_ID: STEP_IDS.NETWORKING,
         FIELD_SET_LEGEND: false,
         FIELD_TYPE: 'radio',
         NO_EDIT_AFTER_SUBMIT: true,
-        RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: ['cluster_privacy_public_subnet_id'],
+        RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: [FIELD_NAME.CLUSTER_PRIVACY_FIELD.PUBLIC_SUBNET_ID],
       },
     },
     CLUSTER_PRIVACY_PUBLIC_SUBNET_ID_SCHEMA: {
       META: {
-        ID: 'cluster_privacy_public_subnet_id',
+        ID: FIELD_NAME.CLUSTER_PRIVACY_FIELD.PUBLIC_SUBNET_ID,
         LABEL_KEY: 'networking.publicSubnetLabel',
         PLACEHOLDER_KEY: 'networking.publicSubnetPlaceholder',
         STEP_ID: STEP_IDS.NETWORKING,
@@ -30,7 +37,7 @@ export const YUP = {
     CIDR_DEFAULT_SCHEMA: {
       DEFAULT: true,
       META: {
-        ID: 'cidr_default',
+        ID: FIELD_NAME.CIDR_DEFAULT,
         LABEL_KEY: 'networking.useDefaultsLabel',
         HELPER_TEXT_KEY: 'networking.useDefaultsHelp',
         STEP_ID: STEP_IDS.NETWORKING,
@@ -41,19 +48,19 @@ export const YUP = {
           {
             when: true,
             setDefaults: [
-              'network_machine_cidr',
-              'network_service_cidr',
-              'network_pod_cidr',
-              'network_host_prefix',
+              FIELD_NAME.NETWORK_MACHINE_CIDR,
+              FIELD_NAME.NETWORK_SERVICE_CIDR,
+              FIELD_NAME.NETWORK_POD_CIDR,
+              FIELD_NAME.NETWORK_HOST_PREFIX,
             ],
           },
         ],
       },
     },
     NETWORK_MACHINE_CIDR_SCHEMA: {
-      DEFAULT: '10.0.0.0/16',
+      DEFAULT: MACHINE_CIDR_DEFAULT,
       META: {
-        ID: 'network_machine_cidr',
+        ID: FIELD_NAME.NETWORK_MACHINE_CIDR,
         LABEL_KEY: 'networking.machineCidrLabel',
         HELPER_TEXT_KEY: 'networking.machineCidrHelp',
         STEP_ID: STEP_IDS.NETWORKING,
@@ -63,9 +70,9 @@ export const YUP = {
       },
     },
     NETWORK_SERVICE_CIDR_SCHEMA: {
-      DEFAULT: '172.30.0.0/16',
+      DEFAULT: SERVICE_CIRD_DEFAULT,
       META: {
-        ID: 'network_service_cidr',
+        ID: FIELD_NAME.NETWORK_SERVICE_CIDR,
         LABEL_KEY: 'networking.serviceCidrLabel',
         HELPER_TEXT_KEY: 'networking.serviceCidrHelp',
         STEP_ID: STEP_IDS.NETWORKING,
@@ -75,9 +82,9 @@ export const YUP = {
       },
     },
     NETWORK_POD_CIDR_SCHEMA: {
-      DEFAULT: '10.128.0.0/14',
+      DEFAULT: POD_CIDR_DEFAULT,
       META: {
-        ID: 'network_pod_cidr',
+        ID: FIELD_NAME.NETWORK_POD_CIDR,
         LABEL_KEY: 'networking.podCidrLabel',
         HELPER_TEXT_KEY: 'networking.podCidrHelp',
         STEP_ID: STEP_IDS.NETWORKING,
@@ -87,9 +94,9 @@ export const YUP = {
       },
     },
     NETWORK_HOST_PREFIX_SCHEMA: {
-      DEFAULT: '/23',
+      DEFAULT: HOST_PREFIX_DEFAULT,
       META: {
-        ID: 'network_host_prefix',
+        ID: FIELD_NAME.NETWORK_HOST_PREFIX,
         LABEL_KEY: 'networking.hostPrefixLabel',
         HELPER_TEXT_KEY: 'networking.hostPrefixHelp',
         STEP_ID: STEP_IDS.NETWORKING,
@@ -101,7 +108,7 @@ export const YUP = {
     CONFIGURE_PROXY_SCHEMA: {
       DEFAULT: false,
       META: {
-        ID: 'configure_proxy',
+        ID: FIELD_NAME.CONFIGURE_PROXY,
         LABEL_KEY: 'networking.proxyCheckboxLabel',
         HELPER_TEXT_KEY: 'networking.proxyCheckboxHelp',
         STEP_ID: STEP_IDS.NETWORKING,
@@ -109,10 +116,10 @@ export const YUP = {
         ADVANCED: true,
         HIDE_IN_REVIEW: true,
         RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: [
-          'http_proxy_url',
-          'https_proxy_url',
-          'no_proxy_domains',
-          'additional_trust_bundle',
+          FIELD_NAME.HTTP_PROXY_URL,
+          FIELD_NAME.HTTPS_PROXY_URL,
+          FIELD_NAME.NO_PROXY_DOMAINS,
+          FIELD_NAME.ADDITIONAL_TRUST_BUNDLE,
         ],
       },
     },
@@ -136,7 +143,7 @@ export const YUP = {
   CLUSTER_WIDE_PROXY: {
     HTTP_PROXY_URL_SCHEMA: {
       META: {
-        ID: 'http_proxy_url',
+        ID: FIELD_NAME.HTTP_PROXY_URL,
         LABEL_KEY: 'clusterWideProxy.httpLabel',
         HELPER_TEXT_KEY: 'clusterWideProxy.httpHelp',
         PLACEHOLDER_KEY: 'clusterWideProxy.httpPlaceholder',
@@ -147,19 +154,19 @@ export const YUP = {
     },
     HTTPS_PROXY_URL_SCHEMA: {
       META: {
-        ID: 'https_proxy_url',
+        ID: FIELD_NAME.HTTPS_PROXY_URL,
         LABEL_KEY: 'clusterWideProxy.httpsLabel',
         HELPER_TEXT_KEY: 'clusterWideProxy.httpsHelp',
         PLACEHOLDER_KEY: 'clusterWideProxy.httpsPlaceholder',
         STEP_ID: STEP_IDS.CLUSTER_WIDE_PROXY,
         FIELD_TYPE: 'text',
-        RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: ['no_proxy_domains'],
+        RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: [FIELD_NAME.NO_PROXY_DOMAINS],
       },
     },
     NO_PROXY_DOMAINS_SCHEMA: {
       DEFAULT: '',
       META: {
-        ID: 'no_proxy_domains',
+        ID: FIELD_NAME.NO_PROXY_DOMAINS,
         LABEL_KEY: 'clusterWideProxy.noProxyLabel',
         HELPER_TEXT_KEY: 'clusterWideProxy.noProxyHelp',
         PLACEHOLDER_KEY: 'clusterWideProxy.noProxyPlaceholder',
@@ -169,7 +176,7 @@ export const YUP = {
     },
     ADDITIONAL_TRUST_BUNDLE_SCHEMA: {
       META: {
-        ID: 'additional_trust_bundle',
+        ID: FIELD_NAME.ADDITIONAL_TRUST_BUNDLE,
         LABEL_KEY: 'clusterWideProxy.trustBundleLabel',
         STEP_ID: STEP_IDS.CLUSTER_WIDE_PROXY,
         FIELD_TYPE: 'textarea',
@@ -181,17 +188,17 @@ export const YUP = {
     KEYS_SCHEMA: {
       DEFAULT: ClusterEncryptionKeys.default,
       META: {
-        ID: 'encryption_keys',
+        ID: FIELD_NAME.ENCRYPTION.ENCRYPTION_KEYS,
         LABEL_KEY: 'encryption.keysGroupLabel',
         STEP_ID: STEP_IDS.ENCRYPTION,
         FIELD_TYPE: 'radio',
         NO_EDIT_AFTER_SUBMIT: true,
-        RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: ['kms_key_arn'],
+        RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: [FIELD_NAME.ENCRYPTION.KMS_KEY_ARN],
       },
     },
     KMS_KEY_ARN_SCHEMA: {
       META: {
-        ID: 'kms_key_arn',
+        ID: FIELD_NAME.ENCRYPTION.KMS_KEY_ARN,
         LABEL_KEY: 'encryption.keyArnLabel',
         LABEL_HELP_KEY: 'encryption.keyArnHelp',
         STEP_ID: STEP_IDS.ENCRYPTION,
@@ -202,19 +209,19 @@ export const YUP = {
     ETCD_ENCRYPTION_SCHEMA: {
       DEFAULT: false,
       META: {
-        ID: 'etcd_encryption',
+        ID: FIELD_NAME.ENCRYPTION.ETCD_ENCRYPTION,
         LABEL_KEY: 'encryption.etcdLabel',
         TITLE: 'etcd encryption',
         STEP_ID: STEP_IDS.ENCRYPTION,
         FIELD_TYPE: 'checkbox',
         NO_EDIT_AFTER_SUBMIT: true,
         REVIEW_LABEL: 'Additional etcd encryption',
-        RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: ['etcd_key_arn'],
+        RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: [FIELD_NAME.ENCRYPTION.ETCD_KEY_ARN],
       },
     },
     ETCD_KEY_ARN_SCHEMA: {
       META: {
-        ID: 'etcd_key_arn',
+        ID: FIELD_NAME.ENCRYPTION.ETCD_KEY_ARN,
         LABEL_KEY: 'encryption.keyArnLabel',
         LABEL_HELP_KEY: 'encryption.keyArnHelp',
         STEP_ID: STEP_IDS.ENCRYPTION,
@@ -226,7 +233,7 @@ export const YUP = {
   MACHINE_POOLS: {
     SELECTED_VPC_SCHEMA: {
       META: {
-        ID: 'selected_vpc',
+        ID: FIELD_NAME.SELECTED_VPC,
         LABEL_KEY: 'machinePools.vpcLabel',
         PLACEHOLDER_KEY: 'machinePools.vpcPlaceholder',
         STEP_ID: STEP_IDS.MACHINE_POOLS,
@@ -238,14 +245,17 @@ export const YUP = {
           {
             resource: 'machineTypes',
             argsFromFields: {
-              role_arn: 'installer_role_arn',
-              region: 'region',
-              availability_zones: 'selected_vpc',
+              role_arn: FIELD_NAME.INSTALLER_ROLE_ARN,
+              region: FIELD_NAME.REGION,
+              availability_zones: FIELD_NAME.SELECTED_VPC,
             },
           },
         ],
         RECONCILE_VALUE_WITH_OPTIONS: true,
-        RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: ['machine_pools_subnets', 'security_groups_worker'],
+        RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: [
+          'machine_pools_subnets',
+          FIELD_NAME.SECURITY_GROUPS_WORKER,
+        ],
         DERIVED_FIELDS_SYNC_ON_CHANGE: 'vpcSecurityGroupsWorkerSelection',
       },
     },
@@ -262,7 +272,7 @@ export const YUP = {
     },
     MACHINE_POOLS_SUBNETS_SCHEMA: {
       META: {
-        ID: 'machine_pools_subnets',
+        ID: FIELD_NAME.MACHINE_POOLS_SUBNETS,
         LABEL_KEY: 'machinePools.subnetLabel',
         STEP_ID: STEP_IDS.MACHINE_POOLS,
         FIELD_TYPE: 'select',
@@ -271,7 +281,7 @@ export const YUP = {
     },
     MACHINE_TYPE_SCHEMA: {
       META: {
-        ID: 'machine_type',
+        ID: FIELD_NAME.MACHINE_TYPE,
         LABEL_KEY: 'machinePools.instanceTypeLabel',
         STEP_ID: STEP_IDS.MACHINE_POOLS,
         FIELD_TYPE: 'select',
@@ -283,7 +293,7 @@ export const YUP = {
     AUTOSCALING_SCHEMA: {
       DEFAULT: false,
       META: {
-        ID: 'autoscaling',
+        ID: FIELD_NAME.AUTOSCALING,
         LABEL_KEY: 'autoscaling.enableLabel',
         STEP_ID: STEP_IDS.MACHINE_POOLS,
         FIELD_TYPE: 'checkbox',
@@ -291,13 +301,13 @@ export const YUP = {
         SYNCS_FIELDS_ON_CHANGE: [
           {
             when: true,
-            setDefaults: ['min_replicas', 'max_replicas'],
-            clear: ['nodes_compute'],
+            setDefaults: [FIELD_NAME.MIN_REPLICAS, FIELD_NAME.MAX_REPLICAS],
+            clear: [FIELD_NAME.NODES_COMPUTE],
           },
           {
             when: false,
-            setDefaults: ['nodes_compute'],
-            clear: ['min_replicas', 'max_replicas'],
+            setDefaults: [FIELD_NAME.NODES_COMPUTE],
+            clear: [FIELD_NAME.MIN_REPLICAS, FIELD_NAME.MAX_REPLICAS],
           },
         ],
       },
@@ -305,7 +315,7 @@ export const YUP = {
     NODES_COMPUTE_SCHEMA: {
       DEFAULT: 2,
       META: {
-        ID: 'nodes_compute',
+        ID: FIELD_NAME.NODES_COMPUTE,
         LABEL_KEY: 'autoscaling.computeCountLabel',
         STEP_ID: STEP_IDS.MACHINE_POOLS,
         FIELD_TYPE: 'number',
@@ -314,7 +324,7 @@ export const YUP = {
     MIN_REPLICAS_SCHEMA: {
       DEFAULT: 2,
       META: {
-        ID: 'min_replicas',
+        ID: FIELD_NAME.MIN_REPLICAS,
         LABEL_KEY: 'autoscaling.minLabel',
         STEP_ID: STEP_IDS.MACHINE_POOLS,
         FIELD_TYPE: 'number',
@@ -323,7 +333,7 @@ export const YUP = {
     MAX_REPLICAS_SCHEMA: {
       DEFAULT: 4,
       META: {
-        ID: 'max_replicas',
+        ID: FIELD_NAME.MAX_REPLICAS,
         LABEL_KEY: 'autoscaling.maxLabel',
         STEP_ID: STEP_IDS.MACHINE_POOLS,
         FIELD_TYPE: 'number',
@@ -332,7 +342,7 @@ export const YUP = {
     COMPUTE_ROOT_VOLUME_SCHEMA: {
       DEFAULT: 300,
       META: {
-        ID: 'compute_root_volume',
+        ID: FIELD_NAME.COMPUTE_ROOT_VOLUME,
         LABEL_KEY: 'machinePools.rootDiskLabel',
         STEP_ID: STEP_IDS.MACHINE_POOLS,
         FIELD_TYPE: 'number',
@@ -343,7 +353,7 @@ export const YUP = {
     },
     IMDS_SCHEMA: {
       META: {
-        ID: 'imds',
+        ID: FIELD_NAME.IMDS,
         LABEL_KEY: 'machinePools.imdsLabel',
         STEP_ID: STEP_IDS.MACHINE_POOLS,
         FIELD_TYPE: 'radio',
@@ -354,7 +364,7 @@ export const YUP = {
     SECURITY_GROUPS_WORKER_SCHEMA: {
       DEFAULT: [] as readonly string[],
       META: {
-        ID: 'security_groups_worker',
+        ID: FIELD_NAME.SECURITY_GROUPS_WORKER,
         LABEL_KEY: 'securityGroups.formLabel',
         STEP_ID: STEP_IDS.MACHINE_POOLS,
         FIELD_TYPE: 'select',
@@ -366,7 +376,7 @@ export const YUP = {
   CLUSTER_UPDATES_FIELDS: {
     UPGRADE_POLICY_SCHEMA: {
       META: {
-        ID: 'upgrade_policy',
+        ID: FIELD_NAME.UPGRADE_POLICY,
         LABEL_KEY: 'clusterUpdates.upgradePolicyLabel',
         REVIEW_LABEL: 'review.updateStrategy',
         STEP_ID: STEP_IDS.CLUSTER_UPDATES,
@@ -376,7 +386,7 @@ export const YUP = {
     },
     UPGRADE_SCHEDULE_SCHEMA: {
       META: {
-        ID: 'upgrade_schedule',
+        ID: FIELD_NAME.UPGRADE_SCHEDULE.NAME,
         LABEL_KEY: 'clusterUpdates.dayTimeLabel',
         REVIEW_LABEL: 'clusterUpdates.upgradeScheduleLabel',
         STEP_ID: STEP_IDS.CLUSTER_UPDATES,
@@ -388,7 +398,7 @@ export const YUP = {
     NAME_SCHEMA: {
       DEFAULT: '',
       META: {
-        ID: 'name',
+        ID: FIELD_NAME.CLUSTER_NAME,
         LABEL_KEY: 'details.clusterNameLabel',
         PLACEHOLDER_KEY: 'details.clusterNamePlaceholder',
         LABEL_HELP_KEY: 'details.clusterNameHelp',
@@ -400,7 +410,7 @@ export const YUP = {
     },
     CLUSTER_VERSION_SCHEMA: {
       META: {
-        ID: 'cluster_version',
+        ID: FIELD_NAME.CLUSTER_VERSION,
         LABEL_KEY: 'details.openShiftVersionLabel',
         PLACEHOLDER_KEY: 'details.openShiftVersionPlaceholder',
         LABEL_HELP_KEY: 'details.openShiftVersionHelp',
@@ -408,12 +418,12 @@ export const YUP = {
         FIELD_TYPE: 'select',
         OPTIONS_WIZARD_DATA_RESOURCE: 'versions',
         RECONCILE_VALUE_WITH_OPTIONS: true,
-        RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: ['imds', 'security_groups_worker'],
+        RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: [FIELD_NAME.IMDS, FIELD_NAME.SECURITY_GROUPS_WORKER],
       },
     },
     ASSOCIATED_AWS_ID_SCHEMA: {
       META: {
-        ID: 'associated_aws_id',
+        ID: FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID,
         LABEL_KEY: 'details.awsInfraLabel',
         LABEL_HELP_KEY: 'details.awsInfraHelp',
         PLACEHOLDER_KEY: 'details.awsInfraPlaceholder',
@@ -423,23 +433,23 @@ export const YUP = {
         OPTIONS_WIZARD_DATA_RESOURCE: 'awsInfrastructureAccounts',
         RECONCILE_VALUE_WITH_OPTIONS: true,
         RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: [
-          'installer_role_arn',
-          'support_role_arn',
-          'worker_role_arn',
-          'selected_vpc',
-          'machine_pools_subnets',
-          'cluster_privacy_public_subnet_id',
+          FIELD_NAME.INSTALLER_ROLE_ARN,
+          FIELD_NAME.SUPPORT_ROLE_ARN,
+          FIELD_NAME.WORKER_ROLE_ARN,
+          FIELD_NAME.SELECTED_VPC,
+          FIELD_NAME.MACHINE_POOLS_SUBNETS,
+          FIELD_NAME.CLUSTER_PRIVACY_FIELD.PUBLIC_SUBNET_ID,
         ],
         REFETCHES_RESOURCES_ON_CHANGE: [
-          { resource: 'regions', argFromField: 'associated_aws_id' },
-          { resource: 'roles', argFromField: 'associated_aws_id' },
-          { resource: 'oidcConfig', argFromField: 'associated_aws_id' },
+          { resource: 'regions', argFromField: FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID },
+          { resource: 'roles', argFromField: FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID },
+          { resource: 'oidcConfig', argFromField: FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID },
         ],
       },
     },
     BILLING_ACCOUNT_ID_SCHEMA: {
       META: {
-        ID: 'billing_account_id',
+        ID: FIELD_NAME.BILLING_ACCOUNT_ID,
         LABEL_KEY: 'details.billingLabel',
         LABEL_HELP_KEY: 'details.billingHelp',
         PLACEHOLDER_KEY: 'details.billingPlaceholder',
@@ -452,7 +462,7 @@ export const YUP = {
     },
     REGION_SCHEMA: {
       META: {
-        ID: 'region',
+        ID: FIELD_NAME.REGION,
         LABEL_KEY: 'details.regionLabel',
         PLACEHOLDER_KEY: 'details.regionPlaceholder',
         STEP_ID: STEP_IDS.DETAILS,
@@ -461,26 +471,26 @@ export const YUP = {
         OPTIONS_WIZARD_DATA_RESOURCE: 'regions',
         RECONCILE_VALUE_WITH_OPTIONS: true,
         RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: [
-          'selected_vpc',
-          'machine_pools_subnets',
-          'security_groups_worker',
-          'cluster_privacy_public_subnet_id',
+          FIELD_NAME.SELECTED_VPC,
+          FIELD_NAME.MACHINE_POOLS_SUBNETS,
+          FIELD_NAME.SECURITY_GROUPS_WORKER,
+          FIELD_NAME.CLUSTER_PRIVACY_FIELD.PUBLIC_SUBNET_ID,
         ],
         REFETCHES_RESOURCES_ON_CHANGE: [
           {
             resource: 'vpcList',
             argsFromFields: {
-              account_id: 'associated_aws_id',
-              role_arn: 'installer_role_arn',
-              region: 'region',
+              account_id: FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID,
+              role_arn: FIELD_NAME.INSTALLER_ROLE_ARN,
+              region: FIELD_NAME.REGION,
             },
           },
           {
             resource: 'machineTypes',
             argsFromFields: {
-              role_arn: 'installer_role_arn',
-              region: 'region',
-              availability_zones: 'selected_vpc',
+              role_arn: FIELD_NAME.INSTALLER_ROLE_ARN,
+              region: FIELD_NAME.REGION,
+              availability_zones: FIELD_NAME.SELECTED_VPC,
             },
           },
         ],
@@ -490,7 +500,7 @@ export const YUP = {
   ROLES_AND_POLICIES: {
     INSTALLER_ROLE_ARN_SCHEMA: {
       META: {
-        ID: 'installer_role_arn',
+        ID: FIELD_NAME.INSTALLER_ROLE_ARN,
         LABEL_KEY: 'rolesAndPolicies.installerRoleLabel',
         LABEL_HELP_KEY: 'rolesAndPolicies.installerRoleHelp',
         PLACEHOLDER_KEY: 'rolesAndPolicies.installerRolePlaceholder',
@@ -502,17 +512,17 @@ export const YUP = {
           {
             resource: 'vpcList',
             argsFromFields: {
-              account_id: 'associated_aws_id',
-              role_arn: 'installer_role_arn',
-              region: 'region',
+              account_id: FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID,
+              role_arn: FIELD_NAME.INSTALLER_ROLE_ARN,
+              region: FIELD_NAME.REGION,
             },
           },
           {
             resource: 'machineTypes',
             argsFromFields: {
-              role_arn: 'installer_role_arn',
-              region: 'region',
-              availability_zones: 'selected_vpc',
+              role_arn: FIELD_NAME.INSTALLER_ROLE_ARN,
+              region: FIELD_NAME.REGION,
+              availability_zones: FIELD_NAME.SELECTED_VPC,
             },
           },
         ],
@@ -522,7 +532,7 @@ export const YUP = {
     },
     SUPPORT_ROLE_ARN_SCHEMA: {
       META: {
-        ID: 'support_role_arn',
+        ID: FIELD_NAME.SUPPORT_ROLE_ARN,
         LABEL_KEY: 'rolesAndPolicies.supportRoleLabel',
         LABEL_HELP_KEY: 'rolesAndPolicies.supportHelp',
         PLACEHOLDER_KEY: 'rolesAndPolicies.installerPlaceholder',
@@ -535,7 +545,7 @@ export const YUP = {
     },
     WORKER_ROLE_ARN_SCHEMA: {
       META: {
-        ID: 'worker_role_arn',
+        ID: FIELD_NAME.WORKER_ROLE_ARN,
         LABEL_KEY: 'rolesAndPolicies.workerRoleLabel',
         LABEL_HELP_KEY: 'rolesAndPolicies.workerHelp',
         PLACEHOLDER_KEY: 'rolesAndPolicies.installerPlaceholder',
@@ -548,7 +558,7 @@ export const YUP = {
     },
     BYO_OIDC_CONFIG_ID_SCHEMA: {
       META: {
-        ID: 'byo_oidc_config_id',
+        ID: FIELD_NAME.BYO_OIDC_CONFIG_ID,
         LABEL_KEY: 'rolesAndPolicies.oidcLabel',
         LABEL_HELP_KEY: 'rolesAndPolicies.oidcHelp',
         PLACEHOLDER_KEY: 'rolesAndPolicies.oidcPlaceholder',
@@ -563,7 +573,7 @@ export const YUP = {
     CUSTOM_OPERATOR_ROLES_PREFIX_SCHEMA: {
       DEFAULT: '',
       META: {
-        ID: 'custom_operator_roles_prefix',
+        ID: FIELD_NAME.CUSTOM_OPERATOR_ROLES_PREFIX,
         LABEL_KEY: 'rolesAndPolicies.operatorPrefixLabel',
         STEP_ID: STEP_IDS.ROLES_AND_POLICIES,
         FIELD_TYPE: 'text',

@@ -6,6 +6,7 @@ import {
   AWS_MACHINE_CIDR_MAX_SINGLE_AZ,
   AWS_MACHINE_CIDR_MIN,
   CIDR_REGEXP,
+  FIELD_NAME,
   HOST_PREFIX_MAX,
   HOST_PREFIX_MIN,
   HOST_PREFIX_REGEXP,
@@ -146,7 +147,7 @@ export const networkMachineCidrSchema = yup
 
     const overlapping = findOverlappingCidrFields(
       value,
-      'network_machine_cidr',
+      FIELD_NAME.NETWORK_MACHINE_CIDR,
       formData,
       msgs.disjointSubnets
     );
@@ -224,7 +225,7 @@ export const networkServiceCidrSchema = yup
 
     const overlapping = findOverlappingCidrFields(
       value,
-      'network_service_cidr',
+      FIELD_NAME.NETWORK_SERVICE_CIDR,
       formData,
       msgs.disjointSubnets
     );
@@ -300,7 +301,7 @@ export const networkPodCidrSchema = yup
 
     const overlapping = findOverlappingCidrFields(
       value,
-      'network_pod_cidr',
+      FIELD_NAME.NETWORK_POD_CIDR,
       formData,
       msgs.disjointSubnets
     );
