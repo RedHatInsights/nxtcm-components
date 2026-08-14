@@ -64,7 +64,7 @@ export const Details = ({
   });
 
   const installerRoleArn = useWatch({ control, name: FIELD_NAME.INSTALLER_ROLE_ARN });
-  const associatedAwsIdRaw = useWatch({ control, name: FIELD_NAME.ASSOCIATES_AWS_ACCOUNT_ID });
+  const associatedAwsIdRaw = useWatch({ control, name: FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID });
   const associatedAwsIdForRegions =
     typeof associatedAwsIdRaw === 'string' && associatedAwsIdRaw !== ''
       ? associatedAwsIdRaw
@@ -127,7 +127,7 @@ export const Details = ({
             <WizSelect<ROSAHCPCluster>
               isFill
               isTypeAhead
-              name={FIELD_NAME.ASSOCIATES_AWS_ACCOUNT_ID}
+              name={FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID}
               schema={clusterValidationSchema}
               isLoading={awsInfrastructureAccounts.isFetching}
               options={awsInfrastructureAccounts.data}

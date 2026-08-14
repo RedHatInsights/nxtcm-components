@@ -82,7 +82,7 @@ export const YAML_MODEL_PATH = 'rosa-hcp-control-plane.yaml';
 export const YAML_VALIDATION_OWNER = 'yaml-hcp-validation';
 
 export const FIELD_NAME = {
-  ASSOCIATES_AWS_ACCOUNT_ID: 'associated_aws_id',
+  ASSOCIATED_AWS_ACCOUNT_ID: 'associated_aws_id',
   BILLING_ACCOUNT_ID: 'billing_account_id',
   REGION: 'region',
   CLUSTER_NAME: 'name',

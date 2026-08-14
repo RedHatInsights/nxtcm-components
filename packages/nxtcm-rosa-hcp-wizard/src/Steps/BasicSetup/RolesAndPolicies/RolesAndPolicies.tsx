@@ -42,7 +42,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   const oidcConfigHintContent = <OIDCConfigHint product={product} />;
   const oidcConfigHintMaxWidth = '25rem';
 
-  const awsInfrastructureAccount = useWatch({ name: FIELD_NAME.ASSOCIATES_AWS_ACCOUNT_ID });
+  const awsInfrastructureAccount = useWatch({ name: FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID });
 
   const installerRoleOptions = useInstallerRoleOptions(roles);
   const { isIncompleteRoleSet } = useDependentRoles(roles);

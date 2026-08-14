@@ -153,7 +153,7 @@ export const YUP = {
         PLACEHOLDER_KEY: 'clusterWideProxy.httpsPlaceholder',
         STEP_ID: STEP_IDS.CLUSTER_WIDE_PROXY,
         FIELD_TYPE: 'text',
-        RESETS_FIELDS_TO_DEFAILT_ON_CHANGE: ['no_proxy_domains'],
+        RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: ['no_proxy_domains'],
       },
     },
     NO_PROXY_DOMAINS_SCHEMA: {
@@ -167,7 +167,7 @@ export const YUP = {
         FIELD_TYPE: 'text',
       },
     },
-    ADDITIONA_TRUST_BUNDLE_SCHEMA: {
+    ADDITIONAL_TRUST_BUNDLE_SCHEMA: {
       META: {
         ID: 'additional_trust_bundle',
         LABEL_KEY: 'clusterWideProxy.trustBundleLabel',
@@ -209,10 +209,10 @@ export const YUP = {
         FIELD_TYPE: 'checkbox',
         NO_EDIT_AFTER_SUBMIT: true,
         REVIEW_LABEL: 'Additional etcd encryption',
-        RESETS_FIELDS_TO_DEFAILT_ON_CHANGE: ['etcd_key_arn'],
+        RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: ['etcd_key_arn'],
       },
     },
-    ETC_KEY_ARN_SCHEMA: {
+    ETCD_KEY_ARN_SCHEMA: {
       META: {
         ID: 'etcd_key_arn',
         LABEL_KEY: 'encryption.keyArnLabel',

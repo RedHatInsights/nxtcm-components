@@ -40,7 +40,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
   const clusterVersion = useWatch({ control, name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
   const selectedVpcRaw = useWatch({ control, name: FIELD_NAME.SELECTED_VPC });
   const autoscaling = useWatch({ control, name: FIELD_NAME.AUTOSCALING });
-  const awsAccountId = useWatch({ control, name: FIELD_NAME.ASSOCIATES_AWS_ACCOUNT_ID });
+  const awsAccountId = useWatch({ control, name: FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID });
   const installerRoleArn = useWatch({ control, name: FIELD_NAME.INSTALLER_ROLE_ARN });
   const maxRootDiskSize = getWorkerNodeVolumeSizeMaxGiB(clusterVersion);
   const wrongVersionForIMDS = !canSelectImds(clusterVersion);
