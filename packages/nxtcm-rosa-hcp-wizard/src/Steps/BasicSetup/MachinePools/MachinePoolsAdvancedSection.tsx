@@ -9,6 +9,7 @@ import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardS
 import { type CloudVpc, type ROSAHCPCluster, type VpcListResource } from '../../../types';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import EditSecurityGroups from './SecurityGroupSection/EditSecurityGroups';
+import { FIELD_NAME, MIN_ROOT_DISK_SIZE_GIB } from '../../../constants';
 
 export interface MachinePoolsAdvancedSectionProps {
   /** When true, IMDS options are hidden (unsupported cluster version). */
@@ -37,8 +38,8 @@ export const MachinePoolsAdvancedSection = (props: MachinePoolsAdvancedSectionPr
     if (!wrongVersionForIMDS) {
       return;
     }
-    if (getValues('imds')) {
-      setValue('imds', undefined);
+    if (getValues(FIELD_NAME.IMDS)) {
+      setValue(FIELD_NAME.IMDS, undefined);
     }
   }, [getValues, setValue, wrongVersionForIMDS]);
 
@@ -48,7 +49,7 @@ export const MachinePoolsAdvancedSection = (props: MachinePoolsAdvancedSectionPr
         {wrongVersionForIMDS ? null : (
           <FieldWrapper>
             <WizRadioGroup<ROSAHCPCluster>
-              name="imds"
+              name={FIELD_NAME.IMDS}
               schema={clusterValidationSchema}
               label={mp.imdsLabel}
               labelHelpTitle={mp.imdsHelpTitle}
@@ -72,9 +73,9 @@ export const MachinePoolsAdvancedSection = (props: MachinePoolsAdvancedSectionPr
 
         <FieldWrapper size="md">
           <WizNumberInput<ROSAHCPCluster>
-            name="compute_root_volume"
+            name={FIELD_NAME.COMPUTE_ROOT_VOLUME}
             schema={clusterValidationSchema}
-            min={75}
+            min={MIN_ROOT_DISK_SIZE_GIB}
             max={maxRootDiskSize}
           />
         </FieldWrapper>

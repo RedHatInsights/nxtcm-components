@@ -12,10 +12,9 @@ import {
   POD_CIDR_MAX,
   POD_NODES_MIN,
   SERVICE_CIDR_MAX,
-  STEP_IDS,
 } from '../constants';
 import { parseCIDRSubnetLength } from '../utilities/helpers';
-import { ClusterNetwork, ROSAHCPCluster } from '../types';
+import { ROSAHCPCluster } from '../types';
 import type { WizardFieldMeta } from './types';
 import {
   ctx,
@@ -27,33 +26,38 @@ import {
   rosaRequiredStringField,
 } from './helpers';
 import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
+import { YUP } from './constants';
 
 export const clusterPrivacySchema = rosaRequiredStringField()
-  .default(ClusterNetwork.external)
+  .default(YUP.NETWORKING.CLUSTER_PRIVACY_SCHEMA.DEFAULT)
   .meta({
-    id: 'cluster_privacy',
-    labelKey: 'networking.clusterPrivacyLabel',
-    stepId: STEP_IDS.NETWORKING,
-    fieldSetLegend: false,
-    fieldType: 'radio',
-    noEditAfterSubmit: true,
-    resetsFieldsToDefaultOnChange: ['cluster_privacy_public_subnet_id'],
+    id: YUP.NETWORKING.CLUSTER_PRIVACY_SCHEMA.META.ID,
+    labelKey: YUP.NETWORKING.CLUSTER_PRIVACY_SCHEMA.META.LABEL_KEY,
+    stepId: YUP.NETWORKING.CLUSTER_PRIVACY_SCHEMA.META.STEP_ID,
+    fieldSetLegend: YUP.NETWORKING.CLUSTER_PRIVACY_SCHEMA.META.FIELD_SET_LEGEND,
+    fieldType: YUP.NETWORKING.CLUSTER_PRIVACY_SCHEMA.META.FIELD_TYPE,
+    noEditAfterSubmit: YUP.NETWORKING.CLUSTER_PRIVACY_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
+    resetsFieldsToDefaultOnChange:
+      YUP.NETWORKING.CLUSTER_PRIVACY_SCHEMA.META.RESETS_FIELDS_TO_DEFAULT_ON_CHANGE,
   } satisfies WizardFieldMeta);
 
 export const clusterPrivacyPublicSubnetIdSchema = yup
   .string()
   .meta({
-    id: 'cluster_privacy_public_subnet_id',
-    labelKey: 'networking.publicSubnetLabel',
-    placeholderKey: 'networking.publicSubnetPlaceholder',
-    stepId: STEP_IDS.NETWORKING,
-    fieldType: 'select',
-    noEditAfterSubmit: true,
-    optionsWizardDataResource: 'vpcList',
-    reconcileValueWithOptions: true,
+    id: YUP.NETWORKING.CLUSTER_PRIVACY_PUBLIC_SUBNET_ID_SCHEMA.META.ID,
+    labelKey: YUP.NETWORKING.CLUSTER_PRIVACY_PUBLIC_SUBNET_ID_SCHEMA.META.LABEL_KEY,
+    placeholderKey: YUP.NETWORKING.CLUSTER_PRIVACY_PUBLIC_SUBNET_ID_SCHEMA.META.PLACEHOLDER_KEY,
+    stepId: YUP.NETWORKING.CLUSTER_PRIVACY_PUBLIC_SUBNET_ID_SCHEMA.META.STEP_ID,
+    fieldType: YUP.NETWORKING.CLUSTER_PRIVACY_PUBLIC_SUBNET_ID_SCHEMA.META.FIELD_TYPE,
+    noEditAfterSubmit:
+      YUP.NETWORKING.CLUSTER_PRIVACY_PUBLIC_SUBNET_ID_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
+    optionsWizardDataResource:
+      YUP.NETWORKING.CLUSTER_PRIVACY_PUBLIC_SUBNET_ID_SCHEMA.META.OPTIONS_WIZARD_DATA_RESOURCE,
+    reconcileValueWithOptions:
+      YUP.NETWORKING.CLUSTER_PRIVACY_PUBLIC_SUBNET_ID_SCHEMA.META.RECONCILE_VALUE_WITH_OPTIONS,
   } satisfies WizardFieldMeta)
   .when('cluster_privacy', {
-    is: ClusterNetwork.external,
+    is: YUP.NETWORKING.CLUSTER_PRIVACY_SCHEMA.DEFAULT,
     then: (schema) =>
       schema.test(rosaCommonRequiredNonEmptyTest).meta({ [YUP_FIELD_REQUIRED_UI_META_KEY]: true }),
     otherwise: (schema) => schema.optional(),
@@ -61,41 +65,31 @@ export const clusterPrivacyPublicSubnetIdSchema = yup
 
 export const cidrDefaultSchema = yup
   .boolean()
-  .default(true)
+  .default(YUP.NETWORKING.CIDR_DEFAULT_SCHEMA.DEFAULT)
   .optional()
   .meta({
-    id: 'cidr_default',
-    labelKey: 'networking.useDefaultsLabel',
-    helperTextKey: 'networking.useDefaultsHelp',
-    stepId: STEP_IDS.NETWORKING,
-    fieldType: 'checkbox',
-    advanced: true,
-    hideInReview: true,
-    syncsFieldsOnChange: [
-      {
-        when: true,
-        setDefaults: [
-          'network_machine_cidr',
-          'network_service_cidr',
-          'network_pod_cidr',
-          'network_host_prefix',
-        ],
-      },
-    ],
+    id: YUP.NETWORKING.CIDR_DEFAULT_SCHEMA.META.ID,
+    labelKey: YUP.NETWORKING.CIDR_DEFAULT_SCHEMA.META.LABEL_KEY,
+    helperTextKey: YUP.NETWORKING.CIDR_DEFAULT_SCHEMA.META.HELPER_TEXT_KEY,
+    stepId: YUP.NETWORKING.CIDR_DEFAULT_SCHEMA.META.STEP_ID,
+    fieldType: YUP.NETWORKING.CIDR_DEFAULT_SCHEMA.META.FIELD_TYPE,
+    advanced: YUP.NETWORKING.CIDR_DEFAULT_SCHEMA.META.ADVANCED,
+    hideInReview: YUP.NETWORKING.CIDR_DEFAULT_SCHEMA.META.HIDE_IN_REVIEW,
+    syncsFieldsOnChange: YUP.NETWORKING.CIDR_DEFAULT_SCHEMA.META.SYNCS_FIELDS_ON_CHANGE,
   } satisfies WizardFieldMeta);
 
 export const networkMachineCidrSchema = yup
   .string()
-  .default('10.0.0.0/16')
+  .default(YUP.NETWORKING.NETWORK_MACHINE_CIDR_SCHEMA.DEFAULT)
   .optional()
   .meta({
-    id: 'network_machine_cidr',
-    labelKey: 'networking.machineCidrLabel',
-    helperTextKey: 'networking.machineCidrHelp',
-    stepId: STEP_IDS.NETWORKING,
-    fieldType: 'text',
-    advanced: true,
-    noEditAfterSubmit: true,
+    id: YUP.NETWORKING.NETWORK_MACHINE_CIDR_SCHEMA.META.ID,
+    labelKey: YUP.NETWORKING.NETWORK_MACHINE_CIDR_SCHEMA.META.LABEL_KEY,
+    helperTextKey: YUP.NETWORKING.NETWORK_MACHINE_CIDR_SCHEMA.META.HELPER_TEXT_KEY,
+    stepId: YUP.NETWORKING.NETWORK_MACHINE_CIDR_SCHEMA.META.STEP_ID,
+    fieldType: YUP.NETWORKING.NETWORK_MACHINE_CIDR_SCHEMA.META.FIELD_TYPE,
+    advanced: YUP.NETWORKING.NETWORK_MACHINE_CIDR_SCHEMA.META.ADVANCED,
+    noEditAfterSubmit: YUP.NETWORKING.NETWORK_MACHINE_CIDR_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
   } satisfies WizardFieldMeta)
   .test('machine-cidr', '', function (value) {
     if (!value) return true;
@@ -167,16 +161,16 @@ export const networkMachineCidrSchema = yup
 
 export const networkServiceCidrSchema = yup
   .string()
-  .default('172.30.0.0/16')
+  .default(YUP.NETWORKING.NETWORK_SERVICE_CIDR_SCHEMA.DEFAULT)
   .optional()
   .meta({
-    id: 'network_service_cidr',
-    labelKey: 'networking.serviceCidrLabel',
-    helperTextKey: 'networking.serviceCidrHelp',
-    stepId: STEP_IDS.NETWORKING,
-    fieldType: 'text',
-    advanced: true,
-    noEditAfterSubmit: true,
+    id: YUP.NETWORKING.NETWORK_SERVICE_CIDR_SCHEMA.META.ID,
+    labelKey: YUP.NETWORKING.NETWORK_SERVICE_CIDR_SCHEMA.META.LABEL_KEY,
+    helperTextKey: YUP.NETWORKING.NETWORK_SERVICE_CIDR_SCHEMA.META.HELPER_TEXT_KEY,
+    stepId: YUP.NETWORKING.NETWORK_SERVICE_CIDR_SCHEMA.META.STEP_ID,
+    fieldType: YUP.NETWORKING.NETWORK_SERVICE_CIDR_SCHEMA.META.FIELD_TYPE,
+    advanced: YUP.NETWORKING.NETWORK_SERVICE_CIDR_SCHEMA.META.ADVANCED,
+    noEditAfterSubmit: YUP.NETWORKING.NETWORK_SERVICE_CIDR_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
   } satisfies WizardFieldMeta)
   .test('service-cidr', '', function (value) {
     if (!value) return true;
@@ -245,16 +239,16 @@ export const networkServiceCidrSchema = yup
 
 export const networkPodCidrSchema = yup
   .string()
-  .default('10.128.0.0/14')
+  .default(YUP.NETWORKING.NETWORK_POD_CIDR_SCHEMA.DEFAULT)
   .optional()
   .meta({
-    id: 'network_pod_cidr',
-    labelKey: 'networking.podCidrLabel',
-    helperTextKey: 'networking.podCidrHelp',
-    stepId: STEP_IDS.NETWORKING,
-    fieldType: 'text',
-    advanced: true,
-    noEditAfterSubmit: true,
+    id: YUP.NETWORKING.NETWORK_POD_CIDR_SCHEMA.META.ID,
+    labelKey: YUP.NETWORKING.NETWORK_POD_CIDR_SCHEMA.META.LABEL_KEY,
+    helperTextKey: YUP.NETWORKING.NETWORK_POD_CIDR_SCHEMA.META.HELPER_TEXT_KEY,
+    stepId: YUP.NETWORKING.NETWORK_POD_CIDR_SCHEMA.META.STEP_ID,
+    fieldType: YUP.NETWORKING.NETWORK_POD_CIDR_SCHEMA.META.FIELD_TYPE,
+    advanced: YUP.NETWORKING.NETWORK_POD_CIDR_SCHEMA.META.ADVANCED,
+    noEditAfterSubmit: YUP.NETWORKING.NETWORK_POD_CIDR_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
   } satisfies WizardFieldMeta)
   .test('pod-cidr', '', function (value) {
     if (!value) return true;
@@ -321,16 +315,16 @@ export const networkPodCidrSchema = yup
 
 export const networkHostPrefixSchema = yup
   .string()
-  .default('/23')
+  .default(YUP.NETWORKING.NETWORK_HOST_PREFIX_SCHEMA.DEFAULT)
   .optional()
   .meta({
-    id: 'network_host_prefix',
-    labelKey: 'networking.hostPrefixLabel',
-    helperTextKey: 'networking.hostPrefixHelp',
-    stepId: STEP_IDS.NETWORKING,
-    fieldType: 'text',
-    advanced: true,
-    noEditAfterSubmit: true,
+    id: YUP.NETWORKING.NETWORK_HOST_PREFIX_SCHEMA.META.ID,
+    labelKey: YUP.NETWORKING.NETWORK_HOST_PREFIX_SCHEMA.META.LABEL_KEY,
+    helperTextKey: YUP.NETWORKING.NETWORK_HOST_PREFIX_SCHEMA.META.HELPER_TEXT_KEY,
+    stepId: YUP.NETWORKING.NETWORK_HOST_PREFIX_SCHEMA.META.STEP_ID,
+    fieldType: YUP.NETWORKING.NETWORK_HOST_PREFIX_SCHEMA.META.FIELD_TYPE,
+    advanced: YUP.NETWORKING.NETWORK_HOST_PREFIX_SCHEMA.META.ADVANCED,
+    noEditAfterSubmit: YUP.NETWORKING.NETWORK_HOST_PREFIX_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
   } satisfies WizardFieldMeta)
   .test('host-prefix', '', function (value) {
     if (!value) return true;
@@ -360,42 +354,38 @@ export const networkHostPrefixSchema = yup
 
 export const configureProxySchema = yup
   .boolean()
-  .default(false)
+  .default(YUP.NETWORKING.CONFIGURE_PROXY_SCHEMA.DEFAULT)
   .optional()
   .meta({
-    id: 'configure_proxy',
-    labelKey: 'networking.proxyCheckboxLabel',
-    helperTextKey: 'networking.proxyCheckboxHelp',
-    stepId: STEP_IDS.NETWORKING,
-    fieldType: 'checkbox',
-    advanced: true,
-    hideInReview: true,
-    resetsFieldsToDefaultOnChange: [
-      'http_proxy_url',
-      'https_proxy_url',
-      'no_proxy_domains',
-      'additional_trust_bundle',
-    ],
+    id: YUP.NETWORKING.CONFIGURE_PROXY_SCHEMA.META.ID,
+    labelKey: YUP.NETWORKING.CONFIGURE_PROXY_SCHEMA.META.LABEL_KEY,
+    helperTextKey: YUP.NETWORKING.CONFIGURE_PROXY_SCHEMA.META.HELPER_TEXT_KEY,
+    stepId: YUP.NETWORKING.CONFIGURE_PROXY_SCHEMA.META.STEP_ID,
+    fieldType: YUP.NETWORKING.CONFIGURE_PROXY_SCHEMA.META.FIELD_TYPE,
+    advanced: YUP.NETWORKING.CONFIGURE_PROXY_SCHEMA.META.ADVANCED,
+    hideInReview: YUP.NETWORKING.CONFIGURE_PROXY_SCHEMA.META.HIDE_IN_REVIEW,
+    resetsFieldsToDefaultOnChange:
+      YUP.NETWORKING.CONFIGURE_PROXY_SCHEMA.META.RESETS_FIELDS_TO_DEFAULT_ON_CHANGE,
   } satisfies WizardFieldMeta);
 
 export const multiAzSchema = yup
   .string()
   .optional()
   .meta({
-    id: 'multi_az',
-    labelKey: 'networking.multiAzLabel',
-    stepId: STEP_IDS.NETWORKING,
-    hideInReview: true,
+    id: YUP.NETWORKING.MULTI_AZ_SCHEMA.META.ID,
+    labelKey: YUP.NETWORKING.MULTI_AZ_SCHEMA.META.LABEL_KEY,
+    stepId: YUP.NETWORKING.MULTI_AZ_SCHEMA.META.STEP_ID,
+    hideInReview: YUP.NETWORKING.MULTI_AZ_SCHEMA.META.HIDE_IN_REVIEW,
   } satisfies WizardFieldMeta);
 
 export const hypershiftSchema = yup
   .string()
   .optional()
   .meta({
-    id: 'hypershift',
-    labelKey: 'networking.hypershiftLabel',
-    stepId: STEP_IDS.NETWORKING,
-    hideInReview: true,
+    id: YUP.NETWORKING.HYPERSHIFT_SCHEMA.META.ID,
+    labelKey: YUP.NETWORKING.HYPERSHIFT_SCHEMA.META.LABEL_KEY,
+    stepId: YUP.NETWORKING.HYPERSHIFT_SCHEMA.META.STEP_ID,
+    hideInReview: YUP.NETWORKING.HYPERSHIFT_SCHEMA.META.HIDE_IN_REVIEW,
   } satisfies WizardFieldMeta);
 
 export const networkingFields = {

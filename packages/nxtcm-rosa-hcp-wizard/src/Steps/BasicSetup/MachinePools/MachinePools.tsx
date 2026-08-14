@@ -17,6 +17,7 @@ import { clusterValidationSchema } from '../../../yupSchemas';
 import { getAutoscalingMaxNodes } from '../../../utilities/getAutoscalingMaxNodes';
 import { MachinePoolsAdvancedSection } from './MachinePoolsAdvancedSection';
 import { MachinePoolsAutoscalingReplicas } from './MachinePoolsAutoscalingReplicas';
+import { FIELD_NAME } from '../../../constants';
 
 type MachinePoolsProps = Pick<ROSAHCPWizardData, 'vpcList' | 'machineTypes'>;
 
@@ -35,12 +36,12 @@ export const MachinePools = (props: MachinePoolsProps) => {
     });
   }, [machineTypes.data]);
 
-  const region = useWatch({ control, name: 'region' });
-  const clusterVersion = useWatch({ control, name: 'cluster_version' }) ?? '';
-  const selectedVpcRaw = useWatch({ control, name: 'selected_vpc' });
-  const autoscaling = useWatch({ control, name: 'autoscaling' });
-  const awsAccountId = useWatch({ control, name: 'associated_aws_id' });
-  const installerRoleArn = useWatch({ control, name: 'installer_role_arn' });
+  const region = useWatch({ control, name: FIELD_NAME.REGION });
+  const clusterVersion = useWatch({ control, name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
+  const selectedVpcRaw = useWatch({ control, name: FIELD_NAME.SELECTED_VPC });
+  const autoscaling = useWatch({ control, name: FIELD_NAME.AUTOSCALING });
+  const awsAccountId = useWatch({ control, name: FIELD_NAME.ASSOCIATES_AWS_ACCOUNT_ID });
+  const installerRoleArn = useWatch({ control, name: FIELD_NAME.INSTALLER_ROLE_ARN });
   const maxRootDiskSize = getWorkerNodeVolumeSizeMaxGiB(clusterVersion);
   const wrongVersionForIMDS = !canSelectImds(clusterVersion);
   const maxAutoscalingNodes = getAutoscalingMaxNodes(clusterVersion);
@@ -89,7 +90,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
     <Section label={mp.sectionLabel} id="machine-pools-section" description={mp.intro}>
       <FieldWrapper size="md">
         <WizSelect<ROSAHCPCluster>
-          name="selected_vpc"
+          name={FIELD_NAME.SELECTED_VPC}
           schema={clusterValidationSchema}
           label={`${mp.vpcLabelPrefix} ${region ?? ''}`}
           placeholder={[mp.vpcPlaceholder, region].filter(Boolean).join(' ')}
@@ -108,7 +109,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
       </FieldWrapper>
       <FieldWrapper size="md">
         <WizSelect<ROSAHCPCluster>
-          name="machine_pools_subnets.0.machine_pool_subnet"
+          name={FIELD_NAME.SELECTED_MACHINE_POOL}
           schema={clusterValidationSchema}
           label={mp.subnetLabel}
           placeholder={mp.subnetPlaceholder}
@@ -121,7 +122,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
       </FieldWrapper>
       <FieldWrapper size="md">
         <WizSelect<ROSAHCPCluster>
-          name="machine_type"
+          name={FIELD_NAME.MACHINE_TYPE}
           schema={clusterValidationSchema}
           isLoading={machineTypes.isFetching}
           options={generalPurposeMachineTypesFirst}
@@ -141,7 +142,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
       <FieldWrapper size="full">
         <WizCheckbox<ROSAHCPCluster>
           id="autoscaling-checkbox"
-          name="autoscaling"
+          name={FIELD_NAME.AUTOSCALING}
           schema={clusterValidationSchema}
           helperText={
             <>
@@ -159,7 +160,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
           <MachinePoolsAutoscalingReplicas maxAutoscalingNodes={maxAutoscalingNodes} />
         ) : (
           <WizNumberInput<ROSAHCPCluster>
-            name="nodes_compute"
+            name={FIELD_NAME.NODES_COMPUTE}
             schema={clusterValidationSchema}
             min={1}
             labelHelp={

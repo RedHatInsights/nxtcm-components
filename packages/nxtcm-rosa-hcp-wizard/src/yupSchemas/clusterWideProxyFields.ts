@@ -1,23 +1,25 @@
 import * as yup from 'yup';
 
-import { BASE_DOMAIN_REGEXP, MAX_CA_SIZE_BYTES, STEP_IDS } from '../constants';
+import { BASE_DOMAIN_REGEXP, FIELD_NAME, MAX_CA_SIZE_BYTES } from '../constants';
 import { stringToArray } from '../utilities/helpers';
 import type { WizardFieldMeta } from './types';
 import { ctx } from './helpers';
+import { YUP } from './constants';
 
 export const httpProxyUrlSchema = yup
   .string()
   .optional()
   .meta({
-    id: 'http_proxy_url',
-    labelKey: 'clusterWideProxy.httpLabel',
-    helperTextKey: 'clusterWideProxy.httpHelp',
-    placeholderKey: 'clusterWideProxy.httpPlaceholder',
-    stepId: STEP_IDS.CLUSTER_WIDE_PROXY,
-    fieldType: 'text',
-    resetsFieldsToDefaultOnChange: ['no_proxy_domains'],
+    id: YUP.CLUSTER_WIDE_PROXY.HTTP_PROXY_URL_SCHEMA.META.ID,
+    labelKey: YUP.CLUSTER_WIDE_PROXY.HTTP_PROXY_URL_SCHEMA.META.LABEL_KEY,
+    helperTextKey: YUP.CLUSTER_WIDE_PROXY.HTTP_PROXY_URL_SCHEMA.META.HELPER_TEXT_KEY,
+    placeholderKey: YUP.CLUSTER_WIDE_PROXY.HTTP_PROXY_URL_SCHEMA.META.PLACEHOLDER_KEY,
+    stepId: YUP.CLUSTER_WIDE_PROXY.HTTP_PROXY_URL_SCHEMA.META.STEP_ID,
+    fieldType: YUP.CLUSTER_WIDE_PROXY.HTTP_PROXY_URL_SCHEMA.META.FIELD_TYPE,
+    resetsFieldsToDefaultOnChange:
+      YUP.CLUSTER_WIDE_PROXY.HTTP_PROXY_URL_SCHEMA.META.RESETS_FIELDS_TO_DEFAULT_ON_CHANGE,
   } satisfies WizardFieldMeta)
-  .test('http-proxy-url', '', function (value) {
+  .test(FIELD_NAME.HTTP_PROXY_URL, '', function (value) {
     if (!value) return true;
     const { msgs } = ctx(this);
     let parsed: URL;
@@ -37,15 +39,16 @@ export const httpsProxyUrlSchema = yup
   .string()
   .optional()
   .meta({
-    id: 'https_proxy_url',
-    labelKey: 'clusterWideProxy.httpsLabel',
-    helperTextKey: 'clusterWideProxy.httpsHelp',
-    placeholderKey: 'clusterWideProxy.httpsPlaceholder',
-    stepId: STEP_IDS.CLUSTER_WIDE_PROXY,
-    fieldType: 'text',
-    resetsFieldsToDefaultOnChange: ['no_proxy_domains'],
+    id: YUP.CLUSTER_WIDE_PROXY.HTTPS_PROXY_URL_SCHEMA.META.ID,
+    labelKey: YUP.CLUSTER_WIDE_PROXY.HTTPS_PROXY_URL_SCHEMA.META.LABEL_KEY,
+    helperTextKey: YUP.CLUSTER_WIDE_PROXY.HTTPS_PROXY_URL_SCHEMA.META.HELPER_TEXT_KEY,
+    placeholderKey: YUP.CLUSTER_WIDE_PROXY.HTTPS_PROXY_URL_SCHEMA.META.PLACEHOLDER_KEY,
+    stepId: YUP.CLUSTER_WIDE_PROXY.HTTPS_PROXY_URL_SCHEMA.META.STEP_ID,
+    fieldType: YUP.CLUSTER_WIDE_PROXY.HTTPS_PROXY_URL_SCHEMA.META.FIELD_TYPE,
+    resetsFieldsToDefaultOnChange:
+      YUP.CLUSTER_WIDE_PROXY.HTTPS_PROXY_URL_SCHEMA.META.RESETS_FIELDS_TO_DEFAILT_ON_CHANGE,
   } satisfies WizardFieldMeta)
-  .test('https-proxy-url', '', function (value) {
+  .test(FIELD_NAME.HTTPS_PROXY_URL, '', function (value) {
     if (!value) return true;
     const { msgs } = ctx(this);
     let parsed: URL;
@@ -64,16 +67,16 @@ export const httpsProxyUrlSchema = yup
 export const noProxyDomainsSchema = yup
   .string()
   .optional()
-  .default('')
+  .default(YUP.CLUSTER_WIDE_PROXY.NO_PROXY_DOMAINS_SCHEMA.DEFAULT)
   .meta({
-    id: 'no_proxy_domains',
-    labelKey: 'clusterWideProxy.noProxyLabel',
-    helperTextKey: 'clusterWideProxy.noProxyHelp',
-    placeholderKey: 'clusterWideProxy.noProxyPlaceholder',
-    stepId: STEP_IDS.CLUSTER_WIDE_PROXY,
-    fieldType: 'text',
+    id: YUP.CLUSTER_WIDE_PROXY.NO_PROXY_DOMAINS_SCHEMA.META.ID,
+    labelKey: YUP.CLUSTER_WIDE_PROXY.NO_PROXY_DOMAINS_SCHEMA.META.LABEL_KEY,
+    helperTextKey: YUP.CLUSTER_WIDE_PROXY.NO_PROXY_DOMAINS_SCHEMA.META.HELPER_TEXT_KEY,
+    placeholderKey: YUP.CLUSTER_WIDE_PROXY.NO_PROXY_DOMAINS_SCHEMA.META.PLACEHOLDER_KEY,
+    stepId: YUP.CLUSTER_WIDE_PROXY.NO_PROXY_DOMAINS_SCHEMA.META.STEP_ID,
+    fieldType: YUP.CLUSTER_WIDE_PROXY.NO_PROXY_DOMAINS_SCHEMA.META.FIELD_TYPE,
   } satisfies WizardFieldMeta)
-  .test('no-proxy-domains', '', function (value) {
+  .test(FIELD_NAME.NO_PROXY_DOMAINS, '', function (value) {
     if (!value) return true;
     const { msgs } = ctx(this);
     const domains = stringToArray(value);
@@ -92,13 +95,14 @@ export const additionalTrustBundleSchema = yup
   .string()
   .optional()
   .meta({
-    id: 'additional_trust_bundle',
-    labelKey: 'clusterWideProxy.trustBundleLabel',
-    stepId: STEP_IDS.CLUSTER_WIDE_PROXY,
-    fieldType: 'textarea',
-    collapseOnRequired: true,
+    id: YUP.CLUSTER_WIDE_PROXY.ADDITIONA_TRUST_BUNDLE_SCHEMA.META.ID,
+    labelKey: YUP.CLUSTER_WIDE_PROXY.ADDITIONA_TRUST_BUNDLE_SCHEMA.META.LABEL_KEY,
+    stepId: YUP.CLUSTER_WIDE_PROXY.ADDITIONA_TRUST_BUNDLE_SCHEMA.META.STEP_ID,
+    fieldType: YUP.CLUSTER_WIDE_PROXY.ADDITIONA_TRUST_BUNDLE_SCHEMA.META.FIELD_TYPE,
+    collapseOnRequired:
+      YUP.CLUSTER_WIDE_PROXY.ADDITIONA_TRUST_BUNDLE_SCHEMA.META.COLLAPSE_ON_REQUIRED,
   } satisfies WizardFieldMeta)
-  .test('trust-bundle', '', function (value) {
+  .test(FIELD_NAME.ADDITIONAL_TRUST_BUNDLE, '', function (value) {
     if (!value) return true;
     const { msgs } = ctx(this);
 

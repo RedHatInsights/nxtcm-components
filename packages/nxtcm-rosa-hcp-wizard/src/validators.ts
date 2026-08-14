@@ -11,8 +11,14 @@ import {
   HOST_PREFIX_MAX,
   HOST_PREFIX_MIN,
   HOST_PREFIX_REGEXP,
+  LOWERCASE_ALPHANUMERIC,
   MAX_CA_SIZE_BYTES,
+  MAX_CLUSTER_NAME_LENGTH,
   MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH,
+  MAX_SECURITY_GROUPS,
+  MIN_ROOT_DISK_SIZE_GIB,
+  MAX_ROOT_DISK_SIZE_OLD_OPENSHIFT,
+  MAX_ROOT_DISK_SIZE_NEW_OPENSHIFT,
   POD_CIDR_MAX,
   POD_NODES_MIN,
   SERVICE_CIDR_MAX,
@@ -40,8 +46,6 @@ import {
 } from './stringsProvider/rosaHcpWizardStrings';
 import { CIDRSubnet, ROSAHCPCluster } from './types';
 
-const lowercaseAlphaNumericCharacters = 'abcdefghijklmnopqrstuvwxyz1234567890';
-
 export const composeValidators =
   (...args: Array<(value: any, item?: unknown) => string | undefined>) =>
   (value: any, item?: unknown) => {
@@ -63,15 +67,14 @@ export function validateClusterName(
   msgs: RosaHcpWizardClusterNameValidatorStrings = defaultRosaHcpWizardValidatorStrings.clusterName
 ) {
   if (!value) return undefined;
-  if (value.length > 54) return msgs.maxLength;
+  if (value.length > MAX_CLUSTER_NAME_LENGTH) return msgs.maxLength;
   for (const char of value) {
-    if (!lowercaseAlphaNumericCharacters.includes(char) && char !== '-' && char !== '.')
+    if (!LOWERCASE_ALPHANUMERIC.includes(char) && char !== '-' && char !== '.')
       return msgs.invalidChars;
   }
-  if (!lowercaseAlphaNumericCharacters.includes(value[0])) return msgs.mustStartAlphanumeric;
+  if (!LOWERCASE_ALPHANUMERIC.includes(value[0])) return msgs.mustStartAlphanumeric;
   if (/^[0-9]/.test(value[0])) return msgs.mustNotStartNumber;
-  if (!lowercaseAlphaNumericCharacters.includes(value[value.length - 1]))
-    return msgs.mustEndAlphanumeric;
+  if (!LOWERCASE_ALPHANUMERIC.includes(value[value.length - 1])) return msgs.mustEndAlphanumeric;
   return undefined;
 }
 
@@ -594,13 +597,13 @@ export const validateRootDiskSize = (
   if (!Number.isInteger(value)) {
     return msgs.notInteger;
   }
-  if (value < 75) {
+  if (value < MIN_ROOT_DISK_SIZE_GIB) {
     return msgs.tooSmall;
   }
-  if (value > maxRootDiskSize && maxRootDiskSize === 1024) {
+  if (value > maxRootDiskSize && maxRootDiskSize === MAX_ROOT_DISK_SIZE_OLD_OPENSHIFT) {
     return msgs.tooLargeOldOpenshift;
   }
-  if (value > maxRootDiskSize && maxRootDiskSize === 16384) {
+  if (value > maxRootDiskSize && maxRootDiskSize === MAX_ROOT_DISK_SIZE_NEW_OPENSHIFT) {
     return msgs.tooLargeNewOpenshift;
   }
   return undefined;
@@ -610,8 +613,7 @@ export const validateSecurityGroups = (
   securityGroups: string[],
   msgs: RosaHcpWizardSecurityGroupsValidatorStrings = defaultRosaHcpWizardValidatorStrings.securityGroups
 ) => {
-  const maxSecurityGroups = 10;
-  return securityGroups?.length && securityGroups.length > maxSecurityGroups
-    ? msgs.maxExceeded(maxSecurityGroups)
+  return securityGroups?.length && securityGroups.length > MAX_SECURITY_GROUPS
+    ? msgs.maxExceeded(MAX_SECURITY_GROUPS)
     : undefined;
 };

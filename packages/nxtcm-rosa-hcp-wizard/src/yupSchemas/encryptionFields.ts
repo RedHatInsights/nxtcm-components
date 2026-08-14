@@ -1,11 +1,12 @@
 import * as yup from 'yup';
 
-import { STEP_IDS } from '../constants';
+import { FIELD_NAME } from '../constants';
 import { ClusterEncryptionKeys, ROSAHCPCluster } from '../types';
 import type { WizardFieldMeta } from './types';
 import { ctx, rosaCommonRequiredNonEmptyTest } from './helpers';
 import { validateAWSKMSKeyARN } from '../validators';
 import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
+import { YUP } from './constants';
 
 /** ARN format/region checks (required when shown is enforced via `.when()` on the field schema). */
 function validateKmsArn(
@@ -19,33 +20,42 @@ function validateKmsArn(
   return error ? this.createError({ message: error }) : true;
 }
 
-const kmsKeyArnFormatTest = { name: 'kms-key-arn', message: '', test: validateKmsArn };
-const etcdKeyArnFormatTest = { name: 'etcd-key-arn', message: '', test: validateKmsArn };
+const kmsKeyArnFormatTest = {
+  name: FIELD_NAME.ENCRYPTION.KMS_KEY_ARN,
+  message: '',
+  test: validateKmsArn,
+};
+const etcdKeyArnFormatTest = {
+  name: FIELD_NAME.ENCRYPTION.ETCD_KEY_ARN,
+  message: '',
+  test: validateKmsArn,
+};
 
 export const encryptionKeysSchema = yup
   .string()
-  .default(ClusterEncryptionKeys.default)
+  .default(YUP.ENCRYPTION.KEYS_SCHEMA.DEFAULT)
   .optional()
   .meta({
-    id: 'encryption_keys',
-    labelKey: 'encryption.keysGroupLabel',
-    stepId: STEP_IDS.ENCRYPTION,
-    fieldType: 'radio',
-    noEditAfterSubmit: true,
-    resetsFieldsToDefaultOnChange: ['kms_key_arn'],
+    id: YUP.ENCRYPTION.KEYS_SCHEMA.META.ID,
+    labelKey: YUP.ENCRYPTION.KEYS_SCHEMA.META.LABEL_KEY,
+    stepId: YUP.ENCRYPTION.KEYS_SCHEMA.META.STEP_ID,
+    fieldType: YUP.ENCRYPTION.KEYS_SCHEMA.META.FIELD_TYPE,
+    noEditAfterSubmit: YUP.ENCRYPTION.KEYS_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
+    resetsFieldsToDefaultOnChange:
+      YUP.ENCRYPTION.KEYS_SCHEMA.META.RESETS_FIELDS_TO_DEFAULT_ON_CHANGE,
   } satisfies WizardFieldMeta);
 
 export const kmsKeyArnSchema = yup
   .string()
   .meta({
-    id: 'kms_key_arn',
-    labelKey: 'encryption.keyArnLabel',
-    labelHelpKey: 'encryption.keyArnHelp',
-    stepId: STEP_IDS.ENCRYPTION,
-    fieldType: 'text',
-    noEditAfterSubmit: true,
+    id: YUP.ENCRYPTION.KMS_KEY_ARN_SCHEMA.META.ID,
+    labelKey: YUP.ENCRYPTION.KMS_KEY_ARN_SCHEMA.META.LABEL_KEY,
+    labelHelpKey: YUP.ENCRYPTION.KMS_KEY_ARN_SCHEMA.META.LABEL_HELP_KEY,
+    stepId: YUP.ENCRYPTION.KMS_KEY_ARN_SCHEMA.META.STEP_ID,
+    fieldType: YUP.ENCRYPTION.KMS_KEY_ARN_SCHEMA.META.FIELD_TYPE,
+    noEditAfterSubmit: YUP.ENCRYPTION.KMS_KEY_ARN_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
   } satisfies WizardFieldMeta)
-  .when('encryption_keys', {
+  .when(FIELD_NAME.ENCRYPTION.ENCRYPTION_KEYS, {
     is: ClusterEncryptionKeys.custom,
     then: (schema) =>
       schema
@@ -57,30 +67,31 @@ export const kmsKeyArnSchema = yup
 
 export const etcdEncryptionSchema = yup
   .boolean()
-  .default(false)
+  .default(YUP.ENCRYPTION.ETCD_ENCRYPTION_SCHEMA.DEFAULT)
   .optional()
   .meta({
-    id: 'etcd_encryption',
-    labelKey: 'encryption.etcdLabel',
-    title: 'etcd encryption',
-    stepId: STEP_IDS.ENCRYPTION,
-    fieldType: 'checkbox',
-    noEditAfterSubmit: true,
-    reviewLabel: 'Additional etcd encryption',
-    resetsFieldsToDefaultOnChange: ['etcd_key_arn'],
+    id: YUP.ENCRYPTION.ETCD_ENCRYPTION_SCHEMA.META.ID,
+    labelKey: YUP.ENCRYPTION.ETCD_ENCRYPTION_SCHEMA.META.LABEL_KEY,
+    title: YUP.ENCRYPTION.ETCD_ENCRYPTION_SCHEMA.META.TITLE,
+    stepId: YUP.ENCRYPTION.ETCD_ENCRYPTION_SCHEMA.META.STEP_ID,
+    fieldType: YUP.ENCRYPTION.ETCD_ENCRYPTION_SCHEMA.META.FIELD_TYPE,
+    noEditAfterSubmit: YUP.ENCRYPTION.ETCD_ENCRYPTION_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
+    reviewLabel: YUP.ENCRYPTION.ETCD_ENCRYPTION_SCHEMA.META.REVIEW_LABEL,
+    resetsFieldsToDefaultOnChange:
+      YUP.ENCRYPTION.ETCD_ENCRYPTION_SCHEMA.META.RESETS_FIELDS_TO_DEFAILT_ON_CHANGE,
   } satisfies WizardFieldMeta);
 
 export const etcdKeyArnSchema = yup
   .string()
   .meta({
-    id: 'etcd_key_arn',
-    labelKey: 'encryption.keyArnLabel',
-    labelHelpKey: 'encryption.keyArnHelp',
-    stepId: STEP_IDS.ENCRYPTION,
-    fieldType: 'text',
-    noEditAfterSubmit: true,
+    id: YUP.ENCRYPTION.ETC_KEY_ARN_SCHEMA.META.ID,
+    labelKey: YUP.ENCRYPTION.ETC_KEY_ARN_SCHEMA.META.LABEL_KEY,
+    labelHelpKey: YUP.ENCRYPTION.ETC_KEY_ARN_SCHEMA.META.LABEL_HELP_KEY,
+    stepId: YUP.ENCRYPTION.ETC_KEY_ARN_SCHEMA.META.STEP_ID,
+    fieldType: YUP.ENCRYPTION.ETC_KEY_ARN_SCHEMA.META.FIELD_TYPE,
+    noEditAfterSubmit: YUP.ENCRYPTION.ETC_KEY_ARN_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
   } satisfies WizardFieldMeta)
-  .when('etcd_encryption', {
+  .when(FIELD_NAME.ENCRYPTION.ETCD_ENCRYPTION, {
     is: true,
     then: (schema) =>
       schema
