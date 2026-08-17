@@ -189,16 +189,39 @@ const mockOicdConfig: OIDCConfig[] = [
 
 const mockMachineTypes: MachineTypesDropdownType[] = [
   {
+    id: 'c5.2xlarge',
+    label: 'c5.2xlarge',
+    description: '8 vCPU 16 GiB RAM',
+    value: 'c5.2xlarge',
+    category: 'RAM optimized',
+  },
+  {
+    id: 'r5.xlarge',
+    label: 'r5.xlarge',
+    description: '4 vCPU 32 GiB RAM',
+    value: 'r5.xlarge',
+    category: 'Storage optimized',
+  },
+  {
+    id: 'c6i.8xlarge',
+    label: 'c6i.8xlarge',
+    description: '32 vCPU 64 GiB RAM',
+    value: 'c6i.8xlarge',
+    category: 'AI optimized',
+  },
+  {
     id: 'm5a.xlarge',
     label: 'm5a.xlarge',
     description: '4 vCPU 16 GiB RAM',
     value: 'm5a.xlarge',
+    category: 'General Purpose',
   },
   {
     id: 'm6a.xlarge',
     label: 'm6a.xlarge',
     description: '4 vCPU 16 GiB RAM',
     value: 'm6a.xlarge',
+    category: 'General Purpose',
   },
 ];
 const mockAdditionalMachineTypes: MachineTypesDropdownType[] = [
