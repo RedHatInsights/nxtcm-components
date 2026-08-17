@@ -3,7 +3,7 @@ import { useWatch } from 'react-hook-form';
 import { Section } from '../../../components/Section';
 import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../constants/links';
-import { STEP_IDS } from '../../../constants';
+import { FIELD_NAME, STEP_IDS } from '../../../constants';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
 import { Radio } from '../../../components/Fields/RadioGroup';
@@ -15,7 +15,9 @@ export const ClusterUpdates = () => {
   const cu = useRosaHcpWizardStrings().clusterUpdates;
   const { goToStepById } = useWizardContext();
 
-  const clusterVersion = useWatch<ROSAHCPCluster, 'cluster_version'>({ name: 'cluster_version' });
+  const clusterVersion = useWatch<ROSAHCPCluster, 'cluster_version'>({
+    name: FIELD_NAME.CLUSTER_VERSION,
+  });
 
   return (
     <Section label={cu.sectionLabel}>
@@ -41,7 +43,7 @@ export const ClusterUpdates = () => {
       </div>
 
       <WizRadioGroup<ROSAHCPCluster>
-        name="upgrade_policy"
+        name={FIELD_NAME.UPGRADE_POLICY}
         schema={clusterValidationSchema}
         hideLabel
       >

@@ -2,6 +2,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { ROSAHCPCluster } from '../../../types';
 import { createOperatorRolesPrefix } from '../../../utilities/helpers';
 import React from 'react';
+import { FIELD_NAME } from '../../../constants';
 
 export const useUpdateOperatorPrefix = () => {
   const { setValue } = useFormContext<ROSAHCPCluster>();
@@ -12,6 +13,8 @@ export const useUpdateOperatorPrefix = () => {
     [clusterName]
   );
   React.useEffect(() => {
-    setValue('custom_operator_roles_prefix', operatorRolesPrefix, { shouldValidate: true });
+    setValue(FIELD_NAME.CUSTOM_OPERATOR_ROLES_PREFIX, operatorRolesPrefix, {
+      shouldValidate: true,
+    });
   }, [operatorRolesPrefix, setValue]);
 };

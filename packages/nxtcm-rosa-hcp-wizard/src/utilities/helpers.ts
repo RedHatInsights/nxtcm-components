@@ -1,4 +1,10 @@
-import { MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH } from '../constants';
+import {
+  MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH,
+  MAX_ROOT_DISK_SIZE_NEW_OPENSHIFT,
+  MAX_ROOT_DISK_SIZE_OLD_OPENSHIFT,
+  MAX_SECURITY_GROUP_DISPLAY_LENGTH,
+  OPERATOR_ROLES_HASH_LENGTH,
+} from '../constants';
 import { securityGroupsSort } from '../Steps/BasicSetup/MachinePools/SecurityGroupSection/helpers';
 import {
   ClusterUpgrade,
@@ -61,21 +67,12 @@ export function buildMachinePoolsReviewSelectOptions(
       value: subnet.subnet_id,
     })),
     securityGroup: securityGroups.map(({ id = '', name = '' }) => ({
-      label: name ? truncateTextWithEllipsis(name, 50) : '--',
+      label: name ? truncateTextWithEllipsis(name, MAX_SECURITY_GROUP_DISPLAY_LENGTH) : '--',
       value: id,
     })),
   };
 }
 
-const OPERATOR_ROLES_HASH_LENGTH = 4;
-
-/**
- * Generates cryptographically secure number within small range
- * there's a slight bias towards the lower end of the range.
- * @param min minimum range including min
- * @param max maximum range including max
- * @returns returns a cryptographically secure number within provided small range
- */
 const secureRandomValueInRange = (min: number, max: number) => {
   const uints = new Uint32Array(1);
   crypto.getRandomValues(uints);
@@ -86,7 +83,6 @@ const secureRandomValueInRange = (min: number, max: number) => {
 };
 
 export const createOperatorRolesHash = () => {
-  // random 4 alphanumeric hash
   const prefixArray = Array.from(
     crypto.getRandomValues(new Uint8Array(OPERATOR_ROLES_HASH_LENGTH))
   ).map((value) => (value % 36).toString(36));
@@ -98,7 +94,6 @@ export const createOperatorRolesHash = () => {
 };
 
 const createOperatorRolesPrefix = (clusterName?: string) => {
-  // increment allowedLength by 1 due to '-' character prepended to hash
   const allowedLength = MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH - (OPERATOR_ROLES_HASH_LENGTH + 1);
   const operatorRolesClusterName = clusterName?.slice(0, allowedLength);
 
@@ -198,7 +193,9 @@ const canSelectImds = (clusterVersionRawId: string): boolean => {
  */
 const getWorkerNodeVolumeSizeMaxGiB = (clusterVersionRawId: string): number => {
   const [major, minor] = splitVersion(clusterVersionRawId);
-  return (major > 4 || (major === 4 && minor >= 14) ? 16 : 1) * 1024;
+  return major > 4 || (major === 4 && minor >= 14)
+    ? MAX_ROOT_DISK_SIZE_NEW_OPENSHIFT
+    : MAX_ROOT_DISK_SIZE_OLD_OPENSHIFT;
 };
 
 const showSecurityGroupsSection = (clusterVersionRawId: string): boolean => {
