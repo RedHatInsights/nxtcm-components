@@ -49,6 +49,7 @@ export type OpenShiftVersionGroup = {
 export type MachineTypesDropdownType = DropdownType & {
   id: string;
   description: string;
+  category?: string;
 };
 
 export type Role = {

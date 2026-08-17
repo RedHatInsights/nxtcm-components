@@ -1,7 +1,7 @@
 import { test, expect, Page } from './fixtures';
 
 async function expandOperatorPrefixSection(page: Page) {
-  await page.getByRole('button', { name: 'Operator role prefix', exact: true }).click();
+  await page.getByRole('button', { name: 'Operator roles prefix', exact: true }).click();
 }
 
 async function fillDetailsStep(page: Page) {
