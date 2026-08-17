@@ -14,7 +14,6 @@ export function useEncryptionYupDescribeOptions(): YupFieldDescribeOptions {
     name: 'etcd_encryption',
   });
 
-  // listing getValues is an overkill because it loads entire state, only encryptionKeys and etcdEncryption are needed
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- listing getValues is an overkill because it loads entire state, only encryptionKeys and etcdEncryption are needed
   return useMemo(() => ({ value: getValues() }), [encryptionKeys, etcdEncryption, getValues]);
 }
