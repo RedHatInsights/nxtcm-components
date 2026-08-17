@@ -13,25 +13,28 @@ import { FieldWrapper } from '../../../components/FieldWrapper';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
 import { useClearFieldWhenHidden } from './useClearFieldWhenHidden';
 import { useEncryptionYupDescribeOptions } from './useEncryptionYupDescribeOptions';
+import { FIELD_NAME } from '../../../constants';
 
 export const Encryption = () => {
   const e = useRosaHcpWizardStrings().encryption;
   const yupDescribeOptions = useEncryptionYupDescribeOptions();
-  const customKmsSelected = useWatch<ROSAHCPCluster>({ name: 'encryption_keys' });
+  const customKmsSelected = useWatch<ROSAHCPCluster>({
+    name: FIELD_NAME.ENCRYPTION.ENCRYPTION_KEYS,
+  });
   const etcdIsChecked = useWatch<Pick<ROSAHCPCluster, 'etcd_encryption'>>({
-    name: 'etcd_encryption',
+    name: FIELD_NAME.ENCRYPTION.ETCD_ENCRYPTION,
   });
 
   useClearFieldWhenHidden<ROSAHCPCluster>(
-    'kms_key_arn',
+    FIELD_NAME.ENCRYPTION.KMS_KEY_ARN,
     customKmsSelected !== ClusterEncryptionKeys.custom
   );
-  useClearFieldWhenHidden<ROSAHCPCluster>('etcd_key_arn', !etcdIsChecked);
+  useClearFieldWhenHidden<ROSAHCPCluster>(FIELD_NAME.ENCRYPTION.ETCD_KEY_ARN, !etcdIsChecked);
 
   return (
     <Section label={e.sectionLabel}>
       <WizRadioGroup<ROSAHCPCluster>
-        name="encryption_keys"
+        name={FIELD_NAME.ENCRYPTION.ENCRYPTION_KEYS}
         schema={clusterValidationSchema}
         helperText={
           <>
@@ -53,7 +56,7 @@ export const Encryption = () => {
       {customKmsSelected === 'custom' ? (
         <FieldWrapper size="lg">
           <WizTextInput<ROSAHCPCluster>
-            name="kms_key_arn"
+            name={FIELD_NAME.ENCRYPTION.KMS_KEY_ARN}
             schema={clusterValidationSchema}
             yupDescribeOptions={yupDescribeOptions}
           />
@@ -61,7 +64,7 @@ export const Encryption = () => {
       ) : null}
       <FieldWrapper size="full">
         <WizCheckbox<ROSAHCPCluster>
-          name="etcd_encryption"
+          name={FIELD_NAME.ENCRYPTION.ETCD_ENCRYPTION}
           schema={clusterValidationSchema}
           helperText={
             <>
@@ -76,7 +79,7 @@ export const Encryption = () => {
       {etcdIsChecked ? (
         <FieldWrapper size="lg">
           <WizTextInput<ROSAHCPCluster>
-            name="etcd_key_arn"
+            name={FIELD_NAME.ENCRYPTION.ETCD_KEY_ARN}
             schema={clusterValidationSchema}
             yupDescribeOptions={yupDescribeOptions}
           />
