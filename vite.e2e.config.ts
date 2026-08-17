@@ -4,7 +4,7 @@ import path from 'path';
 
 const enableCoverage = process.env.COVERAGE === 'true';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+// eslint-disable-next-line @typescript-eslint/no-require-imports The reason require() is used here instead of a static import is that the plugin needs to be conditionally loaded at runtime.
 const istanbulPlugin = enableCoverage ? require('./playwright/istanbul-plugin.cjs')() : null;
 
 export default defineConfig({

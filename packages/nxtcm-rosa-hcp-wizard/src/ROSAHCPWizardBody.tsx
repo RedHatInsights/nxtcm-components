@@ -99,6 +99,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
         onSubmit={onSubmit}
       />
     ),
+    // refs are stable and not changing thus ommiting yamlEditorRef from the dependency array
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [handleCloseYamlEditor, onCancel, onSubmit]
   );

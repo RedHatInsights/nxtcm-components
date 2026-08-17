@@ -122,9 +122,7 @@ const noopFetch = async (): Promise<void> => {
 export function createStoryCheckClusterNameUniqueness(
   onValidationStateChange?: (state: ValidationResource) => void
 ): (name: string, region?: string) => Promise<string | null> {
-  return async (name: string, region?: string) => {
-    // eslint-disable-next-line no-console
-    console.log('ROSA HCP Wizard cluster name validation:', { name, region });
+  return async (name: string) => {
     onValidationStateChange?.({ isFetching: true, error: null });
 
     await sleep(STORY_CLUSTER_NAME_VALIDATION_DELAY_MS);
@@ -135,12 +133,6 @@ export function createStoryCheckClusterNameUniqueness(
       : null;
 
     onValidationStateChange?.({ isFetching: false, error });
-    // eslint-disable-next-line no-console
-    console.log('ROSA HCP Wizard cluster name validation result:', {
-      name,
-      region,
-      available: !isTaken,
-    });
 
     return error;
   };
@@ -173,11 +165,6 @@ export function storyFetchWithLogging<TArgs extends unknown[]>(
   fetchFn?: (...args: TArgs) => Promise<void>
 ): (...args: TArgs) => Promise<void> {
   return async (...args: TArgs) => {
-    // eslint-disable-next-line no-console
-    console.log('ROSA HCP Wizard refetch:', {
-      resource,
-      attributes: args.length > 0 ? args.toString() : undefined,
-    });
     if (fetchFn) {
       await fetchFn(...args);
     } else {
