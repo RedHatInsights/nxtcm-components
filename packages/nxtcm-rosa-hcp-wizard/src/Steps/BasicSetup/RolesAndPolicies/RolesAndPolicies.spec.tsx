@@ -479,20 +479,22 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
   });
 
   test.describe('RolesAndPolicies — operator roles prefix', () => {
-    test('should render the operator role prefix toggle', async ({ mount }) => {
+    test('should render the operator roles prefix toggle', async ({ mount }) => {
       const component = await mount(<RolesAndPoliciesMount />);
-      await expect(component.getByText(rp.operatorPrefixToggle, { exact: true })).toBeVisible();
+      await expect(
+        component.getByRole('button', { name: rp.operatorPrefixToggle, exact: true })
+      ).toBeVisible();
     });
 
     test('should render the operator roles prefix input when expanded', async ({ mount }) => {
       const component = await mount(<RolesAndPoliciesMount />);
-      await component.getByText(rp.operatorPrefixToggle, { exact: true }).click();
-      await expect(component.getByText(rp.operatorPrefixLabel, { exact: true })).toBeVisible();
+      await component.getByRole('button', { name: rp.operatorPrefixToggle, exact: true }).click();
+      await expect(component.getByLabel(rp.operatorPrefixLabel, { exact: true })).toBeVisible();
     });
 
     test('should render the operator prefix helper text when expanded', async ({ mount }) => {
       const component = await mount(<RolesAndPoliciesMount />);
-      await component.getByText(rp.operatorPrefixToggle, { exact: true }).click();
+      await component.getByRole('button', { name: rp.operatorPrefixToggle, exact: true }).click();
       await expect(component.getByText(rp.operatorPrefixHelper)).toBeVisible();
     });
 

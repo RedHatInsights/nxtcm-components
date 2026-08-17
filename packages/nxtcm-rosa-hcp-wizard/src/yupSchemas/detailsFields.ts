@@ -1,18 +1,18 @@
-import { STEP_IDS } from '../constants';
 import type { WizardFieldMeta } from './types';
 import { ctx, rosaRequiredStringField, validateClusterNameSync } from './helpers';
+import { YUP } from './constants';
 
 export const nameSchema = rosaRequiredStringField()
-  .default('')
+  .default(YUP.DETAILS.NAME_SCHEMA.DEFAULT)
   .meta({
-    id: 'name',
-    labelKey: 'details.clusterNameLabel',
-    placeholderKey: 'details.clusterNamePlaceholder',
-    labelHelpKey: 'details.clusterNameHelp',
-    stepId: STEP_IDS.DETAILS,
-    fieldType: 'text',
-    noEditAfterSubmit: true,
-    validateOnBlur: true,
+    id: YUP.DETAILS.NAME_SCHEMA.META.ID,
+    labelKey: YUP.DETAILS.NAME_SCHEMA.META.LABEL_KEY,
+    placeholderKey: YUP.DETAILS.NAME_SCHEMA.META.PLACEHOLDER_KEY,
+    labelHelpKey: YUP.DETAILS.NAME_SCHEMA.META.LABEL_HELP_KEY,
+    stepId: YUP.DETAILS.NAME_SCHEMA.META.STEP_ID,
+    fieldType: YUP.DETAILS.NAME_SCHEMA.META.FIELD_TYPE,
+    noEditAfterSubmit: YUP.DETAILS.NAME_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
+    validateOnBlur: YUP.DETAILS.NAME_SCHEMA.META.VALIDATE_ON_BLUR,
   } satisfies WizardFieldMeta)
   .test('cluster-name-sync', '', function (value) {
     if (!value) return true;
@@ -22,87 +22,59 @@ export const nameSchema = rosaRequiredStringField()
   });
 
 export const clusterVersionSchema = rosaRequiredStringField().meta({
-  id: 'cluster_version',
-  labelKey: 'details.openShiftVersionLabel',
-  placeholderKey: 'details.openShiftVersionPlaceholder',
-  labelHelpKey: 'details.openShiftVersionHelp',
-  stepId: STEP_IDS.DETAILS,
-  fieldType: 'select',
-  optionsWizardDataResource: 'versions',
-  reconcileValueWithOptions: true,
-  resetsFieldsToDefaultOnChange: ['imds', 'security_groups_worker'],
+  id: YUP.DETAILS.CLUSTER_VERSION_SCHEMA.META.ID,
+  labelKey: YUP.DETAILS.CLUSTER_VERSION_SCHEMA.META.LABEL_KEY,
+  placeholderKey: YUP.DETAILS.CLUSTER_VERSION_SCHEMA.META.PLACEHOLDER_KEY,
+  labelHelpKey: YUP.DETAILS.CLUSTER_VERSION_SCHEMA.META.LABEL_HELP_KEY,
+  stepId: YUP.DETAILS.CLUSTER_VERSION_SCHEMA.META.STEP_ID,
+  fieldType: YUP.DETAILS.CLUSTER_VERSION_SCHEMA.META.FIELD_TYPE,
+  optionsWizardDataResource: YUP.DETAILS.CLUSTER_VERSION_SCHEMA.META.OPTIONS_WIZARD_DATA_RESOURCE,
+  reconcileValueWithOptions: YUP.DETAILS.CLUSTER_VERSION_SCHEMA.META.RECONCILE_VALUE_WITH_OPTIONS,
+  resetsFieldsToDefaultOnChange:
+    YUP.DETAILS.CLUSTER_VERSION_SCHEMA.META.RESETS_FIELDS_TO_DEFAULT_ON_CHANGE,
 } satisfies WizardFieldMeta);
 
 export const associatedAwsIdSchema = rosaRequiredStringField().meta({
-  id: 'associated_aws_id',
-  labelKey: 'details.awsInfraLabel',
-  labelHelpKey: 'details.awsInfraHelp',
-  placeholderKey: 'details.awsInfraPlaceholder',
-  stepId: STEP_IDS.DETAILS,
-  fieldType: 'select',
-  noEditAfterSubmit: true,
-  optionsWizardDataResource: 'awsInfrastructureAccounts',
-  reconcileValueWithOptions: true,
-  resetsFieldsToDefaultOnChange: [
-    'installer_role_arn',
-    'support_role_arn',
-    'worker_role_arn',
-    'selected_vpc',
-    'machine_pools_subnets',
-    'cluster_privacy_public_subnet_id',
-  ],
-  refetchesResourcesOnChange: [
-    { resource: 'regions', argFromField: 'associated_aws_id' },
-    { resource: 'roles', argFromField: 'associated_aws_id' },
-    { resource: 'oidcConfig', argFromField: 'associated_aws_id' },
-  ],
+  id: YUP.DETAILS.ASSOCIATED_AWS_ID_SCHEMA.META.ID,
+  labelKey: YUP.DETAILS.ASSOCIATED_AWS_ID_SCHEMA.META.LABEL_KEY,
+  labelHelpKey: YUP.DETAILS.ASSOCIATED_AWS_ID_SCHEMA.META.LABEL_HELP_KEY,
+  placeholderKey: YUP.DETAILS.ASSOCIATED_AWS_ID_SCHEMA.META.PLACEHOLDER_KEY,
+  stepId: YUP.DETAILS.ASSOCIATED_AWS_ID_SCHEMA.META.STEP_ID,
+  fieldType: YUP.DETAILS.ASSOCIATED_AWS_ID_SCHEMA.META.FIELD_TYPE,
+  noEditAfterSubmit: YUP.DETAILS.ASSOCIATED_AWS_ID_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
+  optionsWizardDataResource: YUP.DETAILS.ASSOCIATED_AWS_ID_SCHEMA.META.OPTIONS_WIZARD_DATA_RESOURCE,
+  reconcileValueWithOptions: YUP.DETAILS.ASSOCIATED_AWS_ID_SCHEMA.META.RECONCILE_VALUE_WITH_OPTIONS,
+  resetsFieldsToDefaultOnChange:
+    YUP.DETAILS.ASSOCIATED_AWS_ID_SCHEMA.META.RESETS_FIELDS_TO_DEFAULT_ON_CHANGE,
+  refetchesResourcesOnChange:
+    YUP.DETAILS.ASSOCIATED_AWS_ID_SCHEMA.META.REFETCHES_RESOURCES_ON_CHANGE,
 } satisfies WizardFieldMeta);
 
 export const billingAccountIdSchema = rosaRequiredStringField().meta({
-  id: 'billing_account_id',
-  labelKey: 'details.billingLabel',
-  labelHelpKey: 'details.billingHelp',
-  placeholderKey: 'details.billingPlaceholder',
-  stepId: STEP_IDS.DETAILS,
-  fieldType: 'select',
-  optionsWizardDataResource: 'awsBillingAccounts',
-  reconcileValueWithOptions: true,
-  reviewLabel: 'AWS billing account',
+  id: YUP.DETAILS.BILLING_ACCOUNT_ID_SCHEMA.META.ID,
+  labelKey: YUP.DETAILS.BILLING_ACCOUNT_ID_SCHEMA.META.LABEL_KEY,
+  labelHelpKey: YUP.DETAILS.BILLING_ACCOUNT_ID_SCHEMA.META.LABEL_HELP_KEY,
+  placeholderKey: YUP.DETAILS.BILLING_ACCOUNT_ID_SCHEMA.META.PLACEHOLDER_KEY,
+  stepId: YUP.DETAILS.BILLING_ACCOUNT_ID_SCHEMA.META.STEP_ID,
+  fieldType: YUP.DETAILS.BILLING_ACCOUNT_ID_SCHEMA.META.FIELD_TYPE,
+  optionsWizardDataResource:
+    YUP.DETAILS.BILLING_ACCOUNT_ID_SCHEMA.META.OPTIONS_WIZARD_DATA_RESOURCE,
+  reconcileValueWithOptions:
+    YUP.DETAILS.BILLING_ACCOUNT_ID_SCHEMA.META.RECONCILE_VALUE_WITH_OPTIONS,
+  reviewLabel: YUP.DETAILS.BILLING_ACCOUNT_ID_SCHEMA.META.REVIEW_LABEL,
 } satisfies WizardFieldMeta);
 
 export const regionSchema = rosaRequiredStringField().meta({
-  id: 'region',
-  labelKey: 'details.regionLabel',
-  placeholderKey: 'details.regionPlaceholder',
-  stepId: STEP_IDS.DETAILS,
-  fieldType: 'select',
-  noEditAfterSubmit: true,
-  optionsWizardDataResource: 'regions',
-  reconcileValueWithOptions: true,
-  resetsFieldsToDefaultOnChange: [
-    'selected_vpc',
-    'machine_pools_subnets',
-    'security_groups_worker',
-    'cluster_privacy_public_subnet_id',
-  ],
-  refetchesResourcesOnChange: [
-    {
-      resource: 'vpcList',
-      argsFromFields: {
-        account_id: 'associated_aws_id',
-        role_arn: 'installer_role_arn',
-        region: 'region',
-      },
-    },
-    {
-      resource: 'machineTypes',
-      argsFromFields: {
-        role_arn: 'installer_role_arn',
-        region: 'region',
-        availability_zones: 'selected_vpc',
-      },
-    },
-  ],
+  id: YUP.DETAILS.REGION_SCHEMA.META.ID,
+  labelKey: YUP.DETAILS.REGION_SCHEMA.META.LABEL_KEY,
+  placeholderKey: YUP.DETAILS.REGION_SCHEMA.META.PLACEHOLDER_KEY,
+  stepId: YUP.DETAILS.REGION_SCHEMA.META.STEP_ID,
+  fieldType: YUP.DETAILS.REGION_SCHEMA.META.FIELD_TYPE,
+  noEditAfterSubmit: YUP.DETAILS.REGION_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
+  optionsWizardDataResource: YUP.DETAILS.REGION_SCHEMA.META.OPTIONS_WIZARD_DATA_RESOURCE,
+  reconcileValueWithOptions: YUP.DETAILS.REGION_SCHEMA.META.RECONCILE_VALUE_WITH_OPTIONS,
+  resetsFieldsToDefaultOnChange: YUP.DETAILS.REGION_SCHEMA.META.RESETS_FIELDS_TO_DEFAULT_ON_CHANGE,
+  refetchesResourcesOnChange: YUP.DETAILS.REGION_SCHEMA.META.REFETCHES_RESOURCES_ON_CHANGE,
 } satisfies WizardFieldMeta);
 
 export const detailsFields = {

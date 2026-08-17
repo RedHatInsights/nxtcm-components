@@ -1,7 +1,8 @@
 import semver from 'semver';
 
-export const MAX_NODES_HCP_DEFAULT = 500;
-export const MAX_NODES_HCP_INSUFFICIENT_VERSION = 90;
+import { MAX_NODES_HCP_DEFAULT, MAX_NODES_HCP_INSUFFICIENT_VERSION } from '../constants';
+
+export { MAX_NODES_HCP_DEFAULT, MAX_NODES_HCP_INSUFFICIENT_VERSION };
 
 const scaleMaxNodesBasedOnOpenshiftVersion = (openshiftVersion: string): boolean => {
   const coerced = semver.coerce(openshiftVersion);
