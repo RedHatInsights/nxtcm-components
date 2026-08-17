@@ -27,6 +27,14 @@ export const MachinePools = (props: MachinePoolsProps) => {
 
   const { control } = useFormContext<Partial<ROSAHCPCluster>>();
 
+  const generalPurposeMachineTypesFirst = useMemo(() => {
+    return [...machineTypes.data].sort((a, b) => {
+      const aIsGP = a?.category?.includes('General Purpose') ? 1 : 0;
+      const bIsGP = b?.category?.includes('General Purpose') ? 1 : 0;
+      return bIsGP - aIsGP;
+    });
+  }, [machineTypes.data]);
+
   const region = useWatch({ control, name: 'region' });
   const clusterVersion = useWatch({ control, name: 'cluster_version' }) ?? '';
   const selectedVpcRaw = useWatch({ control, name: 'selected_vpc' });
@@ -116,7 +124,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
           name="machine_type"
           schema={clusterValidationSchema}
           isLoading={machineTypes.isFetching}
-          options={machineTypes.data}
+          options={generalPurposeMachineTypesFirst}
           apiError={machineTypes.error}
           onRefresh={onRefreshMachineTypes}
           isDisabled={machineTypes.isFetching}
