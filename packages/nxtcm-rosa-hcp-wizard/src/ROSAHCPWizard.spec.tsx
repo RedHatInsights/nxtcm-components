@@ -32,10 +32,8 @@ test.describe('ROSAHCPWizard', () => {
   });
 
   test('should support custom strings', async ({ mount }) => {
-    const component = await mount(
-      <ROSAHCPWizardMount wizardProps={{ title: 'Custom Wizard Title' }} />
-    );
-    await expect(component.getByText('Custom Wizard Title')).toBeVisible();
+    const component = await mount(<ROSAHCPWizardMount strings={{ wizard: { next: 'Proceed' } }} />);
+    await expect(component.getByRole('button', { name: /proceed/i })).toBeVisible();
   });
 
   test('should support hidden steps via config', async ({ mount }) => {

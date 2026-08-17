@@ -5,12 +5,12 @@ import { OCMRoleMount } from './OCMRole.spec-helpers';
 test.describe('OCMRole', () => {
   test('should render check linked section', async ({ mount }) => {
     const component = await mount(<OCMRoleMount />);
-    await expect(component.getByText(/check if you have a linked/i)).toBeVisible();
+    await expect(component.getByText(/check if a role exists and is linked/i)).toBeVisible();
   });
 
   test('should render list ocm-role copy instruction', async ({ mount }) => {
     const component = await mount(<OCMRoleMount />);
-    await expect(component.getByText('rosa list ocm-role')).toBeVisible();
+    await expect(component.getByTestId('copy-rosa-list-ocm-role')).toBeVisible();
   });
 
   test('should render info alert about existing linked role', async ({ mount }) => {
@@ -30,15 +30,18 @@ test.describe('OCMRole', () => {
 
   test('should show create OCM role instructions in first tab', async ({ mount }) => {
     const component = await mount(<OCMRoleMount />);
-    // First tab should be active by default
-    await expect(component.getByTestId('copy-rosa-create-ocm-role')).toBeVisible();
-    await expect(component.getByText('rosa create ocm-role')).toBeVisible();
+    const copyInstruction = component.getByTestId('copy-rosa-create-ocm-role');
+    await expect(copyInstruction).toBeVisible();
+    await expect(copyInstruction.getByRole('textbox', { name: /create ocm-role/i })).toBeVisible();
   });
 
   test('should show admin OCM role instruction', async ({ mount }) => {
     const component = await mount(<OCMRoleMount />);
-    await expect(component.getByTestId('copy-rosa-create-ocm-admin-role')).toBeVisible();
-    await expect(component.getByText('rosa create ocm-role --admin')).toBeVisible();
+    const copyInstruction = component.getByTestId('copy-rosa-create-ocm-admin-role');
+    await expect(copyInstruction).toBeVisible();
+    await expect(
+      copyInstruction.getByRole('textbox', { name: /create ocm-role.*admin/i })
+    ).toBeVisible();
   });
 
   test('should show link existing OCM role when second tab clicked', async ({
@@ -50,24 +53,25 @@ test.describe('OCMRole', () => {
     const linkTab = component.getByTestId('copy-ocm-role-tab-yes');
     await linkTab.click();
 
-    await expect(component.getByTestId('copy-rosa-link-ocm-role')).toBeVisible();
-    await expect(component.getByText('rosa link ocm-role <arn>')).toBeVisible();
+    const copyInstruction = component.getByTestId('copy-rosa-link-ocm-role');
+    await expect(copyInstruction).toBeVisible();
+    await expect(copyInstruction.getByRole('textbox', { name: /link ocm-role/i })).toBeVisible();
   });
 
   test('should render popover hint for why link account', async ({ mount }) => {
     const component = await mount(<OCMRoleMount />);
-    const hintButton = component.getByRole('button', { name: /why link/i });
+    const hintButton = component.getByRole('button', { name: /why do i need to link/i });
     await expect(hintButton).toBeVisible();
   });
 
-  test('should render external link to AWS account association docs', async ({ mount }) => {
+  test('should render external link to AWS account association docs', async ({ mount, page }) => {
     const component = await mount(<OCMRoleMount />);
     const hintButton = component.getByRole('button', {
       name: /why do i need to link my account/i,
     });
     await hintButton.click();
 
-    const link = component.getByRole('link', { name: /review.*permissions/i });
+    const link = page.getByRole('link', { name: /review.*permissions/i });
     await expect(link).toHaveAttribute('target', '_blank');
     await expect(link).toHaveAttribute(
       'href',

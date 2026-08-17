@@ -11,13 +11,17 @@ test.describe('DetailsStepDrawer', () => {
   test('should not show drawer panel when collapsed', async ({ mount }) => {
     const component = await mount(<DetailsStepDrawerMount initiallyExpanded={false} />);
     // Panel title should not be visible when collapsed
-    const panelTitle = component.getByRole('heading', { name: /associate aws account/i });
+    const panelTitle = component.getByRole('heading', {
+      name: /how to associate a new aws account/i,
+    });
     await expect(panelTitle).not.toBeVisible();
   });
 
   test('should show drawer panel when expanded', async ({ mount }) => {
     const component = await mount(<DetailsStepDrawerMount initiallyExpanded={true} />);
-    const panelTitle = component.getByRole('heading', { name: /associate aws account/i });
+    const panelTitle = component.getByRole('heading', {
+      name: /how to associate a new aws account/i,
+    });
     await expect(panelTitle).toBeVisible();
   });
 
@@ -34,7 +38,9 @@ test.describe('DetailsStepDrawer', () => {
     await closeButton.click();
 
     // Panel should no longer be visible
-    const panelTitle = component.getByRole('heading', { name: /associate aws account/i });
+    const panelTitle = component.getByRole('heading', {
+      name: /how to associate a new aws account/i,
+    });
     await expect(panelTitle).not.toBeVisible();
   });
 
@@ -43,15 +49,14 @@ test.describe('DetailsStepDrawer', () => {
 
     // Check for expandable sections (they use h3 wrapper)
     await expect(component.getByRole('button', { name: /log in/i })).toBeVisible();
-    await expect(component.getByRole('button', { name: /create.*ocm role/i })).toBeVisible();
-    await expect(component.getByRole('button', { name: /create.*user role/i })).toBeVisible();
-    await expect(component.getByRole('button', { name: /create.*account roles/i })).toBeVisible();
+    await expect(component.getByRole('button', { name: /ocm role/i })).toBeVisible();
+    await expect(component.getByRole('button', { name: /user role/i })).toBeVisible();
+    await expect(component.getByRole('button', { name: /account roles/i })).toBeVisible();
   });
 
   test('should render intro text', async ({ mount }) => {
     const component = await mount(<DetailsStepDrawerMount initiallyExpanded={true} />);
-    // Intro text about STS mode should be visible
-    await expect(component.getByText(/sts/i)).toBeVisible();
+    await expect(component.getByText(/security token service/i)).toBeVisible();
   });
 
   test('should render close button at bottom', async ({ mount }) => {
@@ -70,7 +75,9 @@ test.describe('DetailsStepDrawer', () => {
     await closeButtons.click();
 
     // Panel should no longer be visible
-    const panelTitle = component.getByRole('heading', { name: /associate aws account/i });
+    const panelTitle = component.getByRole('heading', {
+      name: /how to associate a new aws account/i,
+    });
     await expect(panelTitle).not.toBeVisible();
   });
 

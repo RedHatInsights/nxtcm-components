@@ -19,19 +19,14 @@ test.describe('ROSAHCPWizardReviewSections', () => {
   });
 
   test('should filter sections when steps are hidden', async ({ mount }) => {
-    const allSections = await mount(<ROSAHCPWizardReviewSectionsMount />);
-    const allCountText = await allSections.getByTestId('sections-count').textContent();
-    const allCount = parseInt(allCountText || '0');
-
-    const filteredSections = await mount(
+    const component = await mount(
       <ROSAHCPWizardReviewSectionsMount hiddenSteps={['cluster-updates-step' as const]} />
     );
-    const filteredCountText = await filteredSections.getByTestId('sections-count').textContent();
-    const filteredCount = parseInt(filteredCountText || '0');
+    const countText = await component.getByTestId('sections-count').textContent();
+    const count = parseInt(countText || '0');
 
-    // Overall count should be less when a step is hidden
-    expect(filteredCount).toBeLessThan(allCount);
-    expect(filteredCount).toBeGreaterThan(0);
+    // buildRosaHcpWizardReviewSections returns 7 sections; hiding one should yield 6
+    expect(count).toBe(6);
   });
 
   test('should pass accessibility tests', async ({ mount }) => {

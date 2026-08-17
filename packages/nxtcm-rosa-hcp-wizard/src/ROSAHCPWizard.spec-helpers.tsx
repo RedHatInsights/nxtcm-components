@@ -1,6 +1,7 @@
 import React from 'react';
 import { RosaHCPWizard } from './ROSAHCPWizard';
 import type { RosaHCPWizardProps, ROSAHCPWizardData } from './types';
+import type { RosaHcpWizardStringsInput } from './stringsProvider/rosaHcpWizardStrings.types';
 
 export const mockWizardData: ROSAHCPWizardData = {
   machineTypes: {
@@ -64,19 +65,22 @@ export const mockWizardData: ROSAHCPWizardData = {
 
 export interface ROSAHCPWizardMountProps {
   wizardProps?: Partial<RosaHCPWizardProps>;
+  strings?: RosaHcpWizardStringsInput;
 }
 
 const defaultWizardProps: RosaHCPWizardProps = {
   wizardData: mockWizardData,
   onSubmit: async () => {},
   onCancel: () => {},
-  title: 'Create ROSA HCP Cluster',
   resourceGenerator: {
     renderYaml: () => 'kind: Cluster',
     validateYaml: () => [],
   },
 };
 
-export const ROSAHCPWizardMount: React.FC<ROSAHCPWizardMountProps> = ({ wizardProps = {} }) => {
-  return <RosaHCPWizard {...defaultWizardProps} {...wizardProps} />;
+export const ROSAHCPWizardMount: React.FC<ROSAHCPWizardMountProps> = ({
+  wizardProps = {},
+  strings,
+}) => {
+  return <RosaHCPWizard {...defaultWizardProps} {...wizardProps} strings={strings} />;
 };

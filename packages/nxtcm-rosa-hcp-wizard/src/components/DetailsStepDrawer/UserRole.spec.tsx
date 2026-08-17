@@ -5,13 +5,14 @@ import { UserRoleMount } from './UserRole.spec-helpers';
 test.describe('UserRole', () => {
   test('should render check linked section', async ({ mount }) => {
     const component = await mount(<UserRoleMount />);
-    await expect(component.getByText(/check if you have a linked/i)).toBeVisible();
+    await expect(component.getByText(/check if a role exists and is linked/i)).toBeVisible();
   });
 
   test('should render list user-role copy instruction', async ({ mount }) => {
     const component = await mount(<UserRoleMount />);
-    await expect(component.getByTestId('copy-rosa-list-user-role')).toBeVisible();
-    await expect(component.getByText('rosa list user-role')).toBeVisible();
+    const copyInstruction = component.getByTestId('copy-rosa-list-user-role');
+    await expect(copyInstruction).toBeVisible();
+    await expect(copyInstruction.getByRole('textbox', { name: /list user-role/i })).toBeVisible();
   });
 
   test('should render info alert about existing linked role', async ({ mount }) => {
@@ -30,8 +31,9 @@ test.describe('UserRole', () => {
 
   test('should show create user role instruction in first tab', async ({ mount }) => {
     const component = await mount(<UserRoleMount />);
-    await expect(component.getByTestId('copy-rosa-create-user-role')).toBeVisible();
-    await expect(component.getByText('rosa create user-role')).toBeVisible();
+    const copyInstruction = component.getByTestId('copy-rosa-create-user-role');
+    await expect(copyInstruction).toBeVisible();
+    await expect(copyInstruction.getByRole('textbox', { name: /create user-role/i })).toBeVisible();
   });
 
   test('should show popover hint for user role', async ({ mount }) => {
@@ -46,8 +48,9 @@ test.describe('UserRole', () => {
     const linkTab = component.getByTestId('copy-user-role-tab-yes');
     await linkTab.click();
 
-    await expect(component.getByTestId('copy-rosa-link-user-role')).toBeVisible();
-    await expect(component.getByText('rosa link user-role <arn>')).toBeVisible();
+    const copyInstruction = component.getByTestId('copy-rosa-link-user-role');
+    await expect(copyInstruction).toBeVisible();
+    await expect(copyInstruction.getByRole('textbox', { name: /link user-role/i })).toBeVisible();
   });
 
   test('should pass accessibility tests', async ({ mount }) => {
