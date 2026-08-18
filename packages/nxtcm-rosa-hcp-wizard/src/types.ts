@@ -271,6 +271,7 @@ export type RosaHCPWizardProps = {
 
   /** Optional wizard configuration for host-application-specific customisation. */
   config?: WizardConfig;
+  selectedSecret?: SelectedSecret;
 };
 
 export type WizardNavigationContext = ReturnType<typeof useWizardContext>;
@@ -329,4 +330,9 @@ export type ROSAHCPCluster = {
   // cluster updates
   upgrade_policy?: ClusterUpgrade.automatic | ClusterUpgrade.manual;
   upgrade_schedule?: string;
+};
+
+export type SelectedSecret = {
+  client_id: string;
+  client_secret: string;
 };

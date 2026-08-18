@@ -16,7 +16,7 @@ import { useWatch } from 'react-hook-form';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import ExternalLink from '../../../components/ExternalLink';
 import links from '../../../constants/links';
-import { ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
+import { ROSAHCPCluster, ROSAHCPWizardData, SelectedSecret } from '../../../types';
 import { useDependentRoles } from './useDependentRoles';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
@@ -31,15 +31,18 @@ import { FIELD_NAME } from '../../../constants';
 type RolesAndPoliciesStepProps = Pick<ROSAHCPWizardData, 'roles' | 'oidcConfig'> & {
   /** The consuming product. Determines which ROSA login command is shown. Defaults to 'acm'. */
   product?: OIDCConfigHintProduct;
+  selectedSecret?: SelectedSecret;
 };
 
 export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
-  const { roles, oidcConfig, product } = props;
+  const { roles, oidcConfig, product, selectedSecret } = props;
   const [isArnsOpen, setIsArnsOpen] = React.useState<boolean>(false);
   const [isOperatorRolesOpen, setIsOperatorRolesOpen] = React.useState<boolean>(false);
   const rp = useRosaHcpWizardStrings().rolesAndPolicies;
 
-  const oidcConfigHintContent = <OIDCConfigHint product={product} />;
+  const oidcConfigHintContent = (
+    <OIDCConfigHint product={product} selectedSecret={selectedSecret} />
+  );
   const oidcConfigHintMaxWidth = '25rem';
 
   const awsInfrastructureAccount = useWatch({ name: FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID });
@@ -175,7 +178,11 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
             <Content component={ContentVariants.p}>{rp.operatorRolesCreateInstructions}</Content>
           </StackItem>
           <StackItem>
-            <RosaLoginInstruction product={product} showInstructions={false} />
+            <RosaLoginInstruction
+              product={product}
+              showInstructions={false}
+              selectedSecret={selectedSecret}
+            />
           </StackItem>
           <StackItem>
             <CopyInstruction
