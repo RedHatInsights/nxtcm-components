@@ -478,6 +478,50 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     });
   });
 
+  test.describe('RolesAndPolicies — selectedSecret login command', () => {
+    test('should render login command with actual credentials when selectedSecret is provided for acm', async ({
+      mount,
+    }) => {
+      const selectedSecret = { client_id: 'my-client-id', client_secret: 'my-client-secret' };
+      const component = await mount(
+        <RolesAndPoliciesMount product="acm" selectedSecret={selectedSecret} />
+      );
+
+      await expect(
+        component.getByRole('textbox', {
+          name: defaultRosaHcpWizardStrings.rosaLogin.copyAriaLabel,
+        })
+      ).toHaveValue('rosa login --client-id my-client-id --client-secret my-client-secret');
+    });
+
+    test('should render default placeholder login command when no selectedSecret is provided for acm', async ({
+      mount,
+    }) => {
+      const component = await mount(<RolesAndPoliciesMount product="acm" />);
+
+      await expect(
+        component.getByRole('textbox', {
+          name: defaultRosaHcpWizardStrings.rosaLogin.copyAriaLabel,
+        })
+      ).toHaveValue('rosa login --client-id <CLIENT_ID> --client-secret <CLIENT_SECRET>');
+    });
+
+    test('should render default ocm login command even when selectedSecret is provided for ocm', async ({
+      mount,
+    }) => {
+      const selectedSecret = { client_id: 'my-client-id', client_secret: 'my-client-secret' };
+      const component = await mount(
+        <RolesAndPoliciesMount product="ocm" selectedSecret={selectedSecret} />
+      );
+
+      await expect(
+        component.getByRole('textbox', {
+          name: defaultRosaHcpWizardStrings.rosaLogin.copyAriaLabel,
+        })
+      ).toHaveValue('rosa login --use-auth-code --url https://api.openshift.com');
+    });
+  });
+
   test.describe('RolesAndPolicies — operator roles prefix', () => {
     test('should render the operator roles prefix toggle', async ({ mount }) => {
       const component = await mount(<RolesAndPoliciesMount />);
