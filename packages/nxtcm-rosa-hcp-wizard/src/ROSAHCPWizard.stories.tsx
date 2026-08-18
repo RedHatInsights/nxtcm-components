@@ -411,6 +411,10 @@ export const AcmConfiguration: Story = {
     title: 'Create ROSA Cluster — ACM',
     resourceGenerator: storyAcmGenerator,
     product: 'acm',
+    selectedSecret: {
+      client_id: 'demo-service-account-client-id',
+      client_secret: 'demo-service-account-client-secret',
+    },
     wizardData: createMockRosaHcpWizardDataWithFetchLogging(),
     config: {
       hiddenSteps: [STEP_IDS.CLUSTER_WIDE_PROXY, STEP_IDS.CLUSTER_UPDATES],
