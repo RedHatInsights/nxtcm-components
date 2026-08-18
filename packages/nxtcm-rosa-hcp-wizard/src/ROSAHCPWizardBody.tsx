@@ -37,6 +37,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
     onBackToReviewStep,
     resourceGenerator,
     product,
+    selectedSecret,
     enableAllWizardNavSteps = false,
   } = props;
 
@@ -136,7 +137,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
               id={STEP_IDS.ROLES_AND_POLICIES}
               key={STEP_IDS.ROLES_AND_POLICIES}
             >
-              <RolesAndPolicies {...wizardData} product={product} />
+              <RolesAndPolicies {...wizardData} product={product} selectedSecret={selectedSecret} />
             </WizardStep>,
             <WizardStep
               name={sl.machinePools}
