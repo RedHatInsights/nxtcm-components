@@ -158,12 +158,6 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
             labelHelpMaxWidth={oidcConfigHintMaxWidth}
             data-testid="oidc-config-select"
           />
-          <PopoverHintWithTitle
-            displayHintIcon
-            title={rp.oidcPopoverTitle}
-            bodyContent={oidcConfigHintContent}
-            maxWidth={oidcConfigHintMaxWidth}
-          />
         </FieldWrapper>
 
         <span className="pf-v6-c-form__label pf-v6-u-display-block pf-v6-u-mb-sm">
