@@ -6,6 +6,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -23,6 +24,7 @@ import {
   SelectList,
   SelectOption,
   Spinner,
+  Tooltip,
 } from '@patternfly/react-core';
 import { RedoIcon } from '@patternfly/react-icons';
 import { HelperText, helperTextId } from '../HelperText';
@@ -144,6 +146,20 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
   });
 
   const [open, setOpen] = useState(false);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const tooltipTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const showTooltip = useCallback(() => {
+    tooltipTimerRef.current = setTimeout(() => setTooltipVisible(true), 300);
+  }, []);
+  const hideTooltip = useCallback(() => {
+    clearTimeout(tooltipTimerRef.current);
+    setTooltipVisible(false);
+  }, []);
+
+  useEffect(() => {
+    return () => clearTimeout(tooltipTimerRef.current);
+  }, []);
 
   useEffect(() => {
     onMenuOpenChange?.(open);
@@ -312,22 +328,38 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
     return !legacyToggleLabel && !isLoading ? placeholderText : undefined;
   }, [menuToggleAriaLabel, checkboxMenuToggle, legacyToggleLabel, isLoading, placeholderText]);
 
+  /** Full text for the PF tooltip — shows the selected label(s) or placeholder. */
+  const tooltipContent = legacyToggleLabel || placeholderText;
+
   const plainToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <MenuToggle
-      ref={toggleRef}
-      onClick={handleToggle}
-      onBlur={onBlur}
-      isExpanded={open}
-      isDisabled={!!disabled}
-      isFullWidth
-      isPlaceholder={checkboxMenuToggle && toggleMainText === placeholderText}
-      status={getStatus(!!isError, !!isSuccess)}
-      aria-label={plainToggleAriaLabel}
-      aria-describedby={describedBy || undefined}
-      badge={toggleBadge}
+    <Tooltip
+      content={tooltipContent}
+      aria="none"
+      trigger="manual"
+      isVisible={tooltipVisible && !open}
     >
-      {toggleMainText}
-    </MenuToggle>
+      <MenuToggle
+        ref={toggleRef}
+        onClick={handleToggle}
+        onBlur={(e: React.FocusEvent<HTMLElement>) => {
+          hideTooltip();
+          onBlur?.(e);
+        }}
+        onFocus={showTooltip}
+        onMouseEnter={showTooltip}
+        onMouseLeave={hideTooltip}
+        isExpanded={open}
+        isDisabled={!!disabled}
+        isFullWidth
+        isPlaceholder={checkboxMenuToggle && toggleMainText === placeholderText}
+        status={getStatus(!!isError, !!isSuccess)}
+        aria-label={plainToggleAriaLabel}
+        aria-describedby={describedBy || undefined}
+        badge={toggleBadge}
+      >
+        {toggleMainText}
+      </MenuToggle>
+    </Tooltip>
   );
 
   const selectBlock = (

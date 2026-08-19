@@ -26,6 +26,7 @@ import {
   TextInputGroup,
   TextInputGroupMain,
   TextInputGroupUtilities,
+  Tooltip,
 } from '@patternfly/react-core';
 import { RedoIcon, TimesIcon } from '@patternfly/react-icons';
 import { toDisplayString } from './SelectOptions';
@@ -125,7 +126,21 @@ export function Select<T = unknown>(props: SelectProps<T>) {
 
   const [open, setOpen] = useState(false);
   const [typeaheadQuery, setTypeaheadQuery] = useState('');
+  const [tooltipVisible, setTooltipVisible] = useState(false);
   const textInputRef = useRef<HTMLInputElement>(null);
+  const tooltipTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const showTooltip = useCallback(() => {
+    tooltipTimerRef.current = setTimeout(() => setTooltipVisible(true), 300);
+  }, []);
+  const hideTooltip = useCallback(() => {
+    clearTimeout(tooltipTimerRef.current);
+    setTooltipVisible(false);
+  }, []);
+
+  useEffect(() => {
+    return () => clearTimeout(tooltipTimerRef.current);
+  }, []);
 
   useEffect(() => {
     onMenuOpenChange?.(open);
@@ -335,64 +350,96 @@ export function Select<T = unknown>(props: SelectProps<T>) {
 
   const plainToggleAriaLabel = !toggleLabel && !isLoading ? placeholderText : undefined;
 
+  /** Text shown inside the plain (non-typeahead) toggle button. */
+  const plainToggleText = isLoading && !toggleLabel ? 'Loading...' : toggleLabel || placeholderText;
+
+  /** Full text for the PF tooltip — shows the selected label or placeholder. */
+  const tooltipContent = toggleLabel || placeholderText;
+
   const plainToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <MenuToggle
-      ref={toggleRef}
-      onClick={toggleOpen}
-      onBlur={onBlur}
-      isExpanded={open}
-      isDisabled={!!disabled}
-      isFullWidth
-      status={getStatus(!!isError, !!isSuccess)}
-      aria-label={plainToggleAriaLabel}
-      aria-describedby={describedBy || undefined}
-      data-testid={dataTestId}
+    <Tooltip
+      content={tooltipContent}
+      aria="none"
+      trigger="manual"
+      isVisible={tooltipVisible && !open}
     >
-      {isLoading && !toggleLabel ? 'Loading...' : toggleLabel || placeholderText}
-    </MenuToggle>
+      <MenuToggle
+        ref={toggleRef}
+        onClick={toggleOpen}
+        onBlur={(e: React.FocusEvent<HTMLElement>) => {
+          hideTooltip();
+          onBlur?.(e);
+        }}
+        onFocus={showTooltip}
+        onMouseEnter={showTooltip}
+        onMouseLeave={hideTooltip}
+        isExpanded={open}
+        isDisabled={!!disabled}
+        isFullWidth
+        status={getStatus(!!isError, !!isSuccess)}
+        aria-label={plainToggleAriaLabel}
+        aria-describedby={describedBy || undefined}
+        data-testid={dataTestId}
+      >
+        {plainToggleText}
+      </MenuToggle>
+    </Tooltip>
   );
 
   const typeaheadToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <MenuToggle
-      variant="typeahead"
-      ref={toggleRef}
-      onClick={toggleOpen}
-      onBlur={onBlur}
-      isExpanded={open}
-      isDisabled={!!disabled}
-      isFullWidth
-      status={getStatus(!!isError, !!isSuccess)}
-      data-testid={dataTestId}
+    <Tooltip
+      content={tooltipContent}
+      aria="none"
+      trigger="manual"
+      isVisible={tooltipVisible && !open}
     >
-      <TextInputGroup isPlain>
-        <TextInputGroupMain
-          value={typeaheadToggleDisplay}
-          onClick={toggleOpen}
-          onChange={onTypeaheadInputChange}
-          innerRef={textInputRef}
-          placeholder={isLoading ? undefined : placeholderText}
-          isExpanded={open}
-          autoComplete="off"
-          aria-label={placeholderText}
-          aria-describedby={describedBy || undefined}
-          role="combobox"
-          aria-controls={`${id}-listbox`}
-          id={`${id}-typeahead-input`}
-        />
-        <TextInputGroupUtilities
-          {...((!typeaheadQuery && !toggleLabel) || typeaheadToggleDisplay === 'Loading...'
-            ? { style: { display: 'none' } }
-            : {})}
-        >
-          <Button
-            variant="plain"
-            onClick={onClearTypeahead}
-            aria-label="Clear selection"
-            icon={<TimesIcon aria-hidden />}
+      <MenuToggle
+        variant="typeahead"
+        ref={toggleRef}
+        onClick={toggleOpen}
+        onBlur={(e: React.FocusEvent<HTMLElement>) => {
+          hideTooltip();
+          onBlur?.(e);
+        }}
+        onFocus={showTooltip}
+        onMouseEnter={showTooltip}
+        onMouseLeave={hideTooltip}
+        isExpanded={open}
+        isDisabled={!!disabled}
+        isFullWidth
+        status={getStatus(!!isError, !!isSuccess)}
+        data-testid={dataTestId}
+      >
+        <TextInputGroup isPlain>
+          <TextInputGroupMain
+            value={typeaheadToggleDisplay}
+            onClick={toggleOpen}
+            onChange={onTypeaheadInputChange}
+            innerRef={textInputRef}
+            placeholder={isLoading ? undefined : placeholderText}
+            isExpanded={open}
+            autoComplete="off"
+            aria-label={placeholderText}
+            aria-describedby={describedBy || undefined}
+            role="combobox"
+            aria-controls={`${id}-listbox`}
+            id={`${id}-typeahead-input`}
           />
-        </TextInputGroupUtilities>
-      </TextInputGroup>
-    </MenuToggle>
+          <TextInputGroupUtilities
+            {...((!typeaheadQuery && !toggleLabel) || typeaheadToggleDisplay === 'Loading...'
+              ? { style: { display: 'none' } }
+              : {})}
+          >
+            <Button
+              variant="plain"
+              onClick={onClearTypeahead}
+              aria-label="Clear selection"
+              icon={<TimesIcon aria-hidden />}
+            />
+          </TextInputGroupUtilities>
+        </TextInputGroup>
+      </MenuToggle>
+    </Tooltip>
   );
 
   /** Handles PF-initiated open-change (click-outside, Escape). */
