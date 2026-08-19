@@ -121,7 +121,7 @@
     "monaco-yaml": "^5.4.1",
     "nyc": "^18.0.0",
     "test-exclude": "^6.0.0",
-    "prettier": "3.8.3",
+    "prettier": "3.9.6",
     "pretty-html-log": "^1.1.1",
     "progress": "^2.0.3",
     "react": "^18.2.0",
