@@ -130,7 +130,7 @@ function normalizeSummary(summary) {
 }
 
 function stripAnsi(str) {
-  // eslint-disable-next-line no-control-regex
+  // eslint-disable-next-line no-control-regex The regex is specifically matching ANSI escape sequences (ESC[...m) to strip terminal color codes from strings.
   return str.replace(/\u001b\[[0-9;]*m/g, '');
 }
 
