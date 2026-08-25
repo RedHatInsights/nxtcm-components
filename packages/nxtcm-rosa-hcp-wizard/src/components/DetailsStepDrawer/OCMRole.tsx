@@ -15,7 +15,7 @@ export const OCMRole = () => {
         {o.checkLinkedTitle}
       </Title>
 
-      <CopyInstruction>rosa list ocm-role</CopyInstruction>
+      <CopyInstruction data-testid="copy-rosa-list-ocm-role">rosa list ocm-role</CopyInstruction>
 
       <Alert
         variant={AlertVariant.info}
