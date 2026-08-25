@@ -1,5 +1,6 @@
 import React from 'react';
 import { expect, test } from '@playwright/experimental-ct-react';
+import { IMDS } from '../../constants';
 import { ClusterUpgrade } from '../../types';
 import rosaHcpWizardFixtures from '../../ROSAHCPWizard.fixtures';
 import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.defaults';
@@ -156,7 +157,7 @@ test.describe('Review', () => {
       <ReviewHarness
         formOverrides={{
           selected_vpc: vpc.id,
-          imds: 'imdsv2only',
+          imds: IMDS.REQUIRED,
           compute_root_volume: 400,
           security_groups_worker: ['sg-0a1b2c3d4e5f00001', 'sg-0a1b2c3d4e5f00003'],
         }}

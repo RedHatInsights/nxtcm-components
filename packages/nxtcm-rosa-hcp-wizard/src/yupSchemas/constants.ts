@@ -1,6 +1,7 @@
 import {
   FIELD_NAME,
   HOST_PREFIX_DEFAULT,
+  IMDS,
   MACHINE_CIDR_DEFAULT,
   POD_CIDR_DEFAULT,
   SERVICE_CIRD_DEFAULT,
@@ -352,6 +353,7 @@ export const YUP = {
       },
     },
     IMDS_SCHEMA: {
+      DEFAULT: IMDS.OPTIONAL,
       META: {
         ID: FIELD_NAME.IMDS,
         LABEL_KEY: 'machinePools.imdsLabel',
