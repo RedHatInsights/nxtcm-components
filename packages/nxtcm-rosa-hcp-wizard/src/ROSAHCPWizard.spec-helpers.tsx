@@ -3,7 +3,7 @@ import { RosaHCPWizard } from './ROSAHCPWizard';
 import type { RosaHCPWizardProps, ROSAHCPWizardData } from './types';
 import type { RosaHcpWizardStringsInput } from './stringsProvider/rosaHcpWizardStrings.types';
 
-export const mockWizardData: ROSAHCPWizardData = {
+const mockWizardData: ROSAHCPWizardData = {
   machineTypes: {
     data: [],
     error: null,

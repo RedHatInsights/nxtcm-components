@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   AWSBillingAccounts,
   AWSInfrastructureAccounts,
@@ -14,7 +13,6 @@ import {
   VPC,
 } from './types';
 
-const REFETCH_ALL_DELAY_MS = 2000;
 /** Shared API error string for the `AllApiErrors` story (popover/detail body). */
 export const STORY_API_ERROR_MESSAGE = 'This is the error returned from the API call';
 // wraps static mock data in the Resource shape for stories
@@ -572,48 +570,6 @@ const mockExtensiveNumMachineTypes: MachineTypesDropdownType[] = Array.from(
 export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
-export const useSetMockState = <T>(mockData: T[]) => {
-  const [mockStateData, setMockStateData] = React.useState<Resource<T[]>>({
-    data: mockData,
-    error: null,
-    isFetching: false,
-  });
-
-  return {
-    mockStateData,
-    setMockStateData,
-  };
-};
-
-export const useFetchNeededData = <T>(mockData: T) => {
-  const [state, setState] = React.useState<{
-    data: T;
-    isFetching: boolean;
-    error: string | null;
-  }>({
-    data: mockData,
-    isFetching: false,
-    error: null,
-  });
-
-  const fetchData = React.useCallback(async () => {
-    setState((prev) => ({ ...prev, isFetching: true, error: null }));
-
-    await sleep(REFETCH_ALL_DELAY_MS);
-
-    setState({
-      data: mockData,
-      error: null,
-      isFetching: false,
-    });
-  }, [mockData]);
-
-  return {
-    state,
-    fetchData,
-  };
-};
 
 const fixtures = {
   mockResource,

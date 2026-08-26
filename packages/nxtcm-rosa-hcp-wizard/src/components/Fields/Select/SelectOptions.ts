@@ -105,7 +105,7 @@ export function toggleOptionInValues<T>(current: T[], opt: OptionType<T>, keyPat
   return [...current, opt.value as T];
 }
 
-export function findOptionByMenuId<T>(
+function findOptionByMenuId<T>(
   flatForLookup: OptionType<T>[],
   optionId: string
 ): OptionType<T> | undefined {

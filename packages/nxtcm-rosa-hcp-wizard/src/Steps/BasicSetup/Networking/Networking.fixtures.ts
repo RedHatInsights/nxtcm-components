@@ -1,6 +1,6 @@
 import type { Subnet, VPC } from '../../../types';
 
-export const mockSubnets: Subnet[] = [
+const mockSubnets: Subnet[] = [
   {
     subnet_id: 'subnet-001',
     name: 'public-subnet-a',

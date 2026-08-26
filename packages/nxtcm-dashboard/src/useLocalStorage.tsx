@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction } from 'react';
 
-export function useLocalStorage(
+function useLocalStorage(
   key: string,
   initialValue: string = ''
 ): [string, Dispatch<SetStateAction<string>>, () => void] {

@@ -8,10 +8,10 @@ import type {
   ROSAHCPWizardData,
   ValidationResource,
 } from './types';
-/** Storybook refetch delay (matches {@link fixtures} `REFETCH_ALL_DELAY_MS`). */
-export const STORY_REFETCH_DELAY_MS = 2000;
+/** Storybook refetch delay in milliseconds. */
+const STORY_REFETCH_DELAY_MS = 2000;
 /** Simulated async cluster name validation delay for Storybook demos. */
-export const STORY_CLUSTER_NAME_VALIDATION_DELAY_MS = 800;
+const STORY_CLUSTER_NAME_VALIDATION_DELAY_MS = 800;
 
 const storyTakenClusterNames = new Set(fixtures.mockClusterNonUniqueNames.map(({ name }) => name));
 
@@ -119,7 +119,7 @@ const noopFetch = async (): Promise<void> => {
 };
 
 /** Storybook-only: mock async cluster name uniqueness check with console logging. */
-export function createStoryCheckClusterNameUniqueness(
+function createStoryCheckClusterNameUniqueness(
   onValidationStateChange?: (state: ValidationResource) => void
 ): (name: string, region?: string) => Promise<string | null> {
   return async (name: string) => {
