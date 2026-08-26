@@ -65,7 +65,13 @@
     "allthethings": "npm run prettier:fix && npm run lint:fix && npm run type-check && npm run test && npm run test:ct"
   },
   "devDependencies": {
-    "monaco-types": "^0.1.2"
+    "@monaco-editor/react": "^4.7.0",
+    "@patternfly/react-code-editor": "^6.5.1",
+    "@types/js-yaml": "^4.0.9",
+    "js-yaml": "^4.3.0",
+    "monaco-editor": "^0.54.0",
+    "monaco-types": "^0.1.2",
+    "monaco-yaml": "^5.4.1"
   },
   "sideEffects": [
     "*.css"
