@@ -53,7 +53,7 @@ export type RosaHcpWizardValidationMountProps = {
 };
 
 /** Minimal YAML stub returned by getYaml when onSubmit is wired in tests. */
-export const STUB_FORM_YAML = 'kind: ROSAControlPlane\nmetadata:\n  name: stub';
+const STUB_FORM_YAML = 'kind: ROSAControlPlane\nmetadata:\n  name: stub';
 
 export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMountProps> = ({
   defaultValues = {},

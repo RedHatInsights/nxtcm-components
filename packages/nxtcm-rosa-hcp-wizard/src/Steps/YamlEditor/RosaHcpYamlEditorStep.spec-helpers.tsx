@@ -1,5 +1,5 @@
-import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+
 import { RosaHcpWizardStringsProvider } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster } from '../../types';
 import type { YamlResourceGenerator } from './types';
@@ -52,17 +52,15 @@ export function YamlEditorStepMount({
   );
 }
 
-interface YamlEditorStepMountInnerProps {
-  onClose?: () => void;
-  onCancel?: () => void;
-  resourceGenerator: YamlResourceGenerator;
-}
-
 function YamlEditorStepMountInner({
   onClose,
   onCancel,
   resourceGenerator,
-}: YamlEditorStepMountInnerProps) {
+}: {
+  onClose?: () => void;
+  onCancel?: () => void;
+  resourceGenerator: YamlResourceGenerator;
+}) {
   const methods = useForm<Partial<ROSAHCPCluster>>({
     defaultValues: {
       name: 'test-cluster',

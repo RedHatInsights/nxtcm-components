@@ -20,7 +20,7 @@ export const WIZ_TEXT_INPUT_YUP_META_HELPER = 'Yup meta helper text.';
 
 export const WIZ_TEXT_INPUT_SUBMIT_ERROR = 'Notes must be filled in.';
 /** Label on the Yup submit harness textbox (explicit prop, not from meta). */
-export const WIZ_TEXT_INPUT_SUBMIT_DEMO_LABEL = 'Notes (submit demo)';
+const WIZ_TEXT_INPUT_SUBMIT_DEMO_LABEL = 'Notes (submit demo)';
 
 type ExplicitFormValues = { notes: string };
 
@@ -177,7 +177,7 @@ export function WizTextInputNumericMetaLabelHarness() {
 }
 
 export const WIZ_TEXT_INPUT_ALIAS_BLUR_ERROR = 'Alias is required after blur.';
-export const WIZ_TEXT_INPUT_ALIAS_BLUR_LABEL = 'Alias (onBlur validation)';
+const WIZ_TEXT_INPUT_ALIAS_BLUR_LABEL = 'Alias (onBlur validation)';
 
 export const WIZ_TEXT_INPUT_ALIAS_BLUR_PLACEHOLDER = /enter the alias \(onblur validation\)/i;
 

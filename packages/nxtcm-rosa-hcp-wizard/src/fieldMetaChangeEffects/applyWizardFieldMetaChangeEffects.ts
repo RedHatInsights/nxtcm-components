@@ -48,7 +48,7 @@ export type ApplyWizardFieldMetaChangeEffectsArgs = {
  * (e.g. `availability_zones` resolves a VPC value into a `string[]` of AZ identifiers).
  * Returns `null` when any referenced field is empty/missing so the refetch is skipped.
  */
-export function buildComposedRefetchArg(
+function buildComposedRefetchArg(
   argsFromFields: Readonly<Record<string, WizardFormFieldName>>,
   formValues: Partial<ROSAHCPCluster>,
   wizardData: ROSAHCPWizardData

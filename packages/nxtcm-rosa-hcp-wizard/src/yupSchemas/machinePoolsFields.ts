@@ -1,6 +1,10 @@
 import * as yup from 'yup';
 
-import { STEP_IDS } from '../constants';
+import {
+  MIN_ROOT_DISK_SIZE_GIB,
+  MAX_ROOT_DISK_SIZE_OLD_OPENSHIFT,
+  MAX_ROOT_DISK_SIZE_NEW_OPENSHIFT,
+} from '../constants';
 import type { WizardFieldMeta } from './types';
 import {
   ctx,
@@ -9,104 +13,93 @@ import {
   rosaRequiredStringField,
 } from './helpers';
 import { validateSecurityGroups } from '../validators';
+import { YUP } from './constants';
+import { FIELD_NAME } from '../constants';
 
 export const selectedVpcSchema = rosaRequiredMixedField().meta({
-  id: 'selected_vpc',
-  labelKey: 'machinePools.vpcLabel',
-  placeholderKey: 'machinePools.vpcPlaceholder',
-  stepId: STEP_IDS.MACHINE_POOLS,
-  fieldType: 'select',
-  noEditAfterSubmit: true,
-  reviewLabel: 'Install to selected VPC',
-  optionsWizardDataResource: 'vpcList',
-  refetchesResourcesOnChange: [
-    {
-      resource: 'machineTypes',
-      argsFromFields: {
-        role_arn: 'installer_role_arn',
-        region: 'region',
-        availability_zones: 'selected_vpc',
-      },
-    },
-  ],
-  reconcileValueWithOptions: true,
-  resetsFieldsToDefaultOnChange: ['machine_pools_subnets', 'security_groups_worker'],
-
-  derivedFieldsSyncOnChange: 'vpcSecurityGroupsWorkerSelection',
+  id: YUP.MACHINE_POOLS.SELECTED_VPC_SCHEMA.META.ID,
+  labelKey: YUP.MACHINE_POOLS.SELECTED_VPC_SCHEMA.META.LABEL_KEY,
+  placeholderKey: YUP.MACHINE_POOLS.SELECTED_VPC_SCHEMA.META.PLACEHOLDER_KEY,
+  stepId: YUP.MACHINE_POOLS.SELECTED_VPC_SCHEMA.META.STEP_ID,
+  fieldType: YUP.MACHINE_POOLS.SELECTED_VPC_SCHEMA.META.FIELD_TYPE,
+  noEditAfterSubmit: YUP.MACHINE_POOLS.SELECTED_VPC_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
+  reviewLabel: YUP.MACHINE_POOLS.SELECTED_VPC_SCHEMA.META.REVIEW_LABEL,
+  optionsWizardDataResource:
+    YUP.MACHINE_POOLS.SELECTED_VPC_SCHEMA.META.OPTIONS_WIZARD_DATA_RESOURCE,
+  refetchesResourcesOnChange:
+    YUP.MACHINE_POOLS.SELECTED_VPC_SCHEMA.META.REFETCHES_RESOURCES_ON_CHANGE,
+  reconcileValueWithOptions:
+    YUP.MACHINE_POOLS.SELECTED_VPC_SCHEMA.META.RECONCILE_VALUE_WITH_OPTIONS,
+  resetsFieldsToDefaultOnChange:
+    YUP.MACHINE_POOLS.SELECTED_VPC_SCHEMA.META.RESETS_FIELDS_TO_DEFAULT_ON_CHANGE,
+  derivedFieldsSyncOnChange:
+    YUP.MACHINE_POOLS.SELECTED_VPC_SCHEMA.META.DERIVED_FIELDS_SYNC_ON_CHANGE,
 } satisfies WizardFieldMeta);
 
 /** One machine pool row; array shape is required for API / review even when the UI shows a single subnet. */
 export const machinePoolSubnetEntrySchema = yup.object({
   machine_pool_subnet: rosaRequiredStringField().meta({
-    id: 'machine_pool_subnet',
-    labelKey: 'machinePools.subnetLabel',
-    placeholderKey: 'machinePools.subnetPlaceholder',
-    stepId: STEP_IDS.MACHINE_POOLS,
-    fieldType: 'select',
-    optionsWizardDataResource: 'vpcList',
-    reconcileValueWithOptions: true,
+    id: YUP.MACHINE_POOLS.MACHINE_POOL_SUBNET_ENTRY_SCHEMA.META.ID,
+    labelKey: YUP.MACHINE_POOLS.MACHINE_POOL_SUBNET_ENTRY_SCHEMA.META.LABEL_KEY,
+    placeholderKey: YUP.MACHINE_POOLS.MACHINE_POOL_SUBNET_ENTRY_SCHEMA.META.PLACEHOLDER_KEY,
+    stepId: YUP.MACHINE_POOLS.MACHINE_POOL_SUBNET_ENTRY_SCHEMA.META.STEP_ID,
+    fieldType: YUP.MACHINE_POOLS.MACHINE_POOL_SUBNET_ENTRY_SCHEMA.META.FIELD_TYPE,
+    optionsWizardDataResource:
+      YUP.MACHINE_POOLS.MACHINE_POOL_SUBNET_ENTRY_SCHEMA.META.OPTIONS_WIZARD_DATA_RESOURCE,
+    reconcileValueWithOptions:
+      YUP.MACHINE_POOLS.MACHINE_POOL_SUBNET_ENTRY_SCHEMA.META.RECONCILE_VALUE_WITH_OPTIONS,
   } satisfies WizardFieldMeta),
 });
 
 /** Default single-subnet row for the machine pools UI (`machine_pools_subnets.0`). */
-export const DEFAULT_MACHINE_POOL_SUBNETS = [{ machine_pool_subnet: '' }] as const;
+const DEFAULT_MACHINE_POOL_SUBNETS = [{ machine_pool_subnet: '' }] as const;
 
 export const machinePoolsSubnetsSchema = rosaRequiredArrayField(machinePoolSubnetEntrySchema, [
   ...DEFAULT_MACHINE_POOL_SUBNETS,
 ]).meta({
-  id: 'machine_pools_subnets',
-  labelKey: 'machinePools.subnetLabel',
-  stepId: STEP_IDS.MACHINE_POOLS,
-  /** UI is a {@link WizSelect} on `machine_pools_subnets.0.machine_pool_subnet`; top-level path drives nav validation. */
-  fieldType: 'select',
-  noEditAfterSubmit: true,
+  id: YUP.MACHINE_POOLS.MACHINE_POOLS_SUBNETS_SCHEMA.META.ID,
+  labelKey: YUP.MACHINE_POOLS.MACHINE_POOLS_SUBNETS_SCHEMA.META.LABEL_KEY,
+  stepId: YUP.MACHINE_POOLS.MACHINE_POOLS_SUBNETS_SCHEMA.META.STEP_ID,
+  fieldType: YUP.MACHINE_POOLS.MACHINE_POOLS_SUBNETS_SCHEMA.META.FIELD_TYPE,
+  noEditAfterSubmit: YUP.MACHINE_POOLS.MACHINE_POOLS_SUBNETS_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
 } satisfies WizardFieldMeta);
 
 export const machineTypeSchema = rosaRequiredStringField().meta({
-  id: 'machine_type',
-  labelKey: 'machinePools.instanceTypeLabel',
-  stepId: STEP_IDS.MACHINE_POOLS,
-  fieldType: 'select',
-  noEditAfterSubmit: true,
-  optionsWizardDataResource: 'machineTypes',
-  reconcileValueWithOptions: true,
+  id: YUP.MACHINE_POOLS.MACHINE_TYPE_SCHEMA.META.ID,
+  labelKey: YUP.MACHINE_POOLS.MACHINE_TYPE_SCHEMA.META.LABEL_KEY,
+  stepId: YUP.MACHINE_POOLS.MACHINE_TYPE_SCHEMA.META.STEP_ID,
+  fieldType: YUP.MACHINE_POOLS.MACHINE_TYPE_SCHEMA.META.FIELD_TYPE,
+  noEditAfterSubmit: YUP.MACHINE_POOLS.MACHINE_TYPE_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
+  optionsWizardDataResource:
+    YUP.MACHINE_POOLS.MACHINE_TYPE_SCHEMA.META.OPTIONS_WIZARD_DATA_RESOURCE,
+  reconcileValueWithOptions:
+    YUP.MACHINE_POOLS.MACHINE_TYPE_SCHEMA.META.RECONCILE_VALUE_WITH_OPTIONS,
 } satisfies WizardFieldMeta);
 
 export const autoscalingSchema = yup
   .boolean()
-  .default(false)
+  .default(YUP.MACHINE_POOLS.AUTOSCALING_SCHEMA.DEFAULT)
   .optional()
   .meta({
-    id: 'autoscaling',
-    labelKey: 'autoscaling.enableLabel',
-    stepId: STEP_IDS.MACHINE_POOLS,
-    fieldType: 'checkbox',
-    hideInReview: true,
-    syncsFieldsOnChange: [
-      {
-        when: true,
-        setDefaults: ['min_replicas', 'max_replicas'],
-        clear: ['nodes_compute'],
-      },
-      {
-        when: false,
-        setDefaults: ['nodes_compute'],
-        clear: ['min_replicas', 'max_replicas'],
-      },
-    ],
+    id: YUP.MACHINE_POOLS.AUTOSCALING_SCHEMA.META.ID,
+    labelKey: YUP.MACHINE_POOLS.AUTOSCALING_SCHEMA.META.LABEL_KEY,
+    stepId: YUP.MACHINE_POOLS.AUTOSCALING_SCHEMA.META.STEP_ID,
+    fieldType: YUP.MACHINE_POOLS.AUTOSCALING_SCHEMA.META.FIELD_TYPE,
+    hideInReview: YUP.MACHINE_POOLS.AUTOSCALING_SCHEMA.META.HIDE_IN_REVIEW,
+    syncsFieldsOnChange: YUP.MACHINE_POOLS.AUTOSCALING_SCHEMA.META.SYNCS_FIELDS_ON_CHANGE,
   } satisfies WizardFieldMeta);
 
 export const nodesComputeSchema = yup
   .number()
-  .default(2)
+  .default(YUP.MACHINE_POOLS.NODES_COMPUTE_SCHEMA.DEFAULT)
   .optional()
   .meta({
-    id: 'nodes_compute',
-    labelKey: 'autoscaling.computeCountLabel',
-    stepId: STEP_IDS.MACHINE_POOLS,
-    fieldType: 'number',
+    id: YUP.MACHINE_POOLS.NODES_COMPUTE_SCHEMA.META.ID,
+    labelKey: YUP.MACHINE_POOLS.NODES_COMPUTE_SCHEMA.META.LABEL_KEY,
+    stepId: YUP.MACHINE_POOLS.NODES_COMPUTE_SCHEMA.META.STEP_ID,
+    fieldType: YUP.MACHINE_POOLS.NODES_COMPUTE_SCHEMA.META.FIELD_TYPE,
   } satisfies WizardFieldMeta)
-  .test('compute-nodes', '', function (value) {
+  .test(FIELD_NAME.NODES_COMPUTE, '', function (value) {
     if (value === undefined || value === null) return true;
     const { msgs } = ctx(this);
     if (!Number.isInteger(value)) {
@@ -120,15 +113,15 @@ export const nodesComputeSchema = yup
 
 export const minReplicasSchema = yup
   .number()
-  .default(2)
+  .default(YUP.MACHINE_POOLS.MIN_REPLICAS_SCHEMA.DEFAULT)
   .optional()
   .meta({
-    id: 'min_replicas',
-    labelKey: 'autoscaling.minLabel',
-    stepId: STEP_IDS.MACHINE_POOLS,
-    fieldType: 'number',
+    id: YUP.MACHINE_POOLS.MIN_REPLICAS_SCHEMA.META.ID,
+    labelKey: YUP.MACHINE_POOLS.MIN_REPLICAS_SCHEMA.META.LABEL_KEY,
+    stepId: YUP.MACHINE_POOLS.MIN_REPLICAS_SCHEMA.META.STEP_ID,
+    fieldType: YUP.MACHINE_POOLS.MIN_REPLICAS_SCHEMA.META.FIELD_TYPE,
   } satisfies WizardFieldMeta)
-  .test('min-replicas', '', function (value) {
+  .test(FIELD_NAME.MIN_REPLICAS, '', function (value) {
     if (value === undefined || value === null) return true;
     const { msgs, machinePoolsNumber } = ctx(this);
     if (!Number.isInteger(value)) {
@@ -152,15 +145,15 @@ export const minReplicasSchema = yup
 
 export const maxReplicasSchema = yup
   .number()
-  .default(4)
+  .default(YUP.MACHINE_POOLS.MAX_REPLICAS_SCHEMA.DEFAULT)
   .optional()
   .meta({
-    id: 'max_replicas',
-    labelKey: 'autoscaling.maxLabel',
-    stepId: STEP_IDS.MACHINE_POOLS,
-    fieldType: 'number',
+    id: YUP.MACHINE_POOLS.MAX_REPLICAS_SCHEMA.META.ID,
+    labelKey: YUP.MACHINE_POOLS.MAX_REPLICAS_SCHEMA.META.LABEL_KEY,
+    stepId: YUP.MACHINE_POOLS.MAX_REPLICAS_SCHEMA.META.STEP_ID,
+    fieldType: YUP.MACHINE_POOLS.MAX_REPLICAS_SCHEMA.META.FIELD_TYPE,
   } satisfies WizardFieldMeta)
-  .test('max-replicas', '', function (value) {
+  .test(FIELD_NAME.MAX_REPLICAS, '', function (value) {
     if (value === undefined || value === null) return true;
     const { msgs, maxAutoscalingNodes } = ctx(this);
     if (!Number.isInteger(value)) {
@@ -181,30 +174,30 @@ export const maxReplicasSchema = yup
 
 export const computeRootVolumeSchema = yup
   .number()
-  .default(300)
+  .default(YUP.MACHINE_POOLS.COMPUTE_ROOT_VOLUME_SCHEMA.DEFAULT)
   .optional()
   .meta({
-    id: 'compute_root_volume',
-    labelKey: 'machinePools.rootDiskLabel',
-    stepId: STEP_IDS.MACHINE_POOLS,
-    fieldType: 'number',
-    noEditAfterSubmit: true,
-    unit: 'GiB',
-    advanced: true,
+    id: YUP.MACHINE_POOLS.COMPUTE_ROOT_VOLUME_SCHEMA.META.ID,
+    labelKey: YUP.MACHINE_POOLS.COMPUTE_ROOT_VOLUME_SCHEMA.META.LABEL_KEY,
+    stepId: YUP.MACHINE_POOLS.COMPUTE_ROOT_VOLUME_SCHEMA.META.STEP_ID,
+    fieldType: YUP.MACHINE_POOLS.COMPUTE_ROOT_VOLUME_SCHEMA.META.FIELD_TYPE,
+    noEditAfterSubmit: YUP.MACHINE_POOLS.COMPUTE_ROOT_VOLUME_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
+    unit: YUP.MACHINE_POOLS.COMPUTE_ROOT_VOLUME_SCHEMA.META.UNIT,
+    advanced: YUP.MACHINE_POOLS.COMPUTE_ROOT_VOLUME_SCHEMA.META.ADVANCED,
   } satisfies WizardFieldMeta)
-  .test('root-disk-size', '', function (value) {
+  .test(FIELD_NAME.COMPUTE_ROOT_VOLUME, '', function (value) {
     if (value === undefined || value === null) return true;
     const { msgs, maxRootDiskSize } = ctx(this);
     if (!Number.isInteger(value)) {
       return this.createError({ message: msgs.rootDisk.notInteger });
     }
-    if (value < 75) {
+    if (value < MIN_ROOT_DISK_SIZE_GIB) {
       return this.createError({ message: msgs.rootDisk.tooSmall });
     }
-    if (value > maxRootDiskSize && maxRootDiskSize === 1024) {
+    if (value > maxRootDiskSize && maxRootDiskSize === MAX_ROOT_DISK_SIZE_OLD_OPENSHIFT) {
       return this.createError({ message: msgs.rootDisk.tooLargeOldOpenshift });
     }
-    if (value > maxRootDiskSize && maxRootDiskSize === 16384) {
+    if (value > maxRootDiskSize && maxRootDiskSize === MAX_ROOT_DISK_SIZE_NEW_OPENSHIFT) {
       return this.createError({ message: msgs.rootDisk.tooLargeNewOpenshift });
     }
     return true;
@@ -214,20 +207,20 @@ export const imdsSchema = yup
   .string()
   .optional()
   .meta({
-    id: 'imds',
-    labelKey: 'machinePools.imdsLabel',
-    stepId: STEP_IDS.MACHINE_POOLS,
-    fieldType: 'radio',
-    noEditAfterSubmit: true,
-    advanced: true,
+    id: YUP.MACHINE_POOLS.IMDS_SCHEMA.META.ID,
+    labelKey: YUP.MACHINE_POOLS.IMDS_SCHEMA.META.LABEL_KEY,
+    stepId: YUP.MACHINE_POOLS.IMDS_SCHEMA.META.STEP_ID,
+    fieldType: YUP.MACHINE_POOLS.IMDS_SCHEMA.META.FIELD_TYPE,
+    noEditAfterSubmit: YUP.MACHINE_POOLS.IMDS_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
+    advanced: YUP.MACHINE_POOLS.IMDS_SCHEMA.META.ADVANCED,
   } satisfies WizardFieldMeta);
 
 export const securityGroupsWorkerSchema = yup
   .array()
   .of(yup.string())
-  .default([])
+  .default([...YUP.MACHINE_POOLS.SECURITY_GROUPS_WORKER_SCHEMA.DEFAULT])
   .optional()
-  .test('security-groups-worker', '', function (value) {
+  .test(FIELD_NAME.SECURITY_GROUPS_WORKER, '', function (value) {
     if (value === undefined || value === null) return true;
     const { msgs } = ctx(this);
     const error = validateSecurityGroups(value as string[], msgs.securityGroups);
@@ -237,13 +230,13 @@ export const securityGroupsWorkerSchema = yup
     return true;
   })
   .meta({
-    id: 'security_groups_worker',
-    labelKey: 'securityGroups.formLabel',
-    stepId: STEP_IDS.MACHINE_POOLS,
-    fieldType: 'select',
-    noEditAfterSubmit: true,
-    /** Reconciled via {@link WizMultiSelect} derived sync, not {@link WizSelect}. */
-    reconcileValueWithOptions: false,
+    id: YUP.MACHINE_POOLS.SECURITY_GROUPS_WORKER_SCHEMA.META.ID,
+    labelKey: YUP.MACHINE_POOLS.SECURITY_GROUPS_WORKER_SCHEMA.META.LABEL_KEY,
+    stepId: YUP.MACHINE_POOLS.SECURITY_GROUPS_WORKER_SCHEMA.META.STEP_ID,
+    fieldType: YUP.MACHINE_POOLS.SECURITY_GROUPS_WORKER_SCHEMA.META.FIELD_TYPE,
+    noEditAfterSubmit: YUP.MACHINE_POOLS.SECURITY_GROUPS_WORKER_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
+    reconcileValueWithOptions:
+      YUP.MACHINE_POOLS.SECURITY_GROUPS_WORKER_SCHEMA.META.RECONCILE_VALUE_WITH_OPTIONS,
   } satisfies WizardFieldMeta);
 
 export const machinePoolsFields = {

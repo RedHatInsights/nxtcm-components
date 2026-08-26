@@ -309,11 +309,6 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
       await expect(refreshButton).toBeDisabled();
     });
 
-    test('should render the OIDC config popover hint', async ({ mount }) => {
-      const component = await mount(<RolesAndPoliciesMount />);
-      await expect(component.getByText(rp.oidcPopoverTitle)).toBeVisible();
-    });
-
     test('should show OIDC config hint content in the field help popover', async ({
       mount,
       page,
@@ -323,15 +318,6 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
         .locator('#byo_oidc_config_id-form-group')
         .getByRole('button', { name: 'More info' })
         .click();
-      await expect(page.getByText(oidcHint.instructions)).toBeVisible();
-    });
-
-    test('should show OIDC config hint content in the create link popover', async ({
-      mount,
-      page,
-    }) => {
-      const component = await mount(<RolesAndPoliciesMount />);
-      await component.getByRole('button', { name: rp.oidcPopoverTitle }).click();
       await expect(page.getByText(oidcHint.instructions)).toBeVisible();
     });
   });
@@ -479,20 +465,22 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
   });
 
   test.describe('RolesAndPolicies — operator roles prefix', () => {
-    test('should render the operator role prefix toggle', async ({ mount }) => {
+    test('should render the operator roles prefix toggle', async ({ mount }) => {
       const component = await mount(<RolesAndPoliciesMount />);
-      await expect(component.getByText(rp.operatorPrefixToggle, { exact: true })).toBeVisible();
+      await expect(
+        component.getByRole('button', { name: rp.operatorPrefixToggle, exact: true })
+      ).toBeVisible();
     });
 
     test('should render the operator roles prefix input when expanded', async ({ mount }) => {
       const component = await mount(<RolesAndPoliciesMount />);
-      await component.getByText(rp.operatorPrefixToggle, { exact: true }).click();
-      await expect(component.getByText(rp.operatorPrefixLabel, { exact: true })).toBeVisible();
+      await component.getByRole('button', { name: rp.operatorPrefixToggle, exact: true }).click();
+      await expect(component.getByLabel(rp.operatorPrefixLabel, { exact: true })).toBeVisible();
     });
 
     test('should render the operator prefix helper text when expanded', async ({ mount }) => {
       const component = await mount(<RolesAndPoliciesMount />);
-      await component.getByText(rp.operatorPrefixToggle, { exact: true }).click();
+      await component.getByRole('button', { name: rp.operatorPrefixToggle, exact: true }).click();
       await expect(component.getByText(rp.operatorPrefixHelper)).toBeVisible();
     });
 

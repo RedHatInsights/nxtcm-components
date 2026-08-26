@@ -50,7 +50,7 @@ export function pathsHaveValidationIssues<TFieldValues extends FieldValues>(
 }
 
 /** Steps under Additional setup that show Skip to review in the footer. */
-export const ROSA_HCP_SKIP_TO_REVIEW_STEP_IDS: readonly string[] = [
+const ROSA_HCP_SKIP_TO_REVIEW_STEP_IDS: readonly string[] = [
   STEP_IDS.ENCRYPTION,
   STEP_IDS.CLUSTER_UPDATES,
 ];

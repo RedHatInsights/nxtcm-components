@@ -189,7 +189,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     oidcLabel: 'OIDC config ID',
     oidcPlaceholder: 'Select an OIDC config ID',
     oidcPopoverTitle: 'Create a new OIDC config id',
-    operatorPrefixToggle: 'Operator role prefix',
+    operatorPrefixToggle: 'Operator roles prefix',
     operatorPrefixLabel: 'Operator roles prefix',
     operatorPrefixHelpLead: 'You can specify a custom prefix for the Operator AWS IAM roles.',
     operatorPrefixLearnMoreLink: 'Learn more and see examples.',

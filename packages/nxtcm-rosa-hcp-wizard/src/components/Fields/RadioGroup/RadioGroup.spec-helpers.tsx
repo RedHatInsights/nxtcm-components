@@ -9,10 +9,10 @@ export const RADIO_GROUP_HARNESS_SMALL_LABEL = 'Small';
 export const RADIO_GROUP_HARNESS_LARGE_LABEL = 'Large';
 export const RADIO_GROUP_HARNESS_SELECTED_STATUS_LABEL = 'Selected machine type';
 export const RADIO_GROUP_HARNESS_VALUE_LARGE = 'large';
-export const RADIO_GROUP_HARNESS_VALUE_SMALL = 'small';
+const RADIO_GROUP_HARNESS_VALUE_SMALL = 'small';
 
-export const RADIO_GROUP_HARNESS_PLAN_LABEL = 'Plan';
-export const RADIO_GROUP_HARNESS_PLAN_A_LABEL = 'Plan A';
+const RADIO_GROUP_HARNESS_PLAN_LABEL = 'Plan';
+const RADIO_GROUP_HARNESS_PLAN_A_LABEL = 'Plan A';
 export const RADIO_GROUP_HARNESS_PLAN_B_LABEL = 'Plan B';
 export const RADIO_GROUP_HARNESS_PLAN_A_EXTRA_DETAILS = 'Extra details for plan A.';
 

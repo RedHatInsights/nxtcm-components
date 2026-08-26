@@ -2,12 +2,10 @@ import * as yup from 'yup';
 import { overlapCidr } from 'cidr-tools';
 import IPCIDR from 'ip-cidr';
 
-import { CIDR_REGEXP } from '../constants';
+import { CIDR_REGEXP, LOWERCASE_ALPHANUMERIC, MAX_CLUSTER_NAME_LENGTH } from '../constants';
 import type { RosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings';
 import type { ValidationSchemaContext } from './types';
 import { ROSAHCPCluster } from '../types';
-
-export const LOWERCASE_ALPHANUMERIC = 'abcdefghijklmnopqrstuvwxyz1234567890';
 
 export function ctx(testContext: yup.TestContext): ValidationSchemaContext {
   return testContext.options.context as ValidationSchemaContext;
@@ -38,7 +36,7 @@ export function validateClusterNameSync(
   msgs: RosaHcpWizardValidatorStrings['clusterName']
 ): string | undefined {
   if (!value) return undefined;
-  if (value.length > 54) return msgs.maxLength;
+  if (value.length > MAX_CLUSTER_NAME_LENGTH) return msgs.maxLength;
   for (const char of value) {
     if (!LOWERCASE_ALPHANUMERIC.includes(char) && char !== '-' && char !== '.') {
       return msgs.invalidChars;
@@ -131,7 +129,7 @@ function isAbsentRequiredValue(value: unknown): boolean {
  * **Required field pattern:** {@link rosaRequiredStringField}, {@link rosaRequiredMixedField}, or
  * {@link rosaRequiredArrayField}.
  */
-export function rosaRequiredPresentValue(
+function rosaRequiredPresentValue(
   this: yup.TestContext,
   value: unknown
 ): true | yup.ValidationError {

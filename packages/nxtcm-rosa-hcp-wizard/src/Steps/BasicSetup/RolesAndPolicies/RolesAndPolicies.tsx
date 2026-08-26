@@ -10,7 +10,6 @@ import { Section } from '../../../components/Section';
 import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import React from 'react';
-import PopoverHintWithTitle from '../../../components/PopoverHintWithTitle';
 import { OIDCConfigHint, OIDCConfigHintProduct } from '../../../components/OIDCConfigHint';
 import { useWatch } from 'react-hook-form';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
@@ -26,6 +25,7 @@ import { useRosaCommand } from './useRosaCommand';
 import { RolesAlert } from '../../../components/RolesErrorAlert';
 import { RosaLoginInstruction } from '../../../components/RosaLoginInstruction';
 import { CopyInstruction } from '../../../components/CopyInstruction';
+import { FIELD_NAME } from '../../../constants';
 
 type RolesAndPoliciesStepProps = Pick<ROSAHCPWizardData, 'roles' | 'oidcConfig'> & {
   /** The consuming product. Determines which ROSA login command is shown. Defaults to 'acm'. */
@@ -41,7 +41,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   const oidcConfigHintContent = <OIDCConfigHint product={product} />;
   const oidcConfigHintMaxWidth = '25rem';
 
-  const awsInfrastructureAccount = useWatch({ name: 'associated_aws_id' });
+  const awsInfrastructureAccount = useWatch({ name: FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID });
 
   const installerRoleOptions = useInstallerRoleOptions(roles);
   const { isIncompleteRoleSet } = useDependentRoles(roles);
@@ -76,7 +76,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
                   <WizTextInput<ROSAHCPCluster>
                     isRequired
                     schema={clusterValidationSchema}
-                    name="support_role_arn"
+                    name={FIELD_NAME.SUPPORT_ROLE_ARN}
                     readOnly
                     readOnlyVariant="plain"
                   />
@@ -85,7 +85,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
                   <WizTextInput<ROSAHCPCluster>
                     isRequired
                     schema={clusterValidationSchema}
-                    name="worker_role_arn"
+                    name={FIELD_NAME.WORKER_ROLE_ARN}
                     readOnly
                     readOnlyVariant="plain"
                   />
@@ -109,7 +109,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
                 </ExternalLink>
               </>
             }
-            name="installer_role_arn"
+            name={FIELD_NAME.INSTALLER_ROLE_ARN}
             options={installerRoleOptions}
             data-testid="installer-role-select"
           />
@@ -118,14 +118,6 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
       <Section label={rp.operatorRolesSection}>
         <FieldWrapper
           size="lg"
-          additionalContent={
-            <PopoverHintWithTitle
-              displayHintIcon
-              title={rp.oidcPopoverTitle}
-              bodyContent={oidcConfigHintContent}
-              maxWidth={oidcConfigHintMaxWidth}
-            />
-          }
           footer={
             <ExpandableSection
               isExpanded={isOperatorRolesOpen}
@@ -136,7 +128,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
               <NestedFields>
                 <FieldWrapper size="sm">
                   <WizTextInput<ROSAHCPCluster>
-                    name="custom_operator_roles_prefix"
+                    name={FIELD_NAME.CUSTOM_OPERATOR_ROLES_PREFIX}
                     schema={clusterValidationSchema}
                     label={rp.operatorPrefixLabel}
                     labelHelp={
@@ -159,7 +151,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
             apiError={oidcConfig.error}
             isLoading={oidcConfig.isFetching}
             schema={clusterValidationSchema}
-            name="byo_oidc_config_id"
+            name={FIELD_NAME.BYO_OIDC_CONFIG_ID}
             isRequired
             options={oidcConfig.data}
             labelHelp={oidcConfigHintContent}

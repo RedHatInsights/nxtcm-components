@@ -20,7 +20,7 @@ export const WIZ_NUMBER_INPUT_YUP_META_HELPER = 'Yup meta helper text.';
 
 export const WIZ_NUMBER_INPUT_SUBMIT_ERROR = 'Node count must be filled in.';
 
-export const WIZ_NUMBER_INPUT_SUBMIT_DEMO_LABEL = 'Node count (submit demo)';
+const WIZ_NUMBER_INPUT_SUBMIT_DEMO_LABEL = 'Node count (submit demo)';
 
 export const WIZ_NUMBER_INPUT_TOPOLOGY_POOL_STATUS_LABEL = 'topology pool spinbutton value';
 

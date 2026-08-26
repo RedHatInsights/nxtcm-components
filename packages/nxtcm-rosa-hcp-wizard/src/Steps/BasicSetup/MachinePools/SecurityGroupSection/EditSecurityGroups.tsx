@@ -12,6 +12,7 @@ import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWiza
 import { useFormContext, useWatch } from 'react-hook-form';
 import SecurityGroupsNoEditAlert from './SecurityGroupsNoEditAlert';
 import SecurityGroupsEmptyAlert from './SecurityGroupsEmptyAlert';
+import { FIELD_NAME, MAX_SECURITY_GROUP_DISPLAY_LENGTH } from '../../../../constants';
 
 export interface EditSecurityGroupsProps {
   label?: string;
@@ -27,9 +28,11 @@ const EMPTY_GROUP_IDS: string[] = [];
 
 const getDisplayName = (securityGroupName: string) => {
   if (securityGroupName) {
-    const maxVisibleLength = 50;
-    const displayName = truncateTextWithEllipsis(securityGroupName, maxVisibleLength);
-    return { displayName, isCut: securityGroupName.length > maxVisibleLength };
+    const displayName = truncateTextWithEllipsis(
+      securityGroupName,
+      MAX_SECURITY_GROUP_DISPLAY_LENGTH
+    );
+    return { displayName, isCut: securityGroupName.length > MAX_SECURITY_GROUP_DISPLAY_LENGTH };
   }
   return { displayName: '--', isCut: false };
 };
@@ -47,7 +50,7 @@ const EditSecurityGroups = ({
 
   const label = labelProp ?? sg.formLabel;
   const { setValue } = useFormContext<Partial<ROSAHCPCluster>>();
-  const watchedGroups = useWatch({ name: 'security_groups_worker' });
+  const watchedGroups = useWatch({ name: FIELD_NAME.SECURITY_GROUPS_WORKER });
   const selectedGroupIds = React.useMemo(
     () => (Array.isArray(watchedGroups) ? (watchedGroups as string[]) : EMPTY_GROUP_IDS),
     [watchedGroups]
@@ -93,7 +96,7 @@ const EditSecurityGroups = ({
 
   const onDeleteGroup = (deleteGroupId: string) => {
     const next = selectedGroupIds.filter((sgId) => sgId !== deleteGroupId);
-    setValue('security_groups_worker', next, {
+    setValue(FIELD_NAME.SECURITY_GROUPS_WORKER, next, {
       shouldDirty: true,
       shouldTouch: true,
       shouldValidate: true,
@@ -124,7 +127,7 @@ const EditSecurityGroups = ({
       }
     >
       <WizMultiSelect<ROSAHCPCluster>
-        name="security_groups_worker"
+        name={FIELD_NAME.SECURITY_GROUPS_WORKER}
         schema={clusterValidationSchema}
         label={label}
         placeholder={sg.selectToggle}
