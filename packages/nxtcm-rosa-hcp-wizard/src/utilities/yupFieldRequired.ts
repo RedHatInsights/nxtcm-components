@@ -10,14 +10,14 @@ import {
 export type { YupFieldDescribeOptions } from './yupFieldDescribe';
 
 /** {@link rosaCommonRequiredNonEmptyTest} name. */
-export const ROSA_COMMON_REQUIRED_NONEMPTY_TEST_NAME = 'rosa-common-required-nonempty';
+const ROSA_COMMON_REQUIRED_NONEMPTY_TEST_NAME = 'rosa-common-required-nonempty';
 
 /** Whether a Yup schema uses {@link ROSA_COMMON_REQUIRED_NONEMPTY_TEST_NAME}. */
 export function schemaHasRosaRequiredPresentTest(schema: yup.Schema): boolean {
   return descriptionHasRosaRequiredPresentTest(schema.describe());
 }
 
-export function descriptionHasRosaRequiredPresentTest(description: unknown): boolean {
+function descriptionHasRosaRequiredPresentTest(description: unknown): boolean {
   return testsFromDescription(description).some(
     (test) => test.name === ROSA_COMMON_REQUIRED_NONEMPTY_TEST_NAME
   );

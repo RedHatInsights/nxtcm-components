@@ -7,8 +7,6 @@ import type { RosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWi
 import type { ValidationSchemaContext } from './types';
 import { ROSAHCPCluster } from '../types';
 
-export { LOWERCASE_ALPHANUMERIC };
-
 export function ctx(testContext: yup.TestContext): ValidationSchemaContext {
   return testContext.options.context as ValidationSchemaContext;
 }
@@ -131,7 +129,7 @@ function isAbsentRequiredValue(value: unknown): boolean {
  * **Required field pattern:** {@link rosaRequiredStringField}, {@link rosaRequiredMixedField}, or
  * {@link rosaRequiredArrayField}.
  */
-export function rosaRequiredPresentValue(
+function rosaRequiredPresentValue(
   this: yup.TestContext,
   value: unknown
 ): true | yup.ValidationError {

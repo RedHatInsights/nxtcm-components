@@ -82,7 +82,7 @@ const secureRandomValueInRange = (min: number, max: number) => {
   return Math.floor(randomNumber * (maxNum - minNum + 1)) + minNum;
 };
 
-export const createOperatorRolesHash = () => {
+const createOperatorRolesHash = () => {
   const prefixArray = Array.from(
     crypto.getRandomValues(new Uint8Array(OPERATOR_ROLES_HASH_LENGTH))
   ).map((value) => (value % 36).toString(36));
@@ -101,7 +101,6 @@ const createOperatorRolesPrefix = (clusterName?: string) => {
 };
 
 const stringToArray = (str?: string) => str && str.trim().split(',');
-const arrayToString = (arr?: string[]) => arr && arr.join(',');
 
 const parseCIDRSubnetLength = (value?: string): number | undefined => {
   if (!value) {
@@ -254,12 +253,9 @@ const formatUpgradePolicyForReview = (
 export {
   createOperatorRolesPrefix,
   stringToArray,
-  arrayToString,
   parseCIDRSubnetLength,
   constructSelectedSubnets,
-  subnetsFilter,
   truncateTextWithEllipsis,
-  splitVersion,
   canSelectImds,
   getWorkerNodeVolumeSizeMaxGiB,
   showSecurityGroupsSection,

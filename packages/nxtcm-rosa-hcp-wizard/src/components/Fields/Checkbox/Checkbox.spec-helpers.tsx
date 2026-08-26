@@ -2,7 +2,7 @@ import React, { useState, type FormEvent } from 'react';
 import { Form } from '@patternfly/react-core';
 import { Checkbox } from './Checkbox';
 
-export const CHECKBOX_HARNESS_ID = 'ct-checkbox';
+const CHECKBOX_HARNESS_ID = 'ct-checkbox';
 export const CHECKBOX_HARNESS_TITLE = 'Notifications';
 export const CHECKBOX_HARNESS_LABEL = 'Send email when the cluster is ready';
 export const CHECKBOX_HARNESS_HELPER_TEXT = 'You can change this later.';

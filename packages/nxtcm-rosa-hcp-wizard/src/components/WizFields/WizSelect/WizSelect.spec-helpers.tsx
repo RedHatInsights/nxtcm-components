@@ -26,7 +26,7 @@ export const WIZ_SELECT_YUP_META_HELPER = 'Yup meta helper text for zone select.
 
 export const WIZ_SELECT_SUBMIT_ERROR = 'Please choose a region to continue.';
 
-export const WIZ_SELECT_SUBMIT_DEMO_LABEL = 'Region (submit demo)';
+const WIZ_SELECT_SUBMIT_DEMO_LABEL = 'Region (submit demo)';
 
 export const WIZ_SELECT_EXPLICIT_TOGGLE_NAME = /select the explicit region label/i;
 
