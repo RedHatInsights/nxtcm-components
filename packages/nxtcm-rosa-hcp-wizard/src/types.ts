@@ -1,6 +1,6 @@
 import { TooltipProps, useWizardContext } from '@patternfly/react-core';
 import type { YamlResourceGenerator } from './Steps/YamlEditor/types';
-import { STEP_IDS } from './constants';
+import { FIELD_NAME, STEP_IDS } from './constants';
 
 // -- dropdown / select option types --
 
@@ -217,6 +217,12 @@ export type HideableWizardStepId =
   | typeof STEP_IDS.CLUSTER_UPDATES;
 
 /**
+ * Form field paths that can be hidden via {@link WizardConfig.hiddenFields}.
+ * Use the exported `FIELD_NAME` constants for type-safe values.
+ */
+export type HideableWizardFieldId = typeof FIELD_NAME.NODES_COMPUTE;
+
+/**
  * Configuration for the ROSA HCP wizard.
  * Pass via the `config` prop on `RosaHCPWizard` to customise behaviour
  * for different host applications (e.g. ACM vs OCM).
@@ -236,6 +242,18 @@ export interface WizardConfig {
    * config={{ hiddenSteps: [STEP_IDS.CLUSTER_WIDE_PROXY, STEP_IDS.CLUSTER_UPDATES] }}
    */
   hiddenSteps?: ReadonlyArray<HideableWizardStepId>;
+  /**
+   * Form fields to remove from wizard steps and the Review summary.
+   * Use when a host application cannot map a wizard field to the generated YAML/CR spec.
+   *
+   * Supported values (use `FIELD_NAME` constants):
+   * - `FIELD_NAME.NODES_COMPUTE` – hides fixed compute node count when autoscaling is off.
+   *   ROSAControlPlane `defaultMachinePoolSpec` only supports autoscaling min/max, not a fixed replica count.
+   *
+   * @example
+   * config={{ hiddenFields: [FIELD_NAME.NODES_COMPUTE] }}
+   */
+  hiddenFields?: ReadonlyArray<HideableWizardFieldId>;
 }
 
 export type RosaHCPWizardProps = {

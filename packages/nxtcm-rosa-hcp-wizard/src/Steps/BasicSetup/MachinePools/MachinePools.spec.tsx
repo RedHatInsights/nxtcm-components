@@ -8,6 +8,7 @@ import {
   makeVpcListResource,
 } from '../../../test/rosaHcpWizardCtSpecHelpers';
 import { maxReplicasSchema, minReplicasSchema, nodesComputeSchema } from '../../../yupSchemas';
+import { FIELD_NAME } from '../../../constants';
 import { MachinePoolsMount } from './MachinePools.spec-helpers';
 
 const mp = defaultRosaHcpWizardStrings.machinePools;
@@ -186,6 +187,16 @@ test.describe('MachinePools (ROSA HCP)', () => {
     await expect(options.nth(1)).toHaveText(/m6a\.xlarge/);
     await expect(options.nth(2)).toHaveText(/c5\.2xlarge/);
     await expect(options.nth(3)).toHaveText(/r5\.xlarge/);
+  });
+
+  test('should hide compute node count when configured in hiddenFields', async ({ mount }) => {
+    const component = await mount(
+      <MachinePoolsMount config={{ hiddenFields: [FIELD_NAME.NODES_COMPUTE] }} />
+    );
+
+    await expect(
+      component.getByRole('spinbutton', { name: a.computeCountLabel, exact: true })
+    ).toHaveCount(0);
   });
 
   test('should show compute node count by default and min/max when autoscaling is enabled', async ({

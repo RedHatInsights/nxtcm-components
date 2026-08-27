@@ -15,7 +15,7 @@ import {
 } from './ROSAHCPWizard.stories.helpers';
 import fixtures from './ROSAHCPWizard.fixtures';
 import { MachineTypesDropdownType, OIDCConfig, Region, Role, ROSAHCPWizardData } from './types';
-import { STEP_IDS } from './constants';
+import { FIELD_NAME, STEP_IDS } from './constants';
 import { defaultRosaHcpWizardStrings } from './stringsProvider/rosaHcpWizardStrings.defaults';
 import { createAcmCapaGenerator } from './test/acmGeneratorFixtures/acmCapaGenerator';
 import rosaControlPlaneSchema from './test/acmGeneratorFixtures/schemas/rosaControlPlaneSchema.json';
@@ -414,6 +414,7 @@ export const AcmConfiguration: Story = {
     wizardData: createMockRosaHcpWizardDataWithFetchLogging(),
     config: {
       hiddenSteps: [STEP_IDS.CLUSTER_WIDE_PROXY, STEP_IDS.CLUSTER_UPDATES],
+      hiddenFields: [FIELD_NAME.NODES_COMPUTE],
     },
     onSubmit: async (data: unknown) => {
       console.log('Wizard submitted with data:', data);

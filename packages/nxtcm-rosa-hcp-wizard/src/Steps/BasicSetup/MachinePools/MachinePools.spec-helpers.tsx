@@ -5,7 +5,12 @@ import React, { useMemo } from 'react';
 import { Form } from '@patternfly/react-core';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import type { MachineTypesResource, ROSAHCPCluster, VpcListResource } from '../../../types';
+import type {
+  MachineTypesResource,
+  ROSAHCPCluster,
+  VpcListResource,
+  WizardConfig,
+} from '../../../types';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
 import {
   makeDefaultRosaHcpCtWizardData,
@@ -16,6 +21,7 @@ import {
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { createClusterValidationResolver } from '../../../utilities/clusterValidationResolver';
 import { getClusterValidationSchemaDefaultValues } from '../../../yupSchemas';
+import { WizardConfigProvider } from '../../../WizardConfigContext';
 
 import { MachinePools } from './MachinePools';
 
@@ -23,12 +29,14 @@ export type MachinePoolsMountProps = {
   vpcList?: VpcListResource;
   machineTypes?: MachineTypesResource;
   defaultValues?: Partial<ROSAHCPCluster>;
+  config?: WizardConfig;
 };
 
 export const MachinePoolsMount: React.FC<MachinePoolsMountProps> = ({
   vpcList,
   machineTypes,
   defaultValues = {},
+  config = {},
 }) => {
   const resolver = useMemo(
     () => createClusterValidationResolver(defaultRosaHcpWizardValidatorStrings),
@@ -61,11 +69,13 @@ export const MachinePoolsMount: React.FC<MachinePoolsMountProps> = ({
   );
 
   return withRosaCt(
-    <FormProvider {...methods}>
-      <Form>
-        <WizardFieldMetaChangeEffectsCtHarness wizardData={wizardData} />
-        <MachinePools vpcList={vpcListProps} machineTypes={machineTypesProps} />
-      </Form>
-    </FormProvider>
+    <WizardConfigProvider config={config}>
+      <FormProvider {...methods}>
+        <Form>
+          <WizardFieldMetaChangeEffectsCtHarness wizardData={wizardData} />
+          <MachinePools vpcList={vpcListProps} machineTypes={machineTypesProps} />
+        </Form>
+      </FormProvider>
+    </WizardConfigProvider>
   );
 };

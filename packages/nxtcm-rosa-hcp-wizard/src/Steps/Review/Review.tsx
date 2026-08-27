@@ -22,6 +22,7 @@ import {
 } from '../../utilities/helpers';
 import { Section } from '../../components/Section';
 import { STEP_IDS } from '../../constants';
+import { useWizardConfig } from '../../WizardConfigContext';
 import { useRosaHcpWizardReviewSections } from './ROSAHCPWizardReviewSections';
 import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings';
 import { getRosaHcpWizardStringByLabelKey } from '../../stringsProvider/getRosaHcpWizardStringByLabelKey';
@@ -67,6 +68,7 @@ export type ReviewProps = Pick<ROSAHCPWizardData, 'vpcList'> & {
 
 export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
   const { goToStepById } = useWizardContext();
+  const { hiddenFields } = useWizardConfig();
   const watchedFormValues = useWatch();
   const defaultWizardFormValues = getClusterValidationSchemaDefaultValues();
   const formValues = {
@@ -140,6 +142,7 @@ export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
                           path,
                           formValues,
                           metaShouldHideInReview: meta?.hideInReview ?? false,
+                          hiddenFieldPaths: hiddenFields,
                         });
                         const collapseOnRequired = meta?.collapseOnRequired ?? false;
                         return (
