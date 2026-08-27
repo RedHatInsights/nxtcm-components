@@ -1,3 +1,4 @@
+import { IMDS } from '../../constants';
 import {
   ClusterNetwork,
   ClusterUpgrade,
@@ -91,10 +92,10 @@ export function formatReviewFieldValue(
 
   if (path === 'imds' && typeof raw === 'string' && raw !== '') {
     const mp = strings.machinePools;
-    if (raw === 'imdsv1andimdsv2') {
+    if (raw === IMDS.OPTIONAL) {
       return mp.imdsBothLabel;
     }
-    if (raw === 'imdsv2only') {
+    if (raw === IMDS.REQUIRED) {
       return mp.imdsV2Label;
     }
     return raw;

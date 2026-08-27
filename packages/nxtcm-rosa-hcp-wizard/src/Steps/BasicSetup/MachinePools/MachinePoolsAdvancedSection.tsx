@@ -9,7 +9,7 @@ import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardS
 import { type CloudVpc, type ROSAHCPCluster, type VpcListResource } from '../../../types';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import EditSecurityGroups from './SecurityGroupSection/EditSecurityGroups';
-import { FIELD_NAME, MIN_ROOT_DISK_SIZE_GIB } from '../../../constants';
+import { FIELD_NAME, IMDS, MIN_ROOT_DISK_SIZE_GIB } from '../../../constants';
 
 export interface MachinePoolsAdvancedSectionProps {
   /** When true, IMDS options are hidden (unsupported cluster version). */
@@ -58,13 +58,13 @@ export const MachinePoolsAdvancedSection = (props: MachinePoolsAdvancedSectionPr
               <Radio
                 id="cluster-metadata-service-imdsv1-imdsv2-btn"
                 label={mp.imdsBothLabel}
-                value="imdsv1andimdsv2"
+                value={IMDS.OPTIONAL}
                 description={mp.imdsBothDescription}
               />
               <Radio
                 id="cluster-metadata-service-imdsv2-only-btn"
                 label={mp.imdsV2Label}
-                value="imdsv2only"
+                value={IMDS.REQUIRED}
                 description={mp.imdsV2Description}
               />
             </WizRadioGroup>

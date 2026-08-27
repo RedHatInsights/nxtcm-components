@@ -1,3 +1,4 @@
+import { IMDS } from '../../constants';
 import { ClusterNetwork, ClusterUpgrade, type ROSAHCPCluster } from '../../types';
 import { shouldHideReviewRow } from './shouldHideReviewRow';
 
@@ -6,7 +7,7 @@ const baseFormValues: Partial<ROSAHCPCluster> = {
   nodes_compute: 2,
   min_replicas: 2,
   max_replicas: 4,
-  imds: 'imdsv2only',
+  imds: IMDS.REQUIRED,
   security_groups_worker: ['sg-1'],
 };
 

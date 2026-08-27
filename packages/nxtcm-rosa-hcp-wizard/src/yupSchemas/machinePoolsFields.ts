@@ -205,6 +205,7 @@ export const computeRootVolumeSchema = yup
 
 export const imdsSchema = yup
   .string()
+  .default(YUP.MACHINE_POOLS.IMDS_SCHEMA.DEFAULT)
   .optional()
   .meta({
     id: YUP.MACHINE_POOLS.IMDS_SCHEMA.META.ID,

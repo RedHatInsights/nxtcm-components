@@ -89,6 +89,11 @@ export const YAML_VALIDATION_OWNER = 'yaml-hcp-validation';
 export const UPGRADE_SCHEDULE_FIELDS_ID = 'upgrade-schedule-fields';
 export const MACHINE_POOLS_SUBNET_DEFAULT = '';
 
+export const IMDS = {
+  OPTIONAL: 'optional',
+  REQUIRED: 'required',
+};
+
 export const FIELD_NAME = {
   ASSOCIATED_AWS_ACCOUNT_ID: 'associated_aws_id',
   BILLING_ACCOUNT_ID: 'billing_account_id',
