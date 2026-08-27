@@ -27,6 +27,7 @@ const reviewOptions = {
     { label: 'default', value: 'sg-default' },
     { label: 'web-server-sg', value: 'sg-web' },
   ],
+  etcd_encryption: false,
 };
 
 describe('formatReviewFieldValue selected_vpc', () => {
@@ -34,6 +35,12 @@ describe('formatReviewFieldValue selected_vpc', () => {
     expect(
       formatReviewFieldValue('selected_vpc', { selected_vpc: 'vpc-prod' }, strings, reviewOptions)
     ).toBe('production-vpc');
+  });
+
+  it('returns the disabled label when form value for etcd encryption is disabled', () => {
+    expect(
+      formatReviewFieldValue('etcd_encryption', { etcd_encryption: false }, strings, reviewOptions)
+    ).toBe('disabled');
   });
 
   it('returns the option label when form value is a vpc object', () => {

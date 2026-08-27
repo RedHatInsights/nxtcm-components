@@ -360,6 +360,8 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     etcdLearnMore: 'Learn more',
     keysNoteAlert:
       'Take a note of the keys associated with your cluster. If you delete your keys, the cluster will not be available',
+    reviewEtcdDisabledLabel: 'disabled',
+    reviewEtcdEnabledLabel: 'enabled',
   },
   clusterUpdates: {
     sectionLabel: 'Cluster update strategy',

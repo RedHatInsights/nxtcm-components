@@ -436,6 +436,8 @@ export type RosaHcpWizardStrings = {
     etcdHelperLead: string;
     etcdLearnMore: string;
     keysNoteAlert: string;
+    reviewEtcdEnabledLabel: string;
+    reviewEtcdDisabledLabel: string;
   };
   clusterUpdates: {
     sectionLabel: string;
