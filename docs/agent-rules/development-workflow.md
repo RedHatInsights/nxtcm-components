@@ -28,15 +28,9 @@ All four **must** pass with exit code 0. Any failure means the work is not done.
 
 Don't assume failures are "pre-existing" because you didn't modify those files. Your changes break files you didn't touch (changed props break consumers, removed exports break importers, type changes break dependents).
 
-**Don't rationalize failures ("deps issues", "env problems"). Verify ownership:**
+**Don't rationalize failures ("deps issues", "env problems"). To verify ownership, run the full validation checklist on the base branch (main)**. 
 
-```bash
-git stash
-npm run build && npm run lint && npm run test:all:quiet && npm run test:e2e
-git stash pop
-```
-
-Base passes + your branch fails → you broke it, fix it. If base also fails → document in Jira before proceeding.
+Base passes + your branch fails → you broke it, fix it. Base also fails → document in Jira before proceeding.
 
 **Never open a PR with failing CI.**
 
