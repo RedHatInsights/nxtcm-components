@@ -320,10 +320,13 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   );
 
   const toggleOpen = useCallback(() => {
+    if (disabled) {
+      return;
+    }
     const next = !open;
     setOpen(next);
     syncTypeaheadQueryForOpenState(next);
-  }, [open, syncTypeaheadQueryForOpenState]);
+  }, [disabled, open, syncTypeaheadQueryForOpenState]);
 
   const describedBy = helperTextId({
     id,
@@ -365,7 +368,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
       status={getStatus(!!isError, !!isSuccess)}
       data-testid={dataTestId}
     >
-      <TextInputGroup isPlain>
+      <TextInputGroup isPlain isDisabled={!!disabled}>
         <TextInputGroupMain
           value={typeaheadToggleDisplay}
           onClick={toggleOpen}

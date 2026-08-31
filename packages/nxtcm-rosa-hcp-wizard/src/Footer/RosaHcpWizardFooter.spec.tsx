@@ -245,7 +245,7 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
     await component.getByRole('button', { name: FOOTER_NEXT }).click();
     await expect(component.locator('#machine-pools-section')).toBeVisible();
 
-    await component.getByRole('button', { name: vpcSelectToggle, exact: true }).click();
+    await component.getByRole('combobox', { name: vpcSelectToggle, exact: true }).click();
     await page.getByRole('option', { name: mockVpc.name, exact: true }).click();
 
     await component.getByRole('button', { name: FOOTER_NEXT }).click();
@@ -487,9 +487,9 @@ test.describe('RosaHcpWizardFooter — validation alert after failed Review Subm
     await component.getByRole('button', { name: FOOTER_NEXT }).click();
     await expect(component.getByRole('heading', validationAlertHeading)).toBeVisible();
 
-    await component.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
+    await component.getByTestId('installer-role-select').getByRole('combobox').click();
     await page.getByRole('option', { name: INSTALLER_ROLE_LABEL }).click();
-    await component.locator('#byo_oidc_config_id-form-group .pf-v6-c-menu-toggle').click();
+    await component.getByTestId('oidc-config-select').getByRole('combobox').click();
     await page.getByRole('option', { name: fixtures.mockOicdConfig[0].label }).click();
 
     await expect(component.getByRole('heading', validationAlertHeading)).not.toBeVisible();

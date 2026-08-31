@@ -30,20 +30,16 @@ const vpcRefreshFormDefaults = {
   cluster_version: '4.16.2',
 } as const;
 
-/** Plain (non-typeahead) Select: toggle shows explicit {@link MachinePools} `placeholder` (not derived from label). */
+/** Typeahead combobox accessible name is the explicit {@link MachinePools} `placeholder` (not derived from label). */
 const ctRegion = 'us-east-1';
 const vpcSelectMenuName = `${mp.vpcPlaceholder} ${ctRegion}`;
+const instanceTypeSelectName = 'Select the compute node instance type';
 
 /**
- * Opens the VPC select. Toggle shows {@link vpcSelectMenuName} when empty, or the selected VPC label when set.
+ * Opens the VPC typeahead and chooses an option. Combobox name stays {@link vpcSelectMenuName} after selection.
  */
-async function selectVpc(
-  component: MountResult,
-  page: Page,
-  vpcName: string,
-  toggleName: string = vpcSelectMenuName
-) {
-  await component.getByRole('button', { name: toggleName, exact: true }).click();
+async function selectVpc(component: MountResult, page: Page, vpcName: string) {
+  await component.getByRole('combobox', { name: vpcSelectMenuName, exact: true }).click();
   await page.getByRole('option', { name: vpcName, exact: true }).click();
 }
 
@@ -59,7 +55,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
     const component = await mount(<MachinePoolsMount />);
     await expect(component.getByText(mp.sectionLabel, { exact: true })).toBeVisible();
     await expect(
-      component.getByRole('button', { name: vpcSelectMenuName, exact: true })
+      component.getByRole('combobox', { name: vpcSelectMenuName, exact: true })
     ).toBeVisible();
     await expect(
       component.getByRole('checkbox', { name: a.enableLabel, exact: true })
@@ -69,8 +65,11 @@ test.describe('MachinePools (ROSA HCP)', () => {
   test('should disable private subnet select until a VPC is selected', async ({ mount }) => {
     const component = await mount(<MachinePoolsMount />);
 
-    const subnetToggle = component.getByRole('button', { name: mp.subnetPlaceholder, exact: true });
-    await expect(subnetToggle).toBeDisabled();
+    const subnetCombo = component.getByRole('combobox', {
+      name: mp.subnetPlaceholder,
+      exact: true,
+    });
+    await expect(subnetCombo).toBeDisabled();
   });
 
   test('should enable subnet select and list private subnets after choosing a VPC', async ({
@@ -81,10 +80,13 @@ test.describe('MachinePools (ROSA HCP)', () => {
 
     await selectVpc(component, page, fixtureVpc1.name);
 
-    const subnetToggle = component.getByRole('button', { name: mp.subnetPlaceholder, exact: true });
-    await expect(subnetToggle).toBeEnabled();
+    const subnetCombo = component.getByRole('combobox', {
+      name: mp.subnetPlaceholder,
+      exact: true,
+    });
+    await expect(subnetCombo).toBeEnabled();
 
-    await subnetToggle.click();
+    await subnetCombo.click();
     await expect(
       page.getByRole('option', { name: fixtureVpc1PrivateSubnet.name, exact: true })
     ).toBeVisible();
@@ -104,10 +106,13 @@ test.describe('MachinePools (ROSA HCP)', () => {
     await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
     await expect(component.getByText('default', { exact: true })).toBeVisible();
 
-    await selectVpc(component, page, fixtureVpc2.name, fixtureVpc1.name);
+    await selectVpc(component, page, fixtureVpc2.name);
 
-    const subnetToggle = component.getByRole('button', { name: mp.subnetPlaceholder, exact: true });
-    await expect(subnetToggle).toHaveText(mp.subnetPlaceholder);
+    const subnetCombo = component.getByRole('combobox', {
+      name: mp.subnetPlaceholder,
+      exact: true,
+    });
+    await expect(subnetCombo).toHaveValue('');
     await expect(component.getByText('default', { exact: true })).not.toBeVisible();
   });
 
@@ -176,11 +181,11 @@ test.describe('MachinePools (ROSA HCP)', () => {
       <MachinePoolsMount machineTypes={machineTypes} defaultValues={{ selected_vpc: '' }} />
     );
 
-    const instanceTypeToggle = component.getByRole('button', {
-      name: 'Select the compute node instance type',
+    const instanceTypeCombo = component.getByRole('combobox', {
+      name: instanceTypeSelectName,
       exact: true,
     });
-    await instanceTypeToggle.click();
+    await instanceTypeCombo.click();
 
     const options = page.getByRole('option');
     await expect(options.nth(0)).toHaveText(/m5a\.xlarge/);
@@ -413,10 +418,9 @@ test.describe('MachinePools (ROSA HCP)', () => {
 
     const component = await mount(<MachinePoolsMount vpcList={vpcList} />);
 
-    const vpcLoadingToggle = component
+    const vpcCombo = component
       .locator('#machine-pools-section')
-      .getByRole('button', { name: 'Loading...', exact: true })
-      .first();
-    await expect(vpcLoadingToggle).toBeVisible();
+      .getByRole('combobox', { name: vpcSelectMenuName, exact: true });
+    await expect(vpcCombo).toHaveValue('Loading...');
   });
 });

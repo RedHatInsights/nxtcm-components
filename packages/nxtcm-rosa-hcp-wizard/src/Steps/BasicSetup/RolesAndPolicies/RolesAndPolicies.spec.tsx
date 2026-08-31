@@ -1,4 +1,5 @@
-import { expect, test } from '@playwright/experimental-ct-react';
+import { expect, type MountResult, test } from '@playwright/experimental-ct-react';
+import type { Page } from '@playwright/test';
 import { checkAccessibility } from '../../../test-helpers';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import fixtures from '../../../ROSAHCPWizard.fixtures';
@@ -8,6 +9,14 @@ const rp = defaultRosaHcpWizardStrings.rolesAndPolicies;
 const oidcHint = defaultRosaHcpWizardStrings.oidcHint;
 const { mockRoles, mockOicdConfig } = fixtures;
 const INSTALLER_ARN = mockRoles[0].installerRole.value;
+
+function installerRoleCombo(root: MountResult | Page) {
+  return root.getByTestId('installer-role-select').getByRole('combobox');
+}
+
+function oidcConfigCombo(root: MountResult | Page) {
+  return root.getByTestId('oidc-config-select').getByRole('combobox');
+}
 
 test.describe('RolesAndPolicies (ROSA HCP)', () => {
   test('should pass accessibility tests', async ({ mount }) => {
@@ -51,7 +60,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     test('should show installer role options in dropdown', async ({ mount, page }) => {
       const component = await mount(<RolesAndPoliciesMount />);
 
-      await component.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
+      await installerRoleCombo(component).click();
 
       for (const role of mockRoles) {
         await expect(page.getByRole('option', { name: role.installerRole.label })).toBeVisible();
@@ -61,12 +70,10 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     test('should select an installer role', async ({ mount, page }) => {
       const component = await mount(<RolesAndPoliciesMount />);
 
-      await component.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
+      await installerRoleCombo(component).click();
       await page.getByRole('option', { name: mockRoles[0].installerRole.label }).click();
 
-      await expect(
-        component.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle')
-      ).toContainText(mockRoles[0].installerRole.label);
+      await expect(installerRoleCombo(component)).toHaveValue(mockRoles[0].installerRole.label);
     });
 
     test('should show loading state for installer role when loading', async ({ mount }) => {
@@ -76,9 +83,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
         />
       );
 
-      await expect(
-        component.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle')
-      ).toContainText('Loading...');
+      await expect(installerRoleCombo(component)).toHaveValue('Loading...');
     });
 
     test('should show spinner in installer role dropdown when loading', async ({ mount, page }) => {
@@ -88,7 +93,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
         />
       );
 
-      await component.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
+      await installerRoleCombo(component).click();
 
       await expect(page.getByRole('option', { name: /Loading/ })).toBeVisible();
     });
@@ -130,7 +135,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
         <RolesAndPoliciesMount roles={roles} defaultValues={{ cluster_version: '4.12.0' }} />
       );
 
-      await component.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
+      await installerRoleCombo(component).click();
       await expect(
         page.getByRole('option', { name: mockRoles[0].installerRole.label })
       ).toBeDisabled();
@@ -160,7 +165,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
         <RolesAndPoliciesMount roles={roles} defaultValues={{ cluster_version: '4.12.0' }} />
       );
 
-      await page.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
+      await installerRoleCombo(page).click();
       await page.getByRole('option', { name: mockRoles[0].installerRole.label }).hover();
       await expect(
         page.getByRole('tooltip', { name: installerRoleDisabledDescription, exact: true })
@@ -191,7 +196,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     }) => {
       const component = await mount(<RolesAndPoliciesMount />);
 
-      await component.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
+      await installerRoleCombo(component).click();
       await page.getByRole('option', { name: mockRoles[0].installerRole.label }).click();
 
       await component.getByText(rp.arnsToggle, { exact: true }).click();
@@ -207,7 +212,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     }) => {
       const component = await mount(<RolesAndPoliciesMount />);
 
-      await component.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
+      await installerRoleCombo(component).click();
       await page.getByRole('option', { name: mockRoles[0].installerRole.label }).click();
 
       await component.getByText(rp.arnsToggle, { exact: true }).click();
@@ -253,7 +258,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     test('should show OIDC config options in dropdown', async ({ mount, page }) => {
       const component = await mount(<RolesAndPoliciesMount />);
 
-      await component.locator('#byo_oidc_config_id-form-group .pf-v6-c-menu-toggle').click();
+      await oidcConfigCombo(component).click();
 
       for (const config of mockOicdConfig) {
         await expect(page.getByRole('option', { name: config.label })).toBeVisible();
@@ -263,12 +268,10 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     test('should select an OIDC config', async ({ mount, page }) => {
       const component = await mount(<RolesAndPoliciesMount />);
 
-      await component.locator('#byo_oidc_config_id-form-group .pf-v6-c-menu-toggle').click();
+      await oidcConfigCombo(component).click();
       await page.getByRole('option', { name: mockOicdConfig[0].label }).click();
 
-      await expect(
-        component.locator('#byo_oidc_config_id-form-group .pf-v6-c-menu-toggle')
-      ).toContainText(mockOicdConfig[0].label);
+      await expect(oidcConfigCombo(component)).toHaveValue(mockOicdConfig[0].label);
     });
 
     test('should show loading state for OIDC config when loading', async ({ mount }) => {
@@ -278,9 +281,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
         />
       );
 
-      await expect(
-        component.locator('#byo_oidc_config_id-form-group .pf-v6-c-menu-toggle')
-      ).toContainText('Loading...');
+      await expect(oidcConfigCombo(component)).toHaveValue('Loading...');
     });
 
     test('should show spinner in OIDC config dropdown when loading', async ({ mount, page }) => {
@@ -290,7 +291,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
         />
       );
 
-      await component.locator('#byo_oidc_config_id-form-group .pf-v6-c-menu-toggle').click();
+      await oidcConfigCombo(component).click();
 
       await expect(page.getByRole('option', { name: /Loading/ })).toBeVisible();
     });
@@ -392,7 +393,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
       };
       const component = await mount(<RolesAndPoliciesMount roles={incompleteRoles} />);
 
-      await component.locator('#installer_role_arn-form-group .pf-v6-c-menu-toggle').click();
+      await installerRoleCombo(component).click();
       await page.getByRole('option', { name: mockRoles[0].installerRole.label }).click();
 
       await expect(component.getByRole('heading', { name: ALERT_HEADING })).toBeVisible();

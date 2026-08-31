@@ -28,12 +28,12 @@ async function fillRolesStep(page: Page) {
 
 async function fillMachinePoolsStep(page: Page) {
   await page
-    .getByRole('button', { name: 'Select a VPC to install your machine pool into us-east-1' })
+    .getByRole('combobox', { name: 'Select a VPC to install your machine pool into us-east-1' })
     .click();
   await page.getByRole('option', { name: 'test-vpc-1' }).click();
-  await page.getByRole('button', { name: 'Select private subnet' }).click();
+  await page.getByRole('combobox', { name: 'Select private subnet' }).click();
   await page.getByRole('option', { name: 'test-1-subnet-private1-us-east-1a' }).click();
-  await page.getByRole('button', { name: 'Select the compute node instance type' }).click();
+  await page.getByRole('combobox', { name: 'Select the compute node instance type' }).click();
   await page.getByRole('option', { name: 'm5a.xlarge' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
 }
@@ -91,18 +91,20 @@ test.describe('ROSA Wizard', () => {
     await page.getByRole('button', { name: 'Next' }).click();
 
     await expect(
-      page.getByRole('button', { name: 'Select a VPC to install your machine pool into us-east-1' })
+      page.getByRole('combobox', {
+        name: 'Select a VPC to install your machine pool into us-east-1',
+      })
     ).toBeVisible();
 
     await page
-      .getByRole('button', { name: 'Select a VPC to install your machine pool into us-east-1' })
+      .getByRole('combobox', { name: 'Select a VPC to install your machine pool into us-east-1' })
       .click();
     await page.getByRole('option', { name: 'test-vpc-1' }).click();
 
-    await page.getByRole('button', { name: 'Select private subnet' }).click();
+    await page.getByRole('combobox', { name: 'Select private subnet' }).click();
     await page.getByRole('option', { name: 'test-1-subnet-private1-us-east-1a' }).click();
 
-    await page.getByRole('button', { name: 'Select the compute node instance type' }).click();
+    await page.getByRole('combobox', { name: 'Select the compute node instance type' }).click();
     await page.getByRole('option', { name: 'm5a.xlarge' }).click();
 
     await page.getByRole('button', { name: 'Next' }).click();
