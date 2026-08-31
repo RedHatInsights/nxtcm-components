@@ -20,7 +20,19 @@ npm run test:all:quiet
 npm run test:e2e
 ```
 
-All four must pass with exit code 0. Any failure means the work is not done.
+All four **must** pass with exit code 0. Any failure means the work is not done.
+
+### Critical: Failure Ownership Rule
+
+**Any validation failure after your changes is YOUR responsibility, regardless of which files fail.**
+
+Don't assume failures are "pre-existing" because you didn't modify those files. Your changes break files you didn't touch (changed props break consumers, removed exports break importers, type changes break dependents).
+
+**Don't rationalize failures ("deps issues", "env problems"). To verify ownership, run the full validation checklist on the base branch (main)**. 
+
+Base passes + your branch fails → you broke it, fix it. Base also fails → document in Jira before proceeding.
+
+**Never open a PR with failing CI.**
 
 ---
 
