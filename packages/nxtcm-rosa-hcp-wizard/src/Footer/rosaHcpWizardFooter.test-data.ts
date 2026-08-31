@@ -5,15 +5,17 @@ import type { ROSAHCPCluster } from '../types';
 const mockRoleSet = mockRoles[0];
 const mockVpc = fixtures.mockVPCs[0];
 const privateSubnet = mockVpc.aws_subnets.find((subnet) => !subnet.public);
-const publicSubnet = mockVpc.aws_subnets.find((subnet) => subnet.public);
 if (!privateSubnet?.subnet_id) {
   throw new Error(
     `Expected mock VPC "${mockVpc.id}" to include a private subnet in aws_subnets for footer test data`
   );
 }
+const publicSubnet = mockVpc.aws_subnets.find(
+  (subnet) => subnet.public && subnet.availability_zone === privateSubnet.availability_zone
+);
 if (!publicSubnet?.subnet_id) {
   throw new Error(
-    `Expected mock VPC "${mockVpc.id}" to include a public subnet in aws_subnets for footer test data`
+    `Expected mock VPC "${mockVpc.id}" to include a public subnet in the same availability zone as "${privateSubnet.subnet_id}"`
   );
 }
 const mockMachinePoolSubnet = privateSubnet.subnet_id;

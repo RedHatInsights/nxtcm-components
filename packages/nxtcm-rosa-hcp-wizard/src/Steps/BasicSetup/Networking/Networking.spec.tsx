@@ -482,6 +482,44 @@ test.describe('Networking (ROSA HCP)', () => {
       await expect(page.getByRole('option', { name: 'private-subnet-a' })).toHaveCount(0);
     });
 
+    test('should only list public subnets in the selected machine pool subnet AZ', async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(
+        <NetworkingMount
+          defaultValues={{
+            selected_vpc: 'vpc-12345',
+            machine_pools_subnets: [{ machine_pool_subnet: 'subnet-002' }],
+          }}
+        />
+      );
+
+      await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();
+
+      await expect(page.getByRole('option', { name: 'public-subnet-a' })).toBeVisible();
+      await expect(page.getByRole('option', { name: 'public-subnet-b' })).toHaveCount(0);
+    });
+
+    test('should list public subnets for a machine pool subnet in a different AZ', async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(
+        <NetworkingMount
+          defaultValues={{
+            selected_vpc: 'vpc-12345',
+            machine_pools_subnets: [{ machine_pool_subnet: 'subnet-005' }],
+          }}
+        />
+      );
+
+      await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();
+
+      await expect(page.getByRole('option', { name: 'public-subnet-b' })).toBeVisible();
+      await expect(page.getByRole('option', { name: 'public-subnet-a' })).toHaveCount(0);
+    });
+
     test('should allow selecting a public subnet option', async ({ mount, page }) => {
       const component = await mount(
         <NetworkingMount defaultValues={{ selected_vpc: 'vpc-12345' }} />

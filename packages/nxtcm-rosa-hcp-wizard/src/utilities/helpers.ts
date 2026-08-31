@@ -45,11 +45,52 @@ export function resolveSelectedVpc(
   return selectedVpcRaw;
 }
 
+/** Subnet ids selected for machine pools, omitting empty rows. */
+export function getMachinePoolSubnetIds(
+  machinePoolSubnets: readonly MachinePoolSubnetEntry[] | undefined
+): string[] {
+  return (machinePoolSubnets ?? [])
+    .map((entry) => entry.machine_pool_subnet?.trim() ?? '')
+    .filter((id) => id !== '');
+}
+
+/** Availability zones of the given subnet ids on the selected VPC. */
+export function getAvailabilityZonesForSubnetIds(
+  selectedVPC: VPC | undefined,
+  subnetIds: readonly string[]
+): string[] {
+  if (!selectedVPC?.aws_subnets?.length || subnetIds.length === 0) {
+    return [];
+  }
+  const idSet = new Set(subnetIds);
+  const zones = new Set<string>();
+  for (const subnet of selectedVPC.aws_subnets) {
+    if (idSet.has(subnet.subnet_id) && subnet.availability_zone !== '') {
+      zones.add(subnet.availability_zone);
+    }
+  }
+  return [...zones];
+}
+
+/**
+ * Builds VPC / subnet / SG select options.
+ * When `machinePoolSubnetIds` is provided, public subnets are limited to the
+ * availability zones of those machine-pool (private) subnets so Networking
+ * cannot offer a public subnet in a different AZ.
+ */
 export function buildMachinePoolsReviewSelectOptions(
   selectedVPC: VPC | undefined,
-  vpcListData: VPC[]
+  vpcListData: VPC[],
+  machinePoolSubnetIds?: readonly string[]
 ): MachinePoolsReviewSelectOptions {
-  const { privateSubnets, publicSubnets } = subnetsFilter(selectedVPC);
+  const publicSubnetAvailabilityZones =
+    machinePoolSubnetIds === undefined
+      ? undefined
+      : getAvailabilityZonesForSubnetIds(selectedVPC, machinePoolSubnetIds);
+  const { privateSubnets, publicSubnets } = subnetsFilter(
+    selectedVPC,
+    publicSubnetAvailabilityZones
+  );
   const securityGroups = [...(selectedVPC?.aws_security_groups ?? [])];
   securityGroups.sort(securityGroupsSort);
 
@@ -141,14 +182,28 @@ const constructSelectedSubnets = (formValues?: ROSAHCPCluster): CIDRSubnet[] => 
   return privateSubnets.concat(publicSubnets);
 };
 
-const subnetsFilter = (selectedVPC: VPC | undefined) => {
+const subnetsFilter = (
+  selectedVPC: VPC | undefined,
+  publicSubnetAvailabilityZones?: readonly string[]
+): { publicSubnets: Subnet[] | undefined; privateSubnets: Subnet[] | undefined } => {
   const privateSubnets = selectedVPC?.aws_subnets.filter(
     (privateSubnet: Subnet) => privateSubnet.public === false
   );
 
-  const publicSubnets = selectedVPC?.aws_subnets.filter(
-    (publicSubnet: Subnet) => publicSubnet.public === true
-  );
+  const zoneSet =
+    publicSubnetAvailabilityZones === undefined
+      ? undefined
+      : new Set(publicSubnetAvailabilityZones);
+
+  const publicSubnets = selectedVPC?.aws_subnets.filter((publicSubnet: Subnet) => {
+    if (publicSubnet.public !== true) {
+      return false;
+    }
+    if (zoneSet === undefined) {
+      return true;
+    }
+    return zoneSet.has(publicSubnet.availability_zone);
+  });
 
   return {
     publicSubnets,
