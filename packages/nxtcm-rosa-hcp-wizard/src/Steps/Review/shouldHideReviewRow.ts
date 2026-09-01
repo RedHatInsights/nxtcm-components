@@ -5,12 +5,17 @@ export function shouldHideReviewRow({
   path,
   formValues,
   metaShouldHideInReview,
+  hiddenFieldPaths = [],
 }: {
   path: string;
   formValues: Partial<ROSAHCPCluster>;
   metaShouldHideInReview: boolean;
+  hiddenFieldPaths?: ReadonlyArray<string>;
 }): boolean {
   if (metaShouldHideInReview) {
+    return true;
+  }
+  if (hiddenFieldPaths.includes(path)) {
     return true;
   }
   if (path === 'nodes_compute' && formValues.autoscaling) {
