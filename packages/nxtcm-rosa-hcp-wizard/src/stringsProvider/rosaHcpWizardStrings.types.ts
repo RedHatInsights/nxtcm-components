@@ -319,6 +319,7 @@ export type RosaHcpWizardStrings = {
     clusterPrivacyLabel: string;
     publicLabel: string;
     publicPopover: string;
+    publicSubnetDisabledHelper: string;
     publicSubnetLabel: string;
     publicSubnetPlaceholder: string;
     privateLabel: string;

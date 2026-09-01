@@ -54,15 +54,15 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
     () => getMachinePoolSubnetIds(machinePoolsSubnets),
     [machinePoolsSubnets]
   );
-
+  const hasMachinePoolSubnetSelected = machinePoolSubnetIds.length > 0;
   const { publicSubnet } = useMemo(
     () =>
       buildMachinePoolsReviewSelectOptions(
         selectedVPC,
         props.vpcList.data,
-        machinePoolSubnetIds.length > 0 ? machinePoolSubnetIds : undefined
+        hasMachinePoolSubnetSelected ? machinePoolSubnetIds : undefined
       ),
-    [selectedVPC, props.vpcList.data, machinePoolSubnetIds]
+    [selectedVPC, props.vpcList.data, machinePoolSubnetIds, hasMachinePoolSubnetSelected]
   );
 
   const clusterPrivacy = useWatch({ name: FIELD_NAME.CLUSTER_PRIVACY_FIELD.NAME });
@@ -103,6 +103,8 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
               name={FIELD_NAME.CLUSTER_PRIVACY_FIELD.PUBLIC_SUBNET_ID}
               schema={clusterValidationSchema}
               options={publicSubnet}
+              isDisabled={!hasMachinePoolSubnetSelected}
+              helperText={hasMachinePoolSubnetSelected ? undefined : n.publicSubnetDisabledHelper}
             />
           </Radio>
 
