@@ -14,7 +14,8 @@ import {
   TextInput as PfTextInput,
   type TextInputProps as PfTextInputProps,
 } from '@patternfly/react-core';
-import { EyeIcon, EyeSlashIcon } from '@patternfly/react-icons';
+import EyeIcon from '@patternfly/react-icons/dist/esm/icons/eye-icon';
+import EyeSlashIcon from '@patternfly/react-icons/dist/esm/icons/eye-slash-icon';
 import { getValidated, HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
 
