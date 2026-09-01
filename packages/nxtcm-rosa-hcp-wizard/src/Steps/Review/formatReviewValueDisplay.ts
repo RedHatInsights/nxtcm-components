@@ -101,6 +101,14 @@ export function formatReviewFieldValue(
     return raw;
   }
 
+  if (path === 'etcd_encryption' && typeof raw === 'boolean') {
+    const etcdLabel = strings.encryption;
+    if (raw === false) {
+      return etcdLabel.reviewEtcdDisabledLabel;
+    }
+    return etcdLabel.reviewEtcdEnabledLabel;
+  }
+
   if (path === 'security_groups_worker' && Array.isArray(raw)) {
     const ids = raw.filter((id): id is string => typeof id === 'string' && id !== '');
     return formatIdsAsOptionLabels(ids, reviewOptions?.securityGroup);
