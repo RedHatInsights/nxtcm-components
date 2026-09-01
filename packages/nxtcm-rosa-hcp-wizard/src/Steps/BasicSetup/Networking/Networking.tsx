@@ -12,10 +12,11 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, type ReactElement } from 'react';
 import { useClearFieldWhenHidden } from '../../OptionalSetup/Encryption/useClearFieldWhenHidden';
 import {
   buildMachinePoolsReviewSelectOptions,
+  getMachinePoolSubnetIds,
   resolveSelectedVpc,
 } from '../../../utilities/helpers';
 import { FIELD_NAME, STEP_IDS } from '../../../constants';
@@ -37,18 +38,31 @@ function CidrFieldLabelHelp({ helpLead, href, learnMoreLink }: CidrFieldLabelHel
   );
 }
 
-export const Networking = (props: NetworkingStepProps) => {
+export const Networking = (props: NetworkingStepProps): ReactElement => {
   const { networking: n } = useRosaHcpWizardStrings();
   const isProxyStepHidden = useIsStepHidden(STEP_IDS.CLUSTER_WIDE_PROXY);
+  const { setValue } = useFormContext<ROSAHCPCluster>();
 
   const cidrDefaultChecked = useWatch({ name: FIELD_NAME.CIDR_DEFAULT });
   const selectedVPCRaw = useWatch({ name: FIELD_NAME.SELECTED_VPC });
+  const machinePoolsSubnets = useWatch<ROSAHCPCluster, 'machine_pools_subnets'>({
+    name: FIELD_NAME.MACHINE_POOLS_SUBNETS,
+  });
 
   const selectedVPC = resolveSelectedVpc(selectedVPCRaw, props.vpcList.data);
-
+  const machinePoolSubnetIds = useMemo(
+    () => getMachinePoolSubnetIds(machinePoolsSubnets),
+    [machinePoolsSubnets]
+  );
+  const hasMachinePoolSubnetSelected = machinePoolSubnetIds.length > 0;
   const { publicSubnet } = useMemo(
-    () => buildMachinePoolsReviewSelectOptions(selectedVPC, props.vpcList.data),
-    [selectedVPC, props.vpcList.data]
+    () =>
+      buildMachinePoolsReviewSelectOptions(
+        selectedVPC,
+        props.vpcList.data,
+        hasMachinePoolSubnetSelected ? machinePoolSubnetIds : undefined
+      ),
+    [selectedVPC, props.vpcList.data, machinePoolSubnetIds, hasMachinePoolSubnetSelected]
   );
 
   const clusterPrivacy = useWatch({ name: FIELD_NAME.CLUSTER_PRIVACY_FIELD.NAME });
@@ -57,7 +71,6 @@ export const Networking = (props: NetworkingStepProps) => {
     clusterPrivacy === ClusterNetwork.internal
   );
 
-  const { setValue } = useFormContext<ROSAHCPCluster>();
   const previousVpcRef = useRef<string | undefined>(selectedVPC?.id);
   useEffect(() => {
     const currentVpcId = selectedVPC?.id;
@@ -90,6 +103,8 @@ export const Networking = (props: NetworkingStepProps) => {
               name={FIELD_NAME.CLUSTER_PRIVACY_FIELD.PUBLIC_SUBNET_ID}
               schema={clusterValidationSchema}
               options={publicSubnet}
+              isDisabled={!hasMachinePoolSubnetSelected}
+              helperText={hasMachinePoolSubnetSelected ? undefined : n.publicSubnetDisabledHelper}
             />
           </Radio>
 

@@ -19,6 +19,12 @@ const mockSubnets: Subnet[] = [
     availability_zone: 'us-east-1b',
     public: true,
   },
+  {
+    subnet_id: 'subnet-005',
+    name: 'private-subnet-b',
+    availability_zone: 'us-east-1b',
+    public: false,
+  },
 ];
 
 export const mockVpcList: VPC[] = [
