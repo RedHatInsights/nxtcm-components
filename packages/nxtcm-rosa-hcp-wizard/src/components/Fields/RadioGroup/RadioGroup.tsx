@@ -64,43 +64,40 @@ export function RadioGroup(props: RadioGroupProps) {
 
   return (
     <RadioGroupContext.Provider value={state}>
-      <div id={id}>
-        <FormGroup
-          {...formGroupRest}
-          id={`${id}-form-group`}
-          aria-label={label}
-          label={label}
-          isRequired={isRequired}
-          labelHelp={<LabelHelp id={id} labelHelp={labelHelp} labelHelpTitle={labelHelpTitle} />}
-          aria-describedby={helperTextId({
-            id,
-            errorMessage,
-            helperText,
-            isError,
-            isSuccess,
-            successMessage,
-          })}
-          role="radiogroup"
+      <FormGroup
+        {...formGroupRest}
+        id={id}
+        label={label}
+        isRequired={isRequired}
+        labelHelp={<LabelHelp id={id} labelHelp={labelHelp} labelHelpTitle={labelHelpTitle} />}
+        aria-describedby={helperTextId({
+          id,
+          errorMessage,
+          helperText,
+          isError,
+          isSuccess,
+          successMessage,
+        })}
+        role="radiogroup"
+      >
+        <Flex
+          direction={{ default: isInline ? 'row' : 'column' }}
+          spaceItems={{ default: 'spaceItemsMd' }}
+          className="pf-v6-u-pt-xs"
         >
-          <HelperText
-            id={id}
-            errorMessage={errorMessage}
-            isError={isError}
-            helperText={helperText}
-            isSuccess={isSuccess}
-            successMessage={successMessage}
-            isDisabled={isDisabled}
-          />
+          {children}
+        </Flex>
 
-          <Flex
-            direction={{ default: isInline ? 'row' : 'column' }}
-            spaceItems={{ default: 'spaceItemsMd' }}
-            className="pf-v6-u-pt-xs"
-          >
-            {children}
-          </Flex>
-        </FormGroup>
-      </div>
+        <HelperText
+          id={id}
+          errorMessage={errorMessage}
+          isError={isError}
+          helperText={helperText}
+          isSuccess={isSuccess}
+          successMessage={successMessage}
+          isDisabled={isDisabled}
+        />
+      </FormGroup>
     </RadioGroupContext.Provider>
   );
 }
