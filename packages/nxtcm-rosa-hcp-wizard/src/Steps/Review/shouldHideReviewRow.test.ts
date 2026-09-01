@@ -22,6 +22,17 @@ describe('shouldHideReviewRow', () => {
     ).toBe(true);
   });
 
+  it('hides when the field path is in hiddenFieldPaths', () => {
+    expect(
+      shouldHideReviewRow({
+        path: 'nodes_compute',
+        formValues: baseFormValues,
+        metaShouldHideInReview: false,
+        hiddenFieldPaths: ['nodes_compute'],
+      })
+    ).toBe(true);
+  });
+
   it('hides nodes_compute when autoscaling is enabled', () => {
     expect(
       shouldHideReviewRow({
