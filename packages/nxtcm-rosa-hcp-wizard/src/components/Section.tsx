@@ -1,6 +1,6 @@
 import { Content, Form, Split, SplitItem, Stack } from '@patternfly/react-core';
-import { LabelHelp } from './LabelHelp';
 import React, { ReactNode } from 'react';
+import { LabelHelp } from './Fields/LabelHelp';
 import './Section.css';
 
 type SectionProps = {
