@@ -174,6 +174,17 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
       await expect(component.getByText(rp.arnsToggle, { exact: true })).toBeVisible();
     });
 
+    test('should hide support and worker role fields until ARNs are expanded', async ({
+      mount,
+    }) => {
+      const component = await mount(
+        <RolesAndPoliciesMount defaultValues={{ installer_role_arn: INSTALLER_ARN }} />
+      );
+
+      await expect(component.getByText(rp.supportRoleLabel, { exact: true })).toBeHidden();
+      await expect(component.getByText(rp.workerRoleLabel, { exact: true })).toBeHidden();
+    });
+
     test('should show support and worker role fields after expanding ARNs', async ({ mount }) => {
       const component = await mount(
         <RolesAndPoliciesMount defaultValues={{ installer_role_arn: INSTALLER_ARN }} />
@@ -514,6 +525,11 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
       await expect(
         component.getByRole('button', { name: rp.operatorPrefixToggle, exact: true })
       ).toBeVisible();
+    });
+
+    test('should hide the operator roles prefix input until expanded', async ({ mount }) => {
+      const component = await mount(<RolesAndPoliciesMount />);
+      await expect(component.getByLabel(rp.operatorPrefixLabel, { exact: true })).toBeHidden();
     });
 
     test('should render the operator roles prefix input when expanded', async ({ mount }) => {

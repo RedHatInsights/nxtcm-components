@@ -72,7 +72,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
               isExpanded={isArnsOpen}
               onToggle={() => setIsArnsOpen(!isArnsOpen)}
               toggleText={rp.arnsToggle}
-              className="rosa-hcp-field-wrapper__expandable pf-v6-u-mb-lg"
+              className="pf-v6-u-mt-xs pf-v6-u-mb-lg"
             >
               <NestedFields>
                 <FieldWrapper size="lg">
@@ -126,7 +126,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
               isExpanded={isOperatorRolesOpen}
               onToggle={() => setIsOperatorRolesOpen(!isOperatorRolesOpen)}
               toggleText={rp.operatorPrefixToggle}
-              className="rosa-hcp-field-wrapper__expandable"
+              className="pf-v6-u-mt-xs"
             >
               <NestedFields>
                 <FieldWrapper size="sm">
