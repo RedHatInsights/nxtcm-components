@@ -1,6 +1,6 @@
 /* Copyright Contributors to the Open Cluster Management project */
 import { Button, Popover } from '@patternfly/react-core';
-import { HelpIcon } from '@patternfly/react-icons';
+import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 import { Fragment, ReactNode } from 'react';
 
 export function LabelHelp(props: {
