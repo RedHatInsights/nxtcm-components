@@ -32,14 +32,12 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
   });
 
   test.describe('Schema Panel Toggle', () => {
-    // FIXME: Schema panel toggle button test is flaky - button appears in custom controls
-    // which may have timing issues in CT. Skipping for now.
-    test.skip('renders schema toggle button', async ({ mount }) => {
+    test('renders schema toggle button', async ({ mount }) => {
       const component = await mount(<YamlEditorStepMount />);
 
       await waitForMonaco(component);
 
-      const toggleButton = component.getByRole('button', { name: /schema/i });
+      const toggleButton = component.getByRole('button', { name: 'Toggle schema panel' }).first();
       await expect(toggleButton).toBeVisible();
     });
 
