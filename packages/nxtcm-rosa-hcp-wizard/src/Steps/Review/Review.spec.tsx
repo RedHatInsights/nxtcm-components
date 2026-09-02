@@ -1,5 +1,6 @@
 import React from 'react';
 import { expect, test } from '@playwright/experimental-ct-react';
+import { FIELD_NAME, IMDS } from '../../constants';
 import { ClusterUpgrade } from '../../types';
 import rosaHcpWizardFixtures from '../../ROSAHCPWizard.fixtures';
 import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.defaults';
@@ -107,6 +108,22 @@ test.describe('Review', () => {
     await expect(c.getByText(mp.subnetLabel)).toBeVisible();
   });
 
+  test('machine pools review hides compute count when field is hidden in config', async ({
+    mount,
+  }) => {
+    const c = await mount(
+      <ReviewHarness
+        config={{ hiddenFields: [FIELD_NAME.NODES_COMPUTE] }}
+        formOverrides={{
+          autoscaling: false,
+          nodes_compute: 3,
+        }}
+      />
+    );
+
+    await expect(c.getByText(a.computeCountLabel, { exact: true })).toHaveCount(0);
+  });
+
   test('machine pools review hides replica fields when autoscaling is off', async ({ mount }) => {
     const c = await mount(
       <ReviewHarness
@@ -156,7 +173,7 @@ test.describe('Review', () => {
       <ReviewHarness
         formOverrides={{
           selected_vpc: vpc.id,
-          imds: 'imdsv2only',
+          imds: IMDS.REQUIRED,
           compute_root_volume: 400,
           security_groups_worker: ['sg-0a1b2c3d4e5f00001', 'sg-0a1b2c3d4e5f00003'],
         }}

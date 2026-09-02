@@ -319,6 +319,7 @@ export type RosaHcpWizardStrings = {
     clusterPrivacyLabel: string;
     publicLabel: string;
     publicPopover: string;
+    publicSubnetDisabledHelper: string;
     publicSubnetLabel: string;
     publicSubnetPlaceholder: string;
     privateLabel: string;
@@ -435,6 +436,8 @@ export type RosaHcpWizardStrings = {
     etcdHelperLead: string;
     etcdLearnMore: string;
     keysNoteAlert: string;
+    reviewEtcdEnabledLabel: string;
+    reviewEtcdDisabledLabel: string;
   };
   clusterUpdates: {
     sectionLabel: string;

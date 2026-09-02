@@ -1,6 +1,7 @@
 import {
   FIELD_NAME,
   HOST_PREFIX_DEFAULT,
+  IMDS,
   MACHINE_CIDR_DEFAULT,
   POD_CIDR_DEFAULT,
   SERVICE_CIRD_DEFAULT,
@@ -277,6 +278,7 @@ export const YUP = {
         STEP_ID: STEP_IDS.MACHINE_POOLS,
         FIELD_TYPE: 'select',
         NO_EDIT_AFTER_SUBMIT: true,
+        RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: [FIELD_NAME.CLUSTER_PRIVACY_FIELD.PUBLIC_SUBNET_ID],
       },
     },
     MACHINE_TYPE_SCHEMA: {
@@ -352,6 +354,7 @@ export const YUP = {
       },
     },
     IMDS_SCHEMA: {
+      DEFAULT: IMDS.OPTIONAL,
       META: {
         ID: FIELD_NAME.IMDS,
         LABEL_KEY: 'machinePools.imdsLabel',

@@ -18,6 +18,7 @@ import { getAutoscalingMaxNodes } from '../../../utilities/getAutoscalingMaxNode
 import { MachinePoolsAdvancedSection } from './MachinePoolsAdvancedSection';
 import { MachinePoolsAutoscalingReplicas } from './MachinePoolsAutoscalingReplicas';
 import { FIELD_NAME } from '../../../constants';
+import { useIsFieldHidden } from '../../../WizardConfigContext';
 
 type MachinePoolsProps = Pick<ROSAHCPWizardData, 'vpcList' | 'machineTypes'>;
 
@@ -45,6 +46,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
   const maxRootDiskSize = getWorkerNodeVolumeSizeMaxGiB(clusterVersion);
   const wrongVersionForIMDS = !canSelectImds(clusterVersion);
   const maxAutoscalingNodes = getAutoscalingMaxNodes(clusterVersion);
+  const isComputeCountHidden = useIsFieldHidden(FIELD_NAME.NODES_COMPUTE);
 
   const selectedVPC = useMemo(
     () => resolveSelectedVpc(selectedVpcRaw, vpcList.data),
@@ -155,25 +157,27 @@ export const MachinePools = (props: MachinePoolsProps) => {
           label={a.enableLabel}
         />
       </FieldWrapper>
-      <FieldWrapper size={autoscaling ? 'lg' : undefined}>
-        {autoscaling ? (
-          <MachinePoolsAutoscalingReplicas maxAutoscalingNodes={maxAutoscalingNodes} />
-        ) : (
-          <WizNumberInput<ROSAHCPCluster>
-            name={FIELD_NAME.NODES_COMPUTE}
-            schema={clusterValidationSchema}
-            min={1}
-            labelHelp={
-              <>
-                {a.computeCountHelp}
-                <ExternalLink href={links.ROSA_WORKER_NODE_COUNT}>
-                  {a.learnMoreNodeCount}
-                </ExternalLink>
-              </>
-            }
-          />
-        )}
-      </FieldWrapper>
+      {(autoscaling || !isComputeCountHidden) && (
+        <FieldWrapper size={autoscaling ? 'lg' : undefined}>
+          {autoscaling ? (
+            <MachinePoolsAutoscalingReplicas maxAutoscalingNodes={maxAutoscalingNodes} />
+          ) : (
+            <WizNumberInput<ROSAHCPCluster>
+              name={FIELD_NAME.NODES_COMPUTE}
+              schema={clusterValidationSchema}
+              min={1}
+              labelHelp={
+                <>
+                  {a.computeCountHelp}
+                  <ExternalLink href={links.ROSA_WORKER_NODE_COUNT}>
+                    {a.learnMoreNodeCount}
+                  </ExternalLink>
+                </>
+              }
+            />
+          )}
+        </FieldWrapper>
+      )}
       <MachinePoolsAdvancedSection
         wrongVersionForIMDS={wrongVersionForIMDS}
         maxRootDiskSize={maxRootDiskSize}

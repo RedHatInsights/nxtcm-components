@@ -62,6 +62,8 @@ export const machinePoolsSubnetsSchema = rosaRequiredArrayField(machinePoolSubne
   stepId: YUP.MACHINE_POOLS.MACHINE_POOLS_SUBNETS_SCHEMA.META.STEP_ID,
   fieldType: YUP.MACHINE_POOLS.MACHINE_POOLS_SUBNETS_SCHEMA.META.FIELD_TYPE,
   noEditAfterSubmit: YUP.MACHINE_POOLS.MACHINE_POOLS_SUBNETS_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
+  resetsFieldsToDefaultOnChange:
+    YUP.MACHINE_POOLS.MACHINE_POOLS_SUBNETS_SCHEMA.META.RESETS_FIELDS_TO_DEFAULT_ON_CHANGE,
 } satisfies WizardFieldMeta);
 
 export const machineTypeSchema = rosaRequiredStringField().meta({
@@ -205,6 +207,7 @@ export const computeRootVolumeSchema = yup
 
 export const imdsSchema = yup
   .string()
+  .default(YUP.MACHINE_POOLS.IMDS_SCHEMA.DEFAULT)
   .optional()
   .meta({
     id: YUP.MACHINE_POOLS.IMDS_SCHEMA.META.ID,

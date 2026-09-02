@@ -24,7 +24,7 @@ import {
   SelectOption,
   Spinner,
 } from '@patternfly/react-core';
-import { RedoIcon } from '@patternfly/react-icons';
+import RedoIcon from '@patternfly/react-icons/dist/esm/icons/redo-icon';
 import { HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
 import {
