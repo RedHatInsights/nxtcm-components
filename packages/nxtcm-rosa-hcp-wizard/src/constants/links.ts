@@ -61,7 +61,7 @@ export const awsLinks = {
 };
 
 export const useDocsVersion = (clusterVersion?: string) => {
-  const docsVersion = clusterVersion?.split('.')[0];
+  const docsVersion = clusterVersion ? clusterVersion.split('.')[0] : '4';
   const redHatRosaDocsBaseUrl = `${redHatDocsBaseUrl}/red_hat_openshift_service_on_aws/${docsVersion}/html`;
 
   const updatedLinks = Object.fromEntries(
