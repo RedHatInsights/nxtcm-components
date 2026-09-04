@@ -22,7 +22,7 @@ export function testsFromDescription(description: unknown): YupSchemaDescribeTes
     description !== null &&
     typeof description === 'object' &&
     'tests' in description &&
-    Array.isArray((description as { tests: unknown }).tests)
+    Array.isArray(description.tests)
   ) {
     return (description as { tests: YupSchemaDescribeTest[] }).tests;
   }

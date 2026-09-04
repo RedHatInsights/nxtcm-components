@@ -40,7 +40,7 @@ export const SuccessWithData: Story = {
         id: 1,
         name: 'John Doe',
         email: 'john.doe@example.com',
-      } as UserData;
+      };
     },
     children: ({ data, error }) => {
       if (data && !('id' in data)) {
@@ -102,7 +102,7 @@ export const QuickSuccess: Story = {
         id: 2,
         name: 'Jane Smith',
         email: 'jane.smith@example.com',
-      } as UserData;
+      };
     },
     children: ({ data, error }) => {
       if (data && !('id' in data)) {
@@ -175,7 +175,7 @@ export const WithApiResponse: Story = {
       return {
         status: 'success',
         message: 'Data loaded successfully',
-      } as ApiResponse;
+      };
     },
     children: ({ data, error }) => {
       if (data && !('status' in data)) {
@@ -210,7 +210,7 @@ export const LongLoading: Story = {
         id: 3,
         name: 'Slow Data',
         email: 'slow@example.com',
-      } as UserData;
+      };
     },
     children: ({ data, error }) => {
       if (data && !('id' in data)) {

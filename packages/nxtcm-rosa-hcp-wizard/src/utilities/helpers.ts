@@ -230,7 +230,7 @@ const splitVersion = (version: string): number[] => {
     versionArray = version.split('.').map((num) => parseInt(num, 10));
     versionArray[1] = versionArray[1] ?? 0;
     versionArray[2] = versionArray[2] ?? 0;
-  } catch (error) {
+  } catch {
     return [];
   }
   return versionArray;

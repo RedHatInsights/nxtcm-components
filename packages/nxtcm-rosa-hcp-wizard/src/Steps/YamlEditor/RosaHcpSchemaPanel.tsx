@@ -140,9 +140,9 @@ export const RosaHcpSchemaPanel = ({ onClose, schema }: RosaHcpSchemaPanelProps)
 
   const specProperties = useMemo(() => {
     const spec = schema.properties?.spec;
-    if (!spec || typeof spec === 'boolean') return {} as SchemaProps;
+    if (!spec || typeof spec === 'boolean') return {};
     const specProps = spec.properties;
-    if (!specProps) return {} as SchemaProps;
+    if (!specProps) return {};
     return Object.fromEntries(
       Object.entries(specProps).filter(([, v]) => typeof v !== 'boolean')
     ) as SchemaProps;
@@ -182,7 +182,7 @@ export const RosaHcpSchemaPanel = ({ onClose, schema }: RosaHcpSchemaPanelProps)
           <StackItem>
             <Stack>
               {Object.entries(filteredProperties).map(([fieldName, fieldProp]) => (
-                <SchemaField key={fieldName} name={fieldName} prop={fieldProp} /> // eslint-disable-line prettier/prettier
+                <SchemaField key={fieldName} name={fieldName} prop={fieldProp} />
               ))}
             </Stack>
           </StackItem>

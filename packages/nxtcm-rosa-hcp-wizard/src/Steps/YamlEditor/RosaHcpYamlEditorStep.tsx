@@ -133,7 +133,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
     const handleEditorDidMount: EditorDidMount = useCallback(
       (editor, monaco) => {
         editorRef.current = editor;
-        monacoRef.current = monaco as unknown as typeof MonacoTypes;
+        monacoRef.current = monaco;
 
         // Expose editor for E2E testing
         if (import.meta.env.DEV) {
@@ -156,7 +156,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         if (!isInitializedRef.current) {
           monacoYamlDisposeRef.current?.();
           monacoYamlDisposeRef.current = new RosaHcpYamlMonacoLoader().configure(
-            monaco as Parameters<RosaHcpYamlMonacoLoader['configure']>[0],
+            monaco,
             generator.resourceSchemas
           );
           isInitializedRef.current = true;

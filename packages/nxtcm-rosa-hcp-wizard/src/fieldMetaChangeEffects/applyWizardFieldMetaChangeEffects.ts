@@ -105,7 +105,7 @@ function refetchWizardResource(
     return;
   }
 
-  void (fetch as () => Promise<void>)();
+  void fetch();
 }
 
 /** Applies Yup `.meta()` reset, sync, derived sync, and resource refetch rules for a source field change. */
