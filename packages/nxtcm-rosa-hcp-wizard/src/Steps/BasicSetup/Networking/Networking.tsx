@@ -2,7 +2,7 @@ import { Alert, Content, ContentVariants, ExpandableSection } from '@patternfly/
 import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../constants/links';
+import { useDocsVersion } from '../../../constants/links';
 import { ClusterNetwork, ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
 import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
 import { Radio } from '../../../components/Fields/RadioGroup';
@@ -42,6 +42,8 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
   const { networking: n } = useRosaHcpWizardStrings();
   const isProxyStepHidden = useIsStepHidden(STEP_IDS.CLUSTER_WIDE_PROXY);
   const { setValue } = useFormContext<ROSAHCPCluster>();
+  const clusterVersion = useWatch({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
+  const links = useDocsVersion(clusterVersion);
 
   const cidrDefaultChecked = useWatch({ name: FIELD_NAME.CIDR_DEFAULT });
   const selectedVPCRaw = useWatch({ name: FIELD_NAME.SELECTED_VPC });

@@ -2,7 +2,7 @@ import { Button, Content, ContentVariants, useWizardContext } from '@patternfly/
 import { useWatch } from 'react-hook-form';
 import { Section } from '../../../components/Section';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../constants/links';
+import { securityLinks, useDocsVersion } from '../../../constants/links';
 import { FIELD_NAME, STEP_IDS } from '../../../constants';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
@@ -18,6 +18,8 @@ export const ClusterUpdates = () => {
   const clusterVersion = useWatch<ROSAHCPCluster, 'cluster_version'>({
     name: FIELD_NAME.CLUSTER_VERSION,
   });
+
+  const links = useDocsVersion(clusterVersion);
 
   return (
     <Section label={cu.sectionLabel}>
@@ -35,7 +37,7 @@ export const ClusterUpdates = () => {
         </Content>
         <Content component={ContentVariants.p}>
           {cu.cveLead}{' '}
-          <ExternalLink href={links.SECURITY_CLASSIFICATION_CRITICAL}>
+          <ExternalLink href={securityLinks.SECURITY_CLASSIFICATION_CRITICAL}>
             {cu.criticalConcernsLink}
           </ExternalLink>{' '}
           {cu.cveTail}
