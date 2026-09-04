@@ -1,5 +1,5 @@
 import { test, expect } from '../../../../ct-fixture';
-import { FieldWrapper, NestedFields } from './FieldWrapper';
+import { FieldWrapper, NestedFields, type FieldWrapperSize } from './FieldWrapper';
 
 test.describe('FieldWrapper', () => {
   test('renders field content', async ({ mount }) => {
@@ -27,18 +27,37 @@ test.describe('FieldWrapper', () => {
     await expect(component.getByRole('link', { name: 'Learn more' })).toBeVisible();
   });
 
-  test('applies size class for constrained field width', async ({ mount, page }) => {
-    await mount(
-      <FieldWrapper size="lg">
-        <span>Sized field</span>
-      </FieldWrapper>
-    );
+  for (const { size, multiplier } of [
+    { size: 'sm' as const, multiplier: 20 },
+    { size: 'md' as const, multiplier: 30 },
+    { size: 'lg' as const, multiplier: 40 },
+  ] satisfies Array<{ size: Exclude<FieldWrapperSize, 'full'>; multiplier: number }>) {
+    test(`constrains ${size} field max-width with PatternFly spacer tokens`, async ({
+      mount,
+      page,
+    }) => {
+      await mount(
+        <FieldWrapper size={size}>
+          <span>Sized field</span>
+        </FieldWrapper>
+      );
 
-    await expect(page.getByText('Sized field')).toBeVisible();
-    await expect(page.getByTestId('rosa-hcp-field-wrapper')).toHaveClass(
-      /rosa-hcp-field-wrapper--lg/
-    );
-  });
+      const wrapper = page.getByTestId('rosa-hcp-field-wrapper');
+      await expect(page.getByText('Sized field')).toBeVisible();
+      await expect(wrapper).toHaveClass(new RegExp(`rosa-hcp-field-wrapper--${size}`));
+
+      const expectedMaxWidth = await wrapper.evaluate((el, tokenMultiplier) => {
+        const probe = document.createElement('div');
+        probe.style.width = `calc(var(--pf-t--global--spacer--md) * ${tokenMultiplier})`;
+        el.appendChild(probe);
+        const width = getComputedStyle(probe).width;
+        probe.remove();
+        return width;
+      }, multiplier);
+
+      await expect(wrapper).toHaveCSS('max-width', expectedMaxWidth);
+    });
+  }
 
   test('renders full-width blocks alongside fields', async ({ mount }) => {
     const component = await mount(
