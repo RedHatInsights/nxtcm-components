@@ -13,14 +13,13 @@
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
-        "plugin:prettier/recommended"
+        "prettier"
     ],
     "plugins": [
         "@typescript-eslint",
         "react",
         "react-hooks",
-        "jsx-a11y",
-        "prettier"
+        "jsx-a11y"
     ],
     
     "rules": {
