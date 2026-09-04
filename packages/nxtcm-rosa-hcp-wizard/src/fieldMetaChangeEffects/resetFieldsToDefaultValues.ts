@@ -1,4 +1,4 @@
-import type { FieldPathValue, UseFormSetValue } from 'react-hook-form';
+import type { UseFormSetValue } from 'react-hook-form';
 
 import {
   buildFormSetValueOptions,
@@ -28,6 +28,6 @@ export function resetFieldsToDefaultValues(
     if (currentFormValues && wizardFormFieldValuesEqual(currentFormValues[name], value)) {
       continue;
     }
-    setValue(name, value as FieldPathValue<Partial<ROSAHCPCluster>, typeof name>, setOpts);
+    setValue(name, value, setOpts);
   }
 }

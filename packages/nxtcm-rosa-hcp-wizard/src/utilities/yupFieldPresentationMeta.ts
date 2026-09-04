@@ -101,7 +101,5 @@ export function getYupFieldPresentationMeta(
     fieldSetLegend: booleanFromMeta(meta, 'fieldSetLegend'),
   };
 
-  return Object.fromEntries(
-    Object.entries(out).filter(([, value]) => value !== undefined)
-  ) as YupFieldPresentationMeta;
+  return Object.fromEntries(Object.entries(out).filter(([, value]) => value !== undefined));
 }

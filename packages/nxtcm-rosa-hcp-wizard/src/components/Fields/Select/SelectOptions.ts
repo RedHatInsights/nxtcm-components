@@ -84,7 +84,7 @@ export function findOptionByValue<T>(
 
     const ov = o.value;
     if (typeof ov === 'object' && ov !== null && typeof value === 'object' && value !== null) {
-      return objectValuesMatchKeyPath(ov as object, value, keyPath);
+      return objectValuesMatchKeyPath(ov, value, keyPath);
     }
     return false;
   });

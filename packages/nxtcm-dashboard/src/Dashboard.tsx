@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import { useMemo } from 'react';
 import ClusterIcon from '@patternfly/react-icons/dist/esm/icons/cluster-icon';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
