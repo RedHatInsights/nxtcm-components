@@ -4,6 +4,7 @@ import {
   MIN_ROOT_DISK_SIZE_GIB,
   MAX_ROOT_DISK_SIZE_OLD_OPENSHIFT,
   MAX_ROOT_DISK_SIZE_NEW_OPENSHIFT,
+  FIELD_NAME,
 } from '../constants';
 import type { WizardFieldMeta } from './types';
 import {
@@ -14,7 +15,6 @@ import {
 } from './helpers';
 import { validateSecurityGroups } from '../validators';
 import { YUP } from './constants';
-import { FIELD_NAME } from '../constants';
 
 export const selectedVpcSchema = rosaRequiredMixedField().meta({
   id: YUP.MACHINE_POOLS.SELECTED_VPC_SCHEMA.META.ID,

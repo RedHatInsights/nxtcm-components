@@ -3,6 +3,7 @@ import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
+import importPlugin from 'eslint-plugin-import';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
@@ -23,6 +24,8 @@ export default [
   // Base configs
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
+  importPlugin.flatConfigs.recommended,
+  importPlugin.flatConfigs.typescript,
 
   // React
   react.configs.flat.recommended,
@@ -89,6 +92,9 @@ export default [
       // this rule, causing new errors on existing code that worked under
       // v6. Re-enable after codebase cleanup — see FCN-720.
       '@typescript-eslint/no-base-to-string': 'off',
+      // Module aliases are resolved by the TypeScript and Vite toolchains.
+      'import/no-unresolved': 'off',
+      'import/no-named-as-default': 'off',
     },
   },
 
@@ -106,6 +112,14 @@ export default [
     files: ['**/*.test.tsx', '**/*.test.ts'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
+    },
+  },
+
+  // Specs may deliberately split value and type imports to keep fixtures readable.
+  {
+    files: ['**/*.spec.tsx'],
+    rules: {
+      'import/no-duplicates': 'off',
     },
   },
 
