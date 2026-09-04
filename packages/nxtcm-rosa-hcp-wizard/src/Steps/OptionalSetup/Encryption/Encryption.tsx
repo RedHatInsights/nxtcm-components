@@ -8,7 +8,7 @@ import { useWatch } from 'react-hook-form';
 import { ClusterEncryptionKeys, ROSAHCPCluster } from '../../../types';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../constants/links';
+import { awsLinks, useDocsVersion } from '../../../constants/links';
 import { FieldWrapper } from '../../../components/FieldWrapper';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
 import { useClearFieldWhenHidden } from './useClearFieldWhenHidden';
@@ -18,6 +18,9 @@ import { FIELD_NAME } from '../../../constants';
 export const Encryption = () => {
   const e = useRosaHcpWizardStrings().encryption;
   const yupDescribeOptions = useEncryptionYupDescribeOptions();
+
+  const clusterVersion = useWatch({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
+  const links = useDocsVersion(clusterVersion);
   const customKmsSelected = useWatch<ROSAHCPCluster>({
     name: FIELD_NAME.ENCRYPTION.ENCRYPTION_KEYS,
   });
@@ -39,7 +42,7 @@ export const Encryption = () => {
         helperText={
           <>
             {e.keysHelperLead}{' '}
-            <ExternalLink href={links.AWS_DATA_PROTECTION}>{e.keysLearnMore}</ExternalLink>
+            <ExternalLink href={awsLinks.AWS_DATA_PROTECTION}>{e.keysLearnMore}</ExternalLink>
           </>
         }
       >

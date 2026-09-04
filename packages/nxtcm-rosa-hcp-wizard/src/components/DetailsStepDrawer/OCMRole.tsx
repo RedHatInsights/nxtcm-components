@@ -4,11 +4,14 @@ import { CopyInstruction } from '../CopyInstruction';
 import { TabGroup } from './TabGroup';
 import PopoverHintWithTitle from '../PopoverHintWithTitle';
 import ExternalLink from '../ExternalLink';
-import links from '../../constants/links';
+import { useDocsVersion } from '../../constants/links';
+import { useWatch } from 'react-hook-form';
 
 export const OCMRole = () => {
   const { ocmRole: o, associateAwsDrawer: a } = useRosaHcpWizardStrings();
   const u = useRosaHcpWizardStrings().userRole;
+  const clusterVersion = useWatch({ name: 'cluster_version' });
+  const links = useDocsVersion(clusterVersion);
   return (
     <>
       <Title headingLevel="h4" className="pf-v6-u-mb-md" size="md">
