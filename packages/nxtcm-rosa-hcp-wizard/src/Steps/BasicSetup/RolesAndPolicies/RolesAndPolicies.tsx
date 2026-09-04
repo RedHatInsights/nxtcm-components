@@ -98,6 +98,8 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
           }
         >
           <WizSelect<ROSAHCPCluster>
+            isFill
+            isTypeAhead
             schema={clusterValidationSchema}
             apiError={roles.error}
             isLoading={roles.isFetching}
@@ -150,6 +152,8 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
           }
         >
           <WizSelect<ROSAHCPCluster>
+            isFill
+            isTypeAhead
             onRefresh={() => void oidcConfig.fetch(awsInfrastructureAccount)}
             apiError={oidcConfig.error}
             isLoading={oidcConfig.isFetching}

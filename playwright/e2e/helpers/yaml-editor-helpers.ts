@@ -73,12 +73,12 @@ async function fillRolesStep(page: Page): Promise<void> {
  */
 async function fillMachinePoolsStep(page: Page): Promise<void> {
   await page
-    .getByRole('button', { name: 'Select a VPC to install your machine pool into us-east-1' })
+    .getByRole('combobox', { name: 'Select a VPC to install your machine pool into us-east-1' })
     .click();
   await page.getByRole('option', { name: 'test-vpc-1' }).click();
-  await page.getByRole('button', { name: 'Select private subnet' }).click();
+  await page.getByRole('combobox', { name: 'Select private subnet' }).click();
   await page.getByRole('option', { name: 'test-1-subnet-private1-us-east-1a' }).click();
-  await page.getByRole('button', { name: 'Select the compute node instance type' }).click();
+  await page.getByRole('combobox', { name: 'Select the compute node instance type' }).click();
   await page.getByRole('option', { name: 'm5a.xlarge' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
 }
