@@ -7,7 +7,7 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
 
-export default tseslint.config(
+export default [
   // Global ignores (replaces ignorePatterns)
   {
     ignores: [
@@ -22,8 +22,6 @@ export default tseslint.config(
 
   // Base configs
   js.configs.recommended,
-  tseslint.configs.eslintRecommended,
-  ...tseslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
 
   // React
@@ -89,7 +87,7 @@ export default tseslint.config(
       '@typescript-eslint/no-wrapper-object-types': 'warn',
       // Disabled: typescript-eslint v8 has stricter type inference for
       // this rule, causing new errors on existing code that worked under
-      // v6. Can be re-enabled after codebase cleanup.
+      // v6. Re-enable after codebase cleanup — see FCN-720.
       '@typescript-eslint/no-base-to-string': 'off',
     },
   },
@@ -142,4 +140,4 @@ export default tseslint.config(
       ],
     },
   },
-);
+];
