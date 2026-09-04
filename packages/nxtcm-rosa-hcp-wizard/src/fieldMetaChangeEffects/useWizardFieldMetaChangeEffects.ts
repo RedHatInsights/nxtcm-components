@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { type FieldPath, useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 import { applyWizardFieldMetaChangeEffects } from './applyWizardFieldMetaChangeEffects';
 import { readWatchedFieldValue } from './readWatchedFieldValue';
@@ -29,7 +29,7 @@ function buildFormValuesForMetaEffects(
       formValues[field] = currentValue;
     }
   }
-  return formValues as Partial<ROSAHCPCluster>;
+  return formValues;
 }
 
 /**
@@ -49,7 +49,7 @@ export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): 
   const derivedSyncEntries = useMemo(() => listWizardFieldDerivedSyncEntries(), []);
   const watchedValues = useWatch({
     control,
-    name: sourceFields as FieldPath<Partial<ROSAHCPCluster>>[],
+    name: sourceFields,
   });
   const previousByFieldRef = useRef<Partial<Record<WizardFormFieldName, unknown>>>({});
   const programmaticallyResetFieldsRef = useRef<Set<WizardFormFieldName>>(new Set());
