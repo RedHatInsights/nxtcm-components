@@ -52,6 +52,15 @@ async function openCidrFields(page: Page) {
   await page.getByRole('checkbox', { name: 'Use default values' }).click();
 }
 
+async function navigateToReview(page: Page) {
+  await fillDetailsStep(page);
+  await fillRolesStep(page);
+  await fillMachinePoolsStep(page);
+  await fillNetworkingStep(page); // fills Networking and clicks Next → Encryption
+  await page.getByRole('button', { name: 'Next' }).click(); // Encryption → Updates
+  await page.getByRole('button', { name: 'Next' }).click(); // Updates → Review
+}
+
 test.describe('ROSA Wizard', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
@@ -291,6 +300,194 @@ test.describe('ROSA Wizard', () => {
         await input.press('Tab');
         await expect(page.getByText('Value must not contain whitespaces.')).toBeVisible();
       });
+    });
+  });
+
+  test.describe('Machine Pools - VPC and subnet', () => {
+    test('changing VPC resets subnet selection', async ({ page }) => {
+      await fillDetailsStep(page);
+      await fillRolesStep(page);
+
+      // Select VPC 1 and a private subnet
+      await page
+        .getByRole('button', {
+          name: 'Select a VPC to install your machine pool into us-east-1',
+        })
+        .click();
+      await page.getByRole('option', { name: 'test-vpc-1' }).click();
+      await page.getByRole('button', { name: 'Select private subnet' }).click();
+      await page.getByRole('option', { name: 'test-1-subnet-private1-us-east-1a' }).click();
+
+      // Verify subnet is selected (button text changes from placeholder)
+      await expect(page.getByRole('button', { name: 'Select private subnet' })).not.toBeVisible();
+
+      // Change to VPC 2
+      await page.getByRole('button', { name: /test-vpc-1/ }).click();
+      await page.getByRole('option', { name: 'test-2-vpc' }).click();
+
+      // Subnet should be reset (placeholder visible again)
+      await expect(page.getByRole('button', { name: 'Select private subnet' })).toBeVisible();
+    });
+  });
+
+  test.describe('Networking - CIDR cross-field validation', () => {
+    test('CIDR fields must be mutually disjoint - Machine vs Service', async ({ page }) => {
+      await openCidrFields(page);
+
+      const machineCidr = page.getByRole('textbox', { name: 'Machine CIDR' });
+      const serviceCidr = page.getByRole('textbox', { name: 'Service CIDR' });
+
+      await machineCidr.fill('10.0.0.0/16');
+      await machineCidr.press('Tab');
+
+      // Set Service CIDR to overlap with Machine CIDR
+      await serviceCidr.fill('10.0.0.0/16');
+      await serviceCidr.press('Tab');
+
+      await expect(
+        page.getByText(/overlaps with the subnet in the Machine CIDR field/)
+      ).toBeVisible();
+
+      // Fix the overlap
+      await serviceCidr.fill('172.30.0.0/16');
+      await serviceCidr.press('Tab');
+
+      await expect(
+        page.getByText(/overlaps with the subnet in the Machine CIDR field/)
+      ).not.toBeVisible();
+    });
+
+    test('CIDR fields must be mutually disjoint - Machine vs Pod', async ({ page }) => {
+      await openCidrFields(page);
+
+      const machineCidr = page.getByRole('textbox', { name: 'Machine CIDR' });
+      const podCidr = page.getByRole('textbox', { name: 'Pod CIDR' });
+
+      await machineCidr.fill('10.0.0.0/16');
+      await machineCidr.press('Tab');
+
+      // Set Pod CIDR to overlap with Machine CIDR
+      await podCidr.fill('10.0.0.0/16');
+      await podCidr.press('Tab');
+
+      await expect(
+        page.getByText(/overlaps with the subnet in the Machine CIDR field/)
+      ).toBeVisible();
+    });
+
+    test('Machine CIDR - rejects mask too large', async ({ page }) => {
+      await openCidrFields(page);
+      const input = page.getByRole('textbox', { name: 'Machine CIDR' });
+      await input.fill('10.0.0.0/8');
+      await input.press('Tab');
+      await expect(page.getByText("The subnet mask can't be larger than '/16'.")).toBeVisible();
+    });
+
+    test('Machine CIDR - rejects mask too small for single-AZ', async ({ page }) => {
+      await openCidrFields(page);
+      const input = page.getByRole('textbox', { name: 'Machine CIDR' });
+      await input.fill('10.0.0.0/26');
+      await input.press('Tab');
+      await expect(page.getByText("The subnet mask can't be smaller than '/25'.")).toBeVisible();
+    });
+
+    // Subnet containment and CIDR/subnet overlap validations require selectedSubnets
+    // in the Yup validation context. Currently, selected_vpc is stored as a string ID
+    // by WizSelect, so constructSelectedSubnets() returns [] and these validations
+    // don't fire in the wizard flow. They are covered by unit tests with explicit contexts.
+    // Unskip these if the VPC selection is changed to store the full VPC object.
+  });
+
+  test.describe('Review - navigation', () => {
+    test('editing from review updates displayed values', async ({ page }) => {
+      await navigateToReview(page);
+
+      // Verify initial value on review page
+      await expect(page.getByText('test-cluster', { exact: true }).first()).toBeVisible();
+
+      // Click Edit on the Details section (first "Edit step" button)
+      await page.getByRole('button', { name: 'Edit step' }).first().click();
+
+      // Change cluster name
+      const nameInput = page.getByRole('textbox', { name: 'Cluster name' });
+      await nameInput.clear();
+      await nameInput.fill('updated-cluster');
+      await nameInput.press('Tab');
+
+      // Navigate back through all steps to Review
+      await page.getByRole('button', { name: 'Next' }).click(); // Details → Roles
+      await page.getByRole('button', { name: 'Next' }).click(); // Roles → Machine Pools
+      await page.getByRole('button', { name: 'Next' }).click(); // Machine Pools → Networking
+      await page.getByRole('button', { name: 'Next' }).click(); // Networking → Encryption
+      await page.getByRole('button', { name: 'Next' }).click(); // Encryption → Updates
+      // Use "Skip to review" or Next to reach Review
+      await page.getByRole('button', { name: 'Next' }).click(); // Updates → Review
+
+      // Verify updated value appears
+      await expect(page.getByText('updated-cluster', { exact: true }).first()).toBeVisible();
+    });
+
+    test('review page displays all entered values', async ({ page }) => {
+      await navigateToReview(page);
+
+      await expect(page.getByRole('button', { name: 'Create cluster' })).toBeVisible();
+
+      // Cluster details
+      await expect(page.getByText('test-cluster', { exact: true }).first()).toBeVisible();
+      await expect(page.getByText('4.12.0', { exact: true }).first()).toBeVisible();
+      await expect(page.getByText(/us-east-1/).first()).toBeVisible();
+
+      // Roles
+      await expect(
+        page.getByText('ManagedOpenShift-HCP-ROSA-Installer-Role').first()
+      ).toBeVisible();
+      await expect(
+        page.getByText('2kl4t2st8eg2u5jppv8kjeemkvimfm99', { exact: true }).first()
+      ).toBeVisible();
+
+      // Machine type
+      await expect(page.getByText('m5a.xlarge', { exact: true }).first()).toBeVisible();
+    });
+  });
+
+  test.describe('Navigation - state management', () => {
+    test('back button preserves entered data', async ({ page }) => {
+      // Fill Details step
+      await fillDetailsStep(page);
+
+      // Fill some of Roles step
+      await page.getByTestId('installer-role-select').click();
+      await page.getByRole('option', { name: /ManagedOpenShift-HCP-ROSA-Installer-Role/ }).click();
+
+      // Go back to Details
+      await page.getByRole('button', { name: 'Back' }).click();
+
+      // Verify data preserved
+      await expect(page.getByRole('textbox', { name: 'Cluster name' })).toHaveValue('test-cluster');
+    });
+
+    test('validation error prevents navigation to next step', async ({ page }) => {
+      // Enter invalid cluster name
+      const input = page.getByRole('textbox', { name: 'Cluster name' });
+      await input.fill('1invalid');
+      await input.press('Tab');
+
+      // Fill other required fields
+      await page.getByRole('combobox', { name: 'Select an OpenShift version' }).click();
+      await page.getByRole('option', { name: 'OpenShift 4.12.0' }).click();
+      await page.getByRole('combobox', { name: 'Select an AWS infrastructure account' }).click();
+      await page.getByRole('option', { name: 'AWS Account - Production (123456789012)' }).click();
+      await page.getByRole('combobox', { name: 'Select an AWS billing account' }).click();
+      await page.getByRole('option', { name: 'Billing Account - Main (123456789012)' }).click();
+      await page.getByRole('combobox', { name: 'Select a region' }).click();
+      await page.getByRole('option', { name: 'US East (N. Virginia)' }).click();
+
+      // Try to proceed
+      await page.getByRole('button', { name: 'Next' }).click();
+
+      // Should still be on Details step
+      await expect(input).toBeVisible();
+      await expect(page.getByText('This value must not start with a number')).toBeVisible();
     });
   });
 });
