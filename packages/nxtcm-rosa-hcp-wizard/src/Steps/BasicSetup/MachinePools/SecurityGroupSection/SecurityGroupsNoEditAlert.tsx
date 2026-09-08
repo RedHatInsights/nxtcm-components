@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Alert, AlertActionLink } from '@patternfly/react-core';
-import { awsLinks, useDocsVersion } from '../../../../constants/links';
+import { awsLinks, getDocsVersion } from '../../../../constants/links';
 import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWizardStringsContext';
 import { useWatch } from 'react-hook-form';
 import { FIELD_NAME } from '../../../../constants';
@@ -9,7 +9,7 @@ import { FIELD_NAME } from '../../../../constants';
 const SecurityGroupsNoEditAlert = () => {
   const sg = useRosaHcpWizardStrings().securityGroups;
   const clusterVersion = useWatch({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
-  const links = useDocsVersion(clusterVersion);
+  const links = getDocsVersion(clusterVersion);
   return (
     <Alert
       className="pf-v6-u-mt-md"
