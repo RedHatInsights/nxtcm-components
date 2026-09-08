@@ -8,7 +8,7 @@ import { useWatch } from 'react-hook-form';
 import { ClusterEncryptionKeys, ROSAHCPCluster } from '../../../types';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import ExternalLink from '../../../components/ExternalLink';
-import { awsLinks, useDocsVersion } from '../../../constants/links';
+import { awsLinks, getDocsVersion } from '../../../constants/links';
 import { FieldWrapper } from '../../../components/FieldWrapper';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
 import { useClearFieldWhenHidden } from './useClearFieldWhenHidden';
@@ -20,7 +20,7 @@ export const Encryption = () => {
   const yupDescribeOptions = useEncryptionYupDescribeOptions();
 
   const clusterVersion = useWatch({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
-  const links = useDocsVersion(clusterVersion);
+  const links = getDocsVersion(clusterVersion);
   const customKmsSelected = useWatch<ROSAHCPCluster>({
     name: FIELD_NAME.ENCRYPTION.ENCRYPTION_KEYS,
   });

@@ -2,7 +2,7 @@ import { Button, Content, ContentVariants, useWizardContext } from '@patternfly/
 import { useWatch } from 'react-hook-form';
 import { Section } from '../../../components/Section';
 import ExternalLink from '../../../components/ExternalLink';
-import { securityLinks, useDocsVersion } from '../../../constants/links';
+import { securityLinks, getDocsVersion } from '../../../constants/links';
 import { FIELD_NAME, STEP_IDS } from '../../../constants';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
@@ -19,7 +19,7 @@ export const ClusterUpdates = () => {
     name: FIELD_NAME.CLUSTER_VERSION,
   });
 
-  const links = useDocsVersion(clusterVersion);
+  const links = getDocsVersion(clusterVersion);
 
   return (
     <Section label={cu.sectionLabel}>
