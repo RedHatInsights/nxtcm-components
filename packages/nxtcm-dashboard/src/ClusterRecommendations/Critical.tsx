@@ -1,5 +1,5 @@
 import { Button, Content, Flex, FlexItem, Title } from '@patternfly/react-core';
-import { CriticalRiskIcon } from '@patternfly/react-icons';
+import CriticalRiskIcon from '@patternfly/react-icons/dist/esm/icons/critical-risk-icon';
 
 import styles from './Critical.module.scss';
 

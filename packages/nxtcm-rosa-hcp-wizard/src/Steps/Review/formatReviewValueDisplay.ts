@@ -1,3 +1,4 @@
+import { IMDS } from '../../constants';
 import {
   ClusterNetwork,
   ClusterUpgrade,
@@ -91,13 +92,21 @@ export function formatReviewFieldValue(
 
   if (path === 'imds' && typeof raw === 'string' && raw !== '') {
     const mp = strings.machinePools;
-    if (raw === 'imdsv1andimdsv2') {
+    if (raw === IMDS.OPTIONAL) {
       return mp.imdsBothLabel;
     }
-    if (raw === 'imdsv2only') {
+    if (raw === IMDS.REQUIRED) {
       return mp.imdsV2Label;
     }
     return raw;
+  }
+
+  if (path === 'etcd_encryption' && typeof raw === 'boolean') {
+    const etcdLabel = strings.encryption;
+    if (raw === false) {
+      return etcdLabel.reviewEtcdDisabledLabel;
+    }
+    return etcdLabel.reviewEtcdEnabledLabel;
   }
 
   if (path === 'security_groups_worker' && Array.isArray(raw)) {

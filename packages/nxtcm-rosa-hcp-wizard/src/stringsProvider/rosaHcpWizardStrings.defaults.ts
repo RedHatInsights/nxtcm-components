@@ -189,7 +189,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     oidcLabel: 'OIDC config ID',
     oidcPlaceholder: 'Select an OIDC config ID',
     oidcPopoverTitle: 'Create a new OIDC config id',
-    operatorPrefixToggle: 'Operator role prefix',
+    operatorPrefixToggle: 'Operator roles prefix',
     operatorPrefixLabel: 'Operator roles prefix',
     operatorPrefixHelpLead: 'You can specify a custom prefix for the Operator AWS IAM roles.',
     operatorPrefixLearnMoreLink: 'Learn more and see examples.',
@@ -225,6 +225,8 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     publicPopover: 'Access Kubernetes API endpoint and application routes from the internet.',
     publicSubnetLabel: 'Public subnet name',
     publicSubnetPlaceholder: 'Select public subnet name',
+    publicSubnetDisabledHelper:
+      'Select a private subnet on the Machine pools step before choosing a public subnet. The selected private subnet will be used for the public API endpoint and application routes.',
     privateLabel: 'Private',
     privatePopover:
       'Access Kubernetes API endpoint and application routes from direct private connections only.',
@@ -358,6 +360,8 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     etcdLearnMore: 'Learn more',
     keysNoteAlert:
       'Take a note of the keys associated with your cluster. If you delete your keys, the cluster will not be available',
+    reviewEtcdDisabledLabel: 'disabled',
+    reviewEtcdEnabledLabel: 'enabled',
   },
   clusterUpdates: {
     sectionLabel: 'Cluster update strategy',

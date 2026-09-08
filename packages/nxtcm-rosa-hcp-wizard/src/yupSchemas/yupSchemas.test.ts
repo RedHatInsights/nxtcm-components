@@ -62,6 +62,7 @@ import {
   SERVICE_CIDR_MAX,
   POD_CIDR_MAX,
   MAX_CA_SIZE_BYTES,
+  IMDS,
 } from '../constants';
 import {
   CIDRSubnet,
@@ -372,6 +373,32 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
     it('region rejects undefined with common required message', async () => {
       const error = await validate(buildContext(), buildFormData({ region: undefined }), 'region');
       expect(error).toBe(msgs.commonRequired);
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // IMDS
+  // -----------------------------------------------------------------------
+  describe('imds', () => {
+    const field = 'imds' as const;
+
+    it('defaults to optional', () => {
+      expect(getClusterValidationSchemaDefaultValues().imds).toBe(IMDS.OPTIONAL);
+    });
+
+    it('accepts undefined (optional field)', async () => {
+      const error = await validate(buildContext(), buildFormData({ imds: undefined }), field);
+      expect(error).toBeNull();
+    });
+
+    it('accepts optional (both IMDSv1 and IMDSv2)', async () => {
+      const error = await validate(buildContext(), buildFormData({ imds: IMDS.OPTIONAL }), field);
+      expect(error).toBeNull();
+    });
+
+    it('accepts required (IMDSv2 only)', async () => {
+      const error = await validate(buildContext(), buildFormData({ imds: IMDS.REQUIRED }), field);
+      expect(error).toBeNull();
     });
   });
 
@@ -1540,6 +1567,7 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
       expect(defaults.autoscaling).toBe(false);
       expect(defaults.nodes_compute).toBe(2);
       expect(defaults.compute_root_volume).toBe(300);
+      expect(defaults.imds).toBe(IMDS.OPTIONAL);
       expect(defaults.upgrade_policy).toBe('automatic');
       expect(defaults.upgrade_schedule).toBe('00 0 * * 0');
       expect(defaults.machine_pools_subnets).toEqual([{ machine_pool_subnet: '' }]);

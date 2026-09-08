@@ -7,6 +7,7 @@ jest.mock('../../yupSchemas', () => ({
   }),
 }));
 
+import { IMDS } from '../../constants';
 import { ClusterNetwork, ClusterUpgrade } from '../../types';
 
 import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.defaults';
@@ -26,6 +27,7 @@ const reviewOptions = {
     { label: 'default', value: 'sg-default' },
     { label: 'web-server-sg', value: 'sg-web' },
   ],
+  etcd_encryption: false,
 };
 
 describe('formatReviewFieldValue selected_vpc', () => {
@@ -33,6 +35,12 @@ describe('formatReviewFieldValue selected_vpc', () => {
     expect(
       formatReviewFieldValue('selected_vpc', { selected_vpc: 'vpc-prod' }, strings, reviewOptions)
     ).toBe('production-vpc');
+  });
+
+  it('returns the disabled label when form value for etcd encryption is disabled', () => {
+    expect(
+      formatReviewFieldValue('etcd_encryption', { etcd_encryption: false }, strings, reviewOptions)
+    ).toBe('disabled');
   });
 
   it('returns the option label when form value is a vpc object', () => {
@@ -85,14 +93,14 @@ describe('formatReviewFieldValue machine_pools_subnets', () => {
 });
 
 describe('formatReviewFieldValue imds', () => {
-  it('returns both IMDS label for imdsv1andimdsv2', () => {
-    expect(
-      formatReviewFieldValue('imds', { imds: 'imdsv1andimdsv2' }, strings, reviewOptions)
-    ).toBe(strings.machinePools.imdsBothLabel);
+  it('returns both IMDS label for optional', () => {
+    expect(formatReviewFieldValue('imds', { imds: IMDS.OPTIONAL }, strings, reviewOptions)).toBe(
+      strings.machinePools.imdsBothLabel
+    );
   });
 
-  it('returns IMDSv2 label for imdsv2only', () => {
-    expect(formatReviewFieldValue('imds', { imds: 'imdsv2only' }, strings, reviewOptions)).toBe(
+  it('returns IMDSv2 label for required', () => {
+    expect(formatReviewFieldValue('imds', { imds: IMDS.REQUIRED }, strings, reviewOptions)).toBe(
       strings.machinePools.imdsV2Label
     );
   });

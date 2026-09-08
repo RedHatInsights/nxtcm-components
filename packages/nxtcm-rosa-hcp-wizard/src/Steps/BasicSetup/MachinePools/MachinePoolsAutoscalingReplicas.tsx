@@ -6,6 +6,7 @@ import links from '../../../constants/links';
 import { WizNumberInput } from '../../../components/WizFields';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { clusterValidationSchema, minReplicasSchema } from '../../../yupSchemas';
+import { FIELD_NAME } from '../../../constants';
 
 const minReplicasUiMin = minReplicasSchema.getDefault() as number;
 
@@ -28,8 +29,8 @@ export const MachinePoolsAutoscalingReplicas = (props: MachinePoolsAutoscalingRe
   const { maxAutoscalingNodes } = props;
   const a = useRosaHcpWizardStrings().autoscaling;
   const { control } = useFormContext<ROSAHCPCluster>();
-  const minReplicas = useWatch({ control, name: 'min_replicas' });
-  const maxReplicas = useWatch({ control, name: 'max_replicas' });
+  const minReplicas = useWatch({ control, name: FIELD_NAME.MIN_REPLICAS });
+  const maxReplicas = useWatch({ control, name: FIELD_NAME.MAX_REPLICAS });
 
   const minReplicasMax =
     typeof maxReplicas === 'number' && Number.isFinite(maxReplicas)
@@ -42,7 +43,7 @@ export const MachinePoolsAutoscalingReplicas = (props: MachinePoolsAutoscalingRe
     <Split hasGutter isWrappable>
       <SplitItem>
         <WizNumberInput<ROSAHCPCluster>
-          name="min_replicas"
+          name={FIELD_NAME.MIN_REPLICAS}
           schema={clusterValidationSchema}
           min={minReplicasUiMin}
           max={minReplicasMax}
@@ -51,7 +52,7 @@ export const MachinePoolsAutoscalingReplicas = (props: MachinePoolsAutoscalingRe
       </SplitItem>
       <SplitItem>
         <WizNumberInput<ROSAHCPCluster>
-          name="max_replicas"
+          name={FIELD_NAME.MAX_REPLICAS}
           schema={clusterValidationSchema}
           min={maxReplicasMin}
           max={maxAutoscalingNodes}

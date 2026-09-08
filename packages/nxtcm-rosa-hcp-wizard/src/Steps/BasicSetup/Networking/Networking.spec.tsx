@@ -414,6 +414,16 @@ test.describe('Networking (ROSA HCP)', () => {
   });
 
   test.describe('Networking — public subnet select', () => {
+    const machinePoolSubnetUsEast1a = {
+      machine_pools_subnets: [{ machine_pool_subnet: 'subnet-002' }],
+    };
+    const machinePoolSubnetsBothAzs = {
+      machine_pools_subnets: [
+        { machine_pool_subnet: 'subnet-002' },
+        { machine_pool_subnet: 'subnet-005' },
+      ],
+    };
+
     test('should render the public subnet select when Public radio is selected', async ({
       mount,
     }) => {
@@ -424,6 +434,19 @@ test.describe('Networking (ROSA HCP)', () => {
       await expect(
         component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') })
       ).toBeVisible();
+    });
+
+    test('should disable the public subnet select until a machine pool subnet is selected', async ({
+      mount,
+    }) => {
+      const component = await mount(
+        <NetworkingMount defaultValues={{ selected_vpc: 'vpc-12345' }} />
+      );
+
+      await expect(
+        component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') })
+      ).toBeDisabled();
+      await expect(component.getByText(n.publicSubnetDisabledHelper)).toBeVisible();
     });
 
     test('should hide the public subnet select when Private radio is selected', async ({
@@ -463,7 +486,12 @@ test.describe('Networking (ROSA HCP)', () => {
 
     test('should show public subnet options from the selected VPC', async ({ mount, page }) => {
       const component = await mount(
-        <NetworkingMount defaultValues={{ selected_vpc: 'vpc-12345' }} />
+        <NetworkingMount
+          defaultValues={{
+            selected_vpc: 'vpc-12345',
+            ...machinePoolSubnetsBothAzs,
+          }}
+        />
       );
 
       await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();
@@ -474,7 +502,12 @@ test.describe('Networking (ROSA HCP)', () => {
 
     test('should not list private subnets in the public subnet select', async ({ mount, page }) => {
       const component = await mount(
-        <NetworkingMount defaultValues={{ selected_vpc: 'vpc-12345' }} />
+        <NetworkingMount
+          defaultValues={{
+            selected_vpc: 'vpc-12345',
+            ...machinePoolSubnetUsEast1a,
+          }}
+        />
       );
 
       await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();
@@ -482,9 +515,49 @@ test.describe('Networking (ROSA HCP)', () => {
       await expect(page.getByRole('option', { name: 'private-subnet-a' })).toHaveCount(0);
     });
 
+    test('should only list public subnets in the selected machine pool subnet AZ', async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(
+        <NetworkingMount
+          defaultValues={{
+            selected_vpc: 'vpc-12345',
+            ...machinePoolSubnetUsEast1a,
+          }}
+        />
+      );
+
+      await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();
+
+      await expect(page.getByRole('option', { name: 'public-subnet-a' })).toBeVisible();
+      await expect(page.getByRole('option', { name: 'public-subnet-b' })).toHaveCount(0);
+    });
+
+    test('should list public subnets for a machine pool subnet in a different AZ', async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(
+        <NetworkingMount
+          defaultValues={{
+            selected_vpc: 'vpc-12345',
+            machine_pools_subnets: [{ machine_pool_subnet: 'subnet-005' }],
+          }}
+        />
+      );
+
+      await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();
+
+      await expect(page.getByRole('option', { name: 'public-subnet-b' })).toBeVisible();
+      await expect(page.getByRole('option', { name: 'public-subnet-a' })).toHaveCount(0);
+    });
+
     test('should allow selecting a public subnet option', async ({ mount, page }) => {
       const component = await mount(
-        <NetworkingMount defaultValues={{ selected_vpc: 'vpc-12345' }} />
+        <NetworkingMount
+          defaultValues={{ selected_vpc: 'vpc-12345', ...machinePoolSubnetUsEast1a }}
+        />
       );
 
       await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();
@@ -499,7 +572,12 @@ test.describe('Networking (ROSA HCP)', () => {
       page,
     }) => {
       const component = await mount(
-        <NetworkingMount defaultValues={{ selected_vpc: 'vpc-67890' }} />
+        <NetworkingMount
+          defaultValues={{
+            selected_vpc: 'vpc-67890',
+            machine_pools_subnets: [{ machine_pool_subnet: 'subnet-004' }],
+          }}
+        />
       );
 
       await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();

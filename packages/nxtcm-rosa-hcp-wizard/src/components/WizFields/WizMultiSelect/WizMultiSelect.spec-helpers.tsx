@@ -18,7 +18,7 @@ export const WIZ_MULTI_YUP_META_LABEL = 'Yup meta tags label';
 export const WIZ_MULTI_YUP_META_HELPER = 'Yup meta helper text for tags multiselect.';
 
 export const WIZ_MULTI_SUBMIT_ERROR = 'Choose at least one value.';
-export const WIZ_MULTI_SUBMIT_DEMO_LABEL = 'Tags (submit demo)';
+const WIZ_MULTI_SUBMIT_DEMO_LABEL = 'Tags (submit demo)';
 
 export const WIZ_MULTI_EXPLICIT_TOGGLE_NAME = /select the explicit multi label/i;
 export const WIZ_MULTI_SUBMIT_TOGGLE_NAME = /select the tags \(submit demo\)/i;

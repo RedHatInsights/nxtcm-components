@@ -1,85 +1,84 @@
-import { DNS_LABEL_REGEXP, MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH, STEP_IDS } from '../constants';
+import {
+  DNS_LABEL_REGEXP,
+  FIELD_NAME,
+  MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH,
+} from '../constants';
 import type { WizardFieldMeta } from './types';
 import { ctx, rosaRequiredStringField } from './helpers';
+import { YUP } from './constants';
 
 export const installerRoleArnSchema = rosaRequiredStringField().meta({
-  id: 'installer_role_arn',
-  labelKey: 'rolesAndPolicies.installerRoleLabel',
-  labelHelpKey: 'rolesAndPolicies.installerRoleHelp',
-  placeholderKey: 'rolesAndPolicies.installerRolePlaceholder',
-  stepId: STEP_IDS.ROLES_AND_POLICIES,
-  fieldType: 'select',
-  noEditAfterSubmit: true,
-  optionsWizardDataResource: 'roles',
-  refetchesResourcesOnChange: [
-    {
-      resource: 'vpcList',
-      argsFromFields: {
-        account_id: 'associated_aws_id',
-        role_arn: 'installer_role_arn',
-        region: 'region',
-      },
-    },
-    {
-      resource: 'machineTypes',
-      argsFromFields: {
-        role_arn: 'installer_role_arn',
-        region: 'region',
-        availability_zones: 'selected_vpc',
-      },
-    },
-  ],
-  reconcileValueWithOptions: true,
-  derivedFieldsSyncOnChange: 'installerRoleDependentRoles',
+  id: YUP.ROLES_AND_POLICIES.INSTALLER_ROLE_ARN_SCHEMA.META.ID,
+  labelKey: YUP.ROLES_AND_POLICIES.INSTALLER_ROLE_ARN_SCHEMA.META.LABEL_KEY,
+  labelHelpKey: YUP.ROLES_AND_POLICIES.INSTALLER_ROLE_ARN_SCHEMA.META.LABEL_HELP_KEY,
+  placeholderKey: YUP.ROLES_AND_POLICIES.INSTALLER_ROLE_ARN_SCHEMA.META.PLACEHOLDER_KEY,
+  stepId: YUP.ROLES_AND_POLICIES.INSTALLER_ROLE_ARN_SCHEMA.META.STEP_ID,
+  fieldType: YUP.ROLES_AND_POLICIES.INSTALLER_ROLE_ARN_SCHEMA.META.FIELD_TYPE,
+  noEditAfterSubmit: YUP.ROLES_AND_POLICIES.INSTALLER_ROLE_ARN_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
+  optionsWizardDataResource:
+    YUP.ROLES_AND_POLICIES.INSTALLER_ROLE_ARN_SCHEMA.META.OPTIONS_WIZARD_DATA_RESOURCE,
+  refetchesResourcesOnChange:
+    YUP.ROLES_AND_POLICIES.INSTALLER_ROLE_ARN_SCHEMA.META.REFETCHES_RESOURCES_ON_CHANGE,
+  reconcileValueWithOptions:
+    YUP.ROLES_AND_POLICIES.INSTALLER_ROLE_ARN_SCHEMA.META.RECONCILE_VALUE_WITH_OPTIONS,
+  derivedFieldsSyncOnChange:
+    YUP.ROLES_AND_POLICIES.INSTALLER_ROLE_ARN_SCHEMA.META.DERIVED_FIELDS_SYNC_ON_CHANGE,
 } satisfies WizardFieldMeta);
 
 export const supportRoleArnSchema = rosaRequiredStringField().meta({
-  id: 'support_role_arn',
-  labelKey: 'rolesAndPolicies.supportRoleLabel',
-  labelHelpKey: 'rolesAndPolicies.supportHelp',
-  placeholderKey: 'rolesAndPolicies.installerPlaceholder',
-  stepId: STEP_IDS.ROLES_AND_POLICIES,
-  fieldType: 'text',
-  noEditAfterSubmit: true,
-  optionsWizardDataResource: 'roles',
-  reconcileValueWithOptions: false,
+  id: YUP.ROLES_AND_POLICIES.SUPPORT_ROLE_ARN_SCHEMA.META.ID,
+  labelKey: YUP.ROLES_AND_POLICIES.SUPPORT_ROLE_ARN_SCHEMA.META.LABEL_KEY,
+  labelHelpKey: YUP.ROLES_AND_POLICIES.SUPPORT_ROLE_ARN_SCHEMA.META.LABEL_HELP_KEY,
+  placeholderKey: YUP.ROLES_AND_POLICIES.SUPPORT_ROLE_ARN_SCHEMA.META.PLACEHOLDER_KEY,
+  stepId: YUP.ROLES_AND_POLICIES.SUPPORT_ROLE_ARN_SCHEMA.META.STEP_ID,
+  fieldType: YUP.ROLES_AND_POLICIES.SUPPORT_ROLE_ARN_SCHEMA.META.FIELD_TYPE,
+  noEditAfterSubmit: YUP.ROLES_AND_POLICIES.SUPPORT_ROLE_ARN_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
+  optionsWizardDataResource:
+    YUP.ROLES_AND_POLICIES.SUPPORT_ROLE_ARN_SCHEMA.META.OPTIONS_WIZARD_DATA_RESOURCE,
+  reconcileValueWithOptions:
+    YUP.ROLES_AND_POLICIES.SUPPORT_ROLE_ARN_SCHEMA.META.RECONCILE_VALUE_WITH_OPTIONS,
 } satisfies WizardFieldMeta);
 
 export const workerRoleArnSchema = rosaRequiredStringField().meta({
-  id: 'worker_role_arn',
-  labelKey: 'rolesAndPolicies.workerRoleLabel',
-  labelHelpKey: 'rolesAndPolicies.workerHelp',
-  placeholderKey: 'rolesAndPolicies.installerPlaceholder',
-  stepId: STEP_IDS.ROLES_AND_POLICIES,
-  fieldType: 'text',
-  noEditAfterSubmit: true,
-  optionsWizardDataResource: 'roles',
-  reconcileValueWithOptions: false,
+  id: YUP.ROLES_AND_POLICIES.WORKER_ROLE_ARN_SCHEMA.META.ID,
+  labelKey: YUP.ROLES_AND_POLICIES.WORKER_ROLE_ARN_SCHEMA.META.LABEL_KEY,
+  labelHelpKey: YUP.ROLES_AND_POLICIES.WORKER_ROLE_ARN_SCHEMA.META.LABEL_HELP_KEY,
+  placeholderKey: YUP.ROLES_AND_POLICIES.WORKER_ROLE_ARN_SCHEMA.META.PLACEHOLDER_KEY,
+  stepId: YUP.ROLES_AND_POLICIES.WORKER_ROLE_ARN_SCHEMA.META.STEP_ID,
+  fieldType: YUP.ROLES_AND_POLICIES.WORKER_ROLE_ARN_SCHEMA.META.FIELD_TYPE,
+  noEditAfterSubmit: YUP.ROLES_AND_POLICIES.WORKER_ROLE_ARN_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
+  optionsWizardDataResource:
+    YUP.ROLES_AND_POLICIES.WORKER_ROLE_ARN_SCHEMA.META.OPTIONS_WIZARD_DATA_RESOURCE,
+  reconcileValueWithOptions:
+    YUP.ROLES_AND_POLICIES.WORKER_ROLE_ARN_SCHEMA.META.RECONCILE_VALUE_WITH_OPTIONS,
 } satisfies WizardFieldMeta);
 
 export const byoOidcConfigIdSchema = rosaRequiredStringField().meta({
-  id: 'byo_oidc_config_id',
-  labelKey: 'rolesAndPolicies.oidcLabel',
-  labelHelpKey: 'rolesAndPolicies.oidcHelp',
-  placeholderKey: 'rolesAndPolicies.oidcPlaceholder',
-  labelHelpTitleKey: 'rolesAndPolicies.oidcPopoverTitle',
-  stepId: STEP_IDS.ROLES_AND_POLICIES,
-  fieldType: 'select',
-  noEditAfterSubmit: true,
-  optionsWizardDataResource: 'oidcConfig',
-  reconcileValueWithOptions: true,
+  id: YUP.ROLES_AND_POLICIES.BYO_OIDC_CONFIG_ID_SCHEMA.META.ID,
+  labelKey: YUP.ROLES_AND_POLICIES.BYO_OIDC_CONFIG_ID_SCHEMA.META.LABEL_KEY,
+  labelHelpKey: YUP.ROLES_AND_POLICIES.BYO_OIDC_CONFIG_ID_SCHEMA.META.LABEL_HELP_KEY,
+  placeholderKey: YUP.ROLES_AND_POLICIES.BYO_OIDC_CONFIG_ID_SCHEMA.META.PLACEHOLDER_KEY,
+  labelHelpTitleKey: YUP.ROLES_AND_POLICIES.BYO_OIDC_CONFIG_ID_SCHEMA.META.LABEL_HELP_TITLE_KEY,
+  stepId: YUP.ROLES_AND_POLICIES.BYO_OIDC_CONFIG_ID_SCHEMA.META.STEP_ID,
+  fieldType: YUP.ROLES_AND_POLICIES.BYO_OIDC_CONFIG_ID_SCHEMA.META.FIELD_TYPE,
+  noEditAfterSubmit: YUP.ROLES_AND_POLICIES.BYO_OIDC_CONFIG_ID_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
+  optionsWizardDataResource:
+    YUP.ROLES_AND_POLICIES.BYO_OIDC_CONFIG_ID_SCHEMA.META.OPTIONS_WIZARD_DATA_RESOURCE,
+  reconcileValueWithOptions:
+    YUP.ROLES_AND_POLICIES.BYO_OIDC_CONFIG_ID_SCHEMA.META.RECONCILE_VALUE_WITH_OPTIONS,
 } satisfies WizardFieldMeta);
 
 export const customOperatorRolesPrefixSchema = rosaRequiredStringField()
-  .default('')
+  .default(YUP.ROLES_AND_POLICIES.CUSTOM_OPERATOR_ROLES_PREFIX_SCHEMA.DEFAULT)
   .meta({
-    id: 'custom_operator_roles_prefix',
-    labelKey: 'rolesAndPolicies.operatorPrefixLabel',
-    stepId: STEP_IDS.ROLES_AND_POLICIES,
-    fieldType: 'text',
-    noEditAfterSubmit: true,
+    id: YUP.ROLES_AND_POLICIES.CUSTOM_OPERATOR_ROLES_PREFIX_SCHEMA.META.ID,
+    labelKey: YUP.ROLES_AND_POLICIES.CUSTOM_OPERATOR_ROLES_PREFIX_SCHEMA.META.LABEL_KEY,
+    stepId: YUP.ROLES_AND_POLICIES.CUSTOM_OPERATOR_ROLES_PREFIX_SCHEMA.META.STEP_ID,
+    fieldType: YUP.ROLES_AND_POLICIES.CUSTOM_OPERATOR_ROLES_PREFIX_SCHEMA.META.FIELD_TYPE,
+    noEditAfterSubmit:
+      YUP.ROLES_AND_POLICIES.CUSTOM_OPERATOR_ROLES_PREFIX_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
   } satisfies WizardFieldMeta)
-  .test('operator-roles-prefix', '', function (value) {
+  .test(FIELD_NAME.CUSTOM_OPERATOR_ROLES_PREFIX, '', function (value) {
     if (!value) return true;
     const { msgs } = ctx(this);
     const label = msgs.operatorRolesPrefix.fieldLabel;

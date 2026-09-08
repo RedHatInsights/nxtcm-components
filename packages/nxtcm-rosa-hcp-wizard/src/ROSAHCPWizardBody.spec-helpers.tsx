@@ -16,9 +16,7 @@ import rosaClusterSchema from './test/acmGeneratorFixtures/schemas/rosaClusterSc
 
 const noopFetch = async (): Promise<void> => {};
 
-export function makeMinimalRosaHcpWizardData(
-  overrides?: Partial<ROSAHCPWizardData>
-): ROSAHCPWizardData {
+function makeMinimalRosaHcpWizardData(overrides?: Partial<ROSAHCPWizardData>): ROSAHCPWizardData {
   return {
     awsInfrastructureAccounts: fixtures.mockResource(fixtures.mockAwsInfrastructureAccounts),
     awsBillingAccounts: fixtures.mockResource(fixtures.mockAwsBillingAccounts),

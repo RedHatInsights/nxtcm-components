@@ -1,0 +1,86 @@
+import { expect, test } from '@playwright/experimental-ct-react';
+import { checkAccessibility } from '../../test-helpers';
+import { OCMRoleMount } from './OCMRole.spec-helpers';
+
+test.describe('OCMRole', () => {
+  test('should render check linked section', async ({ mount }) => {
+    const component = await mount(<OCMRoleMount />);
+    await expect(component.getByText(/check if a role exists and is linked/i)).toBeVisible();
+  });
+
+  test('should render list ocm-role copy instruction', async ({ mount }) => {
+    const component = await mount(<OCMRoleMount />);
+    await expect(component.getByTestId('copy-rosa-list-ocm-role')).toBeVisible();
+  });
+
+  test('should render info alert about existing linked role', async ({ mount }) => {
+    const component = await mount(<OCMRoleMount />);
+    const alerts = component.locator('.pf-v6-c-alert.pf-m-info');
+    await expect(alerts.first()).toBeVisible();
+  });
+
+  test('should render TabGroup with two tabs', async ({ mount }) => {
+    const component = await mount(<OCMRoleMount />);
+    // "Create new" and "Link existing" tabs
+    const createTab = component.getByTestId('copy-ocm-role-tab-no');
+    const linkTab = component.getByTestId('copy-ocm-role-tab-yes');
+    await expect(createTab).toBeVisible();
+    await expect(linkTab).toBeVisible();
+  });
+
+  test('should show create OCM role instructions in first tab', async ({ mount }) => {
+    const component = await mount(<OCMRoleMount />);
+    const copyInstruction = component.getByTestId('copy-rosa-create-ocm-role');
+    await expect(copyInstruction).toBeVisible();
+    await expect(copyInstruction.getByRole('textbox', { name: /create ocm-role/i })).toBeVisible();
+  });
+
+  test('should show admin OCM role instruction', async ({ mount }) => {
+    const component = await mount(<OCMRoleMount />);
+    const copyInstruction = component.getByTestId('copy-rosa-create-ocm-admin-role');
+    await expect(copyInstruction).toBeVisible();
+    await expect(
+      copyInstruction.getByRole('textbox', { name: /create ocm-role.*admin/i })
+    ).toBeVisible();
+  });
+
+  test('should show link existing OCM role when second tab clicked', async ({
+    mount,
+    page: _page,
+  }) => {
+    const component = await mount(<OCMRoleMount />);
+
+    const linkTab = component.getByTestId('copy-ocm-role-tab-yes');
+    await linkTab.click();
+
+    const copyInstruction = component.getByTestId('copy-rosa-link-ocm-role');
+    await expect(copyInstruction).toBeVisible();
+    await expect(copyInstruction.getByRole('textbox', { name: /link ocm-role/i })).toBeVisible();
+  });
+
+  test('should render popover hint for why link account', async ({ mount }) => {
+    const component = await mount(<OCMRoleMount />);
+    const hintButton = component.getByRole('button', { name: /why do i need to link/i });
+    await expect(hintButton).toBeVisible();
+  });
+
+  test('should render external link to AWS account association docs', async ({ mount, page }) => {
+    const component = await mount(<OCMRoleMount />);
+    const hintButton = component.getByRole('button', {
+      name: /why do i need to link my account/i,
+    });
+    await hintButton.click();
+
+    const link = page.getByRole('link', { name: /review.*permissions/i });
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute(
+      'href',
+      expect.stringContaining('rosa-cloud-expert-prereq-checklist')
+    );
+  });
+
+  test('should pass accessibility tests', async ({ mount }) => {
+    const component = await mount(<OCMRoleMount />);
+    await checkAccessibility({ component });
+  });
+});

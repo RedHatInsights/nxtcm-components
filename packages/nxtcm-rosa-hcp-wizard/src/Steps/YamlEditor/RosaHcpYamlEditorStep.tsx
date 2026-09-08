@@ -18,10 +18,8 @@ import type { ROSAHCPCluster } from '../../types';
 import { RosaHcpYamlMonacoLoader } from './RosaHcpYamlMonacoLoader';
 import { RosaHcpSchemaPanel } from './RosaHcpSchemaPanel';
 import type { YamlResourceGenerator } from './types';
+import { YAML_VALIDATION_OWNER, YAML_MODEL_PATH } from '../../constants';
 import './RosaHcpYamlEditorStep.css';
-
-const YAML_MODEL_PATH = 'rosa-hcp-control-plane.yaml';
-const YAML_VALIDATION_OWNER = 'yaml-hcp-validation';
 
 export type YamlEditorHandle = {
   discard: () => void;

@@ -48,6 +48,10 @@ describe('wizardFieldMetaChangeRegistry', () => {
       expect(listWizardFieldMetaChangeSourceFields()).toContain('installer_role_arn');
       expect(listWizardFieldMetaChangeSourceFields()).toContain('selected_vpc');
     });
+
+    it('includes machine_pools_subnets so a subnet change can reset the public subnet', () => {
+      expect(listWizardFieldMetaChangeSourceFields()).toContain('machine_pools_subnets');
+    });
   });
 
   describe('resets', () => {
@@ -66,6 +70,12 @@ describe('wizardFieldMetaChangeRegistry', () => {
       expect(getWizardFieldResetsForSourceField('cluster_version')).toEqual(
         expect.arrayContaining(['imds', 'security_groups_worker'])
       );
+    });
+
+    it('resets the public subnet when the machine pool subnet changes', () => {
+      expect(getWizardFieldResetsForSourceField('machine_pools_subnets')).toEqual([
+        'cluster_privacy_public_subnet_id',
+      ]);
     });
 
     it('returns an entry per source field with reset metadata', () => {

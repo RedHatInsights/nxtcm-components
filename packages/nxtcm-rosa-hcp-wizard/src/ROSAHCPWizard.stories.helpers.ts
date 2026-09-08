@@ -8,10 +8,10 @@ import type {
   ROSAHCPWizardData,
   ValidationResource,
 } from './types';
-/** Storybook refetch delay (matches {@link fixtures} `REFETCH_ALL_DELAY_MS`). */
-export const STORY_REFETCH_DELAY_MS = 2000;
+/** Storybook refetch delay in milliseconds. */
+const STORY_REFETCH_DELAY_MS = 2000;
 /** Simulated async cluster name validation delay for Storybook demos. */
-export const STORY_CLUSTER_NAME_VALIDATION_DELAY_MS = 800;
+const STORY_CLUSTER_NAME_VALIDATION_DELAY_MS = 800;
 
 const storyTakenClusterNames = new Set(fixtures.mockClusterNonUniqueNames.map(({ name }) => name));
 
@@ -119,12 +119,10 @@ const noopFetch = async (): Promise<void> => {
 };
 
 /** Storybook-only: mock async cluster name uniqueness check with console logging. */
-export function createStoryCheckClusterNameUniqueness(
+function createStoryCheckClusterNameUniqueness(
   onValidationStateChange?: (state: ValidationResource) => void
 ): (name: string, region?: string) => Promise<string | null> {
-  return async (name: string, region?: string) => {
-    // eslint-disable-next-line no-console
-    console.log('ROSA HCP Wizard cluster name validation:', { name, region });
+  return async (name: string) => {
     onValidationStateChange?.({ isFetching: true, error: null });
 
     await sleep(STORY_CLUSTER_NAME_VALIDATION_DELAY_MS);
@@ -135,12 +133,6 @@ export function createStoryCheckClusterNameUniqueness(
       : null;
 
     onValidationStateChange?.({ isFetching: false, error });
-    // eslint-disable-next-line no-console
-    console.log('ROSA HCP Wizard cluster name validation result:', {
-      name,
-      region,
-      available: !isTaken,
-    });
 
     return error;
   };
@@ -173,11 +165,6 @@ export function storyFetchWithLogging<TArgs extends unknown[]>(
   fetchFn?: (...args: TArgs) => Promise<void>
 ): (...args: TArgs) => Promise<void> {
   return async (...args: TArgs) => {
-    // eslint-disable-next-line no-console
-    console.log('ROSA HCP Wizard refetch:', {
-      resource,
-      attributes: args.length > 0 ? args.toString() : undefined,
-    });
     if (fetchFn) {
       await fetchFn(...args);
     } else {

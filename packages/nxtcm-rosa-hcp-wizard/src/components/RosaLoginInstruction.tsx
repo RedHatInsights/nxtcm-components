@@ -3,6 +3,7 @@ import { CopyInstruction } from './CopyInstruction';
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
 import { DEFAULT_HOST_PRODUCT } from '../constants';
 import { getRosaLoginCommand, type RosaLoginProduct } from './rosaLoginCommand';
+import { SelectedSecret } from '../types';
 
 export type RosaLoginInstructionProps = {
   /** The consuming product. Determines which ROSA login command is shown. Defaults to 'acm'. */
@@ -12,6 +13,7 @@ export type RosaLoginInstructionProps = {
   /** When false, only the copyable command is rendered. */
   showInstructions?: boolean;
   textAriaLabel?: string;
+  selectedSecret?: SelectedSecret;
 };
 
 export const RosaLoginInstruction = ({
@@ -19,9 +21,10 @@ export const RosaLoginInstruction = ({
   instructions,
   showInstructions = true,
   textAriaLabel,
+  selectedSecret,
 }: RosaLoginInstructionProps) => {
   const { rosaLogin } = useRosaHcpWizardStrings();
-  const loginCommand = getRosaLoginCommand(product);
+  const loginCommand = getRosaLoginCommand(product, selectedSecret);
   const defaultInstructions =
     product === 'acm' ? rosaLogin.instructionsService : rosaLogin.instructions;
 

@@ -1,6 +1,7 @@
 export { RosaHCPWizard, default } from './ROSAHCPWizard';
 export * from './types';
-export { STEP_IDS } from './constants';
+export { STEP_IDS, FIELD_NAME } from './constants';
+export { useIsFieldHidden, useIsStepHidden } from './WizardConfigContext';
 export * from './stringsProvider/rosaHcpWizardStrings';
 export {
   RosaHcpWizardStringsProvider,

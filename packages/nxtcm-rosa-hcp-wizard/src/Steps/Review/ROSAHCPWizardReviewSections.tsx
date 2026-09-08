@@ -15,10 +15,6 @@ import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStri
 import { useWizardConfig } from '../../WizardConfigContext';
 
 export type { RosaHcpWizardReviewSection } from './rosaHcpWizardReviewSections.data';
-export {
-  buildRosaHcpWizardReviewSections,
-  getFieldPathsForWizardStepId,
-} from './rosaHcpWizardReviewSections.data';
 
 export const useRosaHcpWizardReviewSections = (): RosaHcpWizardReviewSection[] => {
   const rosaStrings = useRosaHcpWizardStrings();

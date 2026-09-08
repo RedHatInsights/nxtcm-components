@@ -61,7 +61,7 @@ export function yamlExceptionToValidationError(
   };
 }
 
-export function detectChildIndent(lines: string[], fromLine: number, parentIndent: number): number {
+function detectChildIndent(lines: string[], fromLine: number, parentIndent: number): number {
   for (let j = fromLine + 1; j < lines.length; j++) {
     const t = lines[j].trimStart();
     if (!t || t.startsWith('#')) continue;

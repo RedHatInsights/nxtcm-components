@@ -27,7 +27,8 @@ import {
   TextInputGroupMain,
   TextInputGroupUtilities,
 } from '@patternfly/react-core';
-import { RedoIcon, TimesIcon } from '@patternfly/react-icons';
+import RedoIcon from '@patternfly/react-icons/dist/esm/icons/redo-icon';
+import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
 import { toDisplayString } from './SelectOptions';
 import { extractOptionValue, type Option, type OptionGroup, type OptionType } from './SelectTypes';
 import { getStatus, isSyntheticOptionId, lowercaseFirst } from './selectFieldUtils';
@@ -319,10 +320,13 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   );
 
   const toggleOpen = useCallback(() => {
+    if (disabled) {
+      return;
+    }
     const next = !open;
     setOpen(next);
     syncTypeaheadQueryForOpenState(next);
-  }, [open, syncTypeaheadQueryForOpenState]);
+  }, [disabled, open, syncTypeaheadQueryForOpenState]);
 
   const describedBy = helperTextId({
     id,
@@ -364,7 +368,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
       status={getStatus(!!isError, !!isSuccess)}
       data-testid={dataTestId}
     >
-      <TextInputGroup isPlain>
+      <TextInputGroup isPlain isDisabled={!!disabled}>
         <TextInputGroupMain
           value={typeaheadToggleDisplay}
           onClick={toggleOpen}

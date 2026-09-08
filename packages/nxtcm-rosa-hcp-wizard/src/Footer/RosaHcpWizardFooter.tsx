@@ -44,7 +44,7 @@ type RosaHcpWizardFooterProps = Pick<
  * PatternFly wizard footer that validates all fields on the active step before Next or Skip to review.
  * Next and Skip to review stay enabled so the user can always retry validation.
  */
-export function RosaHcpWizardFooter({
+function RosaHcpWizardFooter({
   activeStep,
   onNext,
   onBack,

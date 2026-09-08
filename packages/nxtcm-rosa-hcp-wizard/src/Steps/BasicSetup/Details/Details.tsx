@@ -14,6 +14,7 @@ import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
 import { useClusterNameUniquenessValidation } from '../../../hooks/useClusterNameUniquenessValidation';
+import { FIELD_NAME } from '../../../constants';
 
 type DetailsStepProps = Pick<
   ROSAHCPWizardData,
@@ -62,8 +63,8 @@ export const Details = ({
     checkClusterNameUniqueness,
   });
 
-  const installerRoleArn = useWatch({ control, name: 'installer_role_arn' });
-  const associatedAwsIdRaw = useWatch({ control, name: 'associated_aws_id' });
+  const installerRoleArn = useWatch({ control, name: FIELD_NAME.INSTALLER_ROLE_ARN });
+  const associatedAwsIdRaw = useWatch({ control, name: FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID });
   const associatedAwsIdForRegions =
     typeof associatedAwsIdRaw === 'string' && associatedAwsIdRaw !== ''
       ? associatedAwsIdRaw
@@ -126,7 +127,7 @@ export const Details = ({
             <WizSelect<ROSAHCPCluster>
               isFill
               isTypeAhead
-              name="associated_aws_id"
+              name={FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID}
               schema={clusterValidationSchema}
               isLoading={awsInfrastructureAccounts.isFetching}
               options={awsInfrastructureAccounts.data}
@@ -153,7 +154,7 @@ export const Details = ({
             <WizSelect<ROSAHCPCluster>
               isFill
               isTypeAhead
-              name="billing_account_id"
+              name={FIELD_NAME.BILLING_ACCOUNT_ID}
               schema={clusterValidationSchema}
               isLoading={awsBillingAccounts.isFetching}
               options={awsBillingAccounts.data}
@@ -168,7 +169,7 @@ export const Details = ({
             <WizSelect<ROSAHCPCluster>
               isFill
               isTypeAhead
-              name="region"
+              name={FIELD_NAME.REGION}
               schema={clusterValidationSchema}
               options={regions.data}
               isLoading={regions.isFetching}
@@ -188,7 +189,7 @@ export const Details = ({
           </FieldWrapper>
           <FieldWrapper>
             <WizTextInput<ROSAHCPCluster>
-              name="name"
+              name={FIELD_NAME.CLUSTER_NAME}
               schema={clusterValidationSchema}
               onBlur={() => {
                 void checkOnNameBlur();
@@ -200,7 +201,7 @@ export const Details = ({
             <WizSelect<ROSAHCPCluster>
               isFill
               isTypeAhead
-              name="cluster_version"
+              name={FIELD_NAME.CLUSTER_VERSION}
               schema={clusterValidationSchema}
               optionGroups={versionGroupsWithDisabled}
               isLoading={versions.isFetching}

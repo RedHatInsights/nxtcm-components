@@ -1,5 +1,10 @@
 import { expect, test } from '@playwright/experimental-ct-react';
-import { PlainMenuHarness, RefreshHarness, TypeaheadHarness } from './Select.spec-helpers';
+import {
+  PlainMenuHarness,
+  RefreshHarness,
+  TypeaheadHarness,
+  DisabledTypeaheadHarness,
+} from './Select.spec-helpers';
 
 test.describe('Select', () => {
   test('selects an option from a plain menu and updates value', async ({ mount, page }) => {
@@ -49,6 +54,11 @@ test.describe('Select', () => {
 
     // Toggle text must still show the selected label (not empty)
     await expect(combo).toHaveValue('subnet-a');
+  });
+
+  test('disables the typeahead combobox when isDisabled is set', async ({ mount, page }) => {
+    await mount(<DisabledTypeaheadHarness />);
+    await expect(page.getByRole('combobox', { name: /select the subnet/i })).toBeDisabled();
   });
 
   test('invokes onRefresh when the refresh control is pressed', async ({ mount, page }) => {

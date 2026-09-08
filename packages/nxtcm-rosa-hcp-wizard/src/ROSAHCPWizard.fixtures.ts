@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   AWSBillingAccounts,
   AWSInfrastructureAccounts,
@@ -14,7 +13,6 @@ import {
   VPC,
 } from './types';
 
-const REFETCH_ALL_DELAY_MS = 2000;
 /** Shared API error string for the `AllApiErrors` story (popover/detail body). */
 export const STORY_API_ERROR_MESSAGE = 'This is the error returned from the API call';
 // wraps static mock data in the Resource shape for stories
@@ -189,16 +187,39 @@ const mockOicdConfig: OIDCConfig[] = [
 
 const mockMachineTypes: MachineTypesDropdownType[] = [
   {
+    id: 'c5.2xlarge',
+    label: 'c5.2xlarge',
+    description: '8 vCPU 16 GiB RAM',
+    value: 'c5.2xlarge',
+    category: 'RAM optimized',
+  },
+  {
+    id: 'r5.xlarge',
+    label: 'r5.xlarge',
+    description: '4 vCPU 32 GiB RAM',
+    value: 'r5.xlarge',
+    category: 'Storage optimized',
+  },
+  {
+    id: 'c6i.8xlarge',
+    label: 'c6i.8xlarge',
+    description: '32 vCPU 64 GiB RAM',
+    value: 'c6i.8xlarge',
+    category: 'AI optimized',
+  },
+  {
     id: 'm5a.xlarge',
     label: 'm5a.xlarge',
     description: '4 vCPU 16 GiB RAM',
     value: 'm5a.xlarge',
+    category: 'General Purpose',
   },
   {
     id: 'm6a.xlarge',
     label: 'm6a.xlarge',
     description: '4 vCPU 16 GiB RAM',
     value: 'm6a.xlarge',
+    category: 'General Purpose',
   },
 ];
 const mockAdditionalMachineTypes: MachineTypesDropdownType[] = [
@@ -549,48 +570,6 @@ const mockExtensiveNumMachineTypes: MachineTypesDropdownType[] = Array.from(
 export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
-export const useSetMockState = <T>(mockData: T[]) => {
-  const [mockStateData, setMockStateData] = React.useState<Resource<T[]>>({
-    data: mockData,
-    error: null,
-    isFetching: false,
-  });
-
-  return {
-    mockStateData,
-    setMockStateData,
-  };
-};
-
-export const useFetchNeededData = <T>(mockData: T) => {
-  const [state, setState] = React.useState<{
-    data: T;
-    isFetching: boolean;
-    error: string | null;
-  }>({
-    data: mockData,
-    isFetching: false,
-    error: null,
-  });
-
-  const fetchData = React.useCallback(async () => {
-    setState((prev) => ({ ...prev, isFetching: true, error: null }));
-
-    await sleep(REFETCH_ALL_DELAY_MS);
-
-    setState({
-      data: mockData,
-      error: null,
-      isFetching: false,
-    });
-  }, [mockData]);
-
-  return {
-    state,
-    fetchData,
-  };
-};
 
 const fixtures = {
   mockResource,

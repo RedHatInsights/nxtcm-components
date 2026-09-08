@@ -8,8 +8,7 @@ import { parseUpdateSchedule } from '../../../utilities/helpers';
 import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster } from '../../../types';
-
-const UPGRADE_SCHEDULE_FIELDS_ID = 'upgrade-schedule-fields';
+import { FIELD_NAME, UPGRADE_SCHEDULE_FIELDS_ID } from '../../../constants';
 
 const hoursOptions = Array.from(Array(24).keys());
 
@@ -33,9 +32,9 @@ export const UpgradeScheduleFields = () => {
   const cu = useRosaHcpWizardStrings().clusterUpdates;
   const { setValue, formState, getFieldState } = useFormContext<ROSAHCPCluster>();
   const upgradeSchedule =
-    useWatch<ROSAHCPCluster, 'upgrade_schedule'>({ name: 'upgrade_schedule' }) ?? '';
-  const scheduleFieldState = getFieldState('upgrade_schedule', formState);
-  const stepValidationRevealed = useWizStepValidationRevealed('upgrade_schedule');
+    useWatch<ROSAHCPCluster, 'upgrade_schedule'>({ name: FIELD_NAME.UPGRADE_SCHEDULE.NAME }) ?? '';
+  const scheduleFieldState = getFieldState(FIELD_NAME.UPGRADE_SCHEDULE.NAME, formState);
+  const stepValidationRevealed = useWizStepValidationRevealed(FIELD_NAME.UPGRADE_SCHEDULE.NAME);
   const showError = wizFieldShowsError(
     scheduleFieldState.invalid,
     scheduleFieldState.isTouched,
@@ -56,7 +55,7 @@ export const UpgradeScheduleFields = () => {
 
   const syncUpgradeSchedule = (day: string, hour: string) => {
     if (day !== '' && hour !== '') {
-      setValue('upgrade_schedule', buildUpgradeScheduleCron(day, hour), {
+      setValue(FIELD_NAME.UPGRADE_SCHEDULE.NAME, buildUpgradeScheduleCron(day, hour), {
         shouldDirty: true,
         shouldTouch: true,
         shouldValidate: true,
@@ -65,7 +64,7 @@ export const UpgradeScheduleFields = () => {
     }
 
     if (upgradeSchedule) {
-      setValue('upgrade_schedule', undefined, {
+      setValue(FIELD_NAME.UPGRADE_SCHEDULE.NAME, undefined, {
         shouldDirty: true,
         shouldTouch: true,
         shouldValidate: true,
@@ -90,7 +89,7 @@ export const UpgradeScheduleFields = () => {
       <Split hasGutter isWrappable>
         <SplitItem>
           <Select
-            id="upgrade-schedule-day"
+            id={FIELD_NAME.UPGRADE_SCHEDULE.DAY}
             placeholder={cu.selectDayPlaceholder}
             value={selectedDay}
             onChange={onDayChange}
@@ -101,7 +100,7 @@ export const UpgradeScheduleFields = () => {
         </SplitItem>
         <SplitItem>
           <Select
-            id="upgrade-schedule-hour"
+            id={FIELD_NAME.UPGRADE_SCHEDULE.HOUR}
             placeholder={cu.selectTimePlaceholder}
             value={selectedHour}
             onChange={onHourChange}

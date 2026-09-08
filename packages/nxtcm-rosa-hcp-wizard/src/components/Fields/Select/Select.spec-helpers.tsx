@@ -35,6 +35,22 @@ export function TypeaheadHarness() {
   );
 }
 
+export function DisabledTypeaheadHarness() {
+  return (
+    <Form>
+      <Select
+        id="ct-menu-ta-disabled"
+        label="Subnet"
+        value=""
+        onChange={() => undefined}
+        options={['subnet-a']}
+        isTypeAhead
+        isDisabled
+      />
+    </Form>
+  );
+}
+
 export function RefreshHarness() {
   const [value, setValue] = useState<string | number | undefined>();
   const [refreshed, setRefreshed] = useState(0);
