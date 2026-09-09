@@ -1,7 +1,7 @@
 import { test, expect, Page } from './fixtures';
 
 async function expandOperatorPrefixSection(page: Page) {
-  await page.getByRole('button', { name: /^operator role prefix$/i }).click();
+  await page.getByRole('button', { name: /operator roles prefix/i }).click();
 }
 
 async function fillDetailsStep(page: Page) {
@@ -28,12 +28,12 @@ async function fillRolesStep(page: Page) {
 
 async function fillMachinePoolsStep(page: Page) {
   await page
-    .getByRole('button', { name: /Select a VPC to install your machine pool into us-east-1/i })
+    .getByRole('combobox', { name: /Select a VPC to install your machine pool into us-east-1/i })
     .click();
   await page.getByRole('option', { name: /test-vpc-1/i }).click();
-  await page.getByRole('button', { name: /Select private subnet/i }).click();
+  await page.getByRole('combobox', { name: /Select private subnet/i }).click();
   await page.getByRole('option', { name: /test-1-subnet-private1-us-east-1a/i }).click();
-  await page.getByRole('button', { name: /Select the compute node instance type/i }).click();
+  await page.getByRole('combobox', { name: /Select the compute node instance type/i }).click();
   await page.getByRole('option', { name: /m5a\.xlarge/i }).click();
   await page.getByRole('button', { name: /Next/i }).click();
 }
@@ -110,20 +110,20 @@ test.describe('ROSA Wizard', () => {
     await page.getByRole('button', { name: /Next/i }).click();
 
     await expect(
-      page.getByRole('button', {
+      page.getByRole('combobox', {
         name: /Select a VPC to install your machine pool into us-east-1/i,
       })
     ).toBeVisible();
 
     await page
-      .getByRole('button', { name: /Select a VPC to install your machine pool into us-east-1/i })
+      .getByRole('combobox', { name: /Select a VPC to install your machine pool into us-east-1/i })
       .click();
     await page.getByRole('option', { name: /test-vpc-1/i }).click();
 
-    await page.getByRole('button', { name: /Select private subnet/i }).click();
+    await page.getByRole('combobox', { name: /Select private subnet/i }).click();
     await page.getByRole('option', { name: /test-1-subnet-private1-us-east-1a/i }).click();
 
-    await page.getByRole('button', { name: /Select the compute node instance type/i }).click();
+    await page.getByRole('combobox', { name: /Select the compute node instance type/i }).click();
     await page.getByRole('option', { name: /m5a\.xlarge/i }).click();
 
     await page.getByRole('button', { name: /Next/i }).click();
@@ -318,25 +318,26 @@ test.describe('ROSA Wizard', () => {
       await fillDetailsStep(page);
       await fillRolesStep(page);
 
+      const vpcCombo = page.getByRole('combobox', {
+        name: /Select a VPC to install your machine pool into us-east-1/i,
+      });
+      const subnetCombo = page.getByRole('combobox', { name: /Select private subnet/i });
+
       // Select VPC 1 and a private subnet
-      await page
-        .getByRole('button', {
-          name: /Select a VPC to install your machine pool into us-east-1/i,
-        })
-        .click();
+      await vpcCombo.click();
       await page.getByRole('option', { name: /test-vpc-1/i }).click();
-      await page.getByRole('button', { name: /Select private subnet/i }).click();
+      await subnetCombo.click();
       await page.getByRole('option', { name: /test-1-subnet-private1-us-east-1a/i }).click();
 
-      // Verify subnet is selected (button text changes from placeholder)
-      await expect(page.getByRole('button', { name: /Select private subnet/i })).not.toBeVisible();
+      // Verify subnet has a value
+      await expect(subnetCombo).not.toHaveValue('');
 
       // Change to VPC 2
-      await page.getByRole('button', { name: /test-vpc-1/ }).click();
+      await vpcCombo.click();
       await page.getByRole('option', { name: /test-2-vpc/i }).click();
 
-      // Subnet should be reset (placeholder visible again)
-      await expect(page.getByRole('button', { name: /Select private subnet/i })).toBeVisible();
+      // Subnet should be reset (empty value)
+      await expect(subnetCombo).toHaveValue('');
     });
   });
 
@@ -568,7 +569,7 @@ test.describe('ROSA Wizard', () => {
 
         // Select VPC with security groups
         await page
-          .getByRole('button', {
+          .getByRole('combobox', {
             name: /Select a VPC to install your machine pool into us-east-1/i,
           })
           .click();
