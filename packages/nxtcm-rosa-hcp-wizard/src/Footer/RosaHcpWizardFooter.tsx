@@ -14,7 +14,7 @@ import {
 import { useCallback, useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { ROSAHCPCluster } from '../types';
-import { STEP_IDS } from '../constants';
+import { FIELD_NAME, STEP_IDS } from '../constants';
 import { useRosaHcpWizardReviewSections } from '../Steps/Review/ROSAHCPWizardReviewSections';
 import {
   isRosaHcpWizardBackDisabled,
@@ -72,7 +72,7 @@ function RosaHcpWizardFooter({
   } = useFormContext<Partial<ROSAHCPCluster>>();
   const { isSubmitting, submitWizard } = useRosaHcpWizardSubmit({ onSubmit, getYaml });
 
-  const clusterWideProxySelected = useWatch({ name: 'configure_proxy' });
+  const clusterWideProxySelected = useWatch({ name: FIELD_NAME.CONFIGURE_PROXY });
   useRosaHcpWizardNavStatusSync(!!clusterWideProxySelected, enableAllWizardNavSteps);
 
   const activeStepId = String(activeStep.id);
