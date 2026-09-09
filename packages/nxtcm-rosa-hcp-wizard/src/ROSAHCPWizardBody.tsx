@@ -14,7 +14,7 @@ import { createRosaHcpWizardFooter } from './Footer/RosaHcpWizardFooter';
 import { RosaHcpYamlEditorFooter } from './Footer/RosaHcpYamlEditorFooter';
 import { useWizardFieldMetaChangeEffects } from './fieldMetaChangeEffects/useWizardFieldMetaChangeEffects';
 import { useRosaHcpWizardStrings } from './stringsProvider/RosaHcpWizardStringsContext';
-import { STEP_IDS } from './constants';
+import { FIELD_NAME, STEP_IDS } from './constants';
 import type { RosaHCPWizardProps, ROSAHCPCluster } from './types';
 import { useIsStepHidden } from './WizardConfigContext';
 import { RosaWizardSubmitError } from './RosaWizardSubmitError';
@@ -82,7 +82,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
 
   useWizardFieldMetaChangeEffects(wizardData);
 
-  const clusterWideProxySelected = useWatch({ name: 'configure_proxy' });
+  const clusterWideProxySelected = useWatch({ name: FIELD_NAME.CONFIGURE_PROXY });
 
   const isClusterWideProxyHidden = useIsStepHidden(STEP_IDS.CLUSTER_WIDE_PROXY);
   const isClusterUpdatesHidden = useIsStepHidden(STEP_IDS.CLUSTER_UPDATES);
