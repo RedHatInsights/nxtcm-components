@@ -9,7 +9,7 @@ import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
 
 export default [
-  // Global ignores (replaces ignorePatterns)
+  // Global ignores
   {
     ignores: [
       '**/node_modules/',
@@ -60,7 +60,7 @@ export default [
     },
   },
 
-  // Custom rules (preserves all existing rules from .eslintrc.json)
+  // Custom rules
   {
     rules: {
       'react/react-in-jsx-scope': 'off',
@@ -93,7 +93,9 @@ export default [
       // v6. Re-enable after codebase cleanup — see FCN-720.
       '@typescript-eslint/no-base-to-string': 'off',
       // Module aliases are resolved by the TypeScript and Vite toolchains.
+      // TypeScript/Vite aliases are causing issues
       'import/no-unresolved': 'off',
+      // Disabling because of too many issues. They will be addressed separately by FCN-724
       'import/no-named-as-default': 'off',
     },
   },
@@ -125,7 +127,10 @@ export default [
 
   // Wizard: prevent self-imports
   {
-    files: ['packages/nxtcm-rosa-hcp-wizard/src/**/*.ts', 'packages/nxtcm-rosa-hcp-wizard/src/**/*.tsx'],
+    files: [
+      'packages/nxtcm-rosa-hcp-wizard/src/**/*.ts',
+      'packages/nxtcm-rosa-hcp-wizard/src/**/*.tsx',
+    ],
     rules: {
       'no-restricted-imports': [
         'error',
