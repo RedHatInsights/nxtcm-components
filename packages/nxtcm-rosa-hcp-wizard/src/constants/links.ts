@@ -38,8 +38,14 @@ export const awsLinks = {
   AWS_CONSOLE_SECURITY_GROUPS: 'https://console.aws.amazon.com/ec2/home#SecurityGroups',
 };
 
+const FALLBACK_DOCS_MAJOR = '4';
+const PUBLISHED_DOCS_MAJORS = new Set([FALLBACK_DOCS_MAJOR]);
 export const getDocsVersion = (clusterVersion?: string): LinksType => {
-  const docsVersion = clusterVersion ? clusterVersion.split('.')[0] : '4';
+  const requestedDocsClusterVersion = clusterVersion ? clusterVersion.split('.')[0] : '4';
+  const docsVersion =
+    requestedDocsClusterVersion && PUBLISHED_DOCS_MAJORS.has(requestedDocsClusterVersion)
+      ? requestedDocsClusterVersion
+      : FALLBACK_DOCS_MAJOR;
   const redHatRosaDocsBaseUrl = `${redHatDocsBaseUrl}/red_hat_openshift_service_on_aws/${docsVersion}/html`;
 
   return {
