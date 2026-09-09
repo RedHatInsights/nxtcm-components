@@ -6,6 +6,7 @@ import {
 } from '../utilities/formSetValueOptions';
 import { resolveSelectedVpc } from '../utilities/helpers';
 import type { ROSAHCPCluster, ROSAHCPWizardData, Role, VPC } from '../types';
+import { FIELD_NAME } from '../constants';
 import type { WizardFieldDerivedSyncKey } from '../yupSchemas/types';
 import type { WizardFieldDerivedSyncEntry } from '../yupSchemas/wizardFieldMetaChangeRegistry';
 
@@ -77,7 +78,7 @@ export function syncSecurityGroupsWorkerWithVpc(
   const pruned = current.filter((id) => availableIds.has(id));
 
   if (!securityGroupSelectionsEqual(current, pruned)) {
-    setValue('security_groups_worker', pruned, DEFAULT_FORM_SET_VALUE_OPTS_WITH_VALIDATE);
+    setValue(FIELD_NAME.SECURITY_GROUPS_WORKER, pruned, DEFAULT_FORM_SET_VALUE_OPTS_WITH_VALIDATE);
   }
 }
 
@@ -89,12 +90,12 @@ export function syncInstallerRoleDependentRoles(
 ): void {
   const selectedRole = roles.find((role) => role.installerRole.value === installerRoleArn);
   setValue(
-    'support_role_arn',
+    FIELD_NAME.SUPPORT_ROLE_ARN,
     selectedRole?.supportRole[0]?.value ?? '',
     DEFAULT_FORM_SET_VALUE_OPTS
   );
   setValue(
-    'worker_role_arn',
+    FIELD_NAME.WORKER_ROLE_ARN,
     selectedRole?.workerRole[0]?.value ?? '',
     DEFAULT_FORM_SET_VALUE_OPTS
   );
