@@ -1,23 +1,25 @@
 import React from 'react';
 import { Wizard, WizardStep } from '@patternfly/react-core';
 import { FormProvider, useForm } from 'react-hook-form';
-import type { ROSAHCPCluster, VpcListResource } from '../../types';
+import type { ROSAHCPCluster, VpcListResource, WizardConfig } from '../../types';
 import { STEP_IDS } from '../../constants';
 import { makeVpcListResource } from '../../test/rosaHcpWizardCtSpecHelpers';
 import { RosaHcpWizardStringsProvider } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { getClusterValidationSchemaDefaultValues } from '../../yupSchemas';
+import { WizardConfigProvider } from '../../WizardConfigContext';
 import { Review } from './Review';
 
 export interface ReviewHarnessProps {
   formOverrides?: Partial<ROSAHCPCluster>;
   vpcList?: VpcListResource;
+  config?: WizardConfig;
 }
 
 /**
  * Minimal wizard + form context so `Review` can call `useWizardContext` and `useWatch`.
  * Lives outside the spec file so Playwright CT can mount it.
  */
-export function ReviewHarness({ formOverrides = {}, vpcList }: ReviewHarnessProps) {
+export function ReviewHarness({ formOverrides = {}, vpcList, config = {} }: ReviewHarnessProps) {
   const methods = useForm<Partial<ROSAHCPCluster>>({
     defaultValues: { ...getClusterValidationSchemaDefaultValues(), ...formOverrides },
   });
@@ -25,13 +27,15 @@ export function ReviewHarness({ formOverrides = {}, vpcList }: ReviewHarnessProp
 
   return (
     <RosaHcpWizardStringsProvider>
-      <FormProvider {...methods}>
-        <Wizard height={720}>
-          <WizardStep name="Review" id={STEP_IDS.REVIEW} key="review">
-            <Review vpcList={vpcListProps} />
-          </WizardStep>
-        </Wizard>
-      </FormProvider>
+      <WizardConfigProvider config={config}>
+        <FormProvider {...methods}>
+          <Wizard height={720}>
+            <WizardStep name="Review" id={STEP_IDS.REVIEW} key="review">
+              <Review vpcList={vpcListProps} />
+            </WizardStep>
+          </Wizard>
+        </FormProvider>
+      </WizardConfigProvider>
     </RosaHcpWizardStringsProvider>
   );
 }

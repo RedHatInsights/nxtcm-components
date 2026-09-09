@@ -1,4 +1,10 @@
-import { MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH } from '../constants';
+import {
+  MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH,
+  MAX_ROOT_DISK_SIZE_NEW_OPENSHIFT,
+  MAX_ROOT_DISK_SIZE_OLD_OPENSHIFT,
+  MAX_SECURITY_GROUP_DISPLAY_LENGTH,
+  OPERATOR_ROLES_HASH_LENGTH,
+} from '../constants';
 import { securityGroupsSort } from '../Steps/BasicSetup/MachinePools/SecurityGroupSection/helpers';
 import {
   ClusterUpgrade,
@@ -39,11 +45,52 @@ export function resolveSelectedVpc(
   return selectedVpcRaw;
 }
 
+/** Subnet ids selected for machine pools, omitting empty rows. */
+export function getMachinePoolSubnetIds(
+  machinePoolSubnets: readonly MachinePoolSubnetEntry[] | undefined
+): string[] {
+  return (machinePoolSubnets ?? [])
+    .map((entry) => entry.machine_pool_subnet?.trim() ?? '')
+    .filter((id) => id !== '');
+}
+
+/** Availability zones of the given subnet ids on the selected VPC. */
+export function getAvailabilityZonesForSubnetIds(
+  selectedVPC: VPC | undefined,
+  subnetIds: readonly string[]
+): string[] {
+  if (!selectedVPC?.aws_subnets?.length || subnetIds.length === 0) {
+    return [];
+  }
+  const idSet = new Set(subnetIds);
+  const zones = new Set<string>();
+  for (const subnet of selectedVPC.aws_subnets) {
+    if (idSet.has(subnet.subnet_id) && subnet.availability_zone !== '') {
+      zones.add(subnet.availability_zone);
+    }
+  }
+  return [...zones];
+}
+
+/**
+ * Builds VPC / subnet / SG select options.
+ * When `machinePoolSubnetIds` is provided, public subnets are limited to the
+ * availability zones of those machine-pool (private) subnets so Networking
+ * cannot offer a public subnet in a different AZ.
+ */
 export function buildMachinePoolsReviewSelectOptions(
   selectedVPC: VPC | undefined,
-  vpcListData: VPC[]
+  vpcListData: VPC[],
+  machinePoolSubnetIds?: readonly string[]
 ): MachinePoolsReviewSelectOptions {
-  const { privateSubnets, publicSubnets } = subnetsFilter(selectedVPC);
+  const publicSubnetAvailabilityZones =
+    machinePoolSubnetIds === undefined
+      ? undefined
+      : getAvailabilityZonesForSubnetIds(selectedVPC, machinePoolSubnetIds);
+  const { privateSubnets, publicSubnets } = subnetsFilter(
+    selectedVPC,
+    publicSubnetAvailabilityZones
+  );
   const securityGroups = [...(selectedVPC?.aws_security_groups ?? [])];
   securityGroups.sort(securityGroupsSort);
 
@@ -61,21 +108,12 @@ export function buildMachinePoolsReviewSelectOptions(
       value: subnet.subnet_id,
     })),
     securityGroup: securityGroups.map(({ id = '', name = '' }) => ({
-      label: name ? truncateTextWithEllipsis(name, 50) : '--',
+      label: name ? truncateTextWithEllipsis(name, MAX_SECURITY_GROUP_DISPLAY_LENGTH) : '--',
       value: id,
     })),
   };
 }
 
-const OPERATOR_ROLES_HASH_LENGTH = 4;
-
-/**
- * Generates cryptographically secure number within small range
- * there's a slight bias towards the lower end of the range.
- * @param min minimum range including min
- * @param max maximum range including max
- * @returns returns a cryptographically secure number within provided small range
- */
 const secureRandomValueInRange = (min: number, max: number) => {
   const uints = new Uint32Array(1);
   crypto.getRandomValues(uints);
@@ -85,8 +123,7 @@ const secureRandomValueInRange = (min: number, max: number) => {
   return Math.floor(randomNumber * (maxNum - minNum + 1)) + minNum;
 };
 
-export const createOperatorRolesHash = () => {
-  // random 4 alphanumeric hash
+const createOperatorRolesHash = () => {
   const prefixArray = Array.from(
     crypto.getRandomValues(new Uint8Array(OPERATOR_ROLES_HASH_LENGTH))
   ).map((value) => (value % 36).toString(36));
@@ -98,7 +135,6 @@ export const createOperatorRolesHash = () => {
 };
 
 const createOperatorRolesPrefix = (clusterName?: string) => {
-  // increment allowedLength by 1 due to '-' character prepended to hash
   const allowedLength = MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH - (OPERATOR_ROLES_HASH_LENGTH + 1);
   const operatorRolesClusterName = clusterName?.slice(0, allowedLength);
 
@@ -106,7 +142,6 @@ const createOperatorRolesPrefix = (clusterName?: string) => {
 };
 
 const stringToArray = (str?: string) => str && str.trim().split(',');
-const arrayToString = (arr?: string[]) => arr && arr.join(',');
 
 const parseCIDRSubnetLength = (value?: string): number | undefined => {
   if (!value) {
@@ -147,14 +182,28 @@ const constructSelectedSubnets = (formValues?: ROSAHCPCluster): CIDRSubnet[] => 
   return privateSubnets.concat(publicSubnets);
 };
 
-const subnetsFilter = (selectedVPC: VPC | undefined) => {
+const subnetsFilter = (
+  selectedVPC: VPC | undefined,
+  publicSubnetAvailabilityZones?: readonly string[]
+): { publicSubnets: Subnet[] | undefined; privateSubnets: Subnet[] | undefined } => {
   const privateSubnets = selectedVPC?.aws_subnets.filter(
     (privateSubnet: Subnet) => privateSubnet.public === false
   );
 
-  const publicSubnets = selectedVPC?.aws_subnets.filter(
-    (publicSubnet: Subnet) => publicSubnet.public === true
-  );
+  const zoneSet =
+    publicSubnetAvailabilityZones === undefined
+      ? undefined
+      : new Set(publicSubnetAvailabilityZones);
+
+  const publicSubnets = selectedVPC?.aws_subnets.filter((publicSubnet: Subnet) => {
+    if (publicSubnet.public !== true) {
+      return false;
+    }
+    if (zoneSet === undefined) {
+      return true;
+    }
+    return zoneSet.has(publicSubnet.availability_zone);
+  });
 
   return {
     publicSubnets,
@@ -198,7 +247,9 @@ const canSelectImds = (clusterVersionRawId: string): boolean => {
  */
 const getWorkerNodeVolumeSizeMaxGiB = (clusterVersionRawId: string): number => {
   const [major, minor] = splitVersion(clusterVersionRawId);
-  return (major > 4 || (major === 4 && minor >= 14) ? 16 : 1) * 1024;
+  return major > 4 || (major === 4 && minor >= 14)
+    ? MAX_ROOT_DISK_SIZE_NEW_OPENSHIFT
+    : MAX_ROOT_DISK_SIZE_OLD_OPENSHIFT;
 };
 
 const showSecurityGroupsSection = (clusterVersionRawId: string): boolean => {
@@ -257,12 +308,9 @@ const formatUpgradePolicyForReview = (
 export {
   createOperatorRolesPrefix,
   stringToArray,
-  arrayToString,
   parseCIDRSubnetLength,
   constructSelectedSubnets,
-  subnetsFilter,
   truncateTextWithEllipsis,
-  splitVersion,
   canSelectImds,
   getWorkerNodeVolumeSizeMaxGiB,
   showSecurityGroupsSection,

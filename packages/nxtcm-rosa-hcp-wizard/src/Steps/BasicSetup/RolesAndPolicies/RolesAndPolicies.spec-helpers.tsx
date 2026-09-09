@@ -12,6 +12,7 @@ import {
   type OidcConfigResource,
   type ROSAHCPCluster,
   type RolesResource,
+  type SelectedSecret,
 } from '../../../types';
 import { RolesAndPolicies } from './RolesAndPolicies';
 import fixtures from '../../../ROSAHCPWizard.fixtures';
@@ -54,12 +55,16 @@ export type RolesAndPoliciesMountProps = {
   roles?: Partial<RolesResource>;
   oidcConfig?: Partial<OidcConfigResource>;
   defaultValues?: Partial<ROSAHCPCluster>;
+  product?: 'acm' | 'ocm' | 'oem';
+  selectedSecret?: SelectedSecret;
 };
 
 export const RolesAndPoliciesMount: React.FC<RolesAndPoliciesMountProps> = ({
   roles,
   oidcConfig,
   defaultValues = {},
+  product,
+  selectedSecret,
 }) => {
   const resolver = useMemo(
     () => createClusterValidationResolver(defaultRosaHcpWizardValidatorStrings),
@@ -108,7 +113,12 @@ export const RolesAndPoliciesMount: React.FC<RolesAndPoliciesMountProps> = ({
     <FormProvider {...methods}>
       <Form>
         <WizardFieldMetaChangeEffectsCtHarness wizardData={wizardData} />
-        <RolesAndPolicies roles={rolesProps} oidcConfig={oidcProps} />
+        <RolesAndPolicies
+          roles={rolesProps}
+          oidcConfig={oidcProps}
+          product={product}
+          selectedSecret={selectedSecret}
+        />
       </Form>
     </FormProvider>
   );

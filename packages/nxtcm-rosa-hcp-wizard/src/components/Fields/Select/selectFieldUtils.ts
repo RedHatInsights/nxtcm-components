@@ -1,5 +1,5 @@
 /** Synthetic menu rows — must not commit as a real selection. */
-export const SYNTHETIC_OPTION_IDS = new Set(['no-results', 'loading', 'empty']);
+const SYNTHETIC_OPTION_IDS = new Set(['no-results', 'loading', 'empty']);
 
 export function isSyntheticOptionId(optionId: string | undefined): boolean {
   return optionId != null && SYNTHETIC_OPTION_IDS.has(optionId);

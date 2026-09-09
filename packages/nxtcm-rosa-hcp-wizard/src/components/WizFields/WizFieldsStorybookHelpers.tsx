@@ -47,7 +47,7 @@ function storyJsonReplacer(_key: string, value: unknown): unknown {
  * resolved schema's test queue so Storybook shows the same error copy as runtime validation.
  * For conditional schemas, pass the same `describeOptions` you use with {@link isYupFieldRequired}.
  */
-export function yupDescribeJson(
+function yupDescribeJson(
   schema: yup.AnyObjectSchema,
   path: string,
   describeOptions?: YupFieldDescribeOptions

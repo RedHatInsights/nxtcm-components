@@ -47,34 +47,6 @@ export function hasDerivedSyncSourceValue(
   }
 }
 
-/** Wizard-data slices that should re-run a derived sync when they change while the source field is set. */
-export const wizardFieldDerivedSyncWizardDataDeps: Record<
-  WizardFieldDerivedSyncKey,
-  (wizardData: ROSAHCPWizardData) => readonly unknown[]
-> = {
-  installerRoleDependentRoles: (wizardData) => [wizardData.roles.data],
-  vpcSecurityGroupsWorkerSelection: (wizardData) => [wizardData.vpcList.data],
-};
-
-/** Collects wizard-data dependency values for all derived sync handlers in `entries`. */
-export function collectWizardFieldDerivedSyncWizardDataDeps(
-  entries: readonly Pick<WizardFieldDerivedSyncEntry, 'syncKey'>[],
-  wizardData: ROSAHCPWizardData
-): readonly unknown[] {
-  const deps: unknown[] = [];
-  const seenSyncKeys = new Set<WizardFieldDerivedSyncKey>();
-
-  for (const { syncKey } of entries) {
-    if (seenSyncKeys.has(syncKey)) {
-      continue;
-    }
-    seenSyncKeys.add(syncKey);
-    deps.push(...wizardFieldDerivedSyncWizardDataDeps[syncKey](wizardData));
-  }
-
-  return deps;
-}
-
 function securityGroupSelectionsEqual(
   current: readonly string[],
   next: readonly string[]
@@ -128,7 +100,7 @@ export function syncInstallerRoleDependentRoles(
   );
 }
 
-export const wizardFieldDerivedSyncHandlers: Record<
+const wizardFieldDerivedSyncHandlers: Record<
   WizardFieldDerivedSyncKey,
   (args: ApplyWizardFieldDerivedSyncArgs) => void
 > = {

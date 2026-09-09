@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Button, ButtonProps, ButtonVariant, Icon } from '@patternfly/react-core';
-import { ExternalLinkAltIcon } from '@patternfly/react-icons/dist/esm/icons/external-link-alt-icon';
+import ExternalLinkAltIcon from '@patternfly/react-icons/dist/esm/icons/external-link-alt-icon';
 
 type Props = {
   href: string;

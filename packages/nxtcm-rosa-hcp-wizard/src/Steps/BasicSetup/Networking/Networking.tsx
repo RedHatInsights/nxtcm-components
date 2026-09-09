@@ -12,13 +12,14 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, type ReactElement } from 'react';
 import { useClearFieldWhenHidden } from '../../OptionalSetup/Encryption/useClearFieldWhenHidden';
 import {
   buildMachinePoolsReviewSelectOptions,
+  getMachinePoolSubnetIds,
   resolveSelectedVpc,
 } from '../../../utilities/helpers';
-import { STEP_IDS } from '../../../constants';
+import { FIELD_NAME, STEP_IDS } from '../../../constants';
 import { useIsStepHidden } from '../../../WizardConfigContext';
 
 type NetworkingStepProps = Pick<ROSAHCPWizardData, 'vpcList'>;
@@ -37,27 +38,39 @@ function CidrFieldLabelHelp({ helpLead, href, learnMoreLink }: CidrFieldLabelHel
   );
 }
 
-export const Networking = (props: NetworkingStepProps) => {
+export const Networking = (props: NetworkingStepProps): ReactElement => {
   const { networking: n } = useRosaHcpWizardStrings();
   const isProxyStepHidden = useIsStepHidden(STEP_IDS.CLUSTER_WIDE_PROXY);
+  const { setValue } = useFormContext<ROSAHCPCluster>();
 
-  const cidrDefaultChecked = useWatch({ name: 'cidr_default' });
-  const selectedVPCRaw = useWatch({ name: 'selected_vpc' });
+  const cidrDefaultChecked = useWatch({ name: FIELD_NAME.CIDR_DEFAULT });
+  const selectedVPCRaw = useWatch({ name: FIELD_NAME.SELECTED_VPC });
+  const machinePoolsSubnets = useWatch<ROSAHCPCluster, 'machine_pools_subnets'>({
+    name: FIELD_NAME.MACHINE_POOLS_SUBNETS,
+  });
 
   const selectedVPC = resolveSelectedVpc(selectedVPCRaw, props.vpcList.data);
-
+  const machinePoolSubnetIds = useMemo(
+    () => getMachinePoolSubnetIds(machinePoolsSubnets),
+    [machinePoolsSubnets]
+  );
+  const hasMachinePoolSubnetSelected = machinePoolSubnetIds.length > 0;
   const { publicSubnet } = useMemo(
-    () => buildMachinePoolsReviewSelectOptions(selectedVPC, props.vpcList.data),
-    [selectedVPC, props.vpcList.data]
+    () =>
+      buildMachinePoolsReviewSelectOptions(
+        selectedVPC,
+        props.vpcList.data,
+        hasMachinePoolSubnetSelected ? machinePoolSubnetIds : undefined
+      ),
+    [selectedVPC, props.vpcList.data, machinePoolSubnetIds, hasMachinePoolSubnetSelected]
   );
 
-  const clusterPrivacy = useWatch({ name: 'cluster_privacy' });
+  const clusterPrivacy = useWatch({ name: FIELD_NAME.CLUSTER_PRIVACY_FIELD.NAME });
   useClearFieldWhenHidden<ROSAHCPCluster>(
-    'cluster_privacy_public_subnet_id',
+    FIELD_NAME.CLUSTER_PRIVACY_FIELD.PUBLIC_SUBNET_ID,
     clusterPrivacy === ClusterNetwork.internal
   );
 
-  const { setValue } = useFormContext<ROSAHCPCluster>();
   const previousVpcRef = useRef<string | undefined>(selectedVPC?.id);
   useEffect(() => {
     const currentVpcId = selectedVPC?.id;
@@ -66,7 +79,9 @@ export const Networking = (props: NetworkingStepProps) => {
       return;
     }
     if (currentVpcId !== previousVpcRef.current) {
-      setValue('cluster_privacy_public_subnet_id', undefined as never, { shouldValidate: true });
+      setValue(FIELD_NAME.CLUSTER_PRIVACY_FIELD.PUBLIC_SUBNET_ID, undefined as never, {
+        shouldValidate: true,
+      });
     }
     previousVpcRef.current = currentVpcId;
   }, [selectedVPC?.id, setValue]);
@@ -74,23 +89,28 @@ export const Networking = (props: NetworkingStepProps) => {
   return (
     <Section label={n.sectionLabel} description={n.privacyHelper}>
       <FieldWrapper>
-        <WizRadioGroup name="cluster_privacy" schema={clusterValidationSchema}>
+        <WizRadioGroup
+          name={FIELD_NAME.CLUSTER_PRIVACY_FIELD.NAME}
+          schema={clusterValidationSchema}
+        >
           <Radio
             labelHelp={n.publicPopover}
-            id="external"
+            id={FIELD_NAME.CLUSTER_PRIVACY_FIELD.EXTERNAL}
             value={ClusterNetwork.external}
             label={n.publicLabel}
           >
             <WizSelect
-              name="cluster_privacy_public_subnet_id"
+              name={FIELD_NAME.CLUSTER_PRIVACY_FIELD.PUBLIC_SUBNET_ID}
               schema={clusterValidationSchema}
               options={publicSubnet}
+              isDisabled={!hasMachinePoolSubnetSelected}
+              helperText={hasMachinePoolSubnetSelected ? undefined : n.publicSubnetDisabledHelper}
             />
           </Radio>
 
           <Radio
             labelHelp={n.privatePopover}
-            id="internal"
+            id={FIELD_NAME.CLUSTER_PRIVACY_FIELD.INTERNAL}
             value={ClusterNetwork.internal}
             label={n.privateLabel}
           />
@@ -101,7 +121,7 @@ export const Networking = (props: NetworkingStepProps) => {
         <NestedFields>
           {!isProxyStepHidden && (
             <FieldWrapper size="full">
-              <WizCheckbox name="configure_proxy" schema={clusterValidationSchema} />
+              <WizCheckbox name={FIELD_NAME.CONFIGURE_PROXY} schema={clusterValidationSchema} />
             </FieldWrapper>
           )}
 
@@ -116,12 +136,12 @@ export const Networking = (props: NetworkingStepProps) => {
           </Alert>
 
           <FieldWrapper size="full">
-            <WizCheckbox name="cidr_default" schema={clusterValidationSchema} />
+            <WizCheckbox name={FIELD_NAME.CIDR_DEFAULT} schema={clusterValidationSchema} />
           </FieldWrapper>
 
           <FieldWrapper size="lg">
             <WizTextInput<ROSAHCPCluster>
-              name="network_machine_cidr"
+              name={FIELD_NAME.NETWORK_MACHINE_CIDR}
               schema={clusterValidationSchema}
               isDisabled={cidrDefaultChecked}
               labelHelp={
@@ -135,7 +155,7 @@ export const Networking = (props: NetworkingStepProps) => {
           </FieldWrapper>
           <FieldWrapper size="lg">
             <WizTextInput<ROSAHCPCluster>
-              name="network_service_cidr"
+              name={FIELD_NAME.NETWORK_SERVICE_CIDR}
               schema={clusterValidationSchema}
               isDisabled={cidrDefaultChecked}
               labelHelp={
@@ -149,7 +169,7 @@ export const Networking = (props: NetworkingStepProps) => {
           </FieldWrapper>
           <FieldWrapper size="lg">
             <WizTextInput<ROSAHCPCluster>
-              name="network_pod_cidr"
+              name={FIELD_NAME.NETWORK_POD_CIDR}
               schema={clusterValidationSchema}
               isDisabled={cidrDefaultChecked}
               labelHelp={
@@ -163,7 +183,7 @@ export const Networking = (props: NetworkingStepProps) => {
           </FieldWrapper>
           <FieldWrapper size="lg">
             <WizTextInput<ROSAHCPCluster>
-              name="network_host_prefix"
+              name={FIELD_NAME.NETWORK_HOST_PREFIX}
               schema={clusterValidationSchema}
               isDisabled={cidrDefaultChecked}
               labelHelp={

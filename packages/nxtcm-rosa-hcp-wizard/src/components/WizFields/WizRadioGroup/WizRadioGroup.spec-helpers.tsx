@@ -89,7 +89,7 @@ const submitValidationSchema: yup.ObjectSchema<SubmitValidationFormValues> = yup
     .required(WIZ_RADIO_GROUP_SUBMIT_ERROR),
 });
 
-export const WIZ_RADIO_GROUP_SUBMIT_DEMO_LABEL = 'Tier (submit demo)';
+const WIZ_RADIO_GROUP_SUBMIT_DEMO_LABEL = 'Tier (submit demo)';
 
 export function WizRadioGroupSubmitValidationHarness() {
   const methods = useForm<SubmitValidationFormValues>({

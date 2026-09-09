@@ -1,5 +1,5 @@
 import type { ComponentProps, ReactNode } from 'react';
-import { Checkbox as PfCheckbox, FormGroup, Stack } from '@patternfly/react-core';
+import { Checkbox as PfCheckbox, FormGroup } from '@patternfly/react-core';
 import { HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
 
@@ -44,44 +44,42 @@ export function Checkbox(props: CheckboxProps) {
   } = props;
 
   return (
-    <Stack hasGutter>
-      <FormGroup role="group" id={`${id}-form-group`} fieldId={id} label={title}>
-        <PfCheckbox
-          {...checkboxRest}
-          id={id}
-          isRequired={isRequired}
-          isChecked={isChecked}
-          onChange={onChange}
-          onBlur={onBlur}
-          label={
-            <>
-              {label}{' '}
-              <LabelHelp id={id} labelHelp={labelHelp} labelHelpTitle={labelHelpTitle} useButton />
-            </>
-          }
-          isDisabled={isDisabled}
-          aria-describedby={helperTextId({
-            id,
-            errorMessage,
-            helperText,
-            isError,
-            isSuccess,
-            successMessage,
-          })}
-          body={
-            <HelperText
-              id={id}
-              errorMessage={errorMessage}
-              helperText={helperText}
-              isError={isError}
-              isDisabled={isDisabled}
-              isSuccess={isSuccess}
-              successMessage={successMessage}
-            />
-          }
-        />
-        {children}
-      </FormGroup>
-    </Stack>
+    <FormGroup role="group" id={`${id}-form-group`} fieldId={id} label={title}>
+      <PfCheckbox
+        {...checkboxRest}
+        id={id}
+        isRequired={isRequired}
+        isChecked={isChecked}
+        onChange={onChange}
+        onBlur={onBlur}
+        label={
+          <>
+            {label}{' '}
+            <LabelHelp id={id} labelHelp={labelHelp} labelHelpTitle={labelHelpTitle} useButton />
+          </>
+        }
+        isDisabled={isDisabled}
+        aria-describedby={helperTextId({
+          id,
+          errorMessage,
+          helperText,
+          isError,
+          isSuccess,
+          successMessage,
+        })}
+        body={
+          <HelperText
+            id={id}
+            errorMessage={errorMessage}
+            helperText={helperText}
+            isError={isError}
+            isDisabled={isDisabled}
+            isSuccess={isSuccess}
+            successMessage={successMessage}
+          />
+        }
+      />
+      {children}
+    </FormGroup>
   );
 }

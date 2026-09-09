@@ -1,5 +1,6 @@
 import { expect, type MountResult, test } from '@playwright/experimental-ct-react';
 
+import { IMDS } from '../../../constants';
 import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { checkAccessibility } from '../../../test-helpers';
@@ -51,6 +52,31 @@ test.describe('MachinePoolsAdvancedSection (ROSA HCP)', () => {
     ).toBeVisible();
   });
 
+  test('should default IMDS to optional (both IMDSv1 and IMDSv2)', async ({ mount }) => {
+    const component = await mount(<MachinePoolsAdvancedSectionMount wrongVersionForIMDS={false} />);
+    await expandAdvancedSection(component);
+
+    await expect(
+      component.getByRole('radio', { name: new RegExp(`^${mp.imdsBothLabel}`) })
+    ).toBeChecked();
+    await expect(
+      component.getByRole('radio', { name: new RegExp(`^${mp.imdsV2Label}`) })
+    ).not.toBeChecked();
+    await expect(component.getByTestId('ct-imds-value')).toHaveText(IMDS.OPTIONAL);
+  });
+
+  test('should set imds form value to required when IMDSv2 only is selected', async ({ mount }) => {
+    const component = await mount(<MachinePoolsAdvancedSectionMount wrongVersionForIMDS={false} />);
+    await expandAdvancedSection(component);
+
+    await component.getByRole('radio', { name: new RegExp(`^${mp.imdsV2Label}`) }).click();
+
+    await expect(
+      component.getByRole('radio', { name: new RegExp(`^${mp.imdsV2Label}`) })
+    ).toBeChecked();
+    await expect(component.getByTestId('ct-imds-value')).toHaveText(IMDS.REQUIRED);
+  });
+
   test('should hide IMDS options when cluster version does not support IMDS selection', async ({
     mount,
   }) => {
@@ -70,7 +96,7 @@ test.describe('MachinePoolsAdvancedSection (ROSA HCP)', () => {
     const component = await mount(
       <MachinePoolsAdvancedSectionMount
         wrongVersionForIMDS
-        defaultValues={{ imds: 'imdsv2only' }}
+        defaultValues={{ imds: IMDS.REQUIRED }}
       />
     );
 

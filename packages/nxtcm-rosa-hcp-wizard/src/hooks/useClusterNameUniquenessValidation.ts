@@ -8,7 +8,7 @@ import type { CheckClusterNameUniqueness, ROSAHCPCluster } from '../types';
 import { useRosaHcpWizardValidators } from '../stringsProvider/RosaHcpWizardStringsContext';
 import { validateClusterNameSync } from '../yupSchemas/helpers';
 
-export const CLUSTER_NAME_UNIQUE_ERROR_TYPE = 'clusterNameUnique';
+const CLUSTER_NAME_UNIQUE_ERROR_TYPE = 'clusterNameUnique';
 
 type UseClusterNameUniquenessValidationArgs = {
   checkClusterNameUniqueness?: CheckClusterNameUniqueness;

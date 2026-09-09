@@ -20,3 +20,9 @@ export const useIsStepHidden = (stepId: string): boolean => {
   const { hiddenSteps } = useWizardConfig();
   return hiddenSteps?.some((step) => step === stepId) ?? false;
 };
+
+/** Returns true when the given form field path is present in `config.hiddenFields`. */
+export const useIsFieldHidden = (fieldPath: string): boolean => {
+  const { hiddenFields } = useWizardConfig();
+  return hiddenFields?.some((field) => field === fieldPath) ?? false;
+};
