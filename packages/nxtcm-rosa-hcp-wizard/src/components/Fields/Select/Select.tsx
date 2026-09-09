@@ -190,7 +190,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
       }
       const opt = flatForLookup.find((o) => o.id === optionId);
       if (opt) {
-        onChange(opt.value as T | string | number | undefined);
+        onChange(opt.value);
       }
       setOpen(false);
       syncTypeaheadQueryForOpenState(false);
