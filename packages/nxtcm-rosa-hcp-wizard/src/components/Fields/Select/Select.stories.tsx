@@ -41,7 +41,7 @@ function SelectRefreshDemo(args: SelectProps<string>) {
   );
 }
 
-const meta: Meta<typeof Select> = {
+const meta: Meta<SelectProps<string>> = {
   title: 'Form Elements/Select',
   component: Select,
   tags: ['autodocs'],
@@ -74,7 +74,7 @@ const meta: Meta<typeof Select> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<SelectProps<string>>;
 
 export const Default: Story = {
   render: (args) => <SelectDemo {...args} />,
