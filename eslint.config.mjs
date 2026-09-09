@@ -117,7 +117,8 @@ export default [
     },
   },
 
-  // Specs may deliberately split value and type imports to keep fixtures readable.
+  // Specs may deliberately split value and type imports because Playwright CT
+  // transform requires harness imports to be separate from consts
   {
     files: ['**/*.spec.tsx'],
     rules: {
