@@ -80,7 +80,12 @@ export function findOptionByValue<T>(
 
   return flat.find((o) => {
     if (o.value === value) return true;
-    if (o.keyedValue === value || String(o.keyedValue) === String(value)) return true;
+    if (o.keyedValue === value) return true;
+    if (
+      (typeof value === 'string' || typeof value === 'number') &&
+      String(o.keyedValue) === String(value)
+    )
+      return true;
 
     const ov = o.value;
     if (typeof ov === 'object' && ov !== null && typeof value === 'object' && value !== null) {

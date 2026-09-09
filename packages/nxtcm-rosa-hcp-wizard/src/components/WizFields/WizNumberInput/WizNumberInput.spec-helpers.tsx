@@ -6,6 +6,7 @@ import * as yup from 'yup';
 
 import {
   WizCtWatchStatus,
+  formatWatchValue,
   wizCtSubmitValidationPreview,
   withRosaCt,
 } from '../wizFieldCtSpecHelpers';
@@ -45,7 +46,7 @@ export function WizNumberInputExplicitHarness() {
           control={methods.control}
           name="nodeCount"
           ariaLabel={WIZ_NUMBER_INPUT_VALUE_STATUS_LABEL}
-          format={(v) => (v === undefined || v === null ? '(empty)' : String(v))}
+          format={formatWatchValue}
         />
       </Form>
     </FormProvider>
@@ -128,7 +129,7 @@ export function WizNumberInputNestedFallbackHarness() {
           control={methods.control}
           name="topology.poolSize"
           ariaLabel={WIZ_NUMBER_INPUT_TOPOLOGY_POOL_STATUS_LABEL}
-          format={(v) => (v === undefined || v === null ? '(empty)' : String(v))}
+          format={formatWatchValue}
         />
       </Form>
     </FormProvider>
@@ -150,7 +151,7 @@ export function WizNumberInputMinusClearsHarness() {
           control={methods.control}
           name="slots"
           ariaLabel={WIZ_NUMBER_INPUT_SLOT_STATUS_LABEL}
-          format={(v) => (v === undefined || v === null ? '(empty)' : String(v))}
+          format={formatWatchValue}
         />
       </Form>
     </FormProvider>
@@ -179,7 +180,7 @@ export function WizNumberInputExplicitControlOnlyHarness() {
         control={methods.control}
         name="shards"
         ariaLabel={WIZ_NUMBER_INPUT_CONTROL_ONLY_STATUS}
-        format={(v) => (v === undefined || v === null ? '(empty)' : String(v))}
+        format={formatWatchValue}
       />
     </>
   );

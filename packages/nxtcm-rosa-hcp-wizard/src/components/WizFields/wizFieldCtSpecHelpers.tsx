@@ -35,6 +35,14 @@ export interface WizCtWatchStatusProps<T extends FieldValues> {
  * Playwright CT: mirrors {@link useWatch} for assertions. Uses `role="status"` and a human-readable
  * `aria-label` so tests query the live value the way a screen reader would, without `data-testid`.
  */
+/** Safe unknown-to-string for {@link WizCtWatchStatus} format callbacks in test harnesses. */
+export function formatWatchValue(v: unknown): string {
+  if (v == null || v === '') return '(empty)';
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number' || typeof v === 'boolean') return String(v);
+  return JSON.stringify(v);
+}
+
 export function WizCtWatchStatus<T extends FieldValues>({
   control,
   name,

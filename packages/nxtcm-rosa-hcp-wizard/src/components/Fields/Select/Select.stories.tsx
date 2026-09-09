@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Form } from '@patternfly/react-core';
 import { Select, type SelectProps } from './Select';
 
-function SelectDemo(args: SelectProps) {
+function SelectDemo(args: SelectProps<string>) {
   const [value, setValue] = React.useState<string | undefined>();
 
   return (
@@ -17,7 +17,7 @@ function SelectDemo(args: SelectProps) {
   );
 }
 
-function SelectRefreshDemo(args: SelectProps) {
+function SelectRefreshDemo(args: SelectProps<string>) {
   const [value, setValue] = React.useState<string | undefined>();
   const [isLoading, setIsLoading] = React.useState(false);
 

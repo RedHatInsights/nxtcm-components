@@ -12,6 +12,7 @@ import {
 
 import {
   WizCtWatchStatus,
+  formatWatchValue,
   wizCtSubmitValidationPreview,
   withRosaCt,
 } from '../wizFieldCtSpecHelpers';
@@ -104,7 +105,7 @@ export function WizSelectExplicitHarness() {
           control={methods.control}
           name="region"
           ariaLabel={WIZ_SELECT_VALUE_STATUS_LABEL}
-          format={(v) => (v === undefined || v === '' ? '(empty)' : String(v))}
+          format={formatWatchValue}
         />
       </Form>
     </FormProvider>
@@ -197,7 +198,7 @@ export function WizSelectNestedFallbackHarness() {
           control={methods.control}
           name="vpc.subnet"
           ariaLabel={WIZ_SELECT_VPC_SUBNET_FORM_VALUE_LABEL}
-          format={(v) => (v === undefined || v === '' ? '(empty)' : String(v))}
+          format={formatWatchValue}
         />
       </Form>
     </FormProvider>
@@ -297,7 +298,7 @@ export function WizSelectTypeaheadClearHarness() {
           control={methods.control}
           name="region"
           ariaLabel={WIZ_SELECT_TYPEAHEAD_CLEAR_STATUS}
-          format={(v) => (v === undefined || v === '' ? '(empty)' : String(v))}
+          format={formatWatchValue}
         />
       </Form>
     </FormProvider>
@@ -323,7 +324,7 @@ export function WizSelectExplicitControlOnlyHarness() {
         control={methods.control}
         name="vpcId"
         ariaLabel={WIZ_SELECT_CONTROL_ONLY_STATUS}
-        format={(v) => (v === undefined || v === '' ? '(empty)' : String(v))}
+        format={formatWatchValue}
       />
     </>
   );
@@ -366,7 +367,7 @@ export function WizSelectOptionsReconcileHarness() {
           control={methods.control}
           name="region"
           ariaLabel={WIZ_SELECT_RECONCILE_STATUS}
-          format={(v) => (v === undefined || v === '' ? '(empty)' : String(v))}
+          format={formatWatchValue}
         />
         <Button type="button" onClick={() => setOptions(['us-east-1'])}>
           {WIZ_SELECT_RECONCILE_REPLACE_OPTIONS}
