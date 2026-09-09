@@ -25,7 +25,7 @@ export function RosaHcpWizardStringsProvider({
 }: RosaHcpWizardStringsProviderProps) {
   const value = useMemo(
     () => buildRosaHcpWizardStringBundles(stringsInput),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- callers should memoize `strings` when passing inline objects
+
     [stringsInput]
   );
 
