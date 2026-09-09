@@ -52,6 +52,14 @@ async function openCidrFields(page: Page) {
   await page.getByRole('checkbox', { name: 'Use default values' }).click();
 }
 
+async function navigateToClusterUpdates(page: Page) {
+  await fillDetailsStep(page);
+  await fillRolesStep(page);
+  await fillMachinePoolsStep(page);
+  await fillNetworkingStep(page); // fills Networking and clicks Next → Encryption
+  await page.getByRole('button', { name: 'Next' }).click(); // Encryption → Updates
+}
+
 async function navigateToReview(page: Page) {
   await fillDetailsStep(page);
   await fillRolesStep(page);
@@ -488,6 +496,196 @@ test.describe('ROSA Wizard', () => {
       // Should still be on Details step
       await expect(input).toBeVisible();
       await expect(page.getByText('This value must not start with a number')).toBeVisible();
+    });
+  });
+
+  test.describe('Conditionally rendered dropdowns', () => {
+    test.describe('Networking - public subnet select', () => {
+      test('switching to Private hides public subnet select', async ({ page }) => {
+        await fillDetailsStep(page);
+        await fillRolesStep(page);
+        await fillMachinePoolsStep(page);
+
+        // Public is the default — public subnet select should be visible
+        await expect(page.getByRole('button', { name: /public subnet name/i })).toBeVisible();
+
+        // Switch to Private
+        await page.getByRole('radio', { name: 'Private' }).click();
+
+        // Public subnet select should be hidden
+        await expect(page.getByRole('button', { name: /public subnet name/i })).not.toBeVisible();
+      });
+
+      test('switching back to Public re-shows public subnet select', async ({ page }) => {
+        await fillDetailsStep(page);
+        await fillRolesStep(page);
+        await fillMachinePoolsStep(page);
+
+        // Switch to Private
+        await page.getByRole('radio', { name: 'Private' }).click();
+        await expect(page.getByRole('button', { name: /public subnet name/i })).not.toBeVisible();
+
+        // Switch back to Public
+        await page.getByRole('radio', { name: 'Public' }).click();
+
+        // Public subnet select should reappear
+        await expect(page.getByRole('button', { name: /public subnet name/i })).toBeVisible();
+      });
+
+      test('switching to Private clears selected public subnet', async ({ page }) => {
+        await fillDetailsStep(page);
+        await fillRolesStep(page);
+        await fillMachinePoolsStep(page);
+
+        // Select a public subnet
+        await page.getByRole('button', { name: /public subnet name/i }).click();
+        await page.getByRole('option', { name: 'test-1-subnet-public1-us-east-1a' }).click();
+
+        // Switch to Private then back to Public
+        await page.getByRole('radio', { name: 'Private' }).click();
+        await page.getByRole('radio', { name: 'Public' }).click();
+
+        // The select should show the placeholder again (value was cleared)
+        await expect(page.getByRole('button', { name: 'Select public subnet name' })).toBeVisible();
+      });
+    });
+
+    test.describe('Machine Pools - security groups version gate', () => {
+      test('shows incompatible version message for security groups when version < 4.14', async ({
+        page,
+      }) => {
+        await fillDetailsStep(page);
+        await fillRolesStep(page);
+
+        // Select VPC with security groups
+        await page
+          .getByRole('button', {
+            name: 'Select a VPC to install your machine pool into us-east-1',
+          })
+          .click();
+        await page.getByRole('option', { name: 'test-vpc-1' }).click();
+
+        // Expand Advanced section
+        await page.getByRole('button', { name: /Advanced machine pool configuration/i }).click();
+
+        // Version 4.12.0 < 4.14 — should show incompatible message
+        await expect(
+          page.getByText('To use securityGroups, your cluster must be version 4.14.x or newer.')
+        ).toBeVisible();
+      });
+    });
+
+    test.describe('Encryption - KMS key ARN', () => {
+      test('selecting custom KMS key shows Key ARN input', async ({ page }) => {
+        await fillDetailsStep(page);
+        await fillRolesStep(page);
+        await fillMachinePoolsStep(page);
+        await fillNetworkingStep(page);
+
+        // Default is "Use default AWS KMS key" — Key ARN should not be visible
+        await expect(page.getByRole('textbox', { name: 'Key ARN' })).not.toBeVisible();
+
+        // Select custom KMS key
+        await page.getByRole('radio', { name: 'Use custom AWS KMS key' }).click();
+
+        // Key ARN input should appear
+        await expect(page.getByRole('textbox', { name: 'Key ARN' }).first()).toBeVisible();
+      });
+
+      test('switching back to default KMS key hides and clears Key ARN', async ({ page }) => {
+        await fillDetailsStep(page);
+        await fillRolesStep(page);
+        await fillMachinePoolsStep(page);
+        await fillNetworkingStep(page);
+
+        // Select custom and enter a value
+        await page.getByRole('radio', { name: 'Use custom AWS KMS key' }).click();
+        const input = page.getByRole('textbox', { name: 'Key ARN' }).first();
+        await input.fill('arn:aws:kms:us-east-1:123456789012:key/test-key');
+
+        // Switch back to default
+        await page.getByRole('radio', { name: 'Use default AWS KMS key' }).click();
+
+        // Key ARN input should be hidden
+        await expect(page.getByRole('textbox', { name: 'Key ARN' })).not.toBeVisible();
+
+        // Re-select custom — input should be empty (value was cleared)
+        await page.getByRole('radio', { name: 'Use custom AWS KMS key' }).click();
+        await expect(page.getByRole('textbox', { name: 'Key ARN' }).first()).toHaveValue('');
+      });
+    });
+
+    test.describe('Encryption - etcd key ARN', () => {
+      test('enabling etcd encryption shows Key ARN input', async ({ page }) => {
+        await fillDetailsStep(page);
+        await fillRolesStep(page);
+        await fillMachinePoolsStep(page);
+        await fillNetworkingStep(page);
+
+        // etcd encryption is off by default — etcd Key ARN should not be visible
+        // KMS Key ARN is also not visible (default KMS), so no Key ARN inputs at all
+        await expect(page.getByRole('textbox', { name: 'Key ARN' })).not.toBeVisible();
+
+        // Enable etcd encryption
+        await page.getByRole('checkbox', { name: 'Enable additional etcd encryption' }).click();
+
+        // Key ARN input should appear
+        await expect(page.getByRole('textbox', { name: 'Key ARN' }).first()).toBeVisible();
+      });
+
+      test('disabling etcd encryption hides and clears Key ARN', async ({ page }) => {
+        await fillDetailsStep(page);
+        await fillRolesStep(page);
+        await fillMachinePoolsStep(page);
+        await fillNetworkingStep(page);
+
+        // Enable etcd and enter a value
+        await page.getByRole('checkbox', { name: 'Enable additional etcd encryption' }).click();
+        const input = page.getByRole('textbox', { name: 'Key ARN' }).first();
+        await input.fill('arn:aws:kms:us-east-1:123456789012:key/etcd-key');
+
+        // Disable etcd encryption
+        await page.getByRole('checkbox', { name: 'Enable additional etcd encryption' }).click();
+
+        // Key ARN input should be hidden
+        await expect(page.getByRole('textbox', { name: 'Key ARN' })).not.toBeVisible();
+
+        // Re-enable — input should be empty (value was cleared)
+        await page.getByRole('checkbox', { name: 'Enable additional etcd encryption' }).click();
+        await expect(page.getByRole('textbox', { name: 'Key ARN' }).first()).toHaveValue('');
+      });
+    });
+
+    test.describe('Cluster Updates - upgrade schedule selects', () => {
+      test('switching to Manual hides upgrade schedule selects', async ({ page }) => {
+        await navigateToClusterUpdates(page);
+
+        // Default is Automatic — day and hour selects should be visible
+        await expect(page.getByRole('button', { name: 'Sunday' })).toBeVisible();
+        await expect(page.getByRole('button', { name: '00:00 UTC' })).toBeVisible();
+
+        // Switch to Manual
+        await page.getByRole('radio', { name: 'Manual updates' }).click();
+
+        // Day and hour selects should be hidden
+        await expect(page.getByRole('button', { name: 'Sunday' })).not.toBeVisible();
+        await expect(page.getByRole('button', { name: '00:00 UTC' })).not.toBeVisible();
+      });
+
+      test('switching back to Automatic re-shows upgrade schedule selects', async ({ page }) => {
+        await navigateToClusterUpdates(page);
+
+        // Switch to Manual
+        await page.getByRole('radio', { name: 'Manual updates' }).click();
+        await expect(page.getByRole('button', { name: 'Sunday' })).not.toBeVisible();
+
+        // Switch back to Automatic
+        await page.getByRole('radio', { name: 'Automatic updates' }).click();
+
+        // Day and hour selects should reappear
+        await expect(page.getByRole('button', { name: 'Sunday' })).toBeVisible();
+        await expect(page.getByRole('button', { name: '00:00 UTC' })).toBeVisible();
+      });
     });
   });
 });
