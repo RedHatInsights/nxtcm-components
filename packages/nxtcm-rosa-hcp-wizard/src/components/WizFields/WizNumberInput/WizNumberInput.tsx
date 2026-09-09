@@ -7,12 +7,7 @@ import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationCo
 import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizNumberInputControlledKeys =
-  | 'value'
-  | 'onChange'
-  | 'onBlur'
-  | 'errorMessage'
-  | 'isError'
-  | 'name';
+  'value' | 'onChange' | 'onBlur' | 'errorMessage' | 'isError' | 'name';
 
 type WizNumberInputSpreadProps = Omit<
   NumberInputProps,

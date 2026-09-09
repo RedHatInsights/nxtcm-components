@@ -213,8 +213,7 @@ export type { YamlResourceGenerator };
  * Use the exported `STEP_IDS` constants for type-safe values.
  */
 export type HideableWizardStepId =
-  | typeof STEP_IDS.CLUSTER_WIDE_PROXY
-  | typeof STEP_IDS.CLUSTER_UPDATES;
+  typeof STEP_IDS.CLUSTER_WIDE_PROXY | typeof STEP_IDS.CLUSTER_UPDATES;
 
 /**
  * Form field paths that can be hidden via {@link WizardConfig.hiddenFields}.

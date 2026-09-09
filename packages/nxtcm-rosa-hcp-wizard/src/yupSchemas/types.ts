@@ -55,8 +55,7 @@ export type WizardResourceComposedRefetchOnChange = {
 
 /** Describes a {@link ROSAHCPWizardData} resource reload when a form field changes. */
 export type WizardResourceRefetchOnChange =
-  | WizardResourceSimpleRefetchOnChange
-  | WizardResourceComposedRefetchOnChange;
+  WizardResourceSimpleRefetchOnChange | WizardResourceComposedRefetchOnChange;
 
 /**
  * When a source field changes to `when`, apply `setDefaults` and/or `clear` on dependent fields.
@@ -76,8 +75,7 @@ export type WizardFieldSyncOnChange = {
  * Declared on the source field's Yup `.meta()` via `derivedFieldsSyncOnChange`.
  */
 export type WizardFieldDerivedSyncKey =
-  | 'installerRoleDependentRoles'
-  | 'vpcSecurityGroupsWorkerSelection';
+  'installerRoleDependentRoles' | 'vpcSecurityGroupsWorkerSelection';
 
 /**
  * Static metadata attached to each field via `.meta()`.

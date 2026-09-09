@@ -32,12 +32,7 @@ import {
 import { FieldWithAPIErrorAlert } from '../../FieldWithAPIErrorAlert';
 
 type WizTextInputControlledKeys =
-  | 'value'
-  | 'onChange'
-  | 'onBlur'
-  | 'errorMessage'
-  | 'isError'
-  | 'name';
+  'value' | 'onChange' | 'onBlur' | 'errorMessage' | 'isError' | 'name';
 
 type WizTextInputSpreadProps = Omit<
   TextInputProps,
