@@ -26,19 +26,19 @@ test.describe('ROSA Wizard - YAML Editor', () => {
       await navigateToYamlEditor(page);
 
       await page
-        .getByRole('button', { name: 'Discard changes and go back to Review step' })
+        .getByRole('button', { name: /Discard changes and go back to Review step/i })
         .click();
 
       // Confirmation modal appears
       await expect(page.getByRole('dialog')).toBeVisible();
       await expect(
-        page.getByText('Any changes you made to the YAML configuration will be lost.')
+        page.getByText(/any changes you made to the YAML configuration will be lost/i)
       ).toBeVisible();
 
-      await page.getByRole('button', { name: 'Yes' }).click();
+      await page.getByRole('button', { name: /Yes/i }).click();
 
       // Back to review page
-      await expect(page.getByRole('button', { name: 'Edit in YAML' })).toBeVisible();
+      await expect(page.getByRole('button', { name: /Edit in YAML/i })).toBeVisible();
       await expect(page.locator('.monaco-editor')).not.toBeVisible();
     });
 
@@ -46,9 +46,9 @@ test.describe('ROSA Wizard - YAML Editor', () => {
       await navigateToYamlEditor(page);
 
       await page
-        .getByRole('button', { name: 'Discard changes and go back to Review step' })
+        .getByRole('button', { name: /Discard changes and go back to Review step/i })
         .click();
-      await page.getByRole('button', { name: 'Cancel' }).click();
+      await page.getByRole('button', { name: /Cancel/i }).click();
 
       // Still in YAML editor
       await expect(page.locator('.monaco-editor')).toBeVisible();
@@ -87,7 +87,7 @@ test.describe('ROSA Wizard - YAML Editor', () => {
     test('schema panel toggle button is available', async ({ page }) => {
       await navigateToYamlEditor(page);
 
-      const toggleButton = page.getByRole('button', { name: 'Toggle schema panel' }).first();
+      const toggleButton = page.getByRole('button', { name: /Toggle schema panel/i }).first();
       await toggleButton.waitFor({ state: 'visible', timeout: 10000 });
 
       // Button should be visible and enabled
@@ -101,14 +101,14 @@ test.describe('ROSA Wizard - YAML Editor', () => {
       await navigateToYamlEditor(page);
 
       // The footer should show "Create cluster" button when in YAML editor
-      await expect(page.getByRole('button', { name: 'Create cluster' })).toBeVisible();
+      await expect(page.getByRole('button', { name: /Create cluster/i })).toBeVisible();
     });
 
     test('cancel button is visible', async ({ page }) => {
       await navigateToYamlEditor(page);
 
       // Cancel button should be available
-      await expect(page.getByRole('button', { name: 'Cancel cluster creation' })).toBeVisible();
+      await expect(page.getByRole('button', { name: /Cancel cluster creation/i })).toBeVisible();
     });
   });
 });
