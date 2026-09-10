@@ -7,6 +7,7 @@ import { RosaHcpWizardValidationProvider } from './rosaHcpWizardValidationContex
 import { useRosaHcpWizardValidators } from './stringsProvider/RosaHcpWizardStringsContext';
 import { getClusterValidationSchemaDefaultValues } from './yupSchemas';
 import { WizardConfigProvider } from './WizardConfigContext';
+import { DocsVersionProvider } from './ROSAHCPWizardDocsVersionProvider';
 
 export function RosaHcpWizardFormProvider(props: RosaHCPWizardProps) {
   const { config = {}, ...restProps } = props;
@@ -21,12 +22,14 @@ export function RosaHcpWizardFormProvider(props: RosaHCPWizardProps) {
   });
 
   return (
-    <WizardConfigProvider config={config}>
-      <FormProvider {...methods}>
-        <RosaHcpWizardValidationProvider>
-          <ROSAHCPWizardBody {...restProps} />
-        </RosaHcpWizardValidationProvider>
-      </FormProvider>
-    </WizardConfigProvider>
+    <DocsVersionProvider docsVersions={props?.docsVersions}>
+      <WizardConfigProvider config={config}>
+        <FormProvider {...methods}>
+          <RosaHcpWizardValidationProvider>
+            <ROSAHCPWizardBody {...restProps} />
+          </RosaHcpWizardValidationProvider>
+        </FormProvider>
+      </WizardConfigProvider>
+    </DocsVersionProvider>
   );
 }

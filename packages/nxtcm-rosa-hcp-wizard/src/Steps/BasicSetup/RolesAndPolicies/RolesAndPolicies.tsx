@@ -14,7 +14,7 @@ import { OIDCConfigHint, OIDCConfigHintProduct } from '../../../components/OIDCC
 import { useWatch } from 'react-hook-form';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import ExternalLink from '../../../components/ExternalLink';
-import { getDocsVersion } from '../../../constants/links';
+import { useGetDocsVersion } from '../../../constants/links';
 import { ROSAHCPCluster, ROSAHCPWizardData, SelectedSecret } from '../../../types';
 import { useDependentRoles } from './useDependentRoles';
 import { clusterValidationSchema } from '../../../yupSchemas';
@@ -53,7 +53,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   const rosaCommand = useRosaCommand();
 
   const clusterVersion = useWatch({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
-  const links = getDocsVersion(clusterVersion);
+  const links = useGetDocsVersion(clusterVersion);
 
   const hasNoRoles = !roles.isFetching && !roles.error && roles.data.length === 0;
   const showMissingArnsError = hasNoRoles || isIncompleteRoleSet;

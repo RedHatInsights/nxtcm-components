@@ -2,7 +2,7 @@ import { Alert } from '@patternfly/react-core';
 import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
-import { getDocsVersion } from '../../../constants/links';
+import { useGetDocsVersion } from '../../../constants/links';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { clusterValidationSchema } from '../../../yupSchemas';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -23,7 +23,7 @@ export const ClusterWideProxy = () => {
   const disableNoProxyDomains = !isHttpValid && !isHttpsValid;
 
   const clusterVersion = useWatch({ name: FIELD_NAME.CLUSTER_VERSION });
-  const links = getDocsVersion(clusterVersion);
+  const links = useGetDocsVersion(clusterVersion);
 
   return (
     <Section label={cw.sectionLabel} description={cw.intro}>
