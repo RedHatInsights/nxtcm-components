@@ -72,7 +72,7 @@ See `createTemplateBasedGenerator` in the test fixtures for a full reference imp
 ## Usage
 
 ```tsx
-import '@redhat-cloud-services/nxtcm-rosa-hcp-wizard/dist/nxtcm-rosa-hcp-wizard.css';
+import '@redhat-cloud-services/nxtcm-rosa-hcp-wizard/index.css';
 import { RosaHCPWizard } from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
 import type {
   ROSAHCPCluster,
@@ -108,23 +108,10 @@ export const CreateClusterWizard = ({ wizardData }: { wizardData: ROSAHCPWizardD
 - `RosaHCPWizardProps` - wizard component props
 - `ROSAHCPCluster` - submitted cluster payload shape
 - `Resource` - data, loading, and error wrapper used by host apps for wizard resources
-- `RosaHcpWizardStringsProvider` - context provider for label and validator strings
-- `useRosaHcpWizardStrings` - read UI strings in custom extensions
-- `useRosaHcpWizardValidators` - read validator message strings
-- `defaultRosaHcpWizardStrings` - default English UI copy
-- `defaultRosaHcpWizardValidatorStrings` - default English validator messages
-- `mergeRosaHcpWizardStrings` - merge partial UI string overrides
-- `buildRosaHcpWizardStringBundles` - build merged UI and validator string bundles
-- `clusterValidationSchema` - Yup schema for the full wizard form
-- `getClusterValidationSchemaDefaultValues` - default form values from the schema
-- `wizardFieldMetaByPath` - field metadata by schema path
-- `detailsFields` - Details step field schemas
-- `rolesAndPoliciesFields` - Roles and policies step field schemas
-- `machinePoolsFields` - Machine pools step field schemas
-- `networkingFields` - Networking step field schemas
-- `clusterWideProxyFields` - Cluster-wide proxy step field schemas
-- `encryptionFields` - Encryption step field schemas
-- `clusterUpdatesFields` - Cluster updates step field schemas
+- `WizardConfig` / `STEP_IDS` / `FIELD_NAME` - optional host-app step and field hiding
+- `RosaHcpWizardStringsInput` - partial UI string overrides passed via the `strings` prop
+- `YamlResourceGenerator` - host-supplied YAML render/validate contract
+- `splitYamlDocuments` / `findLineForPath` / `yamlExceptionToValidationError` - helpers for implementing `validateYaml`
 
 ## Publishing
 

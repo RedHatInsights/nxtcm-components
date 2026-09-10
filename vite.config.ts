@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import dts from 'unplugin-dts/vite';
 import path from 'path';
 import { resolve } from 'path';
 const repoRoot = __dirname;
@@ -83,7 +84,26 @@ const resolveUmdGlobal = (id: string): string => {
 // https://vitejs.dev/config/
 export default defineConfig({
   root: libRoot,
-  plugins: [react()],
+  plugins: [
+    react(),
+    dts({
+      processor: 'ts',
+      tsconfigPath: resolve(libRoot, 'tsconfig.json'),
+      bundleTypes: true,
+      exclude: [
+        '**/*.spec.tsx',
+        '**/*.spec-helpers.tsx',
+        '**/*.stories.tsx',
+        '**/*.stories.helpers.ts',
+        '**/*.fixtures.ts',
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        '**/*.test-data.ts',
+        '**/*StorybookHelpers.tsx',
+        '**/test/**',
+      ],
+    }),
+  ],
   resolve: {
     alias: {
       '@': path.resolve(repoRoot, './'),
@@ -118,12 +138,15 @@ export default defineConfig({
         inlineDynamicImports: true,
         globals: resolveUmdGlobal,
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name === 'style.css') return 'index.css';
-          return assetInfo.name || '';
+          const assetNames = assetInfo.names ?? (assetInfo.name ? [assetInfo.name] : []);
+          if (assetNames.some((name) => name.endsWith('.css'))) {
+            return 'index.css';
+          }
+          return assetNames[0] || '';
         },
       },
     },
     sourcemap: true,
-    emptyOutDir: false,
+    emptyOutDir: true,
   },
 });
