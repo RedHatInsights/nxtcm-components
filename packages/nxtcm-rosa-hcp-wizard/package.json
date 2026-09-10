@@ -12,6 +12,16 @@
   "main": "dist/index.umd.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.umd.js"
+    },
+    "./index.css": "./dist/index.css",
+    "./dist/nxtcm-rosa-hcp-wizard.css": "./dist/index.css",
+    "./package.json": "./package.json"
+  },
   "files": [
     "dist",
     "README.md",
@@ -52,7 +62,7 @@
   "scripts": {
     "prepack": "cp ../../LICENSE LICENSE",
     "postpack": "rm -f LICENSE",
-    "build": "rm -rf dist && tsc && NXTCM_LIB_NAME=NXTCM-ROSA-HCP-WIZARD vite build --config ../../vite.config.ts",
+    "build": "rm -rf dist && NXTCM_LIB_NAME=NXTCM-ROSA-HCP-WIZARD vite build --config ../../vite.config.ts",
     "type-check": "tsc --noEmit",
     "lint": "eslint --config ../../.eslintrc.json 'src/**/*.{ts,tsx}'",
     "lint:fix": "eslint --config ../../.eslintrc.json 'src/**/*.{ts,tsx}' --fix",

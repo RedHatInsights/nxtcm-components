@@ -57,11 +57,12 @@ export const MyComponent = ({ title, onSave }: MyComponentProps): React.ReactEle
 
 ## exports
 
-both barrel exports are required:
-- update the component's local barrel (`ComponentName/index.ts`)
-- update the package/root barrel where the folder is exported:
-  - `packages/nxtcm-dashboard/src/index.ts`
-  - `packages/nxtcm-rosa-hcp-wizard/src/index.ts`
+every component has a local barrel (`ComponentName/index.ts`).
+
+package barrels differ:
+
+- dashboard widgets are public API — also re-export from `packages/nxtcm-dashboard/src/index.ts`
+- the ROSA HCP wizard package barrel (`packages/nxtcm-rosa-hcp-wizard/src/index.ts`) is the public entry only (`RosaHCPWizard`, public types, and host-app integration helpers). do not add internal fields, steps, or yup schemas there
 
 component local barrel (`ComponentName/index.ts`):
 
@@ -71,11 +72,10 @@ export { MyComponent } from './MyComponent';
 export type { MyComponentProps } from './MyComponent';
 ```
 
-package/root barrel example:
+dashboard package barrel example:
 
 ```tsx
-// in packages/.../src/index.ts
-// this imports the folder and resolves through ComponentName/index.ts
+// in packages/nxtcm-dashboard/src/index.ts
 export { MyComponent } from './MyComponent';
 export type { MyComponentProps } from './MyComponent';
 ```
@@ -83,6 +83,6 @@ export type { MyComponentProps } from './MyComponent';
 ## checklist before done
 
 - [ ] prop interface exported with JSDoc
-- [ ] local barrel and package/root barrel both updated
+- [ ] local barrel updated (and dashboard package barrel if it is a public widget)
 - [ ] no `any`, no inline types, no CSS class selectors in tests
 - [ ] story and CT spec pass (see `storybook.md` and `playwright-ct.md`)

@@ -66,10 +66,10 @@ Each package's build script sets the env var and points at the shared config:
 
 ```bash
 # packages/nxtcm-dashboard/package.json → scripts.build
-rm -rf dist && tsc && NXTCM_LIB_NAME=NXTCM-DASHBOARD vite build --config ../../vite.config.ts
+rm -rf dist && NXTCM_LIB_NAME=NXTCM-DASHBOARD vite build --config ../../vite.config.ts
 
 # packages/nxtcm-rosa-hcp-wizard/package.json → scripts.build
-rm -rf dist && tsc && NXTCM_LIB_NAME=NXTCM-ROSA-HCP-WIZARD vite build --config ../../vite.config.ts
+rm -rf dist && NXTCM_LIB_NAME=NXTCM-ROSA-HCP-WIZARD vite build --config ../../vite.config.ts
 ```
 
 The root `npm run build` runs the two workspace builds in sequence:
@@ -88,8 +88,8 @@ Each build produces:
 |------|--------|---------|
 | `dist/index.js` | ESM | tree-shakeable import for modern bundlers |
 | `dist/index.umd.js` | UMD | legacy/CDN consumption |
-| `dist/<kebab-lib-name>.css` | CSS | component styles (e.g. `nxtcm-dashboard.css`) |
-| `dist/index.d.ts` (+ co-located `*.d.ts`) | types | TypeScript declarations (via `tsc`) |
+| `dist/index.css` | CSS | component styles |
+| `dist/index.d.ts` | types | bundled TypeScript declarations (via `unplugin-dts`) |
 
 ### What gets externalized
 
@@ -103,12 +103,14 @@ Monaco is only a peer dep of the wizard package, not the root or dashboard.
 
 ### TypeScript compilation
 
-Each package has its own `tsconfig.json` that extends the root. During build:
+Each package has its own `tsconfig.json` that extends the root. During build, Vite owns `dist/`:
 
-1. `tsc` runs first to emit `.d.ts` type declarations into `dist/`
-2. `vite build` runs second to bundle the JS + CSS
+1. Vite bundles JS + CSS into `dist/index.js` / `dist/index.umd.js`
+2. `unplugin-dts` (`bundleTypes: true`) rolls public types into a single `dist/index.d.ts`
 
-The root `tsconfig.json` includes all workspace packages for IDE type-checking and `npm run type-check`, but each package's tsconfig scopes its own build output.
+`tsc` is not part of the package build. Use `npm run type-check` (`tsc --noEmit`) for compilation checking.
+
+The root `tsconfig.json` includes all workspace packages for IDE type-checking and `npm run type-check`, but each package's tsconfig scopes its own sources.
 
 ### Path aliases
 
