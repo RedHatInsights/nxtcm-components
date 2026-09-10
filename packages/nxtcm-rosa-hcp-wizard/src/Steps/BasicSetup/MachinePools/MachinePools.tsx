@@ -10,7 +10,7 @@ import {
 import { Section } from '../../../components/Section';
 import { FieldWrapper } from '../../../components/FieldWrapper';
 import ExternalLink from '../../../components/ExternalLink';
-import { getDocsVersion } from '../../../constants/links';
+import { useGetDocsVersion } from '../../../constants/links';
 import { WizCheckbox, WizNumberInput, WizSelect } from '../../../components/WizFields';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { clusterValidationSchema } from '../../../yupSchemas';
@@ -48,7 +48,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
   const maxAutoscalingNodes = getAutoscalingMaxNodes(clusterVersion);
   const isComputeCountHidden = useIsFieldHidden(FIELD_NAME.NODES_COMPUTE);
 
-  const links = getDocsVersion(clusterVersion);
+  const links = useGetDocsVersion(clusterVersion);
 
   const selectedVPC = useMemo(
     () => resolveSelectedVpc(selectedVpcRaw, vpcList.data),

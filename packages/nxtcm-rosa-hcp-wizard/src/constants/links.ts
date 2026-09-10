@@ -1,3 +1,5 @@
+import { useDocsVersions } from '../ROSAHCPWizardDocsVersionProvider';
+
 const redHatDocsBaseUrl = 'https://docs.redhat.com/en/documentation';
 const redHatBaseUrl = 'https://access.redhat.com/';
 const redHatSecurityBaseUrl = `${redHatBaseUrl}security/`;
@@ -39,8 +41,11 @@ export const awsLinks = {
 };
 
 const FALLBACK_DOCS_MAJOR = '4';
-const PUBLISHED_DOCS_MAJORS = new Set([FALLBACK_DOCS_MAJOR]);
-export const getDocsVersion = (clusterVersion?: string): LinksType => {
+// has to be a hook to satisfy eslint
+export const useGetDocsVersion = (clusterVersion?: string): LinksType => {
+  const publishedDocs = useDocsVersions();
+
+  const PUBLISHED_DOCS_MAJORS = new Set([FALLBACK_DOCS_MAJOR, ...publishedDocs]);
   const requestedDocsClusterVersion = clusterVersion ? clusterVersion.split('.')[0] : '4';
   const docsVersion =
     requestedDocsClusterVersion && PUBLISHED_DOCS_MAJORS.has(requestedDocsClusterVersion)

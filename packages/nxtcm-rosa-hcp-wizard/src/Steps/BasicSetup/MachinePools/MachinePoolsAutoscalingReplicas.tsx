@@ -2,7 +2,7 @@ import { Split, SplitItem } from '@patternfly/react-core';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { ROSAHCPCluster } from '../../../types';
 import ExternalLink from '../../../components/ExternalLink';
-import { getDocsVersion } from '../../../constants/links';
+import { useGetDocsVersion } from '../../../constants/links';
 import { WizNumberInput } from '../../../components/WizFields';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { clusterValidationSchema, minReplicasSchema } from '../../../yupSchemas';
@@ -13,7 +13,7 @@ const minReplicasUiMin = minReplicasSchema.getDefault() as number;
 function AutoscalingReplicasLabelHelp({ helpText }: { helpText: string }) {
   const a = useRosaHcpWizardStrings().autoscaling;
   const clusterVersion = useWatch({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
-  const links = getDocsVersion(clusterVersion);
+  const links = useGetDocsVersion(clusterVersion);
   return (
     <>
       {helpText}{' '}
