@@ -9,12 +9,7 @@ export {
   useRosaHcpWizardValidators,
 } from './stringsProvider/RosaHcpWizardStringsContext';
 export * from './yupSchemas';
-export type {
-  YamlResourceGenerator,
-  ResourceSchema,
-  ValidationError,
-  YamlDocumentChunk,
-} from './Steps/YamlEditor/types';
+export type { ResourceSchema, ValidationError, YamlDocumentChunk } from './Steps/YamlEditor/types';
 export { RosaHcpYamlMonacoLoader } from './Steps/YamlEditor/RosaHcpYamlMonacoLoader';
 export type { MonacoYamlOptions } from 'monaco-yaml';
 export {
