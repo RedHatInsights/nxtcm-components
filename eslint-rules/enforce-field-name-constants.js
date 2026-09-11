@@ -19,14 +19,6 @@
 
 const path = require('path');
 
-/**
- * Imports `FIELD_NAME` directly from the wizard constants source file and
- * builds a reverse map: string value → FIELD_NAME constant path.
- *
- * This keeps the ESLint rule in sync with FIELD_NAME automatically — when
- * new fields are added to the FIELD_NAME object the rule picks them up
- * without any manual changes.
- */
 function buildKnownFieldNames() {
   const constantsPath = path.resolve(
     __dirname,
