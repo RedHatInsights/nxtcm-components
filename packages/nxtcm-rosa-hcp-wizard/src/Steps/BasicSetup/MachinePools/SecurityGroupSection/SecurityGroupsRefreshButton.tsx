@@ -1,5 +1,5 @@
 import { Button, Spinner } from '@patternfly/react-core';
-import RedoIcon from '@patternfly/react-icons/dist/esm/icons/redo-icon';
+import { RedoIcon } from '@patternfly/react-icons/dist/esm/icons/redo-icon';
 
 import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWizardStringsContext';
 

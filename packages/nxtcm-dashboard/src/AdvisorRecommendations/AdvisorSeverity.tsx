@@ -1,9 +1,9 @@
 import React from 'react';
 import { Button, Flex, FlexItem, Label, Skeleton, Title } from '@patternfly/react-core';
-import SeverityCriticalIcon from '@patternfly/react-icons/dist/esm/icons/severity-critical-icon';
-import SeverityImportantIcon from '@patternfly/react-icons/dist/esm/icons/severity-important-icon';
-import EqualsIcon from '@patternfly/react-icons/dist/esm/icons/equals-icon';
-import SeverityMinorIcon from '@patternfly/react-icons/dist/esm/icons/severity-minor-icon';
+import { SeverityCriticalIcon } from '@patternfly/react-icons/dist/esm/icons/severity-critical-icon';
+import { SeverityImportantIcon } from '@patternfly/react-icons/dist/esm/icons/severity-important-icon';
+import { EqualsIcon } from '@patternfly/react-icons/dist/esm/icons/equals-icon';
+import { SeverityMinorIcon } from '@patternfly/react-icons/dist/esm/icons/severity-minor-icon';
 import styles from './AdvisorRecommendations.module.scss';
 
 export type SeverityCounts = {

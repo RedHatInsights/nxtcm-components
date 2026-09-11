@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
-import ClusterIcon from '@patternfly/react-icons/dist/esm/icons/cluster-icon';
-import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
-import ChartBarIcon from '@patternfly/react-icons/dist/esm/icons/chart-bar-icon';
-import OutlinedClockIcon from '@patternfly/react-icons/dist/esm/icons/outlined-clock-icon';
-import ConnectedIcon from '@patternfly/react-icons/dist/esm/icons/connected-icon';
-import SyncAltIcon from '@patternfly/react-icons/dist/esm/icons/sync-alt-icon';
-import LightbulbIcon from '@patternfly/react-icons/dist/esm/icons/lightbulb-icon';
-import TachometerAltIcon from '@patternfly/react-icons/dist/esm/icons/tachometer-alt-icon';
-import CubesIcon from '@patternfly/react-icons/dist/esm/icons/cubes-icon';
-import DollarSignIcon from '@patternfly/react-icons/dist/esm/icons/dollar-sign-icon';
+import { ClusterIcon } from '@patternfly/react-icons/dist/esm/icons/cluster-icon';
+import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
+import { ChartBarIcon } from '@patternfly/react-icons/dist/esm/icons/chart-bar-icon';
+import { OutlinedClockIcon } from '@patternfly/react-icons/dist/esm/icons/outlined-clock-icon';
+import { ConnectedIcon } from '@patternfly/react-icons/dist/esm/icons/connected-icon';
+import { SyncAltIcon } from '@patternfly/react-icons/dist/esm/icons/sync-alt-icon';
+import { LightbulbIcon } from '@patternfly/react-icons/dist/esm/icons/lightbulb-icon';
+import { TachometerAltIcon } from '@patternfly/react-icons/dist/esm/icons/tachometer-alt-icon';
+import { CubesIcon } from '@patternfly/react-icons/dist/esm/icons/cubes-icon';
+import { DollarSignIcon } from '@patternfly/react-icons/dist/esm/icons/dollar-sign-icon';
 import {
   ExtendedTemplateConfig,
   WidgetLayout,

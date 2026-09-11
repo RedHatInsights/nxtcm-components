@@ -95,8 +95,6 @@ export default [
       // Module aliases are resolved by the TypeScript and Vite toolchains.
       // TypeScript/Vite aliases are causing issues
       'import/no-unresolved': 'off',
-      // Disabling because of too many issues. They will be addressed separately by FCN-724
-      'import/no-named-as-default': 'off',
     },
   },
 

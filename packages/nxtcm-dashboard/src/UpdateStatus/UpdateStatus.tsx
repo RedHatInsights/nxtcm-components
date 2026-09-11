@@ -1,7 +1,7 @@
 import { Divider, Flex, FlexItem, Skeleton } from '@patternfly/react-core';
-import CheckCircleIcon from '@patternfly/react-icons/dist/esm/icons/check-circle-icon';
-import InProgressIcon from '@patternfly/react-icons/dist/esm/icons/in-progress-icon';
-import SyncAltIcon from '@patternfly/react-icons/dist/esm/icons/sync-alt-icon';
+import { CheckCircleIcon } from '@patternfly/react-icons/dist/esm/icons/check-circle-icon';
+import { InProgressIcon } from '@patternfly/react-icons/dist/esm/icons/in-progress-icon';
+import { SyncAltIcon } from '@patternfly/react-icons/dist/esm/icons/sync-alt-icon';
 import React from 'react';
 import styles from './UpdateStatus.module.scss';
 

@@ -9,8 +9,8 @@ import {
   StackItem,
   useWizardContext,
 } from '@patternfly/react-core';
-import LockIcon from '@patternfly/react-icons/dist/esm/icons/lock-icon';
-import PencilAltIcon from '@patternfly/react-icons/dist/esm/icons/pencil-alt-icon';
+import { LockIcon } from '@patternfly/react-icons/dist/esm/icons/lock-icon';
+import { PencilAltIcon } from '@patternfly/react-icons/dist/esm/icons/pencil-alt-icon';
 import { useWatch } from 'react-hook-form';
 
 import type { ROSAHCPCluster, ROSAHCPWizardData } from '../../types';
