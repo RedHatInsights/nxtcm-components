@@ -1,0 +1,37 @@
+/* Schema-field tree node styles — PatternFly global design tokens. */
+
+.rosa-hcp-schema-field__row {
+  padding-block-end: var(--pf-t--global--spacer--sm);
+  border-block-end: 1px solid var(--pf-t--global--border--color--default);
+}
+
+.rosa-hcp-schema-field__toggle {
+  padding: 0;
+  min-width: auto;
+}
+
+.rosa-hcp-schema-field__spacer {
+  display: inline-block;
+  inline-size: var(--pf-t--global--spacer--md);
+  flex-shrink: 0;
+}
+
+.rosa-hcp-schema-field__content {
+  min-width: 0;
+}
+
+.rosa-hcp-schema-field__name {
+  font-size: var(--pf-t--global--font--size--sm);
+  font-weight: var(--pf-t--global--font--weight--body--bold);
+  word-break: break-all;
+}
+
+.rosa-hcp-schema-field__description {
+  color: var(--pf-t--global--text--color--subtle);
+  margin-block-start: var(--pf-t--global--spacer--xs);
+  display: block;
+}
+
+.rosa-hcp-schema-field__enum-list {
+  margin-block-start: var(--pf-t--global--spacer--xs);
+}

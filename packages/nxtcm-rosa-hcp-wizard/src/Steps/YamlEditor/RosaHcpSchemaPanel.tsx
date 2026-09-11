@@ -7,6 +7,8 @@ import {
   DrawerHead,
   DrawerPanelBody,
   DrawerPanelContent,
+  Flex,
+  FlexItem,
   Label,
   SearchInput,
   Stack,
@@ -18,6 +20,8 @@ import ChevronDownIcon from '@patternfly/react-icons/dist/esm/icons/chevron-down
 import type { JSONSchema } from 'monaco-yaml';
 
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
+
+import './RosaHcpSchemaPanel.css';
 
 type SchemaProperty = {
   type?: string | string[];
@@ -59,15 +63,17 @@ const SchemaField = ({ name, prop, depth = 0 }: SchemaFieldProps) => {
     prop.type === 'object' && prop.properties && Object.keys(prop.properties).length > 0;
 
   return (
-    <StackItem style={depth > 0 ? { paddingLeft: `${depth * 16}px` } : undefined}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: '8px',
-          paddingBottom: '8px',
-          borderBottom: '1px solid var(--pf-t--global--border--color--default)',
-        }}
+    <StackItem
+      style={
+        depth > 0
+          ? { paddingInlineStart: `calc(var(--pf-t--global--spacer--md) * ${depth})` }
+          : undefined
+      }
+    >
+      <Flex
+        alignItems={{ default: 'alignItemsFlexStart' }}
+        gap={{ default: 'gapSm' }}
+        className="rosa-hcp-schema-field__row"
       >
         {hasChildren ? (
           <Button
@@ -75,48 +81,47 @@ const SchemaField = ({ name, prop, depth = 0 }: SchemaFieldProps) => {
             size="sm"
             aria-label={expanded ? 'Collapse' : 'Expand'}
             onClick={() => setExpanded((v) => !v)}
-            style={{ padding: 0, minWidth: 'auto', marginTop: '2px' }}
+            className="rosa-hcp-schema-field__toggle"
           >
             {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
           </Button>
         ) : (
-          <span style={{ width: '16px', display: 'inline-block', flexShrink: 0 }} />
+          <span className="rosa-hcp-schema-field__spacer" />
         )}
 
-        <div style={{ flex: '1 1 auto', minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-            <code style={{ fontSize: '13px', fontWeight: 600, wordBreak: 'break-all' }}>
-              {name}
-            </code>
+        <FlexItem flex={{ default: 'flex_1' }} className="rosa-hcp-schema-field__content">
+          <Flex
+            alignItems={{ default: 'alignItemsCenter' }}
+            gap={{ default: 'gapSm' }}
+            flexWrap={{ default: 'wrap' }}
+          >
+            <code className="rosa-hcp-schema-field__name">{name}</code>
             {typeLabel && (
               <Label isCompact color={typeVariant}>
                 {typeLabel}
               </Label>
             )}
-          </div>
+          </Flex>
           {prop.description && (
-            <Content
-              component="small"
-              style={{
-                color: 'var(--pf-t--global--text--color--subtle)',
-                marginTop: '2px',
-                display: 'block',
-              }}
-            >
+            <Content component="small" className="rosa-hcp-schema-field__description">
               {prop.description}
             </Content>
           )}
           {prop.enum && (
-            <div style={{ marginTop: '4px', display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+            <Flex
+              gap={{ default: 'gapXs' }}
+              flexWrap={{ default: 'wrap' }}
+              className="rosa-hcp-schema-field__enum-list"
+            >
               {prop.enum.map((v, i) => (
                 <Label key={i} isCompact variant="outline">
                   {String(v)}
                 </Label>
               ))}
-            </div>
+            </Flex>
           )}
-        </div>
-      </div>
+        </FlexItem>
+      </Flex>
 
       {hasChildren && expanded && prop.properties && (
         <Stack hasGutter>
