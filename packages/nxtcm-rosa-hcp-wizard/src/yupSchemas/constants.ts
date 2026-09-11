@@ -150,7 +150,7 @@ export const YUP = {
         PLACEHOLDER_KEY: 'clusterWideProxy.httpPlaceholder',
         STEP_ID: STEP_IDS.CLUSTER_WIDE_PROXY,
         FIELD_TYPE: 'text',
-        RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: ['no_proxy_domains'],
+        RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: [FIELD_NAME.NO_PROXY_DOMAINS],
       },
     },
     HTTPS_PROXY_URL_SCHEMA: {
@@ -254,7 +254,7 @@ export const YUP = {
         ],
         RECONCILE_VALUE_WITH_OPTIONS: true,
         RESETS_FIELDS_TO_DEFAULT_ON_CHANGE: [
-          'machine_pools_subnets',
+          FIELD_NAME.MACHINE_POOLS_SUBNETS,
           FIELD_NAME.SECURITY_GROUPS_WORKER,
         ],
         DERIVED_FIELDS_SYNC_ON_CHANGE: 'vpcSecurityGroupsWorkerSelection',
