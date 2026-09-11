@@ -54,10 +54,6 @@ function buildKnownFieldNames() {
   }
 }
 
-/**
- * Map of known form field name string values → the FIELD_NAME constant path.
- * Built by importing `FIELD_NAME` from `packages/nxtcm-rosa-hcp-wizard/src/constants/index.ts`.
- */
 const KNOWN_FIELD_NAMES = buildKnownFieldNames();
 
 /**
