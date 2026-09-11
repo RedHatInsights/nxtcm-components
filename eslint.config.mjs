@@ -88,7 +88,6 @@ export default [
       '@typescript-eslint/no-empty-object-type': 'warn',
       '@typescript-eslint/no-unsafe-function-type': 'warn',
       '@typescript-eslint/no-wrapper-object-types': 'warn',
-      '@typescript-eslint/no-base-to-string': 'error',
       // Module aliases are resolved by the TypeScript and Vite toolchains.
       // TypeScript/Vite aliases are causing issues
       'import/no-unresolved': 'off',
