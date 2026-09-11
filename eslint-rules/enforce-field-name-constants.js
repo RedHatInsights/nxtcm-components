@@ -3,9 +3,9 @@
  * ROSA HCP wizard form field names and requires use of the corresponding
  * `FIELD_NAME` constant from `src/constants/index.ts`.
  *
- * The known-field-name map is auto-generated at load time by parsing the
- * FIELD_NAME constant from its source file, keeping it as the single source
- * of truth.
+ * The known-field-name map is built at load time by importing FIELD_NAME
+ * directly from its source file (Node >=24.15 loads TypeScript modules
+ * natively), keeping it as the single source of truth.
  *
  * Detects magic strings in:
  * - React Hook Form APIs: setValue, getValues, watch, trigger,
@@ -17,57 +17,25 @@
 
 'use strict';
 
-const fs = require('fs');
 const path = require('path');
 
 /**
- * Reads the FIELD_NAME constant from the wizard constants source file and
+ * Imports `FIELD_NAME` directly from the wizard constants source file and
  * builds a reverse map: string value → FIELD_NAME constant path.
  *
  * This keeps the ESLint rule in sync with FIELD_NAME automatically — when
  * new fields are added to the FIELD_NAME object the rule picks them up
  * without any manual changes.
  */
-function buildKnownFieldNamesFromSource() {
+function buildKnownFieldNames() {
   const constantsPath = path.resolve(
     __dirname,
     '../packages/nxtcm-rosa-hcp-wizard/src/constants/index.ts'
   );
 
-  let source;
   try {
-    source = fs.readFileSync(constantsPath, 'utf8');
-  } catch {
-    return new Map();
-  }
-
-  // Locate the FIELD_NAME assignment
-  const startMatch = source.match(/export\s+const\s+FIELD_NAME\s*=\s*/);
-  if (!startMatch) return new Map();
-
-  // Find the matching closing brace (handles nested objects)
-  const startIdx = startMatch.index + startMatch[0].length;
-  let depth = 0;
-  let endIdx = startIdx;
-  for (let i = startIdx; i < source.length; i++) {
-    if (source[i] === '{') depth++;
-    else if (source[i] === '}') {
-      depth--;
-      if (depth === 0) {
-        endIdx = i + 1;
-        break;
-      }
-    }
-  }
-
-  const objectLiteral = source.slice(startIdx, endIdx);
-  const map = new Map();
-
-  try {
-    // Safe to evaluate: FIELD_NAME contains only string literals and plain
-    // nested objects — no function calls, imports, or side effects.
-    // eslint-disable-next-line no-new-func
-    const obj = new Function(`return ${objectLiteral}`)();
+    const { FIELD_NAME } = require(constantsPath);
+    const map = new Map();
 
     (function traverse(o, prefix) {
       for (const [key, value] of Object.entries(o)) {
@@ -78,19 +46,19 @@ function buildKnownFieldNamesFromSource() {
           traverse(value, constantPath);
         }
       }
-    })(obj, '');
+    })(FIELD_NAME, '');
+
+    return map;
   } catch {
     return new Map();
   }
-
-  return map;
 }
 
 /**
  * Map of known form field name string values → the FIELD_NAME constant path.
- * Auto-generated from `packages/nxtcm-rosa-hcp-wizard/src/constants/index.ts`.
+ * Built by importing `FIELD_NAME` from `packages/nxtcm-rosa-hcp-wizard/src/constants/index.ts`.
  */
-const KNOWN_FIELD_NAMES = buildKnownFieldNamesFromSource();
+const KNOWN_FIELD_NAMES = buildKnownFieldNames();
 
 /**
  * React Hook Form APIs whose first argument is a single field name path.
