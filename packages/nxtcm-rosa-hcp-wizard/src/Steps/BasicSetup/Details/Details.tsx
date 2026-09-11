@@ -8,7 +8,7 @@ import { DetailsStepDrawer } from '../../../components/DetailsStepDrawer/Details
 import { Section } from '../../../components/Section';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../constants/links';
+import { awsLinks } from '../../../constants/links';
 import { ROSAHCPWizardData, type RosaHCPWizardProps, type ROSAHCPCluster } from '../../../types';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
@@ -145,7 +145,7 @@ export const Details = ({
               <ExternalLink
                 variant="secondary"
                 className="pf-v6-u-mt-md"
-                href={links.AWS_CONSOLE_ROSA_HOME}
+                href={awsLinks.AWS_CONSOLE_ROSA_HOME}
               >
                 {d.connectBillingLink}
               </ExternalLink>
@@ -177,7 +177,7 @@ export const Details = ({
               labelHelp={
                 <>
                   {d.regionHelpLead}{' '}
-                  <ExternalLink href={links.AWS_REGIONS}>{d.regionLearnMoreLink}</ExternalLink>
+                  <ExternalLink href={awsLinks.AWS_REGIONS}>{d.regionLearnMoreLink}</ExternalLink>
                 </>
               }
               onRefresh={

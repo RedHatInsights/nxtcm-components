@@ -26,6 +26,26 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     await expect(component.getByText(cw.learnMoreLink)).toBeVisible();
   });
 
+  test.describe('ClusterWideProxy — versioned docs link', () => {
+    const proxyDocsHref = (docsVersion: string): string =>
+      `https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/${docsVersion}/html/ovn-kubernetes_network_plugin/configuring-a-cluster-wide-proxy`;
+    const docsVersionCases = [
+      { clusterVersion: '4.16.2', docsVersion: '4', reason: 'published major' },
+      { clusterVersion: '5.1.0', docsVersion: '4', reason: 'unpublished major falls back' },
+    ] as const;
+    for (const { clusterVersion, docsVersion, reason } of docsVersionCases) {
+      test(`should link to OpenShift ${docsVersion} docs when cluster version is ${clusterVersion} (${reason})`, async ({
+        mount,
+      }) => {
+        const component = await mount(
+          <ClusterWideProxyMount defaultValues={{ cluster_version: clusterVersion }} />
+        );
+        const link = component.getByRole('link', { name: cw.learnMoreLink });
+        await expect(link).toHaveAttribute('href', proxyDocsHref(docsVersion));
+      });
+    }
+  });
+
   test('should render the configure at least 1 field alert', async ({ mount }) => {
     const component = await mount(<ClusterWideProxyMount />);
     await expect(component.getByText(cw.alertConfigureFields)).toBeVisible();
