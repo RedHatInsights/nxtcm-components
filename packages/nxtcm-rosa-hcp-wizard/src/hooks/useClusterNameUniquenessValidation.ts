@@ -49,13 +49,13 @@ export function useClusterNameUniquenessValidation({
   const applyUniqueErrorToForm = useCallback(
     (error: string | null) => {
       if (error) {
-        setError('name', { type: CLUSTER_NAME_UNIQUE_ERROR_TYPE, message: error });
+        setError(FIELD_NAME.CLUSTER_NAME, { type: CLUSTER_NAME_UNIQUE_ERROR_TYPE, message: error });
         return;
       }
 
-      const nameFieldError = getFieldState('name').error;
+      const nameFieldError = getFieldState(FIELD_NAME.CLUSTER_NAME).error;
       if (nameFieldError?.type === CLUSTER_NAME_UNIQUE_ERROR_TYPE) {
-        clearErrors('name');
+        clearErrors(FIELD_NAME.CLUSTER_NAME);
       }
     },
     [clearErrors, getFieldState, setError]
