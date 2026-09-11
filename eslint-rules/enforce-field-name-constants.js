@@ -3,75 +3,111 @@
  * ROSA HCP wizard form field names and requires use of the corresponding
  * `FIELD_NAME` constant from `src/constants/index.ts`.
  *
+ * The known-field-name map is auto-generated at load time by parsing the
+ * FIELD_NAME constant from its source file, keeping it as the single source
+ * of truth.
+ *
  * Detects magic strings in:
- * - React Hook Form APIs: setValue, getValues, watch, trigger
+ * - React Hook Form APIs: setValue, getValues, watch, trigger,
+ *   setError, clearErrors, getFieldState
  * - useWatch options ({ name: '...' })
- * - Yup schema .when() first argument
+ * - Yup schema .when() first argument (scalar or array)
  * - Wizard field metadata arrays (RESETS_FIELDS_TO_DEFAULT_ON_CHANGE, etc.)
  */
 
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
+
 /**
- * Mapping of known form field name string values → the FIELD_NAME constant
- * path that should be used instead.
+ * Reads the FIELD_NAME constant from the wizard constants source file and
+ * builds a reverse map: string value → FIELD_NAME constant path.
  *
- * Sourced from `packages/nxtcm-rosa-hcp-wizard/src/constants/index.ts`.
- * When new fields are added to the FIELD_NAME object, add them here too.
+ * This keeps the ESLint rule in sync with FIELD_NAME automatically — when
+ * new fields are added to the FIELD_NAME object the rule picks them up
+ * without any manual changes.
  */
-const KNOWN_FIELD_NAMES = new Map([
-  ['associated_aws_id', 'FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID'],
-  ['billing_account_id', 'FIELD_NAME.BILLING_ACCOUNT_ID'],
-  ['region', 'FIELD_NAME.REGION'],
-  ['name', 'FIELD_NAME.CLUSTER_NAME'],
-  ['cluster_version', 'FIELD_NAME.CLUSTER_VERSION'],
-  ['installer_role_arn', 'FIELD_NAME.INSTALLER_ROLE_ARN'],
-  ['worker_role_arn', 'FIELD_NAME.WORKER_ROLE_ARN'],
-  ['support_role_arn', 'FIELD_NAME.SUPPORT_ROLE_ARN'],
-  ['byo_oidc_config_id', 'FIELD_NAME.BYO_OIDC_CONFIG_ID'],
-  ['custom_operator_roles_prefix', 'FIELD_NAME.CUSTOM_OPERATOR_ROLES_PREFIX'],
-  ['cluster_privacy', 'FIELD_NAME.CLUSTER_PRIVACY_FIELD.NAME'],
-  [
-    'cluster_privacy_public_subnet_id',
-    'FIELD_NAME.CLUSTER_PRIVACY_FIELD.PUBLIC_SUBNET_ID',
-  ],
-  ['configure_proxy', 'FIELD_NAME.CONFIGURE_PROXY'],
-  ['cidr_default', 'FIELD_NAME.CIDR_DEFAULT'],
-  ['network_machine_cidr', 'FIELD_NAME.NETWORK_MACHINE_CIDR'],
-  ['network_service_cidr', 'FIELD_NAME.NETWORK_SERVICE_CIDR'],
-  ['network_pod_cidr', 'FIELD_NAME.NETWORK_POD_CIDR'],
-  ['network_host_prefix', 'FIELD_NAME.NETWORK_HOST_PREFIX'],
-  ['selected_vpc', 'FIELD_NAME.SELECTED_VPC'],
-  ['machine_pools_subnets', 'FIELD_NAME.MACHINE_POOLS_SUBNETS'],
-  [
-    'machine_pools_subnets.0.machine_pool_subnet',
-    'FIELD_NAME.SELECTED_MACHINE_POOL',
-  ],
-  ['machine_type', 'FIELD_NAME.MACHINE_TYPE'],
-  ['autoscaling', 'FIELD_NAME.AUTOSCALING'],
-  ['nodes_compute', 'FIELD_NAME.NODES_COMPUTE'],
-  ['min_replicas', 'FIELD_NAME.MIN_REPLICAS'],
-  ['max_replicas', 'FIELD_NAME.MAX_REPLICAS'],
-  ['imds', 'FIELD_NAME.IMDS'],
-  ['compute_root_volume', 'FIELD_NAME.COMPUTE_ROOT_VOLUME'],
-  ['security_groups_worker', 'FIELD_NAME.SECURITY_GROUPS_WORKER'],
-  ['http_proxy_url', 'FIELD_NAME.HTTP_PROXY_URL'],
-  ['https_proxy_url', 'FIELD_NAME.HTTPS_PROXY_URL'],
-  ['no_proxy_domains', 'FIELD_NAME.NO_PROXY_DOMAINS'],
-  ['additional_trust_bundle', 'FIELD_NAME.ADDITIONAL_TRUST_BUNDLE'],
-  ['upgrade_policy', 'FIELD_NAME.UPGRADE_POLICY'],
-  ['upgrade_schedule', 'FIELD_NAME.UPGRADE_SCHEDULE.NAME'],
-  ['upgrade-schedule-hour', 'FIELD_NAME.UPGRADE_SCHEDULE.HOUR'],
-  ['upgrade-schedule-day', 'FIELD_NAME.UPGRADE_SCHEDULE.DAY'],
-  ['encryption_keys', 'FIELD_NAME.ENCRYPTION.ENCRYPTION_KEYS'],
-  ['kms_key_arn', 'FIELD_NAME.ENCRYPTION.KMS_KEY_ARN'],
-  ['etcd_encryption', 'FIELD_NAME.ENCRYPTION.ETCD_ENCRYPTION'],
-  ['etcd_key_arn', 'FIELD_NAME.ENCRYPTION.ETCD_KEY_ARN'],
+function buildKnownFieldNamesFromSource() {
+  const constantsPath = path.resolve(
+    __dirname,
+    '../packages/nxtcm-rosa-hcp-wizard/src/constants/index.ts'
+  );
+
+  let source;
+  try {
+    source = fs.readFileSync(constantsPath, 'utf8');
+  } catch {
+    return new Map();
+  }
+
+  // Locate the FIELD_NAME assignment
+  const startMatch = source.match(/export\s+const\s+FIELD_NAME\s*=\s*/);
+  if (!startMatch) return new Map();
+
+  // Find the matching closing brace (handles nested objects)
+  const startIdx = startMatch.index + startMatch[0].length;
+  let depth = 0;
+  let endIdx = startIdx;
+  for (let i = startIdx; i < source.length; i++) {
+    if (source[i] === '{') depth++;
+    else if (source[i] === '}') {
+      depth--;
+      if (depth === 0) {
+        endIdx = i + 1;
+        break;
+      }
+    }
+  }
+
+  const objectLiteral = source.slice(startIdx, endIdx);
+  const map = new Map();
+
+  try {
+    // Safe to evaluate: FIELD_NAME contains only string literals and plain
+    // nested objects — no function calls, imports, or side effects.
+    // eslint-disable-next-line no-new-func
+    const obj = new Function(`return ${objectLiteral}`)();
+
+    (function traverse(o, prefix) {
+      for (const [key, value] of Object.entries(o)) {
+        const constantPath = prefix ? `${prefix}.${key}` : `FIELD_NAME.${key}`;
+        if (typeof value === 'string') {
+          map.set(value, constantPath);
+        } else if (typeof value === 'object' && value !== null) {
+          traverse(value, constantPath);
+        }
+      }
+    })(obj, '');
+  } catch {
+    return new Map();
+  }
+
+  return map;
+}
+
+/**
+ * Map of known form field name string values → the FIELD_NAME constant path.
+ * Auto-generated from `packages/nxtcm-rosa-hcp-wizard/src/constants/index.ts`.
+ */
+const KNOWN_FIELD_NAMES = buildKnownFieldNamesFromSource();
+
+/**
+ * React Hook Form APIs whose first argument is a single field name path.
+ * These do NOT accept arrays.
+ */
+const RHF_SCALAR_FUNCTIONS = new Set([
+  'setValue',
+  'setError',
+  'clearErrors',
+  'getFieldState',
 ]);
 
-/** React Hook Form function names whose first argument is a field name path. */
-const RHF_FIELD_NAME_FUNCTIONS = new Set([
-  'setValue',
+/**
+ * React Hook Form APIs whose first argument can be a single field name path
+ * OR an array of field name paths.
+ */
+const RHF_SCALAR_OR_ARRAY_FUNCTIONS = new Set([
   'getValues',
   'watch',
   'trigger',
@@ -202,14 +238,39 @@ module.exports = {
       return null;
     }
 
+    /**
+     * Checks a node that may be a scalar string or an ArrayExpression of
+     * strings (e.g. `getValues(['region', 'name'])`).
+     */
+    function checkScalarOrArray(node) {
+      if (!node) return;
+
+      if (node.type === 'ArrayExpression') {
+        for (const element of node.elements) {
+          if (element) {
+            const value = getStringValue(element);
+            if (value != null) {
+              checkStringLiteral(element, value);
+            }
+          }
+        }
+        return;
+      }
+
+      const value = getStringValue(node);
+      if (value != null) {
+        checkStringLiteral(node, value);
+      }
+    }
+
     return {
       CallExpression(node) {
         const calleeName = getCalleeName(node.callee);
         if (!calleeName || node.arguments.length === 0) return;
 
-        // 1. React Hook Form APIs: setValue, getValues, watch, trigger
-        //    First argument is the field name path.
-        if (RHF_FIELD_NAME_FUNCTIONS.has(calleeName)) {
+        // 1. RHF APIs with scalar-only field name argument:
+        //    setValue, setError, clearErrors, getFieldState
+        if (RHF_SCALAR_FUNCTIONS.has(calleeName)) {
           const firstArg = node.arguments[0];
           const value = getStringValue(firstArg);
           if (value != null) {
@@ -218,7 +279,14 @@ module.exports = {
           return;
         }
 
-        // 2. useWatch({ name: '...' })
+        // 2. RHF APIs that accept scalar OR array field name arguments:
+        //    getValues, watch, trigger
+        if (RHF_SCALAR_OR_ARRAY_FUNCTIONS.has(calleeName)) {
+          checkScalarOrArray(node.arguments[0]);
+          return;
+        }
+
+        // 3. useWatch({ name: '...' })
         if (calleeName === 'useWatch') {
           const firstArg = node.arguments[0];
           if (firstArg && firstArg.type === 'ObjectExpression') {
@@ -238,17 +306,13 @@ module.exports = {
           return;
         }
 
-        // 3. Yup .when('field_name', ...)
+        // 4. Yup .when('field_name', ...) or .when(['f1', 'f2'], ...)
         if (calleeName === 'when') {
-          const firstArg = node.arguments[0];
-          const value = getStringValue(firstArg);
-          if (value != null) {
-            checkStringLiteral(firstArg, value);
-          }
+          checkScalarOrArray(node.arguments[0]);
         }
       },
 
-      // 4. Metadata arrays: RESETS_FIELDS_TO_DEFAULT_ON_CHANGE, setDefaults, clear
+      // 5. Metadata arrays: RESETS_FIELDS_TO_DEFAULT_ON_CHANGE, setDefaults, clear
       //    String elements inside arrays assigned to these property keys.
       'ArrayExpression > Literal'(node) {
         if (typeof node.value !== 'string') return;
@@ -259,7 +323,7 @@ module.exports = {
         }
       },
 
-      // 5. Metadata ID property: ID: 'field_name'
+      // 6. Metadata ID property: ID: 'field_name'
       'Property[key.name="ID"] > Literal'(node) {
         if (typeof node.value !== 'string') return;
         checkStringLiteral(node, node.value);
