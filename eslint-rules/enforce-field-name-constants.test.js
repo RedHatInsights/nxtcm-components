@@ -44,6 +44,31 @@ ruleTester.run('enforce-field-name-constants', rule, {
       code: `schema.when(FIELD_NAME.ENCRYPTION.ENCRYPTION_KEYS, { is: 'custom' });`,
     },
 
+    // --- setError / clearErrors / getFieldState with constants ---
+    {
+      code: `setError(FIELD_NAME.CLUSTER_NAME, { type: 'x', message: 'err' });`,
+    },
+    {
+      code: `clearErrors(FIELD_NAME.REGION);`,
+    },
+    {
+      code: `getFieldState(FIELD_NAME.CLUSTER_NAME);`,
+    },
+
+    // --- Array arguments with constants ---
+    {
+      code: `getValues([FIELD_NAME.REGION, FIELD_NAME.CLUSTER_NAME]);`,
+    },
+    {
+      code: `watch([FIELD_NAME.REGION]);`,
+    },
+    {
+      code: `trigger([FIELD_NAME.CLUSTER_VERSION, FIELD_NAME.REGION]);`,
+    },
+    {
+      code: `schema.when([FIELD_NAME.REGION, FIELD_NAME.CLUSTER_NAME], { is: true });`,
+    },
+
     // --- Unknown field names (not in FIELD_NAME) should NOT be flagged ---
     {
       code: `setValue('some_other_field', value);`,
@@ -59,6 +84,21 @@ ruleTester.run('enforce-field-name-constants', rule, {
     },
     {
       code: `const obj = { ID: 'hypershift' };`,
+    },
+    {
+      code: `setError('unknown_field', { type: 'x' });`,
+    },
+    {
+      code: `clearErrors('unknown_field');`,
+    },
+    {
+      code: `getFieldState('unknown_field');`,
+    },
+    {
+      code: `getValues(['unknown1', 'unknown2']);`,
+    },
+    {
+      code: `schema.when(['unknown_dep1', 'unknown_dep2'], { is: true });`,
     },
 
     // --- Non-form contexts should NOT be flagged ---
@@ -149,6 +189,121 @@ ruleTester.run('enforce-field-name-constants', rule, {
       ],
     },
 
+    // --- React Hook Form: setError ---
+    {
+      code: `setError('region', { type: 'custom', message: 'err' });`,
+      errors: [
+        {
+          messageId: 'useFieldNameConstant',
+          data: { constant: 'FIELD_NAME.REGION', value: 'region' },
+        },
+      ],
+    },
+    {
+      code: `setError('name', { type: 'unique', message: 'taken' });`,
+      errors: [
+        {
+          messageId: 'useFieldNameConstant',
+          data: { constant: 'FIELD_NAME.CLUSTER_NAME', value: 'name' },
+        },
+      ],
+    },
+
+    // --- React Hook Form: clearErrors ---
+    {
+      code: `clearErrors('name');`,
+      errors: [
+        {
+          messageId: 'useFieldNameConstant',
+          data: { constant: 'FIELD_NAME.CLUSTER_NAME', value: 'name' },
+        },
+      ],
+    },
+
+    // --- React Hook Form: getFieldState ---
+    {
+      code: `getFieldState('name');`,
+      errors: [
+        {
+          messageId: 'useFieldNameConstant',
+          data: { constant: 'FIELD_NAME.CLUSTER_NAME', value: 'name' },
+        },
+      ],
+    },
+
+    // --- Array arguments: getValues ---
+    {
+      code: `getValues(['region', 'name']);`,
+      errors: [
+        {
+          messageId: 'useFieldNameConstant',
+          data: { constant: 'FIELD_NAME.REGION', value: 'region' },
+        },
+        {
+          messageId: 'useFieldNameConstant',
+          data: { constant: 'FIELD_NAME.CLUSTER_NAME', value: 'name' },
+        },
+      ],
+    },
+
+    // --- Array arguments: watch ---
+    {
+      code: `watch(['region']);`,
+      errors: [
+        {
+          messageId: 'useFieldNameConstant',
+          data: { constant: 'FIELD_NAME.REGION', value: 'region' },
+        },
+      ],
+    },
+
+    // --- Array arguments: trigger ---
+    {
+      code: `trigger(['cluster_version', 'region']);`,
+      errors: [
+        {
+          messageId: 'useFieldNameConstant',
+          data: {
+            constant: 'FIELD_NAME.CLUSTER_VERSION',
+            value: 'cluster_version',
+          },
+        },
+        {
+          messageId: 'useFieldNameConstant',
+          data: { constant: 'FIELD_NAME.REGION', value: 'region' },
+        },
+      ],
+    },
+
+    // --- Array arguments: Yup .when() ---
+    {
+      code: `schema.when(['cluster_privacy', 'region'], { is: true });`,
+      errors: [
+        {
+          messageId: 'useFieldNameConstant',
+          data: {
+            constant: 'FIELD_NAME.CLUSTER_PRIVACY_FIELD.NAME',
+            value: 'cluster_privacy',
+          },
+        },
+        {
+          messageId: 'useFieldNameConstant',
+          data: { constant: 'FIELD_NAME.REGION', value: 'region' },
+        },
+      ],
+    },
+
+    // --- Mixed array: one known, one unknown ---
+    {
+      code: `getValues(['region', 'unknown_field']);`,
+      errors: [
+        {
+          messageId: 'useFieldNameConstant',
+          data: { constant: 'FIELD_NAME.REGION', value: 'region' },
+        },
+      ],
+    },
+
     // --- useWatch with name property ---
     {
       code: `useWatch({ name: 'configure_proxy' });`,
@@ -184,7 +339,7 @@ ruleTester.run('enforce-field-name-constants', rule, {
       ],
     },
 
-    // --- Yup .when() ---
+    // --- Yup .when() scalar ---
     {
       code: `schema.when('cluster_privacy', { is: 'external' });`,
       errors: [
