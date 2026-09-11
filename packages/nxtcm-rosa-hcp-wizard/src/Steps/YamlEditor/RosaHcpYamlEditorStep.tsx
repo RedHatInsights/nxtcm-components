@@ -10,7 +10,7 @@ import {
 import { CodeEditor, Language } from '@patternfly/react-code-editor';
 import type { EditorDidMount } from '@patternfly/react-code-editor';
 import type * as MonacoTypes from 'monaco-editor';
-import OpenDrawerRightIcon from '@patternfly/react-icons/dist/esm/icons/open-drawer-right-icon';
+import { OpenDrawerRightIcon } from '@patternfly/react-icons/dist/esm/icons/open-drawer-right-icon';
 import { useWatch } from 'react-hook-form';
 
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';

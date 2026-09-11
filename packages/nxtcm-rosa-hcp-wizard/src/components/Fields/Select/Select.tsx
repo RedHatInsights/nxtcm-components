@@ -27,8 +27,8 @@ import {
   TextInputGroupMain,
   TextInputGroupUtilities,
 } from '@patternfly/react-core';
-import RedoIcon from '@patternfly/react-icons/dist/esm/icons/redo-icon';
-import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
+import { RedoIcon } from '@patternfly/react-icons/dist/esm/icons/redo-icon';
+import { TimesIcon } from '@patternfly/react-icons/dist/esm/icons/times-icon';
 import { toDisplayString } from './SelectOptions';
 import { extractOptionValue, type Option, type OptionGroup, type OptionType } from './SelectTypes';
 import { getStatus, isSyntheticOptionId, lowercaseFirst } from './selectFieldUtils';

@@ -12,7 +12,7 @@ import {
   Skeleton,
   Title,
 } from '@patternfly/react-core';
-import BellIcon from '@patternfly/react-icons/dist/esm/icons/bell-icon';
+import { BellIcon } from '@patternfly/react-icons/dist/esm/icons/bell-icon';
 import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import React, { useEffect, useState } from 'react';
 import styles from './NotificationsPanel.module.scss';
