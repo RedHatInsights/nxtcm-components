@@ -25,6 +25,14 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     await checkAccessibility({ component });
   });
 
+  test('should render one form with role sections', async ({ mount }) => {
+    const component = await mount(<RolesAndPoliciesMount />);
+
+    await expect(component.getByText(rp.accountRolesSection, { exact: true })).toBeVisible();
+    await expect(component.getByText(rp.operatorRolesSection, { exact: true })).toBeVisible();
+    await expect(component.locator('form')).toHaveCount(1);
+  });
+
   test('should render the Account roles section title', async ({ mount }) => {
     const component = await mount(<RolesAndPoliciesMount />);
     await expect(component.getByText(rp.accountRolesSection, { exact: true })).toBeVisible();
