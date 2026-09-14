@@ -3,7 +3,6 @@
  */
 import React, { useMemo } from 'react';
 
-import { Form } from '@patternfly/react-core';
 import { FormProvider, type Resolver, useForm } from 'react-hook-form';
 
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
@@ -112,15 +111,13 @@ export const RolesAndPoliciesMount: React.FC<RolesAndPoliciesMountProps> = ({
 
   return withRosaCt(
     <FormProvider {...methods}>
-      <Form>
-        <WizardFieldMetaChangeEffectsCtHarness wizardData={wizardData} />
-        <RolesAndPolicies
-          roles={rolesProps}
-          oidcConfig={oidcProps}
-          product={product}
-          selectedSecret={selectedSecret}
-        />
-      </Form>
+      <WizardFieldMetaChangeEffectsCtHarness wizardData={wizardData} />
+      <RolesAndPolicies
+        roles={rolesProps}
+        oidcConfig={oidcProps}
+        product={product}
+        selectedSecret={selectedSecret}
+      />
     </FormProvider>
   );
 };
