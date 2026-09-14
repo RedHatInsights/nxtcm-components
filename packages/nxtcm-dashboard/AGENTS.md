@@ -4,11 +4,29 @@ package-level context for `@redhat-cloud-services/nxtcm-dashboard`. read the roo
 
 ## what this package is
 
-PatternFly 6 dashboard widget components for the ACM and OCM console home page. each widget is a self-contained card that shows a specific metric, chart, or data view.
+PatternFly 6 dashboard widget components for the ACM and OCM console home page. Each widget is a self-contained card body that shows a specific metric, chart, or data view. The host app owns card chrome and data fetching.
 
 ## package structure
 
-dashboard widgets live in `packages/nxtcm-dashboard/src/`, one directory per widget/component.
+
+
+```text
+src/
+  Dashboard.tsx              # composition / export surface
+  LoadingPanel/              # Promise-callback async loading utility (Spinner)
+  */                         # one directory per widget (component + CT + stories + styles)
+  index.ts                   # public exports
+```
+
+widgets (examples of one folder per widget pattern): `AdvisorRecommendations`, `ClusterRecommendations`, `ClustersWithIssues`, `CostManagement`, `CVECard`, `ExpiredTrials`, `NotificationsPanel`, `ResourceUtilization`, `StorageCard`, `Subscriptions`, `Telemetry`, `TotalClusters`, `UpdateStatus`, `UpgradeRisks`.
+
+## architecture
+
+- **presentational widgets** — receive view-model props; no form state, no HTTP
+- **host-owned chrome** — `Card` / `CardHeader` / `CardTitle` come from the widgetized dashboard host, not from each widget
+- **optional `linkComponent`** — inject routing/link implementation from the consuming app when a widget needs navigation
+
+unlike the ROSA HCP wizard, this package does **not** use react-hook-form, Yup, or cascade side effects.
 
 ## data contract
 
@@ -28,6 +46,13 @@ interface WidgetProps {
 consuming apps (uhc-portal, console) call their own APIs and map responses into widget-friendly props.
 
 ## patterns to follow
+
+### adding a widget
+
+1. create `src/WidgetName/` with component, `index.ts`, CT spec, spec-helpers, story, and optional module SCSS
+2. export from `src/index.ts`
+3. keep props as a view-model (data / loading / error), so no fetch inside the widget
+4. cover loading -> error -> empty -> populated in CT and Storybook
 
 ### card structure
 
