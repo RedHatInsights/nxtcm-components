@@ -161,4 +161,10 @@ exercise the three concerns where relevant: schema validation, footer step-gatin
 
 ## domain terms
 
-ROSA (Red Hat OpenShift Service on AWS), HCP (Hosted Control Plane), OIDC, KMS, STS, CAPA (Cluster API Provider AWS), machine pool (worker node group).
+- ROSA = Red Hat OpenShift Service on AWS
+- HCP = Hosted Control Plane
+- OIDC = OpenID Connect (operator auth)
+- KMS = AWS Key Management Service
+- STS = Security Token Service
+- CAPA = Cluster API Provider AWS (CRD model)
+- machine pool = worker node group
