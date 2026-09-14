@@ -17,33 +17,29 @@
 
 'use strict';
 
-const path = require('path');
-
 function buildKnownFieldNames() {
-  const constantsPath = path.resolve(
-    __dirname,
-    '../packages/nxtcm-rosa-hcp-wizard/src/constants/index.ts'
-  );
+  const { FIELD_NAME } = require('../packages/nxtcm-rosa-hcp-wizard/src/constants/index.ts');
 
-  try {
-    const { FIELD_NAME } = require(constantsPath);
-    const map = new Map();
-
-    (function traverse(o, prefix) {
-      for (const [key, value] of Object.entries(o)) {
-        const constantPath = prefix ? `${prefix}.${key}` : `FIELD_NAME.${key}`;
-        if (typeof value === 'string') {
-          map.set(value, constantPath);
-        } else if (typeof value === 'object' && value !== null) {
-          traverse(value, constantPath);
-        }
-      }
-    })(FIELD_NAME, '');
-
-    return map;
-  } catch {
-    return new Map();
+  if (!FIELD_NAME || typeof FIELD_NAME !== 'object') {
+    throw new Error(
+      'enforce-field-name-constants: FIELD_NAME export is missing or not an object in src/constants/index.ts'
+    );
   }
+
+  const map = new Map();
+
+  (function traverse(o, prefix) {
+    for (const [key, value] of Object.entries(o)) {
+      const constantPath = prefix ? `${prefix}.${key}` : `FIELD_NAME.${key}`;
+      if (typeof value === 'string') {
+        map.set(value, constantPath);
+      } else if (typeof value === 'object' && value !== null) {
+        traverse(value, constantPath);
+      }
+    }
+  })(FIELD_NAME, '');
+
+  return map;
 }
 
 const KNOWN_FIELD_NAMES = buildKnownFieldNames();
