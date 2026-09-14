@@ -3,12 +3,13 @@ import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
+import importPlugin from 'eslint-plugin-import';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
 
 export default [
-  // Global ignores (replaces ignorePatterns)
+  // Global ignores
   {
     ignores: [
       '**/node_modules/',
@@ -23,6 +24,8 @@ export default [
   // Base configs
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
+  importPlugin.flatConfigs.recommended,
+  importPlugin.flatConfigs.typescript,
 
   // React
   react.configs.flat.recommended,
@@ -57,7 +60,7 @@ export default [
     },
   },
 
-  // Custom rules (preserves all existing rules from .eslintrc.json)
+  // Custom rules
   {
     rules: {
       'react/react-in-jsx-scope': 'off',
@@ -89,6 +92,11 @@ export default [
       // this rule, causing new errors on existing code that worked under
       // v6. Re-enable after codebase cleanup — see FCN-720.
       '@typescript-eslint/no-base-to-string': 'off',
+      // Module aliases are resolved by the TypeScript and Vite toolchains.
+      // TypeScript/Vite aliases are causing issues
+      'import/no-unresolved': 'off',
+      // Disabling because of too many issues. They will be addressed separately by FCN-724
+      'import/no-named-as-default': 'off',
     },
   },
 
@@ -109,9 +117,21 @@ export default [
     },
   },
 
+  // Specs may deliberately split value and type imports because Playwright CT
+  // transform requires harness imports to be separate from consts
+  {
+    files: ['**/*.spec.tsx'],
+    rules: {
+      'import/no-duplicates': 'off',
+    },
+  },
+
   // Wizard: prevent self-imports
   {
-    files: ['packages/nxtcm-rosa-hcp-wizard/src/**/*.ts', 'packages/nxtcm-rosa-hcp-wizard/src/**/*.tsx'],
+    files: [
+      'packages/nxtcm-rosa-hcp-wizard/src/**/*.ts',
+      'packages/nxtcm-rosa-hcp-wizard/src/**/*.tsx',
+    ],
     rules: {
       'no-restricted-imports': [
         'error',
