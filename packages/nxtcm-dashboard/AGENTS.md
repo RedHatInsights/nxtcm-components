@@ -12,8 +12,8 @@ PatternFly 6 dashboard widget components for the ACM and OCM console home page. 
 
 ```text
 src/
-  Dashboard.tsx              # composition / export surface
-  LoadingPanel/              # Promise-callback async loading utility (Spinner)
+  Dashboard.tsx              # composed dashboard that wires widgets into the host layout
+  LoadingPanel/              # helper: runs a Promise callback and shows Spinner while waiting
   */                         # one directory per widget (component + CT + stories + styles)
   index.ts                   # public exports
 ```

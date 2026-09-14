@@ -33,15 +33,17 @@ field behavior is schema-driven. Deep meta option catalog: [`src/yupSchemas/READ
 
 ```text
 src/
-  Steps/                    # step UI
-  components/               # presentational controls
-  fieldMetaChangeEffects/   # RHF-connected wrappers
-  yupSchemas/               # validation rules + WizardFieldMeta
-  stringsProvider/          # change-dependency runtime
-  hooks/                    # step-gating on Next / Submit
-  types/ and types.ts       # UI + validator strings
-  utilities/                # resolver, helpers
-  test/ and *.spec.tsx      # Resource<T> and domain contracts
+  Steps/                         # step UI
+  components/Fields/             # presentational controls
+  components/WizFields/          # RHF-connected wrappers
+  fieldMetaChangeEffects/        # change-dependency runtime
+  yupSchemas/                    # validation rules + WizardFieldMeta
+  Footer/                        # step-gating on Next / Submit
+  stringsProvider/               # UI + validator strings
+  hooks/                         # package hooks (e.g. nav step status)
+  utilities/                     # resolver, helpers
+  types/ and types.ts            # Resource<T> and domain contracts
+  test/ and *.spec.tsx           # fixtures and component tests
 ```
 
 ## form state
