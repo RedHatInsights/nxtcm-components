@@ -88,10 +88,6 @@ export default [
       '@typescript-eslint/no-empty-object-type': 'warn',
       '@typescript-eslint/no-unsafe-function-type': 'warn',
       '@typescript-eslint/no-wrapper-object-types': 'warn',
-      // Disabled: typescript-eslint v8 has stricter type inference for
-      // this rule, causing new errors on existing code that worked under
-      // v6. Re-enable after codebase cleanup — see FCN-720.
-      '@typescript-eslint/no-base-to-string': 'off',
       // Module aliases are resolved by the TypeScript and Vite toolchains.
       // TypeScript/Vite aliases are causing issues
       'import/no-unresolved': 'off',
