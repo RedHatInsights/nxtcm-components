@@ -101,27 +101,17 @@ runtime: `wizardFieldMetaChangeRegistry` indexes sources → `useWizardFieldMeta
 
 loop safety: dependents are not watched as sources; equality skips no-op writes; reset/refetch sources can request nav unvisit for later steps (step-gating state, not validation).
 
-example — declare in schema meta:
+example — wire meta from the constants (do not invent simplified refetch shapes):
 
 ```ts
-regionSchema.meta({
-  id: 'region',
-  stepId: STEP_IDS.DETAILS,
-  fieldType: 'select',
-  resetsFieldsToDefaultOnChange: [
-    'selected_vpc',
-    'machine_pools_subnets',
-    'security_groups_worker',
-    'cluster_privacy_public_subnet_id',
-  ],
-  refetchesResourcesOnChange: [
-    { resource: 'vpcList' },
-    { resource: 'machineTypes', argFromField: 'region' },
-  ],
+export const regionSchema = rosaRequiredStringField().meta({
+  // presentation keys from YUP.DETAILS.REGION_SCHEMA.META ...
+  resetsFieldsToDefaultOnChange: YUP.DETAILS.REGION_SCHEMA.META.RESETS_FIELDS_TO_DEFAULT_ON_CHANGE,
+  refetchesResourcesOnChange: YUP.DETAILS.REGION_SCHEMA.META.REFETCHES_RESOURCES_ON_CHANGE,
 } satisfies WizardFieldMeta);
 ```
 
-full option tables: [`src/yupSchemas/README.md`](./src/yupSchemas/README.md).
+region refetch entries use `argsFromFields` with multiple form paths (account / role / region / AZs) — see `YUP.DETAILS.REGION_SCHEMA.META.REFETCHES_RESOURCES_ON_CHANGE` in [`src/yupSchemas/constants.ts`](./src/yupSchemas/constants.ts). full option tables: [`src/yupSchemas/README.md`](./src/yupSchemas/README.md).
 
 ## Resource\<T\> integration
 
