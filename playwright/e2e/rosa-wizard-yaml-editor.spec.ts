@@ -48,7 +48,10 @@ test.describe('ROSA Wizard - YAML Editor', () => {
       await page
         .getByRole('button', { name: /Discard changes and go back to Review step/i })
         .click();
-      await page.getByRole('button', { name: /Cancel/i }).click();
+      await page
+        .getByRole('dialog')
+        .getByRole('button', { name: /^Cancel$/i })
+        .click();
 
       // Still in YAML editor
       await expect(page.locator('.monaco-editor')).toBeVisible();
@@ -84,15 +87,22 @@ test.describe('ROSA Wizard - YAML Editor', () => {
   });
 
   test.describe('Schema Panel', () => {
-    test('schema panel toggle button is available', async ({ page }) => {
+    test('schema panel can be closed and reopened', async ({ page }) => {
       await navigateToYamlEditor(page);
 
-      const toggleButton = page.getByRole('button', { name: /Toggle schema panel/i }).first();
+      const toggleButton = page.getByTestId('schema-panel-toggle');
+      const schemaHeading = page.getByRole('heading', { name: /ROSAControlPlane schema/i });
       await toggleButton.waitFor({ state: 'visible', timeout: 10000 });
 
-      // Button should be visible and enabled
       await expect(toggleButton).toBeVisible();
       await expect(toggleButton).toBeEnabled();
+      await expect(schemaHeading).toBeVisible();
+
+      await toggleButton.click();
+      await expect(schemaHeading).not.toBeVisible();
+
+      await toggleButton.click();
+      await expect(schemaHeading).toBeVisible();
     });
   });
 

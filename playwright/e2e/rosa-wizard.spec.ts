@@ -4,11 +4,14 @@ async function expandOperatorPrefixSection(page: Page) {
   await page.getByRole('button', { name: /operator roles prefix/i }).click();
 }
 
-async function fillDetailsStep(page: Page) {
+async function fillDetailsStep(
+  page: Page,
+  versionName: RegExp = /OpenShift 4\.12\.0/i
+): Promise<void> {
   await page.getByRole('textbox', { name: /Cluster name/i }).fill('test-cluster');
   await page.getByRole('textbox', { name: /Cluster name/i }).press('Tab');
   await page.getByRole('combobox', { name: /Select an OpenShift version/i }).click();
-  await page.getByRole('option', { name: /OpenShift 4\.12\.0/i }).click();
+  await page.getByRole('option', { name: versionName }).click();
   await page.getByRole('combobox', { name: /Select an AWS infrastructure account/i }).click();
   await page.getByRole('option', { name: /AWS Account - Production \(123456789012\)/i }).click();
   await page.getByRole('combobox', { name: /Select an AWS billing account/i }).click();
@@ -26,13 +29,21 @@ async function fillRolesStep(page: Page) {
   await page.getByRole('button', { name: /Next/i }).click();
 }
 
-async function fillMachinePoolsStep(page: Page) {
+async function selectVpcAndPrivateSubnet(
+  page: Page,
+  vpcName: RegExp,
+  subnetName: RegExp
+): Promise<void> {
   await page
     .getByRole('combobox', { name: /Select a VPC to install your machine pool into us-east-1/i })
     .click();
-  await page.getByRole('option', { name: /test-vpc-1/i }).click();
+  await page.getByRole('option', { name: vpcName }).click();
   await page.getByRole('combobox', { name: /Select private subnet/i }).click();
-  await page.getByRole('option', { name: /test-1-subnet-private1-us-east-1a/i }).click();
+  await page.getByRole('option', { name: subnetName }).click();
+}
+
+async function fillMachinePoolsStep(page: Page): Promise<void> {
+  await selectVpcAndPrivateSubnet(page, /test-vpc-1/i, /test-1-subnet-private1-us-east-1a/i);
   await page.getByRole('combobox', { name: /Select the compute node instance type/i }).click();
   await page.getByRole('option', { name: /m5a\.xlarge/i }).click();
   await page.getByRole('button', { name: /Next/i }).click();
@@ -42,6 +53,13 @@ async function fillNetworkingStep(page: Page) {
   await page.getByRole('button', { name: /public subnet name/i }).click();
   await page.getByRole('option', { name: /test-1-subnet-public1-us-east-1a/i }).click();
   await page.getByRole('button', { name: /Next/i }).click();
+}
+
+async function navigateToEncryption(page: Page): Promise<void> {
+  await fillDetailsStep(page);
+  await fillRolesStep(page);
+  await fillMachinePoolsStep(page);
+  await fillNetworkingStep(page);
 }
 
 async function openCidrFields(page: Page) {
@@ -55,18 +73,12 @@ async function openCidrFields(page: Page) {
 }
 
 async function navigateToClusterUpdates(page: Page) {
-  await fillDetailsStep(page);
-  await fillRolesStep(page);
-  await fillMachinePoolsStep(page);
-  await fillNetworkingStep(page); // fills Networking and clicks Next → Encryption
+  await navigateToEncryption(page);
   await page.getByRole('button', { name: /Next/i }).click(); // Encryption → Updates
 }
 
 async function navigateToReview(page: Page) {
-  await fillDetailsStep(page);
-  await fillRolesStep(page);
-  await fillMachinePoolsStep(page);
-  await fillNetworkingStep(page); // fills Networking and clicks Next → Encryption
+  await navigateToEncryption(page);
   await page.getByRole('button', { name: /Next/i }).click(); // Encryption → Updates
   await page.getByRole('button', { name: /Next/i }).click(); // Updates → Review
 }
@@ -115,13 +127,7 @@ test.describe('ROSA Wizard', () => {
       })
     ).toBeVisible();
 
-    await page
-      .getByRole('combobox', { name: /Select a VPC to install your machine pool into us-east-1/i })
-      .click();
-    await page.getByRole('option', { name: /test-vpc-1/i }).click();
-
-    await page.getByRole('combobox', { name: /Select private subnet/i }).click();
-    await page.getByRole('option', { name: /test-1-subnet-private1-us-east-1a/i }).click();
+    await selectVpcAndPrivateSubnet(page, /test-vpc-1/i, /test-1-subnet-private1-us-east-1a/i);
 
     await page.getByRole('combobox', { name: /Select the compute node instance type/i }).click();
     await page.getByRole('option', { name: /m5a\.xlarge/i }).click();
@@ -140,7 +146,7 @@ test.describe('ROSA Wizard', () => {
 
     await expect(page.getByRole('button', { name: /Create cluster/i })).toBeVisible();
 
-    await expect(page.getByText(/test-cluster/i).first()).toBeVisible();
+    await expect(page.getByText(/^test-cluster$/i)).toBeVisible();
     await expect(page.getByText(/4\.12\.0/i).first()).toBeVisible();
     await expect(page.getByText(/ManagedOpenShift-HCP-ROSA-Installer-Role/i).first()).toBeVisible();
     await expect(page.getByText(/2kl4t2st8eg2u5jppv8kjeemkvimfm99/i).first()).toBeVisible();
@@ -250,10 +256,7 @@ test.describe('ROSA Wizard', () => {
 
     test.describe('Encryption - custom KMS key ARN', () => {
       test('blank shows Required', async ({ page }) => {
-        await fillDetailsStep(page);
-        await fillRolesStep(page);
-        await fillMachinePoolsStep(page);
-        await fillNetworkingStep(page);
+        await navigateToEncryption(page);
         await page.getByRole('radio', { name: /Use custom AWS KMS key/i }).click();
         const input = page.getByRole('textbox', { name: /Key ARN/i }).first();
         await input.focus();
@@ -262,10 +265,7 @@ test.describe('ROSA Wizard', () => {
       });
 
       test('"a b" rejects values with whitespace', async ({ page }) => {
-        await fillDetailsStep(page);
-        await fillRolesStep(page);
-        await fillMachinePoolsStep(page);
-        await fillNetworkingStep(page);
+        await navigateToEncryption(page);
         await page.getByRole('radio', { name: /Use custom AWS KMS key/i }).click();
         const input = page.getByRole('textbox', { name: /Key ARN/i }).first();
         await input.fill('a b');
@@ -274,10 +274,7 @@ test.describe('ROSA Wizard', () => {
       });
 
       test('invalid ARN format is rejected', async ({ page }) => {
-        await fillDetailsStep(page);
-        await fillRolesStep(page);
-        await fillMachinePoolsStep(page);
-        await fillNetworkingStep(page);
+        await navigateToEncryption(page);
         await page.getByRole('radio', { name: /Use custom AWS KMS key/i }).click();
         const input = page.getByRole('textbox', { name: /Key ARN/i }).first();
         await input.fill('not-a-valid-arn');
@@ -288,10 +285,7 @@ test.describe('ROSA Wizard', () => {
 
     test.describe('Encryption - etcd key ARN', () => {
       test('blank shows Required', async ({ page }) => {
-        await fillDetailsStep(page);
-        await fillRolesStep(page);
-        await fillMachinePoolsStep(page);
-        await fillNetworkingStep(page);
+        await navigateToEncryption(page);
         await page.getByRole('checkbox', { name: /Enable additional etcd encryption/i }).click();
         const input = page.getByRole('textbox', { name: /Key ARN/i }).first();
         await input.focus();
@@ -300,10 +294,7 @@ test.describe('ROSA Wizard', () => {
       });
 
       test('"a b" rejects values with whitespace', async ({ page }) => {
-        await fillDetailsStep(page);
-        await fillRolesStep(page);
-        await fillMachinePoolsStep(page);
-        await fillNetworkingStep(page);
+        await navigateToEncryption(page);
         await page.getByRole('checkbox', { name: /Enable additional etcd encryption/i }).click();
         const input = page.getByRole('textbox', { name: /Key ARN/i }).first();
         await input.fill('a b');
@@ -323,11 +314,7 @@ test.describe('ROSA Wizard', () => {
       });
       const subnetCombo = page.getByRole('combobox', { name: /Select private subnet/i });
 
-      // Select VPC 1 and a private subnet
-      await vpcCombo.click();
-      await page.getByRole('option', { name: /test-vpc-1/i }).click();
-      await subnetCombo.click();
-      await page.getByRole('option', { name: /test-1-subnet-private1-us-east-1a/i }).click();
+      await selectVpcAndPrivateSubnet(page, /test-vpc-1/i, /test-1-subnet-private1-us-east-1a/i);
 
       // Verify subnet has a value
       await expect(subnetCombo).not.toHaveValue('');
@@ -384,6 +371,13 @@ test.describe('ROSA Wizard', () => {
       await expect(
         page.getByText(/overlaps with the subnet in the Machine CIDR field/)
       ).toBeVisible();
+
+      await podCidr.fill('10.128.0.0/14');
+      await podCidr.press('Tab');
+
+      await expect(
+        page.getByText(/overlaps with the subnet in the Machine CIDR field/)
+      ).not.toBeVisible();
     });
 
     test('Machine CIDR - rejects mask too large', async ({ page }) => {
@@ -392,6 +386,12 @@ test.describe('ROSA Wizard', () => {
       await input.fill('10.0.0.0/8');
       await input.press('Tab');
       await expect(page.getByText(/the subnet mask can't be larger than '\/16'/i)).toBeVisible();
+
+      await input.fill('10.0.0.0/16');
+      await input.press('Tab');
+      await expect(
+        page.getByText(/the subnet mask can't be larger than '\/16'/i)
+      ).not.toBeVisible();
     });
 
     test('Machine CIDR - rejects mask too small for single-AZ', async ({ page }) => {
@@ -400,6 +400,12 @@ test.describe('ROSA Wizard', () => {
       await input.fill('10.0.0.0/26');
       await input.press('Tab');
       await expect(page.getByText(/the subnet mask can't be smaller than '\/25'/i)).toBeVisible();
+
+      await input.fill('10.0.0.0/24');
+      await input.press('Tab');
+      await expect(
+        page.getByText(/the subnet mask can't be smaller than '\/25'/i)
+      ).not.toBeVisible();
     });
 
     // Subnet containment and CIDR/subnet overlap validations require selectedSubnets
@@ -414,7 +420,7 @@ test.describe('ROSA Wizard', () => {
       await navigateToReview(page);
 
       // Verify initial value on review page
-      await expect(page.getByText(/test-cluster/i).first()).toBeVisible();
+      await expect(page.getByText(/^test-cluster$/i)).toBeVisible();
 
       // Click Edit on the Details section (first "Edit step" button)
       await page
@@ -438,7 +444,7 @@ test.describe('ROSA Wizard', () => {
       await page.getByRole('button', { name: /Next/i }).click(); // Updates → Review
 
       // Verify updated value appears
-      await expect(page.getByText(/updated-cluster/i).first()).toBeVisible();
+      await expect(page.getByText(/^updated-cluster$/i)).toBeVisible();
     });
 
     test('review page displays all entered values', async ({ page }) => {
@@ -447,7 +453,7 @@ test.describe('ROSA Wizard', () => {
       await expect(page.getByRole('button', { name: /Create cluster/i })).toBeVisible();
 
       // Cluster details
-      await expect(page.getByText(/test-cluster/i).first()).toBeVisible();
+      await expect(page.getByText(/^test-cluster$/i)).toBeVisible();
       await expect(page.getByText(/4\.12\.0/i).first()).toBeVisible();
       await expect(page.getByText(/us-east-1/).first()).toBeVisible();
 
@@ -459,6 +465,11 @@ test.describe('ROSA Wizard', () => {
 
       // Machine type
       await expect(page.getByText(/m5a\.xlarge/i).first()).toBeVisible();
+
+      // Networking
+      await expect(page.getByText(/^test-vpc-1$/i)).toBeVisible();
+      await expect(page.getByText(/^test-1-subnet-private1-us-east-1a$/i)).toBeVisible();
+      await expect(page.getByText(/^subnet-032as34ty2a6e94deb008$/i)).toBeVisible();
     });
   });
 
@@ -504,6 +515,13 @@ test.describe('ROSA Wizard', () => {
       // Should still be on Details step
       await expect(input).toBeVisible();
       await expect(page.getByText(/this value must not start with a number/i)).toBeVisible();
+
+      await input.fill('valid-cluster');
+      await input.press('Tab');
+      await expect(page.getByText(/this value must not start with a number/i)).not.toBeVisible();
+
+      await page.getByRole('button', { name: /Next/i }).click();
+      await expect(page.getByTestId('installer-role-select')).toBeVisible();
     });
   });
 
@@ -553,7 +571,7 @@ test.describe('ROSA Wizard', () => {
         await page.getByRole('radio', { name: /Private/i }).click();
         await page.getByRole('radio', { name: /Public/i }).click();
 
-        // The select should show the placeholder again (value was cleared)
+        // Changing privacy resets the public subnet through the field metadata cascade
         await expect(
           page.getByRole('button', { name: /Select public subnet name/i })
         ).toBeVisible();
@@ -583,14 +601,30 @@ test.describe('ROSA Wizard', () => {
           page.getByText(/to use securityGroups, your cluster must be version 4\.14\.x or newer/i)
         ).toBeVisible();
       });
+
+      test('does not show incompatible version message for supported versions', async ({
+        page,
+      }) => {
+        await fillDetailsStep(page, /OpenShift 4\.21\.8/i);
+        await fillRolesStep(page);
+
+        await page
+          .getByRole('combobox', {
+            name: /Select a VPC to install your machine pool into us-east-1/i,
+          })
+          .click();
+        await page.getByRole('option', { name: /test-vpc-1/i }).click();
+        await page.getByRole('button', { name: /Advanced machine pool configuration/i }).click();
+
+        await expect(
+          page.getByText(/to use securityGroups, your cluster must be version 4\.14\.x or newer/i)
+        ).not.toBeVisible();
+      });
     });
 
     test.describe('Encryption - KMS key ARN', () => {
       test('selecting custom KMS key shows Key ARN input', async ({ page }) => {
-        await fillDetailsStep(page);
-        await fillRolesStep(page);
-        await fillMachinePoolsStep(page);
-        await fillNetworkingStep(page);
+        await navigateToEncryption(page);
 
         // Default is "Use default AWS KMS key" — Key ARN should not be visible
         await expect(page.getByRole('textbox', { name: /Key ARN/i })).not.toBeVisible();
@@ -603,10 +637,7 @@ test.describe('ROSA Wizard', () => {
       });
 
       test('switching back to default KMS key hides and clears Key ARN', async ({ page }) => {
-        await fillDetailsStep(page);
-        await fillRolesStep(page);
-        await fillMachinePoolsStep(page);
-        await fillNetworkingStep(page);
+        await navigateToEncryption(page);
 
         // Select custom and enter a value
         await page.getByRole('radio', { name: /Use custom AWS KMS key/i }).click();
@@ -627,10 +658,7 @@ test.describe('ROSA Wizard', () => {
 
     test.describe('Encryption - etcd key ARN', () => {
       test('enabling etcd encryption shows Key ARN input', async ({ page }) => {
-        await fillDetailsStep(page);
-        await fillRolesStep(page);
-        await fillMachinePoolsStep(page);
-        await fillNetworkingStep(page);
+        await navigateToEncryption(page);
 
         // etcd encryption is off by default — etcd Key ARN should not be visible
         // KMS Key ARN is also not visible (default KMS), so no Key ARN inputs at all
@@ -644,10 +672,7 @@ test.describe('ROSA Wizard', () => {
       });
 
       test('disabling etcd encryption hides and clears Key ARN', async ({ page }) => {
-        await fillDetailsStep(page);
-        await fillRolesStep(page);
-        await fillMachinePoolsStep(page);
-        await fillNetworkingStep(page);
+        await navigateToEncryption(page);
 
         // Enable etcd and enter a value
         await page.getByRole('checkbox', { name: /Enable additional etcd encryption/i }).click();
