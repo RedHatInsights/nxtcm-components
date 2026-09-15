@@ -24,7 +24,6 @@ widgets (examples of one folder per widget pattern): `AdvisorRecommendations`, `
 
 - **presentational widgets** — receive view-model props; no form state, no HTTP
 - **host-owned chrome** — `Card` / `CardHeader` / `CardTitle` come from the widgetized dashboard host, not from each widget
-- **optional `linkComponent`** — inject routing/link implementation from the consuming app when a widget needs navigation
 
 unlike the ROSA HCP wizard, this package does **not** use react-hook-form, Yup, or cascade side effects.
 
@@ -38,7 +37,6 @@ many dashboard widgets use `data` + `isLoading` style props rather than a direct
 interface WidgetProps {
   data?: WidgetData;
   isLoading?: boolean;
-  linkComponent?: React.ComponentType<LinkProps>;
   // ... widget-specific props
 }
 ```
