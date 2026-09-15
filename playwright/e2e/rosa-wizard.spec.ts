@@ -407,12 +407,6 @@ test.describe('ROSA Wizard', () => {
         page.getByText(/the subnet mask can't be smaller than '\/25'/i)
       ).not.toBeVisible();
     });
-
-    // Subnet containment and CIDR/subnet overlap validations require selectedSubnets
-    // in the Yup validation context. Currently, selected_vpc is stored as a string ID
-    // by WizSelect, so constructSelectedSubnets() returns [] and these validations
-    // don't fire in the wizard flow. They are covered by unit tests with explicit contexts.
-    // Unskip these if the VPC selection is changed to store the full VPC object.
   });
 
   test.describe('Review - navigation', () => {
