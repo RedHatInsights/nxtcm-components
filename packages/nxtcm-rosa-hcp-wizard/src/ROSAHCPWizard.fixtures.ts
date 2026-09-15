@@ -52,7 +52,7 @@ const mockClusterNonUniqueNames = [
 
 // Mock data for the wizard
 const mockVersionsData: OpenShiftVersionsData = {
-  latest: { label: 'OpenShift 4.21.8', value: '4.21.8' },
+  latest: { label: 'OpenShift 5.21.8', value: '5.21.8' },
   default: { label: 'OpenShift 4.12.0', value: '4.12.0' },
   releases: [
     { label: 'OpenShift 4.11.5', value: '4.11.5' },

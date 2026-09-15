@@ -90,7 +90,7 @@ function DefaultWithInitialLoading(props: React.ComponentProps<typeof ROSAHCPWiz
     }),
     [props.wizardData, isFetching]
   );
-  return <ROSAHCPWizard {...props} wizardData={wizardData} />;
+  return <ROSAHCPWizard {...props} wizardData={wizardData} docsVersions={['5']} />;
 }
 
 /** Default story wrapper: initial resource loading plus logged cluster name validation. */
@@ -116,7 +116,7 @@ function DefaultStoryWrapper(props: React.ComponentProps<typeof ROSAHCPWizard>) 
     }),
     [props.wizardData, isFetching, clusterNameValidation, checkClusterNameUniqueness]
   );
-  return <ROSAHCPWizard {...props} wizardData={wizardData} />;
+  return <ROSAHCPWizard {...props} wizardData={wizardData} docsVersions={['5']} />;
 }
 
 /**
