@@ -10,13 +10,13 @@ multi-step wizard for creating ROSA HCP (Hosted Control Plane) clusters. Pattern
 
 ```text
 RosaHcpWizardFormProvider
-  ├─ useForm + createClusterValidationResolver (Yup)
-  ├─ WizardConfigProvider
-  └─ RosaHcpWizardValidationProvider   # step-gating UI state (attempted / unvisit / alerts)
-       └─ ROSAHCPWizardBody
-            ├─ useWizardFieldMetaChangeEffects(wizardData)   # change-dependencies
-            ├─ Steps/* (BasicSetup, OptionalSetup, Review, YamlEditor)
-            └─ Footer   # step-gating: Next / Submit via getFieldPathsByStepId
+  └─ WizardConfigProvider
+       └─ FormProvider (useForm + createClusterValidationResolver)
+            └─ RosaHcpWizardValidationProvider   # step-gating UI state
+                 └─ ROSAHCPWizardBody
+                      ├─ useWizardFieldMetaChangeEffects(wizardData)   # change-dependencies
+                      ├─ Steps/* (BasicSetup, OptionalSetup, Review, YamlEditor)
+                      └─ Footer   # step-gating: Next / Submit via getFieldPathsByStepId
 ```
 
 three concerns ultimately stay separate, so do not conflate them:
