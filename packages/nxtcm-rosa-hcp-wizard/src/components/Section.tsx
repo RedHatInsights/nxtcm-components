@@ -29,26 +29,37 @@ export const Section: React.FunctionComponent<SectionProps> = (props) => {
   } = props;
   const id = idProp ?? (typeof label === 'string' ? label.toLowerCase().split(' ').join('-') : '');
 
+  const titleContent = isForm ? (
+    <div className="pf-v6-u-w-100">
+      {label}
+      {idProp && <LabelHelp id={idProp} labelHelp={labelHelp} labelHelpTitle={labelHelpTitle} />}
+    </div>
+  ) : (
+    <Title headingLevel="h2" size="md" className="pf-v6-u-w-100">
+      {label}
+      {idProp && <LabelHelp id={idProp} labelHelp={labelHelp} labelHelpTitle={labelHelpTitle} />}
+    </Title>
+  );
+
+  const sectionHeader = (
+    <Split hasGutter>
+      <SplitItem isFilled>{titleContent}</SplitItem>
+      {labelActions ? <SplitItem>{labelActions}</SplitItem> : null}
+    </Split>
+  );
+
+  const sectionDescription = description ? (
+    <Content component="small" className="pf-v6-u-pt-sm">
+      {description}
+    </Content>
+  ) : null;
+
   const formSectionTitle = (
     <Split hasGutter>
       <SplitItem isFilled>
         <Stack>
-          <Split hasGutter>
-            <SplitItem isFilled>
-              <div className="pf-v6-u-w-100">
-                {label}
-                {idProp && (
-                  <LabelHelp id={idProp} labelHelp={labelHelp} labelHelpTitle={labelHelpTitle} />
-                )}
-              </div>
-            </SplitItem>
-            {labelActions ? <SplitItem>{labelActions}</SplitItem> : null}
-          </Split>
-          {description && (
-            <Content component="small" className="pf-v6-u-pt-sm">
-              {description}
-            </Content>
-          )}
+          {sectionHeader}
+          {sectionDescription}
         </Stack>
       </SplitItem>
     </Split>
@@ -67,22 +78,8 @@ export const Section: React.FunctionComponent<SectionProps> = (props) => {
   return (
     <div id={id}>
       <Stack hasGutter>
-        <Split hasGutter>
-          <SplitItem isFilled>
-            <Title headingLevel="h2" size="md" className="pf-v6-u-w-100">
-              {label}
-              {idProp && (
-                <LabelHelp id={idProp} labelHelp={labelHelp} labelHelpTitle={labelHelpTitle} />
-              )}
-            </Title>
-          </SplitItem>
-          {labelActions ? <SplitItem>{labelActions}</SplitItem> : null}
-        </Split>
-        {description && (
-          <Content component="small" className="pf-v6-u-pt-sm">
-            {description}
-          </Content>
-        )}
+        {sectionHeader}
+        {sectionDescription}
         {children}
       </Stack>
     </div>
