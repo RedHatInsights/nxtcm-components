@@ -1,6 +1,4 @@
 import { test, expect } from '@/ct-fixture';
-import React from 'react';
-import { UpgradeRisks } from './UpgradeRisks';
 import { checkAccessibility } from '@/test-helpers';
 
 test.describe('UpgradeRisks', () => {
@@ -12,12 +10,16 @@ test.describe('UpgradeRisks', () => {
   };
 
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(<UpgradeRisks {...defaultProps} />);
+    const component = await mount('nxtcm-dashboard/UpgradeRisks/UpgradeRisks/UpgradeRisksStory', {
+      ...defaultProps,
+    });
     await checkAccessibility({ component });
   });
 
   test('should render correctly with all props', async ({ mount }) => {
-    const component = await mount(<UpgradeRisks {...defaultProps} />);
+    const component = await mount('nxtcm-dashboard/UpgradeRisks/UpgradeRisks/UpgradeRisksStory', {
+      ...defaultProps,
+    });
 
     // Find total risks relative to its label using filter
     const totalRisksSection = component
@@ -32,7 +34,9 @@ test.describe('UpgradeRisks', () => {
   });
 
   test('should display correct risk counts', async ({ mount }) => {
-    const component = await mount(<UpgradeRisks {...defaultProps} />);
+    const component = await mount('nxtcm-dashboard/UpgradeRisks/UpgradeRisks/UpgradeRisksStory', {
+      ...defaultProps,
+    });
 
     // Verify Critical count
     const criticalSection = component.getByText('Critical', { exact: true }).locator('..');
@@ -52,17 +56,22 @@ test.describe('UpgradeRisks', () => {
     const handleViewRisks = () => {
       handleViewRisksCalled = true;
     };
-    const component = await mount(<UpgradeRisks {...defaultProps} onViewRisks={handleViewRisks} />);
+    const component = await mount('nxtcm-dashboard/UpgradeRisks/UpgradeRisks/UpgradeRisksStory', {
+      ...defaultProps,
+      onViewRisks: handleViewRisks,
+    });
 
     const viewLink = component.getByRole('button', { name: 'View upgrade risks' });
     await viewLink.click();
-    expect(handleViewRisksCalled).toBe(true);
+    await expect.poll(() => handleViewRisksCalled).toBe(true);
   });
 
   test('should not render View upgrade risks link when onViewRisks is not provided', async ({
     mount,
   }) => {
-    const component = await mount(<UpgradeRisks {...defaultProps} />);
+    const component = await mount('nxtcm-dashboard/UpgradeRisks/UpgradeRisks/UpgradeRisksStory', {
+      ...defaultProps,
+    });
 
     await expect(component.getByText('View upgrade risks')).not.toBeVisible();
   });
@@ -72,24 +81,27 @@ test.describe('UpgradeRisks', () => {
     const handleViewRisks = () => {
       handleViewRisksCalled = true;
     };
-    const component = await mount(<UpgradeRisks {...defaultProps} onViewRisks={handleViewRisks} />);
+    const component = await mount('nxtcm-dashboard/UpgradeRisks/UpgradeRisks/UpgradeRisksStory', {
+      ...defaultProps,
+      onViewRisks: handleViewRisks,
+    });
 
     const viewLink = component.getByRole('button', { name: 'View upgrade risks' });
     await viewLink.click();
 
-    expect(handleViewRisksCalled).toBe(true);
+    await expect.poll(() => handleViewRisksCalled).toBe(true);
   });
 
   test('should display zero counts correctly', async ({ mount }) => {
-    const component = await mount(
-      <UpgradeRisks totalRisks={0} criticalCount={0} warningCount={0} infoCount={0} />
-    );
+    const component = await mount('nxtcm-dashboard/UpgradeRisks/UpgradeRisks/UpgradeRisksStory', {
+      totalRisks: 0,
+      criticalCount: 0,
+      warningCount: 0,
+      infoCount: 0,
+    });
 
     // Verify total risks is 0
-    const totalRisksSection = component
-      .locator('div')
-      .filter({ hasText: 'total number of upgrade risks' });
-    await expect(totalRisksSection.getByText('0')).toBeVisible();
+    await expect(component.getByTestId('total-risks')).toHaveText('0');
 
     // Verify Critical count is 0
     const criticalSection = component.getByText('Critical', { exact: true }).locator('..');
@@ -105,9 +117,12 @@ test.describe('UpgradeRisks', () => {
   });
 
   test('should display different counts for each risk type', async ({ mount }) => {
-    const component = await mount(
-      <UpgradeRisks totalRisks={50} criticalCount={35} warningCount={10} infoCount={5} />
-    );
+    const component = await mount('nxtcm-dashboard/UpgradeRisks/UpgradeRisks/UpgradeRisksStory', {
+      totalRisks: 50,
+      criticalCount: 35,
+      warningCount: 10,
+      infoCount: 5,
+    });
 
     // Verify total risks relative to its label
     const totalRisksSection = component
@@ -129,13 +144,18 @@ test.describe('UpgradeRisks', () => {
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
-    const component = await mount(<UpgradeRisks isLoading {...defaultProps} />);
+    const component = await mount('nxtcm-dashboard/UpgradeRisks/UpgradeRisks/UpgradeRisksStory', {
+      isLoading: true,
+      ...defaultProps,
+    });
     await expect(component.getByText('Loading upgrade risks')).toBeVisible();
     await expect(component.getByTestId('total-risks')).not.toBeVisible();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(<UpgradeRisks isLoading />);
+    const component = await mount('nxtcm-dashboard/UpgradeRisks/UpgradeRisks/UpgradeRisksStory', {
+      isLoading: true,
+    });
     await expect(component.getByText('Loading upgrade risks')).toBeVisible();
   });
 });

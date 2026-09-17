@@ -1,27 +1,30 @@
-import { expect, test } from '@playwright/experimental-ct-react';
+import { expect, test } from '@/ct-fixture';
 
 import { checkAccessibility } from '../test-helpers';
 import { defaultRosaHcpWizardStrings } from '../stringsProvider/rosaHcpWizardStrings.defaults';
-import { YamlEditorFooterMount } from './RosaHcpYamlEditorFooter.spec-helpers';
 
 const w = defaultRosaHcpWizardStrings.wizard;
 const s = defaultRosaHcpWizardStrings.yamlEditor;
 
 test.describe('RosaHcpYamlEditorFooter', () => {
   test('should pass accessibility checks', async ({ mount }) => {
-    const component = await mount(<YamlEditorFooterMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpYamlEditorFooter/YamlEditorFooterMount'
+    );
     await checkAccessibility({ component });
   });
 
   test('renders the Create cluster, Discard changes, and Cancel buttons', async ({ mount }) => {
-    const component = await mount(<YamlEditorFooterMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpYamlEditorFooter/YamlEditorFooterMount'
+    );
     await expect(component.getByRole('button', { name: w.createCluster })).toBeVisible();
     await expect(component.getByRole('button', { name: s.discardChanges })).toBeVisible();
     await expect(component.getByRole('button', { name: s.cancelCreation })).toBeVisible();
   });
 
   test('opens the discard confirmation modal when Discard is clicked', async ({ mount, page }) => {
-    await mount(<YamlEditorFooterMount />);
+    await mount('nxtcm-rosa-hcp-wizard/Footer/RosaHcpYamlEditorFooter/YamlEditorFooterMount');
     await page.getByRole('button', { name: s.discardChanges }).click();
     await expect(page.getByRole('heading', { name: s.discardConfirmTitle })).toBeVisible();
     await expect(page.getByText(s.discardConfirmBody)).toBeVisible();
@@ -29,23 +32,21 @@ test.describe('RosaHcpYamlEditorFooter', () => {
 
   test('calls onClose when the discard confirmation is accepted', async ({ mount, page }) => {
     let closed = false;
-    await mount(
-      <YamlEditorFooterMount
-        onClose={() => {
-          closed = true;
-        }}
-      />
-    );
+    await mount('nxtcm-rosa-hcp-wizard/Footer/RosaHcpYamlEditorFooter/YamlEditorFooterMount', {
+      onClose: () => {
+        closed = true;
+      },
+    });
     await page.getByRole('button', { name: s.discardChanges }).click();
     await page.getByRole('button', { name: s.discardConfirmYes }).click();
-    expect(closed).toBe(true);
+    await expect.poll(() => closed).toBe(true);
   });
 
   test('keeps the modal closed after the user cancels the discard prompt', async ({
     mount,
     page,
   }) => {
-    await mount(<YamlEditorFooterMount />);
+    await mount('nxtcm-rosa-hcp-wizard/Footer/RosaHcpYamlEditorFooter/YamlEditorFooterMount');
     await page.getByRole('button', { name: s.discardChanges }).click();
     await expect(page.getByRole('heading', { name: s.discardConfirmTitle })).toBeVisible();
 
@@ -58,15 +59,13 @@ test.describe('RosaHcpYamlEditorFooter', () => {
     page,
   }) => {
     let cancelled = false;
-    await mount(
-      <YamlEditorFooterMount
-        onCancel={() => {
-          cancelled = true;
-        }}
-      />
-    );
+    await mount('nxtcm-rosa-hcp-wizard/Footer/RosaHcpYamlEditorFooter/YamlEditorFooterMount', {
+      onCancel: () => {
+        cancelled = true;
+      },
+    });
     await page.getByRole('button', { name: s.cancelCreation }).click();
-    expect(cancelled).toBe(true);
+    await expect.poll(() => cancelled).toBe(true);
   });
 
   test('calls onSubmit with the exact YAML string returned by the editor, including advanced fields not mapped by the form', async ({
@@ -84,33 +83,29 @@ test.describe('RosaHcpYamlEditorFooter', () => {
     ].join('\n');
     let receivedYaml: string | undefined;
 
-    await mount(
-      <YamlEditorFooterMount
-        yamlContent={EDITOR_YAML}
-        onSubmit={(yamlString) => {
-          receivedYaml = yamlString;
-          return Promise.resolve();
-        }}
-      />
-    );
+    await mount('nxtcm-rosa-hcp-wizard/Footer/RosaHcpYamlEditorFooter/YamlEditorFooterMount', {
+      yamlContent: EDITOR_YAML,
+      onSubmit: (yamlString: string) => {
+        receivedYaml = yamlString;
+        return Promise.resolve();
+      },
+    });
 
     await page.getByRole('button', { name: w.createCluster }).click();
 
-    expect(receivedYaml).toBe(EDITOR_YAML);
+    await expect.poll(() => receivedYaml).toBe(EDITOR_YAML);
   });
 
   test('does not call onSubmit when the editor has schema errors', async ({ mount, page }) => {
     let submitted = false;
-    await mount(
-      <YamlEditorFooterMount
-        hasSchemaErrors={true}
-        onSubmit={() => {
-          submitted = true;
-          return Promise.resolve();
-        }}
-      />
-    );
+    await mount('nxtcm-rosa-hcp-wizard/Footer/RosaHcpYamlEditorFooter/YamlEditorFooterMount', {
+      hasSchemaErrors: true,
+      onSubmit: () => {
+        submitted = true;
+        return Promise.resolve();
+      },
+    });
     await page.getByRole('button', { name: w.createCluster }).click();
-    expect(submitted).toBe(false);
+    await expect.poll(() => submitted).toBe(false);
   });
 });

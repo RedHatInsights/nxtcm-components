@@ -1,21 +1,15 @@
-import { expect, test } from '@playwright/experimental-ct-react';
-import {
-  PlainMenuHarness,
-  RefreshHarness,
-  TypeaheadHarness,
-  DisabledTypeaheadHarness,
-} from './Select.spec-helpers';
+import { expect, test } from '@/ct-fixture';
 
 test.describe('Select', () => {
   test('selects an option from a plain menu and updates value', async ({ mount, page }) => {
-    await mount(<PlainMenuHarness />);
+    await mount('nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/PlainMenuHarness');
     await page.getByRole('button', { name: /select the region/i }).click();
     await page.getByRole('option', { name: 'eu-west-1' }).click();
     await expect(page.getByTestId('menu-val')).toHaveText('eu-west-1');
   });
 
   test('filters options in typeahead mode', async ({ mount, page }) => {
-    await mount(<TypeaheadHarness />);
+    await mount('nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/TypeaheadHarness');
     const combo = page.getByRole('combobox', { name: /select the subnet/i });
     await combo.click();
     await combo.fill('subnet');
@@ -24,7 +18,7 @@ test.describe('Select', () => {
   });
 
   test('shows all options when reopening a typeahead after selection', async ({ mount, page }) => {
-    await mount(<TypeaheadHarness />);
+    await mount('nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/TypeaheadHarness');
     const combo = page.getByRole('combobox', { name: /select the subnet/i });
 
     // Select an option
@@ -39,7 +33,7 @@ test.describe('Select', () => {
   });
 
   test('re-selecting the same typeahead option keeps the selection', async ({ mount, page }) => {
-    await mount(<TypeaheadHarness />);
+    await mount('nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/TypeaheadHarness');
     const combo = page.getByRole('combobox', { name: /select the subnet/i });
 
     // Select an option
@@ -57,12 +51,12 @@ test.describe('Select', () => {
   });
 
   test('disables the typeahead combobox when isDisabled is set', async ({ mount, page }) => {
-    await mount(<DisabledTypeaheadHarness />);
+    await mount('nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/DisabledTypeaheadHarness');
     await expect(page.getByRole('combobox', { name: /select the subnet/i })).toBeDisabled();
   });
 
   test('invokes onRefresh when the refresh control is pressed', async ({ mount, page }) => {
-    await mount(<RefreshHarness />);
+    await mount('nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/RefreshHarness');
     await page.getByRole('button', { name: 'Refresh' }).click();
     await expect(page.getByTestId('refresh-count')).toHaveText('1');
   });

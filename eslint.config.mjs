@@ -18,6 +18,7 @@ export default [
       '**/coverage/',
       '*.config.js',
       '*.config.ts',
+      '!playwright-ct.config.ts',
     ],
   },
 
@@ -119,6 +120,19 @@ export default [
     files: ['**/*.spec.tsx'],
     rules: {
       'import/no-duplicates': 'off',
+    },
+  },
+
+  // Root Playwright infrastructure runs in Node and is part of the lint/type-check surface.
+  {
+    files: ['ct-fixture.ts', 'playwright-ct.config.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
     },
   },
 

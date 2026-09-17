@@ -1,23 +1,22 @@
-import { expect, test } from '@playwright/experimental-ct-react';
+import { expect, test } from '@/ct-fixture';
 import { checkAccessibility } from './test-helpers';
-import { ROSAHCPWizardMount } from './ROSAHCPWizard.spec-helpers';
 
 test.describe('ROSAHCPWizard', () => {
   test('should render wizard with string provider', async ({ mount }) => {
-    const component = await mount(<ROSAHCPWizardMount />);
+    const component = await mount('nxtcm-rosa-hcp-wizard/ROSAHCPWizard/ROSAHCPWizardMount');
     // Wizard should render with PatternFly wizard structure
     await expect(component.locator('.pf-v6-c-wizard')).toBeVisible();
   });
 
   test('should render wizard steps', async ({ mount }) => {
-    const component = await mount(<ROSAHCPWizardMount />);
+    const component = await mount('nxtcm-rosa-hcp-wizard/ROSAHCPWizard/ROSAHCPWizardMount');
     // Should have navigation (step list)
     const nav = component.locator('.pf-v6-c-wizard__nav');
     await expect(nav).toBeVisible();
   });
 
   test('should render first step content', async ({ mount }) => {
-    const component = await mount(<ROSAHCPWizardMount />);
+    const component = await mount('nxtcm-rosa-hcp-wizard/ROSAHCPWizard/ROSAHCPWizardMount');
     // Details step should be visible by default
     // Look for cluster name field
     const clusterNameInput = component.getByRole('textbox', { name: /cluster name/i });
@@ -25,33 +24,33 @@ test.describe('ROSAHCPWizard', () => {
   });
 
   test('should render wizard footer with navigation buttons', async ({ mount }) => {
-    const component = await mount(<ROSAHCPWizardMount />);
+    const component = await mount('nxtcm-rosa-hcp-wizard/ROSAHCPWizard/ROSAHCPWizardMount');
     // Footer should have Next and Cancel buttons
     await expect(component.getByRole('button', { name: /next/i })).toBeVisible();
     await expect(component.getByRole('button', { name: /cancel/i })).toBeVisible();
   });
 
   test('should support custom strings', async ({ mount }) => {
-    const component = await mount(<ROSAHCPWizardMount strings={{ wizard: { next: 'Proceed' } }} />);
+    const component = await mount('nxtcm-rosa-hcp-wizard/ROSAHCPWizard/ROSAHCPWizardMount', {
+      strings: { wizard: { next: 'Proceed' } },
+    });
     await expect(component.getByRole('button', { name: /proceed/i })).toBeVisible();
   });
 
   test('should support hidden steps via config', async ({ mount }) => {
-    const component = await mount(
-      <ROSAHCPWizardMount
-        wizardProps={{
-          config: {
-            hiddenSteps: ['cluster-updates-step' as const],
-          },
-        }}
-      />
-    );
+    const component = await mount('nxtcm-rosa-hcp-wizard/ROSAHCPWizard/ROSAHCPWizardMount', {
+      wizardProps: {
+        config: {
+          hiddenSteps: ['cluster-updates-step' as const],
+        },
+      },
+    });
     // Wizard should still render even with hidden steps configured
     await expect(component.locator('.pf-v6-c-wizard')).toBeVisible();
   });
 
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(<ROSAHCPWizardMount />);
+    const component = await mount('nxtcm-rosa-hcp-wizard/ROSAHCPWizard/ROSAHCPWizardMount');
     await checkAccessibility({ component });
   });
 });

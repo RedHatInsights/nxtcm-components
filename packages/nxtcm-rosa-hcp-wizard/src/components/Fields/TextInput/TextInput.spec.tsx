@@ -1,7 +1,4 @@
-import { test, expect } from '@playwright/experimental-ct-react';
-
-// CT transform only turns an import into importRefs if every specifier is JSX; keep harness imports separate from consts.
-import { SecretHarness, TextInputHarness } from './TextInput.spec-helpers';
+import { test, expect } from '@/ct-fixture';
 import {
   API_TOKEN_FIELD_LABEL,
   CLUSTER_NAME_FIELD_LABEL,
@@ -10,11 +7,13 @@ import {
   HIDE_PASSWORD_BUTTON_NAME,
   SAMPLE_CLUSTER_NAME_VALUE,
   SHOW_PASSWORD_BUTTON_NAME,
-} from './TextInput.spec-helpers';
+} from './TextInput.story-data';
 
 test.describe('TextInput', () => {
   test('renders label, placeholder, and helper text', async ({ mount }) => {
-    const mounted = await mount(<TextInputHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/Fields/TextInput/TextInput/TextInputHarness'
+    );
     const clusterNameInput = mounted.getByRole('textbox', { name: CLUSTER_NAME_FIELD_LABEL });
     await expect(clusterNameInput).toBeVisible();
     await expect(clusterNameInput).toHaveAttribute('placeholder', CLUSTER_NAME_PLACEHOLDER_TEXT);
@@ -22,14 +21,18 @@ test.describe('TextInput', () => {
   });
 
   test('updates value when the user types', async ({ mount }) => {
-    const mounted = await mount(<TextInputHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/Fields/TextInput/TextInput/TextInputHarness'
+    );
     const input = mounted.getByRole('textbox', { name: CLUSTER_NAME_FIELD_LABEL });
     await input.fill(SAMPLE_CLUSTER_NAME_VALUE);
     await expect(input).toHaveValue(SAMPLE_CLUSTER_NAME_VALUE);
   });
 
   test('reveals and hides secret value when the control button is used', async ({ mount }) => {
-    const mounted = await mount(<SecretHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/Fields/TextInput/TextInput/SecretHarness'
+    );
     const input = mounted.getByRole('textbox', { name: API_TOKEN_FIELD_LABEL });
     await expect(input).toHaveAttribute('type', 'password');
     await mounted.getByRole('button', { name: SHOW_PASSWORD_BUTTON_NAME }).click();

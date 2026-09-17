@@ -1,14 +1,11 @@
 import { test, expect } from '../../../../ct-fixture';
-import { FieldWrapper, NestedFields, type FieldWrapperSize } from './FieldWrapper';
+import { type FieldWrapperSize } from './FieldWrapper';
 
 test.describe('FieldWrapper', () => {
   test('renders field content', async ({ mount }) => {
     const component = await mount(
-      <NestedFields>
-        <FieldWrapper size="md">
-          <span>Cluster name</span>
-        </FieldWrapper>
-      </NestedFields>
+      'nxtcm-rosa-hcp-wizard/components/FieldWrapper/FieldWrapperStory',
+      { variant: 'field' }
     );
 
     await expect(component.getByText('Cluster name')).toBeVisible();
@@ -16,11 +13,8 @@ test.describe('FieldWrapper', () => {
 
   test('renders additional content below the field', async ({ mount }) => {
     const component = await mount(
-      <NestedFields>
-        <FieldWrapper additionalContent={<a href="/help">Learn more</a>}>
-          <span>Field label</span>
-        </FieldWrapper>
-      </NestedFields>
+      'nxtcm-rosa-hcp-wizard/components/FieldWrapper/FieldWrapperStory',
+      { variant: 'additional' }
     );
 
     await expect(component.getByText('Field label')).toBeVisible();
@@ -36,11 +30,10 @@ test.describe('FieldWrapper', () => {
       mount,
       page,
     }) => {
-      await mount(
-        <FieldWrapper size={size}>
-          <span>Sized field</span>
-        </FieldWrapper>
-      );
+      await mount('nxtcm-rosa-hcp-wizard/components/FieldWrapper/FieldWrapperStory', {
+        variant: 'sized',
+        size,
+      });
 
       const wrapper = page.getByTestId('rosa-hcp-field-wrapper');
       await expect(page.getByText('Sized field')).toBeVisible();
@@ -61,12 +54,8 @@ test.describe('FieldWrapper', () => {
 
   test('renders full-width blocks alongside fields', async ({ mount }) => {
     const component = await mount(
-      <NestedFields>
-        <p>Intro copy</p>
-        <FieldWrapper>
-          <span>Field label</span>
-        </FieldWrapper>
-      </NestedFields>
+      'nxtcm-rosa-hcp-wizard/components/FieldWrapper/FieldWrapperStory',
+      { variant: 'full' }
     );
 
     await expect(component.getByText('Intro copy')).toBeVisible();

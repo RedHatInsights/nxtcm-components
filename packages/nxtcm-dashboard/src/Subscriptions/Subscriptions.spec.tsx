@@ -1,6 +1,5 @@
 import { test, expect } from '@/ct-fixture';
-import React from 'react';
-import { Subscriptions, SubscriptionsProps } from './Subscriptions';
+import { SubscriptionsProps } from './Subscriptions';
 
 const defaultProps: SubscriptionsProps = {
   subscriptionCount: 3,
@@ -9,26 +8,38 @@ const defaultProps: SubscriptionsProps = {
 
 test.describe('Subscriptions', () => {
   test('should render the component with correct counts', async ({ mount }) => {
-    const component = await mount(<Subscriptions {...defaultProps} />);
+    const component = await mount(
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { ...defaultProps }
+    );
 
     await expect(component.getByText('3')).toBeVisible();
     await expect(component.getByText('11')).toBeVisible();
   });
 
   test('should display subscription count', async ({ mount }) => {
-    const component = await mount(<Subscriptions {...defaultProps} />);
+    const component = await mount(
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { ...defaultProps }
+    );
 
     await expect(component.getByText('3')).toBeVisible();
   });
 
   test('should display instance count', async ({ mount }) => {
-    const component = await mount(<Subscriptions {...defaultProps} />);
+    const component = await mount(
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { ...defaultProps }
+    );
 
     await expect(component.getByText('11')).toBeVisible();
   });
 
   test('should display description text', async ({ mount }) => {
-    const component = await mount(<Subscriptions {...defaultProps} />);
+    const component = await mount(
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { ...defaultProps }
+    );
 
     await expect(
       component.getByText(
@@ -38,25 +49,37 @@ test.describe('Subscriptions', () => {
   });
 
   test('should display "Subscriptions" label', async ({ mount }) => {
-    const component = await mount(<Subscriptions {...defaultProps} />);
+    const component = await mount(
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { ...defaultProps }
+    );
 
     await expect(component.getByText('Subscriptions', { exact: true }).last()).toBeVisible();
   });
 
   test('should display "Instances" label', async ({ mount }) => {
-    const component = await mount(<Subscriptions {...defaultProps} />);
+    const component = await mount(
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { ...defaultProps }
+    );
 
     await expect(component.getByText('Instances')).toBeVisible();
   });
 
   test('should render with zero counts', async ({ mount }) => {
-    const component = await mount(<Subscriptions subscriptionCount={0} instanceCount={0} />);
+    const component = await mount(
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { subscriptionCount: 0, instanceCount: 0 }
+    );
 
     await expect(component.getByText('0').first()).toBeVisible();
   });
 
   test('should render with high counts', async ({ mount }) => {
-    const component = await mount(<Subscriptions subscriptionCount={150} instanceCount={999} />);
+    const component = await mount(
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { subscriptionCount: 150, instanceCount: 999 }
+    );
 
     await expect(component.getByText('150')).toBeVisible();
     await expect(component.getByText('999')).toBeVisible();
@@ -65,7 +88,10 @@ test.describe('Subscriptions', () => {
   test('should not show View subscriptions button when onViewSubscriptions is not provided', async ({
     mount,
   }) => {
-    const component = await mount(<Subscriptions {...defaultProps} />);
+    const component = await mount(
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { ...defaultProps }
+    );
 
     await expect(component.getByRole('button', { name: /View subscriptions/i })).not.toBeVisible();
   });
@@ -74,7 +100,8 @@ test.describe('Subscriptions', () => {
     mount,
   }) => {
     const component = await mount(
-      <Subscriptions {...defaultProps} onViewSubscriptions={() => {}} />
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { ...defaultProps, onViewSubscriptions: () => {} }
     );
 
     const viewButton = component.getByRole('button', { name: /View subscriptions/i });
@@ -88,32 +115,36 @@ test.describe('Subscriptions', () => {
     };
 
     const component = await mount(
-      <Subscriptions {...defaultProps} onViewSubscriptions={handleViewSubscriptions} />
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { ...defaultProps, onViewSubscriptions: handleViewSubscriptions }
     );
 
     await component.getByRole('button', { name: /View subscriptions/i }).click();
 
-    expect(onViewSubscriptionsCalled).toBe(true);
+    await expect.poll(() => onViewSubscriptionsCalled).toBe(true);
   });
 
   test('should render subscription count as span when onSubscriptionsClick is not provided', async ({
     mount,
     page,
   }) => {
-    await mount(<Subscriptions {...defaultProps} />);
+    await mount('nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory', {
+      ...defaultProps,
+    });
 
     const subscriptionCount = page.getByText('3').first();
     await expect(subscriptionCount).toBeVisible();
 
     const tagName = await subscriptionCount.evaluate((el) => el.tagName.toLowerCase());
-    expect(tagName).toBe('span');
+    await expect.poll(() => tagName).toBe('span');
   });
 
   test('should render subscription count as button when onSubscriptionsClick is provided', async ({
     mount,
   }) => {
     const component = await mount(
-      <Subscriptions {...defaultProps} onSubscriptionsClick={() => {}} />
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { ...defaultProps, onSubscriptionsClick: () => {} }
     );
 
     await expect(component.getByRole('button', { name: '3' })).toBeVisible();
@@ -126,31 +157,37 @@ test.describe('Subscriptions', () => {
     };
 
     const component = await mount(
-      <Subscriptions {...defaultProps} onSubscriptionsClick={handleSubscriptionsClick} />
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { ...defaultProps, onSubscriptionsClick: handleSubscriptionsClick }
     );
 
     await component.getByRole('button', { name: '3' }).click();
 
-    expect(onSubscriptionsClickCalled).toBe(true);
+    await expect.poll(() => onSubscriptionsClickCalled).toBe(true);
   });
 
   test('should render instance count as span when onInstancesClick is not provided', async ({
     mount,
     page,
   }) => {
-    await mount(<Subscriptions {...defaultProps} />);
+    await mount('nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory', {
+      ...defaultProps,
+    });
 
     const instanceCount = page.getByText('11').first();
     await expect(instanceCount).toBeVisible();
 
     const tagName = await instanceCount.evaluate((el) => el.tagName.toLowerCase());
-    expect(tagName).toBe('span');
+    await expect.poll(() => tagName).toBe('span');
   });
 
   test('should render instance count as button when onInstancesClick is provided', async ({
     mount,
   }) => {
-    const component = await mount(<Subscriptions {...defaultProps} onInstancesClick={() => {}} />);
+    const component = await mount(
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { ...defaultProps, onInstancesClick: () => {} }
+    );
 
     await expect(component.getByRole('button', { name: '11' })).toBeVisible();
   });
@@ -162,23 +199,21 @@ test.describe('Subscriptions', () => {
     };
 
     const component = await mount(
-      <Subscriptions {...defaultProps} onInstancesClick={handleInstancesClick} />
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { ...defaultProps, onInstancesClick: handleInstancesClick }
     );
 
     await component.getByRole('button', { name: '11' }).click();
 
-    expect(onInstancesClickCalled).toBe(true);
+    await expect.poll(() => onInstancesClickCalled).toBe(true);
   });
 
   test('should render both counts as clickable when both callbacks are provided', async ({
     mount,
   }) => {
     const component = await mount(
-      <Subscriptions
-        {...defaultProps}
-        onSubscriptionsClick={() => {}}
-        onInstancesClick={() => {}}
-      />
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { ...defaultProps, onSubscriptionsClick: () => {}, onInstancesClick: () => {} }
     );
 
     await expect(component.getByRole('button', { name: '3' })).toBeVisible();
@@ -192,27 +227,30 @@ test.describe('Subscriptions', () => {
     let instancesClicked = false;
 
     const component = await mount(
-      <Subscriptions
-        {...defaultProps}
-        onSubscriptionsClick={() => {
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      {
+        ...defaultProps,
+        onSubscriptionsClick: () => {
           subscriptionsClicked = true;
-        }}
-        onInstancesClick={() => {
+        },
+        onInstancesClick: () => {
           instancesClicked = true;
-        }}
-      />
+        },
+      }
     );
 
     await component.getByRole('button', { name: '3' }).click();
-    expect(subscriptionsClicked).toBe(true);
-    expect(instancesClicked).toBe(false);
+    await expect.poll(() => subscriptionsClicked).toBe(true);
+    await expect.poll(() => instancesClicked).toBe(false);
 
     await component.getByRole('button', { name: '11' }).click();
-    expect(instancesClicked).toBe(true);
+    await expect.poll(() => instancesClicked).toBe(true);
   });
 
   test('should render icons correctly', async ({ mount, page }) => {
-    await mount(<Subscriptions {...defaultProps} />);
+    await mount('nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory', {
+      ...defaultProps,
+    });
 
     const icons = page.locator('svg');
     expect(await icons.count()).toBeGreaterThan(0);
@@ -224,61 +262,72 @@ test.describe('Subscriptions', () => {
     let instancesClickCalled = false;
 
     const component = await mount(
-      <Subscriptions
-        {...defaultProps}
-        onViewSubscriptions={() => {
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      {
+        ...defaultProps,
+        onViewSubscriptions: () => {
           viewSubscriptionsCalled = true;
-        }}
-        onSubscriptionsClick={() => {
+        },
+        onSubscriptionsClick: () => {
           subscriptionsClickCalled = true;
-        }}
-        onInstancesClick={() => {
+        },
+        onInstancesClick: () => {
           instancesClickCalled = true;
-        }}
-      />
+        },
+      }
     );
 
     await component.getByRole('button', { name: '3' }).click();
-    expect(subscriptionsClickCalled).toBe(true);
+    await expect.poll(() => subscriptionsClickCalled).toBe(true);
 
     await component.getByRole('button', { name: '11' }).click();
-    expect(instancesClickCalled).toBe(true);
+    await expect.poll(() => instancesClickCalled).toBe(true);
 
     await component.getByRole('button', { name: /View subscriptions/i }).click();
-    expect(viewSubscriptionsCalled).toBe(true);
+    await expect.poll(() => viewSubscriptionsCalled).toBe(true);
   });
 
   test('should render only subscription count as clickable', async ({ mount, page }) => {
     const component = await mount(
-      <Subscriptions {...defaultProps} onSubscriptionsClick={() => {}} />
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { ...defaultProps, onSubscriptionsClick: () => {} }
     );
 
     await expect(component.getByRole('button', { name: '3' })).toBeVisible();
 
     const instanceCount = page.getByText('11').first();
     const instTagName = await instanceCount.evaluate((el) => el.tagName.toLowerCase());
-    expect(instTagName).toBe('span');
+    await expect.poll(() => instTagName).toBe('span');
   });
 
   test('should render only instance count as clickable', async ({ mount, page }) => {
-    const component = await mount(<Subscriptions {...defaultProps} onInstancesClick={() => {}} />);
+    const component = await mount(
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { ...defaultProps, onInstancesClick: () => {} }
+    );
 
     await expect(component.getByRole('button', { name: '11' })).toBeVisible();
 
     const subscriptionCount = page.getByText('3').first();
     const subTagName = await subscriptionCount.evaluate((el) => el.tagName.toLowerCase());
-    expect(subTagName).toBe('span');
+    await expect.poll(() => subTagName).toBe('span');
   });
 
   test('should render with single digit counts', async ({ mount }) => {
-    const component = await mount(<Subscriptions subscriptionCount={1} instanceCount={2} />);
+    const component = await mount(
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { subscriptionCount: 1, instanceCount: 2 }
+    );
 
     await expect(component.getByText('1')).toBeVisible();
     await expect(component.getByText('2')).toBeVisible();
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
-    const component = await mount(<Subscriptions isLoading {...defaultProps} />);
+    const component = await mount(
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { isLoading: true, ...defaultProps }
+    );
     await expect(component.getByText('Loading subscriptions')).toBeVisible();
     await expect(
       component.getByText(
@@ -288,7 +337,10 @@ test.describe('Subscriptions', () => {
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(<Subscriptions isLoading />);
+    const component = await mount(
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { isLoading: true }
+    );
     await expect(component.getByText('Loading subscriptions')).toBeVisible();
   });
 });
