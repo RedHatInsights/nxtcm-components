@@ -1,9 +1,12 @@
 import type { UseFormSetValue } from 'react-hook-form';
 
-import { hasDerivedSyncSourceValue, hasRefetchableStringValue } from './wizardFieldDerivedSyncs';
+import {
+  hasDerivedSyncSourceValue,
+  hasRefetchableStringValue,
+  applyWizardFieldDerivedSync,
+} from './wizardFieldDerivedSyncs';
 import { resetFieldsToDefaultValues } from './resetFieldsToDefaultValues';
 import { syncFieldsOnSourceChange } from './syncFieldsOnSourceChange';
-import { applyWizardFieldDerivedSync } from './wizardFieldDerivedSyncs';
 import { wizardFormFieldValuesEqual } from './wizardFormFieldValuesEqual';
 import type { ROSAHCPCluster, ROSAHCPWizardData } from '../types';
 import { resolveSelectedVpc } from '../utilities/helpers';

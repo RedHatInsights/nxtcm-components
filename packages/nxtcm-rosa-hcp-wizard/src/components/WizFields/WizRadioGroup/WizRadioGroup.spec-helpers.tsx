@@ -7,6 +7,7 @@ import * as yup from 'yup';
 import { Radio } from '../../Fields/RadioGroup';
 import {
   WizCtWatchStatus,
+  formatWatchValue,
   wizCtSubmitValidationPreview,
   withRosaCt,
 } from '../wizFieldCtSpecHelpers';
@@ -46,7 +47,7 @@ export function WizRadioGroupExplicitHarness() {
           control={methods.control}
           name="tier"
           ariaLabel={WIZ_RADIO_GROUP_VALUE_STATUS_LABEL}
-          format={(v) => (v === undefined || v === null || v === '' ? '(empty)' : String(v))}
+          format={formatWatchValue}
         />
       </Form>
     </FormProvider>
@@ -147,7 +148,7 @@ export function WizRadioGroupNestedFallbackHarness() {
           control={methods.control}
           name="plan.target"
           ariaLabel={WIZ_RADIO_GROUP_NESTED_STATUS_LABEL}
-          format={(v) => (v === undefined || v === '' ? '(empty)' : String(v))}
+          format={formatWatchValue}
         />
       </Form>
     </FormProvider>
@@ -265,7 +266,7 @@ export function WizRadioGroupExplicitControlOnlyHarness() {
         control={methods.control}
         name="tier"
         ariaLabel={WIZ_RADIO_GROUP_CONTROL_ONLY_STATUS}
-        format={(v) => (v === undefined || v === '' ? '(empty)' : String(v))}
+        format={formatWatchValue}
       />
     </>
   );

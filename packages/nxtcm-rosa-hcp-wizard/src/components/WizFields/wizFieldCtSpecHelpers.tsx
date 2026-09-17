@@ -48,3 +48,11 @@ export function WizCtWatchStatus<T extends FieldValues>({
     </span>
   );
 }
+
+/** Safe unknown-to-string for {@link WizCtWatchStatus} format callbacks in test harnesses. */
+export function formatWatchValue(v: unknown): string {
+  if (v == null || v === '') return '(empty)';
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number' || typeof v === 'boolean') return String(v);
+  return JSON.stringify(v);
+}

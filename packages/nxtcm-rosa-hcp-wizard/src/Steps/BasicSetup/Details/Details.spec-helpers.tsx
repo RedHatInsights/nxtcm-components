@@ -10,6 +10,13 @@ import {
   ClusterNetwork,
   ClusterUpgrade,
   type ROSAHCPCluster,
+  CheckClusterNameUniqueness,
+  AwsBillingAccountsResource,
+  AwsInfrastructureAccountsResource,
+  RegionsResource,
+  RolesResource,
+  VersionsResource,
+  VpcListResource,
 } from '../../../types';
 import { Details } from './Details';
 import {
@@ -20,7 +27,6 @@ import {
   mockRoles,
 } from './Details.fixtures';
 import { createClusterValidationResolver } from '../../../utilities/clusterValidationResolver';
-import type { CheckClusterNameUniqueness } from '../../../types';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { RosaHcpWizardValidationProvider } from '../../../rosaHcpWizardValidationContext';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
@@ -29,14 +35,6 @@ import {
   makeVpcListResource,
   WizardFieldMetaChangeEffectsRunner,
 } from '../../../test/rosaHcpWizardCtSpecHelpers';
-import type {
-  AwsBillingAccountsResource,
-  AwsInfrastructureAccountsResource,
-  RegionsResource,
-  RolesResource,
-  VersionsResource,
-  VpcListResource,
-} from '../../../types';
 
 /** Defaults aligned with {@link ROSAHCPWizardBody} so the composed Yup schema resolves consistently in CT. */
 const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ROSAHCPCluster> = {
