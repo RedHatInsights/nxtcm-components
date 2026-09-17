@@ -1,4 +1,4 @@
-import { Content, Form, Split, SplitItem, Stack } from '@patternfly/react-core';
+import { Content, Form, FormSection, Split, SplitItem, Stack, Title } from '@patternfly/react-core';
 import { LabelHelp } from './LabelHelp';
 import React, { ReactNode } from 'react';
 import './Section.css';
@@ -29,44 +29,59 @@ export const Section: React.FunctionComponent<SectionProps> = (props) => {
   } = props;
   const id = idProp ?? (typeof label === 'string' ? label.toLowerCase().split(' ').join('-') : '');
 
+  const titleContent = isForm ? (
+    <div className="pf-v6-u-w-100">
+      {label}
+      {idProp && <LabelHelp id={idProp} labelHelp={labelHelp} labelHelpTitle={labelHelpTitle} />}
+    </div>
+  ) : (
+    <Title headingLevel="h2" size="md" className="pf-v6-u-w-100">
+      {label}
+      {idProp && <LabelHelp id={idProp} labelHelp={labelHelp} labelHelpTitle={labelHelpTitle} />}
+    </Title>
+  );
+
   const sectionHeader = (
+    <Split hasGutter>
+      <SplitItem isFilled>{titleContent}</SplitItem>
+      {labelActions ? <SplitItem>{labelActions}</SplitItem> : null}
+    </Split>
+  );
+
+  const sectionDescription = description ? (
+    <Content component="small" className="pf-v6-u-pt-sm">
+      {description}
+    </Content>
+  ) : null;
+
+  const formSectionTitle = (
     <Split hasGutter>
       <SplitItem isFilled>
         <Stack>
-          <Split hasGutter>
-            <SplitItem isFilled>
-              <div className="rosa-hcp-section__title pf-v6-u-w-100">
-                {label}
-                {idProp && (
-                  <LabelHelp id={idProp} labelHelp={labelHelp} labelHelpTitle={labelHelpTitle} />
-                )}
-              </div>
-            </SplitItem>
-            {labelActions ? <SplitItem>{labelActions}</SplitItem> : null}
-          </Split>
-          {description && (
-            <Content component="small" className="pf-v6-u-pt-sm">
-              {description}
-            </Content>
-          )}
+          {sectionHeader}
+          {sectionDescription}
         </Stack>
       </SplitItem>
     </Split>
   );
 
+  if (isForm) {
+    return (
+      <Form onSubmit={(e) => e.preventDefault()}>
+        <FormSection id={id} title={formSectionTitle}>
+          {children}
+        </FormSection>
+      </Form>
+    );
+  }
+
   return (
-    <section id={id} className="pf-v6-c-form__group" role="group">
-      {isForm ? (
-        <Form onSubmit={(e) => e.preventDefault()}>
-          {sectionHeader}
-          {children}
-        </Form>
-      ) : (
-        <div className="pf-v6-c-form">
-          {sectionHeader}
-          {children}
-        </div>
-      )}
-    </section>
+    <div id={id}>
+      <Stack hasGutter>
+        {sectionHeader}
+        {sectionDescription}
+        {children}
+      </Stack>
+    </div>
   );
 };
