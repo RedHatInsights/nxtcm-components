@@ -206,6 +206,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         <Button
           variant="plain"
           aria-label={yamlStrings.schemaToggleAriaLabel}
+          data-testid="schema-panel-toggle"
           onClick={() => setShowSchema((v) => !v)}
         >
           <OpenDrawerRightIcon />
