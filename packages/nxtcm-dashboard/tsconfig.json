@@ -4,13 +4,6 @@
     "rootDir": "src",
     "outDir": "dist"
   },
-  "include": [
-   "src/**/*",
-   "../../types/typings.d.ts"
-  ],
-  "exclude": [
-    "**/*.spec.tsx",
-    "**/*.spec-helpers.tsx",
-    "**/*.stories.tsx"
-  ]
+  "include": ["src/**/*", "../../types/typings.d.ts"],
+  "exclude": ["**/*.spec.tsx", "**/*.story.tsx", "**/*.story-data.ts", "**/*.stories.tsx"]
 }

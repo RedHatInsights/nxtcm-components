@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect } from '@playwright/experimental-ct-react';
+import { expect } from '@playwright/test';
 
 /**
  * Shared test utilities for Playwright Component Tests.

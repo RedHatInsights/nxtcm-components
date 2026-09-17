@@ -17,6 +17,7 @@ const testExclude = new TestExclude({
   include: ['packages/**/*.ts', 'packages/**/*.tsx'],
   exclude: [
     'packages/**/*.spec.tsx',
+    'packages/**/*.story.tsx',
     '**/ct-fixture.ts',
     'packages/**/test-helpers.ts',
     'packages/**/*.stories.*',

@@ -1,11 +1,10 @@
-import { test, expect, type MountResult } from '@playwright/experimental-ct-react';
+import { test, expect, type MountResult } from '@/ct-fixture';
 
 import {
   defaultRosaHcpWizardStrings,
   defaultRosaHcpWizardValidatorStrings,
 } from '../stringsProvider/rosaHcpWizardStrings.defaults';
 import * as yaml from 'js-yaml';
-import { RosaHcpWizardValidationMount } from './RosaHcpWizardFooter.spec-helpers';
 import fixtures from '../ROSAHCPWizard.fixtures';
 import { mockRoles } from '../Steps/BasicSetup/Details/Details.fixtures';
 import {
@@ -89,7 +88,9 @@ test.describe('RosaHcpWizardFooter — left nav validation icons', () => {
   test('shows error icons on Details and Basic setup after Next fails validation', async ({
     mount,
   }) => {
-    const component = await mount(<RosaHcpWizardValidationMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount'
+    );
 
     await component.getByRole('button', { name: FOOTER_NEXT }).click();
 
@@ -100,12 +101,13 @@ test.describe('RosaHcpWizardFooter — left nav validation icons', () => {
 
   test('clears nav error icons after Details fields become valid', async ({ mount }) => {
     const component = await mount(
-      <RosaHcpWizardValidationMount
-        defaultValues={{
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      {
+        defaultValues: {
           ...VALID_DETAILS_FORM_VALUES,
           name: '',
-        }}
-      />
+        },
+      }
     );
 
     await component.getByRole('button', { name: FOOTER_NEXT }).click();
@@ -121,7 +123,8 @@ test.describe('RosaHcpWizardFooter — left nav validation icons', () => {
     mount,
   }) => {
     const component = await mount(
-      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: VALID_REVIEW_SUBMIT_FORM_VALUES }
     );
 
     await advanceToEncryptionStep(component);
@@ -135,7 +138,8 @@ test.describe('RosaHcpWizardFooter — left nav validation icons', () => {
 
   test('shows error icons on steps with errors after a failed Review Submit', async ({ mount }) => {
     const component = await mount(
-      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: VALID_REVIEW_SUBMIT_FORM_VALUES }
     );
 
     await advanceToReviewStep(component);
@@ -154,14 +158,18 @@ test.describe('RosaHcpWizardFooter — left nav validation icons', () => {
 
 test.describe('RosaHcpWizardFooter — step validation on Next', () => {
   test('disables Back on the Details step', async ({ mount }) => {
-    const component = await mount(<RosaHcpWizardValidationMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount'
+    );
     await expect(component.getByRole('button', { name: FOOTER_BACK })).toBeDisabled();
   });
 
   test('shows the validation alert and field errors when Next is pressed with an invalid Details step', async ({
     mount,
   }) => {
-    const component = await mount(<RosaHcpWizardValidationMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount'
+    );
 
     await component.getByRole('button', { name: FOOTER_NEXT }).click();
 
@@ -177,12 +185,13 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
     mount,
   }) => {
     const component = await mount(
-      <RosaHcpWizardValidationMount
-        defaultValues={{
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      {
+        defaultValues: {
           ...VALID_DETAILS_FORM_VALUES,
           name: '',
-        }}
-      />
+        },
+      }
     );
 
     await component.getByRole('button', { name: FOOTER_NEXT }).click();
@@ -197,7 +206,8 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
     mount,
   }) => {
     const component = await mount(
-      <RosaHcpWizardValidationMount defaultValues={VALID_DETAILS_FORM_VALUES} />
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: VALID_DETAILS_FORM_VALUES }
     );
 
     await component.getByRole('button', { name: FOOTER_NEXT }).click();
@@ -213,7 +223,9 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
   test('keeps future nav steps disabled after Details Next failed validation', async ({
     mount,
   }) => {
-    const component = await mount(<RosaHcpWizardValidationMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount'
+    );
 
     await component.getByRole('button', { name: FOOTER_NEXT }).click();
     await expect(component.getByRole('heading', validationAlertHeading)).toBeVisible();
@@ -232,13 +244,14 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
     const vpcSelectToggle = `${mp.vpcPlaceholder} ${region}`;
 
     const component = await mount(
-      <RosaHcpWizardValidationMount
-        defaultValues={{
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      {
+        defaultValues: {
           ...VALID_REVIEW_SUBMIT_FORM_VALUES,
           selected_vpc: '',
           machine_pools_subnets: [{ machine_pool_subnet: '' }],
-        }}
-      />
+        },
+      }
     );
 
     await advancePastDetailsStep(component);
@@ -261,7 +274,8 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
     mount,
   }) => {
     const component = await mount(
-      <RosaHcpWizardValidationMount defaultValues={VALID_DETAILS_FORM_VALUES} />
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: VALID_DETAILS_FORM_VALUES }
     );
 
     await expect(
@@ -298,7 +312,8 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
   }) => {
     test.setTimeout(30_000);
     const component = await mount(
-      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: VALID_REVIEW_SUBMIT_FORM_VALUES }
     );
 
     await advanceToReviewStep(component);
@@ -319,13 +334,16 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
 
 test.describe('RosaHcpWizardFooter — Skip to review', () => {
   test('does not show Skip to review on the Details step', async ({ mount }) => {
-    const component = await mount(<RosaHcpWizardValidationMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount'
+    );
     await expect(component.getByRole('button', { name: SKIP_TO_REVIEW })).not.toBeVisible();
   });
 
   test('shows Skip to review on an Additional setup step', async ({ mount }) => {
     const component = await mount(
-      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: VALID_REVIEW_SUBMIT_FORM_VALUES }
     );
 
     await advanceToEncryptionStep(component);
@@ -338,7 +356,8 @@ test.describe('RosaHcpWizardFooter — Skip to review', () => {
     mount,
   }) => {
     const component = await mount(
-      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: VALID_REVIEW_SUBMIT_FORM_VALUES }
     );
 
     await advanceToEncryptionStep(component);
@@ -354,7 +373,8 @@ test.describe('RosaHcpWizardFooter — Skip to review', () => {
     mount,
   }) => {
     const component = await mount(
-      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: VALID_REVIEW_SUBMIT_FORM_VALUES }
     );
 
     await advanceToEncryptionStep(component);
@@ -372,7 +392,8 @@ test.describe('RosaHcpWizardFooter — Skip to review', () => {
   }) => {
     test.setTimeout(30_000);
     const component = await mount(
-      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: VALID_REVIEW_SUBMIT_FORM_VALUES }
     );
 
     await advanceToEncryptionStep(component);
@@ -405,7 +426,8 @@ test.describe('RosaHcpWizardFooter — Skip to review', () => {
     mount,
   }) => {
     const component = await mount(
-      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: VALID_REVIEW_SUBMIT_FORM_VALUES }
     );
 
     await advanceToEncryptionStep(component);
@@ -421,7 +443,8 @@ test.describe('RosaHcpWizardFooter — Review Submit validation alert', () => {
     mount,
   }) => {
     const component = await mount(
-      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: VALID_REVIEW_SUBMIT_FORM_VALUES }
     );
 
     await advanceToReviewStep(component);
@@ -445,13 +468,14 @@ test.describe('RosaHcpWizardFooter — submission payload', () => {
   }) => {
     let receivedPayload: string | undefined;
     const component = await mount(
-      <RosaHcpWizardValidationMount
-        defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES}
-        onSubmit={(yamlString) => {
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      {
+        defaultValues: VALID_REVIEW_SUBMIT_FORM_VALUES,
+        onSubmit: (yamlString: string) => {
           receivedPayload = yamlString;
           return Promise.resolve();
-        }}
-      />
+        },
+      }
     );
 
     await advanceToReviewStep(component);
@@ -474,13 +498,14 @@ test.describe('RosaHcpWizardFooter — validation alert after failed Review Subm
     page,
   }) => {
     const component = await mount(
-      <RosaHcpWizardValidationMount
-        defaultValues={{
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      {
+        defaultValues: {
           ...VALID_DETAILS_FORM_VALUES,
           // Match mock installer roleVersion (4.16.0) so the installer option is enabled.
           cluster_version: '4.16.0',
-        }}
-      />
+        },
+      }
     );
 
     await advancePastDetailsStep(component);
