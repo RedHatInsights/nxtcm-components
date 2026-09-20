@@ -25,8 +25,6 @@ widgets (examples of one folder per widget pattern): `AdvisorRecommendations`, `
 - **presentational widgets** — receive view-model props; no form state, no HTTP
 - **host-owned chrome** — `Card` / `CardHeader` / `CardTitle` come from the widgetized dashboard host, not from each widget
 
-unlike the ROSA HCP wizard, this package does **not** use react-hook-form, Yup, or cascade side effects.
-
 ## data contract
 
 widgets never make API calls. consuming apps own data fetching and pass view-model props into widgets.

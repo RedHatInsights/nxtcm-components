@@ -40,6 +40,7 @@ src/
   yupSchemas/                    # validation rules + WizardFieldMeta
   Footer/                        # step-gating on Next / Submit
   stringsProvider/               # UI + validator strings
+  constants/                     # FIELD_NAME, STEP_IDS, and related constants
   hooks/                         # package hooks (e.g. nav step status)
   utilities/                     # resolver, helpers
   types/ and types.ts            # Resource<T> and domain contracts
@@ -51,7 +52,7 @@ src/
 `RosaHcpWizardFormProvider`: `useForm({ resolver: createClusterValidationResolver(...), mode: 'onTouched', defaultValues })`.
 
 - read with `useFormContext()` / `useWatch()`
-- write with `setValue()` — prefer meta-driven change-dependencies over inline `onChange` cascades
+- write with `setValue()` — use meta-driven change-dependencies over inline `onChange` cascades
 
 ## 1. validation (field / form correctness)
 
