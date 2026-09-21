@@ -51,6 +51,19 @@ export const MyComponent = ({ title, onSave }: MyComponentProps): React.ReactEle
 - explicit return type
 - named export (not default)
 
+## PatternFly usage
+
+- use native PatternFly components, props, layouts, and design tokens
+- use layout components such as `Stack`, `Flex`, and `Grid` for spacing and responsiveness
+- do not use PatternFly utility classes to repair layout problems or to force spacing
+- do not add custom CSS, `className`, or `style` overrides to adjust PatternFly component appearance or behavior
+- reconsider the component structure before overriding PatternFly behavior
+- allow custom styling only when PatternFly doesn't support the required behavior/design; keep it minimal and justify the exception in a code comment or the PR description
+- follow PatternFly's documented component composition: use structural subcomponents only within their intended parent and preserve required wrappers and nesting (for example, use `FormSection` only within `Form`)
+- verify composition against the documentation and examples; rendering successfully or passing TypeScript does not make an undocumented composition supported
+- read and follow the PatternFly design and accessibility guidelines for each PatternFly component
+- do not rely on PatternFly internals: customizations tied to internal markup or CSS classes are fragile across upgrades
+
 ## story + CT
 
 - story conventions and title guidance: `docs/agent-rules/storybook.md`

@@ -7,7 +7,7 @@ import {
   ClusterUpgrade,
   type ROSAHCPCluster,
 } from '../../../types';
-import { STEP_IDS } from '../../../constants';
+import { FIELD_NAME, STEP_IDS } from '../../../constants';
 import { createClusterValidationResolver } from '../../../utilities/clusterValidationResolver';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
@@ -56,7 +56,7 @@ function ClusterUpdatesValidateButton() {
       type="button"
       onClick={() => {
         markValidationAttempted(STEP_IDS.CLUSTER_UPDATES);
-        void trigger(['upgrade_policy', 'upgrade_schedule']);
+        void trigger([FIELD_NAME.UPGRADE_POLICY, FIELD_NAME.UPGRADE_SCHEDULE.NAME]);
       }}
     >
       Validate

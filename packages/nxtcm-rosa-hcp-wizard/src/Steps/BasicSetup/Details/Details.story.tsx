@@ -29,6 +29,7 @@ import {
 import { createClusterValidationResolver } from '../../../utilities/clusterValidationResolver';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { RosaHcpWizardValidationProvider } from '../../../rosaHcpWizardValidationContext';
+import { FIELD_NAME } from '../../../constants';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
 import {
   makeDefaultRosaHcpCtWizardData,
@@ -83,7 +84,7 @@ export type DetailsMountProps = {
 
 /** Hidden probe for Playwright CT assertions on cross-step form fields. */
 const DetailsFormValuesProbe: React.FC = () => {
-  const selectedVpc = useWatch({ name: 'selected_vpc' });
+  const selectedVpc = useWatch({ name: FIELD_NAME.SELECTED_VPC });
   return (
     <span data-testid="ct-selected-vpc" hidden aria-hidden>
       {typeof selectedVpc === 'string' ? selectedVpc : (selectedVpc?.id ?? '')}

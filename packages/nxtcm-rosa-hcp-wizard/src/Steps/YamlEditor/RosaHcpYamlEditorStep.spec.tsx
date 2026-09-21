@@ -1,8 +1,9 @@
 import { test, expect } from '@/ct-fixture';
+import type { Locator } from '@playwright/test';
 
 // Helper to wait for Monaco editor to be ready
 
-async function waitForMonaco(component: any) {
+async function waitForMonaco(component: Locator): Promise<void> {
   // Wait for Monaco editor and its content to render
   await component.locator('.monaco-editor').waitFor({ timeout: 10000 });
   // Wait for view-lines (Monaco's content area) to be visible
@@ -34,19 +35,27 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
   });
 
   test.describe('Schema Panel Toggle', () => {
-    test('renders schema toggle button', async ({ mount }) => {
+    test('toggles the schema panel', async ({ mount }) => {
       const component = await mount(
         'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepMount'
       );
 
       await waitForMonaco(component);
 
-      const toggleButton = component.getByRole('button', { name: 'Toggle schema panel' }).first();
-      await expect(toggleButton).toBeVisible();
-    });
+      const toggleButton = component.getByTestId('schema-panel-toggle');
+      const schemaHeading = component.getByRole('heading', {
+        name: /ROSAControlPlane schema/i,
+      });
 
-    // Note: Clicking the toggle button is flaky in CT due to Monaco's complex DOM overlays
-    // This interaction is better tested in E2E or manual testing
+      await expect(toggleButton).toBeVisible();
+      await expect(schemaHeading).toBeVisible();
+
+      await toggleButton.click();
+      await expect(schemaHeading).not.toBeVisible();
+
+      await toggleButton.click();
+      await expect(schemaHeading).toBeVisible();
+    });
   });
 
   test.describe('Initial State', () => {
