@@ -3,11 +3,6 @@
   "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
   "packageRules": [
     {
-      "description": "Disable all major updates",
-      "matchUpdateTypes": ["major"],
-      "enabled": false
-    },
-    {
       "description": "Group non-security patch updates into a single PR",
       "matchUpdateTypes": ["patch"],
       "matchJsonata": ["isVulnerabilityAlert != true"],
