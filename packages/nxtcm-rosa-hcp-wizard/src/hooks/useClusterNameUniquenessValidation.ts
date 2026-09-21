@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
-import { STEP_IDS } from '../constants';
+import { FIELD_NAME, STEP_IDS } from '../constants';
 import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
 import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
 import type { CheckClusterNameUniqueness, ROSAHCPCluster } from '../types';
@@ -29,7 +29,7 @@ export function useClusterNameUniquenessValidation({
   const { setStepAsyncValidating } = useRosaHcpWizardValidation();
   const { control, getValues, setError, clearErrors, getFieldState } =
     useFormContext<Partial<ROSAHCPCluster>>();
-  const region = useWatch({ control, name: 'region' });
+  const region = useWatch({ control, name: FIELD_NAME.REGION });
   const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const previousRegionRef = useRef<string | undefined>(undefined);
   const hasInitializedRegionRef = useRef(false);
@@ -49,13 +49,13 @@ export function useClusterNameUniquenessValidation({
   const applyUniqueErrorToForm = useCallback(
     (error: string | null) => {
       if (error) {
-        setError('name', { type: CLUSTER_NAME_UNIQUE_ERROR_TYPE, message: error });
+        setError(FIELD_NAME.CLUSTER_NAME, { type: CLUSTER_NAME_UNIQUE_ERROR_TYPE, message: error });
         return;
       }
 
-      const nameFieldError = getFieldState('name').error;
+      const nameFieldError = getFieldState(FIELD_NAME.CLUSTER_NAME).error;
       if (nameFieldError?.type === CLUSTER_NAME_UNIQUE_ERROR_TYPE) {
-        clearErrors('name');
+        clearErrors(FIELD_NAME.CLUSTER_NAME);
       }
     },
     [clearErrors, getFieldState, setError]
@@ -67,8 +67,8 @@ export function useClusterNameUniquenessValidation({
       return;
     }
 
-    const name = getValues('name');
-    const currentRegion = getValues('region');
+    const name = getValues(FIELD_NAME.CLUSTER_NAME);
+    const currentRegion = getValues(FIELD_NAME.REGION);
     const clearAsyncValidatingIfInFlight = (): void => {
       if (asyncValidatingRequestIdRef.current !== null) {
         asyncValidatingRequestIdRef.current = null;
@@ -147,7 +147,7 @@ export function useClusterNameUniquenessValidation({
 
     previousRegionRef.current = currentRegion;
 
-    const name = getValues('name');
+    const name = getValues(FIELD_NAME.CLUSTER_NAME);
     if (!hasRefetchableStringValue(name) || !currentRegion) {
       lastCheckedRef.current = null;
       applyUniqueErrorToForm(null);
