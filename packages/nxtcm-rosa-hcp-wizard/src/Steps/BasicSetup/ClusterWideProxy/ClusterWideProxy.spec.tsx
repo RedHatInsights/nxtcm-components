@@ -44,6 +44,25 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
         await expect(link).toHaveAttribute('href', proxyDocsHref(docsVersion));
       });
     }
+
+    const bothPublishedCases = [
+      { clusterVersion: '4.16.2', docsVersion: '4' },
+      { clusterVersion: '5.1.0', docsVersion: '5' },
+    ] as const;
+    for (const { clusterVersion, docsVersion } of bothPublishedCases) {
+      test(`should link to OpenShift ${docsVersion} docs when both v4 and v5 are published and cluster version is ${clusterVersion}`, async ({
+        mount,
+      }) => {
+        const component = await mount(
+          <ClusterWideProxyMount
+            defaultValues={{ cluster_version: clusterVersion }}
+            docsVersions={['4', '5']}
+          />
+        );
+        const link = component.getByRole('link', { name: cw.learnMoreLink });
+        await expect(link).toHaveAttribute('href', proxyDocsHref(docsVersion));
+      });
+    }
   });
 
   test('should render the configure at least 1 field alert', async ({ mount }) => {
