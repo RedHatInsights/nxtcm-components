@@ -31,7 +31,7 @@ const mockWizardData: ROSAHCPWizardData = {
   versions: {
     data: {
       default: { label: 'OpenShift 4.12.0', value: '4.12.0' },
-      latest: { label: 'OpenShift 4.12.0', value: '4.12.0' },
+      latest: { label: 'OpenShift 4.21.8', value: '4.21.8' },
       releases: [
         { label: 'OpenShift 4.11.5', value: '4.11.5' },
         { label: 'OpenShift 4.10.8', value: '4.10.8' },
