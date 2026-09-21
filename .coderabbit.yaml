@@ -16,5 +16,3 @@ knowledge_base:
         applyTo: '**/*.stories.tsx'
       - files: 'docs/agent-rules/ci-workflows.md'
         applyTo: '.github/workflows/**'
-      - files: 'docs/agent-rules/development-workflow.md'
-        applyTo: '**'
