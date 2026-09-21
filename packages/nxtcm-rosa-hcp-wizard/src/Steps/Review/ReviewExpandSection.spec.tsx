@@ -1,13 +1,9 @@
-import React from 'react';
-import { expect, test } from '@playwright/experimental-ct-react';
-import { ReviewExpandSection } from './ReviewExpandSection';
+import { expect, test } from '@/ct-fixture';
 
 test.describe('ReviewExpandSection', () => {
   test('shows children when initialExpanded is true', async ({ mount }) => {
     const c = await mount(
-      <ReviewExpandSection label="Networking summary" initialExpanded>
-        <p>subnet-a and subnet-b</p>
-      </ReviewExpandSection>
+      'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewExpandSection/ExpandedReviewSection'
     );
 
     const toggle = c.getByRole('button', { name: /networking summary/i });
@@ -17,9 +13,7 @@ test.describe('ReviewExpandSection', () => {
 
   test('hides children when initialExpanded is false', async ({ mount }) => {
     const c = await mount(
-      <ReviewExpandSection label="Proxy settings" initialExpanded={false}>
-        <p>http://proxy.example</p>
-      </ReviewExpandSection>
+      'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewExpandSection/CollapsedReviewSection'
     );
 
     const toggle = c.getByRole('button', { name: /proxy settings/i });

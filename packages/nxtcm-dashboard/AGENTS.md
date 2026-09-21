@@ -60,7 +60,7 @@ use PatternFly chart color tokens, not hardcoded colors. charts must work in bot
 ## testing
 
 - CT specs live next to each widget: `WidgetName.spec.tsx`
-- spec-helpers provide mock props for each state (loading, error, empty, with-data)
+- gallery stories provide mock props for each state (loading, error, empty, with-data)
 - test all four states: loading (`isLoading: true`) → error → empty → populated
 
 ## storybook

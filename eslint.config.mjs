@@ -19,6 +19,7 @@ export default [
       '**/coverage/',
       '*.config.js',
       '*.config.ts',
+      '!playwright-ct.config.ts',
     ],
   },
 
@@ -123,6 +124,19 @@ export default [
     },
   },
 
+  // Root Playwright infrastructure runs in Node and is part of the lint/type-check surface.
+  {
+    files: ['ct-fixture.ts', 'playwright-ct.config.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
+    },
+  },
+
   // Wizard: prevent self-imports
   {
     files: [
@@ -144,7 +158,10 @@ export default [
 
   // Wizard: enforce FIELD_NAME constants instead of magic strings
   {
-    files: ['packages/nxtcm-rosa-hcp-wizard/src/**/*.ts', 'packages/nxtcm-rosa-hcp-wizard/src/**/*.tsx'],
+    files: [
+      'packages/nxtcm-rosa-hcp-wizard/src/**/*.ts',
+      'packages/nxtcm-rosa-hcp-wizard/src/**/*.tsx',
+    ],
     ignores: [
       '**/*.test.ts',
       '**/*.test.tsx',

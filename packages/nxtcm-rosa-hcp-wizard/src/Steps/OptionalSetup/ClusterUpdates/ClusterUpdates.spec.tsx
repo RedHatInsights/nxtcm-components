@@ -1,28 +1,33 @@
-import { expect, test } from '@playwright/experimental-ct-react';
+import { expect, test } from '@/ct-fixture';
 import { ClusterUpgrade } from '../../../types';
 import {
   defaultRosaHcpWizardStrings,
   defaultRosaHcpWizardValidatorStrings,
 } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import { ClusterUpdatesMount } from './ClusterUpdates.spec-helpers';
 
 const cu = defaultRosaHcpWizardStrings.clusterUpdates;
 const REQUIRED_FIELD_MESSAGE = defaultRosaHcpWizardValidatorStrings.commonRequired;
 
 test.describe('ClusterUpdates (ROSA HCP)', () => {
   test('should render the cluster update strategy section', async ({ mount }) => {
-    const component = await mount(<ClusterUpdatesMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount'
+    );
     await expect(component.getByText(cu.sectionLabel, { exact: true })).toBeVisible();
   });
 
   test('should render upgrade strategy radio options', async ({ mount }) => {
-    const component = await mount(<ClusterUpdatesMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount'
+    );
     await expect(component.getByRole('radio', { name: cu.individualLabel })).toBeVisible();
     await expect(component.getByRole('radio', { name: cu.recurringLabel })).toBeVisible();
   });
 
   test('should not render a duplicate upgrade policy field label', async ({ mount }) => {
-    const component = await mount(<ClusterUpdatesMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount'
+    );
     await expect(component.getByText(cu.upgradePolicyLabel, { exact: true })).toHaveCount(1);
     const radiogroup = component.getByRole('radiogroup');
     await expect(radiogroup).toBeVisible();
@@ -32,7 +37,9 @@ test.describe('ClusterUpdates (ROSA HCP)', () => {
   test('should show day and time selectors when recurring updates is selected by default', async ({
     mount,
   }) => {
-    const component = await mount(<ClusterUpdatesMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount'
+    );
     await expect(component.getByRole('radio', { name: cu.recurringLabel })).toBeChecked();
     await expect(component.getByText(cu.dayTimeLabel, { exact: true })).toBeVisible();
     await expect(component.getByRole('button', { name: cu.selectDayPlaceholder })).toBeVisible();
@@ -42,7 +49,9 @@ test.describe('ClusterUpdates (ROSA HCP)', () => {
     mount,
     page,
   }) => {
-    const component = await mount(<ClusterUpdatesMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount'
+    );
 
     await component.getByRole('radio', { name: cu.individualLabel }).click();
     await expect(component.getByText(cu.dayTimeLabel, { exact: true })).not.toBeVisible();
@@ -53,7 +62,8 @@ test.describe('ClusterUpdates (ROSA HCP)', () => {
     mount,
   }) => {
     const component = await mount(
-      <ClusterUpdatesMount defaultValues={{ upgrade_policy: ClusterUpgrade.manual }} />
+      'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount',
+      { defaultValues: { upgrade_policy: ClusterUpgrade.manual } }
     );
 
     await component.getByRole('radio', { name: cu.recurringLabel }).click();
@@ -64,7 +74,8 @@ test.describe('ClusterUpdates (ROSA HCP)', () => {
 
   test('should update upgrade schedule when day and time are selected', async ({ mount, page }) => {
     const component = await mount(
-      <ClusterUpdatesMount defaultValues={{ upgrade_policy: ClusterUpgrade.automatic }} />
+      'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount',
+      { defaultValues: { upgrade_policy: ClusterUpgrade.automatic } }
     );
 
     await component.getByRole('button', { name: cu.selectDayPlaceholder }).click();
@@ -81,9 +92,8 @@ test.describe('ClusterUpdates (ROSA HCP)', () => {
     mount,
   }) => {
     const component = await mount(
-      <ClusterUpdatesMount
-        defaultValues={{ upgrade_policy: ClusterUpgrade.automatic, upgrade_schedule: '' }}
-      />
+      'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount',
+      { defaultValues: { upgrade_policy: ClusterUpgrade.automatic, upgrade_schedule: '' } }
     );
 
     await component.getByRole('button', { name: 'Validate' }).click();

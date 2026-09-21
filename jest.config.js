@@ -14,5 +14,11 @@ module.exports = {
     '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest',
   },
   testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)test.[jt]s?(x)'],
-  testPathIgnorePatterns: ['/node_modules/', '/dist/', '/playwright/', '\\.spec\\.', '/eslint-rules/'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/dist/',
+    '/playwright/',
+    '\\.spec\\.',
+    '/eslint-rules/',
+  ],
 };

@@ -1,10 +1,16 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["node", "@playwright/test"],
+    "types": ["node", "@playwright/test", "vite/client"],
     "moduleResolution": "bundler",
     "module": "esnext"
   },
-  "include": ["playwright/**/*", "e2e-app/**/*", "playwright-ct.config.ts"],
+  "include": [
+    "playwright/**/*",
+    "e2e-app/**/*",
+    "ct-fixture.ts",
+    "playwright-ct.config.ts",
+    "vite-env.d.ts"
+  ],
   "exclude": ["node_modules"]
 }

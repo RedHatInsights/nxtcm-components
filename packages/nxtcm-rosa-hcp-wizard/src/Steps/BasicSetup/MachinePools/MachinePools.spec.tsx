@@ -1,4 +1,4 @@
-import { expect, type MountResult, test } from '@playwright/experimental-ct-react';
+import { expect, type MountResult, test } from '@/ct-fixture';
 import type { Page } from '@playwright/test';
 import { checkAccessibility } from '../../../test-helpers';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
@@ -9,7 +9,6 @@ import {
 } from '../../../test/rosaHcpWizardCtSpecHelpers';
 import { maxReplicasSchema, minReplicasSchema, nodesComputeSchema } from '../../../yupSchemas';
 import { FIELD_NAME } from '../../../constants';
-import { MachinePoolsMount } from './MachinePools.spec-helpers';
 
 const mp = defaultRosaHcpWizardStrings.machinePools;
 const a = defaultRosaHcpWizardStrings.autoscaling;
@@ -45,14 +44,18 @@ async function selectVpc(component: MountResult, page: Page, vpcName: string) {
 
 test.describe('MachinePools (ROSA HCP)', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(<MachinePoolsMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
+    );
     await checkAccessibility({ component });
   });
 
   test('should render machine pool section with instance type and autoscaling', async ({
     mount,
   }) => {
-    const component = await mount(<MachinePoolsMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
+    );
     await expect(component.getByText(mp.sectionLabel, { exact: true })).toBeVisible();
     await expect(
       component.getByRole('combobox', { name: vpcSelectMenuName, exact: true })
@@ -63,7 +66,9 @@ test.describe('MachinePools (ROSA HCP)', () => {
   });
 
   test('should disable private subnet select until a VPC is selected', async ({ mount }) => {
-    const component = await mount(<MachinePoolsMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
+    );
 
     const subnetCombo = component.getByRole('combobox', {
       name: mp.subnetPlaceholder,
@@ -76,7 +81,9 @@ test.describe('MachinePools (ROSA HCP)', () => {
     mount,
     page,
   }) => {
-    const component = await mount(<MachinePoolsMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
+    );
 
     await selectVpc(component, page, fixtureVpc1.name);
 
@@ -94,13 +101,14 @@ test.describe('MachinePools (ROSA HCP)', () => {
 
   test('should reset subnet and security groups when VPC changes', async ({ mount, page }) => {
     const component = await mount(
-      <MachinePoolsMount
-        defaultValues={{
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
+      {
+        defaultValues: {
           selected_vpc: fixtureVpc1.id,
           machine_pools_subnets: [{ machine_pool_subnet: fixtureVpc1PrivateSubnet.subnet_id }],
           security_groups_worker: [rosaHcpWizardFixtures.mockSecurityGroups[0].id],
-        }}
-      />
+        },
+      }
     );
 
     await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
@@ -126,13 +134,14 @@ test.describe('MachinePools (ROSA HCP)', () => {
     });
 
     await mount(
-      <MachinePoolsMount
-        machineTypes={machineTypes}
-        defaultValues={{
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
+      {
+        machineTypes: machineTypes,
+        defaultValues: {
           installer_role_arn: 'arn:aws:iam::role/test-installer',
           selected_vpc: fixtureVpc1.id,
-        }}
-      />
+        },
+      }
     );
 
     await expect
@@ -178,7 +187,8 @@ test.describe('MachinePools (ROSA HCP)', () => {
     });
 
     const component = await mount(
-      <MachinePoolsMount machineTypes={machineTypes} defaultValues={{ selected_vpc: '' }} />
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
+      { machineTypes: machineTypes, defaultValues: { selected_vpc: '' } }
     );
 
     const instanceTypeCombo = component.getByRole('combobox', {
@@ -196,7 +206,8 @@ test.describe('MachinePools (ROSA HCP)', () => {
 
   test('should hide compute node count when configured in hiddenFields', async ({ mount }) => {
     const component = await mount(
-      <MachinePoolsMount config={{ hiddenFields: [FIELD_NAME.NODES_COMPUTE] }} />
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
+      { config: { hiddenFields: [FIELD_NAME.NODES_COMPUTE] } }
     );
 
     await expect(
@@ -207,7 +218,9 @@ test.describe('MachinePools (ROSA HCP)', () => {
   test('should show compute node count by default and min/max when autoscaling is enabled', async ({
     mount,
   }) => {
-    const component = await mount(<MachinePoolsMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
+    );
 
     await expect(
       component.getByRole('spinbutton', { name: a.computeCountLabel, exact: true })
@@ -230,7 +243,9 @@ test.describe('MachinePools (ROSA HCP)', () => {
   });
 
   test('should disable min replica plus button at max replica bound', async ({ mount }) => {
-    const component = await mount(<MachinePoolsMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
+    );
 
     await component.getByRole('checkbox', { name: a.enableLabel, exact: true }).click();
 
@@ -242,7 +257,9 @@ test.describe('MachinePools (ROSA HCP)', () => {
   });
 
   test('should disable max replica minus button at min replica bound', async ({ mount }) => {
-    const component = await mount(<MachinePoolsMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
+    );
 
     await component.getByRole('checkbox', { name: a.enableLabel, exact: true }).click();
 
@@ -256,7 +273,9 @@ test.describe('MachinePools (ROSA HCP)', () => {
   test('should set replica defaults when autoscaling is enabled and restore compute count when disabled', async ({
     mount,
   }) => {
-    const component = await mount(<MachinePoolsMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
+    );
 
     await component.getByRole('checkbox', { name: a.enableLabel, exact: true }).click();
 
@@ -280,7 +299,9 @@ test.describe('MachinePools (ROSA HCP)', () => {
   test('should show advanced machine pool controls inside expandable section', async ({
     mount,
   }) => {
-    const component = await mount(<MachinePoolsMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
+    );
 
     await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
 
@@ -296,7 +317,8 @@ test.describe('MachinePools (ROSA HCP)', () => {
     mount,
   }) => {
     const component = await mount(
-      <MachinePoolsMount defaultValues={{ selected_vpc: fixtureVpc1.id }} />
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
+      { defaultValues: { selected_vpc: fixtureVpc1.id } }
     );
 
     await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
@@ -311,12 +333,13 @@ test.describe('MachinePools (ROSA HCP)', () => {
     mount,
   }) => {
     const component = await mount(
-      <MachinePoolsMount
-        defaultValues={{
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
+      {
+        defaultValues: {
           selected_vpc: fixtureVpc1.id,
           cluster_version: '4.13.0',
-        }}
-      />
+        },
+      }
     );
 
     await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
@@ -334,13 +357,14 @@ test.describe('MachinePools (ROSA HCP)', () => {
     });
 
     const component = await mount(
-      <MachinePoolsMount
-        vpcList={vpcList}
-        defaultValues={{
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
+      {
+        vpcList: vpcList,
+        defaultValues: {
           ...vpcRefreshFormDefaults,
           selected_vpc: fixtureVpc1.id,
-        }}
-      />
+        },
+      }
     );
 
     await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
@@ -365,13 +389,14 @@ test.describe('MachinePools (ROSA HCP)', () => {
     });
 
     const component = await mount(
-      <MachinePoolsMount
-        vpcList={vpcList}
-        defaultValues={{
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
+      {
+        vpcList: vpcList,
+        defaultValues: {
           ...vpcRefreshFormDefaults,
           selected_vpc: fixtureVpc2.id,
-        }}
-      />
+        },
+      }
     );
 
     await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
@@ -391,13 +416,14 @@ test.describe('MachinePools (ROSA HCP)', () => {
     });
 
     const component = await mount(
-      <MachinePoolsMount
-        vpcList={vpcList}
-        defaultValues={{
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
+      {
+        vpcList: vpcList,
+        defaultValues: {
           ...vpcRefreshFormDefaults,
           selected_vpc: fixtureVpc1.id,
-        }}
-      />
+        },
+      }
     );
 
     await component.getByRole('button', { name: mp.advancedToggle, exact: true }).click();
@@ -416,7 +442,10 @@ test.describe('MachinePools (ROSA HCP)', () => {
       fetch: async () => {},
     });
 
-    const component = await mount(<MachinePoolsMount vpcList={vpcList} />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
+      { vpcList: vpcList }
+    );
 
     const vpcCombo = component
       .locator('#machine-pools-section')

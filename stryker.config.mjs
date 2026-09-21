@@ -11,7 +11,7 @@ import os from 'node:os';
  *
  * The runner script sets STRYKER_TARGETS with co-located *.spec.tsx files.
  * Tests execute through scripts/stryker-playwright-ct.mjs (per-mutant cache + port).
- * playwright/index.tsx mirrors __STRYKER_ACTIVE_MUTANT__ into the browser bundle.
+ * playwright/gallery/src.tsx mirrors __STRYKER_ACTIVE_MUTANT__ into the browser bundle.
  */
 /** @type {{ components: string[]; specs: string[] } | null} */
 let targets = null;

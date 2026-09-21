@@ -68,7 +68,7 @@ two layers of form field components:
 ### adding a new substep
 
 1. create directory under the appropriate step: `Steps/BasicSetup/NewSubstep/`
-2. create the component, barrel export (`index.ts`), CT spec, spec-helpers, story, and unit test together in the component directory
+2. create the component, barrel export (`index.ts`), CT spec, gallery story, and unit test together in the component directory
 3. wire into the step's layout component
 4. add yup schema fields in `src/yupSchemas/`
 5. add review row in `Steps/Review/`
@@ -106,8 +106,8 @@ machineTypes.fetch?.({
 
 ## testing
 
-- CT specs per component, using spec-helpers for form context wrappers
-- spec-helpers provide `FormWrapper` that wraps component in `FormProvider` with default values
+- CT specs per component, using gallery stories for form context wrappers
+- gallery stories wrap components in `FormProvider` with default values
 - test: rendering, validation messages, field interactions, cascade behavior
 
 ## storybook
