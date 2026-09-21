@@ -1,0 +1,21 @@
+language: en-US
+reviews:
+  profile: assertive
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - files: docs/agent-rules/ui-component.md
+        applyTo: packages/**/*.{ts,tsx}
+      - files: docs/agent-rules/typescript.md
+        applyTo: '**/*.{ts,tsx}'
+      - files: docs/agent-rules/playwright-ct.md
+        applyTo: '**/*.spec.tsx'
+      - files: docs/agent-rules/playwright-ct.md
+        applyTo: '**/*.spec-helpers.tsx'
+      - files: docs/agent-rules/storybook.md
+        applyTo: '**/*.stories.tsx'
+      - files: docs/agent-rules/ci-workflows.md
+        applyTo: .github/workflows/**
+      - files: docs/agent-rules/development-workflow.md
+        applyTo: '**'
