@@ -57,7 +57,7 @@ export const clusterPrivacyPublicSubnetIdSchema = yup
     reconcileValueWithOptions:
       YUP.NETWORKING.CLUSTER_PRIVACY_PUBLIC_SUBNET_ID_SCHEMA.META.RECONCILE_VALUE_WITH_OPTIONS,
   } satisfies WizardFieldMeta)
-  .when('cluster_privacy', {
+  .when(FIELD_NAME.CLUSTER_PRIVACY_FIELD.NAME, {
     is: YUP.NETWORKING.CLUSTER_PRIVACY_SCHEMA.DEFAULT,
     then: (schema) =>
       schema.test(rosaCommonRequiredNonEmptyTest).meta({ [YUP_FIELD_REQUIRED_UI_META_KEY]: true }),
