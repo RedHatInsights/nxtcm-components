@@ -5,6 +5,7 @@ import { ResourceUtilization } from './ResourceUtilization';
 const meta: Meta<typeof ResourceUtilization> = {
   title: 'Components/Dashboard/ResourceUtilization',
   component: ResourceUtilization,
+  tags: ['autodocs'],
 };
 
 export default meta;

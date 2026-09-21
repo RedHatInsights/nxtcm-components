@@ -59,9 +59,9 @@ function WizCheckboxFormDemo(args: WizCheckboxProps) {
 }
 
 const meta: Meta<typeof WizCheckbox> = {
-  title: 'Form Elements/Connected Form Elements/WizCheckbox',
+  title: 'Internal/Form Elements/Connected Form Elements/WizCheckbox',
   component: WizCheckbox,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   decorators: [
     (Story) => (
       <RosaHcpWizardStringsProvider>

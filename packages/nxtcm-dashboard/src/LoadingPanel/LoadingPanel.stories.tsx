@@ -32,7 +32,7 @@ type ApiResponse = {
 };
 
 // Success story with user data
-export const SuccessWithData: Story = {
+export const Default: Story = {
   args: {
     callback: async () => {
       // Simulate API delay

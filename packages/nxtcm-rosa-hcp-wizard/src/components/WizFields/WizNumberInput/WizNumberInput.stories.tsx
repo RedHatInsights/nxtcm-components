@@ -62,9 +62,9 @@ function WizNumberInputFormDemo(args: WizNumberInputProps) {
 }
 
 const meta: Meta<typeof WizNumberInput> = {
-  title: 'Form Elements/Connected Form Elements/WizNumberInput',
+  title: 'Internal/Form Elements/Connected Form Elements/WizNumberInput',
   component: WizNumberInput,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   decorators: [
     (Story) => (
       <RosaHcpWizardStringsProvider>

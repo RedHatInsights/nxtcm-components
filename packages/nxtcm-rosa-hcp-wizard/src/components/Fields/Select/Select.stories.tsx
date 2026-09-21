@@ -44,9 +44,9 @@ function SelectRefreshDemo(args: SelectProps<string>) {
 }
 
 const meta: Meta<SelectProps<string>> = {
-  title: 'Form Elements/Select',
+  title: 'Internal/Form Elements/Select',
   component: Select,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   parameters: {
     layout: 'padded',
   },

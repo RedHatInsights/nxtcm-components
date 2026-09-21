@@ -1,6 +1,12 @@
 import type { StorybookConfig } from '@storybook/react-vite';
 import path from 'path';
 
+function includeInternalStories(): boolean {
+  if (process.env.STORYBOOK_INCLUDE_INTERNAL === 'true') return true;
+  if (process.env.STORYBOOK_INCLUDE_INTERNAL === 'false') return false;
+  return process.argv.includes('dev');
+}
+
 const config: StorybookConfig = {
   stories: [
     '../src/**/*.mdx',
@@ -11,6 +17,11 @@ const config: StorybookConfig = {
   framework: {
     name: '@storybook/react-vite',
     options: {},
+  },
+  tags: {
+    internal: includeInternalStories()
+      ? {}
+      : { excludeFromSidebar: true, excludeFromDocsStories: true },
   },
   async viteFinal(config) {
     // merge custom configuration into the default config

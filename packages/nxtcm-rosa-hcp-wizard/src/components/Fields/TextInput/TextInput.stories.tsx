@@ -21,9 +21,9 @@ function TextInputDemo(args: TextInputProps) {
 }
 
 const meta: Meta<typeof TextInput> = {
-  title: 'Form Elements/TextInput',
+  title: 'Internal/Form Elements/TextInput',
   component: TextInput,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   parameters: {
     layout: 'padded',
   },
