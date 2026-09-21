@@ -6,7 +6,7 @@ import { FIELD_NAME } from '../../../constants';
 
 export const useUpdateOperatorPrefix = () => {
   const { setValue } = useFormContext<ROSAHCPCluster>();
-  const clusterName = useWatch({ name: 'name' });
+  const clusterName = useWatch({ name: FIELD_NAME.CLUSTER_NAME });
 
   const operatorRolesPrefix = React.useMemo(
     () => createOperatorRolesPrefix(clusterName),
