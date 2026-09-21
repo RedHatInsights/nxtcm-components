@@ -14,6 +14,7 @@ This repository provides reusable React components built with PatternFly that se
 - **Storybook**: Interactive component documentation and development environment
 - **Testing**: Comprehensive unit tests with Jest and React Testing Library
 - **Modern Tooling**: Vite, modern JavaScript features, and fast HMR
+- **Dynamic documentation links**: Provide version (4 or when 5 is released) of the docs to utilize in the wizard. And with cluster version selection the links will automatically update to desired version.
 
 ## Documentation
 
