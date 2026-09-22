@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Form } from '@patternfly/react-core';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
