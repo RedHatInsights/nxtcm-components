@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { type DropEvent, Form } from '@patternfly/react-core';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { FileUpload, type FileUploadProps } from './FileUpload';
 

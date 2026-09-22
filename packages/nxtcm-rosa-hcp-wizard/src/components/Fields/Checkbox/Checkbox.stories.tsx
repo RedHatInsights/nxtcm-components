@@ -1,7 +1,7 @@
 import React, { type FormEvent } from 'react';
 
 import { Form } from '@patternfly/react-core';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { Checkbox, type CheckboxProps } from './Checkbox';
 
