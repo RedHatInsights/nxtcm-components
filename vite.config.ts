@@ -4,6 +4,7 @@ import dts from 'unplugin-dts/vite';
 import path from 'path';
 import { resolve } from 'path';
 const repoRoot = __dirname;
+const isStorybook = process.env.STORYBOOK === 'true';
 const libRoot = process.cwd() === repoRoot ? repoRoot : process.cwd();
 const libEntry = resolve(libRoot, 'src/index.ts');
 const libName = process.env.NXTCM_LIB_NAME ?? 'NXTCM-COMPONENTS';
@@ -86,24 +87,25 @@ export default defineConfig({
   root: libRoot,
   plugins: [
     react(),
-    dts({
-      processor: 'ts',
-      tsconfigPath: resolve(libRoot, 'tsconfig.json'),
-      bundleTypes: true,
-      exclude: [
-        '**/*.spec.tsx',
-        '**/*.spec-helpers.tsx',
-        '**/*.stories.tsx',
-        '**/*.stories.helpers.ts',
-        '**/*.fixtures.ts',
-        '**/*.test.ts',
-        '**/*.test.tsx',
-        '**/*.test-data.ts',
-        '**/*StorybookHelpers.tsx',
-        '**/test/**',
-      ],
-    }),
-  ],
+    !isStorybook &&
+      dts({
+        processor: 'ts',
+        tsconfigPath: resolve(libRoot, 'tsconfig.json'),
+        bundleTypes: true,
+        exclude: [
+          '**/*.spec.tsx',
+          '**/*.spec-helpers.tsx',
+          '**/*.stories.tsx',
+          '**/*.stories.helpers.ts',
+          '**/*.fixtures.ts',
+          '**/*.test.ts',
+          '**/*.test.tsx',
+          '**/*.test-data.ts',
+          '**/*StorybookHelpers.tsx',
+          '**/test/**',
+        ],
+      }),
+  ].filter(Boolean),
   resolve: {
     alias: {
       '@': path.resolve(repoRoot, './'),
