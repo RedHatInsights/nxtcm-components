@@ -2,9 +2,11 @@
 
 repo-wide typescript rules for writing and refactoring code.
 
-## no `any` in new code
+## no `any` and no unsafe type-aware operations
 
-`@typescript-eslint/no-explicit-any` is OFF (tech debt), but new code should use proper types:
+`@typescript-eslint/no-explicit-any`, `@typescript-eslint/no-unsafe-return`, and
+`@typescript-eslint/no-unsafe-call` are errors. Use proper types and keep values typed
+through function boundaries:
 
 ```tsx
 // don't
@@ -15,6 +17,12 @@ const handleData = (data: ClusterPayload) => { ... }
 // or if truly unknown:
 const handleData = (data: unknown) => { ... }
 ```
+
+The related `no-unsafe-assignment`, `no-unsafe-argument`, and `no-unsafe-member-access`
+rules remain off for now. Do not add `any` or `as any` to work around a violation.
+
+If a third-party boundary cannot be typed, use a line-level suppression only, with an
+adjacent comment explaining the boundary (for example, an untyped library declaration).
 
 ## explicit return types
 

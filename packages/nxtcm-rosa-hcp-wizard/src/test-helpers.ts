@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect } from '@playwright/experimental-ct-react';
+import type { MountResult } from '@playwright/experimental-ct-react';
 
 /**
  * Accessibility testing helper for Playwright component tests.
@@ -11,7 +12,7 @@ export async function checkAccessibility({
   ignoreRules = [],
   enforceAllRules,
 }: {
-  component: any;
+  component: MountResult;
   ignoreRules?: string[];
   enforceAllRules?: boolean;
 }): Promise<void> {
