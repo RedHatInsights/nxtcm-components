@@ -38,7 +38,9 @@ function serializeValueForSectionDiff(value: unknown): string {
   const normalized = normalizeEmptyFormValue(value);
   if (normalized === '') return '';
   if (typeof normalized === 'object') return JSON.stringify(normalized);
-  return String(normalized);
+  if (typeof normalized === 'string') return normalized;
+  if (typeof normalized === 'number' || typeof normalized === 'boolean') return String(normalized);
+  return '';
 }
 
 function sectionDiffersFromDefaults(

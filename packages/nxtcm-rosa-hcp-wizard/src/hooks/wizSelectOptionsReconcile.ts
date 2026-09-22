@@ -95,15 +95,14 @@ export function wizSelectValueToReconcileString(value: unknown, keyPath: string)
   }
   if (typeof value === 'object') {
     const keyed = getNestedValue(value, keyPath);
-    if (keyed != null && keyed !== '') {
-      return String(keyed);
-    }
+    if (typeof keyed === 'string' && keyed !== '') return keyed;
+    if (typeof keyed === 'number') return String(keyed);
     const id = (value as { id?: string }).id;
     if (id) {
       return id;
     }
   }
-  return String(value);
+  return typeof value === 'boolean' ? String(value) : '';
 }
 
 /** Form value written when a select clears or reconciles back to the Yup default. */
@@ -121,7 +120,11 @@ export function reconcileWizSelectFormValue(params: {
   const { currentValue, newOptions, schema, name, keyPath = 'value' } = params;
   const schemaDefault = getWizSelectFieldDefaultValue(schema, name);
   const defaultForReconcile =
-    schemaDefault == null || schemaDefault === '' ? '' : String(schemaDefault);
+    typeof schemaDefault === 'string'
+      ? schemaDefault
+      : typeof schemaDefault === 'number'
+        ? String(schemaDefault)
+        : '';
   const currentForReconcile = wizSelectValueToReconcileString(currentValue, keyPath);
   const reconciled = reconcileFieldValueWithNewOptions({
     currentValue: currentForReconcile,

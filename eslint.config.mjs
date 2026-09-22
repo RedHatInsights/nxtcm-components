@@ -7,6 +7,7 @@ import importPlugin from 'eslint-plugin-import';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
+import enforceFieldNameConstants from './eslint-rules/enforce-field-name-constants.js';
 
 export default [
   // Global ignores
@@ -88,10 +89,6 @@ export default [
       '@typescript-eslint/no-empty-object-type': 'warn',
       '@typescript-eslint/no-unsafe-function-type': 'warn',
       '@typescript-eslint/no-wrapper-object-types': 'warn',
-      // Disabled: typescript-eslint v8 has stricter type inference for
-      // this rule, causing new errors on existing code that worked under
-      // v6. Re-enable after codebase cleanup — see FCN-720.
-      '@typescript-eslint/no-base-to-string': 'off',
       // Module aliases are resolved by the TypeScript and Vite toolchains.
       // TypeScript/Vite aliases are causing issues
       'import/no-unresolved': 'off',
@@ -142,6 +139,31 @@ export default [
           ],
         },
       ],
+    },
+  },
+
+  // Wizard: enforce FIELD_NAME constants instead of magic strings
+  {
+    files: ['packages/nxtcm-rosa-hcp-wizard/src/**/*.ts', 'packages/nxtcm-rosa-hcp-wizard/src/**/*.tsx'],
+    ignores: [
+      '**/*.test.ts',
+      '**/*.test.tsx',
+      '**/*.spec.tsx',
+      '**/*.spec.ts',
+      '**/*.spec-helpers.ts',
+      '**/*.spec-helpers.tsx',
+      '**/*.fixtures.ts',
+      '**/*.fixtures.tsx',
+      '**/*.test-data.ts',
+      '**/*.test-data.tsx',
+      '**/*.stories.ts',
+      '**/*.stories.tsx',
+    ],
+    plugins: {
+      local: { rules: { 'enforce-field-name-constants': enforceFieldNameConstants } },
+    },
+    rules: {
+      'local/enforce-field-name-constants': 'error',
     },
   },
 

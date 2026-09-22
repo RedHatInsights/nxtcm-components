@@ -80,10 +80,72 @@ describe('wizSelectOptionsReconcile', () => {
   });
 
   describe('wizSelectValueToReconcileString', () => {
+    it('returns a non-empty string value directly', () => {
+      expect(wizSelectValueToReconcileString('us-east-1', 'value')).toBe('us-east-1');
+    });
+
+    it('returns empty string for null', () => {
+      expect(wizSelectValueToReconcileString(null, 'value')).toBe('');
+    });
+
+    it('returns empty string for undefined', () => {
+      expect(wizSelectValueToReconcileString(undefined, 'value')).toBe('');
+    });
+
+    it('returns empty string for empty string', () => {
+      expect(wizSelectValueToReconcileString('', 'value')).toBe('');
+    });
+
+    it('converts a number value to string', () => {
+      expect(wizSelectValueToReconcileString(42, 'value')).toBe('42');
+    });
+
+    it('converts zero to string', () => {
+      expect(wizSelectValueToReconcileString(0, 'value')).toBe('0');
+    });
+
+    it('returns keyed string from an object', () => {
+      expect(wizSelectValueToReconcileString({ value: 'east' }, 'value')).toBe('east');
+    });
+
+    it('converts keyed number from an object to string', () => {
+      expect(wizSelectValueToReconcileString({ value: 7 }, 'value')).toBe('7');
+    });
+
+    it('falls through keyed boolean to id fallback', () => {
+      expect(wizSelectValueToReconcileString({ value: true, id: 'fallback-id' }, 'value')).toBe(
+        'fallback-id'
+      );
+    });
+
+    it('falls through keyed null to id fallback', () => {
+      expect(wizSelectValueToReconcileString({ value: null, id: 'id-1' }, 'value')).toBe('id-1');
+    });
+
+    it('falls through keyed empty string to id fallback', () => {
+      expect(wizSelectValueToReconcileString({ value: '', id: 'id-2' }, 'value')).toBe('id-2');
+    });
+
     it('reads id from VPC-shaped objects', () => {
       expect(
         wizSelectValueToReconcileString({ id: 'vpc-abc', name: 'my-vpc', aws_subnets: [] }, 'value')
       ).toBe('vpc-abc');
+    });
+
+    it('returns empty string for object without keyed value or id', () => {
+      expect(wizSelectValueToReconcileString({ name: 'no-key-no-id' }, 'value')).toBe('');
+    });
+
+    it('resolves nested keyPath with dot notation', () => {
+      expect(wizSelectValueToReconcileString({ a: { b: 'deep' } }, 'a.b')).toBe('deep');
+    });
+
+    it('converts boolean true to string', () => {
+      expect(wizSelectValueToReconcileString(true, 'value')).toBe('true');
+    });
+
+    it('converts boolean false to string', () => {
+      expect(wizSelectValueToReconcileString(false, 'value')).toBe('false');
     });
   });
 
