@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/experimental-ct-react';
+import { test, expect, type MountResult } from '@playwright/experimental-ct-react';
+import type { Page } from '@playwright/test';
 
 import { defaultRosaHcpWizardStrings } from './stringsProvider/rosaHcpWizardStrings.defaults';
 import {
@@ -9,6 +10,9 @@ import { checkAccessibility } from './test-helpers';
 
 const { submitError: submitErrorStrings, wizard } = defaultRosaHcpWizardStrings;
 const ERROR_MESSAGE = 'There has been an error creating the cluster';
+
+const rosaDocsBase = (version: string): string =>
+  `https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/${version}/html`;
 
 test.describe('ROSAHCPWizardBody', () => {
   test('shows the wizard when onSubmitError is not set', async ({ mount }) => {
@@ -104,6 +108,84 @@ test.describe('ROSAHCPWizardBody', () => {
       );
 
       await checkAccessibility({ component });
+    });
+  });
+
+  test.describe('docsVersions prop — versioned docs links', () => {
+    const { details, autoscaling } = defaultRosaHcpWizardStrings;
+
+    /**
+     * Selects a version from the OpenShift version typeahead dropdown,
+     * then navigates to the Machine pool step where a versioned docs link
+     * is directly visible in the autoscaling helper text.
+     */
+    async function selectVersionAndGoToMachinePool(
+      component: MountResult,
+      page: Page,
+      versionLabel: string
+    ): Promise<void> {
+      await component
+        .locator('#cluster_version-form-group')
+        .getByRole('combobox', { name: details.openShiftVersionPlaceholder, exact: true })
+        .click();
+      await page.getByText(versionLabel, { exact: true }).click();
+
+      await component.getByRole('button', { name: wizard.stepLabels.machinePools }).click();
+    }
+
+    test('should use v4 docs links when v5 is not in docsVersions and a v5 cluster version is selected', async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(<RosaHcpWizardBodyMount enableAllWizardNavSteps />);
+
+      await selectVersionAndGoToMachinePool(component, page, 'OpenShift 5.21.8');
+
+      const autoscaleLink = component.getByRole('link', {
+        name: autoscaling.learnMoreAutoscaling,
+      });
+      await expect(autoscaleLink).toHaveAttribute(
+        'href',
+        expect.stringContaining(rosaDocsBase('4'))
+      );
+    });
+
+    test('should use v5 docs links when docsVersions includes 5 and a v5 cluster version is selected', async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(
+        <RosaHcpWizardBodyMount enableAllWizardNavSteps docsVersions={['4', '5']} />
+      );
+
+      await selectVersionAndGoToMachinePool(component, page, 'OpenShift 5.21.8');
+
+      const autoscaleLink = component.getByRole('link', {
+        name: autoscaling.learnMoreAutoscaling,
+      });
+      await expect(autoscaleLink).toHaveAttribute(
+        'href',
+        expect.stringContaining(rosaDocsBase('5'))
+      );
+    });
+
+    test('should use v4 docs links when docsVersions includes both 4 and 5 and a v4 cluster version is selected', async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(
+        <RosaHcpWizardBodyMount enableAllWizardNavSteps docsVersions={['4', '5']} />
+      );
+
+      await selectVersionAndGoToMachinePool(component, page, 'OpenShift 4.12.0');
+
+      const autoscaleLink = component.getByRole('link', {
+        name: autoscaling.learnMoreAutoscaling,
+      });
+      await expect(autoscaleLink).toHaveAttribute(
+        'href',
+        expect.stringContaining(rosaDocsBase('4'))
+      );
     });
   });
 });
