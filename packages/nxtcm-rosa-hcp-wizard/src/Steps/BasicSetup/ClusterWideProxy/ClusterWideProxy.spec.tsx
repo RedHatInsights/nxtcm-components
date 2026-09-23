@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/experimental-ct-react';
-import { checkAccessibility } from '../../../test-helpers';
+
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { checkAccessibility } from '../../../test-helpers';
 import { ClusterWideProxyMount } from './ClusterWideProxy.spec-helpers';
 
 const cw = defaultRosaHcpWizardStrings.clusterWideProxy;

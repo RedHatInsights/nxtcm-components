@@ -9,6 +9,7 @@ import {
   useRef,
   useState,
 } from 'react';
+
 import {
   Button,
   Divider,
@@ -29,12 +30,13 @@ import {
 } from '@patternfly/react-core';
 import RedoIcon from '@patternfly/react-icons/dist/esm/icons/redo-icon';
 import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
-import { toDisplayString } from './SelectOptions';
-import { extractOptionValue, type Option, type OptionGroup, type OptionType } from './SelectTypes';
-import { getStatus, isSyntheticOptionId, lowercaseFirst } from './selectFieldUtils';
-import { useSelectDerived } from './useSelectDerived';
+
 import { HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
+import { getStatus, isSyntheticOptionId, lowercaseFirst } from './selectFieldUtils';
+import { toDisplayString } from './SelectOptions';
+import { extractOptionValue, type Option, type OptionGroup, type OptionType } from './SelectTypes';
+import { useSelectDerived } from './useSelectDerived';
 
 export interface SelectProps<T = unknown> {
   /** Stable field id (toggle and listbox wiring). */

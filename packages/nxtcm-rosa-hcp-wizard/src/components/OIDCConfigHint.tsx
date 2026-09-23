@@ -1,10 +1,11 @@
 import { Content, ContentVariants } from '@patternfly/react-core';
-import { CopyInstruction } from './CopyInstruction';
-import { RosaLoginInstruction } from './RosaLoginInstruction';
-import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
+
 import { DEFAULT_HOST_PRODUCT } from '../constants';
-import type { RosaLoginProduct } from './rosaLoginCommand';
+import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
 import { SelectedSecret } from '../types';
+import { CopyInstruction } from './CopyInstruction';
+import type { RosaLoginProduct } from './rosaLoginCommand';
+import { RosaLoginInstruction } from './RosaLoginInstruction';
 
 export type OIDCConfigHintProduct = RosaLoginProduct;
 

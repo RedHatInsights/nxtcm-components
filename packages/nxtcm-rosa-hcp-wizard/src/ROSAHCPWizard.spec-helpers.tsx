@@ -1,7 +1,8 @@
 import React from 'react';
+
 import { RosaHCPWizard } from './ROSAHCPWizard';
-import type { RosaHCPWizardProps, ROSAHCPWizardData } from './types';
 import type { RosaHcpWizardStringsInput } from './stringsProvider/rosaHcpWizardStrings.types';
+import type { ROSAHCPWizardData, RosaHCPWizardProps } from './types';
 
 const mockWizardData: ROSAHCPWizardData = {
   machineTypes: {

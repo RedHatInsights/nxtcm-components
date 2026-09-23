@@ -1,5 +1,6 @@
 import React from 'react';
-import { test, expect } from '@playwright/experimental-ct-react';
+
+import { expect, test } from '@playwright/experimental-ct-react';
 
 // Playwright CT Babel: only strip/replace imports when every specifier is a JSX component.
 // Split harness vs constants (same pattern as WizSelect.spec.tsx + WizSelect.spec-helpers.tsx).

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+
 import { Subscriptions } from './Subscriptions';
 
 const meta: Meta<typeof Subscriptions> = {

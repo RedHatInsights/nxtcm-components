@@ -1,7 +1,8 @@
 import React, { act, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
+
 import { useForm } from 'react-hook-form';
-import { WizTextInput } from './WizTextInput/WizTextInput';
+
 import {
   stringLabelFromYupMeta,
   wizFallbackFieldId,
@@ -9,6 +10,7 @@ import {
   wizFieldShowsError,
   wizFieldShowsErrorMessage,
 } from './wizFieldRhf';
+import { WizTextInput } from './WizTextInput/WizTextInput';
 
 describe('stringLabelFromYupMeta', () => {
   it('uses the field-path fallback when Yup meta has no string or number label', () => {

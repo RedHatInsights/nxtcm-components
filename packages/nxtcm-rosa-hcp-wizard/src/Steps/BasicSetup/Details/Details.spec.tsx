@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/experimental-ct-react';
+
+import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
+import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { makeVpcListResource } from '../../../test/rosaHcpWizardCtSpecHelpers';
 import { checkAccessibility } from '../../../test-helpers';
 import type { Resource, Role } from '../../../types';
-import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
-import { makeVpcListResource } from '../../../test/rosaHcpWizardCtSpecHelpers';
-import { DetailsMount } from './Details.spec-helpers';
 import {
   INSTALLER_ARN_412,
   mockRegions,
@@ -12,6 +12,7 @@ import {
   mockVersionsLatestDefaultPrevious,
   rolesWithInstallerVersion412,
 } from './Details.fixtures';
+import { DetailsMount } from './Details.spec-helpers';
 
 const mockResource = <TData,>(data: TData): Resource<TData> => ({
   data,

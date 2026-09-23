@@ -1,4 +1,5 @@
 import { type MouseEvent, type ReactNode, useState } from 'react';
+
 import { ExpandableSection, Stack } from '@patternfly/react-core';
 
 export const ReviewExpandSection = (props: {

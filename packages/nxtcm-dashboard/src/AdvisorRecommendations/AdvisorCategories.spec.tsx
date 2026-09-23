@@ -1,7 +1,10 @@
-import { test, expect } from '@playwright/experimental-ct-react';
 import React from 'react';
-import { AdvisorCategories, CategoryCounts } from './AdvisorCategories';
+
+import { expect, test } from '@playwright/experimental-ct-react';
+
 import { checkAccessibility } from '@/test-helpers';
+
+import { AdvisorCategories, CategoryCounts } from './AdvisorCategories';
 
 const defaultCategories: CategoryCounts = {
   serviceAvailability: 25,

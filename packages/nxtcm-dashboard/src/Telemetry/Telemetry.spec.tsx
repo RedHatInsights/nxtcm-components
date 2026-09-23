@@ -1,7 +1,9 @@
-import { test, expect } from '@/ct-fixture';
 import React from 'react';
-import { Telemetry, TelemetryData } from './Telemetry';
+
+import { expect, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
+
+import { Telemetry, TelemetryData } from './Telemetry';
 
 const defaultData: TelemetryData = {
   connected: 142,

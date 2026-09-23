@@ -1,5 +1,6 @@
 import React from 'react';
-import { test, expect } from '@playwright/experimental-ct-react';
+
+import { expect, test } from '@playwright/experimental-ct-react';
 
 import {
   WizTextInputBlurValidationHarness,
@@ -19,9 +20,9 @@ import {
   WIZ_TEXT_INPUT_EXPLICIT_LABEL,
   WIZ_TEXT_INPUT_META_LOSER_HELPER,
   WIZ_TEXT_INPUT_META_LOSER_LABEL,
+  WIZ_TEXT_INPUT_OPTIONAL_SCHEMA_REQUIRED_UI_LABEL,
   WIZ_TEXT_INPUT_OVERRIDE_BEATS_META_HELPER,
   WIZ_TEXT_INPUT_OVERRIDE_BEATS_META_LABEL,
-  WIZ_TEXT_INPUT_OPTIONAL_SCHEMA_REQUIRED_UI_LABEL,
   WIZ_TEXT_INPUT_REMOTE_ONLY_LABEL,
   WIZ_TEXT_INPUT_REMOTE_ONLY_STATUS_LABEL,
   WIZ_TEXT_INPUT_SUBMIT_ERROR,

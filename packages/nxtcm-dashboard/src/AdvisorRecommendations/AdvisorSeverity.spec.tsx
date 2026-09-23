@@ -1,7 +1,10 @@
-import { test, expect } from '@playwright/experimental-ct-react';
 import React from 'react';
-import { AdvisorSeverity, SeverityCounts } from './AdvisorSeverity';
+
+import { expect, test } from '@playwright/experimental-ct-react';
+
 import { checkAccessibility } from '@/test-helpers';
+
+import { AdvisorSeverity, SeverityCounts } from './AdvisorSeverity';
 
 const defaultSeverity: SeverityCounts = {
   critical: 3,

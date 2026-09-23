@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
+
 import {
   Button,
   Content,
@@ -15,8 +16,8 @@ import {
   StackItem,
   Title,
 } from '@patternfly/react-core';
-import ChevronRightIcon from '@patternfly/react-icons/dist/esm/icons/chevron-right-icon';
 import ChevronDownIcon from '@patternfly/react-icons/dist/esm/icons/chevron-down-icon';
+import ChevronRightIcon from '@patternfly/react-icons/dist/esm/icons/chevron-right-icon';
 import type { JSONSchema } from 'monaco-yaml';
 
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';

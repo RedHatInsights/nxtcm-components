@@ -1,43 +1,46 @@
 import { useMemo } from 'react';
-import ClusterIcon from '@patternfly/react-icons/dist/esm/icons/cluster-icon';
-import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
+
 import ChartBarIcon from '@patternfly/react-icons/dist/esm/icons/chart-bar-icon';
-import OutlinedClockIcon from '@patternfly/react-icons/dist/esm/icons/outlined-clock-icon';
+import ClusterIcon from '@patternfly/react-icons/dist/esm/icons/cluster-icon';
 import ConnectedIcon from '@patternfly/react-icons/dist/esm/icons/connected-icon';
-import SyncAltIcon from '@patternfly/react-icons/dist/esm/icons/sync-alt-icon';
-import LightbulbIcon from '@patternfly/react-icons/dist/esm/icons/lightbulb-icon';
-import TachometerAltIcon from '@patternfly/react-icons/dist/esm/icons/tachometer-alt-icon';
 import CubesIcon from '@patternfly/react-icons/dist/esm/icons/cubes-icon';
 import DollarSignIcon from '@patternfly/react-icons/dist/esm/icons/dollar-sign-icon';
+import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
+import LightbulbIcon from '@patternfly/react-icons/dist/esm/icons/lightbulb-icon';
+import OutlinedClockIcon from '@patternfly/react-icons/dist/esm/icons/outlined-clock-icon';
+import SyncAltIcon from '@patternfly/react-icons/dist/esm/icons/sync-alt-icon';
+import TachometerAltIcon from '@patternfly/react-icons/dist/esm/icons/tachometer-alt-icon';
 import {
   ExtendedTemplateConfig,
   WidgetLayout,
   WidgetMapping,
 } from '@patternfly/widgetized-dashboard';
-import '@patternfly/widgetized-dashboard/dist/esm/styles.css';
-import { TotalClusters, TotalClustersData } from './TotalClusters/TotalClusters';
+
 import {
+  AdvisorCategories,
+  AdvisorSeverity,
+  CategoryCounts,
+  SeverityCounts,
+} from './AdvisorRecommendations/AdvisorRecommendations';
+import {
+  ClusterIssue,
   ClustersWithIssues,
   ClustersWithIssuesData,
-  ClusterIssue,
 } from './ClustersWithIssues/ClustersWithIssues';
+import { ClusterCost, CostManagement } from './CostManagement/CostManagement';
+import { ExpiredTrial, ExpiredTrials, ExpiredTrialsData } from './ExpiredTrials/ExpiredTrials';
+import { filterDashboardTemplate } from './filterDashboardTemplate';
 import {
   ResourceUtilization,
   ResourceUtilizationData,
 } from './ResourceUtilization/ResourceUtilization';
-import { ExpiredTrials, ExpiredTrialsData, ExpiredTrial } from './ExpiredTrials/ExpiredTrials';
 import { Telemetry, TelemetryData } from './Telemetry/Telemetry';
-import { UpdateStatus, UpdateStatusData } from './UpdateStatus/UpdateStatus';
-import {
-  AdvisorSeverity,
-  SeverityCounts,
-  AdvisorCategories,
-  CategoryCounts,
-} from './AdvisorRecommendations/AdvisorRecommendations';
 import { ClusterProviders, ProviderBreakdown } from './TotalClusters/ClusterProviders';
-import { CostManagement, ClusterCost } from './CostManagement/CostManagement';
+import { TotalClusters, TotalClustersData } from './TotalClusters/TotalClusters';
+import { UpdateStatus, UpdateStatusData } from './UpdateStatus/UpdateStatus';
 import { useLocalStorageWithObject } from './useLocalStorage';
-import { filterDashboardTemplate } from './filterDashboardTemplate';
+
+import '@patternfly/widgetized-dashboard/dist/esm/styles.css';
 
 export type DashboardProps = {
   totalClusters: {

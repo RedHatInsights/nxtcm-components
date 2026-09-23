@@ -1,7 +1,9 @@
-import { test, expect } from '@/ct-fixture';
 import React from 'react';
-import { TotalClusters } from './TotalClusters';
+
+import { expect, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
+
+import { TotalClusters } from './TotalClusters';
 
 test.describe('TotalClusters', () => {
   test('should pass accessibility tests', async ({ mount }) => {

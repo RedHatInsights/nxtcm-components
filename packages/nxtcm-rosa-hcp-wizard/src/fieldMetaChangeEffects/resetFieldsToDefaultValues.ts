@@ -1,13 +1,12 @@
 import type { UseFormSetValue } from 'react-hook-form';
 
+import type { ROSAHCPCluster } from '../types';
 import {
   buildFormSetValueOptions,
   type FormSetValueOptions,
 } from '../utilities/formSetValueOptions';
-import type { ROSAHCPCluster } from '../types';
 import { getClusterValidationSchemaDefaultValues } from '../yupSchemas';
 import type { WizardFormFieldName } from '../yupSchemas/types';
-
 import { wizardFormFieldValuesEqual } from './wizardFormFieldValuesEqual';
 
 export type ResetFieldsToDefaultValuesOptions = FormSetValueOptions;

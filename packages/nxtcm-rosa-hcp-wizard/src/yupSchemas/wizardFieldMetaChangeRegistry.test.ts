@@ -1,11 +1,11 @@
 import { STEP_IDS } from '../constants';
 import {
   getFieldPathsByStepId,
-  getWizardSelectFieldPaths,
   getWizardFieldDerivedSyncKeyForSourceField,
   getWizardFieldResetsForSourceField,
   getWizardFieldSyncsForSourceField,
   getWizardResourceRefetchesForSourceField,
+  getWizardSelectFieldPaths,
   listWizardFieldDerivedSyncEntries,
   listWizardFieldMetaChangeSourceFields,
   listWizardFieldRefetchEntries,

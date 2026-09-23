@@ -5,6 +5,7 @@ import {
   type RefAttributes,
   useState,
 } from 'react';
+
 import {
   Button,
   FormGroup,
@@ -16,6 +17,7 @@ import {
 } from '@patternfly/react-core';
 import EyeIcon from '@patternfly/react-icons/dist/esm/icons/eye-icon';
 import EyeSlashIcon from '@patternfly/react-icons/dist/esm/icons/eye-slash-icon';
+
 import { getValidated, HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
 

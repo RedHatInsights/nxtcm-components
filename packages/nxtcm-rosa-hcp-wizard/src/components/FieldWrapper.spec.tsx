@@ -1,5 +1,5 @@
-import { test, expect } from '../../../../ct-fixture';
-import { FieldWrapper, NestedFields, type FieldWrapperSize } from './FieldWrapper';
+import { expect, test } from '../../../../ct-fixture';
+import { FieldWrapper, type FieldWrapperSize, NestedFields } from './FieldWrapper';
 
 test.describe('FieldWrapper', () => {
   test('renders field content', async ({ mount }) => {

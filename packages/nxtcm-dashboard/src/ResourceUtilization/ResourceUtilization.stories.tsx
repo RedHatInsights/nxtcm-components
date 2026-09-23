@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+
 import { ResourceUtilization } from './ResourceUtilization';
 
 const meta: Meta<typeof ResourceUtilization> = {

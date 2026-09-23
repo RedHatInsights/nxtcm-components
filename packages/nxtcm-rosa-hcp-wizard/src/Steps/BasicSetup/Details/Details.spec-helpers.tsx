@@ -2,22 +2,32 @@
  * Playwright CT mount target. Components from *.story.tsx cannot be mounted (see playwright.dev/test-components#test-stories).
  */
 import React, { useMemo } from 'react';
-import { Form } from '@patternfly/react-core';
-import { FormProvider, useForm, useWatch, type Resolver } from 'react-hook-form';
 
+import { Form } from '@patternfly/react-core';
+import { FormProvider, type Resolver, useForm, useWatch } from 'react-hook-form';
+
+import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
+import { RosaHcpWizardValidationProvider } from '../../../rosaHcpWizardValidationContext';
+import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
+  makeDefaultRosaHcpCtWizardData,
+  makeVpcListResource,
+  WizardFieldMetaChangeEffectsRunner,
+} from '../../../test/rosaHcpWizardCtSpecHelpers';
+import {
+  AwsBillingAccountsResource,
+  AwsInfrastructureAccountsResource,
+  CheckClusterNameUniqueness,
   ClusterEncryptionKeys,
   ClusterNetwork,
   ClusterUpgrade,
-  type ROSAHCPCluster,
-  CheckClusterNameUniqueness,
-  AwsBillingAccountsResource,
-  AwsInfrastructureAccountsResource,
   RegionsResource,
   RolesResource,
+  type ROSAHCPCluster,
   VersionsResource,
   VpcListResource,
 } from '../../../types';
+import { createClusterValidationResolver } from '../../../utilities/clusterValidationResolver';
 import { Details } from './Details';
 import {
   mockAwsBillingAccounts,
@@ -26,15 +36,6 @@ import {
   mockRegions,
   mockRoles,
 } from './Details.fixtures';
-import { createClusterValidationResolver } from '../../../utilities/clusterValidationResolver';
-import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import { RosaHcpWizardValidationProvider } from '../../../rosaHcpWizardValidationContext';
-import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
-import {
-  makeDefaultRosaHcpCtWizardData,
-  makeVpcListResource,
-  WizardFieldMetaChangeEffectsRunner,
-} from '../../../test/rosaHcpWizardCtSpecHelpers';
 
 /** Defaults aligned with {@link ROSAHCPWizardBody} so the composed Yup schema resolves consistently in CT. */
 const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ROSAHCPCluster> = {

@@ -1,4 +1,5 @@
 import { IMDS } from '../../constants';
+import { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.types';
 import {
   ClusterNetwork,
   ClusterUpgrade,
@@ -12,7 +13,6 @@ import {
   formatUpgradeScheduleForReview,
   getNestedValue,
 } from '../../utilities/helpers';
-import { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.types';
 import { wizardFieldMetaByPath } from '../../yupSchemas';
 
 export type ReviewSelectOption = LabelValueOption;

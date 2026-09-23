@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Form } from '@patternfly/react-core';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -6,10 +7,10 @@ import * as yup from 'yup';
 
 import { Radio } from '../../Fields/RadioGroup';
 import {
-  WizCtWatchStatus,
   formatWatchValue,
-  wizCtSubmitValidationPreview,
   withRosaCt,
+  wizCtSubmitValidationPreview,
+  WizCtWatchStatus,
 } from '../wizFieldCtSpecHelpers';
 import { WizRadioGroup } from './WizRadioGroup';
 

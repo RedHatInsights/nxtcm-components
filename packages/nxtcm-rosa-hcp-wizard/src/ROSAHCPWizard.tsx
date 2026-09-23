@@ -1,6 +1,6 @@
-import { RosaHcpWizardStringsProvider } from './stringsProvider/RosaHcpWizardStringsContext';
 import { RosaHcpWizardFormProvider } from './RosaHcpWizardFormProvider';
 import { RosaHcpWizardStringsInput } from './stringsProvider/rosaHcpWizardStrings';
+import { RosaHcpWizardStringsProvider } from './stringsProvider/RosaHcpWizardStringsContext';
 import { RosaHCPWizardProps } from './types';
 
 type ROSAHCPWrapperProps = RosaHCPWizardProps & {

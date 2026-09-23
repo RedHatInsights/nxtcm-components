@@ -1,17 +1,19 @@
 import { type ReactNode, useCallback, useState } from 'react';
+
 import { type FieldValues, useController } from 'react-hook-form';
-import { requiredFromYup } from '../../../utilities/yupFieldRequired';
+
 import { useReconcileWizSelectValueWithOptions } from '../../../hooks/useReconcileWizSelectValueWithOptions';
 import {
   getWizSelectFieldDefaultValue,
   shouldReconcileWizSelectValue,
   toWizSelectFormValueFromSchemaDefault,
 } from '../../../hooks/wizSelectOptionsReconcile';
-import { FieldWithAPIErrorAlert } from '../../FieldWithAPIErrorAlert';
-import { Select, type SelectProps } from '../../Fields/Select';
-import { useWizFieldPresentation } from '../wizFieldPresentation';
 import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
-import { useWizRhfControl, useWizMenuFieldBlur, type WizRhfBoundFieldProps } from '../wizFieldRhf';
+import { requiredFromYup } from '../../../utilities/yupFieldRequired';
+import { Select, type SelectProps } from '../../Fields/Select';
+import { FieldWithAPIErrorAlert } from '../../FieldWithAPIErrorAlert';
+import { useWizFieldPresentation } from '../wizFieldPresentation';
+import { useWizMenuFieldBlur, useWizRhfControl, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizSelectControlledKeys = 'value' | 'onChange' | 'onBlur' | 'errorMessage' | 'isError';
 

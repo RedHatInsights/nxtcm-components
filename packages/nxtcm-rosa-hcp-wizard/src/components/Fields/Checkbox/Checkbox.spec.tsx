@@ -1,6 +1,8 @@
 import React from 'react';
-import { expect, test } from '@playwright/experimental-ct-react';
+
 import { Form } from '@patternfly/react-core';
+import { expect, test } from '@playwright/experimental-ct-react';
+
 import { Checkbox } from './Checkbox';
 import {
   CHECKBOX_HARNESS_HELPER_TEXT,

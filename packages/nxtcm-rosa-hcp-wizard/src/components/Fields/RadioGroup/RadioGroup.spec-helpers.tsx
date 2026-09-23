@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+
 import { Form } from '@patternfly/react-core';
-import { RadioGroup, Radio } from './RadioGroup';
+
+import { Radio, RadioGroup } from './RadioGroup';
 
 /** Strings shared by `RadioGroup.spec.tsx` and these harnesses */
 export const RADIO_GROUP_HARNESS_MACHINE_TYPE_LABEL = 'Machine type';

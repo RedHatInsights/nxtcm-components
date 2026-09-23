@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/experimental-ct-react';
-import { checkAccessibility } from './test-helpers';
+
 import { ROSAHCPWizardMount } from './ROSAHCPWizard.spec-helpers';
+import { checkAccessibility } from './test-helpers';
 
 test.describe('ROSAHCPWizard', () => {
   test('should render wizard with string provider', async ({ mount }) => {

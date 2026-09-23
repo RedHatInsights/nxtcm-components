@@ -1,20 +1,20 @@
 import * as yup from 'yup';
 
 import {
-  MIN_ROOT_DISK_SIZE_GIB,
-  MAX_ROOT_DISK_SIZE_OLD_OPENSHIFT,
-  MAX_ROOT_DISK_SIZE_NEW_OPENSHIFT,
   FIELD_NAME,
+  MAX_ROOT_DISK_SIZE_NEW_OPENSHIFT,
+  MAX_ROOT_DISK_SIZE_OLD_OPENSHIFT,
+  MIN_ROOT_DISK_SIZE_GIB,
 } from '../constants';
-import type { WizardFieldMeta } from './types';
+import { validateSecurityGroups } from '../validators';
+import { YUP } from './constants';
 import {
   ctx,
   rosaRequiredArrayField,
   rosaRequiredMixedField,
   rosaRequiredStringField,
 } from './helpers';
-import { validateSecurityGroups } from '../validators';
-import { YUP } from './constants';
+import type { WizardFieldMeta } from './types';
 
 export const selectedVpcSchema = rosaRequiredMixedField().meta({
   id: YUP.MACHINE_POOLS.SELECTED_VPC_SCHEMA.META.ID,

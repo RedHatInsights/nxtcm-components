@@ -1,14 +1,15 @@
 import { expect, type MountResult, test } from '@playwright/experimental-ct-react';
 import type { Page } from '@playwright/test';
-import { checkAccessibility } from '../../../test-helpers';
-import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+
+import { FIELD_NAME } from '../../../constants';
 import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
+import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
   makeMachineTypesResource,
   makeVpcListResource,
 } from '../../../test/rosaHcpWizardCtSpecHelpers';
+import { checkAccessibility } from '../../../test-helpers';
 import { maxReplicasSchema, minReplicasSchema, nodesComputeSchema } from '../../../yupSchemas';
-import { FIELD_NAME } from '../../../constants';
 import { MachinePoolsMount } from './MachinePools.spec-helpers';
 
 const mp = defaultRosaHcpWizardStrings.machinePools;

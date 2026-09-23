@@ -5,7 +5,6 @@ import {
   buildRosaHcpWizardReviewSections,
   type RosaHcpWizardReviewSection,
 } from '../Steps/Review/rosaHcpWizardReviewSections.data';
-
 import {
   buildOrderedWizardNavStepIds,
   buildRosaHcpWizardNavStepDisabledByValidation,

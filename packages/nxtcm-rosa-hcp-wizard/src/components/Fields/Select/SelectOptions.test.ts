@@ -1,3 +1,4 @@
+import { isSyntheticOptionId } from './selectFieldUtils';
 import {
   findOptionByValue,
   normalizeOption,
@@ -5,7 +6,6 @@ import {
   toggleOptionInValues,
   toggleValuesFromPfSelectId,
 } from './SelectOptions';
-import { isSyntheticOptionId } from './selectFieldUtils';
 
 describe('multiSelect option helpers', () => {
   const flat = ['a', 'b', 'c'].map((s) => normalizeOption(s, 'value'));

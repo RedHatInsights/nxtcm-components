@@ -1,7 +1,10 @@
-import { test, expect } from '@playwright/experimental-ct-react';
 import React from 'react';
-import { ClusterProviders, ProviderBreakdown } from './ClusterProviders';
+
+import { expect, test } from '@playwright/experimental-ct-react';
+
 import { checkAccessibility } from '@/test-helpers';
+
+import { ClusterProviders, ProviderBreakdown } from './ClusterProviders';
 
 const defaultProviders: ProviderBreakdown[] = [
   { label: 'ROSA', count: 42 },

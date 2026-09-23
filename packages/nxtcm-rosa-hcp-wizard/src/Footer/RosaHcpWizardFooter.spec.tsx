@@ -1,18 +1,18 @@
-import { test, expect, type MountResult } from '@playwright/experimental-ct-react';
+import { expect, type MountResult, test } from '@playwright/experimental-ct-react';
+import * as yaml from 'js-yaml';
 
+import { STEP_IDS } from '../constants';
+import fixtures from '../ROSAHCPWizard.fixtures';
+import { mockRoles } from '../Steps/BasicSetup/Details/Details.fixtures';
 import {
   defaultRosaHcpWizardStrings,
   defaultRosaHcpWizardValidatorStrings,
 } from '../stringsProvider/rosaHcpWizardStrings.defaults';
-import * as yaml from 'js-yaml';
 import { RosaHcpWizardValidationMount } from './RosaHcpWizardFooter.spec-helpers';
-import fixtures from '../ROSAHCPWizard.fixtures';
-import { mockRoles } from '../Steps/BasicSetup/Details/Details.fixtures';
 import {
   VALID_DETAILS_FORM_VALUES,
   VALID_REVIEW_SUBMIT_FORM_VALUES,
 } from './rosaHcpWizardFooter.test-data';
-import { STEP_IDS } from '../constants';
 
 const INSTALLER_ROLE_LABEL = mockRoles[0].installerRole.label;
 const EXPECTED_SUBMIT_YAML = 'kind: ROSAControlPlane\nmetadata:\n  name: stub';

@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/experimental-ct-react';
-import { ClusterUpgrade } from '../../../types';
+
 import {
   defaultRosaHcpWizardStrings,
   defaultRosaHcpWizardValidatorStrings,
 } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { ClusterUpgrade } from '../../../types';
 import { ClusterUpdatesMount } from './ClusterUpdates.spec-helpers';
 
 const cu = defaultRosaHcpWizardStrings.clusterUpdates;

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/experimental-ct-react';
+import { expect, test } from '@playwright/experimental-ct-react';
 
 import {
   FILE_UPLOAD_HARNESS_HELPER_TEXT,

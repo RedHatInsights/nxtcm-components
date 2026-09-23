@@ -1,14 +1,16 @@
 import React from 'react';
+
 import { FormGroup, Split, SplitItem } from '@patternfly/react-core';
 import { useFormContext, useWatch } from 'react-hook-form';
+
 import { HelperText } from '../../../components/Fields/HelperText';
 import { Select } from '../../../components/Fields/Select';
 import { wizFieldShowsError } from '../../../components/WizFields/wizFieldRhf';
-import { parseUpdateSchedule } from '../../../utilities/helpers';
+import { FIELD_NAME, UPGRADE_SCHEDULE_FIELDS_ID } from '../../../constants';
 import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster } from '../../../types';
-import { FIELD_NAME, UPGRADE_SCHEDULE_FIELDS_ID } from '../../../constants';
+import { parseUpdateSchedule } from '../../../utilities/helpers';
 
 const hoursOptions = Array.from(Array(24).keys());
 

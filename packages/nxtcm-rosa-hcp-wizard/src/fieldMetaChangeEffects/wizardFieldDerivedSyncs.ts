@@ -1,16 +1,15 @@
 import type { UseFormSetValue } from 'react-hook-form';
 
+import { FIELD_NAME } from '../constants';
+import type { Role, ROSAHCPCluster, ROSAHCPWizardData, VPC } from '../types';
 import {
   DEFAULT_FORM_SET_VALUE_OPTS,
   DEFAULT_FORM_SET_VALUE_OPTS_WITH_VALIDATE,
 } from '../utilities/formSetValueOptions';
+import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
 import { resolveSelectedVpc } from '../utilities/helpers';
-import type { ROSAHCPCluster, ROSAHCPWizardData, Role, VPC } from '../types';
-import { FIELD_NAME } from '../constants';
 import type { WizardFieldDerivedSyncKey } from '../yupSchemas/types';
 import type { WizardFieldDerivedSyncEntry } from '../yupSchemas/wizardFieldMetaChangeRegistry';
-
-import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
 
 export { hasRefetchableStringValue };
 

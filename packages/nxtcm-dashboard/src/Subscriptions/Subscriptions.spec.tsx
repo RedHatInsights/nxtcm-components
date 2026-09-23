@@ -1,5 +1,7 @@
-import { test, expect } from '@/ct-fixture';
 import React from 'react';
+
+import { expect, test } from '@/ct-fixture';
+
 import { Subscriptions, SubscriptionsProps } from './Subscriptions';
 
 const defaultProps: SubscriptionsProps = {

@@ -1,8 +1,11 @@
-import { test, expect } from '@playwright/experimental-ct-react';
 import React from 'react';
+
+import { expect, test } from '@playwright/experimental-ct-react';
+
+import { checkAccessibility } from '@/test-helpers';
+
 import { ClustersWithIssues, ClustersWithIssuesProps } from './ClustersWithIssues';
 import { ClustersWithIssuesWithConsoleLink } from './ClustersWithIssues.spec-helpers';
-import { checkAccessibility } from '@/test-helpers';
 
 const defaultData: ClustersWithIssuesProps['data'] = {
   totalUnhealthy: 4,

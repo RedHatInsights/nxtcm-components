@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { NotificationsPanel, NotificationItem } from './NotificationsPanel';
+
+import { NotificationItem, NotificationsPanel } from './NotificationsPanel';
 
 const mockNotifications: NotificationItem[] = [
   {

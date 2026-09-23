@@ -1,5 +1,6 @@
 import React from 'react';
-import { test, expect } from '@playwright/experimental-ct-react';
+
+import { expect, test } from '@playwright/experimental-ct-react';
 
 // CT transform only turns an import into importRefs if every specifier is JSX; keep harness imports separate from consts.
 import {

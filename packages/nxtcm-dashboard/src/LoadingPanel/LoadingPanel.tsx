@@ -1,5 +1,6 @@
-import { Spinner } from '@patternfly/react-core';
 import { useEffect, useState } from 'react';
+
+import { Spinner } from '@patternfly/react-core';
 
 type LoadingPanelProps<T> = {
   callback: () => Promise<T>;

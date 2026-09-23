@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/experimental-ct-react';
 
-import { checkAccessibility } from '../test-helpers';
 import { defaultRosaHcpWizardStrings } from '../stringsProvider/rosaHcpWizardStrings.defaults';
+import { checkAccessibility } from '../test-helpers';
 import { YamlEditorFooterMount } from './RosaHcpYamlEditorFooter.spec-helpers';
 
 const w = defaultRosaHcpWizardStrings.wizard;

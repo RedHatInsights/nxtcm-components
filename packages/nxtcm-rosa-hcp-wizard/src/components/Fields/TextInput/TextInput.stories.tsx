@@ -1,6 +1,8 @@
 import React, { type FormEvent } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+
 import { Form } from '@patternfly/react-core';
+import type { Meta, StoryObj } from '@storybook/react';
+
 import { TextInput, type TextInputProps } from './TextInput';
 
 function TextInputDemo(args: TextInputProps) {

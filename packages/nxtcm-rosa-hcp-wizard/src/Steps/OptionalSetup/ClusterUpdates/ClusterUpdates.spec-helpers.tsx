@@ -1,20 +1,22 @@
 import React, { useMemo } from 'react';
+
 import { Button, Form } from '@patternfly/react-core';
 import { FormProvider, type Resolver, useForm, useFormContext } from 'react-hook-form';
+
+import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
+import { STEP_IDS } from '../../../constants';
+import {
+  RosaHcpWizardValidationProvider,
+  useRosaHcpWizardValidation,
+} from '../../../rosaHcpWizardValidationContext';
+import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
   ClusterEncryptionKeys,
   ClusterNetwork,
   ClusterUpgrade,
   type ROSAHCPCluster,
 } from '../../../types';
-import { STEP_IDS } from '../../../constants';
 import { createClusterValidationResolver } from '../../../utilities/clusterValidationResolver';
-import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import {
-  RosaHcpWizardValidationProvider,
-  useRosaHcpWizardValidation,
-} from '../../../rosaHcpWizardValidationContext';
-import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
 import { ClusterUpdates } from './ClusterUpdates';
 
 const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ROSAHCPCluster> = {
