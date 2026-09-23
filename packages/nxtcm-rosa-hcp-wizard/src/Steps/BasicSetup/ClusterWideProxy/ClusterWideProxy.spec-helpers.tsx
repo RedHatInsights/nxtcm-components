@@ -20,6 +20,7 @@ import {
   makeDefaultRosaHcpCtWizardData,
   WizardFieldMetaChangeEffectsCtHarness,
 } from '../../../test/rosaHcpWizardCtSpecHelpers';
+import { DocsVersionProvider } from '../../../ROSAHCPWizardDocsVersionProvider';
 
 /** Defaults aligned with {@link ROSAHCPWizardBody} so the composed Yup schema resolves consistently in CT. */
 const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ROSAHCPCluster> = {
@@ -54,12 +55,15 @@ const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ROSAHCPCluster> = {
 
 export type ClusterWideProxyMountProps = {
   defaultValues?: Partial<ROSAHCPCluster>;
+  /** Published docs majors supplied to DocsVersionProvider (defaults to `[]`). */
+  docsVersions?: string[];
 };
 
 const CT_WIZARD_DATA = makeDefaultRosaHcpCtWizardData();
 
 export const ClusterWideProxyMount: React.FC<ClusterWideProxyMountProps> = ({
   defaultValues = {},
+  docsVersions,
 }) => {
   const resolver = useMemo(
     () => createClusterValidationResolver(defaultRosaHcpWizardValidatorStrings),
@@ -73,11 +77,13 @@ export const ClusterWideProxyMount: React.FC<ClusterWideProxyMountProps> = ({
   });
 
   return withRosaCt(
-    <FormProvider {...methods}>
-      <Form>
-        <WizardFieldMetaChangeEffectsCtHarness wizardData={CT_WIZARD_DATA} />
-        <ClusterWideProxy />
-      </Form>
-    </FormProvider>
+    <DocsVersionProvider docsVersions={docsVersions}>
+      <FormProvider {...methods}>
+        <Form>
+          <WizardFieldMetaChangeEffectsCtHarness wizardData={CT_WIZARD_DATA} />
+          <ClusterWideProxy />
+        </Form>
+      </FormProvider>
+    </DocsVersionProvider>
   );
 };
