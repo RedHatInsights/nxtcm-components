@@ -1,6 +1,5 @@
 import * as yup from 'yup';
 import { overlapCidr } from 'cidr-tools';
-import IPCIDR from 'ip-cidr';
 
 import { CIDR_REGEXP, LOWERCASE_ALPHANUMERIC, MAX_CLUSTER_NAME_LENGTH } from '../constants';
 import type { RosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings';
@@ -27,8 +26,18 @@ export function isCidrSubnetAddress(value: string): boolean {
 }
 
 export function getStartingIP(cidr: string): string {
-  const ip = new IPCIDR(cidr);
-  return ip.start().toString();
+  const [address, prefix] = cidr.split('/');
+  const maskBits = Number(prefix);
+
+  return address
+    .split('.')
+    .map(Number)
+    .map((octet, index) => {
+      const bitsInOctet = Math.min(Math.max(maskBits - index * 8, 0), 8);
+      const mask = bitsInOctet === 0 ? 0 : 256 - 2 ** (8 - bitsInOctet);
+      return octet & mask;
+    })
+    .join('.');
 }
 
 export function validateClusterNameSync(
@@ -129,8 +138,8 @@ function isAbsentRequiredValue(value: unknown): boolean {
  * **Required field pattern:** {@link rosaRequiredStringField}, {@link rosaRequiredMixedField}, or
  * {@link rosaRequiredArrayField}.
  */
-function rosaRequiredPresentValue(
-  this: yup.TestContext,
+function rosaRequiredPresentValue<TContext extends yup.AnyObject>(
+  this: yup.TestContext<TContext>,
   value: unknown
 ): true | yup.ValidationError {
   if (isAbsentRequiredValue(value)) {
@@ -177,10 +186,11 @@ export function rosaRequiredMixedField(): yup.MixedSchema {
  * Required non-empty array: test + `.required()`. Optional `defaultValue` for structural row shape
  * (e.g. `[{ machine_pool_subnet: '' }]`); use {@link rosaRequiredStringField} on item fields for leaf validation.
  */
-export function rosaRequiredArrayField(of: yup.AnySchema, defaultValue?: unknown[]): yup.AnySchema {
-  let schema: yup.AnySchema = yup.array().of(of);
-  if (defaultValue !== undefined) {
-    schema = schema.default(defaultValue);
-  }
-  return schema.test(rosaCommonRequiredNonEmptyTest).required();
+export function rosaRequiredArrayField<T>(
+  of: yup.ISchema<T>,
+  defaultValue?: T[]
+): yup.ArraySchema<T[], yup.AnyObject, T[] | undefined, '' | 'd'> {
+  const schema = yup.array<yup.AnyObject, T>(of);
+  const schemaWithDefault = defaultValue === undefined ? schema : schema.default(defaultValue);
+  return schemaWithDefault.test(rosaCommonRequiredNonEmptyTest).required();
 }

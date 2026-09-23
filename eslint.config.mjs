@@ -68,12 +68,13 @@ export default [
       'react/prop-types': 'off',
       'react/display-name': 'warn',
       'no-console': 'error',
-      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-explicit-any': 'error',
+      // These sibling unsafe rules are deferred and remain intentionally disabled.
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-return': 'error',
+      '@typescript-eslint/no-unsafe-call': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -144,7 +145,10 @@ export default [
 
   // Wizard: enforce FIELD_NAME constants instead of magic strings
   {
-    files: ['packages/nxtcm-rosa-hcp-wizard/src/**/*.ts', 'packages/nxtcm-rosa-hcp-wizard/src/**/*.tsx'],
+    files: [
+      'packages/nxtcm-rosa-hcp-wizard/src/**/*.ts',
+      'packages/nxtcm-rosa-hcp-wizard/src/**/*.tsx',
+    ],
     ignores: [
       '**/*.test.ts',
       '**/*.test.tsx',

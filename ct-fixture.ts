@@ -11,7 +11,9 @@ export const test = base.extend<{ _coverageCapture: void }>({
     async ({ page }, use) => {
       await use();
       try {
-        const coverage = await page.evaluate(() => (window as any).__coverage__);
+        const coverage = await page.evaluate(
+          () => (window as unknown as { __coverage__?: unknown }).__coverage__
+        );
         if (!coverage) return;
         mkdirSync('.nyc_output', { recursive: true });
         const filename = join(

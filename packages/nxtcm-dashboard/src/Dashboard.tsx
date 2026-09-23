@@ -37,6 +37,7 @@ import {
 import { ClusterProviders, ProviderBreakdown } from './TotalClusters/ClusterProviders';
 import { CostManagement, ClusterCost } from './CostManagement/CostManagement';
 import { useLocalStorageWithObject } from './useLocalStorage';
+import { filterDashboardTemplate } from './filterDashboardTemplate';
 
 export type DashboardProps = {
   totalClusters: {
@@ -549,30 +550,6 @@ const initialDashboardData: ExtendedTemplateConfig = {
   ],
 };
 
-function filterTemplate(template: ExtendedTemplateConfig): ExtendedTemplateConfig {
-  const allowedKeys = ['i', 'x', 'y', 'w', 'h', 'widgetType', 'title'] as const;
-  const filterLayoutItem = (item: any) => {
-    const filtered: any = {};
-    for (const key of allowedKeys) {
-      if (key in item) {
-        filtered[key] = item[key];
-      }
-    }
-    return filtered;
-  };
-
-  const filtered = {} as ExtendedTemplateConfig;
-  const breakpoints: Array<keyof ExtendedTemplateConfig> = ['sm', 'md', 'lg', 'xl'];
-
-  for (const breakpoint of breakpoints) {
-    if (template[breakpoint]) {
-      filtered[breakpoint] = template[breakpoint].map(filterLayoutItem);
-    }
-  }
-
-  return filtered;
-}
-
 export const Dashboard = (props: DashboardProps) => {
   const [template, setTemplate] = useLocalStorageWithObject<ExtendedTemplateConfig>(
     'dashboard-template-v5',
@@ -585,7 +562,7 @@ export const Dashboard = (props: DashboardProps) => {
     <WidgetLayout
       widgetMapping={mapping}
       initialTemplate={template}
-      onTemplateChange={(template) => setTemplate(filterTemplate(template))}
+      onTemplateChange={(template) => setTemplate(filterDashboardTemplate(template))}
       showDrawer
     />
   );
