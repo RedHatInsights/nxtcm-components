@@ -1,6 +1,7 @@
 import { type MouseEvent, type ReactNode, useState } from 'react';
 
-import { ExpandableSection, Stack } from '@patternfly/react-core';
+import { ExpandableSection } from '@patternfly/react-core/dist/dynamic/components/ExpandableSection';
+import { Stack } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 
 export const ReviewExpandSection = (props: {
   label: string;

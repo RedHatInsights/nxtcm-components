@@ -1,6 +1,8 @@
 import { type ComponentProps, type ReactNode, useRef } from 'react';
 
-import { Button, ButtonVariant, FormGroupLabelHelp, Popover } from '@patternfly/react-core';
+import { Button, ButtonVariant } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { FormGroupLabelHelp } from '@patternfly/react-core/dist/dynamic/components/Form';
+import { Popover } from '@patternfly/react-core/dist/dynamic/components/Popover';
 import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 
 type PopoverComponentProps = ComponentProps<typeof Popover>;

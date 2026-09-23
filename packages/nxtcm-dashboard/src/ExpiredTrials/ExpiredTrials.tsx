@@ -1,7 +1,19 @@
-import React from 'react';
-
-import { Flex, FlexItem, Pagination, PaginationVariant, Skeleton } from '@patternfly/react-core';
-import { ActionsColumn, IAction, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import {
+  Pagination,
+  PaginationVariant,
+} from '@patternfly/react-core/dist/dynamic/components/Pagination';
+import { Skeleton } from '@patternfly/react-core/dist/dynamic/components/Skeleton';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
+import {
+  ActionsColumn,
+  IAction,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@patternfly/react-table/dist/dynamic/components/Table';
 
 import styles from './ExpiredTrials.module.scss';
 

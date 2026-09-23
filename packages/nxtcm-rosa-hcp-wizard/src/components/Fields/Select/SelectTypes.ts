@@ -1,4 +1,4 @@
-import type { TooltipProps } from '@patternfly/react-core';
+import type { TooltipProps } from '@patternfly/react-core/dist/dynamic/components/Tooltip';
 
 export type Option<T> = {
   id?: string;

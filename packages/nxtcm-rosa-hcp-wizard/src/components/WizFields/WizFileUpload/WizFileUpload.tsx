@@ -1,4 +1,4 @@
-import type { DropEvent } from '@patternfly/react-core';
+import type { DropEvent } from '@patternfly/react-core/dist/dynamic/helpers/typeUtils';
 import { type FieldValues, useController } from 'react-hook-form';
 
 import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';

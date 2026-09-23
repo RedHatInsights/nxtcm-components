@@ -1,4 +1,5 @@
-import { TooltipProps, useWizardContext } from '@patternfly/react-core';
+import { TooltipProps } from '@patternfly/react-core/dist/dynamic/components/Tooltip';
+import { useWizardContext } from '@patternfly/react-core/dist/dynamic/components/Wizard';
 
 import { FIELD_NAME, STEP_IDS } from './constants';
 import type { YamlResourceGenerator } from './Steps/YamlEditor/types';

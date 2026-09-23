@@ -4,7 +4,7 @@
  */
 import React, { useCallback, useMemo } from 'react';
 
-import { Wizard, WizardStep } from '@patternfly/react-core';
+import { Wizard, WizardStep } from '@patternfly/react-core/dist/dynamic/components/Wizard';
 import { FormProvider, type Resolver, useForm } from 'react-hook-form';
 
 import { withRosaCt } from '../components/WizFields/wizFieldCtSpecHelpers';

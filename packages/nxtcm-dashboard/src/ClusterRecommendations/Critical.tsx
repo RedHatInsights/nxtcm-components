@@ -1,4 +1,7 @@
-import { Button, Content, Flex, FlexItem, Title } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Content } from '@patternfly/react-core/dist/dynamic/components/Content';
+import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 import CriticalRiskIcon from '@patternfly/react-icons/dist/esm/icons/critical-risk-icon';
 
 import styles from './Critical.module.scss';

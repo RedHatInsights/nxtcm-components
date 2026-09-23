@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { useWizardContext } from '@patternfly/react-core';
+import { useWizardContext } from '@patternfly/react-core/dist/dynamic/components/Wizard';
 import { type FieldPath, useFormContext, useFormState } from 'react-hook-form';
 
 import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
