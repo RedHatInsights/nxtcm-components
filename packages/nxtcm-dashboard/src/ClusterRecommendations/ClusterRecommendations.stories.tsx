@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+
 import { ClusterRecommendations } from './ClusterRecommendations';
 
 const meta: Meta<typeof ClusterRecommendations> = {

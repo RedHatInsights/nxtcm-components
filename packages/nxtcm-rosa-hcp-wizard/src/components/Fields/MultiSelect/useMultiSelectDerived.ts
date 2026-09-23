@@ -1,7 +1,7 @@
 import type { Option, OptionGroup } from '../Select/SelectTypes';
 import {
-  useNormalizedSelectOptions,
   type NormalizedSelectOptionsModel,
+  useNormalizedSelectOptions,
   type UseNormalizedSelectOptionsParams,
 } from '../Select/useNormalizedSelectOptions';
 

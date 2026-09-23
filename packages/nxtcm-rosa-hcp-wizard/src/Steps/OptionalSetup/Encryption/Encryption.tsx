@@ -1,19 +1,20 @@
 import { Alert } from '@patternfly/react-core';
-import { Section } from '../../../components/Section';
-import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
-import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
-import { clusterValidationSchema } from '../../../yupSchemas';
-import { Radio } from '../../../components/Fields/Radio';
 import { useWatch } from 'react-hook-form';
-import { ClusterEncryptionKeys, ROSAHCPCluster } from '../../../types';
-import { WizTextInput } from '../../../components/WizFields/WizTextInput';
+
 import ExternalLink from '../../../components/ExternalLink';
-import { awsLinks, useGetDocsVersion } from '../../../constants/links';
+import { Radio } from '../../../components/Fields/Radio';
 import { FieldWrapper } from '../../../components/FieldWrapper';
+import { Section } from '../../../components/Section';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
+import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
+import { WizTextInput } from '../../../components/WizFields/WizTextInput';
+import { FIELD_NAME } from '../../../constants';
+import { awsLinks, useGetDocsVersion } from '../../../constants/links';
+import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+import { ClusterEncryptionKeys, ROSAHCPCluster } from '../../../types';
+import { clusterValidationSchema } from '../../../yupSchemas';
 import { useClearFieldWhenHidden } from './useClearFieldWhenHidden';
 import { useEncryptionYupDescribeOptions } from './useEncryptionYupDescribeOptions';
-import { FIELD_NAME } from '../../../constants';
 
 export const Encryption = () => {
   const e = useRosaHcpWizardStrings().encryption;

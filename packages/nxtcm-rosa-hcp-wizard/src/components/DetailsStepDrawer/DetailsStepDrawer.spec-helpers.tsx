@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+
 import { FormProvider, useForm } from 'react-hook-form';
+
 import type { ROSAHCPCluster } from '../../types';
+import type { RosaLoginProduct } from '../rosaLoginCommand';
 import { withRosaCt } from '../WizFields/wizFieldCtSpecHelpers';
 import { DetailsStepDrawer } from './DetailsStepDrawer';
-import type { RosaLoginProduct } from '../rosaLoginCommand';
 
 export interface DetailsStepDrawerMountProps {
   initiallyExpanded?: boolean;

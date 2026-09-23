@@ -1,9 +1,9 @@
 import * as yup from 'yup';
 
-import type { WizardFieldMeta } from './types';
+import type { ROSAHCPCluster } from '../types';
 import { clusterValidationSchema } from './clusterValidationSchema';
 import { readWizardFieldMeta } from './readWizardFieldMeta';
-import type { ROSAHCPCluster } from '../types';
+import type { WizardFieldMeta } from './types';
 
 export { clusterValidationSchema } from './clusterValidationSchema';
 

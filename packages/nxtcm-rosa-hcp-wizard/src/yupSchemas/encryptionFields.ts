@@ -2,11 +2,11 @@ import * as yup from 'yup';
 
 import { FIELD_NAME } from '../constants';
 import { ClusterEncryptionKeys, ROSAHCPCluster } from '../types';
-import type { WizardFieldMeta } from './types';
-import { ctx, rosaCommonRequiredNonEmptyTest } from './helpers';
-import { validateAWSKMSKeyARN } from '../validators';
 import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
+import { validateAWSKMSKeyARN } from '../validators';
 import { YUP } from './constants';
+import { ctx, rosaCommonRequiredNonEmptyTest } from './helpers';
+import type { WizardFieldMeta } from './types';
 
 /** ARN format/region checks (required when shown is enforced via `.when()` on the field schema). */
 function validateKmsArn(

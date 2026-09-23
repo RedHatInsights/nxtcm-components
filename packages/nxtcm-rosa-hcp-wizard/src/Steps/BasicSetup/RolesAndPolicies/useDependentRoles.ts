@@ -1,8 +1,9 @@
 import React from 'react';
+
 import { useWatch } from 'react-hook-form';
 
-import type { DropdownType, RolesResource } from '../../../types';
 import { FIELD_NAME } from '../../../constants';
+import type { DropdownType, RolesResource } from '../../../types';
 
 interface UseDependentRolesResult {
   supportRoleOptions: DropdownType[];

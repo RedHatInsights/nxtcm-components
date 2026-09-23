@@ -1,5 +1,6 @@
-import { expect, test } from '@playwright/experimental-ct-react';
 import React from 'react';
+
+import { expect, test } from '@playwright/experimental-ct-react';
 
 import { LabelHelp } from './LabelHelp';
 

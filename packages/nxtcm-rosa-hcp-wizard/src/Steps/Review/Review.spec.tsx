@@ -1,9 +1,11 @@
 import React from 'react';
+
 import { expect, test } from '@playwright/experimental-ct-react';
+
 import { FIELD_NAME, IMDS } from '../../constants';
-import { ClusterUpgrade } from '../../types';
 import rosaHcpWizardFixtures from '../../ROSAHCPWizard.fixtures';
 import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { ClusterUpgrade } from '../../types';
 import { ReviewHarness } from './Review.spec-helpers';
 
 const mp = defaultRosaHcpWizardStrings.machinePools;

@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+
 import { Form } from '@patternfly/react-core';
+import type { Meta, StoryObj } from '@storybook/react';
+
 import { MultiSelect, type MultiSelectProps } from './MultiSelect';
 
 function MultiSelectDemo(args: MultiSelectProps<string>) {

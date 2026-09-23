@@ -1,5 +1,5 @@
 /** Playwright CT guidance: docs/agent-rules/playwright-ct.md */
-import { test, expect } from '@playwright/experimental-ct-react';
+import { expect, test } from '@playwright/experimental-ct-react';
 import type { Locator } from '@playwright/test';
 
 import { YamlEditorStepMount } from './RosaHcpYamlEditorStep.spec-helpers';

@@ -1,6 +1,8 @@
 import React from 'react';
-import { Flex, FlexItem, Skeleton, Title } from '@patternfly/react-core';
+
 import { ChartDonut } from '@patternfly/react-charts/victory';
+import { Flex, FlexItem, Skeleton, Title } from '@patternfly/react-core';
+
 import styles from './ClusterProviders.module.scss';
 
 export type ProviderBreakdown = {

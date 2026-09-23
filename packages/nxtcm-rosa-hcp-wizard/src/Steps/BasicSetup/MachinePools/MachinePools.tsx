@@ -1,24 +1,26 @@
 import { useMemo } from 'react';
+
 import { useFormContext, useWatch } from 'react-hook-form';
+
+import ExternalLink from '../../../components/ExternalLink';
+import { FieldWrapper } from '../../../components/FieldWrapper';
+import { Section } from '../../../components/Section';
+import { WizCheckbox, WizNumberInput, WizSelect } from '../../../components/WizFields';
+import { FIELD_NAME } from '../../../constants';
+import { useGetDocsVersion } from '../../../constants/links';
+import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster, ROSAHCPWizardData, VPCRefetchArgs } from '../../../types';
+import { getAutoscalingMaxNodes } from '../../../utilities/getAutoscalingMaxNodes';
 import {
   buildMachinePoolsReviewSelectOptions,
   canSelectImds,
   getWorkerNodeVolumeSizeMaxGiB,
   resolveSelectedVpc,
 } from '../../../utilities/helpers';
-import { Section } from '../../../components/Section';
-import { FieldWrapper } from '../../../components/FieldWrapper';
-import ExternalLink from '../../../components/ExternalLink';
-import { useGetDocsVersion } from '../../../constants/links';
-import { WizCheckbox, WizNumberInput, WizSelect } from '../../../components/WizFields';
-import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+import { useIsFieldHidden } from '../../../WizardConfigContext';
 import { clusterValidationSchema } from '../../../yupSchemas';
-import { getAutoscalingMaxNodes } from '../../../utilities/getAutoscalingMaxNodes';
 import { MachinePoolsAdvancedSection } from './MachinePoolsAdvancedSection';
 import { MachinePoolsAutoscalingReplicas } from './MachinePoolsAutoscalingReplicas';
-import { FIELD_NAME } from '../../../constants';
-import { useIsFieldHidden } from '../../../WizardConfigContext';
 
 type MachinePoolsProps = Pick<ROSAHCPWizardData, 'vpcList' | 'machineTypes'>;
 

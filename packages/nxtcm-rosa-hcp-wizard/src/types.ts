@@ -1,6 +1,7 @@
 import { TooltipProps, useWizardContext } from '@patternfly/react-core';
-import type { YamlResourceGenerator } from './Steps/YamlEditor/types';
+
 import { FIELD_NAME, STEP_IDS } from './constants';
+import type { YamlResourceGenerator } from './Steps/YamlEditor/types';
 
 // -- dropdown / select option types --
 

@@ -1,5 +1,5 @@
+import { containsCidr, overlapCidr } from 'cidr-tools';
 import * as yup from 'yup';
-import { overlapCidr, containsCidr } from 'cidr-tools';
 
 import {
   AWS_MACHINE_CIDR_MAX_MULTI_AZ,
@@ -14,9 +14,10 @@ import {
   POD_NODES_MIN,
   SERVICE_CIDR_MAX,
 } from '../constants';
-import { parseCIDRSubnetLength } from '../utilities/helpers';
 import { ROSAHCPCluster } from '../types';
-import type { WizardFieldMeta } from './types';
+import { parseCIDRSubnetLength } from '../utilities/helpers';
+import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
+import { YUP } from './constants';
 import {
   ctx,
   findOverlappingCidrFields,
@@ -26,8 +27,7 @@ import {
   rosaCommonRequiredNonEmptyTest,
   rosaRequiredStringField,
 } from './helpers';
-import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
-import { YUP } from './constants';
+import type { WizardFieldMeta } from './types';
 
 export const clusterPrivacySchema = rosaRequiredStringField()
   .default(YUP.NETWORKING.CLUSTER_PRIVACY_SCHEMA.DEFAULT)

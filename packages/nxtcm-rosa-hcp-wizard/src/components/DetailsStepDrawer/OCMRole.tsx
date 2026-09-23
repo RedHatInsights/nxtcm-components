@@ -1,12 +1,13 @@
 import { Alert, AlertVariant, Content, ContentVariants, Title } from '@patternfly/react-core';
+import { useWatch } from 'react-hook-form';
+
+import { FIELD_NAME } from '../../constants';
+import { useGetDocsVersion } from '../../constants/links';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { CopyInstruction } from '../CopyInstruction';
-import { TabGroup } from './TabGroup';
-import PopoverHintWithTitle from '../PopoverHintWithTitle';
 import ExternalLink from '../ExternalLink';
-import { useGetDocsVersion } from '../../constants/links';
-import { useWatch } from 'react-hook-form';
-import { FIELD_NAME } from '../../constants';
+import PopoverHintWithTitle from '../PopoverHintWithTitle';
+import { TabGroup } from './TabGroup';
 
 export const OCMRole = () => {
   const { ocmRole: o, associateAwsDrawer: a } = useRosaHcpWizardStrings();

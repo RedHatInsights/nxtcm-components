@@ -1,7 +1,8 @@
-import { test, expect } from '../../../../ct-fixture';
 import React from 'react';
-import { FieldWithAPIErrorAlert } from './FieldWithAPIErrorAlert';
+
+import { expect, test } from '../../../../ct-fixture';
 import { RosaHcpWizardStringsProvider } from '../stringsProvider/RosaHcpWizardStringsContext';
+import { FieldWithAPIErrorAlert } from './FieldWithAPIErrorAlert';
 
 /** `FieldWithAPIErrorAlert` uses `useRosaWizardStrings` (ROSA HCP strings context), which requires this provider. */
 function withRosaStrings(ui: React.ReactElement) {

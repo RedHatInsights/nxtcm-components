@@ -1,4 +1,5 @@
 import { Flex, FlexItem, Skeleton } from '@patternfly/react-core';
+
 import { Critical } from './Critical';
 import { Category, RecommendationByCategory } from './RecommendationByCategory';
 

@@ -1,4 +1,4 @@
-import { Content, ContentVariants, ClipboardCopy, clipboardCopyFunc } from '@patternfly/react-core';
+import { ClipboardCopy, clipboardCopyFunc, Content, ContentVariants } from '@patternfly/react-core';
 
 type CopyInstructionProps = {
   children: string;

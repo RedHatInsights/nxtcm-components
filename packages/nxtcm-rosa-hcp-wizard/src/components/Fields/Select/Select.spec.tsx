@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/experimental-ct-react';
+
 import {
+  DisabledTypeaheadHarness,
   PlainMenuHarness,
   RefreshHarness,
   TypeaheadHarness,
-  DisabledTypeaheadHarness,
 } from './Select.spec-helpers';
 
 test.describe('Select', () => {

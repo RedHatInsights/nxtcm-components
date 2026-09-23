@@ -1,11 +1,11 @@
-import { test, expect, type MountResult } from '@playwright/experimental-ct-react';
+import { expect, type MountResult, test } from '@playwright/experimental-ct-react';
 import type { Page } from '@playwright/test';
 
-import { defaultRosaHcpWizardStrings } from './stringsProvider/rosaHcpWizardStrings.defaults';
 import {
   RosaHcpWizardBodyErrorThenBackMount,
   RosaHcpWizardBodyMount,
 } from './ROSAHCPWizardBody.spec-helpers';
+import { defaultRosaHcpWizardStrings } from './stringsProvider/rosaHcpWizardStrings.defaults';
 import { checkAccessibility } from './test-helpers';
 
 const { submitError: submitErrorStrings, wizard } = defaultRosaHcpWizardStrings;

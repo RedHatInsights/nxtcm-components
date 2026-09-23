@@ -1,6 +1,7 @@
 import { Alert, Content, ContentVariants, Stack, StackItem } from '@patternfly/react-core';
-import { CopyInstruction } from './CopyInstruction';
+
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
+import { CopyInstruction } from './CopyInstruction';
 
 type RolesErrorAlertProps = {
   showMissingArnsError: boolean;

@@ -1,8 +1,11 @@
-import { test, expect } from '@playwright/experimental-ct-react';
 import React from 'react';
+
+import { expect, test } from '@playwright/experimental-ct-react';
+
+import { checkAccessibility } from '@/test-helpers';
+
 import { ExpiredTrials, ExpiredTrialsProps } from './ExpiredTrials';
 import { ExpiredTrialsWithActions } from './ExpiredTrials.spec-helpers';
-import { checkAccessibility } from '@/test-helpers';
 
 const defaultData: ExpiredTrialsProps['data'] = {
   trials: [

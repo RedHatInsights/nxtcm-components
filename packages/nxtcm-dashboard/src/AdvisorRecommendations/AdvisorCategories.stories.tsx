@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+
 import { AdvisorCategories, CategoryCounts } from './AdvisorCategories';
 
 const meta: Meta<typeof AdvisorCategories> = {

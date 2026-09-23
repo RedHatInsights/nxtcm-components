@@ -3,9 +3,38 @@
  * Keep a single mount export in this file (see Details.spec-helpers / NumberInput.spec).
  */
 import React, { useCallback, useMemo } from 'react';
-import { FormProvider, useForm, type Resolver } from 'react-hook-form';
-import { Wizard, WizardStep } from '@patternfly/react-core';
 
+import { Wizard, WizardStep } from '@patternfly/react-core';
+import { FormProvider, type Resolver, useForm } from 'react-hook-form';
+
+import { withRosaCt } from '../components/WizFields/wizFieldCtSpecHelpers';
+import { STEP_IDS } from '../constants';
+import fixtures from '../ROSAHCPWizard.fixtures';
+import { RosaHcpWizardValidationProvider } from '../rosaHcpWizardValidationContext';
+import { Details } from '../Steps/BasicSetup/Details/Details';
+import {
+  mockAwsBillingAccounts,
+  mockAwsInfrastructureAccounts,
+  mockOpenShiftVersionsData,
+  mockRegions,
+  mockRoles,
+} from '../Steps/BasicSetup/Details/Details.fixtures';
+import { MachinePools } from '../Steps/BasicSetup/MachinePools/MachinePools';
+import { Networking } from '../Steps/BasicSetup/Networking/Networking';
+import { RolesAndPolicies } from '../Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies';
+import { ClusterUpdates } from '../Steps/OptionalSetup/ClusterUpdates/ClusterUpdates';
+import { Encryption } from '../Steps/OptionalSetup/Encryption/Encryption';
+import { Review } from '../Steps/Review/Review';
+import {
+  defaultRosaHcpWizardStrings,
+  defaultRosaHcpWizardValidatorStrings,
+} from '../stringsProvider/rosaHcpWizardStrings.defaults';
+import {
+  makeDefaultRosaHcpCtWizardData,
+  makeMachineTypesResource,
+  makeVpcListResource,
+  WizardFieldMetaChangeEffectsRunner,
+} from '../test/rosaHcpWizardCtSpecHelpers';
 import {
   type AwsBillingAccountsResource,
   type AwsInfrastructureAccountsResource,
@@ -14,37 +43,9 @@ import {
   type ROSAHCPCluster,
   type VersionsResource,
 } from '../types';
-import { Details } from '../Steps/BasicSetup/Details/Details';
-import { MachinePools } from '../Steps/BasicSetup/MachinePools/MachinePools';
-import { Networking } from '../Steps/BasicSetup/Networking/Networking';
-import { RolesAndPolicies } from '../Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies';
-import { Encryption } from '../Steps/OptionalSetup/Encryption/Encryption';
-import { ClusterUpdates } from '../Steps/OptionalSetup/ClusterUpdates/ClusterUpdates';
-import { Review } from '../Steps/Review/Review';
-import {
-  mockAwsBillingAccounts,
-  mockAwsInfrastructureAccounts,
-  mockOpenShiftVersionsData,
-  mockRegions,
-  mockRoles,
-} from '../Steps/BasicSetup/Details/Details.fixtures';
-import { STEP_IDS } from '../constants';
+import { createClusterValidationResolver } from '../utilities/clusterValidationResolver';
 import { createRosaHcpWizardFooter, rosaHcpWizardFooter } from './RosaHcpWizardFooter';
 import { FOOTER_CT_BASE_FORM_VALUES } from './rosaHcpWizardFooter.ctDefaults';
-import { RosaHcpWizardValidationProvider } from '../rosaHcpWizardValidationContext';
-import fixtures from '../ROSAHCPWizard.fixtures';
-import { createClusterValidationResolver } from '../utilities/clusterValidationResolver';
-import {
-  defaultRosaHcpWizardStrings,
-  defaultRosaHcpWizardValidatorStrings,
-} from '../stringsProvider/rosaHcpWizardStrings.defaults';
-import { withRosaCt } from '../components/WizFields/wizFieldCtSpecHelpers';
-import {
-  makeDefaultRosaHcpCtWizardData,
-  makeMachineTypesResource,
-  makeVpcListResource,
-  WizardFieldMetaChangeEffectsRunner,
-} from '../test/rosaHcpWizardCtSpecHelpers';
 
 export type RosaHcpWizardValidationMountProps = {
   defaultValues?: Partial<ROSAHCPCluster>;

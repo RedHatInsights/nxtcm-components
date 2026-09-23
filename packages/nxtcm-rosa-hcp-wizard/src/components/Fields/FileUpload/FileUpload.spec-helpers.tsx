@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+
 import { type DropEvent, Form } from '@patternfly/react-core';
+
 import { FileUpload } from './FileUpload';
 
 export const FILE_UPLOAD_HARNESS_LABEL = 'Pull secret';

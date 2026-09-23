@@ -100,6 +100,7 @@
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "^7.33.0",
     "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-simple-import-sort": "^14.0.0",
     "globals": "^17.11.0",
     "husky": "^9.1.7",
     "identity-obj-proxy": "^3.0.0",

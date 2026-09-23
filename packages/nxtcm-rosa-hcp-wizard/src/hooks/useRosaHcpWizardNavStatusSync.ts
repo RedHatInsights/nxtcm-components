@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+
 import { useWizardContext } from '@patternfly/react-core';
 import { type FieldPath, useFormContext, useFormState } from 'react-hook-form';
 
 import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
 import { useRosaHcpWizardReviewSections } from '../Steps/Review/ROSAHCPWizardReviewSections';
 import type { ROSAHCPCluster } from '../types';
-
 import {
   buildOrderedWizardNavStepIds,
   buildRosaHcpWizardNavStepDisabledByValidation,

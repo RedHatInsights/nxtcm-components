@@ -1,8 +1,10 @@
-import { test, expect, MountResult } from '@/ct-fixture';
 import React from 'react';
+
+import { expect, MountResult, test } from '@/ct-fixture';
+import { checkAccessibility } from '@/test-helpers';
+
 import { ClusterRecommendations } from './ClusterRecommendations';
 import { Category } from './RecommendationByCategory';
-import { checkAccessibility } from '@/test-helpers';
 
 const defaultProps = {
   count: 25,

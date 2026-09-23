@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { expect, test } from '@playwright/experimental-ct-react';
+
 import { ReviewExpandSection } from './ReviewExpandSection';
 
 test.describe('ReviewExpandSection', () => {

@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/experimental-ct-react';
 import type { Locator } from '@playwright/test';
-import { checkAccessibility } from '../../../test-helpers';
-import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import { ClusterNetwork } from '../../../types';
+
 import { STEP_IDS } from '../../../constants';
+import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { checkAccessibility } from '../../../test-helpers';
+import { ClusterNetwork } from '../../../types';
 import { NetworkingMount } from './Networking.spec-helpers';
 
 const n = defaultRosaHcpWizardStrings.networking;

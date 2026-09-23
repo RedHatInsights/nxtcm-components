@@ -1,6 +1,7 @@
 import { Button, Flex, FlexItem, Skeleton } from '@patternfly/react-core';
 import FolderIcon from '@patternfly/react-icons/dist/esm/icons/folder-icon';
 import ServerIcon from '@patternfly/react-icons/dist/esm/icons/server-icon';
+
 import styles from './Subscriptions.module.scss';
 
 export type SubscriptionsProps = {

@@ -2,10 +2,10 @@ import * as yup from 'yup';
 
 import { FIELD_NAME } from '../constants';
 import { ClusterUpgrade } from '../types';
-import type { WizardFieldMeta } from './types';
-import { rosaCommonRequiredNonEmptyTest } from './helpers';
 import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
 import { YUP } from './constants';
+import { rosaCommonRequiredNonEmptyTest } from './helpers';
+import type { WizardFieldMeta } from './types';
 
 export const upgradePolicySchema = yup
   .string()

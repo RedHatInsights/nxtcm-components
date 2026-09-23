@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+
 import { Form } from '@patternfly/react-core';
-import { Radio } from './Radio';
+
 import { RadioGroupContext } from '../RadioGroup/RadioGroupContext';
+import { Radio } from './Radio';
 
 /** Strings shared by `Radio.spec.tsx` and this harness */
 const RADIO_HARNESS_US_EAST_LABEL = 'US East';

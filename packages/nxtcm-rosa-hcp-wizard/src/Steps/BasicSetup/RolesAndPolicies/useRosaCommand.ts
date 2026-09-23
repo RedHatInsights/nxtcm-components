@@ -1,5 +1,6 @@
-import { FIELD_NAME } from '../../../constants';
 import { useWatch } from 'react-hook-form';
+
+import { FIELD_NAME } from '../../../constants';
 
 export const useRosaCommand = () => {
   const customOperatorRolesPrefix = useWatch({ name: FIELD_NAME.CUSTOM_OPERATOR_ROLES_PREFIX });

@@ -1,10 +1,10 @@
-import * as yup from 'yup';
 import { overlapCidr } from 'cidr-tools';
+import * as yup from 'yup';
 
 import { CIDR_REGEXP, LOWERCASE_ALPHANUMERIC, MAX_CLUSTER_NAME_LENGTH } from '../constants';
 import type { RosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings';
-import type { ValidationSchemaContext } from './types';
 import { ROSAHCPCluster } from '../types';
+import type { ValidationSchemaContext } from './types';
 
 export function ctx(testContext: yup.TestContext): ValidationSchemaContext {
   return testContext.options.context as ValidationSchemaContext;

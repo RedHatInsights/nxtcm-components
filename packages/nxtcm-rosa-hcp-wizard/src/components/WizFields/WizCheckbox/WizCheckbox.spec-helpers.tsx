@@ -4,9 +4,9 @@ import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import {
-  WizCtWatchStatus,
-  wizCtSubmitValidationPreview,
   withRosaCt,
+  wizCtSubmitValidationPreview,
+  WizCtWatchStatus,
 } from '../wizFieldCtSpecHelpers';
 import { WizCheckbox } from './WizCheckbox';
 

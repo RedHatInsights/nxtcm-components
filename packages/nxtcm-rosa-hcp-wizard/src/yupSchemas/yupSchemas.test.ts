@@ -45,25 +45,18 @@ jest.mock('ip-cidr', () => {
 });
 
 import {
-  clusterValidationSchema,
-  getClusterValidationSchemaDefaultValues,
-  wizardFieldMetaByPath,
-} from './index';
-import { coerceAbsentRequiredFieldValues } from '../utilities/clusterValidationResolver';
-import type { ValidationSchemaContext } from './types';
-import { defaultRosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings.defaults';
-import {
-  MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH,
-  HOST_PREFIX_MIN,
-  HOST_PREFIX_MAX,
-  AWS_MACHINE_CIDR_MIN,
-  AWS_MACHINE_CIDR_MAX_SINGLE_AZ,
   AWS_MACHINE_CIDR_MAX_MULTI_AZ,
-  SERVICE_CIDR_MAX,
-  POD_CIDR_MAX,
-  MAX_CA_SIZE_BYTES,
+  AWS_MACHINE_CIDR_MAX_SINGLE_AZ,
+  AWS_MACHINE_CIDR_MIN,
+  HOST_PREFIX_MAX,
+  HOST_PREFIX_MIN,
   IMDS,
+  MAX_CA_SIZE_BYTES,
+  MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH,
+  POD_CIDR_MAX,
+  SERVICE_CIDR_MAX,
 } from '../constants';
+import { defaultRosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
   CIDRSubnet,
   ClusterEncryptionKeys,
@@ -71,6 +64,13 @@ import {
   ClusterUpgrade,
   ROSAHCPCluster,
 } from '../types';
+import { coerceAbsentRequiredFieldValues } from '../utilities/clusterValidationResolver';
+import {
+  clusterValidationSchema,
+  getClusterValidationSchemaDefaultValues,
+  wizardFieldMetaByPath,
+} from './index';
+import type { ValidationSchemaContext } from './types';
 
 // ---------------------------------------------------------------------------
 // Helpers

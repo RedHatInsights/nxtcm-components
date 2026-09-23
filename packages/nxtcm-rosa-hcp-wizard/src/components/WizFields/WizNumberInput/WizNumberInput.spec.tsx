@@ -1,5 +1,6 @@
 import React from 'react';
-import { test, expect } from '@playwright/experimental-ct-react';
+
+import { expect, test } from '@playwright/experimental-ct-react';
 
 import {
   WizNumberInputExplicitControlOnlyHarness,
@@ -15,8 +16,8 @@ import {
   WIZ_NUMBER_INPUT_EXPLICIT_HELPER,
   WIZ_NUMBER_INPUT_EXPLICIT_LABEL,
   WIZ_NUMBER_INPUT_SLOT_STATUS_LABEL,
-  WIZ_NUMBER_INPUT_TOPOLOGY_POOL_STATUS_LABEL,
   WIZ_NUMBER_INPUT_SUBMIT_ERROR,
+  WIZ_NUMBER_INPUT_TOPOLOGY_POOL_STATUS_LABEL,
   WIZ_NUMBER_INPUT_VALUE_STATUS_LABEL,
   WIZ_NUMBER_INPUT_YUP_META_HELPER,
   WIZ_NUMBER_INPUT_YUP_META_LABEL,

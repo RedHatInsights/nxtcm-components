@@ -1,5 +1,5 @@
-import type { CIDRSubnet, ROSAHCPCluster, ROSAHCPWizardData } from '../types';
 import type { RosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings';
+import type { CIDRSubnet, ROSAHCPCluster, ROSAHCPWizardData } from '../types';
 
 /** Top-level {@link ROSAHCPCluster} keys used in form reset metadata. */
 export type WizardFormFieldName = keyof ROSAHCPCluster;

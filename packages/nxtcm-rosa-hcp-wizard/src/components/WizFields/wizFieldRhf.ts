@@ -6,19 +6,19 @@ import {
   useEffect,
   useRef,
 } from 'react';
+
 import {
   type Control,
   type FieldPath,
   type FieldValues,
-  type UseFormReturn,
   useFormContext,
+  type UseFormReturn,
 } from 'react-hook-form';
 import * as yup from 'yup';
 
-import { type YupFieldDescribeOptions } from '../../utilities/yupFieldRequired';
-
-import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.types';
 import { getRosaHcpWizardStringByLabelKey } from '../../stringsProvider/getRosaHcpWizardStringByLabelKey';
+import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.types';
+import { type YupFieldDescribeOptions } from '../../utilities/yupFieldRequired';
 
 /**
  * Shared react-hook-form + Yup wiring for ROSA HCP wizard `Wiz*` fields.

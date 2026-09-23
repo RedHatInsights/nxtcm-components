@@ -1,10 +1,11 @@
 import React, { useRef } from 'react';
+
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { RosaHcpWizardStringsProvider } from '../stringsProvider/RosaHcpWizardStringsContext';
 import { RosaHcpWizardValidationProvider } from '../rosaHcpWizardValidationContext';
-import type { ROSAHCPCluster } from '../types';
 import type { YamlEditorHandle } from '../Steps/YamlEditor/RosaHcpYamlEditorStep';
+import { RosaHcpWizardStringsProvider } from '../stringsProvider/RosaHcpWizardStringsContext';
+import type { ROSAHCPCluster } from '../types';
 import { RosaHcpYamlEditorFooter } from './RosaHcpYamlEditorFooter';
 
 export type YamlEditorFooterMountProps = {

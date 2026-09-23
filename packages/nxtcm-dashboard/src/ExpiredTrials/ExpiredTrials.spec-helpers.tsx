@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { ExpiredTrials, ExpiredTrialsProps } from './ExpiredTrials';
 
 // playwright CT can't serialize functions that return data across process
