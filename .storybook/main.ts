@@ -13,7 +13,18 @@ const config: StorybookConfig = {
     options: {},
   },
   async viteFinal(config) {
-    // merge custom configuration into the default config
+    // Strip unplugin-dts — Storybook does not need declaration file generation
+    // and it fails because the library dist output does not exist during a Storybook build
+    config.plugins = (config.plugins ?? []).filter(
+      (p) =>
+        !(
+          p &&
+          typeof p === 'object' &&
+          !Array.isArray(p) &&
+          (p as { name: string }).name === 'unplugin-dts'
+        )
+    );
+
     const { mergeConfig } = await import('vite');
 
     return mergeConfig(config, {
