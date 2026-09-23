@@ -1,6 +1,11 @@
 import React from 'react';
 
-import { Button, ButtonProps, ButtonVariant, Icon } from '@patternfly/react-core';
+import {
+  Button,
+  ButtonProps,
+  ButtonVariant,
+} from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Icon } from '@patternfly/react-core/dist/dynamic/components/Icon';
 import ExternalLinkAltIcon from '@patternfly/react-icons/dist/esm/icons/external-link-alt-icon';
 
 type Props = {

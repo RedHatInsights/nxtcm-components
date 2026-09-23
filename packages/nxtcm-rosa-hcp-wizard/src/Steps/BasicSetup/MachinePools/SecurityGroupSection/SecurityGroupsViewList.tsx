@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Label, LabelGroup } from '@patternfly/react-core';
+import { Label, LabelGroup } from '@patternfly/react-core/dist/dynamic/components/Label';
 
 import { SecurityGroup } from '../../../../types';
 

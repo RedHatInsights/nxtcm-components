@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Wizard, WizardStep } from '@patternfly/react-core';
+import { Wizard, WizardStep } from '@patternfly/react-core/dist/dynamic/components/Wizard';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { STEP_IDS } from '../../constants';

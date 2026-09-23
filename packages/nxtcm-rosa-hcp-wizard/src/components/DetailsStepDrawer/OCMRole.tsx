@@ -1,8 +1,7 @@
-import { Alert, AlertVariant, Content, ContentVariants, Title } from '@patternfly/react-core';
-import { useWatch } from 'react-hook-form';
+import { Alert, AlertVariant } from '@patternfly/react-core/dist/dynamic/components/Alert';
+import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
+import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
 
-import { FIELD_NAME } from '../../constants';
-import { useGetDocsVersion } from '../../constants/links';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { CopyInstruction } from '../CopyInstruction';
 import ExternalLink from '../ExternalLink';

@@ -3,19 +3,29 @@ import React, { useEffect, useState } from 'react';
 import {
   EmptyState,
   EmptyStateBody,
-  Flex,
-  FlexItem,
+} from '@patternfly/react-core/dist/dynamic/components/EmptyState';
+import {
   Pagination,
   PaginationVariant,
+} from '@patternfly/react-core/dist/dynamic/components/Pagination';
+import {
   Panel,
   PanelHeader,
   PanelMain,
   PanelMainBody,
-  Skeleton,
-  Title,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/dist/dynamic/components/Panel';
+import { Skeleton } from '@patternfly/react-core/dist/dynamic/components/Skeleton';
+import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 import BellIcon from '@patternfly/react-icons/dist/esm/icons/bell-icon';
-import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import {
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@patternfly/react-table/dist/dynamic/components/Table';
 
 import styles from './NotificationsPanel.module.scss';
 

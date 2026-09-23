@@ -4,15 +4,15 @@ import {
   ActionList,
   ActionListGroup,
   ActionListItem,
-  Alert,
-  AlertVariant,
-  Button,
-  ButtonVariant,
+} from '@patternfly/react-core/dist/dynamic/components/ActionList';
+import { Alert, AlertVariant } from '@patternfly/react-core/dist/dynamic/components/Alert';
+import { Button, ButtonVariant } from '@patternfly/react-core/dist/dynamic/components/Button';
+import {
   type CustomWizardFooterFunction,
   useWizardContext,
   type WizardFooterProps,
   WizardFooterWrapper,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/dist/dynamic/components/Wizard';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 import { FIELD_NAME, STEP_IDS } from '../constants';

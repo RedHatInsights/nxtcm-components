@@ -1,6 +1,8 @@
 import { useId, useState } from 'react';
 
-import { ExpandableSectionToggle, Flex, FlexItem, StackItem } from '@patternfly/react-core';
+import { ExpandableSectionToggle } from '@patternfly/react-core/dist/dynamic/components/ExpandableSection';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
+import { StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { ReviewFieldValueWithLock } from './ReviewFieldRowShared';

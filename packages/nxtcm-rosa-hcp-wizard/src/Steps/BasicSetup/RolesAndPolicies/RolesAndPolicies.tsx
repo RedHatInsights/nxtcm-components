@@ -1,17 +1,8 @@
-import React from 'react';
+import { ClipboardCopyVariant } from '@patternfly/react-core/dist/dynamic/components/ClipboardCopy';
+import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
+import { ExpandableSection } from '@patternfly/react-core/dist/dynamic/components/ExpandableSection';
+import { Stack, StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 
-import {
-  ClipboardCopyVariant,
-  Content,
-  ContentVariants,
-  ExpandableSection,
-  Stack,
-  StackItem,
-} from '@patternfly/react-core';
-import { useWatch } from 'react-hook-form';
-
-import { CopyInstruction } from '../../../components/CopyInstruction';
-import ExternalLink from '../../../components/ExternalLink';
 import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
 import { OIDCConfigHint, OIDCConfigHintProduct } from '../../../components/OIDCConfigHint';
 import { RolesAlert } from '../../../components/RolesErrorAlert';

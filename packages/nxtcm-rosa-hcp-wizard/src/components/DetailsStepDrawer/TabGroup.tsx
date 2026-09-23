@@ -1,12 +1,11 @@
 import { ReactElement, useState } from 'react';
 
 import {
-  Stack,
-  StackItem,
   ToggleGroup,
   ToggleGroupItem,
   ToggleGroupItemProps,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/dist/dynamic/components/ToggleGroup';
+import { Stack, StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 
 type ToggleGroupTabsProps = {
   tabs: { title: string; body: ReactElement; 'data-testid'?: string; id: string }[];

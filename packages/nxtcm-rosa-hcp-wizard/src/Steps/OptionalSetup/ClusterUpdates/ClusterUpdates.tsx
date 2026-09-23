@@ -1,4 +1,6 @@
-import { Button, Content, ContentVariants, useWizardContext } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
+import { useWizardContext } from '@patternfly/react-core/dist/dynamic/components/Wizard';
 import { useWatch } from 'react-hook-form';
 
 import ExternalLink from '../../../components/ExternalLink';

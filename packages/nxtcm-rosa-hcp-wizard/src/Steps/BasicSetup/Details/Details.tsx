@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Button } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { useFormContext, useWatch } from 'react-hook-form';
 import semver from 'semver';
 
