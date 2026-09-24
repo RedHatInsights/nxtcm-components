@@ -4,7 +4,7 @@
  */
 import React, { useMemo } from 'react';
 
-import { Form } from '@patternfly/react-core';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 import { FormProvider, type Resolver, useForm } from 'react-hook-form';
 
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';

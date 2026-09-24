@@ -1,6 +1,10 @@
 import React from 'react';
 
-import { Drawer, DrawerContent, DrawerContentBody } from '@patternfly/react-core';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerContentBody,
+} from '@patternfly/react-core/dist/dynamic/components/Drawer';
 
 import { withRosaCt } from '../../components/WizFields/wizFieldCtSpecHelpers';
 import rosaControlPlaneSchema from '../../test/acmGeneratorFixtures/schemas/rosaControlPlaneSchema.json';

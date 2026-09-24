@@ -1,6 +1,6 @@
 import { Children, type ComponentProps, type ReactNode, useContext } from 'react';
 
-import { Radio as PfRadio } from '@patternfly/react-core';
+import { Radio as PfRadio } from '@patternfly/react-core/dist/dynamic/components/Radio';
 
 import { LabelHelp } from '../LabelHelp';
 import { RadioGroupContext } from '../RadioGroup/RadioGroupContext';

@@ -1,4 +1,5 @@
-import { ClipboardCopyVariant, Content, ContentVariants } from '@patternfly/react-core';
+import { ClipboardCopyVariant } from '@patternfly/react-core/dist/dynamic/components/ClipboardCopy';
+import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
 
 import { DEFAULT_HOST_PRODUCT } from '../constants';
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';

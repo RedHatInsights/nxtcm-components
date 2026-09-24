@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Form } from '@patternfly/react-core';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { RadioGroup } from '../RadioGroup';

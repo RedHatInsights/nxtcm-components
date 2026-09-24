@@ -1,11 +1,11 @@
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 import {
-  Button,
   EmptyState,
   EmptyStateActions,
   EmptyStateBody,
   EmptyStateFooter,
   EmptyStateStatus,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/dist/dynamic/components/EmptyState';
 
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
 

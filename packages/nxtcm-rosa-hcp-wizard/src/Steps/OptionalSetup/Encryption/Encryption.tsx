@@ -1,4 +1,4 @@
-import { Alert } from '@patternfly/react-core';
+import { Alert } from '@patternfly/react-core/dist/dynamic/components/Alert';
 import { useWatch } from 'react-hook-form';
 
 import ExternalLink from '../../../components/ExternalLink';

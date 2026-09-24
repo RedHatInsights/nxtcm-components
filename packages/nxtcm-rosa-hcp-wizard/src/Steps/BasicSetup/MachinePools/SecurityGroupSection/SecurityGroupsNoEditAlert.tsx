@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Alert, AlertActionLink } from '@patternfly/react-core';
+import { Alert, AlertActionLink } from '@patternfly/react-core/dist/dynamic/components/Alert';
 import { useWatch } from 'react-hook-form';
 
 import { FIELD_NAME } from '../../../../constants';

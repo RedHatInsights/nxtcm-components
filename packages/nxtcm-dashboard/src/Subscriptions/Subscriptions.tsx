@@ -1,4 +1,6 @@
-import { Button, Flex, FlexItem, Skeleton } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Skeleton } from '@patternfly/react-core/dist/dynamic/components/Skeleton';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 import FolderIcon from '@patternfly/react-icons/dist/esm/icons/folder-icon';
 import ServerIcon from '@patternfly/react-icons/dist/esm/icons/server-icon';
 

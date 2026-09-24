@@ -1,4 +1,6 @@
-import { Alert, Content, ContentVariants, Stack, StackItem } from '@patternfly/react-core';
+import { Alert } from '@patternfly/react-core/dist/dynamic/components/Alert';
+import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
+import { Stack, StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
 import { CopyInstruction } from './CopyInstruction';

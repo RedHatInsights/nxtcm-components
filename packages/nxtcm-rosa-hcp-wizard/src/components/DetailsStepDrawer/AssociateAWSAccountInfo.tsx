@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ExpandableSection } from '@patternfly/react-core';
+import { ExpandableSection } from '@patternfly/react-core/dist/dynamic/components/ExpandableSection';
 
 import './AssociateAWSAccountInfo.css';
 

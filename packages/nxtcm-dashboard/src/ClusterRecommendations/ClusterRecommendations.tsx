@@ -1,4 +1,5 @@
-import { Flex, FlexItem, Skeleton } from '@patternfly/react-core';
+import { Skeleton } from '@patternfly/react-core/dist/dynamic/components/Skeleton';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 
 import { Critical } from './Critical';
 import { Category, RecommendationByCategory } from './RecommendationByCategory';

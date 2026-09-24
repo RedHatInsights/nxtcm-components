@@ -1,17 +1,16 @@
 import React from 'react';
 
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 import {
-  Button,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
-  Divider,
-  Flex,
-  FlexItem,
-  Skeleton,
-  Title,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/dist/dynamic/components/DescriptionList';
+import { Divider } from '@patternfly/react-core/dist/dynamic/components/Divider';
+import { Skeleton } from '@patternfly/react-core/dist/dynamic/components/Skeleton';
+import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 
 import styles from './CostManagement.module.scss';
 

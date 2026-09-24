@@ -1,6 +1,7 @@
 import { type ComponentProps, type ReactNode, useCallback, useId } from 'react';
 
-import { Flex, FormGroup } from '@patternfly/react-core';
+import { FormGroup } from '@patternfly/react-core/dist/dynamic/components/Form';
+import { Flex } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 
 import { HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
