@@ -27,7 +27,7 @@ import { expect } from '@playwright/test';
  * import { checkAccessibility } from '../../test-helpers';
  *
  * test('has no accessibility violations', async ({ mount }) => {
- *   const component = await mount(<MyComponent />);
+ *   const component = await mount('workspace/path/MyComponent');
  *   await checkAccessibility({ component });
  * });
  * ```

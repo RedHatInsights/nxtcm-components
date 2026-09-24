@@ -290,6 +290,9 @@ export type RosaHCPWizardProps = {
   /** Optional wizard configuration for host-application-specific customisation. */
   config?: WizardConfig;
   selectedSecret?: SelectedSecret;
+
+  // versions of available documentation for links in the wizard
+  docsVersions?: string[];
 };
 
 export type WizardNavigationContext = ReturnType<typeof useWizardContext>;
