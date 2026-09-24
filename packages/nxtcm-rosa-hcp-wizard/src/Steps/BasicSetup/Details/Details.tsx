@@ -11,7 +11,7 @@ import { Section } from '../../../components/Section';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { FIELD_NAME } from '../../../constants';
-import { awsLinks } from '../../../constants/links';
+import { awsLinks } from '../../../constants/rawLinks';
 import { useClusterNameUniquenessValidation } from '../../../hooks/useClusterNameUniquenessValidation';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { type ROSAHCPCluster, ROSAHCPWizardData, type RosaHCPWizardProps } from '../../../types';

@@ -4,7 +4,8 @@ import { Alert, AlertActionLink } from '@patternfly/react-core';
 import { useWatch } from 'react-hook-form';
 
 import { FIELD_NAME } from '../../../../constants';
-import { awsLinks, useGetDocsVersion } from '../../../../constants/links';
+import { useGetDocsVersion } from '../../../../constants/links';
+import { awsLinks } from '../../../../constants/rawLinks';
 import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWizardStringsContext';
 
 const SecurityGroupsNoEditAlert = () => {
