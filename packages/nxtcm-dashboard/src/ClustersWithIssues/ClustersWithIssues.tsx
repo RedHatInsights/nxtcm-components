@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+
 import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { Icon } from '@patternfly/react-core/dist/dynamic/components/Icon';
 import { Pagination } from '@patternfly/react-core/dist/dynamic/components/Pagination';

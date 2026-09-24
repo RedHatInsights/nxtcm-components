@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import type { Meta, StoryObj } from '@storybook/react';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
@@ -86,7 +87,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: (args) => WizMultiSelectFormDemo(defaultSchema)(args),
+  render: (args) =>
+    WizMultiSelectFormDemo(defaultSchema)(args as unknown as WizMultiSelectStoryArgs),
   args: {
     options: ['alpha', 'bravo', 'charlie'],
     isDisabled: false,

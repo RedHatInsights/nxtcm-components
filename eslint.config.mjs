@@ -147,26 +147,7 @@ export default [
     },
   },
 
-  // Wizard: prevent self-imports
-  {
-    files: [
-      'packages/nxtcm-rosa-hcp-wizard/src/**/*.ts',
-      'packages/nxtcm-rosa-hcp-wizard/src/**/*.tsx',
-    ],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            '@redhat-cloud-services/nxtcm-rosa-hcp-wizard',
-            '@redhat-cloud-services/nxtcm-rosa-hcp-wizard/*',
-          ],
-        },
-      ],
-    },
-  },
-
-  // Wizard: restrict imports from non dynamic paths
+  // Wizard: prevent self-imports + restrict PatternFly to dynamic paths
   {
     files: [
       'packages/nxtcm-rosa-hcp-wizard/src/**/*.ts',
@@ -194,6 +175,8 @@ export default [
             },
           ],
           patterns: [
+            '@redhat-cloud-services/nxtcm-rosa-hcp-wizard',
+            '@redhat-cloud-services/nxtcm-rosa-hcp-wizard/*',
             '!@patternfly/react-core/*',
             '!@patternfly/react-table/*',
             '!@patternfly/react-icons/*',
@@ -231,23 +214,7 @@ export default [
     },
   },
 
-  // Dashboard: prevent self-imports
-  {
-    files: ['packages/nxtcm-dashboard/src/**/*.ts', 'packages/nxtcm-dashboard/src/**/*.tsx'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            '@redhat-cloud-services/nxtcm-dashboard',
-            '@redhat-cloud-services/nxtcm-dashboard/*',
-          ],
-        },
-      ],
-    },
-  },
-
-  // Wizard: restrict imports from non dynamic paths
+  // Dashboard: prevent self-imports + restrict PatternFly to dynamic paths
   {
     files: ['packages/nxtcm-dashboard/src/**/*.ts', 'packages/nxtcm-dashboard/src/**/*.tsx'],
     rules: {
@@ -272,6 +239,8 @@ export default [
             },
           ],
           patterns: [
+            '@redhat-cloud-services/nxtcm-dashboard',
+            '@redhat-cloud-services/nxtcm-dashboard/*',
             '!@patternfly/react-core/*',
             '!@patternfly/react-table/*',
             '!@patternfly/react-icons/*',

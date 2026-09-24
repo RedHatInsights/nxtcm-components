@@ -1,6 +1,7 @@
 import React, { type SyntheticEvent } from 'react';
 
 import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import { NumberInput, type NumberInputProps } from './NumberInput';
 
