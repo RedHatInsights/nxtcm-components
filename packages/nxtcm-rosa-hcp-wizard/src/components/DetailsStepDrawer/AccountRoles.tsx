@@ -1,6 +1,6 @@
 import { Alert, AlertVariant, Content, ContentVariants } from '@patternfly/react-core';
 
-import { awsLinks } from '../../constants/links';
+import { awsLinks } from '../../constants/rawLinks';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { CopyInstruction } from '../CopyInstruction';
 import ExternalLink from '../ExternalLink';
