@@ -4,8 +4,8 @@ import { FormHelperText } from '@patternfly/react-core/dist/dynamic/components/F
 import {
   HelperText as PFHelperText,
   HelperTextItem,
-  HelperTextItem,
   HelperTextItemProps,
+  HelperTextItemVariant,
 } from '@patternfly/react-core/dist/dynamic/components/HelperText';
 
 import { helperTextId } from './helperTextUtils';

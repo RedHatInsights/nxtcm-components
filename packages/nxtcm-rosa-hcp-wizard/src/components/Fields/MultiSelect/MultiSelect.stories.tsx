@@ -62,7 +62,7 @@ export const Default: Story = {
     label: 'Regions',
     options: ['us-east-1', 'eu-west-1', 'ap-south-1'],
   },
-  render: (args) => <MultiSelectDemo {...args} />,
+  render: (args) => <MultiSelectDemo {...(args as unknown as MultiSelectProps<string>)} />,
 };
 
 export const WithRefresh: Story = {
@@ -71,5 +71,5 @@ export const WithRefresh: Story = {
     label: 'VPC security groups',
     options: ['sg-a', 'sg-b'],
   },
-  render: (args) => <MultiSelectRefreshDemo {...args} />,
+  render: (args) => <MultiSelectRefreshDemo {...(args as unknown as MultiSelectProps<string>)} />,
 };

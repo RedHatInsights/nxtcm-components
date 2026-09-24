@@ -192,7 +192,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: (args) => WizSelectFormDemo(defaultSchema)(args),
+  render: (args) => WizSelectFormDemo(defaultSchema)(args as unknown as WizSelectStoryArgs),
   args: {
     options: ['us-east-1', 'us-west-2', { label: 'US West (N. California)', value: 'us-west-1' }],
     isDisabled: false,
@@ -201,7 +201,7 @@ export const Default: Story = {
 };
 
 export const GroupedOptions: Story = {
-  render: (args) => WizSelectFormDemo(groupedSchema)(args),
+  render: (args) => WizSelectFormDemo(groupedSchema)(args as unknown as WizSelectStoryArgs),
   args: {
     optionGroups: [
       {
@@ -233,7 +233,7 @@ export const GroupedOptions: Story = {
 };
 
 export const Refresh: Story = {
-  render: (args) => WizSelectRefreshFormDemo(refreshSchema)(args),
+  render: (args) => WizSelectRefreshFormDemo(refreshSchema)(args as unknown as WizSelectStoryArgs),
   args: {
     options: ['us-east-1', 'us-west-2', { label: 'US West (N. California)', value: 'us-west-1' }],
     isDisabled: false,

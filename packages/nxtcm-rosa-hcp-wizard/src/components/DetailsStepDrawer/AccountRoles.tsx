@@ -1,6 +1,7 @@
 import { Alert, AlertVariant } from '@patternfly/react-core/dist/dynamic/components/Alert';
 import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
 
+import { awsLinks } from '../../constants/links';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { CopyInstruction } from '../CopyInstruction';
 import ExternalLink from '../ExternalLink';

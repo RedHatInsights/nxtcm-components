@@ -5,6 +5,7 @@ import { Label } from '@patternfly/react-core/dist/dynamic/components/Label';
 import { Skeleton } from '@patternfly/react-core/dist/dynamic/components/Skeleton';
 import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
 import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
+import EqualsIcon from '@patternfly/react-icons/dist/esm/icons/equals-icon';
 import SeverityCriticalIcon from '@patternfly/react-icons/dist/esm/icons/severity-critical-icon';
 import SeverityImportantIcon from '@patternfly/react-icons/dist/esm/icons/severity-important-icon';
 import SeverityMinorIcon from '@patternfly/react-icons/dist/esm/icons/severity-minor-icon';

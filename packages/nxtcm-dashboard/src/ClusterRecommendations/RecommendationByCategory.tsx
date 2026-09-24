@@ -1,3 +1,4 @@
+import { ChartThemeColor, getTheme } from '@patternfly/react-charts/victory';
 import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
 import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';

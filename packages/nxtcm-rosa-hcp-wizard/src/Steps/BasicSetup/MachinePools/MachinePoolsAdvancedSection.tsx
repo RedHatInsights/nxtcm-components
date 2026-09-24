@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 
 import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
 import { ExpandableSection } from '@patternfly/react-core/dist/dynamic/components/ExpandableSection';
+import { useFormContext } from 'react-hook-form';
 
 import { Radio } from '../../../components/Fields/RadioGroup';
 import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
