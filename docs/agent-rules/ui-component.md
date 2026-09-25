@@ -65,7 +65,7 @@ export const MyComponent = ({ title, onSave }: MyComponentProps): React.ReactEle
 
 ## story + CT
 
-- story conventions and title guidance: `docs/agent-rules/storybook.md`
+- story conventions, public vs internal visibility, and title guidance: `docs/agent-rules/storybook.md`
 - CT conventions, selectors, and spec-helpers: `docs/agent-rules/playwright-ct.md`
 
 ## exports

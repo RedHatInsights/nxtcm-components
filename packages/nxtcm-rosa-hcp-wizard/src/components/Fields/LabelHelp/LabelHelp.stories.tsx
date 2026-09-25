@@ -5,9 +5,9 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { LabelHelp } from './LabelHelp';
 
 const meta: Meta<typeof LabelHelp> = {
-  title: 'Form Elements/LabelHelp',
+  title: 'Internal/Form Elements/LabelHelp',
   component: LabelHelp,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   parameters: {
     layout: 'padded',
   },

@@ -148,7 +148,31 @@ disable until dependencies are selected; show `resource.isFetching` loading on s
 
 ## testing / storybook
 
-exercise the three concerns where relevant: schema validation, footer step-gating, and meta-driven cascades. CT specs live next to components; registry/effect unit tests live under `yupSchemas/` and `fieldMetaChangeEffects/`. story titles: `Wizards/RosaHCPWizard`, `Form Elements/*`, `Form Elements/Connected Form Elements/*`.
+exercise the three concerns where relevant: schema validation, footer step-gating, and meta-driven cascades. CT specs live next to components; registry/effect unit tests live under `yupSchemas/` and `fieldMetaChangeEffects/`.
+
+stories use these title groups and tags:
+
+- **Public full wizard**: `Wizards/RosaHCPWizard` with `tags: ['autodocs']`
+- **Internal base field components**: `Internal/Form Elements/<Name>` with `tags: ['autodocs', 'internal']`
+- **Internal connected field wrappers**: `Internal/Form Elements/Connected Form Elements/<Name>` with `tags: ['autodocs', 'internal']`
+- **Internal steps/drawers**: `Internal/Wizard/...` with `tags: ['autodocs', 'internal']`
+- Every story file must export a `Default` story.
+
+```tsx
+// Public exported wizard
+const meta: Meta<typeof RosaHCPWizard> = {
+  title: 'Wizards/RosaHCPWizard',
+  component: RosaHCPWizard,
+  tags: ['autodocs'],
+};
+
+// Internal field component (sidebar in dev; hidden on build/Pages)
+const internalMeta: Meta<typeof TextInput> = {
+  title: 'Internal/Form Elements/TextInput',
+  component: TextInput,
+  tags: ['autodocs', 'internal'],
+};
+```
 
 ## domain terms
 

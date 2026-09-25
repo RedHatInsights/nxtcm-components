@@ -131,9 +131,9 @@ function WizSelectRefreshFormDemo(schema: yup.ObjectSchema<DemoFormValues>) {
 }
 
 const meta: Meta<typeof WizSelect> = {
-  title: 'Form Elements/Connected Form Elements/WizSelect',
+  title: 'Internal/Form Elements/Connected Form Elements/WizSelect',
   component: WizSelect,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   decorators: [
     (Story) => (
       <RosaHcpWizardStringsProvider>

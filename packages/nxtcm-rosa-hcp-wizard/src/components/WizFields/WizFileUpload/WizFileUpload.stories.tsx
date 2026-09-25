@@ -59,9 +59,9 @@ function WizFileUploadFormDemo(args: WizFileUploadProps) {
 }
 
 const meta: Meta<typeof WizFileUpload> = {
-  title: 'Form Elements/Connected Form Elements/WizFileUpload',
+  title: 'Internal/Form Elements/Connected Form Elements/WizFileUpload',
   component: WizFileUpload,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   decorators: [
     (Story) => (
       <RosaHcpWizardStringsProvider>
