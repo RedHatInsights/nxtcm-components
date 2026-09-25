@@ -7,7 +7,7 @@ rules for writing Storybook stories in this repo.
 CSF3 (Component Story Format 3) — the only format used here.
 
 ```tsx
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ComponentName } from './ComponentName';
 
 const meta: Meta<typeof ComponentName> = {

@@ -1,7 +1,7 @@
 import React, { type SyntheticEvent } from 'react';
 
 import { Form } from '@patternfly/react-core';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { NumberInput, type NumberInputProps } from './NumberInput';
 

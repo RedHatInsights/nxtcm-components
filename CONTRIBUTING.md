@@ -157,7 +157,7 @@ storybook is also published on github pages for external viewing: [redhatinsight
 use CSF3 format (the only format used here):
 
 ```tsx
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MyComponent } from './MyComponent';
 
 const meta: Meta<typeof MyComponent> = {

@@ -7,6 +7,7 @@ import importPlugin from 'eslint-plugin-import';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import storybook from 'eslint-plugin-storybook';
 import globals from 'globals';
 import enforceFieldNameConstants from './eslint-rules/enforce-field-name-constants.js';
 
@@ -37,6 +38,9 @@ export default [
 
   // JSX accessibility
   jsxA11y.flatConfigs.recommended,
+
+  // Storybook config
+  ...storybook.configs['flat/recommended'],
 
   // Prettier (must be last to override conflicting rules)
   eslintConfigPrettier,
