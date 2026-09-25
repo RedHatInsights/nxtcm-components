@@ -45,7 +45,7 @@
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "lint": "eslint 'packages/**/*.{ts,tsx}' '.storybook/**/*.ts'",
-    "lint:fix": "eslint 'packages/**/*.{ts,tsx}' --fix",
+    "lint:fix": "eslint 'packages/**/*.{ts,tsx}' '.storybook/**/*.ts' --fix",
     "prettier:check": "prettier --check '{scripts,packages}/**/*.{js,ts,mjs,jsx,tsx}'",
     "prettier:fix": "prettier --write '{scripts,packages}/**/*.{js,ts,mjs,jsx,tsx}'",
     "test": "jest",
