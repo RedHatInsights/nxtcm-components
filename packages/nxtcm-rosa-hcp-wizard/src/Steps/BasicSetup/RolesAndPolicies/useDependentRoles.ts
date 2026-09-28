@@ -13,7 +13,7 @@ interface UseDependentRolesResult {
 
 /** Options for support/worker roles based on the selected installer role. Values sync via Yup derived-field meta. */
 export const useDependentRoles = (roles: RolesResource): UseDependentRolesResult => {
-  const selectedInstallerArn = useWatch<ROSAHCPCluster, 'installer_role_arn'>({
+  const selectedInstallerArn = useWatch<ROSAHCPCluster, typeof FIELD_NAME.INSTALLER_ROLE_ARN>({
     name: FIELD_NAME.INSTALLER_ROLE_ARN,
   });
   const selectedRole = React.useMemo(

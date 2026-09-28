@@ -74,7 +74,7 @@ function RosaHcpWizardFooter({
   } = useFormContext<Partial<ROSAHCPCluster>>();
   const { isSubmitting, submitWizard } = useRosaHcpWizardSubmit({ onSubmit, getYaml });
 
-  const clusterWideProxySelected = useWatch<ROSAHCPCluster, 'configure_proxy'>({
+  const clusterWideProxySelected = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CONFIGURE_PROXY>({
     name: FIELD_NAME.CONFIGURE_PROXY,
   });
   useRosaHcpWizardNavStatusSync(!!clusterWideProxySelected, enableAllWizardNavSteps);

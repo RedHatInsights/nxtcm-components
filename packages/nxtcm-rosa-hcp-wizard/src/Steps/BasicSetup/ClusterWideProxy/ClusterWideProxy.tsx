@@ -23,7 +23,7 @@ export const ClusterWideProxy = () => {
   const isHttpsValid = !!httpsProxyValue && !httpsState.error;
   const disableNoProxyDomains = !isHttpValid && !isHttpsValid;
 
-  const clusterVersion = useWatch<ROSAHCPCluster, 'cluster_version'>({
+  const clusterVersion = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({
     name: FIELD_NAME.CLUSTER_VERSION,
   });
   const links = useGetDocsVersion(clusterVersion);
