@@ -18,8 +18,8 @@ const handleData = (data: ClusterPayload) => { ... }
 const handleData = (data: unknown) => { ... }
 ```
 
-The related `no-unsafe-assignment`, `no-unsafe-argument`, and `no-unsafe-member-access`
-rules remain off for now. Do not add `any` or `as any` to work around a violation.
+The related `no-unsafe-argument` and `no-unsafe-member-access` rules remain off for now.
+`no-unsafe-assignment` is also enforced as an error. Do not add `any` or `as any` to work around a violation.
 
 If a third-party boundary cannot be typed, use a line-level suppression only, with an
 adjacent comment explaining the boundary (for example, an untyped library declaration).

@@ -20,7 +20,8 @@ export const Encryption = () => {
   const e = useRosaHcpWizardStrings().encryption;
   const yupDescribeOptions = useEncryptionYupDescribeOptions();
 
-  const clusterVersion = useWatch({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
+  const clusterVersion =
+    useWatch<ROSAHCPCluster, 'cluster_version'>({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
   const links = useGetDocsVersion(clusterVersion);
   const customKmsSelected = useWatch<ROSAHCPCluster>({
     name: FIELD_NAME.ENCRYPTION.ENCRYPTION_KEYS,

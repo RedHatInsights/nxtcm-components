@@ -6,10 +6,12 @@ import { useWatch } from 'react-hook-form';
 import { FIELD_NAME } from '../../../../constants';
 import { awsLinks, useGetDocsVersion } from '../../../../constants/links';
 import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWizardStringsContext';
+import type { ROSAHCPCluster } from '../../../../types';
 
 const SecurityGroupsNoEditAlert = () => {
   const sg = useRosaHcpWizardStrings().securityGroups;
-  const clusterVersion = useWatch({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
+  const clusterVersion =
+    useWatch<ROSAHCPCluster, 'cluster_version'>({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
   const links = useGetDocsVersion(clusterVersion);
   return (
     <Alert

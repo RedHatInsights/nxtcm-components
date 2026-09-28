@@ -6,6 +6,7 @@ import { useWatch } from 'react-hook-form';
 import { FIELD_NAME } from '../../constants';
 import { useGetDocsVersion } from '../../constants/links';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
+import type { ROSAHCPCluster } from '../../types';
 import { CopyInstruction } from '../CopyInstruction';
 import ExternalLink from '../ExternalLink';
 import PopoverHintWithTitle from '../PopoverHintWithTitle';
@@ -14,7 +15,9 @@ import { TabGroup } from './TabGroup';
 export const OCMRole = () => {
   const { ocmRole: o, associateAwsDrawer: a } = useRosaHcpWizardStrings();
   const u = useRosaHcpWizardStrings().userRole;
-  const clusterVersion = useWatch({ name: FIELD_NAME.CLUSTER_VERSION });
+  const clusterVersion = useWatch<ROSAHCPCluster, 'cluster_version'>({
+    name: FIELD_NAME.CLUSTER_VERSION,
+  });
   const links = useGetDocsVersion(clusterVersion);
   return (
     <>

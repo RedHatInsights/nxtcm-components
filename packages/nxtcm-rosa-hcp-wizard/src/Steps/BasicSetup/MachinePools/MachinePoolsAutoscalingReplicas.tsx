@@ -13,7 +13,8 @@ const minReplicasUiMin = minReplicasSchema.getDefault() as number;
 
 function AutoscalingReplicasLabelHelp({ helpText }: { helpText: string }) {
   const a = useRosaHcpWizardStrings().autoscaling;
-  const clusterVersion = useWatch({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
+  const clusterVersion =
+    useWatch<ROSAHCPCluster, 'cluster_version'>({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
   const links = useGetDocsVersion(clusterVersion);
   return (
     <>
