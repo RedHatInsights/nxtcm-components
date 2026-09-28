@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 
 import { useWizardContext } from '@patternfly/react-core/dist/dynamic/components/Wizard';
 import { type FieldPath, useFormContext, useFormState } from 'react-hook-form';
@@ -96,11 +96,10 @@ export function useRosaHcpWizardNavStatusSync(
     [enableAllWizardNavSteps, setStep, wizardSteps]
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    registerNavUnvisitApplier(applyNavUnvisit);
     return () => registerNavUnvisitApplier(null);
-  }, [registerNavUnvisitApplier]);
-
-  registerNavUnvisitApplier(applyNavUnvisit);
+  }, [registerNavUnvisitApplier, applyNavUnvisit]);
 
   useEffect(() => {
     const visitedStepIds = [activeStepId, parentStepId].filter(

@@ -1,4 +1,4 @@
-import { type ComponentProps, type ReactNode, useCallback, useEffect, useState } from 'react';
+import { type ComponentProps, type ReactNode, useCallback, useState } from 'react';
 
 import { FileUpload as PfFileUpload } from '@patternfly/react-core/dist/dynamic/components/FileUpload';
 import { FormGroup } from '@patternfly/react-core/dist/dynamic/components/Form';
@@ -44,6 +44,14 @@ export function FileUpload(props: FileUploadProps) {
 
   const isFilenameControlled = filenameProp !== undefined;
   const [uncontrolledFilename, setUncontrolledFilename] = useState('');
+  const [prevValue, setPrevValue] = useState(value);
+
+  if (prevValue !== value) {
+    setPrevValue(value);
+    if (!isFilenameControlled && (value === '' || value === null)) {
+      setUncontrolledFilename('');
+    }
+  }
 
   const displayFilename = isFilenameControlled ? filenameProp : uncontrolledFilename;
 
@@ -66,12 +74,6 @@ export function FileUpload(props: FileUploadProps) {
     },
     [isFilenameControlled, onClearClick]
   );
-
-  useEffect(() => {
-    if (!isFilenameControlled && (value === '' || value === null)) {
-      setUncontrolledFilename('');
-    }
-  }, [value, isFilenameControlled]);
 
   const fileUpload = (
     <>
