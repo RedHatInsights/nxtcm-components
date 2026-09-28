@@ -14,6 +14,8 @@ export const SHOW_PASSWORD_BUTTON_NAME = 'Show password';
 export const HIDE_PASSWORD_BUTTON_NAME = 'Hide password';
 
 export const SAMPLE_CLUSTER_NAME_VALUE = 'my-cluster';
+export const SECRET_PLACEHOLDER_TEXT = 'Enter the API token';
+export const SAMPLE_SECRET_VALUE = 'secret123';
 
 export function TextInputHarness() {
   const [value, setValue] = useState('');
@@ -33,13 +35,14 @@ export function TextInputHarness() {
 }
 
 export function SecretHarness() {
-  const [value, setValue] = useState('secret123');
+  const [value, setValue] = useState(SAMPLE_SECRET_VALUE);
   return (
     <Form>
       <TextInput
         id="ct-secret"
         name="token"
         label={API_TOKEN_FIELD_LABEL}
+        placeholder={SECRET_PLACEHOLDER_TEXT}
         value={value}
         onChange={(_e, v) => setValue(v)}
         isSecret
