@@ -1,3 +1,4 @@
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import { expect, test } from '@/ct-fixture';
 
 // Match NUMBER_HARNESS_FIELD_LABEL in the gallery story.

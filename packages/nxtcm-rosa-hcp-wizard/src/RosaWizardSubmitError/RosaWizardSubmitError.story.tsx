@@ -1,3 +1,4 @@
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 /**
  * Playwright CT mount targets for {@link RosaWizardSubmitError}.
  * Stateful wrappers live here so specs can mount them (Playwright CT cannot mount components defined in test files).

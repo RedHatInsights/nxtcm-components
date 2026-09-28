@@ -1,3 +1,4 @@
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import * as yaml from 'js-yaml';
 
 import { expect, type MountResult, test } from '@/ct-fixture';

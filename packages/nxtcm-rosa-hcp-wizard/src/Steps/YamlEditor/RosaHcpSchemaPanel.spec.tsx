@@ -1,3 +1,4 @@
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import { expect, test } from '@/ct-fixture';
 
 import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.defaults';

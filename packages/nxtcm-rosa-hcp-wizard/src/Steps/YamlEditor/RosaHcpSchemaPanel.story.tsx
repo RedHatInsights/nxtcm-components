@@ -1,3 +1,4 @@
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import React from 'react';
 
 import { Drawer, DrawerContent, DrawerContentBody } from '@patternfly/react-core';

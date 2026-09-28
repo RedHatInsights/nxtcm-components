@@ -1,3 +1,4 @@
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import type { Page } from '@playwright/test';
 
 import { expect, type MountResult, test } from '@/ct-fixture';

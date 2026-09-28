@@ -1,3 +1,4 @@
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 /**
  * Playwright CT mount target for footer step-validation tests.
  * Keep a single gallery export in this file (see Details.story / NumberInput.spec).

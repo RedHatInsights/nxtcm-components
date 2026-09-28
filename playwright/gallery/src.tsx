@@ -1,11 +1,13 @@
-import '@patternfly/react-core/dist/styles/base.css';
+import React, { type ComponentType } from 'react';
+import { flushSync } from 'react-dom';
+import { createRoot, type Root } from 'react-dom/client';
+
 import { loader } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
 import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker.js?worker';
 import YamlWorker from 'monaco-yaml/yaml.worker.js?worker';
-import React, { type ComponentType } from 'react';
-import { flushSync } from 'react-dom';
-import { createRoot, type Root } from 'react-dom/client';
+
+import '@patternfly/react-core/dist/styles/base.css';
 
 type StoryProps = Record<string, unknown>;
 type Story = ComponentType<StoryProps>;

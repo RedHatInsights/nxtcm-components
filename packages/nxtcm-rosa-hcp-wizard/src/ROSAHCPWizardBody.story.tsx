@@ -1,3 +1,4 @@
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 /**
  * Playwright CT mount targets for {@link ROSAHCPWizardBody}.
  */

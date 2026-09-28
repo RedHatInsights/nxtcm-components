@@ -1,13 +1,18 @@
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 
 const repoRoot = path.resolve(__dirname, '..');
 const enableCoverage = process.env.COVERAGE === 'true';
-// eslint-disable-next-line @typescript-eslint/no-require-imports -- Coverage is enabled at runtime.
-const istanbulPlugin = enableCoverage ? require('./istanbul-plugin.cjs')() : null;
+const istanbulPlugin = enableCoverage ? loadIstanbulPlugin() : null;
 const strykerCacheDir = process.env.STRYKER_CT_CACHE_DIR;
 const strykerActiveMutant = process.env.__STRYKER_ACTIVE_MUTANT__;
+
+function loadIstanbulPlugin(): Plugin {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- The custom plugin is CommonJS.
+  const createIstanbulPlugin: () => Plugin = require('./istanbul-plugin.cjs');
+  return createIstanbulPlugin();
+}
 
 export default defineConfig({
   root: path.join(__dirname, 'gallery'),

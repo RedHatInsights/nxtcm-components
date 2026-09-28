@@ -1,3 +1,4 @@
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import { ReviewExpandSection } from './ReviewExpandSection';
 
 export function ExpandedReviewSection(): React.ReactElement {

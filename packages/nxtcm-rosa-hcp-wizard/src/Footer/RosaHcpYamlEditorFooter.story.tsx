@@ -1,3 +1,4 @@
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import React, { useRef } from 'react';
 
 import { FormProvider, useForm } from 'react-hook-form';

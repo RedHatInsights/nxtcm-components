@@ -1,3 +1,4 @@
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import React from 'react';
 
 import { ExpiredTrials, ExpiredTrialsProps } from './ExpiredTrials';

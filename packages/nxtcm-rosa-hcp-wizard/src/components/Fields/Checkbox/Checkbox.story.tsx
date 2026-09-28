@@ -1,3 +1,4 @@
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import {
   CHECKBOX_HARNESS_HELPER_TEXT,
   CHECKBOX_HARNESS_LABEL,

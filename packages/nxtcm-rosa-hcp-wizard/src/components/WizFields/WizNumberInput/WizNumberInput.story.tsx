@@ -1,3 +1,4 @@
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import {
   WIZ_NUMBER_INPUT_CONTROL_ONLY_LABEL,
   WIZ_NUMBER_INPUT_CONTROL_ONLY_STATUS,

@@ -21,6 +21,7 @@ export default [
       '*.config.js',
       '*.config.ts',
       '!playwright-ct.config.ts',
+      '!playwright/vite.config.ts',
     ],
   },
 

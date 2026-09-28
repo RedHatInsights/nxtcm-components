@@ -1,3 +1,4 @@
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 /**
  * Playwright CT mount target for ClusterWideProxy.
  * Components from *.story.tsx cannot be mounted (see playwright.dev/test-components#test-stories).

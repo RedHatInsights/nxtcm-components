@@ -1,3 +1,4 @@
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import { FieldWrapper, type FieldWrapperSize, NestedFields } from './FieldWrapper';
 
 export interface FieldWrapperStoryProps {

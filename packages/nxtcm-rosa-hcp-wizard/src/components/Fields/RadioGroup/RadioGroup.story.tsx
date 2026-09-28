@@ -1,3 +1,4 @@
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import {
   RADIO_GROUP_HARNESS_HELPER_TEXT,
   RADIO_GROUP_HARNESS_LARGE_LABEL,

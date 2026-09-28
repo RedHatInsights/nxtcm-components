@@ -1,3 +1,4 @@
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import {
   WIZ_RADIO_GROUP_CONTROL_ONLY_STATUS,
   WIZ_RADIO_GROUP_EXPLICIT_HELPER,
