@@ -367,8 +367,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   const plainToggleText = isLoading && !toggleLabel ? 'Loading...' : toggleLabel || placeholderText;
 
   /** Full text for the PF tooltip — matches the visible toggle text. */
-  const tooltipContent =
-    isLoading && !toggleLabel ? 'Loading...' : toggleLabel || placeholderText;
+  const tooltipContent = isLoading && !toggleLabel ? 'Loading...' : toggleLabel || placeholderText;
 
   const plainToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
     <Tooltip
