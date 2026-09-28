@@ -50,9 +50,11 @@ const EditSecurityGroups = ({
 
   const label = labelProp ?? sg.formLabel;
   const { setValue } = useFormContext<Partial<ROSAHCPCluster>>();
-  const watchedGroups = useWatch({ name: FIELD_NAME.SECURITY_GROUPS_WORKER });
+  const watchedGroups = useWatch<ROSAHCPCluster, 'security_groups_worker'>({
+    name: FIELD_NAME.SECURITY_GROUPS_WORKER,
+  });
   const selectedGroupIds = React.useMemo(
-    () => (Array.isArray(watchedGroups) ? (watchedGroups as string[]) : EMPTY_GROUP_IDS),
+    () => (Array.isArray(watchedGroups) ? watchedGroups : EMPTY_GROUP_IDS),
     [watchedGroups]
   );
 

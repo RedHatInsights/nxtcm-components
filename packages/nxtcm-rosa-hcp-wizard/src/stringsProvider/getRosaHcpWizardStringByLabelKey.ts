@@ -14,6 +14,6 @@ export function getRosaHcpWizardStringByLabelKey(
   if (path.length === 0) {
     return undefined;
   }
-  const value = get(strings as object, path);
+  const value: unknown = get(strings as object, path);
   return typeof value === 'string' ? value : undefined;
 }

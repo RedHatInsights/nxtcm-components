@@ -3,7 +3,7 @@ import { ReactElement, useState } from 'react';
 import {
   ToggleGroup,
   ToggleGroupItem,
-  ToggleGroupItemProps,
+  type ToggleGroupItemProps,
 } from '@patternfly/react-core/dist/dynamic/components/ToggleGroup';
 import { Stack, StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 
@@ -16,6 +16,7 @@ export const TabGroup: React.FunctionComponent<ToggleGroupTabsProps> = ({ tabs }
   const [isSelected, setIsSelected] = useState<string>(tabs[0].id);
 
   const handleToggleChange: ToggleGroupItemProps['onChange'] = (event) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- event.currentTarget is `any` from PatternFly's React.MouseEvent<any> in ToggleGroupItemProps['onChange']
     const { id } = event.currentTarget;
     const tab = tabs.find((element) => element.id === id);
 

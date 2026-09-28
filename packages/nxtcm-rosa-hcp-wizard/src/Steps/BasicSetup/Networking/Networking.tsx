@@ -46,11 +46,16 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
   const { networking: n } = useRosaHcpWizardStrings();
   const isProxyStepHidden = useIsStepHidden(STEP_IDS.CLUSTER_WIDE_PROXY);
   const { setValue } = useFormContext<ROSAHCPCluster>();
-  const clusterVersion = useWatch({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
+  const clusterVersion =
+    useWatch<ROSAHCPCluster, 'cluster_version'>({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
   const links = useGetDocsVersion(clusterVersion);
 
-  const cidrDefaultChecked = useWatch({ name: FIELD_NAME.CIDR_DEFAULT });
-  const selectedVPCRaw = useWatch({ name: FIELD_NAME.SELECTED_VPC });
+  const cidrDefaultChecked = useWatch<ROSAHCPCluster, 'cidr_default'>({
+    name: FIELD_NAME.CIDR_DEFAULT,
+  });
+  const selectedVPCRaw = useWatch<ROSAHCPCluster, 'selected_vpc'>({
+    name: FIELD_NAME.SELECTED_VPC,
+  });
   const machinePoolsSubnets = useWatch<ROSAHCPCluster, 'machine_pools_subnets'>({
     name: FIELD_NAME.MACHINE_POOLS_SUBNETS,
   });
@@ -71,7 +76,9 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
     [selectedVPC, props.vpcList.data, machinePoolSubnetIds, hasMachinePoolSubnetSelected]
   );
 
-  const clusterPrivacy = useWatch({ name: FIELD_NAME.CLUSTER_PRIVACY_FIELD.NAME });
+  const clusterPrivacy = useWatch<ROSAHCPCluster, 'cluster_privacy'>({
+    name: FIELD_NAME.CLUSTER_PRIVACY_FIELD.NAME,
+  });
   useClearFieldWhenHidden<ROSAHCPCluster>(
     FIELD_NAME.CLUSTER_PRIVACY_FIELD.PUBLIC_SUBNET_ID,
     clusterPrivacy === ClusterNetwork.internal
