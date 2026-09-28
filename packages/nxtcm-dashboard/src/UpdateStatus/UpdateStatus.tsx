@@ -1,6 +1,6 @@
-import React from 'react';
-
-import { Divider, Flex, FlexItem, Skeleton } from '@patternfly/react-core';
+import { Divider } from '@patternfly/react-core/dist/dynamic/components/Divider';
+import { Skeleton } from '@patternfly/react-core/dist/dynamic/components/Skeleton';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 import CheckCircleIcon from '@patternfly/react-icons/dist/esm/icons/check-circle-icon';
 import InProgressIcon from '@patternfly/react-icons/dist/esm/icons/in-progress-icon';
 import SyncAltIcon from '@patternfly/react-icons/dist/esm/icons/sync-alt-icon';

@@ -1,6 +1,9 @@
 import React, { ReactNode } from 'react';
 
-import { Content, Form, Split, SplitItem, Stack } from '@patternfly/react-core';
+import { Content } from '@patternfly/react-core/dist/dynamic/components/Content';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import { Split, SplitItem } from '@patternfly/react-core/dist/dynamic/layouts/Split';
+import { Stack } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 
 import { LabelHelp } from './Fields/LabelHelp';
 

@@ -10,24 +10,30 @@ import {
   useState,
 } from 'react';
 
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Divider } from '@patternfly/react-core/dist/dynamic/components/Divider';
+import { FormGroup } from '@patternfly/react-core/dist/dynamic/components/Form';
 import {
-  Button,
-  Divider,
-  Flex,
-  FormGroup,
   InputGroup,
   InputGroupItem,
+} from '@patternfly/react-core/dist/dynamic/components/InputGroup';
+import {
   MenuToggle,
   type MenuToggleElement,
+} from '@patternfly/react-core/dist/dynamic/components/MenuToggle';
+import {
   Select as PfSelect,
   SelectGroup,
   SelectList,
   SelectOption,
-  Spinner,
+} from '@patternfly/react-core/dist/dynamic/components/Select';
+import { Spinner } from '@patternfly/react-core/dist/dynamic/components/Spinner';
+import {
   TextInputGroup,
   TextInputGroupMain,
   TextInputGroupUtilities,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/dist/dynamic/components/TextInputGroup';
+import { Flex } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 import RedoIcon from '@patternfly/react-icons/dist/esm/icons/redo-icon';
 import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
 

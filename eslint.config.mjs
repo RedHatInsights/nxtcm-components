@@ -151,25 +151,6 @@ export default [
     },
   },
 
-  // Wizard: prevent self-imports
-  {
-    files: [
-      'packages/nxtcm-rosa-hcp-wizard/src/**/*.ts',
-      'packages/nxtcm-rosa-hcp-wizard/src/**/*.tsx',
-    ],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            '@redhat-cloud-services/nxtcm-rosa-hcp-wizard',
-            '@redhat-cloud-services/nxtcm-rosa-hcp-wizard/*',
-          ],
-        },
-      ],
-    },
-  },
-
   // Wizard: enforce FIELD_NAME constants instead of magic strings
   {
     files: [
@@ -198,16 +179,43 @@ export default [
     },
   },
 
-  // Dashboard: prevent self-imports
+  // Dashboard and Wizard: prevent self-imports + restrict PatternFly to dynamic paths
   {
-    files: ['packages/nxtcm-dashboard/src/**/*.ts', 'packages/nxtcm-dashboard/src/**/*.tsx'],
+    files: [
+      'packages/nxtcm-dashboard/src/**/*.ts',
+      'packages/nxtcm-dashboard/src/**/*.tsx',
+      'packages/nxtcm-rosa-hcp-wizard/src/**/*.ts',
+      'packages/nxtcm-rosa-hcp-wizard/src/**/*.tsx',
+    ],
     rules: {
       'no-restricted-imports': [
         'error',
         {
+          paths: [
+            {
+              name: '@patternfly/react-core',
+              message:
+                "Please use `import [component] from '@patternfly/react-core/dist/dynamic/components/[component]'` instead.",
+            },
+            {
+              name: '@patternfly/react-table',
+              message:
+                "Please use `import [component] from '@patternfly/react-table/dist/dynamic/components/[component]'` instead.",
+            },
+            {
+              name: '@patternfly/react-icons',
+              message:
+                "Please use `import [icon] from '@patternfly/react-icons/dist/dynamic/icons/[icon]'` instead.",
+            },
+          ],
           patterns: [
             '@redhat-cloud-services/nxtcm-dashboard',
             '@redhat-cloud-services/nxtcm-dashboard/*',
+            '@redhat-cloud-services/nxtcm-rosa-hcp-wizard',
+            '@redhat-cloud-services/nxtcm-rosa-hcp-wizard/*',
+            '!@patternfly/react-core/*',
+            '!@patternfly/react-table/*',
+            '!@patternfly/react-icons/*',
           ],
         },
       ],

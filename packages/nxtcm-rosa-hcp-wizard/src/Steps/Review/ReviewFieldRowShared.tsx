@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { Flex, FlexItem } from '@patternfly/react-core';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 import LockIcon from '@patternfly/react-icons/dist/esm/icons/lock-icon';
 
 const CannotChangeAfterSubmitIcon = ({

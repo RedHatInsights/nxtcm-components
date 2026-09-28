@@ -6,15 +6,17 @@ import {
   useState,
 } from 'react';
 
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { FormGroup } from '@patternfly/react-core/dist/dynamic/components/Form';
 import {
-  Button,
-  FormGroup,
   InputGroup,
   InputGroupItem,
-  Spinner,
+} from '@patternfly/react-core/dist/dynamic/components/InputGroup';
+import { Spinner } from '@patternfly/react-core/dist/dynamic/components/Spinner';
+import {
   TextInput as PfTextInput,
   type TextInputProps as PfTextInputProps,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/dist/dynamic/components/TextInput';
 import EyeIcon from '@patternfly/react-icons/dist/esm/icons/eye-icon';
 import EyeSlashIcon from '@patternfly/react-icons/dist/esm/icons/eye-slash-icon';
 

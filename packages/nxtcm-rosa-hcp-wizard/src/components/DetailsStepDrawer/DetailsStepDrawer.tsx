@@ -1,8 +1,6 @@
+import { Button, ButtonVariant } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
 import {
-  Button,
-  ButtonVariant,
-  Content,
-  ContentVariants,
   Drawer,
   DrawerActions,
   DrawerCloseButton,
@@ -10,10 +8,9 @@ import {
   DrawerHead,
   DrawerPanelBody,
   DrawerPanelContent,
-  PageSection,
-  Stack,
-  StackItem,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/dist/dynamic/components/Drawer';
+import { PageSection } from '@patternfly/react-core/dist/dynamic/components/Page';
+import { Stack, StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import type { RosaLoginProduct } from '../rosaLoginCommand';

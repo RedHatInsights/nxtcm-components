@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Form } from '@patternfly/react-core';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 import { expect, test } from '@playwright/experimental-ct-react';
 
 import { Checkbox } from './Checkbox';

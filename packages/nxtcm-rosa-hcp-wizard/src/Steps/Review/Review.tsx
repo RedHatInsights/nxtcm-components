@@ -1,15 +1,10 @@
 import { useMemo } from 'react';
 
-import {
-  Alert,
-  AlertVariant,
-  Button,
-  Split,
-  SplitItem,
-  Stack,
-  StackItem,
-  useWizardContext,
-} from '@patternfly/react-core';
+import { Alert, AlertVariant } from '@patternfly/react-core/dist/dynamic/components/Alert';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { useWizardContext } from '@patternfly/react-core/dist/dynamic/components/Wizard';
+import { Split, SplitItem } from '@patternfly/react-core/dist/dynamic/layouts/Split';
+import { Stack, StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 import LockIcon from '@patternfly/react-icons/dist/esm/icons/lock-icon';
 import PencilAltIcon from '@patternfly/react-icons/dist/esm/icons/pencil-alt-icon';
 import { useWatch } from 'react-hook-form';

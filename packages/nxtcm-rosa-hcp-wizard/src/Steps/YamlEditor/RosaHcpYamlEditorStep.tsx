@@ -2,14 +2,14 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useSta
 
 import type { EditorDidMount } from '@patternfly/react-code-editor';
 import { CodeEditor, Language } from '@patternfly/react-code-editor';
+import { Alert } from '@patternfly/react-core/dist/dynamic/components/Alert';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 import {
-  Alert,
-  Button,
   Drawer,
   DrawerContent,
   DrawerContentBody,
-  Tooltip,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/dist/dynamic/components/Drawer';
+import { Tooltip } from '@patternfly/react-core/dist/dynamic/components/Tooltip';
 import OpenDrawerRightIcon from '@patternfly/react-icons/dist/esm/icons/open-drawer-right-icon';
 import type * as MonacoTypes from 'monaco-editor';
 import { useWatch } from 'react-hook-form';

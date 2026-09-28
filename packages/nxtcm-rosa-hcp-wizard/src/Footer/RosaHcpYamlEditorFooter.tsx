@@ -5,15 +5,16 @@ import {
   ActionList,
   ActionListGroup,
   ActionListItem,
-  Button,
-  ButtonVariant,
+} from '@patternfly/react-core/dist/dynamic/components/ActionList';
+import { Button, ButtonVariant } from '@patternfly/react-core/dist/dynamic/components/Button';
+import {
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
   ModalVariant,
-  WizardFooterWrapper,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/dist/dynamic/components/Modal';
+import { WizardFooterWrapper } from '@patternfly/react-core/dist/dynamic/components/Wizard';
 
 import type { YamlEditorHandle } from '../Steps/YamlEditor/RosaHcpYamlEditorStep';
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';

@@ -1,4 +1,4 @@
-import { Content, ContentVariants } from '@patternfly/react-core';
+import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
 
 import { DEFAULT_HOST_PRODUCT } from '../constants';
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';

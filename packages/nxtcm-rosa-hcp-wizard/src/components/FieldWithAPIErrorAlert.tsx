@@ -1,12 +1,12 @@
 import React from 'react';
 
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { FormHelperText } from '@patternfly/react-core/dist/dynamic/components/Form';
 import {
-  Button,
-  FormHelperText,
   HelperText,
   HelperTextItem,
-  Popover,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/dist/dynamic/components/HelperText';
+import { Popover } from '@patternfly/react-core/dist/dynamic/components/Popover';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
 
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';

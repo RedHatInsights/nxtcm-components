@@ -1,13 +1,9 @@
 import React from 'react';
 
-import {
-  ClipboardCopyVariant,
-  Content,
-  ContentVariants,
-  ExpandableSection,
-  Stack,
-  StackItem,
-} from '@patternfly/react-core';
+import { ClipboardCopyVariant } from '@patternfly/react-core/dist/dynamic/components/ClipboardCopy';
+import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
+import { ExpandableSection } from '@patternfly/react-core/dist/dynamic/components/ExpandableSection';
+import { Stack, StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 import { useWatch } from 'react-hook-form';
 
 import { CopyInstruction } from '../../../components/CopyInstruction';

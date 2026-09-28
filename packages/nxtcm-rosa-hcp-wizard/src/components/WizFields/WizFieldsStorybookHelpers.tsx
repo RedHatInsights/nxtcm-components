@@ -1,6 +1,8 @@
 import { isValidElement, useMemo } from 'react';
 
-import { Content, Grid, GridItem, Stack } from '@patternfly/react-core';
+import { Content } from '@patternfly/react-core/dist/dynamic/components/Content';
+import { Grid, GridItem } from '@patternfly/react-core/dist/dynamic/layouts/Grid';
+import { Stack } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 import * as yup from 'yup';
 
 import {
