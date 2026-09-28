@@ -20,9 +20,9 @@ function FileUploadDemo(args: FileUploadProps) {
 }
 
 const meta: Meta<typeof FileUpload> = {
-  title: 'Form Elements/FileUpload',
+  title: 'Internal/Form Elements/FileUpload',
   component: FileUpload,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   parameters: {
     layout: 'padded',
   },

@@ -167,5 +167,9 @@ Additional workflows:
 Storybook 9 (`@storybook/react-vite`) is the shared component docs and visual QA surface for this repo.
 
 - audience: package contributors and reviewers validating behavior before integration
-- source: co-located stories in workspace packages plus root-level MDX docs (the `../src/**/*.mdx` glob is configured, but there are currently no `src/**/*.mdx` files)
+- source: co-located stories in workspace packages (`packages/*/src/**/*.stories.tsx`)
+- visibility gating: Storybook tags separate public vs internal components:
+  - **Public**: stories for components re-exported in `packages/*/src/index.ts` use `tags: ['autodocs']` and titles under `Components/Dashboard/` or `Wizards/`. Included in all environments (local dev, static build, GitHub Pages).
+  - **Internal**: stories for internal subcomponents use `tags: ['autodocs', 'internal']` and titles under `Internal/`. Local `npm run storybook` shows them in the sidebar. `storybook build` (CI and GitHub Pages) hides them from the sidebar and docs via `excludeFromSidebar` and `excludeFromDocsStories`. They remain in `index.json`, and a direct URL still opens them.
+  - Assert script `npm run storybook:assert-public` validates that all required public components are present in the static build index in CI.
 - aliases: see [Path aliases](#path-aliases) above for the per-tool breakdown; prefer the package aliases for cross-package imports

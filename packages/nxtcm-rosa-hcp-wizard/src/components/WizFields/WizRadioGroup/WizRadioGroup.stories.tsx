@@ -63,9 +63,9 @@ function WizRadioGroupFormDemo(args: WizRadioGroupProps) {
 }
 
 const meta: Meta<typeof WizRadioGroup> = {
-  title: 'Form Elements/Connected Form Elements/WizRadioGroup',
+  title: 'Internal/Form Elements/Connected Form Elements/WizRadioGroup',
   component: WizRadioGroup,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   decorators: [
     (Story) => (
       <RosaHcpWizardStringsProvider>

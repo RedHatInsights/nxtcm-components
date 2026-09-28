@@ -65,6 +65,8 @@
     "test:stryker:report": "node scripts/stryker-target.mjs --report",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
+    "build-storybook:internal": "STORYBOOK_INCLUDE_INTERNAL=true storybook build",
+    "storybook:assert-public": "node scripts/assert-storybook-public.mjs",
     "check:peers": "node scripts/check-peer-dep-versions.mjs",
     "allthethings": "npm run prettier:fix && npm run lint:fix && npm run type-check && npm run test && npm run test:ct",
     "prepare": "husky"
@@ -72,6 +74,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
     "@babel/core": "^7.29.0",
+    "@babel/parser": "^7.29.0",
     "@babel/preset-env": "^7.29.0",
     "@babel/preset-react": "^7.28.5",
     "@babel/preset-typescript": "^7.28.5",

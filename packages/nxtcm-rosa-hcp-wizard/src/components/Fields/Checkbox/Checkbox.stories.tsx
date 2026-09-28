@@ -19,9 +19,9 @@ function CheckboxDemo(args: CheckboxProps) {
 }
 
 const meta: Meta<typeof Checkbox> = {
-  title: 'Form Elements/Checkbox',
+  title: 'Internal/Form Elements/Checkbox',
   component: Checkbox,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   parameters: {
     layout: 'padded',
   },

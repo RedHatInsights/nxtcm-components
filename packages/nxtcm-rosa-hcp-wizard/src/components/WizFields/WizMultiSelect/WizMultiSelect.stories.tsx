@@ -57,9 +57,9 @@ function WizMultiSelectFormDemo(schema: yup.ObjectSchema<DemoFormValues>) {
 }
 
 const meta: Meta<typeof WizMultiSelect> = {
-  title: 'Form Elements/Connected Form Elements/WizMultiSelect',
+  title: 'Internal/Form Elements/Connected Form Elements/WizMultiSelect',
   component: WizMultiSelect,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   decorators: [
     (Story) => (
       <RosaHcpWizardStringsProvider>

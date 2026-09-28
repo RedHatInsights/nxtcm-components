@@ -146,7 +146,7 @@ pass the **component** `.tsx` file, not the `.spec.tsx`.
 ### Running
 
 ```bash
-npm run storybook     # dev server on port 6006
+npm run storybook        # dev server on port 6006
 npm run build-storybook  # static build
 ```
 
@@ -161,7 +161,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { MyComponent } from './MyComponent';
 
 const meta: Meta<typeof MyComponent> = {
-  title: 'Components/Category/MyComponent',
+  title: 'Components/Dashboard/MyComponent',
   component: MyComponent,
   tags: ['autodocs'],
 };
@@ -173,21 +173,26 @@ export const Default: Story = {
 };
 ```
 
-### Title conventions
+### Public vs internal visibility & title conventions
 
-| package                 | title pattern                                  |
-| ----------------------- | ---------------------------------------------- |
-| dashboard               | `Components/Dashboard/<Name>`                  |
-| wizard fields           | `Form Elements/<Name>`                         |
-| wizard connected fields | `Form Elements/Connected Form Elements/<Name>` |
-| full wizard             | `Wizards/RosaHCPWizard`                        |
+| Kind | Package / Type | Title pattern | Tags | Visibility |
+| --- | --- | --- | --- | --- |
+| **Public** (exported from package `index.ts`) | dashboard widgets | `Components/Dashboard/<Name>` | `['autodocs']` | Local dev, static build, GitHub Pages |
+| **Public** | full wizard | `Wizards/RosaHCPWizard` | `['autodocs']` | Local dev, static build, GitHub Pages |
+| **Internal** | wizard base fields | `Internal/Form Elements/<Name>` | `['autodocs', 'internal']` | Local sidebar; hidden on build/Pages (direct URL opens) |
+| **Internal** | wizard connected fields | `Internal/Form Elements/Connected Form Elements/<Name>` | `['autodocs', 'internal']` | Local sidebar; hidden on build/Pages (direct URL opens) |
+| **Internal** | dashboard subcomponents | `Internal/Dashboard/<Name>` | `['autodocs', 'internal']` | Local sidebar; hidden on build/Pages (direct URL opens) |
 
-include at least a `Default` story. add `Loading`, `Error`, and `Empty` stories for components that handle those states.
-note: current Storybook globs actively target package stories. keep new stories in package paths.
+Every story file must export a `Default` story. Add `Loading`, `Error`, and `Empty` stories for components that handle those states. Non-UI elements (hooks, schemas, utilities, contexts) never get stories.
 
 ### Verification
 
 after writing a story, open it in the browser and verify it renders in both light and dark mode. check that controls work and the autodocs page generates correctly.
+
+```bash
+npm run build-storybook:internal  # static build with internal stories in sidebar (debug only)
+npm run storybook:assert-public   # assert static build index contains all required public stories
+```
 
 ---
 

@@ -86,11 +86,14 @@ use PatternFly chart color tokens, not hardcoded colors. charts must work in bot
 
 ## storybook
 
-stories use title prefix `Components/Dashboard/`:
+- Exported widget stories use title prefix `Components/Dashboard/<Name>` and `tags: ['autodocs']`.
+- Any internal subcomponent stories (e.g. `Critical`, `RecommendationByCategory`) must use title prefix `Internal/Dashboard/<Name>` and `tags: ['autodocs', 'internal']`.
+- Every story file must export a `Default` story.
 
 ```tsx
 const meta: Meta<typeof TotalClusters> = {
   title: 'Components/Dashboard/TotalClusters',
-  // ...
+  component: TotalClusters,
+  tags: ['autodocs'],
 };
 ```

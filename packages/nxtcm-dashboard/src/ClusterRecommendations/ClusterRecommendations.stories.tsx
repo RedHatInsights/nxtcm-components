@@ -45,7 +45,7 @@ const meta: Meta<typeof ClusterRecommendations> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
+export const Default: Story = {
   args: {
     count: 5,
     serviceAvailability: 2,

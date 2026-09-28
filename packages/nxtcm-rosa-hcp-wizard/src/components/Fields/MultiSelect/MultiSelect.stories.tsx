@@ -40,9 +40,9 @@ function MultiSelectRefreshDemo(args: MultiSelectProps<string>) {
 }
 
 const meta: Meta<typeof MultiSelect> = {
-  title: 'Form Elements/MultiSelect',
+  title: 'Internal/Form Elements/MultiSelect',
   component: MultiSelect,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   parameters: {
     layout: 'padded',
   },

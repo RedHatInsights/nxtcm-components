@@ -19,9 +19,9 @@ function NumberInputDemo(args: NumberInputProps) {
 }
 
 const meta: Meta<typeof NumberInput> = {
-  title: 'Form Elements/NumberInput',
+  title: 'Internal/Form Elements/NumberInput',
   component: NumberInput,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   parameters: {
     layout: 'padded',
   },

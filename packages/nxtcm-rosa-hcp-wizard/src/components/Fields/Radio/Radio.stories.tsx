@@ -19,9 +19,9 @@ function RadioGroupDemo(args: RadioProps) {
 }
 
 const meta: Meta<typeof Radio> = {
-  title: 'Form Elements/Radio',
+  title: 'Internal/Form Elements/Radio',
   component: Radio,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   parameters: {
     layout: 'padded',
   },

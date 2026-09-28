@@ -108,9 +108,9 @@ function WizTextInputPasswordFormDemo(args: WizTextInputProps) {
 }
 
 const meta: Meta<typeof WizTextInput> = {
-  title: 'Form Elements/Connected Form Elements/WizTextInput',
+  title: 'Internal/Form Elements/Connected Form Elements/WizTextInput',
   component: WizTextInput,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   decorators: [
     (Story) => (
       <RosaHcpWizardStringsProvider>
