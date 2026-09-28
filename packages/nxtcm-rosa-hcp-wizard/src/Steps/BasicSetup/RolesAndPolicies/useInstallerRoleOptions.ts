@@ -9,7 +9,7 @@ import { RolesResource, type ROSAHCPCluster } from '../../../types';
 
 export const useInstallerRoleOptions = (roles: RolesResource) => {
   const rp = useRosaHcpWizardStrings().rolesAndPolicies;
-  const selectedClusterVersion = useWatch<ROSAHCPCluster, 'cluster_version'>({
+  const selectedClusterVersion = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({
     name: FIELD_NAME.CLUSTER_VERSION,
   });
   const installerRoleOptions = React.useMemo(() => {

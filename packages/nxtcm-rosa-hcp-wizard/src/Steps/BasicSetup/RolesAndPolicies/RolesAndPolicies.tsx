@@ -43,7 +43,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   );
   const oidcConfigHintMaxWidth = '25rem';
 
-  const awsInfrastructureAccount = useWatch<ROSAHCPCluster, 'associated_aws_id'>({
+  const awsInfrastructureAccount = useWatch<ROSAHCPCluster, typeof FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID>({
     name: FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID,
   });
 
@@ -54,7 +54,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   const rosaCommand = useRosaCommand();
 
   const clusterVersion =
-    useWatch<ROSAHCPCluster, 'cluster_version'>({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
+    useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
   const links = useGetDocsVersion(clusterVersion);
 
   const hasNoRoles = !roles.isFetching && !roles.error && roles.data.length === 0;

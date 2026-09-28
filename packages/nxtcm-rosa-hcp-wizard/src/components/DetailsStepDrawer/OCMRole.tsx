@@ -15,7 +15,7 @@ import { TabGroup } from './TabGroup';
 export const OCMRole = () => {
   const { ocmRole: o, associateAwsDrawer: a } = useRosaHcpWizardStrings();
   const u = useRosaHcpWizardStrings().userRole;
-  const clusterVersion = useWatch<ROSAHCPCluster, 'cluster_version'>({
+  const clusterVersion = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({
     name: FIELD_NAME.CLUSTER_VERSION,
   });
   const links = useGetDocsVersion(clusterVersion);
