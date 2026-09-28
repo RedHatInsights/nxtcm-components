@@ -140,7 +140,10 @@ export function useWizMenuFieldBlur(
 ): FocusEventHandler<HTMLElement> {
   const wasMenuOpenRef = useRef(false);
   const onBlurRef = useRef(onBlur);
-  onBlurRef.current = onBlur;
+
+  useEffect(() => {
+    onBlurRef.current = onBlur;
+  });
 
   useEffect(() => {
     if (wasMenuOpenRef.current && !isMenuOpen) {

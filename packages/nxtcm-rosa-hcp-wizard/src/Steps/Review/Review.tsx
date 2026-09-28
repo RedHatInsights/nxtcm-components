@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 import { Alert, AlertVariant } from '@patternfly/react-core/dist/dynamic/components/Alert';
 import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { useWizardContext } from '@patternfly/react-core/dist/dynamic/components/Wizard';
@@ -75,15 +73,9 @@ export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
       : {}),
   } as Partial<ROSAHCPCluster>;
 
-  const selectedVPC = useMemo(
-    () => resolveSelectedVpc(formValues.selected_vpc, vpcList.data),
-    [formValues.selected_vpc, vpcList.data]
-  );
-
-  const reviewSelectOptions = useMemo(
-    () => buildMachinePoolsReviewSelectOptions(selectedVPC, vpcList.data),
-    [selectedVPC, vpcList.data]
-  );
+  const vpcData = vpcList.data;
+  const selectedVPC = resolveSelectedVpc(formValues.selected_vpc, vpcData);
+  const reviewSelectOptions = buildMachinePoolsReviewSelectOptions(selectedVPC, vpcData);
   const reviewSections = useRosaHcpWizardReviewSections();
   const rosaStrings = useRosaHcpWizardStrings();
   const { review } = rosaStrings;

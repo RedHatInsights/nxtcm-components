@@ -34,7 +34,7 @@ export default [
   react.configs.flat.recommended,
 
   // React hooks
-  reactHooks.configs['recommended-latest'],
+  reactHooks.configs.flat.recommended,
 
   // JSX accessibility
   jsxA11y.flatConfigs.recommended,
