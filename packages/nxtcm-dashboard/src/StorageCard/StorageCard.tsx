@@ -1,11 +1,13 @@
 import React from 'react';
-import { Button, Flex, FlexItem, Skeleton } from '@patternfly/react-core';
+
 import {
   ChartDonutUtilization,
   ChartLabel,
   ChartThemeColor,
   getTheme,
 } from '@patternfly/react-charts/victory';
+import { Button, Flex, FlexItem, Skeleton } from '@patternfly/react-core';
+
 import styles from './StorageCard.module.scss';
 
 export interface StorageData {

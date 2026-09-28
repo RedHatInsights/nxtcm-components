@@ -2,8 +2,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import type { Resolver } from 'react-hook-form';
 import * as yup from 'yup';
 
-import type { ROSAHCPCluster } from '../types';
 import type { RosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings';
+import type { ROSAHCPCluster } from '../types';
 import { clusterValidationSchema } from '../yupSchemas/clusterValidationSchema';
 import { buildClusterValidationSchemaContext } from './buildClusterValidationSchemaContext';
 import { schemaHasRosaRequiredPresentTest } from './yupFieldRequired';

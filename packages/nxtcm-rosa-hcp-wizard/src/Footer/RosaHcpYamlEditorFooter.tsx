@@ -1,3 +1,6 @@
+import type React from 'react';
+import { useCallback, useState } from 'react';
+
 import {
   ActionList,
   ActionListGroup,
@@ -11,11 +14,9 @@ import {
   ModalVariant,
   WizardFooterWrapper,
 } from '@patternfly/react-core';
-import { useCallback, useState } from 'react';
-import type React from 'react';
 
-import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
 import type { YamlEditorHandle } from '../Steps/YamlEditor/RosaHcpYamlEditorStep';
+import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
 import { useRosaHcpWizardSubmit } from './useRosaHcpWizardSubmit';
 
 export type RosaHcpYamlEditorFooterProps = {

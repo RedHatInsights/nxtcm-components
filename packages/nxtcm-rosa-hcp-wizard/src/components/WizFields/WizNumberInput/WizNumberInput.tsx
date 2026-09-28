@@ -1,9 +1,11 @@
 import type { SyntheticEvent } from 'react';
+
 import { type FieldValues, useController } from 'react-hook-form';
+
+import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { requiredFromYup } from '../../../utilities/yupFieldRequired';
 import { NumberInput, type NumberInputProps } from '../../Fields/NumberInput';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
-import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizNumberInputControlledKeys =

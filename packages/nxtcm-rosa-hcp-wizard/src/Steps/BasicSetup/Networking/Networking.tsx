@@ -1,26 +1,28 @@
+import { type ReactElement, useEffect, useMemo, useRef } from 'react';
+
 import { Alert, Content, ContentVariants, ExpandableSection } from '@patternfly/react-core';
-import { Section } from '../../../components/Section';
-import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
-import ExternalLink from '../../../components/ExternalLink';
-import { useGetDocsVersion } from '../../../constants/links';
-import { ClusterNetwork, ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
-import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
-import { Radio } from '../../../components/Fields/RadioGroup';
-import { clusterValidationSchema } from '../../../yupSchemas';
-import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { WizSelect } from '../../../components/WizFields/WizSelect';
+
+import ExternalLink from '../../../components/ExternalLink';
+import { Radio } from '../../../components/Fields/RadioGroup';
+import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
+import { Section } from '../../../components/Section';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
+import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
+import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
-import { useEffect, useMemo, useRef, type ReactElement } from 'react';
-import { useClearFieldWhenHidden } from '../../OptionalSetup/Encryption/useClearFieldWhenHidden';
+import { FIELD_NAME, STEP_IDS } from '../../../constants';
+import { useGetDocsVersion } from '../../../constants/links';
+import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+import { ClusterNetwork, ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
 import {
   buildMachinePoolsReviewSelectOptions,
   getMachinePoolSubnetIds,
   resolveSelectedVpc,
 } from '../../../utilities/helpers';
-import { FIELD_NAME, STEP_IDS } from '../../../constants';
 import { useIsStepHidden } from '../../../WizardConfigContext';
+import { clusterValidationSchema } from '../../../yupSchemas';
+import { useClearFieldWhenHidden } from '../../OptionalSetup/Encryption/useClearFieldWhenHidden';
 
 type NetworkingStepProps = Pick<ROSAHCPWizardData, 'vpcList'>;
 

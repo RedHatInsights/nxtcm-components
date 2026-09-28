@@ -1,4 +1,5 @@
-import { test, expect } from '@/ct-fixture';
+import { expect, test } from '@/ct-fixture';
+
 import {
   WIZ_RADIO_GROUP_CONTROL_ONLY_STATUS,
   WIZ_RADIO_GROUP_EXPLICIT_HELPER,

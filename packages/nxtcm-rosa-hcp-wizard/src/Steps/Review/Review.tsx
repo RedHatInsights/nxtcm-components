@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+
 import {
   Alert,
   AlertVariant,
@@ -13,24 +14,23 @@ import LockIcon from '@patternfly/react-icons/dist/esm/icons/lock-icon';
 import PencilAltIcon from '@patternfly/react-icons/dist/esm/icons/pencil-alt-icon';
 import { useWatch } from 'react-hook-form';
 
+import { Section } from '../../components/Section';
+import { STEP_IDS } from '../../constants';
+import { getRosaHcpWizardStringByLabelKey } from '../../stringsProvider/getRosaHcpWizardStringByLabelKey';
+import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings';
+import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster, ROSAHCPWizardData } from '../../types';
-
 import {
   buildMachinePoolsReviewSelectOptions,
   getNestedValue,
   resolveSelectedVpc,
 } from '../../utilities/helpers';
-import { Section } from '../../components/Section';
-import { STEP_IDS } from '../../constants';
 import { useWizardConfig } from '../../WizardConfigContext';
-import { useRosaHcpWizardReviewSections } from './ROSAHCPWizardReviewSections';
-import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings';
-import { getRosaHcpWizardStringByLabelKey } from '../../stringsProvider/getRosaHcpWizardStringByLabelKey';
-import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { getClusterValidationSchemaDefaultValues, wizardFieldMetaByPath } from '../../yupSchemas';
+import { formatReviewFieldValue, normalizeEmptyFormValue } from './formatReviewValueDisplay';
 import { ReviewExpandSection } from './ReviewExpandSection';
 import { ReviewFieldRow } from './ReviewFieldRow';
-import { formatReviewFieldValue, normalizeEmptyFormValue } from './formatReviewValueDisplay';
+import { useRosaHcpWizardReviewSections } from './ROSAHCPWizardReviewSections';
 import { shouldHideReviewRow } from './shouldHideReviewRow';
 
 /** Stable string for comparing a field to defaults (includes arrays/objects). */

@@ -1,6 +1,7 @@
-import { test, expect } from '@/ct-fixture';
-import { SeverityCounts } from './AdvisorSeverity';
+import { expect, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
+
+import { SeverityCounts } from './AdvisorSeverity';
 
 const defaultSeverity: SeverityCounts = {
   critical: 3,

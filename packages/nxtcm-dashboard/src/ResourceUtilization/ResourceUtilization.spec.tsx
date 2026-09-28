@@ -1,4 +1,5 @@
-import { test, expect } from '@/ct-fixture';
+import { expect, test } from '@/ct-fixture';
+
 import { ResourceUtilizationData } from './ResourceUtilization';
 
 const defaultData: ResourceUtilizationData = {

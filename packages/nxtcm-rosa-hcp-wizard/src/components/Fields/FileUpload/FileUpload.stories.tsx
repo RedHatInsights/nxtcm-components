@@ -1,6 +1,8 @@
 import React from 'react';
+
 import { type DropEvent, Form } from '@patternfly/react-core';
 import type { Meta, StoryObj } from '@storybook/react';
+
 import { FileUpload, type FileUploadProps } from './FileUpload';
 
 function FileUploadDemo(args: FileUploadProps) {

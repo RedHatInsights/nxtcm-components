@@ -1,20 +1,20 @@
-import Handlebars from 'handlebars';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
+import Handlebars from 'handlebars';
 import IPCIDR from 'ip-cidr';
 import * as yaml from 'js-yaml';
 
+import type {
+  ResourceSchema,
+  ValidationError,
+  YamlResourceGenerator,
+} from '../../Steps/YamlEditor/types';
 import {
   findLineForPath,
   formatAjvError,
   splitYamlDocuments,
   yamlExceptionToValidationError,
 } from '../../Steps/YamlEditor/yamlValidation';
-import type {
-  YamlResourceGenerator,
-  ValidationError,
-  ResourceSchema,
-} from '../../Steps/YamlEditor/types';
 
 export interface TemplateBasedGeneratorOptions {
   template: string;

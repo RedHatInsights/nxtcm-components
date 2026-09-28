@@ -7,8 +7,8 @@ import {
 } from '../constants';
 import { securityGroupsSort } from '../Steps/BasicSetup/MachinePools/SecurityGroupSection/helpers';
 import {
-  ClusterUpgrade,
   CIDRSubnet,
+  ClusterUpgrade,
   MachinePoolSubnetEntry,
   ROSAHCPCluster,
   Subnet,

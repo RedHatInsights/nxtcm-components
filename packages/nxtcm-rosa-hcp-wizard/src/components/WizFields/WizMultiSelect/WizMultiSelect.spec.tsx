@@ -1,4 +1,5 @@
-import { test, expect } from '@/ct-fixture';
+import { expect, test } from '@/ct-fixture';
+
 import {
   WIZ_MULTI_API_ERROR_DETAIL,
   WIZ_MULTI_API_ERROR_FIELD_LABEL,

@@ -1,6 +1,7 @@
-import { test, expect } from '@/ct-fixture';
-import { UpdateStatusData } from './UpdateStatus';
+import { expect, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
+
+import { UpdateStatusData } from './UpdateStatus';
 
 const defaultData: UpdateStatusData = {
   upToDate: 118,

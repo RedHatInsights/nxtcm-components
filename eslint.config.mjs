@@ -6,6 +6,7 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 import importPlugin from 'eslint-plugin-import';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import globals from 'globals';
 import enforceFieldNameConstants from './eslint-rules/enforce-field-name-constants.js';
 
@@ -64,17 +65,40 @@ export default [
 
   // Custom rules
   {
+    plugins: {
+      'simple-import-sort': simpleImportSort,
+    },
     rules: {
+      'simple-import-sort/imports': [
+        'error',
+        {
+          groups: [
+            // React first
+            ['^react(?:-dom)?(?:/|\\u0000?$)'],
+            // External packages
+            ['^@?\\w'],
+            // Workspace and source aliases
+            ['^@redhat-cloud-services/nxtcm-(dashboard|rosa-hcp-wizard)', '^@/'],
+            // Parent and local imports
+            ['^\\.'],
+            // CSS and SCSS last
+            ['^.+\\.s?css$'],
+            // Other side-effect imports
+            ['^\\u0000'],
+          ],
+        },
+      ],
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'react/display-name': 'warn',
       'no-console': 'error',
-      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-explicit-any': 'error',
+      // These sibling unsafe rules are deferred and remain intentionally disabled.
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-return': 'error',
+      '@typescript-eslint/no-unsafe-call': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {

@@ -1,4 +1,4 @@
-import { test, expect } from '@/ct-fixture';
+import { expect, test } from '@/ct-fixture';
 
 import { defaultRosaHcpWizardStrings } from '../stringsProvider/rosaHcpWizardStrings.defaults';
 import { checkAccessibility } from '../test-helpers';

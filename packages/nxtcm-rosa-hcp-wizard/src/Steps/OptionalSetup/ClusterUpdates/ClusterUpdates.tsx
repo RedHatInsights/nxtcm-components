@@ -1,14 +1,15 @@
 import { Button, Content, ContentVariants, useWizardContext } from '@patternfly/react-core';
 import { useWatch } from 'react-hook-form';
-import { Section } from '../../../components/Section';
+
 import ExternalLink from '../../../components/ExternalLink';
-import { securityLinks, useGetDocsVersion } from '../../../constants/links';
-import { FIELD_NAME, STEP_IDS } from '../../../constants';
-import { clusterValidationSchema } from '../../../yupSchemas';
-import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
 import { Radio } from '../../../components/Fields/RadioGroup';
+import { Section } from '../../../components/Section';
+import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
+import { FIELD_NAME, STEP_IDS } from '../../../constants';
+import { securityLinks, useGetDocsVersion } from '../../../constants/links';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { ClusterUpgrade, type ROSAHCPCluster } from '../../../types';
+import { clusterValidationSchema } from '../../../yupSchemas';
 import { UpgradeScheduleFields } from './UpgradeScheduleFields';
 
 export const ClusterUpdates = () => {

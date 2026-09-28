@@ -1,6 +1,7 @@
-import { test, expect } from '@/ct-fixture';
-import { ClustersWithIssuesProps } from './ClustersWithIssues';
+import { expect, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
+
+import { ClustersWithIssuesProps } from './ClustersWithIssues';
 
 const defaultData: ClustersWithIssuesProps['data'] = {
   totalUnhealthy: 4,

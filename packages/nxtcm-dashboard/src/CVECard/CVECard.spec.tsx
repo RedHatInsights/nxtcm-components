@@ -1,6 +1,7 @@
-import { test, expect } from '@/ct-fixture';
-import { CVEData } from './CVECard';
+import { expect, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
+
+import { CVEData } from './CVECard';
 
 const mockCVEData: CVEData[] = [
   {

@@ -3,11 +3,13 @@
  * Components from *.story.tsx cannot be mounted (see playwright.dev/test-components#test-stories).
  */
 import React, { useMemo } from 'react';
+
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Form } from '@patternfly/react-core';
-import { FormProvider, useForm, useWatch, type Resolver } from 'react-hook-form';
+import { FormProvider, type Resolver, useForm, useWatch } from 'react-hook-form';
 
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
+import { FIELD_NAME } from '../../../constants';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
   makeDefaultRosaHcpCtWizardData,
@@ -20,8 +22,6 @@ import {
   getClusterValidationSchemaDefaultValues,
 } from '../../../yupSchemas';
 import type { ValidationSchemaContext } from '../../../yupSchemas/types';
-import { FIELD_NAME } from '../../../constants';
-
 import { MachinePoolsAdvancedSection } from './MachinePoolsAdvancedSection';
 
 const MachinePoolsAdvancedFormValuesProbe: React.FC = () => {

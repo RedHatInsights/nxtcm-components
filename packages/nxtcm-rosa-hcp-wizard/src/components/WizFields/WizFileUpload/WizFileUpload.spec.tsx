@@ -1,4 +1,5 @@
-import { test, expect } from '@/ct-fixture';
+import { expect, test } from '@/ct-fixture';
+
 import {
   WIZ_FILE_UPLOAD_CONTROL_BODY_STATUS,
   WIZ_FILE_UPLOAD_DOC_CLEAR_STATUS,

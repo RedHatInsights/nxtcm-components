@@ -1,12 +1,12 @@
 import type { UseFormSetValue } from 'react-hook-form';
 
+import fixtures from '../ROSAHCPWizard.fixtures';
+import type { ROSAHCPCluster, ROSAHCPWizardData, VPC } from '../types';
+import { getWizardFieldSyncsForSourceField } from '../yupSchemas';
 import { applyWizardFieldMetaChangeEffects } from './applyWizardFieldMetaChangeEffects';
 import { resetFieldsToDefaultValues } from './resetFieldsToDefaultValues';
 import { syncFieldsOnSourceChange } from './syncFieldsOnSourceChange';
 import { applyWizardFieldDerivedSync } from './wizardFieldDerivedSyncs';
-import type { ROSAHCPCluster, ROSAHCPWizardData, VPC } from '../types';
-import fixtures from '../ROSAHCPWizard.fixtures';
-import { getWizardFieldSyncsForSourceField } from '../yupSchemas';
 
 const autoscalingSyncRules = getWizardFieldSyncsForSourceField('autoscaling');
 const cidrDefaultSyncRules = getWizardFieldSyncsForSourceField('cidr_default');

@@ -1,9 +1,10 @@
 import type { DropEvent } from '@patternfly/react-core';
 import { type FieldValues, useController } from 'react-hook-form';
+
+import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { requiredFromYup } from '../../../utilities/yupFieldRequired';
 import { FileUpload, type FileUploadProps } from '../../Fields/FileUpload';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
-import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizFileUploadControlledKeys =

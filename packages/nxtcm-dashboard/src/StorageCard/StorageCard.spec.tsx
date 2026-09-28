@@ -1,6 +1,7 @@
-import { test, expect } from '@/ct-fixture';
-import { StorageCardProps } from './StorageCard';
+import { expect, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
+
+import { StorageCardProps } from './StorageCard';
 
 const mockStorageData: StorageCardProps['storageData'] = {
   rosaClusters: 63.02,

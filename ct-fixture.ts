@@ -1,4 +1,4 @@
-import { expect, test as base, type Locator, type Page } from '@playwright/test';
+import { expect, type Locator, type Page, test as base } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 

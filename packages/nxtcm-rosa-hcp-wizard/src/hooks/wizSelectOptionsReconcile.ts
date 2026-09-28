@@ -1,14 +1,13 @@
 import * as yup from 'yup';
 
-import {
-  reconcileFieldValueWithNewOptions,
-  type ReconcileFieldOption,
-} from '../utilities/reconcileFieldValueWithNewOptions';
-
-import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
-import { getNestedValue } from '../utilities/helpers';
 import { normalizeOption } from '../components/Fields/Select/SelectOptions';
 import type { Option, OptionGroup } from '../components/Fields/Select/SelectTypes';
+import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
+import { getNestedValue } from '../utilities/helpers';
+import {
+  type ReconcileFieldOption,
+  reconcileFieldValueWithNewOptions,
+} from '../utilities/reconcileFieldValueWithNewOptions';
 import { readWizardFieldMeta } from '../yupSchemas/readWizardFieldMeta';
 import type { WizardFieldMeta } from '../yupSchemas/types';
 

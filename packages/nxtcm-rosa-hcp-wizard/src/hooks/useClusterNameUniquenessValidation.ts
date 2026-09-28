@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef } from 'react';
+
 import { useFormContext, useWatch } from 'react-hook-form';
 
 import { FIELD_NAME, STEP_IDS } from '../constants';
 import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
-import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
-import type { CheckClusterNameUniqueness, ROSAHCPCluster } from '../types';
 import { useRosaHcpWizardValidators } from '../stringsProvider/RosaHcpWizardStringsContext';
+import type { CheckClusterNameUniqueness, ROSAHCPCluster } from '../types';
+import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
 import { validateClusterNameSync } from '../yupSchemas/helpers';
 
 const CLUSTER_NAME_UNIQUE_ERROR_TYPE = 'clusterNameUnique';

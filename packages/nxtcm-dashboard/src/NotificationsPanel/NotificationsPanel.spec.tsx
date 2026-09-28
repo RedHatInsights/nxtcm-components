@@ -1,6 +1,7 @@
-import { test, expect } from '@/ct-fixture';
-import { NotificationItem } from './NotificationsPanel';
+import { expect, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
+
+import { NotificationItem } from './NotificationsPanel';
 
 const mockNotifications: NotificationItem[] = [
   {

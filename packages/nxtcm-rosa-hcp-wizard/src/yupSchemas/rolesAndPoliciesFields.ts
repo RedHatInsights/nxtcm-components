@@ -3,9 +3,9 @@ import {
   FIELD_NAME,
   MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH,
 } from '../constants';
-import type { WizardFieldMeta } from './types';
-import { ctx, rosaRequiredStringField } from './helpers';
 import { YUP } from './constants';
+import { ctx, rosaRequiredStringField } from './helpers';
+import type { WizardFieldMeta } from './types';
 
 export const installerRoleArnSchema = rosaRequiredStringField().meta({
   id: YUP.ROLES_AND_POLICIES.INSTALLER_ROLE_ARN_SCHEMA.META.ID,

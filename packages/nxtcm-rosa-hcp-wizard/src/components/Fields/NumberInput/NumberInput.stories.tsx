@@ -1,6 +1,8 @@
 import React, { type SyntheticEvent } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+
 import { Form } from '@patternfly/react-core';
+import type { Meta, StoryObj } from '@storybook/react';
+
 import { NumberInput, type NumberInputProps } from './NumberInput';
 
 function NumberInputDemo(args: NumberInputProps) {

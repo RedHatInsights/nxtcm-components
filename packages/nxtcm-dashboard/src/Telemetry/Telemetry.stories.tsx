@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+
 import { Telemetry } from './Telemetry';
 
 const meta: Meta<typeof Telemetry> = {

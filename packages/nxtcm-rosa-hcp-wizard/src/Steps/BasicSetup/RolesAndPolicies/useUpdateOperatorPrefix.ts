@@ -1,8 +1,10 @@
+import React from 'react';
+
 import { useFormContext, useWatch } from 'react-hook-form';
+
+import { FIELD_NAME } from '../../../constants';
 import { ROSAHCPCluster } from '../../../types';
 import { createOperatorRolesPrefix } from '../../../utilities/helpers';
-import React from 'react';
-import { FIELD_NAME } from '../../../constants';
 
 export const useUpdateOperatorPrefix = () => {
   const { setValue } = useFormContext<ROSAHCPCluster>();

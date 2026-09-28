@@ -1,4 +1,5 @@
-import { test, expect } from '@/ct-fixture';
+import { expect, test } from '@/ct-fixture';
+
 import {
   RADIO_HARNESS_EAST_DESCRIPTION,
   RADIO_HARNESS_SELECTED_STATUS_LABEL,

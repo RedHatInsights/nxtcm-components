@@ -1,8 +1,7 @@
 import type { DropdownType } from '../types';
-
 import {
-  reconcileFieldValueWithNewOptions,
   type ReconcileFieldOption,
+  reconcileFieldValueWithNewOptions,
 } from './reconcileFieldValueWithNewOptions';
 
 const regionOptions: DropdownType[] = [

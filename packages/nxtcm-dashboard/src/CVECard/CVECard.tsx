@@ -1,7 +1,9 @@
+import React from 'react';
+
 import { Button, Flex, FlexItem, Skeleton, Title } from '@patternfly/react-core';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon';
-import React from 'react';
+
 import styles from './CVECard.module.scss';
 
 export type CVESeverity = 'critical' | 'important';

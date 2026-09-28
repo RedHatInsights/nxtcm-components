@@ -1,9 +1,11 @@
 import React from 'react';
-import semver from 'semver';
-import { RolesResource } from '../../../types';
-import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+
 import { useWatch } from 'react-hook-form';
+import semver from 'semver';
+
 import { FIELD_NAME } from '../../../constants';
+import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+import { RolesResource } from '../../../types';
 
 export const useInstallerRoleOptions = (roles: RolesResource) => {
   const rp = useRosaHcpWizardStrings().rolesAndPolicies;

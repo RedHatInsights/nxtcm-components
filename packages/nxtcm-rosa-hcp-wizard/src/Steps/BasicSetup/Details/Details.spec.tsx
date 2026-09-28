@@ -1,9 +1,10 @@
 import { expect, test } from '@/ct-fixture';
+
+import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
+import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { makeVpcListResource } from '../../../test/rosaHcpWizardCtSpecHelpers';
 import { checkAccessibility } from '../../../test-helpers';
 import type { Resource, Role } from '../../../types';
-import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
-import { makeVpcListResource } from '../../../test/rosaHcpWizardCtSpecHelpers';
 import {
   INSTALLER_ARN_412,
   mockRegions,

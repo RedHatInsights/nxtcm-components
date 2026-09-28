@@ -1,6 +1,6 @@
+import { ChartThemeColor, getTheme } from '@patternfly/react-charts/victory';
 import { Button, Flex, FlexItem, Title } from '@patternfly/react-core';
 import SquareFullIcon from '@patternfly/react-icons/dist/esm/icons/square-full-icon';
-import { ChartThemeColor, getTheme } from '@patternfly/react-charts/victory';
 
 import styles from './RecommendationByCategory.module.scss';
 

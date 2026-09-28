@@ -1,18 +1,18 @@
 import {
-  WIZ_TEXT_INPUT_REMOTE_ONLY_STATUS_LABEL,
-  WIZ_TEXT_INPUT_REMOTE_ONLY_LABEL,
-  WIZ_TEXT_INPUT_OPTIONAL_SCHEMA_REQUIRED_UI_LABEL,
   WIZ_TEXT_INPUT_ALIAS_BLUR_ERROR,
-  WIZ_TEXT_INPUT_OVERRIDE_BEATS_META_HELPER,
-  WIZ_TEXT_INPUT_OVERRIDE_BEATS_META_LABEL,
-  WIZ_TEXT_INPUT_META_LOSER_HELPER,
-  WIZ_TEXT_INPUT_META_LOSER_LABEL,
-  WIZ_TEXT_INPUT_SUBMIT_ERROR,
-  WIZ_TEXT_INPUT_YUP_META_HELPER,
-  WIZ_TEXT_INPUT_YUP_META_LABEL,
-  WIZ_TEXT_INPUT_VALUE_STATUS_LABEL,
   WIZ_TEXT_INPUT_EXPLICIT_HELPER,
   WIZ_TEXT_INPUT_EXPLICIT_LABEL,
+  WIZ_TEXT_INPUT_META_LOSER_HELPER,
+  WIZ_TEXT_INPUT_META_LOSER_LABEL,
+  WIZ_TEXT_INPUT_OPTIONAL_SCHEMA_REQUIRED_UI_LABEL,
+  WIZ_TEXT_INPUT_OVERRIDE_BEATS_META_HELPER,
+  WIZ_TEXT_INPUT_OVERRIDE_BEATS_META_LABEL,
+  WIZ_TEXT_INPUT_REMOTE_ONLY_LABEL,
+  WIZ_TEXT_INPUT_REMOTE_ONLY_STATUS_LABEL,
+  WIZ_TEXT_INPUT_SUBMIT_ERROR,
+  WIZ_TEXT_INPUT_VALUE_STATUS_LABEL,
+  WIZ_TEXT_INPUT_YUP_META_HELPER,
+  WIZ_TEXT_INPUT_YUP_META_LABEL,
 } from './WizTextInput.story-data';
 export {
   WIZ_TEXT_INPUT_REMOTE_ONLY_STATUS_LABEL,
@@ -32,15 +32,16 @@ export {
   WIZ_TEXT_INPUT_EXPLICIT_LABEL,
 } from './WizTextInput.story-data';
 import React from 'react';
+
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Form } from '@patternfly/react-core';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import {
-  WizCtWatchStatus,
-  wizCtSubmitValidationPreview,
   withRosaCt,
+  wizCtSubmitValidationPreview,
+  WizCtWatchStatus,
 } from '../wizFieldCtSpecHelpers';
 import { WizTextInput } from './WizTextInput';
 /** Label on the Yup submit harness textbox (explicit prop, not from meta). */

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from 'storybook/test';
-import { ClustersWithIssues, ClusterIssue } from './ClustersWithIssues';
+
+import { ClusterIssue, ClustersWithIssues } from './ClustersWithIssues';
 
 const meta: Meta<typeof ClustersWithIssues> = {
   title: 'Components/Dashboard/ClustersWithIssues',

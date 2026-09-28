@@ -8,9 +8,8 @@ jest.mock('../../yupSchemas', () => ({
 }));
 
 import { IMDS } from '../../constants';
-import { ClusterNetwork, ClusterUpgrade } from '../../types';
-
 import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { ClusterNetwork, ClusterUpgrade } from '../../types';
 import { formatReviewFieldValue } from './formatReviewValueDisplay';
 
 const strings = defaultRosaHcpWizardStrings;

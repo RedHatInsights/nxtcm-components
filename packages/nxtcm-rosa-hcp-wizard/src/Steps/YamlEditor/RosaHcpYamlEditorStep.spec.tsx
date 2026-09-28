@@ -1,5 +1,6 @@
-import { test, expect } from '@/ct-fixture';
 import type { Locator } from '@playwright/test';
+
+import { expect, test } from '@/ct-fixture';
 
 // Helper to wait for Monaco editor to be ready
 

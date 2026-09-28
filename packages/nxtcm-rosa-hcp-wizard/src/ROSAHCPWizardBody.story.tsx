@@ -6,13 +6,13 @@ import React from 'react';
 import fixtures from './ROSAHCPWizard.fixtures';
 import { RosaHcpWizardFormProvider } from './RosaHcpWizardFormProvider';
 import { RosaHcpWizardStringsProvider } from './stringsProvider/RosaHcpWizardStringsContext';
-import { makeMachineTypesResource, makeVpcListResource } from './test/rosaHcpWizardCtSpecHelpers';
-import type { RosaHCPWizardProps, ROSAHCPWizardData } from './types';
 import { createAcmCapaGenerator } from './test/acmGeneratorFixtures/acmCapaGenerator';
-import rosaControlPlaneSchema from './test/acmGeneratorFixtures/schemas/rosaControlPlaneSchema.json';
-import managedClusterSchema from './test/acmGeneratorFixtures/schemas/managedClusterSchema.json';
 import capiClusterSchema from './test/acmGeneratorFixtures/schemas/capiClusterSchema.json';
+import managedClusterSchema from './test/acmGeneratorFixtures/schemas/managedClusterSchema.json';
 import rosaClusterSchema from './test/acmGeneratorFixtures/schemas/rosaClusterSchema.json';
+import rosaControlPlaneSchema from './test/acmGeneratorFixtures/schemas/rosaControlPlaneSchema.json';
+import { makeMachineTypesResource, makeVpcListResource } from './test/rosaHcpWizardCtSpecHelpers';
+import type { ROSAHCPWizardData, RosaHCPWizardProps } from './types';
 
 const noopFetch = async (): Promise<void> => {};
 

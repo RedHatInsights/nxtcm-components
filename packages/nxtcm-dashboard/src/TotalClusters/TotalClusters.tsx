@@ -1,5 +1,7 @@
-import { Button, Flex, FlexItem, Skeleton, Title } from '@patternfly/react-core';
 import React from 'react';
+
+import { Button, Flex, FlexItem, Skeleton, Title } from '@patternfly/react-core';
+
 import styles from './TotalClusters.module.scss';
 
 export type TotalClustersData = {

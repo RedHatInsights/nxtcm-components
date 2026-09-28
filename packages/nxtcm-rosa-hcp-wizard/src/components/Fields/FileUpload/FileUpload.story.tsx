@@ -7,7 +7,9 @@ export {
   FILE_UPLOAD_HARNESS_LABEL,
 } from './FileUpload.story-data';
 import React, { useState } from 'react';
+
 import { type DropEvent, Form } from '@patternfly/react-core';
+
 import { FileUpload } from './FileUpload';
 
 export function FileUploadHarness() {

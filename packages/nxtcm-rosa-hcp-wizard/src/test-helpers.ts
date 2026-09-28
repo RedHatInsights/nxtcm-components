@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect } from '@playwright/test';
+import { expect, type Locator } from '@playwright/test';
 
 /**
  * Accessibility testing helper for Playwright component tests.
@@ -11,7 +11,7 @@ export async function checkAccessibility({
   ignoreRules = [],
   enforceAllRules,
 }: {
-  component: any;
+  component: Locator;
   ignoreRules?: string[];
   enforceAllRules?: boolean;
 }): Promise<void> {

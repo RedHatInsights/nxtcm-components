@@ -1,6 +1,8 @@
+import React from 'react';
+
 import { Flex, FlexItem, Pagination, PaginationVariant, Skeleton } from '@patternfly/react-core';
 import { ActionsColumn, IAction, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
-import React from 'react';
+
 import styles from './ExpiredTrials.module.scss';
 
 export type ExpiredTrial = {

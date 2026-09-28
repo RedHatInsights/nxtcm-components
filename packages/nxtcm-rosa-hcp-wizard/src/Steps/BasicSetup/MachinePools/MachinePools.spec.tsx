@@ -1,14 +1,16 @@
-import { expect, type MountResult, test } from '@/ct-fixture';
 import type { Page } from '@playwright/test';
-import { checkAccessibility } from '../../../test-helpers';
-import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+
+import { expect, type MountResult, test } from '@/ct-fixture';
+
+import { FIELD_NAME } from '../../../constants';
 import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
+import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
   makeMachineTypesResource,
   makeVpcListResource,
 } from '../../../test/rosaHcpWizardCtSpecHelpers';
+import { checkAccessibility } from '../../../test-helpers';
 import { maxReplicasSchema, minReplicasSchema, nodesComputeSchema } from '../../../yupSchemas';
-import { FIELD_NAME } from '../../../constants';
 
 const mp = defaultRosaHcpWizardStrings.machinePools;
 const a = defaultRosaHcpWizardStrings.autoscaling;

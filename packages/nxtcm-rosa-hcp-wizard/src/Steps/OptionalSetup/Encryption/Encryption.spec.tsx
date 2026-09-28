@@ -1,10 +1,11 @@
 import { expect, test } from '@/ct-fixture';
-import { checkAccessibility } from '../../../test-helpers';
-import { ClusterEncryptionKeys } from '../../../types';
+
 import {
   defaultRosaHcpWizardStrings,
   defaultRosaHcpWizardValidatorStrings,
 } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { checkAccessibility } from '../../../test-helpers';
+import { ClusterEncryptionKeys } from '../../../types';
 
 const e = defaultRosaHcpWizardStrings.encryption;
 const v = defaultRosaHcpWizardValidatorStrings.kmsKeyArn;

@@ -1,4 +1,5 @@
 import { expect, test } from '@/ct-fixture';
+
 import { checkAccessibility } from '../../test-helpers';
 
 test.describe('ReviewFieldValueWithLock', () => {

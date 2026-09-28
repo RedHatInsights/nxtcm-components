@@ -1,4 +1,5 @@
 import { expect, test } from '@/ct-fixture';
+
 import {
   CHECKBOX_HARNESS_HELPER_TEXT,
   CHECKBOX_HARNESS_LABEL,

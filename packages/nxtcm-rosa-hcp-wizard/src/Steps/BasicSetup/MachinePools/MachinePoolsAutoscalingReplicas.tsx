@@ -1,12 +1,13 @@
 import { Split, SplitItem } from '@patternfly/react-core';
 import { useFormContext, useWatch } from 'react-hook-form';
-import type { ROSAHCPCluster } from '../../../types';
+
 import ExternalLink from '../../../components/ExternalLink';
-import { useGetDocsVersion } from '../../../constants/links';
 import { WizNumberInput } from '../../../components/WizFields';
-import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
-import { clusterValidationSchema, minReplicasSchema } from '../../../yupSchemas';
 import { FIELD_NAME } from '../../../constants';
+import { useGetDocsVersion } from '../../../constants/links';
+import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+import type { ROSAHCPCluster } from '../../../types';
+import { clusterValidationSchema, minReplicasSchema } from '../../../yupSchemas';
 
 const minReplicasUiMin = minReplicasSchema.getDefault() as number;
 

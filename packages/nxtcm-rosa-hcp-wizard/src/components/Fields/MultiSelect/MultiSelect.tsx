@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+
 import {
   Badge,
   Button,
@@ -25,15 +26,16 @@ import {
   Spinner,
 } from '@patternfly/react-core';
 import RedoIcon from '@patternfly/react-icons/dist/esm/icons/redo-icon';
+
 import { HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
+import { getStatus, lowercaseFirst } from '../Select/selectFieldUtils';
 import {
   findOptionByValue,
   optionContainsValue,
   toDisplayString,
   toggleValuesFromPfSelectId,
 } from '../Select/SelectOptions';
-import { getStatus, lowercaseFirst } from '../Select/selectFieldUtils';
 import {
   extractOptionValue,
   type Option,

@@ -1,7 +1,8 @@
 import React from 'react';
+
 import { withRosaCt } from '../../components/WizFields/wizFieldCtSpecHelpers';
-import { ReviewFieldRow } from './ReviewFieldRow';
 import type { ReviewFieldRowProps } from './ReviewFieldRow';
+import { ReviewFieldRow } from './ReviewFieldRow';
 
 export interface ReviewFieldRowMountProps extends Partial<ReviewFieldRowProps> {
   labelText?: string;

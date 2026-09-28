@@ -14,13 +14,14 @@ import {
   Stack,
   StackItem,
 } from '@patternfly/react-core';
-import { OCMRole } from './OCMRole';
-import { AccountRoles } from './AccountRoles';
+
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
-import { UserRole } from './UserRole';
+import type { RosaLoginProduct } from '../rosaLoginCommand';
+import { AccountRoles } from './AccountRoles';
 import { AssociateAWSAccountInfo } from './AssociateAWSAccountInfo';
 import { LoginStep } from './LoginStep';
-import type { RosaLoginProduct } from '../rosaLoginCommand';
+import { OCMRole } from './OCMRole';
+import { UserRole } from './UserRole';
 
 type StepDrawerProps = {
   isDrawerExpanded: boolean;

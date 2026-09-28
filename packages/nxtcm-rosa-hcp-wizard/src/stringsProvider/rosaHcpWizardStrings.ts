@@ -8,16 +8,16 @@
  * are filled from {@link defaultRosaHcpWizardStrings} and {@link defaultRosaHcpWizardValidatorStrings}.
  */
 
+import {
+  defaultRosaHcpWizardStrings,
+  defaultRosaHcpWizardValidatorStrings,
+} from './rosaHcpWizardStrings.defaults';
 import type {
   DeepPartial,
   RosaHcpWizardStrings,
   RosaHcpWizardStringsInput,
   RosaHcpWizardValidatorStrings,
 } from './rosaHcpWizardStrings.types';
-import {
-  defaultRosaHcpWizardStrings,
-  defaultRosaHcpWizardValidatorStrings,
-} from './rosaHcpWizardStrings.defaults';
 
 export * from './rosaHcpWizardStrings.types';
 export * from './rosaHcpWizardStrings.defaults';

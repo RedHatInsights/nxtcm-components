@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { OIDCConfigHint } from './OIDCConfigHint';
 
 describe('OIDCConfigHint', () => {

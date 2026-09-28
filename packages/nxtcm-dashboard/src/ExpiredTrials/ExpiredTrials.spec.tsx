@@ -1,6 +1,7 @@
-import { test, expect } from '@/ct-fixture';
-import { ExpiredTrialsProps } from './ExpiredTrials';
+import { expect, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
+
+import { ExpiredTrialsProps } from './ExpiredTrials';
 
 const defaultData: ExpiredTrialsProps['data'] = {
   trials: [

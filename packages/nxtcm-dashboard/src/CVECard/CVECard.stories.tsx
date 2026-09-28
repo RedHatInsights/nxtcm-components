@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+
 import { CVECard, CVEData } from './CVECard';
 
 const defaultCVEData: CVEData[] = [

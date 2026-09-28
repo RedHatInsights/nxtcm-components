@@ -2,27 +2,27 @@
  * Playwright CT mount target. Components from *.story.tsx cannot be mounted (see playwright.dev/test-components#test-stories).
  */
 import React, { useMemo } from 'react';
+
 import { Form } from '@patternfly/react-core';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import type {
-  MachineTypesResource,
-  ROSAHCPCluster,
-  VpcListResource,
-  WizardConfig,
-} from '../../../types';
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
+import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
   makeDefaultRosaHcpCtWizardData,
   makeMachineTypesResource,
   makeVpcListResource,
   WizardFieldMetaChangeEffectsCtHarness,
 } from '../../../test/rosaHcpWizardCtSpecHelpers';
-import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import type {
+  MachineTypesResource,
+  ROSAHCPCluster,
+  VpcListResource,
+  WizardConfig,
+} from '../../../types';
 import { createClusterValidationResolver } from '../../../utilities/clusterValidationResolver';
-import { getClusterValidationSchemaDefaultValues } from '../../../yupSchemas';
 import { WizardConfigProvider } from '../../../WizardConfigContext';
-
+import { getClusterValidationSchemaDefaultValues } from '../../../yupSchemas';
 import { MachinePools } from './MachinePools';
 
 export type MachinePoolsMountProps = {

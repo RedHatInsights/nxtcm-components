@@ -2,9 +2,9 @@ import { FormProvider, useForm } from 'react-hook-form';
 
 import { RosaHcpWizardStringsProvider } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster } from '../../types';
-import type { YamlResourceGenerator } from './types';
-import { RosaHcpYamlEditorStep } from './RosaHcpYamlEditorStep';
 import type { RosaHcpYamlEditorStepProps } from './RosaHcpYamlEditorStep';
+import { RosaHcpYamlEditorStep } from './RosaHcpYamlEditorStep';
+import type { YamlResourceGenerator } from './types';
 
 // Mock resource generator for tests
 const mockResourceGenerator: YamlResourceGenerator = {

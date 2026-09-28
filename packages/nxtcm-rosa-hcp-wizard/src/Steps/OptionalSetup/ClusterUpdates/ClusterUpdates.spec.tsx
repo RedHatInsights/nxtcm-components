@@ -1,9 +1,10 @@
 import { expect, test } from '@/ct-fixture';
-import { ClusterUpgrade } from '../../../types';
+
 import {
   defaultRosaHcpWizardStrings,
   defaultRosaHcpWizardValidatorStrings,
 } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { ClusterUpgrade } from '../../../types';
 
 const cu = defaultRosaHcpWizardStrings.clusterUpdates;
 const REQUIRED_FIELD_MESSAGE = defaultRosaHcpWizardValidatorStrings.commonRequired;

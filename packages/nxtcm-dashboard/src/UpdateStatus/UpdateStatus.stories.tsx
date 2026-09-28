@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+
 import { UpdateStatus } from './UpdateStatus';
 
 const meta: Meta<typeof UpdateStatus> = {

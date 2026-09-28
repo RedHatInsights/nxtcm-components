@@ -1,6 +1,7 @@
-import { test, expect } from '@/ct-fixture';
-import { ProviderBreakdown } from './ClusterProviders';
+import { expect, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
+
+import { ProviderBreakdown } from './ClusterProviders';
 
 const defaultProviders: ProviderBreakdown[] = [
   { label: 'ROSA', count: 42 },

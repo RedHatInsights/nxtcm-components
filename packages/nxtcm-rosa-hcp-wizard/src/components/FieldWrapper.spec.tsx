@@ -1,4 +1,4 @@
-import { test, expect } from '../../../../ct-fixture';
+import { expect, test } from '../../../../ct-fixture';
 import { type FieldWrapperSize } from './FieldWrapper';
 
 test.describe('FieldWrapper', () => {

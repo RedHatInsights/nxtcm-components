@@ -1,6 +1,7 @@
-import { test, expect } from '@/ct-fixture';
-import { CategoryCounts } from './AdvisorCategories';
+import { expect, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
+
+import { CategoryCounts } from './AdvisorCategories';
 
 const defaultCategories: CategoryCounts = {
   serviceAvailability: 25,

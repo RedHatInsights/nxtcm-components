@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import type { NormalizedOptionGroup, Option, OptionGroup, OptionType } from './SelectTypes';
+
 import { findOptionByValue, toDisplayString } from './SelectOptions';
+import type { NormalizedOptionGroup, Option, OptionGroup, OptionType } from './SelectTypes';
 import { useNormalizedSelectOptions } from './useNormalizedSelectOptions';
 
 export interface UseSelectDerivedParams<T> {

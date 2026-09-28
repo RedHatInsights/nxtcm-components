@@ -1,8 +1,8 @@
 import {
   API_TOKEN_FIELD_LABEL,
-  CLUSTER_NAME_PLACEHOLDER_TEXT,
-  CLUSTER_NAME_HELPER_TEXT,
   CLUSTER_NAME_FIELD_LABEL,
+  CLUSTER_NAME_HELPER_TEXT,
+  CLUSTER_NAME_PLACEHOLDER_TEXT,
 } from './TextInput.story-data';
 export {
   SAMPLE_CLUSTER_NAME_VALUE,
@@ -14,7 +14,9 @@ export {
   CLUSTER_NAME_FIELD_LABEL,
 } from './TextInput.story-data';
 import React, { useState } from 'react';
+
 import { Form } from '@patternfly/react-core';
+
 import { TextInput } from './TextInput';
 
 export function TextInputHarness() {

@@ -1,7 +1,8 @@
 import React from 'react';
+
+import type { RosaLoginProduct } from '../rosaLoginCommand';
 import { withRosaCt } from '../WizFields/wizFieldCtSpecHelpers';
 import { LoginStep } from './LoginStep';
-import type { RosaLoginProduct } from '../rosaLoginCommand';
 
 export interface LoginStepMountProps {
   product?: RosaLoginProduct;

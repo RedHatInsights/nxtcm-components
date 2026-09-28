@@ -1,4 +1,4 @@
-import { test, expect } from '@/ct-fixture';
+import { expect, test } from '@/ct-fixture';
 
 test.describe('MultiSelect', () => {
   test('toggles multiple options and updates value', async ({ mount, page }) => {

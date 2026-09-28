@@ -1,12 +1,14 @@
 import React from 'react';
+
 import { Wizard, WizardStep } from '@patternfly/react-core';
 import { FormProvider, useForm } from 'react-hook-form';
-import type { ROSAHCPCluster, VpcListResource, WizardConfig } from '../../types';
+
 import { STEP_IDS } from '../../constants';
-import { makeVpcListResource } from '../../test/rosaHcpWizardCtSpecHelpers';
 import { RosaHcpWizardStringsProvider } from '../../stringsProvider/RosaHcpWizardStringsContext';
-import { getClusterValidationSchemaDefaultValues } from '../../yupSchemas';
+import { makeVpcListResource } from '../../test/rosaHcpWizardCtSpecHelpers';
+import type { ROSAHCPCluster, VpcListResource, WizardConfig } from '../../types';
 import { WizardConfigProvider } from '../../WizardConfigContext';
+import { getClusterValidationSchemaDefaultValues } from '../../yupSchemas';
 import { Review } from './Review';
 
 export interface ReviewHarnessProps {

@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {
   ClipboardCopyVariant,
   Content,
@@ -6,26 +8,26 @@ import {
   Stack,
   StackItem,
 } from '@patternfly/react-core';
-import { Section } from '../../../components/Section';
-import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
-import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
-import React from 'react';
-import { OIDCConfigHint, OIDCConfigHintProduct } from '../../../components/OIDCConfigHint';
 import { useWatch } from 'react-hook-form';
-import { WizSelect } from '../../../components/WizFields/WizSelect';
+
+import { CopyInstruction } from '../../../components/CopyInstruction';
 import ExternalLink from '../../../components/ExternalLink';
-import { useGetDocsVersion } from '../../../constants/links';
-import { ROSAHCPCluster, ROSAHCPWizardData, SelectedSecret } from '../../../types';
-import { useDependentRoles } from './useDependentRoles';
-import { clusterValidationSchema } from '../../../yupSchemas';
-import { WizTextInput } from '../../../components/WizFields/WizTextInput';
-import { useUpdateOperatorPrefix } from './useUpdateOperatorPrefix';
-import { useInstallerRoleOptions } from './useInstallerRoleOptions';
-import { useRosaCommand } from './useRosaCommand';
+import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
+import { OIDCConfigHint, OIDCConfigHintProduct } from '../../../components/OIDCConfigHint';
 import { RolesAlert } from '../../../components/RolesErrorAlert';
 import { RosaLoginInstruction } from '../../../components/RosaLoginInstruction';
-import { CopyInstruction } from '../../../components/CopyInstruction';
+import { Section } from '../../../components/Section';
+import { WizSelect } from '../../../components/WizFields/WizSelect';
+import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { FIELD_NAME } from '../../../constants';
+import { useGetDocsVersion } from '../../../constants/links';
+import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+import { ROSAHCPCluster, ROSAHCPWizardData, SelectedSecret } from '../../../types';
+import { clusterValidationSchema } from '../../../yupSchemas';
+import { useDependentRoles } from './useDependentRoles';
+import { useInstallerRoleOptions } from './useInstallerRoleOptions';
+import { useRosaCommand } from './useRosaCommand';
+import { useUpdateOperatorPrefix } from './useUpdateOperatorPrefix';
 
 type RolesAndPoliciesStepProps = Pick<ROSAHCPWizardData, 'roles' | 'oidcConfig'> & {
   /** The consuming product. Determines which ROSA login command is shown. Defaults to 'acm'. */

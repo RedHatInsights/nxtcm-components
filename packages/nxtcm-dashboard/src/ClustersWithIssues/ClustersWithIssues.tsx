@@ -1,19 +1,21 @@
+import React, { useState } from 'react';
+
 import {
+  Bullseye,
   Button,
   Flex,
   FlexItem,
   Icon,
-  Bullseye,
   Pagination,
   Skeleton,
   Title,
   Tooltip,
 } from '@patternfly/react-core';
-import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
 import ExternalLinkAltIcon from '@patternfly/react-icons/dist/esm/icons/external-link-alt-icon';
 import OutlinedQuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/outlined-question-circle-icon';
-import React, { useState } from 'react';
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+
 import styles from './ClustersWithIssues.module.scss';
 
 const DEFAULT_PER_PAGE = 5;

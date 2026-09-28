@@ -8,8 +8,10 @@ export {
   CHECKBOX_HARNESS_LABEL,
   CHECKBOX_HARNESS_TITLE,
 } from './Checkbox.story-data';
-import React, { useState, type FormEvent } from 'react';
+import React, { type FormEvent, useState } from 'react';
+
 import { Form } from '@patternfly/react-core';
+
 import { Checkbox } from './Checkbox';
 
 const CHECKBOX_HARNESS_ID = 'ct-checkbox';

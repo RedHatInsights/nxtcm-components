@@ -1,8 +1,9 @@
 import { Alert, AlertVariant, Content, ContentVariants, Title } from '@patternfly/react-core';
+
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { CopyInstruction } from '../CopyInstruction';
-import { TabGroup } from './TabGroup';
 import PopoverHint from '../PopoverHint';
+import { TabGroup } from './TabGroup';
 
 export const UserRole = () => {
   const u = useRosaHcpWizardStrings().userRole;

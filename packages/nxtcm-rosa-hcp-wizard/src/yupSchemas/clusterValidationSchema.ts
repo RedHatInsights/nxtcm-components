@@ -1,13 +1,13 @@
 import * as yup from 'yup';
 
+import { ROSAHCPCluster } from '../types';
+import { clusterUpdatesFields } from './clusterUpdatesFields';
+import { clusterWideProxyFields } from './clusterWideProxyFields';
 import { detailsFields } from './detailsFields';
-import { rolesAndPoliciesFields } from './rolesAndPoliciesFields';
+import { encryptionFields } from './encryptionFields';
 import { machinePoolsFields } from './machinePoolsFields';
 import { networkingFields } from './networkingFields';
-import { clusterWideProxyFields } from './clusterWideProxyFields';
-import { encryptionFields } from './encryptionFields';
-import { clusterUpdatesFields } from './clusterUpdatesFields';
-import { ROSAHCPCluster } from '../types';
+import { rolesAndPoliciesFields } from './rolesAndPoliciesFields';
 
 /**
  * Composed Yup schema for `ROSAHCPCluster` — built from individual

@@ -1,3 +1,5 @@
+import { useCallback, useEffect, useMemo } from 'react';
+
 import {
   ActionList,
   ActionListGroup,
@@ -11,11 +13,14 @@ import {
   type WizardFooterProps,
   WizardFooterWrapper,
 } from '@patternfly/react-core';
-import { useCallback, useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import type { ROSAHCPCluster } from '../types';
+
 import { FIELD_NAME, STEP_IDS } from '../constants';
+import { useRosaHcpWizardNavStatusSync } from '../hooks/useRosaHcpWizardNavStatusSync';
+import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
 import { useRosaHcpWizardReviewSections } from '../Steps/Review/ROSAHCPWizardReviewSections';
+import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
+import type { ROSAHCPCluster } from '../types';
 import {
   isRosaHcpWizardBackDisabled,
   isRosaHcpWizardSkipToReviewVisible,
@@ -25,10 +30,7 @@ import {
   touchInvalidPaths,
   validateWizardStepFields,
 } from './rosaHcpWizardFooter.validation';
-import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
-import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
 import { useRosaHcpWizardSubmit } from './useRosaHcpWizardSubmit';
-import { useRosaHcpWizardNavStatusSync } from '../hooks/useRosaHcpWizardNavStatusSync';
 
 type RosaHcpWizardFooterProps = Pick<
   WizardFooterProps,

@@ -1,5 +1,7 @@
-import { Stack } from '@patternfly/react-core';
 import type { ReactNode } from 'react';
+
+import { Stack } from '@patternfly/react-core';
+
 import './FieldWrapper.css';
 
 export type FieldWrapperSize = 'sm' | 'md' | 'lg' | 'full';

@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { ClustersWithIssues, ClustersWithIssuesProps } from './ClustersWithIssues';
 
 // playwright CT can't serialize functions across process boundaries,

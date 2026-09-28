@@ -1,6 +1,7 @@
 import { expect, test } from '@/ct-fixture';
-import { checkAccessibility } from '../../../test-helpers';
+
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { checkAccessibility } from '../../../test-helpers';
 
 const cw = defaultRosaHcpWizardStrings.clusterWideProxy;
 

@@ -1,8 +1,9 @@
 import { type FieldValues, useController } from 'react-hook-form';
+
+import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { requiredFromYup } from '../../../utilities/yupFieldRequired';
 import { RadioGroup, type RadioGroupProps } from '../../Fields/RadioGroup';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
-import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizRadioGroupControlledKeys =

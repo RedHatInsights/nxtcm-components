@@ -5,5 +5,13 @@
     "outDir": "dist"
   },
   "include": ["src/**/*", "../../types/typings.d.ts"],
-  "exclude": ["**/*.spec.tsx", "**/*.story.tsx", "**/*.story-data.ts", "**/*.stories.tsx"]
+  "exclude": [
+    "**/*.spec.tsx",
+    "**/*.spec-helpers.tsx",
+    "**/*.story.tsx",
+    "**/*.story-data.ts",
+    "**/*.stories.tsx",
+    "**/*.test.ts",
+    "**/*.test.tsx"
+  ]
 }

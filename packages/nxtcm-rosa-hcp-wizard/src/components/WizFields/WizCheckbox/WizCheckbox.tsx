@@ -1,9 +1,11 @@
 import type { FormEvent } from 'react';
+
 import { type FieldValues, useController } from 'react-hook-form';
+
+import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { requiredFromYup } from '../../../utilities/yupFieldRequired';
 import { Checkbox, type CheckboxProps } from '../../Fields/Checkbox';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
-import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizCheckboxControlledKeys =

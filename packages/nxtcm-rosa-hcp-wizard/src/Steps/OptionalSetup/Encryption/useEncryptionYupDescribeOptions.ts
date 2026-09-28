@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
+
 import { useFormContext, useWatch } from 'react-hook-form';
-import type { YupFieldDescribeOptions } from '../../../utilities/yupFieldRequired';
-import type { ROSAHCPCluster } from '../../../types';
+
 import { FIELD_NAME } from '../../../constants';
+import type { ROSAHCPCluster } from '../../../types';
+import type { YupFieldDescribeOptions } from '../../../utilities/yupFieldRequired';
 
 /**
  * Form values for Yup {@link yup.Schema.describe} so `.when()` branches resolve for

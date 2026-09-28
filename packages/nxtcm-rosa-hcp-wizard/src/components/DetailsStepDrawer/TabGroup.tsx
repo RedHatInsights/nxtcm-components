@@ -1,3 +1,5 @@
+import { ReactElement, useState } from 'react';
+
 import {
   Stack,
   StackItem,
@@ -5,7 +7,6 @@ import {
   ToggleGroupItem,
   ToggleGroupItemProps,
 } from '@patternfly/react-core';
-import { ReactElement, useState } from 'react';
 
 type ToggleGroupTabsProps = {
   tabs: { title: string; body: ReactElement; 'data-testid'?: string; id: string }[];

@@ -1,6 +1,6 @@
 import {
-  RADIO_HARNESS_SELECTED_STATUS_LABEL,
   RADIO_HARNESS_EAST_DESCRIPTION,
+  RADIO_HARNESS_SELECTED_STATUS_LABEL,
   RADIO_HARNESS_US_WEST_LABEL,
 } from './Radio.story-data';
 export {
@@ -10,9 +10,11 @@ export {
   RADIO_HARNESS_US_WEST_LABEL,
 } from './Radio.story-data';
 import React, { useState } from 'react';
+
 import { Form } from '@patternfly/react-core';
-import { Radio } from './Radio';
+
 import { RadioGroupContext } from '../RadioGroup/RadioGroupContext';
+import { Radio } from './Radio';
 
 /** Strings shared by `Radio.spec.tsx` and this harness */
 const RADIO_HARNESS_US_EAST_LABEL = 'US East';

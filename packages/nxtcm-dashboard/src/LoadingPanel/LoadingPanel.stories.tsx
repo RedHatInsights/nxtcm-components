@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+
 import { LoadingPanel } from './LoadingPanel';
 
 const meta: Meta<typeof LoadingPanel<UserData | ApiResponse | ItemData[]>> = {

@@ -1,4 +1,5 @@
 import { expect, test } from '@/ct-fixture';
+
 import { getValidated, helperTextId } from './helperTextUtils';
 
 test.describe('HelperText', () => {

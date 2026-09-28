@@ -1,4 +1,4 @@
-import { test, expect } from '../../../../ct-fixture';
+import { expect, test } from '../../../../ct-fixture';
 
 test.describe('FieldWithAPIErrorAlert', () => {
   test('shows alert and message body when string error is provided', async ({ mount, page }) => {

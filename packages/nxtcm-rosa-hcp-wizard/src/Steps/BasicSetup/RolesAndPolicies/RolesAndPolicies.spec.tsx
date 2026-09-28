@@ -1,8 +1,10 @@
-import { expect, type MountResult, test } from '@/ct-fixture';
 import type { Page } from '@playwright/test';
-import { checkAccessibility } from '../../../test-helpers';
-import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+
+import { expect, type MountResult, test } from '@/ct-fixture';
+
 import fixtures from '../../../ROSAHCPWizard.fixtures';
+import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { checkAccessibility } from '../../../test-helpers';
 
 const rp = defaultRosaHcpWizardStrings.rolesAndPolicies;
 const oidcHint = defaultRosaHcpWizardStrings.oidcHint;

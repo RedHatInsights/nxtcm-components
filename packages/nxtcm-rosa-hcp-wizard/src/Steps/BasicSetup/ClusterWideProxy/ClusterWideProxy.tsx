@@ -1,15 +1,16 @@
 import { Alert } from '@patternfly/react-core';
-import { Section } from '../../../components/Section';
-import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
-import ExternalLink from '../../../components/ExternalLink';
-import { useGetDocsVersion } from '../../../constants/links';
-import { WizTextInput } from '../../../components/WizFields/WizTextInput';
-import { clusterValidationSchema } from '../../../yupSchemas';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { ROSAHCPCluster } from '../../../types';
-import { WizFileUpload } from '../../../components/WizFields/WizFileUpload';
+
+import ExternalLink from '../../../components/ExternalLink';
 import { FieldWrapper } from '../../../components/FieldWrapper';
+import { Section } from '../../../components/Section';
+import { WizFileUpload } from '../../../components/WizFields/WizFileUpload';
+import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { FIELD_NAME } from '../../../constants';
+import { useGetDocsVersion } from '../../../constants/links';
+import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+import { ROSAHCPCluster } from '../../../types';
+import { clusterValidationSchema } from '../../../yupSchemas';
 
 export const ClusterWideProxy = () => {
   const cw = useRosaHcpWizardStrings().clusterWideProxy;

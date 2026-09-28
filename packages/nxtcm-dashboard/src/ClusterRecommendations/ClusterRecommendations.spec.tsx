@@ -1,6 +1,7 @@
-import { test, expect, MountResult } from '@/ct-fixture';
-import { Category } from './RecommendationByCategory';
+import { expect, MountResult, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
+
+import { Category } from './RecommendationByCategory';
 
 const defaultProps = {
   count: 25,

@@ -2,27 +2,28 @@
  * Playwright CT mount target. Components from *.story.tsx cannot be mounted (see playwright.dev/test-components#test-stories).
  */
 import React, { useMemo } from 'react';
-import { Form } from '@patternfly/react-core';
-import { FormProvider, useForm, type Resolver } from 'react-hook-form';
 
+import { Form } from '@patternfly/react-core';
+import { FormProvider, type Resolver, useForm } from 'react-hook-form';
+
+import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
+import fixtures from '../../../ROSAHCPWizard.fixtures';
+import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import {
+  makeDefaultRosaHcpCtWizardData,
+  WizardFieldMetaChangeEffectsCtHarness,
+} from '../../../test/rosaHcpWizardCtSpecHelpers';
 import {
   ClusterEncryptionKeys,
   ClusterNetwork,
   ClusterUpgrade,
   type OidcConfigResource,
-  type ROSAHCPCluster,
   type RolesResource,
+  type ROSAHCPCluster,
   type SelectedSecret,
 } from '../../../types';
-import { RolesAndPolicies } from './RolesAndPolicies';
-import fixtures from '../../../ROSAHCPWizard.fixtures';
 import { createClusterValidationResolver } from '../../../utilities/clusterValidationResolver';
-import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
-import {
-  WizardFieldMetaChangeEffectsCtHarness,
-  makeDefaultRosaHcpCtWizardData,
-} from '../../../test/rosaHcpWizardCtSpecHelpers';
+import { RolesAndPolicies } from './RolesAndPolicies';
 
 /** Defaults aligned with {@link ROSAHCPWizardBody} so the composed Yup schema resolves consistently in CT. */
 const DEFAULT_ROSA_HCP_CT_FORM_VALUES: Partial<ROSAHCPCluster> = {

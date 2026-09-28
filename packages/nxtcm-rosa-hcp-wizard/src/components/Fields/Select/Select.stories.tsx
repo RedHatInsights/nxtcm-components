@@ -1,6 +1,8 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+
 import { Form } from '@patternfly/react-core';
+import type { Meta, StoryObj } from '@storybook/react';
+
 import { Select, type SelectProps } from './Select';
 
 function SelectDemo(args: SelectProps<string>) {

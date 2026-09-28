@@ -1,4 +1,4 @@
-import { FieldWrapper, NestedFields, type FieldWrapperSize } from './FieldWrapper';
+import { FieldWrapper, type FieldWrapperSize, NestedFields } from './FieldWrapper';
 
 export interface FieldWrapperStoryProps {
   variant: 'field' | 'additional' | 'sized' | 'full';

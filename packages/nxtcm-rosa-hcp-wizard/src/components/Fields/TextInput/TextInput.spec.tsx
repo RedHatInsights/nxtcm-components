@@ -1,4 +1,5 @@
-import { test, expect } from '@/ct-fixture';
+import { expect, test } from '@/ct-fixture';
+
 import {
   API_TOKEN_FIELD_LABEL,
   CLUSTER_NAME_FIELD_LABEL,

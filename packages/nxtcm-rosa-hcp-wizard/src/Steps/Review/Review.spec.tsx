@@ -1,8 +1,9 @@
 import { expect, test } from '@/ct-fixture';
+
 import { FIELD_NAME, IMDS } from '../../constants';
-import { ClusterUpgrade } from '../../types';
 import rosaHcpWizardFixtures from '../../ROSAHCPWizard.fixtures';
 import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { ClusterUpgrade } from '../../types';
 
 const mp = defaultRosaHcpWizardStrings.machinePools;
 const sg = defaultRosaHcpWizardStrings.securityGroups;

@@ -1,5 +1,5 @@
-import type { RosaHcpWizardStrings } from './rosaHcpWizardStrings.types';
 import { getRosaHcpWizardStringByLabelKey } from './getRosaHcpWizardStringByLabelKey';
+import type { RosaHcpWizardStrings } from './rosaHcpWizardStrings.types';
 
 describe('getRosaHcpWizardStringByLabelKey', () => {
   const minimalStrings = {

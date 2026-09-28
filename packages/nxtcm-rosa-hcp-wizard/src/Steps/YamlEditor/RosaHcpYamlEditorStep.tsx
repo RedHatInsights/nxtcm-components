@@ -1,4 +1,7 @@
-import { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHandle } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+
+import type { EditorDidMount } from '@patternfly/react-code-editor';
+import { CodeEditor, Language } from '@patternfly/react-code-editor';
 import {
   Alert,
   Button,
@@ -7,18 +10,17 @@ import {
   DrawerContentBody,
   Tooltip,
 } from '@patternfly/react-core';
-import { CodeEditor, Language } from '@patternfly/react-code-editor';
-import type { EditorDidMount } from '@patternfly/react-code-editor';
-import type * as MonacoTypes from 'monaco-editor';
 import OpenDrawerRightIcon from '@patternfly/react-icons/dist/esm/icons/open-drawer-right-icon';
+import type * as MonacoTypes from 'monaco-editor';
 import { useWatch } from 'react-hook-form';
 
+import { YAML_MODEL_PATH, YAML_VALIDATION_OWNER } from '../../constants';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster } from '../../types';
-import { RosaHcpYamlMonacoLoader } from './RosaHcpYamlMonacoLoader';
 import { RosaHcpSchemaPanel } from './RosaHcpSchemaPanel';
+import { RosaHcpYamlMonacoLoader } from './RosaHcpYamlMonacoLoader';
 import type { YamlResourceGenerator } from './types';
-import { YAML_VALIDATION_OWNER, YAML_MODEL_PATH } from '../../constants';
+
 import './RosaHcpYamlEditorStep.css';
 
 export type YamlEditorHandle = {

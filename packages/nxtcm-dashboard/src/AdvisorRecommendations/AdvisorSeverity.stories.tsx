@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+
 import { AdvisorSeverity, SeverityCounts } from './AdvisorSeverity';
 
 const meta: Meta<typeof AdvisorSeverity> = {

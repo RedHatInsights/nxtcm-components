@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {
   Button,
   FormHelperText,
@@ -7,8 +8,10 @@ import {
   Popover,
 } from '@patternfly/react-core';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
-import './FieldWithAPIErrorAlert.css';
+
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
+
+import './FieldWithAPIErrorAlert.css';
 
 type FieldWithAPIErrorAlertProps = {
   /** `false`/empty: children only. `true`: summary helper only (no popover). Other values: summary + popover with that detail. */

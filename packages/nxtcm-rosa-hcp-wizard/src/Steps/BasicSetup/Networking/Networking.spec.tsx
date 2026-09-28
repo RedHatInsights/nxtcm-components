@@ -1,9 +1,11 @@
-import { expect, test } from '@/ct-fixture';
 import type { Locator } from '@playwright/test';
-import { checkAccessibility } from '../../../test-helpers';
-import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import { ClusterNetwork } from '../../../types';
+
+import { expect, test } from '@/ct-fixture';
+
 import { STEP_IDS } from '../../../constants';
+import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { checkAccessibility } from '../../../test-helpers';
+import { ClusterNetwork } from '../../../types';
 
 const n = defaultRosaHcpWizardStrings.networking;
 

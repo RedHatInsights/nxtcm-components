@@ -1,18 +1,18 @@
 import React, { type ReactNode } from 'react';
 
-import SecurityGroupsViewList from './SecurityGroupsViewList';
+import { useFormContext, useWatch } from 'react-hook-form';
 
-import { securityGroupsSort } from './helpers';
-import { showSecurityGroupsSection, truncateTextWithEllipsis } from '../../../../utilities/helpers';
 import { FieldWrapper } from '../../../../components/FieldWrapper';
 import { WizMultiSelect } from '../../../../components/WizFields';
-import { clusterValidationSchema } from '../../../../yupSchemas';
-import type { CloudVpc, ROSAHCPCluster } from '../../../../types';
-import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWizardStringsContext';
-import { useFormContext, useWatch } from 'react-hook-form';
-import SecurityGroupsNoEditAlert from './SecurityGroupsNoEditAlert';
-import SecurityGroupsEmptyAlert from './SecurityGroupsEmptyAlert';
 import { FIELD_NAME, MAX_SECURITY_GROUP_DISPLAY_LENGTH } from '../../../../constants';
+import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWizardStringsContext';
+import type { CloudVpc, ROSAHCPCluster } from '../../../../types';
+import { showSecurityGroupsSection, truncateTextWithEllipsis } from '../../../../utilities/helpers';
+import { clusterValidationSchema } from '../../../../yupSchemas';
+import { securityGroupsSort } from './helpers';
+import SecurityGroupsEmptyAlert from './SecurityGroupsEmptyAlert';
+import SecurityGroupsNoEditAlert from './SecurityGroupsNoEditAlert';
+import SecurityGroupsViewList from './SecurityGroupsViewList';
 
 export interface EditSecurityGroupsProps {
   label?: string;

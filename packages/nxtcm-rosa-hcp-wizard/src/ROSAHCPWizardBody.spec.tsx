@@ -1,5 +1,6 @@
-import { test, expect, type MountResult } from '@/ct-fixture';
 import type { Page } from '@playwright/test';
+
+import { expect, type MountResult, test } from '@/ct-fixture';
 
 import { defaultRosaHcpWizardStrings } from './stringsProvider/rosaHcpWizardStrings.defaults';
 import { checkAccessibility } from './test-helpers';
