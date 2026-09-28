@@ -9,6 +9,8 @@ import {
   CLUSTER_NAME_PLACEHOLDER_TEXT,
   HIDE_PASSWORD_BUTTON_NAME,
   SAMPLE_CLUSTER_NAME_VALUE,
+  SAMPLE_SECRET_VALUE,
+  SECRET_PLACEHOLDER_TEXT,
   SHOW_PASSWORD_BUTTON_NAME,
 } from './TextInput.spec-helpers';
 
@@ -36,5 +38,29 @@ test.describe('TextInput', () => {
     await expect(input).toHaveAttribute('type', 'text');
     await mounted.getByRole('button', { name: HIDE_PASSWORD_BUTTON_NAME }).click();
     await expect(input).toHaveAttribute('type', 'password');
+  });
+
+  test('tooltip shows placeholder while secret is masked and value after reveal', async ({
+    mount,
+    page,
+  }) => {
+    const mounted = await mount(<SecretHarness />);
+    const input = mounted.getByRole('textbox', { name: API_TOKEN_FIELD_LABEL });
+
+    // While masked, tooltip must show placeholder — never the real secret
+    await input.hover();
+    const tooltip = page.getByRole('tooltip');
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip).toHaveText(SECRET_PLACEHOLDER_TEXT);
+
+    // Move away to dismiss tooltip
+    await page.mouse.move(0, 0);
+    await expect(tooltip).not.toBeVisible();
+
+    // Reveal secret, hover again — tooltip should now show the actual value
+    await mounted.getByRole('button', { name: SHOW_PASSWORD_BUTTON_NAME }).click();
+    await input.hover();
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip).toHaveText(SAMPLE_SECRET_VALUE);
   });
 });

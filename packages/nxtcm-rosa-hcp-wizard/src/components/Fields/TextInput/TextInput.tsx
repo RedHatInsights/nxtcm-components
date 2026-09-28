@@ -87,9 +87,10 @@ export const TextInput: ForwardRefExoticComponent<
   const placeholderText =
     placeholder ?? (label && label.length ? `Enter the ${lowercaseFirst(label)}` : '');
 
-  const tooltipContent = textInputRest.value
-    ? String(textInputRest.value)
-    : placeholderText || undefined;
+  const tooltipContent =
+    textInputRest.value && !(isSecret && !secretRevealed)
+      ? String(textInputRest.value)
+      : placeholderText || undefined;
 
   const input = (
     <InputGroup>
