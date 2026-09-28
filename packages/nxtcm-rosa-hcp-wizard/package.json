@@ -62,7 +62,7 @@
   "scripts": {
     "prepack": "cp ../../LICENSE LICENSE",
     "postpack": "rm -f LICENSE",
-    "build": "rm -rf dist && NXTCM_LIB_NAME=NXTCM-ROSA-HCP-WIZARD vite build --config ../../vite.config.ts",
+    "build": "npm run type-check && rm -rf dist && NXTCM_LIB_NAME=NXTCM-ROSA-HCP-WIZARD vite build --config ../../vite.config.ts",
     "type-check": "tsc --noEmit",
     "lint": "eslint --config ../../.eslintrc.json 'src/**/*.{ts,tsx}'",
     "lint:fix": "eslint --config ../../.eslintrc.json 'src/**/*.{ts,tsx}' --fix",

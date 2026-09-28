@@ -1,5 +1,12 @@
 export { RosaHCPWizard, default } from './ROSAHCPWizard';
-export * from './types';
+export type {
+  RosaHCPWizardProps,
+  ROSAHCPWizardData,
+  ROSAHCPCluster,
+  Resource,
+  WizardConfig,
+  YamlResourceGenerator,
+} from './types';
 export { STEP_IDS, FIELD_NAME } from './constants';
 export type { RosaHcpWizardStringsInput } from './stringsProvider/rosaHcpWizardStrings';
 export type { ResourceSchema, ValidationError, YamlDocumentChunk } from './Steps/YamlEditor/types';

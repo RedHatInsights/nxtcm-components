@@ -104,14 +104,6 @@ export const CreateClusterWizard = ({ wizardData }: { wizardData: ROSAHCPWizardD
 ## Component catalog
 
 - `RosaHCPWizard` - full ROSA HCP cluster creation wizard
-- `ROSAHCPWizardData` - injected async resources for regions, roles, VPCs, versions, and related fields
-- `RosaHCPWizardProps` - wizard component props
-- `ROSAHCPCluster` - submitted cluster payload shape
-- `Resource` - data, loading, and error wrapper used by host apps for wizard resources
-- `WizardConfig` / `STEP_IDS` / `FIELD_NAME` - optional host-app step and field hiding
-- `RosaHcpWizardStringsInput` - partial UI string overrides passed via the `strings` prop
-- `YamlResourceGenerator` - host-supplied YAML render/validate contract
-- `splitYamlDocuments` / `findLineForPath` / `yamlExceptionToValidationError` - helpers for implementing `validateYaml`
 
 ## Publishing
 
