@@ -140,6 +140,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   const tooltipTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const showTooltip = useCallback(() => {
+    clearTimeout(tooltipTimerRef.current);
     tooltipTimerRef.current = setTimeout(() => setTooltipVisible(true), 300);
   }, []);
   const hideTooltip = useCallback(() => {
@@ -365,8 +366,9 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   /** Text shown inside the plain (non-typeahead) toggle button. */
   const plainToggleText = isLoading && !toggleLabel ? 'Loading...' : toggleLabel || placeholderText;
 
-  /** Full text for the PF tooltip — shows the selected label or placeholder. */
-  const tooltipContent = toggleLabel || placeholderText;
+  /** Full text for the PF tooltip — matches the visible toggle text. */
+  const tooltipContent =
+    isLoading && !toggleLabel ? 'Loading...' : toggleLabel || placeholderText;
 
   const plainToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
     <Tooltip

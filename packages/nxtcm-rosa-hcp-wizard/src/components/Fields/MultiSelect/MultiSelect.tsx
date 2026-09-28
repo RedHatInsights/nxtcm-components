@@ -156,6 +156,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
   const tooltipTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const showTooltip = useCallback(() => {
+    clearTimeout(tooltipTimerRef.current);
     tooltipTimerRef.current = setTimeout(() => setTooltipVisible(true), 300);
   }, []);
   const hideTooltip = useCallback(() => {
@@ -334,8 +335,9 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
     return !legacyToggleLabel && !isLoading ? placeholderText : undefined;
   }, [menuToggleAriaLabel, checkboxMenuToggle, legacyToggleLabel, isLoading, placeholderText]);
 
-  /** Full text for the PF tooltip — shows the selected label(s) or placeholder. */
-  const tooltipContent = legacyToggleLabel || placeholderText;
+  /** Full text for the PF tooltip — matches the visible toggle text. */
+  const tooltipContent =
+    isLoading && value.length === 0 ? 'Loading...' : legacyToggleLabel || placeholderText;
 
   const plainToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
     <Tooltip
