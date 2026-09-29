@@ -2,8 +2,9 @@ import React, { ReactNode } from 'react';
 
 import { Content } from '@patternfly/react-core/dist/dynamic/components/Content';
 import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
 import { Split, SplitItem } from '@patternfly/react-core/dist/dynamic/layouts/Split';
-import { Stack } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
+import { Stack, StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 
 import { LabelHelp } from './Fields/LabelHelp';
 
@@ -11,7 +12,7 @@ import './Section.css';
 
 type SectionProps = {
   id?: string;
-  label: string | ReactNode;
+  label?: string | ReactNode;
   description?: ReactNode;
   children?: ReactNode;
   labelHelpTitle?: string;
@@ -33,46 +34,33 @@ export const Section: React.FunctionComponent<SectionProps> = (props) => {
     labelHelpTitle,
     labelActions,
   } = props;
-  const id = idProp ?? (typeof label === 'string' ? label.toLowerCase().split(' ').join('-') : '');
-
-  const sectionHeader = (
-    <Split hasGutter>
-      <SplitItem isFilled>
-        <Stack>
-          <Split hasGutter>
-            <SplitItem isFilled>
-              <div className="rosa-hcp-section__title pf-v6-u-w-100">
-                {label}
-                {idProp && (
-                  <LabelHelp id={idProp} labelHelp={labelHelp} labelHelpTitle={labelHelpTitle} />
-                )}
-              </div>
-            </SplitItem>
-            {labelActions ? <SplitItem>{labelActions}</SplitItem> : null}
-          </Split>
-          {description && (
-            <Content component="small" className="pf-v6-u-pt-sm">
-              {description}
-            </Content>
+  const id =
+    idProp ?? (typeof label === 'string' ? label.toLowerCase().split(' ').join('-') : undefined);
+  const sectionHeader = label ? (
+    <Content>
+      <Split hasGutter>
+        <SplitItem isFilled>
+          <Title headingLevel="h3" size="md">
+            {label}
+          </Title>
+          {idProp && (
+            <LabelHelp id={idProp} labelHelp={labelHelp} labelHelpTitle={labelHelpTitle} />
           )}
-        </Stack>
-      </SplitItem>
-    </Split>
-  );
+        </SplitItem>
+        {labelActions ? <SplitItem>{labelActions}</SplitItem> : null}
+      </Split>
+      {description ? <Content component="small">{description}</Content> : null}
+    </Content>
+  ) : null;
 
   return (
-    <section id={id} className="pf-v6-c-form__group" role="group">
-      {isForm ? (
-        <Form onSubmit={(e) => e.preventDefault()}>
-          {sectionHeader}
-          {children}
-        </Form>
-      ) : (
-        <div className="pf-v6-c-form">
-          {sectionHeader}
-          {children}
-        </div>
-      )}
-    </section>
+    <div id={id}>
+      <Stack hasGutter>
+        {sectionHeader ? <StackItem>{sectionHeader}</StackItem> : null}
+        <StackItem>
+          {isForm ? <Form onSubmit={(event) => event.preventDefault()}>{children}</Form> : children}
+        </StackItem>
+      </Stack>
+    </div>
   );
 };

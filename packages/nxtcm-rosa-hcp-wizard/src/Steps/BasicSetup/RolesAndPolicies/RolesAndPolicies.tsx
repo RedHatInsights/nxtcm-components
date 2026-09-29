@@ -3,6 +3,7 @@ import React from 'react';
 import { ClipboardCopyVariant } from '@patternfly/react-core/dist/dynamic/components/ClipboardCopy';
 import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
 import { ExpandableSection } from '@patternfly/react-core/dist/dynamic/components/ExpandableSection';
+import { FormSection } from '@patternfly/react-core/dist/dynamic/components/Form';
 import { Stack, StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 import { useWatch } from 'react-hook-form';
 
@@ -57,8 +58,8 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   const showMissingArnsError = hasNoRoles || isIncompleteRoleSet;
 
   return (
-    <>
-      <Section label={rp.accountRolesSection}>
+    <Section>
+      <FormSection title={rp.accountRolesSection}>
         {showMissingArnsError || roles.ocmRoleError || roles.userRoleError ? (
           <RolesAlert
             showMissingArnsError={showMissingArnsError}
@@ -73,7 +74,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
               isExpanded={isArnsOpen}
               onToggle={() => setIsArnsOpen(!isArnsOpen)}
               toggleText={rp.arnsToggle}
-              className="pf-v6-u-mt-xs pf-v6-u-mb-lg"
+              className="pf-v6-u-mt-xs"
             >
               <NestedFields>
                 <FieldWrapper size="lg">
@@ -120,8 +121,8 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
             data-testid="installer-role-select"
           />
         </FieldWrapper>
-      </Section>
-      <Section label={rp.operatorRolesSection}>
+      </FormSection>
+      <FormSection title={rp.operatorRolesSection}>
         <FieldWrapper
           size="lg"
           footer={
@@ -191,7 +192,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
             </CopyInstruction>
           </StackItem>
         </Stack>
-      </Section>
-    </>
+      </FormSection>
+    </Section>
   );
 };
