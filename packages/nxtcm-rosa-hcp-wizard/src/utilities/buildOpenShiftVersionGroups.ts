@@ -6,28 +6,26 @@ export function buildOpenShiftVersionGroups(
   data: OpenShiftVersionsData,
   labels: RosaHcpWizardOpenShiftVersionGroupLabels
 ): OpenShiftVersionGroup[] {
-  const hasDefault = data.default != null;
-  const hasLatest = data.latest != null;
-  const releasesLabel = hasDefault || hasLatest ? labels.previousReleases : labels.releases;
+  const { default: defaultVersion, latest, releases } = data;
 
-  if (!hasDefault && !hasLatest) {
-    return [{ label: releasesLabel, options: data.releases }];
+  if (defaultVersion == null && latest == null) {
+    return [{ label: labels.releases, options: releases }];
   }
 
-  if (hasDefault && hasLatest && data.latest!.value === data.default!.value) {
+  if (defaultVersion != null && latest != null && latest.value === defaultVersion.value) {
     return [
-      { label: labels.defaultRecommended, options: [data.default!] },
-      { label: releasesLabel, options: data.releases },
+      { label: labels.defaultRecommended, options: [defaultVersion] },
+      { label: labels.previousReleases, options: releases },
     ];
   }
 
   const groups: OpenShiftVersionGroup[] = [];
-  if (hasLatest) {
-    groups.push({ label: labels.latestRelease, options: [data.latest!] });
+  if (latest != null) {
+    groups.push({ label: labels.latestRelease, options: [latest] });
   }
-  if (hasDefault) {
-    groups.push({ label: labels.defaultRelease, options: [data.default!] });
+  if (defaultVersion != null) {
+    groups.push({ label: labels.defaultRelease, options: [defaultVersion] });
   }
-  groups.push({ label: releasesLabel, options: data.releases });
+  groups.push({ label: labels.previousReleases, options: releases });
   return groups;
 }
