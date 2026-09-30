@@ -11,7 +11,9 @@ import type { ROSAHCPCluster } from '../../../../types';
 const SecurityGroupsNoEditAlert = () => {
   const sg = useRosaHcpWizardStrings().securityGroups;
   const clusterVersion =
-    useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
+    useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({
+      name: FIELD_NAME.CLUSTER_VERSION,
+    }) ?? '';
   const links = useGetDocsVersion(clusterVersion);
   return (
     <Alert

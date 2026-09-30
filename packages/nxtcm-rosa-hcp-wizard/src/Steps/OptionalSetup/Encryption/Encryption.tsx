@@ -21,7 +21,9 @@ export const Encryption = () => {
   const yupDescribeOptions = useEncryptionYupDescribeOptions();
 
   const clusterVersion =
-    useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
+    useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({
+      name: FIELD_NAME.CLUSTER_VERSION,
+    }) ?? '';
   const links = useGetDocsVersion(clusterVersion);
   const customKmsSelected = useWatch<ROSAHCPCluster>({
     name: FIELD_NAME.ENCRYPTION.ENCRYPTION_KEYS,
