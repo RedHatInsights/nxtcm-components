@@ -196,6 +196,7 @@ export const Details = ({
               onBlur={() => {
                 void checkOnNameBlur();
               }}
+              parseValue={(value: string): string => value}
             />
           </FieldWrapper>
 

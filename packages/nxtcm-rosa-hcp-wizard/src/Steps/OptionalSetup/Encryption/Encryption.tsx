@@ -67,6 +67,7 @@ export const Encryption = () => {
             name={FIELD_NAME.ENCRYPTION.KMS_KEY_ARN}
             schema={clusterValidationSchema}
             yupDescribeOptions={yupDescribeOptions}
+            parseValue={(value: string): string => value}
           />
         </FieldWrapper>
       ) : null}
@@ -90,6 +91,7 @@ export const Encryption = () => {
             name={FIELD_NAME.ENCRYPTION.ETCD_KEY_ARN}
             schema={clusterValidationSchema}
             yupDescribeOptions={yupDescribeOptions}
+            parseValue={(value: string): string => value}
           />
         </FieldWrapper>
       ) : null}

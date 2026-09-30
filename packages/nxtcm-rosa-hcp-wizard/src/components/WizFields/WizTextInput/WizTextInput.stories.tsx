@@ -45,7 +45,12 @@ function WizTextInputFormDemo(args: WizTextInputProps) {
           })(e);
         }}
       >
-        <WizTextInput {...args} name={CLUSTER_NAME_PATH} schema={schema} />
+        <WizTextInput
+          {...args}
+          name={CLUSTER_NAME_PATH}
+          schema={schema}
+          parseValue={(value: string): string => value}
+        />
         <Button type="submit" className="pf-v6-u-mt-md">
           Submit
         </Button>
@@ -94,7 +99,12 @@ function WizTextInputPasswordFormDemo(args: WizTextInputProps) {
           })(e);
         }}
       >
-        <WizTextInput {...args} name={ADMIN_PASSWORD_PATH} schema={passwordSchema} />
+        <WizTextInput
+          {...args}
+          name={ADMIN_PASSWORD_PATH}
+          schema={passwordSchema}
+          parseValue={(value: string): string => value}
+        />
         <Button type="submit" className="pf-v6-u-mt-md">
           Submit
         </Button>

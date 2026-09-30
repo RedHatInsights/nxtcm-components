@@ -1,6 +1,7 @@
-import type { FieldValues, UseFormGetFieldState, UseFormGetValues } from 'react-hook-form';
+import { createFormControl, type UseFormGetFieldState } from 'react-hook-form';
 
 import type { RosaHcpWizardReviewSection } from '../Steps/Review/rosaHcpWizardReviewSections.data';
+import { WizardFieldPath, WizardFormValues } from '../types';
 import {
   markSectionsWithValidationErrors,
   reconcileValidationAttemptedFlags,
@@ -8,28 +9,29 @@ import {
 } from './rosaHcpWizardFooter.validation';
 
 const mockGetFieldState = (
-  impl: (path: string) => { invalid: boolean }
-): UseFormGetFieldState<FieldValues> =>
-  jest.fn((path: string) => ({
+  impl: (path: WizardFieldPath) => { invalid: boolean }
+): UseFormGetFieldState<WizardFormValues> =>
+  jest.fn((path: WizardFieldPath) => ({
     invalid: impl(path).invalid,
     isTouched: false,
     isDirty: false,
     isValidating: false,
     error: undefined,
-  })) as UseFormGetFieldState<FieldValues>;
+  }));
 
 describe('touchInvalidPaths', () => {
   it('touches only invalid paths', () => {
-    const getFieldState = mockGetFieldState((path) => ({ invalid: path === 'name' }));
-    const getValues = jest.fn((path: string) =>
-      path === 'name' ? 'x' : ''
-    ) as unknown as UseFormGetValues<FieldValues>;
-    const setValue = jest.fn() as unknown as Parameters<typeof touchInvalidPaths>[3];
+    const form = createFormControl<WizardFormValues>({
+      defaultValues: { name: 'x', region: '' },
+    });
+    form.setError('name', { type: 'required' });
 
-    touchInvalidPaths(['name', 'region'], getFieldState, getValues, setValue);
+    const setValueSpy = jest.spyOn(form, 'setValue');
 
-    expect(setValue).toHaveBeenCalledTimes(1);
-    expect(setValue).toHaveBeenCalledWith('name', 'x', {
+    touchInvalidPaths(['name', 'region'], form.getFieldState, form.getValues, form.setValue);
+
+    expect(setValueSpy).toHaveBeenCalledTimes(1);
+    expect(setValueSpy).toHaveBeenCalledWith('name', 'x', {
       shouldTouch: true,
       shouldValidate: false,
     });
