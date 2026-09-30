@@ -7,9 +7,9 @@ import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 import { FormProvider, type Resolver, useForm, useWatch } from 'react-hook-form';
 
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
+import { FIELD_NAME } from '../../../constants';
 import { RosaHcpWizardValidationProvider } from '../../../rosaHcpWizardValidationContext';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import { FIELD_NAME } from '../../../constants';
 import {
   makeDefaultRosaHcpCtWizardData,
   makeVpcListResource,

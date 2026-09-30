@@ -47,7 +47,9 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
   const isProxyStepHidden = useIsStepHidden(STEP_IDS.CLUSTER_WIDE_PROXY);
   const { setValue } = useFormContext<ROSAHCPCluster>();
   const clusterVersion =
-    useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
+    useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({
+      name: FIELD_NAME.CLUSTER_VERSION,
+    }) ?? '';
   const links = useGetDocsVersion(clusterVersion);
 
   const cidrDefaultChecked = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CIDR_DEFAULT>({

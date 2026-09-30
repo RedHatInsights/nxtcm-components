@@ -4,7 +4,10 @@ import { FIELD_NAME } from '../../../constants';
 import type { ROSAHCPCluster } from '../../../types';
 
 export const useRosaCommand = () => {
-  const customOperatorRolesPrefix = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CUSTOM_OPERATOR_ROLES_PREFIX>({
+  const customOperatorRolesPrefix = useWatch<
+    ROSAHCPCluster,
+    typeof FIELD_NAME.CUSTOM_OPERATOR_ROLES_PREFIX
+  >({
     name: FIELD_NAME.CUSTOM_OPERATOR_ROLES_PREFIX,
   });
   const byoOidcConfigId = useWatch<ROSAHCPCluster, typeof FIELD_NAME.BYO_OIDC_CONFIG_ID>({
