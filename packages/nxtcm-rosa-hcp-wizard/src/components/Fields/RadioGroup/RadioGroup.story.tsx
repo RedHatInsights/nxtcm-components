@@ -21,7 +21,7 @@ export {
 } from './RadioGroup.story-data';
 import React, { useState } from 'react';
 
-import { Form } from '@patternfly/react-core';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 
 import { Radio, RadioGroup } from './RadioGroup';
 const RADIO_GROUP_HARNESS_VALUE_SMALL = 'small';

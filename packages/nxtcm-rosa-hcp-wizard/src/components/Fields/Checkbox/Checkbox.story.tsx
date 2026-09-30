@@ -11,7 +11,7 @@ export {
 } from './Checkbox.story-data';
 import React, { type FormEvent, useState } from 'react';
 
-import { Form } from '@patternfly/react-core';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 
 import { Checkbox } from './Checkbox';
 

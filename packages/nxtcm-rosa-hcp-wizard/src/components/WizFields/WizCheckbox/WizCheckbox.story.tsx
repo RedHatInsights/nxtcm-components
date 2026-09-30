@@ -34,7 +34,8 @@ export {
   WIZ_CHECKBOX_EXPLICIT_TITLE,
 } from './WizCheckbox.story-data';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, Form } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 

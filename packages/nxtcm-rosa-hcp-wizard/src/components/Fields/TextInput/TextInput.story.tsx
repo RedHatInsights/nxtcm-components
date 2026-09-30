@@ -4,6 +4,8 @@ import {
   CLUSTER_NAME_FIELD_LABEL,
   CLUSTER_NAME_HELPER_TEXT,
   CLUSTER_NAME_PLACEHOLDER_TEXT,
+  SAMPLE_SECRET_VALUE,
+  SECRET_PLACEHOLDER_TEXT,
 } from './TextInput.story-data';
 export {
   SAMPLE_CLUSTER_NAME_VALUE,
@@ -16,7 +18,7 @@ export {
 } from './TextInput.story-data';
 import React, { useState } from 'react';
 
-import { Form } from '@patternfly/react-core';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 
 import { TextInput } from './TextInput';
 
@@ -38,13 +40,14 @@ export function TextInputHarness() {
 }
 
 export function SecretHarness() {
-  const [value, setValue] = useState('secret123');
+  const [value, setValue] = useState(SAMPLE_SECRET_VALUE);
   return (
     <Form>
       <TextInput
         id="ct-secret"
         name="token"
         label={API_TOKEN_FIELD_LABEL}
+        placeholder={SECRET_PLACEHOLDER_TEXT}
         value={value}
         onChange={(_e, v) => setValue(v)}
         isSecret

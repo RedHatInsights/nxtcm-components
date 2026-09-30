@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { FormGroup, Split, SplitItem } from '@patternfly/react-core';
+import { FormGroup } from '@patternfly/react-core/dist/dynamic/components/Form';
+import { Split, SplitItem } from '@patternfly/react-core/dist/dynamic/layouts/Split';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 import { HelperText } from '../../../components/Fields/HelperText';

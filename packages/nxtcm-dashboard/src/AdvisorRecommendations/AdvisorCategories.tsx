@@ -1,7 +1,9 @@
 import React from 'react';
 
 import { ChartDonut } from '@patternfly/react-charts/victory';
-import { Flex, FlexItem, Skeleton, Title } from '@patternfly/react-core';
+import { Skeleton } from '@patternfly/react-core/dist/dynamic/components/Skeleton';
+import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 
 import styles from './AdvisorRecommendations.module.scss';
 

@@ -1,7 +1,7 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import React, { useState } from 'react';
 
-import { Form } from '@patternfly/react-core';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 
 import { Select } from './Select';
 

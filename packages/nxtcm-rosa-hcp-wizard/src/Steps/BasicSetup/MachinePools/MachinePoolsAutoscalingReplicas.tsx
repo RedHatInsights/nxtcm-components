@@ -1,4 +1,4 @@
-import { Split, SplitItem } from '@patternfly/react-core';
+import { Split, SplitItem } from '@patternfly/react-core/dist/dynamic/layouts/Split';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 import ExternalLink from '../../../components/ExternalLink';

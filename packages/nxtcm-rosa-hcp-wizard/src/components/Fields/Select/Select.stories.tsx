@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Form } from '@patternfly/react-core';
-import type { Meta, StoryObj } from '@storybook/react';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { Select, type SelectProps } from './Select';
 

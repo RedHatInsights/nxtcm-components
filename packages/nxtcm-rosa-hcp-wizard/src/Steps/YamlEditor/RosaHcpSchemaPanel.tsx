@@ -1,21 +1,19 @@
 import { useMemo, useState } from 'react';
 
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Content } from '@patternfly/react-core/dist/dynamic/components/Content';
 import {
-  Button,
-  Content,
   DrawerActions,
   DrawerCloseButton,
   DrawerHead,
   DrawerPanelBody,
   DrawerPanelContent,
-  Flex,
-  FlexItem,
-  Label,
-  SearchInput,
-  Stack,
-  StackItem,
-  Title,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/dist/dynamic/components/Drawer';
+import { Label } from '@patternfly/react-core/dist/dynamic/components/Label';
+import { SearchInput } from '@patternfly/react-core/dist/dynamic/components/SearchInput';
+import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
+import { Stack, StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 import ChevronDownIcon from '@patternfly/react-icons/dist/esm/icons/chevron-down-icon';
 import ChevronRightIcon from '@patternfly/react-icons/dist/esm/icons/chevron-right-icon';
 import type { JSONSchema } from 'monaco-yaml';

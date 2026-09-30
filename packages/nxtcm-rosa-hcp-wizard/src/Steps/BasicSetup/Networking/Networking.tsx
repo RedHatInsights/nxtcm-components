@@ -1,6 +1,8 @@
 import { type ReactElement, useEffect, useMemo, useRef } from 'react';
 
-import { Alert, Content, ContentVariants, ExpandableSection } from '@patternfly/react-core';
+import { Alert } from '@patternfly/react-core/dist/dynamic/components/Alert';
+import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
+import { ExpandableSection } from '@patternfly/react-core/dist/dynamic/components/ExpandableSection';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 import ExternalLink from '../../../components/ExternalLink';
@@ -83,7 +85,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
       return;
     }
     if (currentVpcId !== previousVpcRef.current) {
-      setValue(FIELD_NAME.CLUSTER_PRIVACY_FIELD.PUBLIC_SUBNET_ID, undefined as never, {
+      setValue(FIELD_NAME.CLUSTER_PRIVACY_FIELD.PUBLIC_SUBNET_ID, undefined, {
         shouldValidate: true,
       });
     }

@@ -9,7 +9,8 @@ export {
 } from './FileUpload.story-data';
 import React, { useState } from 'react';
 
-import { type DropEvent, Form } from '@patternfly/react-core';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import { type DropEvent } from '@patternfly/react-core/dist/dynamic/helpers/typeUtils';
 
 import { FileUpload } from './FileUpload';
 

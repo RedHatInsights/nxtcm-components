@@ -6,25 +6,31 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
+import { Badge } from '@patternfly/react-core/dist/dynamic/components/Badge';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Divider } from '@patternfly/react-core/dist/dynamic/components/Divider';
+import { FormGroup } from '@patternfly/react-core/dist/dynamic/components/Form';
 import {
-  Badge,
-  Button,
-  Divider,
-  Flex,
-  FormGroup,
   InputGroup,
   InputGroupItem,
+} from '@patternfly/react-core/dist/dynamic/components/InputGroup';
+import {
   MenuToggle,
   type MenuToggleElement,
+} from '@patternfly/react-core/dist/dynamic/components/MenuToggle';
+import {
   Select as PfSelect,
   SelectGroup,
   SelectList,
   SelectOption,
-  Spinner,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/dist/dynamic/components/Select';
+import { Spinner } from '@patternfly/react-core/dist/dynamic/components/Spinner';
+import { Tooltip } from '@patternfly/react-core/dist/dynamic/components/Tooltip';
+import { Flex } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 import RedoIcon from '@patternfly/react-icons/dist/esm/icons/redo-icon';
 
 import { HelperText, helperTextId } from '../HelperText';
@@ -146,6 +152,21 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
   });
 
   const [open, setOpen] = useState(false);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const tooltipTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const showTooltip = useCallback(() => {
+    clearTimeout(tooltipTimerRef.current);
+    tooltipTimerRef.current = setTimeout(() => setTooltipVisible(true), 300);
+  }, []);
+  const hideTooltip = useCallback(() => {
+    clearTimeout(tooltipTimerRef.current);
+    setTooltipVisible(false);
+  }, []);
+
+  useEffect(() => {
+    return () => clearTimeout(tooltipTimerRef.current);
+  }, []);
 
   useEffect(() => {
     onMenuOpenChange?.(open);
@@ -314,22 +335,39 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
     return !legacyToggleLabel && !isLoading ? placeholderText : undefined;
   }, [menuToggleAriaLabel, checkboxMenuToggle, legacyToggleLabel, isLoading, placeholderText]);
 
+  /** Full text for the PF tooltip — matches the visible toggle text. */
+  const tooltipContent =
+    isLoading && value.length === 0 ? 'Loading...' : legacyToggleLabel || placeholderText;
+
   const plainToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <MenuToggle
-      ref={toggleRef}
-      onClick={handleToggle}
-      onBlur={onBlur}
-      isExpanded={open}
-      isDisabled={!!disabled}
-      isFullWidth
-      isPlaceholder={checkboxMenuToggle && toggleMainText === placeholderText}
-      status={getStatus(!!isError, !!isSuccess)}
-      aria-label={plainToggleAriaLabel}
-      aria-describedby={describedBy || undefined}
-      badge={toggleBadge}
+    <Tooltip
+      content={tooltipContent}
+      aria="none"
+      trigger="manual"
+      isVisible={tooltipVisible && !open}
     >
-      {toggleMainText}
-    </MenuToggle>
+      <MenuToggle
+        ref={toggleRef}
+        onClick={handleToggle}
+        onBlur={(e: React.FocusEvent<HTMLElement>) => {
+          hideTooltip();
+          onBlur?.(e);
+        }}
+        onFocus={showTooltip}
+        onMouseEnter={showTooltip}
+        onMouseLeave={hideTooltip}
+        isExpanded={open}
+        isDisabled={!!disabled}
+        isFullWidth
+        isPlaceholder={checkboxMenuToggle && toggleMainText === placeholderText}
+        status={getStatus(!!isError, !!isSuccess)}
+        aria-label={plainToggleAriaLabel}
+        aria-describedby={describedBy || undefined}
+        badge={toggleBadge}
+      >
+        {toggleMainText}
+      </MenuToggle>
+    </Tooltip>
   );
 
   const selectBlock = (

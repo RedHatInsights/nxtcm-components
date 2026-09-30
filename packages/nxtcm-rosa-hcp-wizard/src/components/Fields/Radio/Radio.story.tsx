@@ -12,7 +12,7 @@ export {
 } from './Radio.story-data';
 import React, { useState } from 'react';
 
-import { Form } from '@patternfly/react-core';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 
 import { RadioGroupContext } from '../RadioGroup/RadioGroupContext';
 import { Radio } from './Radio';

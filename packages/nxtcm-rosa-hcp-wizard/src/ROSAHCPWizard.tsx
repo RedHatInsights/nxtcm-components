@@ -3,7 +3,7 @@ import { RosaHcpWizardStringsInput } from './stringsProvider/rosaHcpWizardString
 import { RosaHcpWizardStringsProvider } from './stringsProvider/RosaHcpWizardStringsContext';
 import { RosaHCPWizardProps } from './types';
 
-type ROSAHCPWrapperProps = RosaHCPWizardProps & {
+export type ROSAHCPWrapperProps = RosaHCPWizardProps & {
   strings?: RosaHcpWizardStringsInput;
 };
 

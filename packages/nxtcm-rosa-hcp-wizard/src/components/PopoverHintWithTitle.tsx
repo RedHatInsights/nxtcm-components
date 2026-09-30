@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { Button, Popover, PopoverProps } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Popover, PopoverProps } from '@patternfly/react-core/dist/dynamic/components/Popover';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
 import OutlinedQuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/outlined-question-circle-icon';
 

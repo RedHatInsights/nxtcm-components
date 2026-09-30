@@ -6,7 +6,9 @@ import {
   ChartThemeColor,
   getTheme,
 } from '@patternfly/react-charts/victory';
-import { Button, Flex, FlexItem, Skeleton } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Skeleton } from '@patternfly/react-core/dist/dynamic/components/Skeleton';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 
 import styles from './StorageCard.module.scss';
 

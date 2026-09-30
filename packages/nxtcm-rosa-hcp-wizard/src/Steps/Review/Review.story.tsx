@@ -1,7 +1,7 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import React from 'react';
 
-import { Wizard, WizardStep } from '@patternfly/react-core';
+import { Wizard, WizardStep } from '@patternfly/react-core/dist/dynamic/components/Wizard';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { STEP_IDS } from '../../constants';

@@ -7,6 +7,7 @@ import importPlugin from 'eslint-plugin-import';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import storybook from 'eslint-plugin-storybook';
 import globals from 'globals';
 import enforceFieldNameConstants from './eslint-rules/enforce-field-name-constants.js';
 
@@ -39,6 +40,9 @@ export default [
 
   // JSX accessibility
   jsxA11y.flatConfigs.recommended,
+
+  // Storybook config
+  ...storybook.configs['flat/recommended'],
 
   // Prettier (must be last to override conflicting rules)
   eslintConfigPrettier,
@@ -132,6 +136,14 @@ export default [
     },
   },
 
+  // Playwright gallery stories use named function exports, not Storybook CSF defaults.
+  {
+    files: ['**/*.story.tsx', '**/*.story.ts'],
+    rules: {
+      'storybook/default-exports': 'off',
+    },
+  },
+
   // Test files override
   {
     files: ['**/*.test.tsx', '**/*.test.ts'],
@@ -159,25 +171,6 @@ export default [
     },
     rules: {
       'react-hooks/rules-of-hooks': 'off',
-    },
-  },
-
-  // Wizard: prevent self-imports
-  {
-    files: [
-      'packages/nxtcm-rosa-hcp-wizard/src/**/*.ts',
-      'packages/nxtcm-rosa-hcp-wizard/src/**/*.tsx',
-    ],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            '@redhat-cloud-services/nxtcm-rosa-hcp-wizard',
-            '@redhat-cloud-services/nxtcm-rosa-hcp-wizard/*',
-          ],
-        },
-      ],
     },
   },
 
@@ -209,16 +202,43 @@ export default [
     },
   },
 
-  // Dashboard: prevent self-imports
+  // Dashboard and Wizard: prevent self-imports + restrict PatternFly to dynamic paths
   {
-    files: ['packages/nxtcm-dashboard/src/**/*.ts', 'packages/nxtcm-dashboard/src/**/*.tsx'],
+    files: [
+      'packages/nxtcm-dashboard/src/**/*.ts',
+      'packages/nxtcm-dashboard/src/**/*.tsx',
+      'packages/nxtcm-rosa-hcp-wizard/src/**/*.ts',
+      'packages/nxtcm-rosa-hcp-wizard/src/**/*.tsx',
+    ],
     rules: {
       'no-restricted-imports': [
         'error',
         {
+          paths: [
+            {
+              name: '@patternfly/react-core',
+              message:
+                "Please use `import [component] from '@patternfly/react-core/dist/dynamic/components/[component]'` instead.",
+            },
+            {
+              name: '@patternfly/react-table',
+              message:
+                "Please use `import [component] from '@patternfly/react-table/dist/dynamic/components/[component]'` instead.",
+            },
+            {
+              name: '@patternfly/react-icons',
+              message:
+                "Please use `import [icon] from '@patternfly/react-icons/dist/dynamic/icons/[icon]'` instead.",
+            },
+          ],
           patterns: [
             '@redhat-cloud-services/nxtcm-dashboard',
             '@redhat-cloud-services/nxtcm-dashboard/*',
+            '@redhat-cloud-services/nxtcm-rosa-hcp-wizard',
+            '@redhat-cloud-services/nxtcm-rosa-hcp-wizard/*',
+            '!@patternfly/react-core/*',
+            '!@patternfly/react-table/*',
+            '!@patternfly/react-icons/*',
           ],
         },
       ],

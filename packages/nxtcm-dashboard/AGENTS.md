@@ -45,7 +45,7 @@ consuming apps (uhc-portal, console) call their own APIs and map responses into 
 
 ### adding a widget
 
-1. create `src/WidgetName/` with component, `index.ts`, CT spec, spec-helpers, story, and optional module SCSS
+1. create `src/WidgetName/` with component, `index.ts`, CT spec, story, and optional module SCSS
 2. export from `src/index.ts`
 3. keep props as a view-model (data / loading / error), so no fetch inside the widget
 4. cover loading -> error -> empty -> populated in CT and Storybook

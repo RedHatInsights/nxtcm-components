@@ -49,7 +49,7 @@ then in the spec:
 
 ```tsx
 test('renders with default props', async ({ mount }) => {
-  const component = await mount('nxtcm-dashboard/MyComponent/MyComponentStory');
+  const component = await mount('nxtcm-dashboard/MyComponent/MyComponent/MyComponentStory');
   // assertions...
 });
 ```
@@ -62,7 +62,7 @@ follow arrange-act-assert:
 test('shows error when data fails to load', async ({ mount }) => {
   // arrange
   // act
-  const component = await mount('nxtcm-dashboard/MyComponent/MyComponentStory', {
+  const component = await mount('nxtcm-dashboard/MyComponent/MyComponent/MyComponentStory', {
     state: 'error',
   });
 

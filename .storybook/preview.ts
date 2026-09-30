@@ -1,12 +1,13 @@
+import { loader } from '@monaco-editor/react';
+import { withThemeByClassName } from '@storybook/addon-themes';
+import type { Preview } from '@storybook/react';
+import * as monaco from 'monaco-editor';
+import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker.js?worker';
+import YamlWorker from 'monaco-yaml/yaml.worker.js?worker';
+
 import '@patternfly/patternfly/patternfly.css';
 import '@patternfly/patternfly/patternfly-addons.css';
 import '@patternfly/patternfly/patternfly-charts.css';
-import type { Preview } from '@storybook/react';
-import { withThemeByClassName } from '@storybook/addon-themes';
-import * as monaco from 'monaco-editor';
-import { loader } from '@monaco-editor/react';
-import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker.js?worker';
-import YamlWorker from 'monaco-yaml/yaml.worker.js?worker';
 
 window.MonacoEnvironment = {
   getWorker(_moduleId: string, label: string): Worker {

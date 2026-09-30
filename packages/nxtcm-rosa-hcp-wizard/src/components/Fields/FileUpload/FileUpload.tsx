@@ -1,6 +1,8 @@
 import { type ComponentProps, type ReactNode, useCallback, useEffect, useState } from 'react';
 
-import { type DropEvent, FileUpload as PfFileUpload, FormGroup } from '@patternfly/react-core';
+import { FileUpload as PfFileUpload } from '@patternfly/react-core/dist/dynamic/components/FileUpload';
+import { FormGroup } from '@patternfly/react-core/dist/dynamic/components/Form';
+import { type DropEvent } from '@patternfly/react-core/dist/dynamic/helpers/typeUtils';
 
 import { getValidated, HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { Stack } from '@patternfly/react-core';
+import { Stack } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 
 import './FieldWrapper.css';
 
