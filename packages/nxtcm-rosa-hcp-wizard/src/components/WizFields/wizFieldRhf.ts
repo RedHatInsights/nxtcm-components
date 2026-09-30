@@ -1,11 +1,4 @@
-import {
-  type FocusEvent,
-  type FocusEventHandler,
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-} from 'react';
+import { type FocusEventHandler, type ReactNode, useCallback, useEffect, useRef } from 'react';
 
 import {
   type Control,
@@ -135,7 +128,7 @@ export function wizFieldShowsError(
  * before the new value lands.
  */
 export function useWizMenuFieldBlur(
-  onBlur: FocusEventHandler<HTMLElement>,
+  onBlur: () => void,
   isMenuOpen: boolean
 ): FocusEventHandler<HTMLElement> {
   const wasMenuOpenRef = useRef(false);
@@ -144,20 +137,17 @@ export function useWizMenuFieldBlur(
 
   useEffect(() => {
     if (wasMenuOpenRef.current && !isMenuOpen) {
-      onBlurRef.current({ type: 'blur' } as FocusEvent<HTMLElement>);
+      onBlurRef.current();
     }
     wasMenuOpenRef.current = isMenuOpen;
   }, [isMenuOpen]);
 
-  return useCallback(
-    (event: FocusEvent<HTMLElement>) => {
-      if (isMenuOpen) {
-        return;
-      }
-      onBlur(event);
-    },
-    [isMenuOpen, onBlur]
-  );
+  return useCallback((): void => {
+    if (isMenuOpen) {
+      return;
+    }
+    onBlur();
+  }, [isMenuOpen, onBlur]);
 }
 
 /** Like {@link wizFieldShowsError}, but keyed on a resolved error message string. */
@@ -185,7 +175,7 @@ export function useWizRhfControl<TFieldValues extends FieldValues>(
   controlProp?: Control<TFieldValues>
 ): Control<TFieldValues> {
   /** RHF default context is `null` when `FormProvider` is not used. */
-  const formContext = useFormContext<TFieldValues>() as UseFormReturn<TFieldValues> | null;
+  const formContext: UseFormReturn<TFieldValues> | null = useFormContext<TFieldValues>();
   const control = controlProp ?? formContext?.control;
 
   if (control == null) {

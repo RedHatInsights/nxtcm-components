@@ -20,7 +20,7 @@ import { useRosaHcpWizardNavStatusSync } from '../hooks/useRosaHcpWizardNavStatu
 import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
 import { useRosaHcpWizardReviewSections } from '../Steps/Review/ROSAHCPWizardReviewSections';
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
-import type { ROSAHCPCluster } from '../types';
+import type { ROSAHCPCluster, WizardFieldPath } from '../types';
 import {
   isRosaHcpWizardBackDisabled,
   isRosaHcpWizardSkipToReviewVisible,
@@ -110,14 +110,14 @@ function RosaHcpWizardFooter({
   }, [activeStepId, setValidationAlertStepId]);
 
   const revealInvalidFields = useCallback(
-    (fieldPaths: readonly string[]) => {
+    (fieldPaths: readonly WizardFieldPath[]) => {
       touchInvalidPaths(fieldPaths, getFieldState, getValues, setValue);
     },
     [getFieldState, getValues, setValue]
   );
 
   const failStepValidation = useCallback(
-    (fieldPaths: readonly string[], stepIdsToMark: readonly string[]) => {
+    (fieldPaths: readonly WizardFieldPath[], stepIdsToMark: readonly string[]) => {
       revealInvalidFields(fieldPaths);
       for (const stepId of stepIdsToMark) {
         markValidationAttempted(stepId);

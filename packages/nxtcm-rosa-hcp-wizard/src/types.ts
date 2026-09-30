@@ -1,5 +1,6 @@
 import { TooltipProps } from '@patternfly/react-core/dist/dynamic/components/Tooltip';
 import { useWizardContext } from '@patternfly/react-core/dist/dynamic/components/Wizard';
+import type { Path } from 'react-hook-form';
 
 import { FIELD_NAME, STEP_IDS } from './constants';
 import type { YamlResourceGenerator } from './Steps/YamlEditor/types';
@@ -354,6 +355,9 @@ export type ROSAHCPCluster = {
   upgrade_policy?: ClusterUpgrade.automatic | ClusterUpgrade.manual;
   upgrade_schedule?: string;
 };
+
+export type WizardFormValues = Partial<ROSAHCPCluster>;
+export type WizardFieldPath = Path<WizardFormValues>;
 
 export type SelectedSecret = {
   client_id: string;
