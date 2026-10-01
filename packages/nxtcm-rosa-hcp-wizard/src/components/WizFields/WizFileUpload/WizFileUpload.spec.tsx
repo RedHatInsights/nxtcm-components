@@ -83,9 +83,7 @@ test.describe('WizFileUpload', () => {
     });
 
     await mounted.getByRole('button', { name: 'Submit' }).click();
-    await expect(
-      mounted.getByText(WIZ_FILE_UPLOAD_SUBMIT_ERROR, { exact: true })
-    ).not.toBeVisible();
+    await expect(mounted.getByText(WIZ_FILE_UPLOAD_SUBMIT_ERROR, { exact: true })).toBeHidden();
   });
 
   test('writes nested-path uploads into react-hook-form state', async ({ mount, page }) => {

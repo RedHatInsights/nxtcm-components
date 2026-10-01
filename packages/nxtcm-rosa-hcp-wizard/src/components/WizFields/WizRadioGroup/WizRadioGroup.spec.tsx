@@ -85,9 +85,7 @@ test.describe('WizRadioGroup', () => {
       .click();
 
     await mounted.getByRole('button', { name: 'Submit' }).click();
-    await expect(
-      mounted.getByText(WIZ_RADIO_GROUP_SUBMIT_ERROR, { exact: true })
-    ).not.toBeVisible();
+    await expect(mounted.getByText(WIZ_RADIO_GROUP_SUBMIT_ERROR, { exact: true })).toBeHidden();
   });
 
   test('binds dotted field paths via fallback labeling when Yup is omitted', async ({ mount }) => {

@@ -69,7 +69,7 @@ test.describe('Subscriptions', () => {
   }) => {
     const component = await mount(<Subscriptions {...defaultProps} />);
 
-    await expect(component.getByRole('button', { name: /View subscriptions/i })).not.toBeVisible();
+    await expect(component.getByRole('button', { name: /View subscriptions/i })).toBeHidden();
   });
 
   test('should show View subscriptions button when onViewSubscriptions is provided', async ({
@@ -286,7 +286,7 @@ test.describe('Subscriptions', () => {
       component.getByText(
         'Monitor your OpenShift usage for both Annual and On-Demand subscriptions.'
       )
-    ).not.toBeVisible();
+    ).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {

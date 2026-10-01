@@ -76,7 +76,7 @@ test.describe('WizMultiSelect', () => {
     await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: 'Submit', exact: true }).click();
-    await expect(page.getByText(WIZ_MULTI_SUBMIT_ERROR, { exact: true })).not.toBeVisible();
+    await expect(page.getByText(WIZ_MULTI_SUBMIT_ERROR, { exact: true })).toBeHidden();
   });
 
   test('binds through the control prop without a FormProvider wrapper', async ({ mount, page }) => {

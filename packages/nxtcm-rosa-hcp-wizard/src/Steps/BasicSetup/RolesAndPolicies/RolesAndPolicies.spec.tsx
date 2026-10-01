@@ -349,7 +349,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     test('should not show alert when roles are loaded and no errors', async ({ mount }) => {
       const component = await mount(<RolesAndPoliciesMount />);
 
-      await expect(component.getByRole('heading', { name: ALERT_HEADING })).not.toBeVisible();
+      await expect(component.getByRole('heading', { name: ALERT_HEADING })).toBeHidden();
     });
 
     test('should show "Missing account roles" when no roles data is available', async ({
@@ -481,7 +481,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
 
       await expect(component.getByRole('heading', { name: ALERT_HEADING })).toBeVisible();
       await expect(component.getByText(ocmError)).toBeVisible();
-      await expect(component.getByText('Missing user role')).not.toBeVisible();
+      await expect(component.getByText('Missing user role')).toBeHidden();
     });
   });
 

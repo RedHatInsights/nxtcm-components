@@ -164,17 +164,13 @@ test.describe('NotificationsPanel', () => {
       );
 
       await expect(component.getByText(manyNotifications[0].title, { exact: true })).toBeVisible();
-      await expect(
-        component.getByText(manyNotifications[6].title, { exact: true })
-      ).not.toBeVisible();
+      await expect(component.getByText(manyNotifications[6].title, { exact: true })).toBeHidden();
 
       await component.getByRole('button', { name: /Next page/i }).click();
 
       await expect(component.getByText('7 - 12 of 20')).toBeVisible();
       await expect(component.getByText(manyNotifications[6].title, { exact: true })).toBeVisible();
-      await expect(
-        component.getByText(manyNotifications[0].title, { exact: true })
-      ).not.toBeVisible();
+      await expect(component.getByText(manyNotifications[0].title, { exact: true })).toBeHidden();
     });
 
     test('should navigate to previous page when previous button is clicked', async ({ mount }) => {
@@ -188,18 +184,14 @@ test.describe('NotificationsPanel', () => {
 
       await component.getByRole('button', { name: /Next page/i }).click();
 
-      await expect(
-        component.getByText(manyNotifications[0].title, { exact: true })
-      ).not.toBeVisible();
+      await expect(component.getByText(manyNotifications[0].title, { exact: true })).toBeHidden();
       await expect(component.getByText(manyNotifications[6].title, { exact: true })).toBeVisible();
 
       await component.getByRole('button', { name: /Previous page/i }).click();
 
       await expect(component.getByText('1 - 6 of 20')).toBeVisible();
       await expect(component.getByText(manyNotifications[0].title, { exact: true })).toBeVisible();
-      await expect(
-        component.getByText(manyNotifications[6].title, { exact: true })
-      ).not.toBeVisible();
+      await expect(component.getByText(manyNotifications[6].title, { exact: true })).toBeHidden();
     });
 
     test('should disable previous button on first page', async ({ mount }) => {
@@ -240,8 +232,8 @@ test.describe('NotificationsPanel', () => {
         <NotificationsPanel notifications={manyNotifications} enablePagination={false} />
       );
 
-      await expect(component.getByText(/of 20/)).not.toBeVisible();
-      await expect(component.getByRole('button', { name: /Previous page/i })).not.toBeVisible();
+      await expect(component.getByText(/of 20/)).toBeHidden();
+      await expect(component.getByRole('button', { name: /Previous page/i })).toBeHidden();
     });
   });
 
@@ -413,7 +405,7 @@ test.describe('NotificationsPanel', () => {
       <NotificationsPanel notifications={exactCount} enablePagination={true} itemsPerPage={6} />
     );
 
-    await expect(component.getByRole('button', { name: /Next page/i })).not.toBeVisible();
+    await expect(component.getByRole('button', { name: /Next page/i })).toBeHidden();
   });
 
   test('should display correct count with zero notifications', async ({ mount }) => {
@@ -477,7 +469,7 @@ test.describe('NotificationsPanel', () => {
       <NotificationsPanel isLoading notifications={mockNotifications} />
     );
     await expect(component.getByText('Loading notifications')).toBeVisible();
-    await expect(component.getByTestId('notification-1')).not.toBeVisible();
+    await expect(component.getByTestId('notification-1')).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {

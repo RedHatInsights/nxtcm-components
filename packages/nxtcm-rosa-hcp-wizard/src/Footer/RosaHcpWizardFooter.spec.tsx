@@ -190,7 +190,7 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
 
     await component.getByRole('textbox', { name: /Cluster name/i }).fill('mycluster');
 
-    await expect(component.getByRole('heading', validationAlertHeading)).not.toBeVisible();
+    await expect(component.getByRole('heading', validationAlertHeading)).toBeHidden();
   });
 
   test('does not show the validation alert on the next step after advancing with a valid Details step', async ({
@@ -203,7 +203,7 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
     await component.getByRole('button', { name: FOOTER_NEXT }).click();
 
     await expect(component.getByText(rp.accountRolesSection, { exact: true })).toBeVisible();
-    await expect(component.getByRole('heading', validationAlertHeading)).not.toBeVisible();
+    await expect(component.getByRole('heading', validationAlertHeading)).toBeHidden();
     await expect(component.getByRole('button', { name: FOOTER_BACK })).toBeEnabled();
     await expect(component.locator('#installer_role_arn-form-group')).not.toContainText(
       REQUIRED_FIELD_MESSAGE
@@ -277,7 +277,7 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
       .getByRole('button', { name: 'Clear selection' })
       .click();
 
-    await expect(component.getByText(REQUIRED_FIELD_MESSAGE)).not.toBeVisible();
+    await expect(component.getByText(REQUIRED_FIELD_MESSAGE)).toBeHidden();
     await expectWizardNavNoError(component, STEP_IDS.DETAILS);
     await expect(
       component.getByRole('button', { name: w.stepLabels.rolesAndPolicies, exact: true })
@@ -320,7 +320,7 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
 test.describe('RosaHcpWizardFooter — Skip to review', () => {
   test('does not show Skip to review on the Details step', async ({ mount }) => {
     const component = await mount(<RosaHcpWizardValidationMount />);
-    await expect(component.getByRole('button', { name: SKIP_TO_REVIEW })).not.toBeVisible();
+    await expect(component.getByRole('button', { name: SKIP_TO_REVIEW })).toBeHidden();
   });
 
   test('shows Skip to review on an Additional setup step', async ({ mount }) => {
@@ -412,7 +412,7 @@ test.describe('RosaHcpWizardFooter — Skip to review', () => {
     await component.getByRole('button', { name: SKIP_TO_REVIEW }).click();
 
     await expect(component.getByText(review.sectionLabel, { exact: true })).toBeVisible();
-    await expect(component.getByRole('button', { name: SKIP_TO_REVIEW })).not.toBeVisible();
+    await expect(component.getByRole('button', { name: SKIP_TO_REVIEW })).toBeHidden();
   });
 });
 
@@ -435,7 +435,7 @@ test.describe('RosaHcpWizardFooter — Review Submit validation alert', () => {
 
     await nameInput.fill('mycluster');
 
-    await expect(component.getByRole('heading', validationAlertHeading)).not.toBeVisible();
+    await expect(component.getByRole('heading', validationAlertHeading)).toBeHidden();
   });
 });
 
@@ -492,6 +492,6 @@ test.describe('RosaHcpWizardFooter — validation alert after failed Review Subm
     await component.getByTestId('oidc-config-select').getByRole('combobox').click();
     await page.getByRole('option', { name: fixtures.mockOicdConfig[0].label }).click();
 
-    await expect(component.getByRole('heading', validationAlertHeading)).not.toBeVisible();
+    await expect(component.getByRole('heading', validationAlertHeading)).toBeHidden();
   });
 });
