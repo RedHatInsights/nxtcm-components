@@ -16,7 +16,7 @@ test.describe('ReviewFieldRow', () => {
     const component = await mount(
       <ReviewFieldRowMount labelText="Hidden Field" hideInReview={true} />
     );
-    await expect(component.getByText('Hidden Field')).not.toBeVisible();
+    await expect(component.getByText('Hidden Field')).toBeHidden();
   });
 
   test('should show lock icon when noEditAfterStep is true', async ({ mount }) => {
@@ -68,7 +68,7 @@ test.describe('ReviewFieldRow', () => {
     );
     // Value should not be visible until expanded
     const preElement = component.locator('pre');
-    await expect(preElement).not.toBeVisible();
+    await expect(preElement).toBeHidden();
   });
 
   test('should expand to show value when toggle clicked', async ({ mount }) => {
@@ -108,7 +108,7 @@ test.describe('ReviewFieldRow', () => {
     await showLessToggle.click();
 
     // Pre element should be hidden again
-    await expect(component.locator('pre')).not.toBeVisible();
+    await expect(component.locator('pre')).toBeHidden();
   });
 
   test('should show value directly when collapseOnRequired is false', async ({ mount }) => {
@@ -121,7 +121,7 @@ test.describe('ReviewFieldRow', () => {
     );
     await expect(component.getByText('Direct value')).toBeVisible();
     // No toggle button should exist
-    await expect(component.getByRole('button', { name: /show/i })).not.toBeVisible();
+    await expect(component.getByRole('button', { name: /show/i })).toBeHidden();
   });
 
   test('should pass accessibility tests in collapsed state', async ({ mount }) => {

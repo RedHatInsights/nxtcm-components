@@ -75,7 +75,7 @@ test.describe('ResourceUtilization', () => {
 
   test('should not render Storage when not provided', async ({ mount }) => {
     const component = await mount(<ResourceUtilization data={defaultData} />);
-    await expect(component.getByTestId('metric-storage-donut')).not.toBeVisible();
+    await expect(component.getByTestId('metric-storage-donut')).toBeHidden();
   });
 
   test('should render Storage when provided', async ({ mount }) => {
@@ -98,7 +98,7 @@ test.describe('ResourceUtilization', () => {
 
   test('should not show View more button when onViewMore is omitted', async ({ mount }) => {
     const component = await mount(<ResourceUtilization data={defaultData} />);
-    await expect(component.getByRole('button', { name: /View more/i })).not.toBeVisible();
+    await expect(component.getByRole('button', { name: /View more/i })).toBeHidden();
   });
 
   test('should call onViewMore when button is clicked', async ({ mount }) => {
@@ -162,7 +162,7 @@ test.describe('ResourceUtilization', () => {
   test('should render skeleton when isLoading is true', async ({ mount }) => {
     const component = await mount(<ResourceUtilization isLoading />);
     await expect(component.getByText('Loading resource utilization')).toBeVisible();
-    await expect(component.getByTestId('metric-vcpu-donut')).not.toBeVisible();
+    await expect(component.getByTestId('metric-vcpu-donut')).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
