@@ -1,3 +1,5 @@
+import type * as yup from 'yup';
+
 import type { RosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings';
 import type { CIDRSubnet, ROSAHCPCluster, ROSAHCPWizardData } from '../types';
 
@@ -157,6 +159,10 @@ export type WizardFieldMeta = {
     keyof ROSAHCPWizardData,
     'clusterNameValidation' | 'checkClusterNameUniqueness'
   >;
+};
+
+export type ClusterTestContext = Omit<yup.TestContext<ValidationSchemaContext>, 'parent'> & {
+  parent: Partial<ROSAHCPCluster>;
 };
 
 /**

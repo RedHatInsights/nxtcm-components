@@ -6,8 +6,16 @@ import type { RosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWi
 import { ROSAHCPCluster } from '../types';
 import type { ValidationSchemaContext } from './types';
 
-export function ctx(testContext: yup.TestContext): ValidationSchemaContext {
-  return testContext.options.context as ValidationSchemaContext;
+export function ctx(
+  testContext: yup.TestContext<ValidationSchemaContext>
+): ValidationSchemaContext {
+  const context = testContext.options.context;
+
+  if (!context) {
+    throw new Error('ValidationSchemaContext is required');
+  }
+
+  return context;
 }
 
 export function isValidCidr(value: string): boolean {
@@ -57,22 +65,27 @@ export function validateClusterNameSync(
   return undefined;
 }
 
+type CidrFieldName = 'network_machine_cidr' | 'network_service_cidr' | 'network_pod_cidr';
+
 export function findOverlappingCidrFields(
   value: string,
   fieldName: string,
   formData: Partial<ROSAHCPCluster>,
   msgs: RosaHcpWizardValidatorStrings['disjointSubnets']
 ): string[] {
-  const fieldLabels: Record<string, string> = {
-    network_machine_cidr: msgs.fieldLabelMachine,
-    network_service_cidr: msgs.fieldLabelService,
-    network_pod_cidr: msgs.fieldLabelPod,
-  };
-  delete fieldLabels[fieldName];
+  const fieldLabels: ReadonlyArray<readonly [CidrFieldName, string]> = [
+    ['network_machine_cidr', msgs.fieldLabelMachine],
+    ['network_service_cidr', msgs.fieldLabelService],
+    ['network_pod_cidr', msgs.fieldLabelPod],
+  ];
 
   const overlapping: string[] = [];
-  Object.entries(fieldLabels).forEach(([name, label]) => {
-    const fieldValue = (formData as Record<string, string | undefined>)[name];
+
+  fieldLabels.forEach(([name, label]) => {
+    if (name === fieldName) return;
+
+    const fieldValue = formData[name];
+
     try {
       if (fieldValue && overlapCidr(value, fieldValue)) {
         overlapping.push(label);
@@ -81,6 +94,7 @@ export function findOverlappingCidrFields(
       // parse error — ignore
     }
   });
+
   return overlapping;
 }
 
@@ -138,8 +152,8 @@ function isAbsentRequiredValue(value: unknown): boolean {
  * **Required field pattern:** {@link rosaRequiredStringField}, {@link rosaRequiredMixedField}, or
  * {@link rosaRequiredArrayField}.
  */
-function rosaRequiredPresentValue<TContext extends yup.AnyObject>(
-  this: yup.TestContext<TContext>,
+function rosaRequiredPresentValue(
+  this: yup.TestContext<ValidationSchemaContext>,
   value: unknown
 ): true | yup.ValidationError {
   if (isAbsentRequiredValue(value)) {
@@ -163,9 +177,9 @@ export const rosaCommonRequiredNonEmptyTest = {
  * Required string field (select, text): transform + {@link rosaCommonRequiredNonEmptyTest} + `.required()`.
  * Untouched top-level `undefined` is coerced in {@link coerceAbsentRequiredFieldValues} before validate.
  */
-export function rosaRequiredStringField(): yup.StringSchema {
+export function rosaRequiredStringField(): yup.StringSchema<string, ValidationSchemaContext> {
   return yup
-    .string()
+    .string<string, ValidationSchemaContext>()
     .transform(rosaAbsentStringToEmpty)
     .test(rosaCommonRequiredNonEmptyTest)
     .required();
@@ -174,9 +188,11 @@ export function rosaRequiredStringField(): yup.StringSchema {
 /**
  * Required object select (`mixed`, e.g. VPC): {@link rosaUndefinedMixedToAbsentObject} + test + `.required()`.
  */
-export function rosaRequiredMixedField(): yup.MixedSchema {
-  return yup
-    .mixed()
+export function rosaRequiredMixedField(): yup.MixedSchema<
+  NonNullable<unknown> | undefined,
+  ValidationSchemaContext
+> {
+  return new yup.MixedSchema<NonNullable<unknown> | undefined, ValidationSchemaContext>()
     .transform(rosaUndefinedMixedToAbsentObject)
     .test(rosaCommonRequiredNonEmptyTest)
     .required();
@@ -189,8 +205,9 @@ export function rosaRequiredMixedField(): yup.MixedSchema {
 export function rosaRequiredArrayField<T>(
   of: yup.ISchema<T>,
   defaultValue?: T[]
-): yup.ArraySchema<T[], yup.AnyObject, T[] | undefined, '' | 'd'> {
-  const schema = yup.array<yup.AnyObject, T>(of);
+): yup.ArraySchema<T[], ValidationSchemaContext, T[] | undefined, '' | 'd'> {
+  const schema = yup.array<ValidationSchemaContext, T>(of);
   const schemaWithDefault = defaultValue === undefined ? schema : schema.default(defaultValue);
+
   return schemaWithDefault.test(rosaCommonRequiredNonEmptyTest).required();
 }
