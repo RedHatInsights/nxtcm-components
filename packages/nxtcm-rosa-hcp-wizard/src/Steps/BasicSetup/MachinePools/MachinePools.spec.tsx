@@ -419,9 +419,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
 
     const component = await mount(<MachinePoolsMount vpcList={vpcList} />);
 
-    const vpcCombo = component
-      .locator('#machine-pools-section')
-      .getByRole('combobox', { name: vpcSelectMenuName, exact: true });
+    const vpcCombo = component.getByRole('combobox', { name: vpcSelectMenuName, exact: true });
     await expect(vpcCombo).toHaveValue('Loading...');
   });
 });
