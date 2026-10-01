@@ -63,14 +63,15 @@ export type ReviewProps = Pick<ROSAHCPWizardData, 'vpcList'> & {
 export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
   const { goToStepById } = useWizardContext();
   const { hiddenFields } = useWizardConfig();
-  const watchedFormValues = useWatch();
+  const watchedFormValues = useWatch({
+    compute: (values: Partial<ROSAHCPCluster>): Partial<ROSAHCPCluster> => values,
+  });
   const defaultWizardFormValues = getClusterValidationSchemaDefaultValues();
-  const formValues = {
+
+  const formValues: Partial<ROSAHCPCluster> = {
     ...defaultWizardFormValues,
-    ...(typeof watchedFormValues === 'object' && watchedFormValues !== null
-      ? watchedFormValues
-      : {}),
-  } as Partial<ROSAHCPCluster>;
+    ...watchedFormValues,
+  };
 
   const vpcData = vpcList.data;
   const selectedVPC = resolveSelectedVpc(formValues.selected_vpc, vpcData);

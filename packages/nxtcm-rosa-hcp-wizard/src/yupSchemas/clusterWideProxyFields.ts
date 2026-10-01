@@ -4,10 +4,10 @@ import { BASE_DOMAIN_REGEXP, FIELD_NAME, MAX_CA_SIZE_BYTES } from '../constants'
 import { stringToArray } from '../utilities/helpers';
 import { YUP } from './constants';
 import { ctx } from './helpers';
-import type { WizardFieldMeta } from './types';
+import type { ValidationSchemaContext, WizardFieldMeta } from './types';
 
 export const httpProxyUrlSchema = yup
-  .string()
+  .string<string, ValidationSchemaContext>()
   .optional()
   .meta({
     id: YUP.CLUSTER_WIDE_PROXY.HTTP_PROXY_URL_SCHEMA.META.ID,
@@ -36,7 +36,7 @@ export const httpProxyUrlSchema = yup
   });
 
 export const httpsProxyUrlSchema = yup
-  .string()
+  .string<string, ValidationSchemaContext>()
   .optional()
   .meta({
     id: YUP.CLUSTER_WIDE_PROXY.HTTPS_PROXY_URL_SCHEMA.META.ID,
@@ -65,7 +65,7 @@ export const httpsProxyUrlSchema = yup
   });
 
 export const noProxyDomainsSchema = yup
-  .string()
+  .string<string, ValidationSchemaContext>()
   .optional()
   .default(YUP.CLUSTER_WIDE_PROXY.NO_PROXY_DOMAINS_SCHEMA.DEFAULT)
   .meta({
@@ -92,7 +92,7 @@ export const noProxyDomainsSchema = yup
   });
 
 export const additionalTrustBundleSchema = yup
-  .string()
+  .string<string, ValidationSchemaContext>()
   .optional()
   .meta({
     id: YUP.CLUSTER_WIDE_PROXY.ADDITIONAL_TRUST_BUNDLE_SCHEMA.META.ID,
