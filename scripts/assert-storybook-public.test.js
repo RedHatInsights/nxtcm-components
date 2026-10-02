@@ -15,7 +15,6 @@ const ALL_REQUIRED_TITLES = [
   'Components/Dashboard/CostManagement',
   'Components/Dashboard/Dashboard',
   'Components/Dashboard/ExpiredTrials',
-  'Components/Dashboard/LoadingPanel',
   'Components/Dashboard/NotificationsPanel',
   'Components/Dashboard/ResourceUtilization',
   'Components/Dashboard/StorageCard',
