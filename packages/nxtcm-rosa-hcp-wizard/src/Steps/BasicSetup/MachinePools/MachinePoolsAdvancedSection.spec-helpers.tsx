@@ -9,6 +9,7 @@ import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 import { FormProvider, type Resolver, useForm, useWatch } from 'react-hook-form';
 
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
+import { FIELD_NAME } from '../../../constants';
 import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
   makeDefaultRosaHcpCtWizardData,
@@ -24,7 +25,7 @@ import type { ValidationSchemaContext } from '../../../yupSchemas/types';
 import { MachinePoolsAdvancedSection } from './MachinePoolsAdvancedSection';
 
 const MachinePoolsAdvancedFormValuesProbe: React.FC = () => {
-  const imds = useWatch({ name: 'imds' });
+  const imds = useWatch<ROSAHCPCluster, typeof FIELD_NAME.IMDS>({ name: FIELD_NAME.IMDS });
   return (
     <span data-testid="ct-imds-value" hidden aria-hidden>
       {imds ?? ''}
