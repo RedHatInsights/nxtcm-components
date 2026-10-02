@@ -14,7 +14,6 @@ import {
   POD_NODES_MIN,
   SERVICE_CIDR_MAX,
 } from '../constants';
-import { ROSAHCPCluster } from '../types';
 import { parseCIDRSubnetLength } from '../utilities/helpers';
 import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
 import { YUP } from './constants';
@@ -27,7 +26,7 @@ import {
   rosaCommonRequiredNonEmptyTest,
   rosaRequiredStringField,
 } from './helpers';
-import type { WizardFieldMeta } from './types';
+import type { ClusterTestContext, ValidationSchemaContext, WizardFieldMeta } from './types';
 
 export const clusterPrivacySchema = rosaRequiredStringField()
   .default(YUP.NETWORKING.CLUSTER_PRIVACY_SCHEMA.DEFAULT)
@@ -43,7 +42,7 @@ export const clusterPrivacySchema = rosaRequiredStringField()
   } satisfies WizardFieldMeta);
 
 export const clusterPrivacyPublicSubnetIdSchema = yup
-  .string()
+  .string<string, ValidationSchemaContext>()
   .meta({
     id: YUP.NETWORKING.CLUSTER_PRIVACY_PUBLIC_SUBNET_ID_SCHEMA.META.ID,
     labelKey: YUP.NETWORKING.CLUSTER_PRIVACY_PUBLIC_SUBNET_ID_SCHEMA.META.LABEL_KEY,
@@ -80,7 +79,7 @@ export const cidrDefaultSchema = yup
   } satisfies WizardFieldMeta);
 
 export const networkMachineCidrSchema = yup
-  .string()
+  .string<string, ValidationSchemaContext>()
   .default(YUP.NETWORKING.NETWORK_MACHINE_CIDR_SCHEMA.DEFAULT)
   .optional()
   .meta({
@@ -92,7 +91,7 @@ export const networkMachineCidrSchema = yup
     advanced: YUP.NETWORKING.NETWORK_MACHINE_CIDR_SCHEMA.META.ADVANCED,
     noEditAfterSubmit: YUP.NETWORKING.NETWORK_MACHINE_CIDR_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
   } satisfies WizardFieldMeta)
-  .test('machine-cidr', '', function (value) {
+  .test('machine-cidr', '', function (this: ClusterTestContext, value) {
     if (!value) return true;
     const { msgs, selectedSubnets } = ctx(this);
 
@@ -104,7 +103,7 @@ export const networkMachineCidrSchema = yup
     }
 
     const prefixLength = parseCIDRSubnetLength(value);
-    const formData = this.parent as Partial<ROSAHCPCluster>;
+    const formData = this.parent;
     const isMultiAz = formData.multi_az === 'true';
 
     if (prefixLength != null) {
@@ -161,7 +160,7 @@ export const networkMachineCidrSchema = yup
   });
 
 export const networkServiceCidrSchema = yup
-  .string()
+  .string<string, ValidationSchemaContext>()
   .default(YUP.NETWORKING.NETWORK_SERVICE_CIDR_SCHEMA.DEFAULT)
   .optional()
   .meta({
@@ -173,7 +172,7 @@ export const networkServiceCidrSchema = yup
     advanced: YUP.NETWORKING.NETWORK_SERVICE_CIDR_SCHEMA.META.ADVANCED,
     noEditAfterSubmit: YUP.NETWORKING.NETWORK_SERVICE_CIDR_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
   } satisfies WizardFieldMeta)
-  .test('service-cidr', '', function (value) {
+  .test('service-cidr', '', function (this: ClusterTestContext, value) {
     if (!value) return true;
     const { msgs, selectedSubnets } = ctx(this);
 
@@ -200,7 +199,7 @@ export const networkServiceCidrSchema = yup
       });
     }
 
-    const formData = this.parent as Partial<ROSAHCPCluster>;
+    const formData = this.parent;
 
     if (selectedSubnets && selectedSubnets.length > 0) {
       for (const subnet of selectedSubnets) {
@@ -239,7 +238,7 @@ export const networkServiceCidrSchema = yup
   });
 
 export const networkPodCidrSchema = yup
-  .string()
+  .string<string, ValidationSchemaContext>()
   .default(YUP.NETWORKING.NETWORK_POD_CIDR_SCHEMA.DEFAULT)
   .optional()
   .meta({
@@ -251,7 +250,7 @@ export const networkPodCidrSchema = yup
     advanced: YUP.NETWORKING.NETWORK_POD_CIDR_SCHEMA.META.ADVANCED,
     noEditAfterSubmit: YUP.NETWORKING.NETWORK_POD_CIDR_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
   } satisfies WizardFieldMeta)
-  .test('pod-cidr', '', function (value) {
+  .test('pod-cidr', '', function (this: ClusterTestContext, value) {
     if (!value) return true;
     const { msgs, selectedSubnets } = ctx(this);
 
@@ -262,7 +261,7 @@ export const networkPodCidrSchema = yup
       return this.createError({ message: msgs.validateRange.notSubnetAddress });
     }
 
-    const formData = this.parent as Partial<ROSAHCPCluster>;
+    const formData = this.parent;
     const prefixLength = parseCIDRSubnetLength(value);
 
     if (prefixLength != null) {
@@ -315,7 +314,7 @@ export const networkPodCidrSchema = yup
   });
 
 export const networkHostPrefixSchema = yup
-  .string()
+  .string<string, ValidationSchemaContext>()
   .default(YUP.NETWORKING.NETWORK_HOST_PREFIX_SCHEMA.DEFAULT)
   .optional()
   .meta({
@@ -327,7 +326,7 @@ export const networkHostPrefixSchema = yup
     advanced: YUP.NETWORKING.NETWORK_HOST_PREFIX_SCHEMA.META.ADVANCED,
     noEditAfterSubmit: YUP.NETWORKING.NETWORK_HOST_PREFIX_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
   } satisfies WizardFieldMeta)
-  .test('host-prefix', '', function (value) {
+  .test('host-prefix', '', function (this: ClusterTestContext, value) {
     if (!value) return true;
     const { msgs } = ctx(this);
 

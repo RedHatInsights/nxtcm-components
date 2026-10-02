@@ -5,7 +5,7 @@ import { ClusterUpgrade } from '../types';
 import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
 import { YUP } from './constants';
 import { rosaCommonRequiredNonEmptyTest } from './helpers';
-import type { WizardFieldMeta } from './types';
+import type { ValidationSchemaContext, WizardFieldMeta } from './types';
 
 export const upgradePolicySchema = yup
   .string()
@@ -20,7 +20,7 @@ export const upgradePolicySchema = yup
   } satisfies WizardFieldMeta);
 
 export const upgradeScheduleSchema = yup
-  .string()
+  .string<string, ValidationSchemaContext>()
   .default(YUP.CLUSTER_UPDATES_FIELDS.UPGRADE_SCHEDULE_SCHEMA.DEFAULT)
   .meta({
     id: YUP.CLUSTER_UPDATES_FIELDS.UPGRADE_SCHEDULE_SCHEMA.META.ID,
