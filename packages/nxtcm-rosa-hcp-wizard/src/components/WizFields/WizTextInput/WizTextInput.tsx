@@ -318,15 +318,16 @@ export function WizTextInput<TFieldValues extends FieldValues = FieldValues>(
     validationRevealed: stepValidationRevealed,
   };
 
-  const textInput = validateOnBlur ? (
-    <WizTextInputValidateOnBlur
-      {...boundProps}
-      setValue={formContext!.setValue}
-      trigger={formContext!.trigger}
-    />
-  ) : (
-    <WizTextInputStandard {...boundProps} />
-  );
+  const textInput =
+    validateOnBlur && formContext != null ? (
+      <WizTextInputValidateOnBlur
+        {...boundProps}
+        setValue={formContext.setValue}
+        trigger={formContext.trigger}
+      />
+    ) : (
+      <WizTextInputStandard {...boundProps} />
+    );
 
   if (apiError) {
     return (
