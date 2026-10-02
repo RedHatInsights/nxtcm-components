@@ -56,7 +56,10 @@ export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): 
   const programmaticallyResetFieldsRef = useRef<Set<WizardFormFieldName>>(new Set());
   const hasInitializedRef = useRef(false);
   const wizardDataRef = useRef(wizardData);
-  wizardDataRef.current = wizardData;
+
+  useEffect(() => {
+    wizardDataRef.current = wizardData;
+  });
 
   useEffect(() => {
     const formValues = buildFormValuesForMetaEffects(sourceFields, watchedValues, getValues);
