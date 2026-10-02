@@ -13,6 +13,9 @@ import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardS
 import type { ROSAHCPCluster } from '../../../types';
 import { parseUpdateSchedule } from '../../../utilities/helpers';
 
+const UPGRADE_SCHEDULE_DAY_ID = 'upgrade-schedule-day';
+const UPGRADE_SCHEDULE_HOUR_ID = 'upgrade-schedule-hour';
+
 const hoursOptions = Array.from(Array(24).keys());
 
 const formatHourLabel = (hour: number) => `${hour.toString().padStart(2, '0')}:00 UTC`;
@@ -92,7 +95,7 @@ export const UpgradeScheduleFields = () => {
       <Split hasGutter isWrappable>
         <SplitItem>
           <Select
-            id={FIELD_NAME.UPGRADE_SCHEDULE.DAY}
+            id={UPGRADE_SCHEDULE_DAY_ID}
             placeholder={cu.selectDayPlaceholder}
             value={selectedDay}
             onChange={onDayChange}
@@ -103,7 +106,7 @@ export const UpgradeScheduleFields = () => {
         </SplitItem>
         <SplitItem>
           <Select
-            id={FIELD_NAME.UPGRADE_SCHEDULE.HOUR}
+            id={UPGRADE_SCHEDULE_HOUR_ID}
             placeholder={cu.selectTimePlaceholder}
             value={selectedHour}
             onChange={onHourChange}
