@@ -1,0 +1,10 @@
+export const WIZ_NUMBER_INPUT_EXPLICIT_LABEL = 'Explicit number label';
+export const WIZ_NUMBER_INPUT_EXPLICIT_HELPER = 'Explicit helper text.';
+export const WIZ_NUMBER_INPUT_VALUE_STATUS_LABEL = 'nodeCount form value';
+export const WIZ_NUMBER_INPUT_YUP_META_LABEL = 'Yup meta label';
+export const WIZ_NUMBER_INPUT_YUP_META_HELPER = 'Yup meta helper text.';
+export const WIZ_NUMBER_INPUT_SUBMIT_ERROR = 'Node count must be filled in.';
+export const WIZ_NUMBER_INPUT_TOPOLOGY_POOL_STATUS_LABEL = 'topology pool spinbutton value';
+export const WIZ_NUMBER_INPUT_SLOT_STATUS_LABEL = 'slot counter value';
+export const WIZ_NUMBER_INPUT_CONTROL_ONLY_LABEL = 'Control-only shards';
+export const WIZ_NUMBER_INPUT_CONTROL_ONLY_STATUS = 'shard count status';

@@ -1,4 +1,5 @@
-import { expect, test } from '@playwright/experimental-ct-react';
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
+import { expect, test } from '@/ct-fixture';
 
 import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
@@ -12,7 +13,6 @@ import {
   mockVersionsLatestDefaultPrevious,
   rolesWithInstallerVersion412,
 } from './Details.fixtures';
-import { DetailsMount } from './Details.spec-helpers';
 
 const mockResource = <TData,>(data: TData): Resource<TData> => ({
   data,
@@ -27,33 +27,40 @@ const versionDisabledDescription = d.openShiftVersionOptionDisabledDescription;
 
 test.describe('Details (ROSA HCP)', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(<DetailsMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+    );
     await checkAccessibility({ component });
   });
 
   test('should render the Details section title', async ({ mount }) => {
-    const component = await mount(<DetailsMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+    );
     await expect(component.getByText('Cluster details', { exact: true })).toBeVisible();
   });
 
   test('should render OpenShift version select', async ({ mount }) => {
-    const component = await mount(<DetailsMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+    );
     await expect(component.getByText('OpenShift version', { exact: true })).toBeVisible();
   });
 
   test('should render with empty options', async ({ mount }) => {
     const component = await mount(
-      <DetailsMount
-        versions={{
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+      {
+        versions: {
           data: { releases: [] },
           error: null,
           isFetching: false,
           fetch: async () => {},
-        }}
-        regions={{ data: [], error: null, isFetching: false, fetch: async () => {} }}
-        awsInfrastructureAccounts={mockResource([])}
-        awsBillingAccounts={mockResource([])}
-      />
+        },
+        regions: { data: [], error: null, isFetching: false, fetch: async () => {} },
+        awsInfrastructureAccounts: mockResource([]),
+        awsBillingAccounts: mockResource([]),
+      }
     );
 
     await expect(component.getByText('Cluster details', { exact: true })).toBeVisible();
@@ -61,14 +68,18 @@ test.describe('Details (ROSA HCP)', () => {
   });
 
   test('should render the Cluster name input', async ({ mount }) => {
-    const component = await mount(<DetailsMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+    );
 
     await expect(component.getByText('Cluster name', { exact: true })).toBeVisible();
     await expect(component.getByRole('textbox', { name: 'Cluster name' })).toBeVisible();
   });
 
   test('should render the Associated AWS infrastructure account select', async ({ mount }) => {
-    const component = await mount(<DetailsMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+    );
 
     await expect(
       component.getByText('Associated AWS infrastructure account', { exact: true })
@@ -76,7 +87,9 @@ test.describe('Details (ROSA HCP)', () => {
   });
 
   test('should render the Associated AWS billing account select', async ({ mount }) => {
-    const component = await mount(<DetailsMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+    );
 
     await expect(
       component.getByText('Associated AWS billing account', { exact: true })
@@ -84,13 +97,17 @@ test.describe('Details (ROSA HCP)', () => {
   });
 
   test('should render the Region select', async ({ mount }) => {
-    const component = await mount(<DetailsMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+    );
 
     await expect(component.getByText('Region', { exact: true })).toBeVisible();
   });
 
   test('should render the Associate a new AWS account button', async ({ mount }) => {
-    const component = await mount(<DetailsMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+    );
 
     await expect(component.getByText('Associate a new AWS account')).toBeVisible();
   });
@@ -99,7 +116,9 @@ test.describe('Details (ROSA HCP)', () => {
     test('should display validation error for cluster name with invalid characters', async ({
       mount,
     }) => {
-      const component = await mount(<DetailsMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+      );
 
       const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
       await nameInput.fill('MyCluster');
@@ -113,7 +132,9 @@ test.describe('Details (ROSA HCP)', () => {
     test('should display validation error for cluster name starting with a number', async ({
       mount,
     }) => {
-      const component = await mount(<DetailsMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+      );
 
       const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
       await nameInput.fill('1cluster');
@@ -123,7 +144,9 @@ test.describe('Details (ROSA HCP)', () => {
     });
 
     test('should allow typing a cluster name', async ({ mount }) => {
-      const component = await mount(<DetailsMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+      );
 
       const nameInput = component.getByRole('textbox', { name: 'Cluster name' });
       await nameInput.fill('my-test-cluster');
@@ -134,7 +157,9 @@ test.describe('Details (ROSA HCP)', () => {
 
   test.describe('Details — associated AWS infrastructure account select', () => {
     test('should show AWS infrastructure account options in dropdown', async ({ mount, page }) => {
-      const component = await mount(<DetailsMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+      );
 
       await component
         .locator('#associated_aws_id-form-group')
@@ -153,7 +178,8 @@ test.describe('Details (ROSA HCP)', () => {
       mount,
     }) => {
       const component = await mount(
-        <DetailsMount awsInfrastructureAccounts={{ data: [], isFetching: true, error: null }} />
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        { awsInfrastructureAccounts: { data: [], isFetching: true, error: null } }
       );
 
       const awsCombo = component
@@ -167,7 +193,8 @@ test.describe('Details (ROSA HCP)', () => {
       page,
     }) => {
       const component = await mount(
-        <DetailsMount awsInfrastructureAccounts={{ data: [], isFetching: true, error: null }} />
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        { awsInfrastructureAccounts: { data: [], isFetching: true, error: null } }
       );
 
       await component
@@ -182,14 +209,15 @@ test.describe('Details (ROSA HCP)', () => {
       mount,
     }) => {
       const component = await mount(
-        <DetailsMount
-          awsInfrastructureAccounts={{
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        {
+          awsInfrastructureAccounts: {
             data: [],
             isFetching: true,
             error: null,
             fetch: async () => {},
-          }}
-        />
+          },
+        }
       );
 
       const refreshButton = component
@@ -203,7 +231,8 @@ test.describe('Details (ROSA HCP)', () => {
   test.describe('Details — AWS billing account select', () => {
     test('should show pending state for AWS billing account when loading', async ({ mount }) => {
       const component = await mount(
-        <DetailsMount awsBillingAccounts={{ data: [], isFetching: true, error: null }} />
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        { awsBillingAccounts: { data: [], isFetching: true, error: null } }
       );
 
       const billingCombo = component
@@ -217,7 +246,8 @@ test.describe('Details (ROSA HCP)', () => {
       page,
     }) => {
       const component = await mount(
-        <DetailsMount awsBillingAccounts={{ data: [], isFetching: true, error: null }} />
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        { awsBillingAccounts: { data: [], isFetching: true, error: null } }
       );
 
       await component
@@ -232,14 +262,15 @@ test.describe('Details (ROSA HCP)', () => {
       mount,
     }) => {
       const component = await mount(
-        <DetailsMount
-          awsBillingAccounts={{
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        {
+          awsBillingAccounts: {
             data: [],
             isFetching: true,
             error: null,
             fetch: async () => {},
-          }}
-        />
+          },
+        }
       );
 
       const refreshButton = component
@@ -250,7 +281,9 @@ test.describe('Details (ROSA HCP)', () => {
     });
 
     test('should render the Connect ROSA to a new AWS billing account link', async ({ mount }) => {
-      const component = await mount(<DetailsMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+      );
 
       await expect(component.getByText('Connect ROSA to a new AWS billing account')).toBeVisible();
     });
@@ -258,7 +291,9 @@ test.describe('Details (ROSA HCP)', () => {
 
   test.describe('Details — region select', () => {
     test('should show region options in dropdown', async ({ mount, page }) => {
-      const component = await mount(<DetailsMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+      );
 
       await component
         .locator('#region-form-group')
@@ -272,9 +307,8 @@ test.describe('Details (ROSA HCP)', () => {
 
     test('should show pending state for Region select when loading', async ({ mount }) => {
       const component = await mount(
-        <DetailsMount
-          regions={{ data: [], isFetching: true, error: null, fetch: async () => {} }}
-        />
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        { regions: { data: [], isFetching: true, error: null, fetch: async () => {} } }
       );
 
       const regionCombo = component
@@ -285,9 +319,8 @@ test.describe('Details (ROSA HCP)', () => {
 
     test('should show spinner in Region dropdown when loading', async ({ mount, page }) => {
       const component = await mount(
-        <DetailsMount
-          regions={{ data: [], isFetching: true, error: null, fetch: async () => {} }}
-        />
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        { regions: { data: [], isFetching: true, error: null, fetch: async () => {} } }
       );
 
       await component
@@ -302,15 +335,16 @@ test.describe('Details (ROSA HCP)', () => {
       mount,
     }) => {
       const component = await mount(
-        <DetailsMount
-          defaultValues={{ associated_aws_id: 'aws-prod-123456789012' }}
-          regions={{
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        {
+          defaultValues: { associated_aws_id: 'aws-prod-123456789012' },
+          regions: {
             data: [],
             isFetching: true,
             error: null,
             fetch: async () => {},
-          }}
-        />
+          },
+        }
       );
 
       const refreshButton = component
@@ -322,16 +356,17 @@ test.describe('Details (ROSA HCP)', () => {
 
     test('should render with empty regions', async ({ mount }) => {
       const component = await mount(
-        <DetailsMount
-          regions={{ data: [], isFetching: false, error: null, fetch: async () => {} }}
-        />
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        { regions: { data: [], isFetching: false, error: null, fetch: async () => {} } }
       );
 
       await expect(component.getByText('Region', { exact: true })).toBeVisible();
     });
 
     test('should select a region', async ({ mount, page }) => {
-      const component = await mount(<DetailsMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+      );
 
       await component
         .locator('#region-form-group')
@@ -356,15 +391,16 @@ test.describe('Details (ROSA HCP)', () => {
       });
 
       const component = await mount(
-        <DetailsMount
-          vpcList={vpcList}
-          defaultValues={{
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        {
+          vpcList: vpcList,
+          defaultValues: {
             associated_aws_id: 'aws-prod-123456789012',
             installer_role_arn: 'arn:aws:iam::123456789012:role/Installer',
             region: 'us-east-1',
             selected_vpc: rosaHcpWizardFixtures.mockVPCs[0].id,
-          }}
-        />
+          },
+        }
       );
 
       await expect.poll(() => vpcFetchCount >= 1).toBe(true);
@@ -393,7 +429,9 @@ test.describe('Details (ROSA HCP)', () => {
 
   test.describe('Details — OpenShift version select', () => {
     test('should show OpenShift version options in dropdown', async ({ mount, page }) => {
-      const component = await mount(<DetailsMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+      );
 
       await component
         .locator('#cluster_version-form-group')
@@ -406,21 +444,24 @@ test.describe('Details (ROSA HCP)', () => {
 
     test('should render with empty OpenShift versions', async ({ mount }) => {
       const component = await mount(
-        <DetailsMount
-          versions={{
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        {
+          versions: {
             data: { releases: [] },
             isFetching: false,
             error: null,
             fetch: async () => {},
-          }}
-        />
+          },
+        }
       );
 
       await expect(component.getByText('OpenShift version', { exact: true })).toBeVisible();
     });
 
     test('should select an OpenShift version', async ({ mount, page }) => {
-      const component = await mount(<DetailsMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+      );
 
       await component
         .locator('#cluster_version-form-group')
@@ -442,13 +483,14 @@ test.describe('Details (ROSA HCP)', () => {
     }) => {
       const calls: Array<{ name: string; region: string | undefined }> = [];
       const component = await mount(
-        <DetailsMount
-          checkClusterNameUniqueness={(name, region) => {
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        {
+          checkClusterNameUniqueness: (name: string, region?: string) => {
             calls.push({ name, region });
             return Promise.resolve('Cluster name already exists.');
-          }}
-          defaultValues={{ region: 'us-east-1' }}
-        />
+          },
+          defaultValues: { region: 'us-east-1' },
+        }
       );
 
       const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
@@ -467,10 +509,11 @@ test.describe('Details (ROSA HCP)', () => {
       mount,
     }) => {
       const component = await mount(
-        <DetailsMount
-          checkClusterNameUniqueness={() => Promise.resolve('Cluster name already exists.')}
-          defaultValues={{ name: 'INVALID', region: 'us-east-1' }}
-        />
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        {
+          checkClusterNameUniqueness: () => Promise.resolve('Cluster name already exists.'),
+          defaultValues: { name: 'INVALID', region: 'us-east-1' },
+        }
       );
 
       const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
@@ -489,13 +532,14 @@ test.describe('Details (ROSA HCP)', () => {
       const calls: Array<{ name: string; region: string | undefined }> = [];
 
       const component = await mount(
-        <DetailsMount
-          checkClusterNameUniqueness={(name, region) => {
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        {
+          checkClusterNameUniqueness: (name: string, region?: string) => {
             calls.push({ name, region });
             return Promise.resolve(null);
-          }}
-          defaultValues={{ region: 'us-east-1' }}
-        />
+          },
+          defaultValues: { region: 'us-east-1' },
+        }
       );
 
       const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
@@ -509,13 +553,14 @@ test.describe('Details (ROSA HCP)', () => {
       const calls: Array<{ name: string; region: string | undefined }> = [];
 
       const component = await mount(
-        <DetailsMount
-          checkClusterNameUniqueness={(name, region) => {
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        {
+          checkClusterNameUniqueness: (name: string, region?: string) => {
             calls.push({ name, region });
             return Promise.resolve(null);
-          }}
-          defaultValues={{ region: 'us-east-1' }}
-        />
+          },
+          defaultValues: { region: 'us-east-1' },
+        }
       );
 
       const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
@@ -539,11 +584,12 @@ test.describe('Details (ROSA HCP)', () => {
       const calls: string[] = [];
 
       const component = await mount(
-        <DetailsMount
-          clusterNameUniquenessError="Cluster name already exists."
-          onClusterNameUniquenessCheck={(name) => calls.push(name)}
-          defaultValues={{ region: 'us-east-1' }}
-        />
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        {
+          clusterNameUniquenessError: 'Cluster name already exists.',
+          onClusterNameUniquenessCheck: (name: string) => calls.push(name),
+          defaultValues: { region: 'us-east-1' },
+        }
       );
 
       const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
@@ -567,10 +613,11 @@ test.describe('Details (ROSA HCP)', () => {
       page,
     }) => {
       const component = await mount(
-        <DetailsMount
-          clusterNameUniquenessError="Cluster name already exists."
-          defaultValues={{ name: 'mycluster', region: 'us-east-1' }}
-        />
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        {
+          clusterNameUniquenessError: 'Cluster name already exists.',
+          defaultValues: { name: 'mycluster', region: 'us-east-1' },
+        }
       );
 
       const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
@@ -609,13 +656,14 @@ test.describe('Details (ROSA HCP)', () => {
       const calls: Array<{ name: string; region: string | undefined }> = [];
 
       const component = await mount(
-        <DetailsMount
-          checkClusterNameUniqueness={(name, region) => {
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        {
+          checkClusterNameUniqueness: (name: string, region?: string) => {
             calls.push({ name, region });
             return Promise.resolve(null);
-          }}
-          defaultValues={{ name: 'mycluster', region: 'us-east-1' }}
-        />
+          },
+          defaultValues: { name: 'mycluster', region: 'us-east-1' },
+        }
       );
 
       await component
@@ -641,12 +689,13 @@ test.describe('Details (ROSA HCP)', () => {
       const calls: Array<{ name: string; region: string | undefined }> = [];
 
       const component = await mount(
-        <DetailsMount
-          checkClusterNameUniqueness={(name, region) => {
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        {
+          checkClusterNameUniqueness: (name: string, region?: string) => {
             calls.push({ name, region });
             return Promise.resolve(null);
-          }}
-        />
+          },
+        }
       );
 
       const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
@@ -663,13 +712,14 @@ test.describe('Details (ROSA HCP)', () => {
       const calls: Array<{ name: string; region: string | undefined }> = [];
 
       const component = await mount(
-        <DetailsMount
-          checkClusterNameUniqueness={(name, region) => {
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        {
+          checkClusterNameUniqueness: (name: string, region?: string) => {
             calls.push({ name, region });
             return Promise.resolve(null);
-          }}
-          defaultValues={{ name: 'mycluster', region: 'us-east-1' }}
-        />
+          },
+          defaultValues: { name: 'mycluster', region: 'us-east-1' },
+        }
       );
 
       const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
@@ -694,12 +744,13 @@ test.describe('Details (ROSA HCP)', () => {
       const calls: Array<{ name: string; region?: string }> = [];
 
       const component = await mount(
-        <DetailsMount
-          checkClusterNameUniqueness={(name, region) => {
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        {
+          checkClusterNameUniqueness: (name: string, region?: string) => {
             calls.push({ name, region });
             return Promise.resolve(null);
-          }}
-        />
+          },
+        }
       );
 
       await component
@@ -719,7 +770,10 @@ test.describe('Details (ROSA HCP)', () => {
     test('should NOT call checkClusterNameUniqueness when callback is not provided', async ({
       mount,
     }) => {
-      const component = await mount(<DetailsMount defaultValues={{ region: 'us-east-1' }} />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+        { defaultValues: { region: 'us-east-1' } }
+      );
 
       const nameInput = component.getByRole('textbox', { name: /Cluster name/ });
       await nameInput.fill('valid-cluster');
@@ -735,14 +789,15 @@ test.describe('Details (ROSA HCP)', () => {
     page,
   }) => {
     const component = await mount(
-      <DetailsMount
-        versions={{
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+      {
+        versions: {
           data: mockVersionsLatestDefaultPrevious,
           isFetching: false,
           error: null,
           fetch: async () => {},
-        }}
-      />
+        },
+      }
     );
 
     await component
@@ -772,14 +827,15 @@ test.describe('Details (ROSA HCP)', () => {
     page,
   }) => {
     const component = await mount(
-      <DetailsMount
-        versions={{
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+      {
+        versions: {
           data: mockVersionsDefaultEqualsLatest,
           isFetching: false,
           error: null,
           fetch: async () => {},
-        }}
-      />
+        },
+      }
     );
 
     await component
@@ -820,16 +876,17 @@ test.describe('Details (ROSA HCP)', () => {
     };
 
     const component = await mount(
-      <DetailsMount
-        roles={rolesResource}
-        defaultValues={{ installer_role_arn: INSTALLER_ARN_412 }}
-        versions={{
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+      {
+        roles: rolesResource,
+        defaultValues: { installer_role_arn: INSTALLER_ARN_412 },
+        versions: {
           data: mockVersionsLatestDefaultPrevious,
           isFetching: false,
           error: null,
           fetch: async () => {},
-        }}
-      />
+        },
+      }
     );
 
     await component
@@ -857,16 +914,17 @@ test.describe('Details (ROSA HCP)', () => {
     };
 
     const component = await mount(
-      <DetailsMount
-        roles={rolesResource}
-        defaultValues={{ installer_role_arn: INSTALLER_ARN_412 }}
-        versions={{
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount',
+      {
+        roles: rolesResource,
+        defaultValues: { installer_role_arn: INSTALLER_ARN_412 },
+        versions: {
           data: mockVersionsLatestDefaultPrevious,
           isFetching: false,
           error: null,
           fetch: async () => {},
-        }}
-      />
+        },
+      }
     );
 
     await component

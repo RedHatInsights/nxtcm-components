@@ -59,7 +59,7 @@ ComponentName/
   ComponentName.tsx              # the component
   ComponentName.stories.tsx      # storybook story (CSF3)
   ComponentName.spec.tsx         # playwright CT test
-  ComponentName.spec-helpers.tsx # test setup, mock data
+  ComponentName.story.tsx       # gallery story, providers, mock data
   ComponentName.test.ts          # jest unit test (if logic warrants it)
   index.ts                       # barrel export
 ```
@@ -125,7 +125,7 @@ npx playwright test -c playwright-ct.config.ts --ui
 ### Test guidelines
 
 - use **role-based selectors** (`getByRole`, `getByLabel`, `getByText`) — never CSS class selectors
-- put mock data and provider wrappers in `*.spec-helpers.tsx`, not inline
+- put mock data and provider wrappers in named `*.story.tsx` gallery exports, not inline
 - test behavior, not implementation details
 - cover: happy path, loading state, error state, empty state, user interactions
 

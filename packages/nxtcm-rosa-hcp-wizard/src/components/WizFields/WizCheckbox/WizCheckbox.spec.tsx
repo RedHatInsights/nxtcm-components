@@ -1,16 +1,6 @@
-import React from 'react';
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
+import { expect, test } from '@/ct-fixture';
 
-import { expect, test } from '@playwright/experimental-ct-react';
-
-// CT transform only turns an import into importRefs if every specifier is JSX; keep harness imports separate from consts.
-import {
-  WizCheckboxExplicitControlOnlyHarness,
-  WizCheckboxExplicitHarness,
-  WizCheckboxExplicitPropsOverrideMetaHarness,
-  WizCheckboxNestedFallbackHarness,
-  WizCheckboxSubmitValidationHarness,
-  WizCheckboxYupMetaHarness,
-} from './WizCheckbox.spec-helpers';
 import {
   WIZ_CHECKBOX_EXPLICIT_HELPER,
   WIZ_CHECKBOX_EXPLICIT_LABEL,
@@ -27,18 +17,22 @@ import {
   WIZ_CHECKBOX_YUP_META_HELPER,
   WIZ_CHECKBOX_YUP_META_LABEL,
   WIZ_CHECKBOX_YUP_META_TITLE,
-} from './WizCheckbox.spec-helpers';
+} from './WizCheckbox.story-data';
 
 test.describe('WizCheckbox', () => {
   test('renders explicit title, label, and helper text', async ({ mount }) => {
-    const mounted = await mount(<WizCheckboxExplicitHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizCheckbox/WizCheckbox/WizCheckboxExplicitHarness'
+    );
     await expect(mounted.getByRole('group', { name: WIZ_CHECKBOX_EXPLICIT_TITLE })).toBeVisible();
     await expect(mounted.getByText(WIZ_CHECKBOX_EXPLICIT_LABEL, { exact: true })).toBeVisible();
     await expect(mounted.getByText(WIZ_CHECKBOX_EXPLICIT_HELPER, { exact: true })).toBeVisible();
   });
 
   test('writes the boolean value to react-hook-form when toggled', async ({ mount }) => {
-    const mounted = await mount(<WizCheckboxExplicitHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizCheckbox/WizCheckbox/WizCheckboxExplicitHarness'
+    );
     const status = mounted.getByRole('status', { name: WIZ_CHECKBOX_VALUE_STATUS_LABEL });
     await expect(status).toHaveText('false');
 
@@ -54,14 +48,18 @@ test.describe('WizCheckbox', () => {
   test('derives title, label, and helper text from Yup schema meta when props are omitted', async ({
     mount,
   }) => {
-    const mounted = await mount(<WizCheckboxYupMetaHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizCheckbox/WizCheckbox/WizCheckboxYupMetaHarness'
+    );
     await expect(mounted.getByRole('group', { name: WIZ_CHECKBOX_YUP_META_TITLE })).toBeVisible();
     await expect(mounted.getByText(WIZ_CHECKBOX_YUP_META_LABEL, { exact: true })).toBeVisible();
     await expect(mounted.getByText(WIZ_CHECKBOX_YUP_META_HELPER, { exact: true })).toBeVisible();
   });
 
   test('shows Yup validation after submit when the checkbox stays unchecked', async ({ mount }) => {
-    const mounted = await mount(<WizCheckboxSubmitValidationHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizCheckbox/WizCheckbox/WizCheckboxSubmitValidationHarness'
+    );
     await mounted.getByRole('button', { name: 'Submit' }).click();
     await expect(mounted.getByText(WIZ_CHECKBOX_SUBMIT_ERROR, { exact: true })).toBeVisible();
   });
@@ -69,7 +67,9 @@ test.describe('WizCheckbox', () => {
   test('clears Yup validation after the user checks the box and submits again', async ({
     mount,
   }) => {
-    const mounted = await mount(<WizCheckboxSubmitValidationHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizCheckbox/WizCheckbox/WizCheckboxSubmitValidationHarness'
+    );
     await mounted.getByRole('button', { name: 'Submit' }).click();
     await expect(mounted.getByText(WIZ_CHECKBOX_SUBMIT_ERROR, { exact: true })).toBeVisible();
 
@@ -81,14 +81,18 @@ test.describe('WizCheckbox', () => {
   test('uses nested path segment fallback for the checkbox accessible name without Yup', async ({
     mount,
   }) => {
-    const mounted = await mount(<WizCheckboxNestedFallbackHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizCheckbox/WizCheckbox/WizCheckboxNestedFallbackHarness'
+    );
     const box = mounted.getByRole('checkbox', { name: /digest/i });
     await box.click();
     await expect(box).toBeChecked();
   });
 
   test('prefers explicit title, label, and helper props over Yup .meta()', async ({ mount }) => {
-    const mounted = await mount(<WizCheckboxExplicitPropsOverrideMetaHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizCheckbox/WizCheckbox/WizCheckboxExplicitPropsOverrideMetaHarness'
+    );
     await expect(
       mounted.getByRole('group', { name: WIZ_CHECKBOX_OVERRIDE_TITLE_PROPS })
     ).toBeVisible();
@@ -104,7 +108,9 @@ test.describe('WizCheckbox', () => {
   });
 
   test('binds through the control prop without a FormProvider wrapper', async ({ mount }) => {
-    const mounted = await mount(<WizCheckboxExplicitControlOnlyHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizCheckbox/WizCheckbox/WizCheckboxExplicitControlOnlyHarness'
+    );
     const status = mounted.getByRole('status', {
       name: WIZ_CHECKBOX_SOLO_CONTROL_STATUS,
     });

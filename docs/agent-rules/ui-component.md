@@ -3,6 +3,7 @@
 Rules for UI components patterns used in nxtcm-components. Read this before working on any component file.
 
 Always read the related guidelines before proceeding:
+
 - [TypeScript guidelines](typescript.md) - patterns and rules specifically for TS
 
 ## file structure (mandatory)
@@ -66,7 +67,7 @@ export const MyComponent = ({ title, onSave }: MyComponentProps): React.ReactEle
 ## story + CT
 
 - story conventions, public vs internal visibility, and title guidance: `docs/agent-rules/storybook.md`
-- CT conventions, selectors, and spec-helpers: `docs/agent-rules/playwright-ct.md`
+- CT conventions, selectors, and gallery stories: `docs/agent-rules/playwright-ct.md`
 
 ## exports
 

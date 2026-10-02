@@ -1,19 +1,14 @@
 {
-    "extends": "./tsconfig.json",
-    "include": [
-        "src/**/*",
-        ".storybook/**/*",
-        "packages/**/*",
-        "test-helpers.ts",
-        "vite-env.d.ts",
-        "types/**/*"
-    ],
-    "exclude": [
-        "node_modules",
-        "dist",
-        "build",
-        "**/lib",
-        "coverage"
-    ]
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/**/*",
+    ".storybook/**/*",
+    "packages/**/*",
+    "ct-fixture.ts",
+    "playwright-ct.config.ts",
+    "test-helpers.ts",
+    "vite-env.d.ts",
+    "types/**/*"
+  ],
+  "exclude": ["node_modules", "dist", "build", "**/lib", "coverage"]
 }
-

@@ -1,7 +1,6 @@
-import { expect, test } from '@playwright/experimental-ct-react';
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
+import { expect, test } from '@/ct-fixture';
 
-// CT transform only turns an import into importRefs if every specifier is JSX; keep harness imports separate from consts.
-import { SecretHarness, TextInputHarness } from './TextInput.spec-helpers';
 import {
   API_TOKEN_FIELD_LABEL,
   CLUSTER_NAME_FIELD_LABEL,
@@ -12,11 +11,13 @@ import {
   SAMPLE_SECRET_VALUE,
   SECRET_PLACEHOLDER_TEXT,
   SHOW_PASSWORD_BUTTON_NAME,
-} from './TextInput.spec-helpers';
+} from './TextInput.story-data';
 
 test.describe('TextInput', () => {
   test('renders label, placeholder, and helper text', async ({ mount }) => {
-    const mounted = await mount(<TextInputHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/Fields/TextInput/TextInput/TextInputHarness'
+    );
     const clusterNameInput = mounted.getByRole('textbox', { name: CLUSTER_NAME_FIELD_LABEL });
     await expect(clusterNameInput).toBeVisible();
     await expect(clusterNameInput).toHaveAttribute('placeholder', CLUSTER_NAME_PLACEHOLDER_TEXT);
@@ -24,14 +25,18 @@ test.describe('TextInput', () => {
   });
 
   test('updates value when the user types', async ({ mount }) => {
-    const mounted = await mount(<TextInputHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/Fields/TextInput/TextInput/TextInputHarness'
+    );
     const input = mounted.getByRole('textbox', { name: CLUSTER_NAME_FIELD_LABEL });
     await input.fill(SAMPLE_CLUSTER_NAME_VALUE);
     await expect(input).toHaveValue(SAMPLE_CLUSTER_NAME_VALUE);
   });
 
   test('reveals and hides secret value when the control button is used', async ({ mount }) => {
-    const mounted = await mount(<SecretHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/Fields/TextInput/TextInput/SecretHarness'
+    );
     const input = mounted.getByRole('textbox', { name: API_TOKEN_FIELD_LABEL });
     await expect(input).toHaveAttribute('type', 'password');
     await mounted.getByRole('button', { name: SHOW_PASSWORD_BUTTON_NAME }).click();
@@ -44,7 +49,9 @@ test.describe('TextInput', () => {
     mount,
     page,
   }) => {
-    const mounted = await mount(<SecretHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/Fields/TextInput/TextInput/SecretHarness'
+    );
     const input = mounted.getByRole('textbox', { name: API_TOKEN_FIELD_LABEL });
 
     // While masked, tooltip must show placeholder — never the real secret

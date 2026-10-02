@@ -174,6 +174,10 @@ const internalMeta: Meta<typeof TextInput> = {
 };
 ```
 
+- CT specs per component, using gallery stories for form context wrappers
+- gallery stories wrap components in `FormProvider` with default values
+- test: rendering, validation messages, field interactions, cascade behavior
+
 ## domain terms
 
 - ROSA = Red Hat OpenShift Service on AWS

@@ -1,3 +1,8 @@
+---
+name: patternfly
+description: Build or modify PatternFly React interfaces using documented components, design guidance, accessibility behavior, and repository conventions.
+---
+
 # PatternFly application development
 
 Use this guide when building or modifying UI that follows [PatternFly](https://www.patternfly.org/). PatternFly is the source of truth for components, **design guidelines**, layout, design tokens, and accessibility.
@@ -31,7 +36,9 @@ Before implementing PatternFly UI, check whether **patternfly-mcp** is enabled.
 
 ```tsx
 test('should pass accessibility tests', async ({ mount }) => {
-  const component = await mount(<MyCustomComponent />);
+  const component = await mount(
+    'nxtcm-dashboard/MyCustomComponent/MyCustomComponent/MyCustomComponentStory'
+  );
   await checkAccessibility({ component });
 });
 ```

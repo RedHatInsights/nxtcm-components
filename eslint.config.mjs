@@ -21,6 +21,8 @@ export default [
       '**/coverage/',
       '*.config.js',
       '*.config.ts',
+      '!playwright-ct.config.ts',
+      '!playwright/vite.config.ts',
     ],
   },
 
@@ -134,6 +136,14 @@ export default [
     },
   },
 
+  // Playwright gallery stories use named function exports, not Storybook CSF defaults.
+  {
+    files: ['**/*.story.tsx', '**/*.story.ts'],
+    rules: {
+      'storybook/default-exports': 'off',
+    },
+  },
+
   // Test files override
   {
     files: ['**/*.test.tsx', '**/*.test.ts'],
@@ -148,6 +158,19 @@ export default [
     files: ['**/*.spec.tsx'],
     rules: {
       'import/no-duplicates': 'off',
+    },
+  },
+
+  // Root Playwright infrastructure runs in Node and is part of the lint/type-check surface.
+  {
+    files: ['ct-fixture.ts', 'playwright-ct.config.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
     },
   },
 

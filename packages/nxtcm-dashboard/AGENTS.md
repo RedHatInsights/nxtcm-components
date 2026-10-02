@@ -43,7 +43,7 @@ consuming apps (uhc-portal, console) call their own APIs and map responses into 
 
 ### adding a widget
 
-1. create `src/WidgetName/` with component, `index.ts`, CT spec, spec-helpers, story, and optional module SCSS
+1. create `src/WidgetName/` with component, `index.ts`, CT spec, story, and optional module SCSS
 2. export from `src/index.ts`
 3. keep props as a view-model (data / loading / error), so no fetch inside the widget
 4. cover loading -> error -> empty -> populated in CT and Storybook
@@ -77,7 +77,7 @@ use PatternFly chart color tokens, not hardcoded colors. charts must work in bot
 ## testing
 
 - CT specs live next to each widget: `WidgetName.spec.tsx`
-- spec-helpers provide mock props for each state (loading, error, empty, with-data)
+- gallery stories provide mock props for each state (loading, error, empty, with-data)
 - test all four states: loading (`isLoading: true`) → error → empty → populated
 
 ## storybook

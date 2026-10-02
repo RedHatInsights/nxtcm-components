@@ -7,7 +7,7 @@
  * mutant's bundle cannot be reused (the main cause of false "survived" results).
  */
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, rmSync } from 'node:fs';
+import { mkdirSync, rmSync } from 'node:fs';
 import path from 'node:path';
 
 const mutantId = process.env.__STRYKER_ACTIVE_MUTANT__ ?? 'dry-run';
@@ -54,24 +54,19 @@ if (process.env.STRYKER_CT_DEBUG === '1') {
   );
 }
 
-const playwrightBin = path.join(workingDir, 'node_modules', '.bin', 'playwright');
-const playwrightExecutable = existsSync(playwrightBin) ? playwrightBin : 'npx';
+const nodeExecutable = process.execPath;
+const playwrightCli = path.join(workingDir, 'node_modules', '@playwright', 'test', 'cli.js');
+const playwrightArgs = [
+  playwrightCli,
+  'test',
+  '-c',
+  'playwright-ct.config.ts',
+  '--reporter=list',
+  '--workers=1',
+  ...specs,
+];
 
-/** @type {string[]} */
-const playwrightArgs =
-  playwrightExecutable === playwrightBin
-    ? ['test', '-c', 'playwright-ct.config.ts', '--reporter=list', '--workers=1', ...specs]
-    : [
-        'playwright',
-        'test',
-        '-c',
-        'playwright-ct.config.ts',
-        '--reporter=list',
-        '--workers=1',
-        ...specs,
-      ];
-
-const result = spawnSync(playwrightExecutable, playwrightArgs, {
+const result = spawnSync(nodeExecutable, playwrightArgs, {
   cwd: workingDir,
   stdio: 'inherit',
   env: {

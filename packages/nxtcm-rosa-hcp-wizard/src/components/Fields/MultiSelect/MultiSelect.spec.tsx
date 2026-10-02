@@ -1,17 +1,11 @@
-import { expect, test } from '@playwright/experimental-ct-react';
-
-import {
-  MultiBadgeHarness,
-  MultiGroupedHarness,
-  MultiLegacyToggleHarness,
-  MultiLoadingHarness,
-  MultiPlainHarness,
-  MultiRefreshHarness,
-} from './MultiSelect.spec-helpers';
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
+import { expect, test } from '@/ct-fixture';
 
 test.describe('MultiSelect', () => {
   test('toggles multiple options and updates value', async ({ mount, page }) => {
-    await mount(<MultiPlainHarness />);
+    await mount(
+      'nxtcm-rosa-hcp-wizard/components/Fields/MultiSelect/MultiSelect/MultiPlainHarness'
+    );
     await page.getByRole('button', { name: /select the zones/i }).click();
     const listbox = page.locator('#ct-multi-plain-listbox');
     await expect(listbox).toBeVisible();
@@ -23,13 +17,17 @@ test.describe('MultiSelect', () => {
   });
 
   test('invokes onRefresh when the refresh control is pressed', async ({ mount, page }) => {
-    await mount(<MultiRefreshHarness />);
+    await mount(
+      'nxtcm-rosa-hcp-wizard/components/Fields/MultiSelect/MultiSelect/MultiRefreshHarness'
+    );
     await page.getByRole('button', { name: 'Refresh' }).click();
     await expect(page.getByTestId('multi-refresh-count')).toHaveText('1');
   });
 
   test('renders grouped options and records selections', async ({ mount, page }) => {
-    await mount(<MultiGroupedHarness />);
+    await mount(
+      'nxtcm-rosa-hcp-wizard/components/Fields/MultiSelect/MultiSelect/MultiGroupedHarness'
+    );
     await page.getByRole('button', { name: /select the grouped zones/i }).click();
     const listbox = page.locator('#ct-multi-grouped-listbox');
     await expect(listbox).toBeVisible();
@@ -39,7 +37,9 @@ test.describe('MultiSelect', () => {
   });
 
   test('shows a loading row in the menu when isLoading is true', async ({ mount, page }) => {
-    await mount(<MultiLoadingHarness />);
+    await mount(
+      'nxtcm-rosa-hcp-wizard/components/Fields/MultiSelect/MultiSelect/MultiLoadingHarness'
+    );
     await page.getByRole('button', { name: /^loading/i }).click();
     const listbox = page.locator('#ct-multi-loading-listbox');
     await expect(listbox).toBeVisible();
@@ -50,7 +50,9 @@ test.describe('MultiSelect', () => {
     mount,
     page,
   }) => {
-    await mount(<MultiBadgeHarness />);
+    await mount(
+      'nxtcm-rosa-hcp-wizard/components/Fields/MultiSelect/MultiSelect/MultiBadgeHarness'
+    );
     const toggle = page.getByRole('button', { name: /select the regions/i });
     await toggle.click();
     const listbox = page.locator('#ct-multi-badge-listbox');
@@ -61,7 +63,9 @@ test.describe('MultiSelect', () => {
   });
 
   test('uses legacy toggle labels when checkboxMenuToggle is false', async ({ mount, page }) => {
-    await mount(<MultiLegacyToggleHarness />);
+    await mount(
+      'nxtcm-rosa-hcp-wizard/components/Fields/MultiSelect/MultiSelect/MultiLegacyToggleHarness'
+    );
     await page.getByRole('button', { name: /select the legacy toggle/i }).click();
     const listbox = page.locator('#ct-multi-legacy-listbox');
     await expect(listbox).toBeVisible();
