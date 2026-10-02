@@ -93,7 +93,7 @@ export const MachinePools = (props: MachinePoolsProps) => {
     : undefined;
 
   return (
-    <Section label={mp.sectionLabel} id="machine-pools-section" description={mp.intro}>
+    <Section label={mp.sectionLabel} description={mp.intro}>
       <FieldWrapper size="md">
         <WizSelect<ROSAHCPCluster>
           isFill
