@@ -55,7 +55,7 @@ test.describe('TextInput', () => {
 
     // Move away to dismiss tooltip
     await page.mouse.move(0, 0);
-    await expect(tooltip).not.toBeVisible();
+    await expect(tooltip).toBeHidden();
 
     // Reveal secret, hover again — tooltip should now show the actual value
     await mounted.getByRole('button', { name: SHOW_PASSWORD_BUTTON_NAME }).click();

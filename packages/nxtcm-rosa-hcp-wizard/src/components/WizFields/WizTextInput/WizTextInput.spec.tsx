@@ -80,7 +80,7 @@ test.describe('WizTextInput', () => {
     await mounted.getByRole('textbox', { name: /notes \(submit demo\)/i }).fill('Something useful');
 
     await mounted.getByRole('button', { name: 'Submit' }).click();
-    await expect(mounted.getByText(WIZ_TEXT_INPUT_SUBMIT_ERROR, { exact: true })).not.toBeVisible();
+    await expect(mounted.getByText(WIZ_TEXT_INPUT_SUBMIT_ERROR, { exact: true })).toBeHidden();
   });
 
   test('uses the last segment of a nested path as the field name when no label or Yup schema', async ({
