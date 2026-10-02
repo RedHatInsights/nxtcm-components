@@ -39,6 +39,7 @@ export function WizTextInputExplicitHarness() {
           id="wiz-text-input-ct-explicit"
           label={WIZ_TEXT_INPUT_EXPLICIT_LABEL}
           helperText={WIZ_TEXT_INPUT_EXPLICIT_HELPER}
+          parseValue={(value: string): string => value}
         />
         <WizCtWatchStatus
           control={methods.control}
@@ -69,7 +70,11 @@ export function WizTextInputYupMetaHarness() {
   return withRosaCt(
     <FormProvider {...methods}>
       <Form>
-        <WizTextInput<YupMetaFormValues> name="summary" schema={yupMetaSchema} />
+        <WizTextInput<YupMetaFormValues>
+          name="summary"
+          schema={yupMetaSchema}
+          parseValue={(value: string): string => value}
+        />
       </Form>
     </FormProvider>
   );
@@ -95,6 +100,7 @@ export function WizTextInputSubmitValidationHarness() {
           name="notes"
           schema={submitValidationSchema}
           label={WIZ_TEXT_INPUT_SUBMIT_DEMO_LABEL}
+          parseValue={(value: string): string => value}
         />
         <Button type="submit">Submit</Button>
       </Form>
@@ -117,7 +123,10 @@ export function WizTextInputNestedFallbackHarness() {
   return withRosaCt(
     <FormProvider {...methods}>
       <Form>
-        <WizTextInput<NestedGatewayFormValues> name="gateway.host" />
+        <WizTextInput<NestedGatewayFormValues>
+          name="gateway.host"
+          parseValue={(value: string): string => value}
+        />
       </Form>
     </FormProvider>
   );
@@ -151,6 +160,7 @@ export function WizTextInputExplicitPropsOverrideMetaHarness() {
           schema={propsOverrideMetaSchema}
           label={WIZ_TEXT_INPUT_OVERRIDE_BEATS_META_LABEL}
           helperText={WIZ_TEXT_INPUT_OVERRIDE_BEATS_META_HELPER}
+          parseValue={(value: string): string => value}
         />
       </Form>
     </FormProvider>
@@ -172,7 +182,11 @@ export function WizTextInputNumericMetaLabelHarness() {
   return withRosaCt(
     <FormProvider {...methods}>
       <Form>
-        <WizTextInput<NumericLabelFormValues> name="yearCode" schema={numericLabelSchema} />
+        <WizTextInput<NumericLabelFormValues>
+          name="yearCode"
+          schema={numericLabelSchema}
+          parseValue={(value: string): string => value}
+        />
       </Form>
     </FormProvider>
   );
@@ -202,6 +216,7 @@ export function WizTextInputBlurValidationHarness() {
           schema={blurAliasSchema}
           label={WIZ_TEXT_INPUT_ALIAS_BLUR_LABEL}
           validateOnBlur
+          parseValue={(value: string): string => value}
         />
       </Form>
     </FormProvider>
@@ -232,6 +247,7 @@ export function WizTextInputExplicitIsRequiredHarness() {
           schema={optionalTagSchema}
           label={WIZ_TEXT_INPUT_OPTIONAL_SCHEMA_REQUIRED_UI_LABEL}
           isRequired
+          parseValue={(value: string): string => value}
         />
       </Form>
     </FormProvider>
@@ -254,6 +270,7 @@ export function WizTextInputExplicitControlOnlyHarness() {
         control={methods.control}
         name="remote"
         label={WIZ_TEXT_INPUT_REMOTE_ONLY_LABEL}
+        parseValue={(value: string): string => value}
       />
       <WizCtWatchStatus
         control={methods.control}

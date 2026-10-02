@@ -157,6 +157,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
                   learnMoreLink={n.cidrFieldLearnMoreLink}
                 />
               }
+              parseValue={(value: string): string => value}
             />
           </FieldWrapper>
           <FieldWrapper size="lg">
@@ -171,6 +172,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
                   learnMoreLink={n.cidrFieldLearnMoreLink}
                 />
               }
+              parseValue={(value: string): string => value}
             />
           </FieldWrapper>
           <FieldWrapper size="lg">
@@ -185,6 +187,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
                   learnMoreLink={n.cidrFieldLearnMoreLink}
                 />
               }
+              parseValue={(value: string): string => value}
             />
           </FieldWrapper>
           <FieldWrapper size="lg">
@@ -199,6 +202,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
                   learnMoreLink={n.cidrFieldLearnMoreLink}
                 />
               }
+              parseValue={(value: string): string => value}
             />
           </FieldWrapper>
         </NestedFields>

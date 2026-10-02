@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useWizardContext } from '@patternfly/react-core/dist/dynamic/components/Wizard';
-import { type FieldPath, useFormContext, useFormState } from 'react-hook-form';
+import { useFormContext, useFormState } from 'react-hook-form';
 
 import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
 import { useRosaHcpWizardReviewSections } from '../Steps/Review/ROSAHCPWizardReviewSections';
@@ -30,9 +30,8 @@ export function useRosaHcpWizardNavStatusSync(
 
   const activeStepSection = reviewSections.find((section) => section.id === activeStepId);
   const isActiveStepValidating =
-    activeStepSection?.fieldPaths.some(
-      (path) => getFieldState(path as FieldPath<Partial<ROSAHCPCluster>>, formState).isValidating
-    ) ?? false;
+    activeStepSection?.fieldPaths.some((path) => getFieldState(path, formState).isValidating) ??
+    false;
   const isActiveStepAsyncValidating = asyncValidatingStepIds.has(activeStepId);
 
   const orderedStepIds = useMemo(
@@ -45,8 +44,7 @@ export function useRosaHcpWizardNavStatusSync(
       buildRosaHcpWizardNavStepDisabledByValidation({
         orderedStepIds,
         sections: reviewSections,
-        getFieldState: (path, state) =>
-          getFieldState(path as FieldPath<Partial<ROSAHCPCluster>>, state ?? formState),
+        getFieldState: (path, state) => getFieldState(path, state ?? formState),
         validationAttemptedStepIds,
         activeStepId,
         asyncValidatingStepIds,

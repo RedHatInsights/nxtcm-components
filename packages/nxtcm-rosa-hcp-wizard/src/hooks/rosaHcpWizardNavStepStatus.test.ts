@@ -1,10 +1,11 @@
-import type { FieldValues, UseFormGetFieldState } from 'react-hook-form';
+import type { UseFormGetFieldState } from 'react-hook-form';
 
 import { STEP_IDS } from '../constants';
 import {
   buildRosaHcpWizardReviewSections,
   type RosaHcpWizardReviewSection,
 } from '../Steps/Review/rosaHcpWizardReviewSections.data';
+import type { WizardFieldPath, WizardFormValues } from '../types';
 import {
   buildOrderedWizardNavStepIds,
   buildRosaHcpWizardNavStepDisabledByValidation,
@@ -32,15 +33,15 @@ const allReviewSections = buildRosaHcpWizardReviewSections(reviewStepLabels);
 const visibleStepIds = buildVisibleWizardStepIds(allReviewSections, false);
 
 const mockGetFieldState = (
-  impl: (path: string) => { invalid: boolean; isTouched: boolean; isValidating?: boolean }
-): UseFormGetFieldState<FieldValues> =>
-  jest.fn((path: string) => ({
+  impl: (path: WizardFieldPath) => { invalid: boolean; isTouched: boolean; isValidating?: boolean }
+): UseFormGetFieldState<WizardFormValues> =>
+  jest.fn((path: WizardFieldPath) => ({
     invalid: impl(path).invalid,
     isTouched: impl(path).isTouched,
     isDirty: false,
     isValidating: impl(path).isValidating ?? false,
     error: undefined,
-  })) as UseFormGetFieldState<FieldValues>;
+  }));
 
 const sections: RosaHcpWizardReviewSection[] = [
   { id: STEP_IDS.DETAILS, label: 'Details', fieldPaths: ['name'] },

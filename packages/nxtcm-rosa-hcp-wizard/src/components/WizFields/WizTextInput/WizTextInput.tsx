@@ -66,9 +66,18 @@ type WizTextInputSpreadProps = Omit<
     >
   >;
 
+type WizTextInputValueBinding<TFieldValues extends FieldValues> = {
+  [TName in FieldPath<TFieldValues>]: {
+    name: TName;
+    /** Converts input text to the named field's value type. */
+    parseValue: (text: string) => FieldPathValue<TFieldValues, TName>;
+  };
+}[FieldPath<TFieldValues>];
+
 export type WizTextInputProps<TFieldValues extends FieldValues = FieldValues> =
   WizTextInputSpreadProps &
-    WizRhfBoundFieldProps<TFieldValues> & {
+    WizRhfBoundFieldProps<TFieldValues> &
+    WizTextInputValueBinding<TFieldValues> & {
       /**
        * Optional API/load failure content shown in `FieldWithAPIErrorAlert` when set.
        */
@@ -97,14 +106,9 @@ type WizTextInputResolvedPresentation = {
 };
 
 type WizTextInputBoundFieldProps<TFieldValues extends FieldValues> = {
-  rest: Omit<
-    WizTextInputProps<TFieldValues>,
-    | keyof WizRhfBoundFieldProps<TFieldValues>
-    | 'validateOnBlur'
-    | 'onBlur'
-    | 'supplementalErrorMessage'
-  >;
+  rest: WizTextInputSpreadProps;
   name: FieldPath<TFieldValues>;
+  parseValue: (text: string) => FieldPathValue<TFieldValues, FieldPath<TFieldValues>>;
   requiredProp: boolean | undefined;
   presentation: WizTextInputResolvedPresentation;
   controller: UseControllerReturn<TFieldValues, FieldPath<TFieldValues>>;
@@ -131,17 +135,17 @@ const EMPTY_SUBSCRIBED_FIELD_STATE = {
   isTouched: false,
   isValidating: false,
   error: undefined,
-} as ReturnType<UseFormGetFieldState<FieldValues>>;
+} satisfies ReturnType<UseFormGetFieldState<FieldValues>>;
 
 async function handleWizTextInputValidateOnBlur<TFieldValues extends FieldValues>(
   event: FocusEvent<HTMLInputElement>,
   name: FieldPath<TFieldValues>,
   setValue: UseFormSetValue<TFieldValues>,
   trigger: UseFormTrigger<TFieldValues>,
+  parseValue: (text: string) => FieldPathValue<TFieldValues, FieldPath<TFieldValues>>,
   onBlurProp?: FocusEventHandler<HTMLInputElement>
 ): Promise<void> {
-  const value = event.target.value;
-  setValue(name, value as FieldPathValue<TFieldValues, typeof name>, {
+  setValue(name, parseValue(event.target.value), {
     shouldTouch: true,
   });
   await trigger(name);
@@ -198,13 +202,13 @@ function renderWizTextInputField<TFieldValues extends FieldValues>({
 function WizTextInputStandard<TFieldValues extends FieldValues>(
   props: WizTextInputBoundFieldProps<TFieldValues>
 ) {
-  const { controller, onBlurProp } = props;
+  const { controller, onBlurProp, parseValue } = props;
   const { field } = controller;
 
   return renderWizTextInputField({
     ...props,
     onChange: (_event, value) => {
-      field.onChange(value);
+      field.onChange(parseValue(value));
     },
     onBlur: (event) => {
       field.onBlur();
@@ -222,18 +226,18 @@ function WizTextInputValidateOnBlur<TFieldValues extends FieldValues>(
     trigger: UseFormTrigger<TFieldValues>;
   }
 ) {
-  const { name, onBlurProp, setValue, trigger } = props;
+  const { name, onBlurProp, setValue, trigger, parseValue } = props;
 
   return renderWizTextInputField({
     ...props,
     onChange: (_event, value) => {
-      setValue(name, value as FieldPathValue<TFieldValues, typeof name>, {
+      setValue(name, parseValue(value), {
         shouldValidate: false,
         shouldDirty: true,
       });
     },
     onBlur: (event) => {
-      void handleWizTextInputValidateOnBlur(event, name, setValue, trigger, onBlurProp);
+      void handleWizTextInputValidateOnBlur(event, name, setValue, trigger, parseValue, onBlurProp);
     },
   });
 }
@@ -249,6 +253,7 @@ export function WizTextInput<TFieldValues extends FieldValues = FieldValues>(
 ) {
   const {
     name,
+    parseValue,
     control: controlProp,
     schema,
     yupDescribeOptions,
@@ -276,7 +281,7 @@ export function WizTextInput<TFieldValues extends FieldValues = FieldValues>(
 
   const control = useWizRhfControl<TFieldValues>('WizTextInput', controlProp);
   /** RHF default context is `null` when `FormProvider` is not used (control-only harness). */
-  const formContext = useFormContext<TFieldValues>() as UseFormReturn<TFieldValues> | null;
+  const formContext: UseFormReturn<TFieldValues> | null = useFormContext<TFieldValues>();
 
   if (validateOnBlur && formContext == null) {
     throw new Error(WIZ_TEXT_INPUT_VALIDATE_ON_BLUR_CONTROL_ONLY_ERROR);
@@ -304,6 +309,7 @@ export function WizTextInput<TFieldValues extends FieldValues = FieldValues>(
   const boundProps: WizTextInputBoundFieldProps<TFieldValues> = {
     rest,
     name,
+    parseValue,
     requiredProp,
     presentation: {
       ...presentationProps,
@@ -321,8 +327,8 @@ export function WizTextInput<TFieldValues extends FieldValues = FieldValues>(
   const textInput = validateOnBlur ? (
     <WizTextInputValidateOnBlur
       {...boundProps}
-      setValue={formContext!.setValue}
-      trigger={formContext!.trigger}
+      setValue={formContext.setValue}
+      trigger={formContext.trigger}
     />
   ) : (
     <WizTextInputStandard {...boundProps} />

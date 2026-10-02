@@ -84,6 +84,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
                     name={FIELD_NAME.SUPPORT_ROLE_ARN}
                     readOnly
                     readOnlyVariant="plain"
+                    parseValue={(value: string): string => value}
                   />
                 </FieldWrapper>
                 <FieldWrapper size="lg">
@@ -93,6 +94,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
                     name={FIELD_NAME.WORKER_ROLE_ARN}
                     readOnly
                     readOnlyVariant="plain"
+                    parseValue={(value: string): string => value}
                   />
                 </FieldWrapper>
               </NestedFields>
@@ -147,6 +149,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
                       </>
                     }
                     helperText={rp.operatorPrefixHelper}
+                    parseValue={(value: string): string => value}
                   />
                 </FieldWrapper>
               </NestedFields>
