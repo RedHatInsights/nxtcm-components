@@ -45,9 +45,11 @@ export function FileUpload(props: FileUploadProps) {
   const isFilenameControlled = filenameProp !== undefined;
   const [uncontrolledFilename, setUncontrolledFilename] = useState('');
   const [prevValue, setPrevValue] = useState(value);
+  const [prevIsFilenameControlled, setPrevIsFilenameControlled] = useState(isFilenameControlled);
 
-  if (prevValue !== value) {
+  if (prevValue !== value || prevIsFilenameControlled !== isFilenameControlled) {
     setPrevValue(value);
+    setPrevIsFilenameControlled(isFilenameControlled);
     if (!isFilenameControlled && (value === '' || value === null)) {
       setUncontrolledFilename('');
     }
