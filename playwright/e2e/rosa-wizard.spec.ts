@@ -1,4 +1,4 @@
-import { test, expect, Page } from './fixtures';
+import { expect, Page, test } from './fixtures';
 
 async function expandOperatorPrefixSection(page: Page) {
   await page.getByRole('button', { name: /operator roles prefix/i }).click();
@@ -352,7 +352,7 @@ test.describe('ROSA Wizard', () => {
 
       await expect(
         page.getByText(/overlaps with the subnet in the Machine CIDR field/)
-      ).not.toBeVisible();
+      ).toBeHidden();
     });
 
     test('CIDR fields must be mutually disjoint - Machine vs Pod', async ({ page }) => {
@@ -377,7 +377,7 @@ test.describe('ROSA Wizard', () => {
 
       await expect(
         page.getByText(/overlaps with the subnet in the Machine CIDR field/)
-      ).not.toBeVisible();
+      ).toBeHidden();
     });
 
     test('Machine CIDR - rejects mask too large', async ({ page }) => {
@@ -389,9 +389,7 @@ test.describe('ROSA Wizard', () => {
 
       await input.fill('10.0.0.0/16');
       await input.press('Tab');
-      await expect(
-        page.getByText(/the subnet mask can't be larger than '\/16'/i)
-      ).not.toBeVisible();
+      await expect(page.getByText(/the subnet mask can't be larger than '\/16'/i)).toBeHidden();
     });
 
     test('Machine CIDR - rejects mask too small for single-AZ', async ({ page }) => {
@@ -403,9 +401,7 @@ test.describe('ROSA Wizard', () => {
 
       await input.fill('10.0.0.0/24');
       await input.press('Tab');
-      await expect(
-        page.getByText(/the subnet mask can't be smaller than '\/25'/i)
-      ).not.toBeVisible();
+      await expect(page.getByText(/the subnet mask can't be smaller than '\/25'/i)).toBeHidden();
     });
   });
 
@@ -512,7 +508,7 @@ test.describe('ROSA Wizard', () => {
 
       await input.fill('valid-cluster');
       await input.press('Tab');
-      await expect(page.getByText(/this value must not start with a number/i)).not.toBeVisible();
+      await expect(page.getByText(/this value must not start with a number/i)).toBeHidden();
 
       await page.getByRole('button', { name: /Next/i }).click();
       await expect(page.getByTestId('installer-role-select')).toBeVisible();
@@ -533,7 +529,7 @@ test.describe('ROSA Wizard', () => {
         await page.getByRole('radio', { name: /Private/i }).click();
 
         // Public subnet select should be hidden
-        await expect(page.getByRole('button', { name: /public subnet name/i })).not.toBeVisible();
+        await expect(page.getByRole('button', { name: /public subnet name/i })).toBeHidden();
       });
 
       test('switching back to Public re-shows public subnet select', async ({ page }) => {
@@ -543,7 +539,7 @@ test.describe('ROSA Wizard', () => {
 
         // Switch to Private
         await page.getByRole('radio', { name: /Private/i }).click();
-        await expect(page.getByRole('button', { name: /public subnet name/i })).not.toBeVisible();
+        await expect(page.getByRole('button', { name: /public subnet name/i })).toBeHidden();
 
         // Switch back to Public
         await page.getByRole('radio', { name: /Public/i }).click();
@@ -612,7 +608,7 @@ test.describe('ROSA Wizard', () => {
 
         await expect(
           page.getByText(/to use securityGroups, your cluster must be version 4\.14\.x or newer/i)
-        ).not.toBeVisible();
+        ).toBeHidden();
       });
     });
 
@@ -621,7 +617,7 @@ test.describe('ROSA Wizard', () => {
         await navigateToEncryption(page);
 
         // Default is "Use default AWS KMS key" — Key ARN should not be visible
-        await expect(page.getByRole('textbox', { name: /Key ARN/i })).not.toBeVisible();
+        await expect(page.getByRole('textbox', { name: /Key ARN/i })).toBeHidden();
 
         // Select custom KMS key
         await page.getByRole('radio', { name: /Use custom AWS KMS key/i }).click();
@@ -642,7 +638,7 @@ test.describe('ROSA Wizard', () => {
         await page.getByRole('radio', { name: /Use default AWS KMS key/i }).click();
 
         // Key ARN input should be hidden
-        await expect(page.getByRole('textbox', { name: /Key ARN/i })).not.toBeVisible();
+        await expect(page.getByRole('textbox', { name: /Key ARN/i })).toBeHidden();
 
         // Re-select custom — input should be empty (value was cleared)
         await page.getByRole('radio', { name: /Use custom AWS KMS key/i }).click();
@@ -656,7 +652,7 @@ test.describe('ROSA Wizard', () => {
 
         // etcd encryption is off by default — etcd Key ARN should not be visible
         // KMS Key ARN is also not visible (default KMS), so no Key ARN inputs at all
-        await expect(page.getByRole('textbox', { name: /Key ARN/i })).not.toBeVisible();
+        await expect(page.getByRole('textbox', { name: /Key ARN/i })).toBeHidden();
 
         // Enable etcd encryption
         await page.getByRole('checkbox', { name: /Enable additional etcd encryption/i }).click();
@@ -677,7 +673,7 @@ test.describe('ROSA Wizard', () => {
         await page.getByRole('checkbox', { name: /Enable additional etcd encryption/i }).click();
 
         // Key ARN input should be hidden
-        await expect(page.getByRole('textbox', { name: /Key ARN/i })).not.toBeVisible();
+        await expect(page.getByRole('textbox', { name: /Key ARN/i })).toBeHidden();
 
         // Re-enable — input should be empty (value was cleared)
         await page.getByRole('checkbox', { name: /Enable additional etcd encryption/i }).click();
@@ -697,8 +693,8 @@ test.describe('ROSA Wizard', () => {
         await page.getByRole('radio', { name: /Manual updates/i }).click();
 
         // Day and hour selects should be hidden
-        await expect(page.getByRole('button', { name: /Sunday/i })).not.toBeVisible();
-        await expect(page.getByRole('button', { name: /00:00 UTC/i })).not.toBeVisible();
+        await expect(page.getByRole('button', { name: /Sunday/i })).toBeHidden();
+        await expect(page.getByRole('button', { name: /00:00 UTC/i })).toBeHidden();
       });
 
       test('switching back to Automatic re-shows upgrade schedule selects', async ({ page }) => {
@@ -706,7 +702,7 @@ test.describe('ROSA Wizard', () => {
 
         // Switch to Manual
         await page.getByRole('radio', { name: /Manual updates/i }).click();
-        await expect(page.getByRole('button', { name: /Sunday/i })).not.toBeVisible();
+        await expect(page.getByRole('button', { name: /Sunday/i })).toBeHidden();
 
         // Switch back to Automatic
         await page.getByRole('radio', { name: /Automatic updates/i }).click();
