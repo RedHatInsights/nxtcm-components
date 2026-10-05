@@ -43,7 +43,12 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   );
   const oidcConfigHintMaxWidth = '25rem';
 
-  const awsInfrastructureAccount = useWatch({ name: FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID });
+  const awsInfrastructureAccount = useWatch<
+    ROSAHCPCluster,
+    typeof FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID
+  >({
+    name: FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID,
+  });
 
   const installerRoleOptions = useInstallerRoleOptions(roles);
   const { isIncompleteRoleSet } = useDependentRoles(roles);
@@ -51,7 +56,10 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
 
   const rosaCommand = useRosaCommand();
 
-  const clusterVersion = useWatch({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
+  const clusterVersion =
+    useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({
+      name: FIELD_NAME.CLUSTER_VERSION,
+    }) ?? '';
   const links = useGetDocsVersion(clusterVersion);
 
   const hasNoRoles = !roles.isFetching && !roles.error && roles.data.length === 0;
@@ -156,7 +164,9 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
           <WizSelect<ROSAHCPCluster>
             isFill
             isTypeAhead
-            onRefresh={() => void oidcConfig.fetch(awsInfrastructureAccount)}
+            onRefresh={() =>
+              void (awsInfrastructureAccount && oidcConfig.fetch(awsInfrastructureAccount))
+            }
             apiError={oidcConfig.error}
             isLoading={oidcConfig.isFetching}
             schema={clusterValidationSchema}

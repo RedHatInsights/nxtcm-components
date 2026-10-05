@@ -96,8 +96,8 @@ export default [
       'react/display-name': 'warn',
       'no-console': 'error',
       '@typescript-eslint/no-explicit-any': 'error',
-      // These sibling unsafe rules are deferred and remain intentionally disabled.
-      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'error',
+      // no-unsafe-argument and no-unsafe-member-access remain intentionally disabled.
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-return': 'error',

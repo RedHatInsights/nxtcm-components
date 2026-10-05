@@ -86,7 +86,9 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
 
   useWizardFieldMetaChangeEffects(wizardData);
 
-  const clusterWideProxySelected = useWatch({ name: FIELD_NAME.CONFIGURE_PROXY });
+  const clusterWideProxySelected = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CONFIGURE_PROXY>({
+    name: FIELD_NAME.CONFIGURE_PROXY,
+  });
 
   const isClusterWideProxyHidden = useIsStepHidden(STEP_IDS.CLUSTER_WIDE_PROXY);
   const isClusterUpdatesHidden = useIsStepHidden(STEP_IDS.CLUSTER_UPDATES);
