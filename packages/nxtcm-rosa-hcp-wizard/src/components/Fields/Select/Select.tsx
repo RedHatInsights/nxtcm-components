@@ -464,7 +464,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     [syncTypeaheadQueryForOpenState]
   );
 
-  const [prevToggleLabel, setPrevToggleLabel] = useState(toggleLabel);
+  const [prevToggleLabel, setPrevToggleLabel] = useState<string | null>(null);
   if (isTypeAhead && prevToggleLabel !== toggleLabel) {
     setPrevToggleLabel(toggleLabel);
     /** Keeps query text in sync when the controlled selection (`value`) changes. Typing filters without changing selection leaves `toggleLabel` stable, so the input is not reset. */

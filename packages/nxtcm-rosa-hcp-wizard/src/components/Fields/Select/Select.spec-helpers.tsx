@@ -37,6 +37,23 @@ export function TypeaheadHarness() {
   );
 }
 
+export function PreselectedTypeaheadHarness() {
+  const [value, setValue] = useState<string | number | undefined>('subnet-a');
+  return (
+    <Form>
+      <Select
+        id="ct-menu-ta-preselected"
+        label="Subnet"
+        value={value}
+        onChange={setValue}
+        options={['subnet-a', 'subnet-b', 'other-net']}
+        isTypeAhead
+      />
+      <span data-testid="ta-preselected-val">{value === undefined ? 'none' : String(value)}</span>
+    </Form>
+  );
+}
+
 export function DisabledTypeaheadHarness() {
   return (
     <Form>
