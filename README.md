@@ -361,7 +361,7 @@ The repository includes the following configuration files:
 
 | File | Purpose |
 |------|---------|
-| `.eslintrc.json` | ESLint configuration with React, TypeScript, and accessibility rules |
+| `eslint.config.mjs` | ESLint flat configuration with React, TypeScript, and accessibility rules |
 | `.prettierrc` | Prettier code formatting rules |
 | `.prettierignore` | Files to exclude from Prettier formatting |
 | `.npmignore` | Files to exclude from npm package |
