@@ -190,16 +190,6 @@ export const Details = ({
             />
           </FieldWrapper>
           <FieldWrapper>
-            <WizTextInput<ROSAHCPCluster>
-              name={FIELD_NAME.CLUSTER_NAME}
-              schema={clusterValidationSchema}
-              onBlur={() => {
-                void checkOnNameBlur();
-              }}
-            />
-          </FieldWrapper>
-
-          <FieldWrapper>
             <WizSelect<ROSAHCPCluster>
               isFill
               isTypeAhead
@@ -209,6 +199,16 @@ export const Details = ({
               isLoading={versions.isFetching}
               onRefresh={() => void versions.fetch()}
               apiError={versions.error}
+            />
+          </FieldWrapper>
+
+          <FieldWrapper>
+            <WizTextInput<ROSAHCPCluster>
+              name={FIELD_NAME.CLUSTER_NAME}
+              schema={clusterValidationSchema}
+              onBlur={() => {
+                void checkOnNameBlur();
+              }}
             />
           </FieldWrapper>
         </NestedFields>
