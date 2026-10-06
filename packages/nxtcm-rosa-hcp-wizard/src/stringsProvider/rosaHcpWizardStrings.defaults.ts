@@ -136,7 +136,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     manualInstructionsLink: 'these instructions',
   },
   details: {
-    sectionLabel: 'Cluster details',
+    sectionLabel: 'Cluster details testing',
     clusterNameLabel: 'Cluster name',
     clusterNamePlaceholder: 'Enter the cluster name',
     clusterNameHelp:
