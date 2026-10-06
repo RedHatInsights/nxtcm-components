@@ -4,12 +4,17 @@ import { Alert, AlertActionLink } from '@patternfly/react-core/dist/dynamic/comp
 import { useWatch } from 'react-hook-form';
 
 import { FIELD_NAME } from '../../../../constants';
-import { awsLinks, useGetDocsVersion } from '../../../../constants/links';
+import { useGetDocsVersion } from '../../../../constants/links';
+import { awsLinks } from '../../../../constants/rawLinks';
 import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWizardStringsContext';
+import type { ROSAHCPCluster } from '../../../../types';
 
 const SecurityGroupsNoEditAlert = () => {
   const sg = useRosaHcpWizardStrings().securityGroups;
-  const clusterVersion = useWatch({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
+  const clusterVersion =
+    useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({
+      name: FIELD_NAME.CLUSTER_VERSION,
+    }) ?? '';
   const links = useGetDocsVersion(clusterVersion);
   return (
     <Alert

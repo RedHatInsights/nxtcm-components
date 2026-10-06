@@ -26,7 +26,7 @@ import type { ValidationSchemaContext } from '../../../yupSchemas/types';
 import { MachinePoolsAdvancedSection } from './MachinePoolsAdvancedSection';
 
 const MachinePoolsAdvancedFormValuesProbe: React.FC = () => {
-  const imds = useWatch({ name: FIELD_NAME.IMDS });
+  const imds = useWatch<ROSAHCPCluster, typeof FIELD_NAME.IMDS>({ name: FIELD_NAME.IMDS });
   return (
     <span data-testid="ct-imds-value" hidden aria-hidden>
       {imds ?? ''}

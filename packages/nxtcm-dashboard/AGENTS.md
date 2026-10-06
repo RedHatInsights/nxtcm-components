@@ -13,7 +13,6 @@ PatternFly 6 dashboard widget components for the ACM and OCM console home page. 
 ```text
 src/
   Dashboard.tsx              # composed dashboard that wires widgets into the host layout
-  LoadingPanel/              # helper: runs a Promise callback and shows Spinner while waiting
   */                         # one directory per widget (component + CT + stories + styles)
   index.ts                   # public exports
 ```
@@ -29,7 +28,6 @@ widgets (examples of one folder per widget pattern): `AdvisorRecommendations`, `
 
 widgets never make API calls. consuming apps own data fetching and pass view-model props into widgets.
 many dashboard widgets use `data` + `isLoading` style props rather than a direct `Resource<T>` prop.
-`LoadingPanel` is a shared loading-state utility and does not own any data contract.
 
 ```tsx
 interface WidgetProps {
@@ -63,8 +61,6 @@ if (isLoading) {
   return <Skeleton screenreaderText="Loading widget data" />;
 }
 ```
-
-`LoadingPanel` is a separate utility for callback-based async loading (takes a Promise callback, shows Spinner). it's not used by data-bearing widgets for their loading prop.
 
 ### error state
 

@@ -2,7 +2,7 @@ import { Alert } from '@patternfly/react-core/dist/dynamic/components/Alert';
 import { Stack, StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 
 import ExternalLink from '../../../../components/ExternalLink';
-import { awsLinks } from '../../../../constants/links';
+import { awsLinks } from '../../../../constants/rawLinks';
 import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWizardStringsContext';
 import { SecurityGroupsRefreshButton } from './SecurityGroupsRefreshButton';
 

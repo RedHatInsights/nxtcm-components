@@ -86,7 +86,9 @@ export type DetailsMountProps = {
 
 /** Hidden probe for Playwright CT assertions on cross-step form fields. */
 const DetailsFormValuesProbe: React.FC = () => {
-  const selectedVpc = useWatch({ name: FIELD_NAME.SELECTED_VPC });
+  const selectedVpc = useWatch<ROSAHCPCluster, typeof FIELD_NAME.SELECTED_VPC>({
+    name: FIELD_NAME.SELECTED_VPC,
+  });
   return (
     <span data-testid="ct-selected-vpc" hidden aria-hidden>
       {typeof selectedVpc === 'string' ? selectedVpc : (selectedVpc?.id ?? '')}

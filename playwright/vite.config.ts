@@ -10,8 +10,11 @@ const strykerActiveMutant = process.env.__STRYKER_ACTIVE_MUTANT__;
 
 function loadIstanbulPlugin(): Plugin {
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- The custom plugin is CommonJS.
-  const createIstanbulPlugin: () => Plugin = require('./istanbul-plugin.cjs');
-  return createIstanbulPlugin();
+  const createIstanbulPlugin: unknown = require('./istanbul-plugin.cjs');
+  if (typeof createIstanbulPlugin !== 'function') {
+    throw new TypeError('Expected the Istanbul plugin module to export a factory function.');
+  }
+  return (createIstanbulPlugin as () => Plugin)();
 }
 
 export default defineConfig({
