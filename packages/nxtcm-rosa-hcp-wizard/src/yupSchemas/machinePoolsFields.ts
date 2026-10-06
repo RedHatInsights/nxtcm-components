@@ -135,6 +135,7 @@ export const minReplicasSchema = yup
     if (value > 500) {
       return this.createError({ message: msgs.replicas.maxNodes(500) });
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- Yup TestContext.parent is untyped
     const maxReplicas = this.parent?.max_replicas as number | undefined;
     if (maxReplicas !== undefined && value > maxReplicas) {
       return this.createError({ message: msgs.replicas.minGreaterThanMax });
@@ -167,6 +168,7 @@ export const maxReplicasSchema = yup
     if (value > maxAutoscalingNodes) {
       return this.createError({ message: msgs.replicas.maxNodes(maxAutoscalingNodes) });
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- Yup TestContext.parent is untyped
     const minReplicas = this.parent?.min_replicas as number | undefined;
     if (minReplicas !== undefined && value < minReplicas) {
       return this.createError({ message: msgs.replicas.maxLessThanMin });

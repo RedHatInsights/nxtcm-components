@@ -92,7 +92,9 @@ export const ClusterProviders: React.FC<ClusterProvidersProps> = ({
                 constrainToVisibleArea
                 data={providers.map((p) => ({ x: p.label, y: p.count }))}
                 colorScale={providerColors.slice(0, providers.length)}
-                labels={({ datum }) => `${datum.x}: ${datum.y}`}
+                labels={({ datum }: { datum: { x: string; y: number } }) =>
+                  `${datum.x}: ${datum.y}`
+                }
                 padAngle={1}
                 subTitle="clusters"
                 title={String(providers.reduce((sum, p) => sum + p.count, 0))}
