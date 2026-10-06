@@ -1,16 +1,6 @@
-import React from 'react';
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
+import { expect, test } from '@/ct-fixture';
 
-import { expect, test } from '@playwright/experimental-ct-react';
-
-// CT transform only turns an import into importRefs if every specifier is JSX; keep harness imports separate from consts.
-import {
-  WizFileUploadClearViaButtonHarness,
-  WizFileUploadExplicitControlOnlyHarness,
-  WizFileUploadExplicitHarness,
-  WizFileUploadNestedFallbackHarness,
-  WizFileUploadSubmitValidationHarness,
-  WizFileUploadYupMetaHarness,
-} from './WizFileUpload.spec-helpers';
 import {
   WIZ_FILE_UPLOAD_CONTROL_BODY_STATUS,
   WIZ_FILE_UPLOAD_DOC_CLEAR_STATUS,
@@ -22,17 +12,21 @@ import {
   WIZ_FILE_UPLOAD_VALUE_STATUS_LABEL,
   WIZ_FILE_UPLOAD_YUP_META_HELPER,
   WIZ_FILE_UPLOAD_YUP_META_LABEL,
-} from './WizFileUpload.spec-helpers';
+} from './WizFileUpload.story-data';
 
 test.describe('WizFileUpload', () => {
   test('renders explicit label and helper text', async ({ mount }) => {
-    const mounted = await mount(<WizFileUploadExplicitHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizFileUpload/WizFileUpload/WizFileUploadExplicitHarness'
+    );
     await expect(mounted.getByText(WIZ_FILE_UPLOAD_EXPLICIT_LABEL, { exact: true })).toBeVisible();
     await expect(mounted.getByText(WIZ_FILE_UPLOAD_EXPLICIT_HELPER, { exact: true })).toBeVisible();
   });
 
   test('writes file contents to react-hook-form when a file is chosen', async ({ mount, page }) => {
-    const mounted = await mount(<WizFileUploadExplicitHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizFileUpload/WizFileUpload/WizFileUploadExplicitHarness'
+    );
     const status = mounted.getByRole('status', { name: WIZ_FILE_UPLOAD_VALUE_STATUS_LABEL });
     await expect(status).toHaveText('(empty)');
 
@@ -54,13 +48,17 @@ test.describe('WizFileUpload', () => {
   test('derives label and helper text from Yup schema meta when props are omitted', async ({
     mount,
   }) => {
-    const mounted = await mount(<WizFileUploadYupMetaHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizFileUpload/WizFileUpload/WizFileUploadYupMetaHarness'
+    );
     await expect(mounted.getByText(WIZ_FILE_UPLOAD_YUP_META_LABEL, { exact: true })).toBeVisible();
     await expect(mounted.getByText(WIZ_FILE_UPLOAD_YUP_META_HELPER, { exact: true })).toBeVisible();
   });
 
   test('shows Yup validation after submit when the field is empty', async ({ mount }) => {
-    const mounted = await mount(<WizFileUploadSubmitValidationHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizFileUpload/WizFileUpload/WizFileUploadSubmitValidationHarness'
+    );
     await mounted.getByRole('button', { name: 'Submit' }).click();
     await expect(mounted.getByText(WIZ_FILE_UPLOAD_SUBMIT_ERROR, { exact: true })).toBeVisible();
   });
@@ -69,7 +67,9 @@ test.describe('WizFileUpload', () => {
     mount,
     page,
   }) => {
-    const mounted = await mount(<WizFileUploadSubmitValidationHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizFileUpload/WizFileUpload/WizFileUploadSubmitValidationHarness'
+    );
     await mounted.getByRole('button', { name: 'Submit' }).click();
     await expect(mounted.getByText(WIZ_FILE_UPLOAD_SUBMIT_ERROR, { exact: true })).toBeVisible();
 
@@ -89,7 +89,9 @@ test.describe('WizFileUpload', () => {
   });
 
   test('writes nested-path uploads into react-hook-form state', async ({ mount, page }) => {
-    const mounted = await mount(<WizFileUploadNestedFallbackHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizFileUpload/WizFileUpload/WizFileUploadNestedFallbackHarness'
+    );
     await expect(
       mounted.getByText(WIZ_FILE_UPLOAD_NESTED_FIELD_LABEL, { exact: true })
     ).toBeVisible();
@@ -114,7 +116,9 @@ test.describe('WizFileUpload', () => {
     mount,
     page,
   }) => {
-    const mounted = await mount(<WizFileUploadClearViaButtonHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizFileUpload/WizFileUpload/WizFileUploadClearViaButtonHarness'
+    );
     const status = mounted.getByRole('status', {
       name: WIZ_FILE_UPLOAD_DOC_CLEAR_STATUS,
     });
@@ -136,7 +140,9 @@ test.describe('WizFileUpload', () => {
     mount,
     page,
   }) => {
-    const mounted = await mount(<WizFileUploadExplicitControlOnlyHarness />);
+    const mounted = await mount(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizFileUpload/WizFileUpload/WizFileUploadExplicitControlOnlyHarness'
+    );
     const status = mounted.getByRole('status', {
       name: WIZ_FILE_UPLOAD_CONTROL_BODY_STATUS,
     });

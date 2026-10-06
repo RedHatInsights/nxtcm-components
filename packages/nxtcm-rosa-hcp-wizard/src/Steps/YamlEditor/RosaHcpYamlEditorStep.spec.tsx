@@ -1,8 +1,7 @@
-/** Playwright CT guidance: docs/agent-rules/playwright-ct.md */
-import { expect, test } from '@playwright/experimental-ct-react';
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import type { Locator } from '@playwright/test';
 
-import { YamlEditorStepMount } from './RosaHcpYamlEditorStep.spec-helpers';
+import { expect, storyCallback, test } from '@/ct-fixture';
 
 // Helper to wait for Monaco editor to be ready
 
@@ -15,7 +14,9 @@ async function waitForMonaco(component: Locator): Promise<void> {
 
 test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
   test('renders Monaco editor', async ({ mount }) => {
-    const component = await mount(<YamlEditorStepMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepMount'
+    );
 
     await waitForMonaco(component);
 
@@ -25,7 +26,9 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
   });
 
   test('displays CodeEditor component', async ({ mount }) => {
-    const component = await mount(<YamlEditorStepMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepMount'
+    );
 
     await waitForMonaco(component);
 
@@ -35,7 +38,9 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
 
   test.describe('Schema Panel Toggle', () => {
     test('toggles the schema panel', async ({ mount }) => {
-      const component = await mount(<YamlEditorStepMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepMount'
+      );
 
       await waitForMonaco(component);
 
@@ -57,7 +62,9 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
 
   test.describe('Initial State', () => {
     test('does not show error banner initially', async ({ mount }) => {
-      const component = await mount(<YamlEditorStepMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepMount'
+      );
 
       await waitForMonaco(component);
 
@@ -72,11 +79,10 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
   test.describe('Component Props', () => {
     test('renders without errors when onClose prop is provided', async ({ mount }) => {
       const component = await mount(
-        <YamlEditorStepMount
-          onClose={() => {
-            // Callback provided
-          }}
-        />
+        'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepMount',
+        {
+          onClose: storyCallback('onClose'),
+        }
       );
 
       await waitForMonaco(component);
@@ -85,11 +91,10 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
 
     test('renders without errors when onCancel prop is provided', async ({ mount }) => {
       const component = await mount(
-        <YamlEditorStepMount
-          onCancel={() => {
-            // Callback provided
-          }}
-        />
+        'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepMount',
+        {
+          onCancel: storyCallback('onCancel'),
+        }
       );
 
       await waitForMonaco(component);
@@ -99,7 +104,9 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
 
   test.describe('Monaco Configuration', () => {
     test('sets up YAML language mode', async ({ mount }) => {
-      const component = await mount(<YamlEditorStepMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepMount'
+      );
 
       await waitForMonaco(component);
 
@@ -110,7 +117,9 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
     });
 
     test('enables copy functionality', async ({ mount }) => {
-      const component = await mount(<YamlEditorStepMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepMount'
+      );
 
       await waitForMonaco(component);
 
@@ -120,7 +129,9 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
     });
 
     test('enables download functionality', async ({ mount }) => {
-      const component = await mount(<YamlEditorStepMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepMount'
+      );
 
       await waitForMonaco(component);
 
@@ -132,7 +143,9 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
 
   test.describe('Editor Accessibility', () => {
     test('Monaco textarea is accessible', async ({ mount }) => {
-      const component = await mount(<YamlEditorStepMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepMount'
+      );
 
       await waitForMonaco(component);
 

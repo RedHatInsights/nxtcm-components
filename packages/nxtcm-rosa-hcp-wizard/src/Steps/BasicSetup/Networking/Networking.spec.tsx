@@ -1,11 +1,12 @@
-import { expect, test } from '@playwright/experimental-ct-react';
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import type { Locator } from '@playwright/test';
+
+import { expect, test } from '@/ct-fixture';
 
 import { STEP_IDS } from '../../../constants';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { checkAccessibility } from '../../../test-helpers';
 import { ClusterNetwork } from '../../../types';
-import { NetworkingMount } from './Networking.spec-helpers';
 
 const n = defaultRosaHcpWizardStrings.networking;
 
@@ -36,38 +37,52 @@ async function openAdvancedCidrFields(component: NetworkingCtRoot): Promise<Adva
 
 test.describe('Networking (ROSA HCP)', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(<NetworkingMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+    );
     await checkAccessibility({ component });
   });
 
   test('should render the Networking section title', async ({ mount }) => {
-    const component = await mount(<NetworkingMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+    );
     await expect(component.getByText(n.sectionLabel, { exact: true })).toBeVisible();
   });
 
   test('should render the privacy description', async ({ mount }) => {
-    const component = await mount(<NetworkingMount />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+    );
     await expect(component.getByText(n.privacyHelper)).toBeVisible();
   });
 
   test.describe('Networking — cluster privacy radio group', () => {
     test('should render Public radio option', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
       await expect(component.getByRole('radio', { name: n.publicLabel })).toBeVisible();
     });
 
     test('should render Private radio option', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
       await expect(component.getByRole('radio', { name: n.privateLabel })).toBeVisible();
     });
 
     test('should have Public selected by default', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
       await expect(component.getByRole('radio', { name: n.publicLabel })).toBeChecked();
     });
 
     test('should select Private when clicked', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByRole('radio', { name: n.privateLabel }).click();
 
@@ -79,7 +94,8 @@ test.describe('Networking (ROSA HCP)', () => {
       mount,
     }) => {
       const component = await mount(
-        <NetworkingMount defaultValues={{ cluster_privacy: ClusterNetwork.internal }} />
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        { defaultValues: { cluster_privacy: ClusterNetwork.internal } }
       );
 
       await expect(component.getByRole('radio', { name: n.privateLabel })).toBeChecked();
@@ -88,12 +104,16 @@ test.describe('Networking (ROSA HCP)', () => {
 
   test.describe('Networking — advanced networking configuration', () => {
     test('should render the advanced networking toggle', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
       await expect(component.getByText(n.advancedToggle)).toBeVisible();
     });
 
     test('should expand advanced section when toggle is clicked', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -101,7 +121,9 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should render configure proxy checkbox in advanced section', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -109,7 +131,9 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should render CIDR alert in advanced section', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -117,7 +141,9 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should render use default values checkbox in advanced section', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -125,7 +151,9 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should have use default values checked by default', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -137,7 +165,9 @@ test.describe('Networking (ROSA HCP)', () => {
     test('should render Machine CIDR field as disabled when defaults are used', async ({
       mount,
     }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -149,7 +179,9 @@ test.describe('Networking (ROSA HCP)', () => {
     test('should render Service CIDR field as disabled when defaults are used', async ({
       mount,
     }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -159,7 +191,9 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should render Pod CIDR field as disabled when defaults are used', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -171,7 +205,9 @@ test.describe('Networking (ROSA HCP)', () => {
     test('should render Host prefix field as disabled when defaults are used', async ({
       mount,
     }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -181,7 +217,10 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should enable CIDR fields when "Use default values" is unchecked', async ({ mount }) => {
-      const component = await mount(<NetworkingMount defaultValues={{ cidr_default: false }} />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        { defaultValues: { cidr_default: false } }
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -194,7 +233,9 @@ test.describe('Networking (ROSA HCP)', () => {
     test('should restore default CIDR values when "Use default values" is re-checked', async ({
       mount,
     }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
       const { useDefaultsCheckbox, machineInput, serviceInput, podInput, hostInput } =
         await openAdvancedCidrFields(component);
 
@@ -214,7 +255,9 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should show default value for Machine CIDR', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -224,7 +267,9 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should show default value for Service CIDR', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -234,7 +279,9 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should show default value for Pod CIDR', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -244,7 +291,9 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should show default value for Host prefix', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -254,7 +303,10 @@ test.describe('Networking (ROSA HCP)', () => {
 
   test.describe('Networking — CIDR validation', () => {
     test('should display validation error for invalid Machine CIDR notation', async ({ mount }) => {
-      const component = await mount(<NetworkingMount defaultValues={{ cidr_default: false }} />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        { defaultValues: { cidr_default: false } }
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -266,7 +318,10 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should display validation error for invalid Service CIDR notation', async ({ mount }) => {
-      const component = await mount(<NetworkingMount defaultValues={{ cidr_default: false }} />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        { defaultValues: { cidr_default: false } }
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -278,7 +333,10 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should display validation error for invalid Pod CIDR notation', async ({ mount }) => {
-      const component = await mount(<NetworkingMount defaultValues={{ cidr_default: false }} />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        { defaultValues: { cidr_default: false } }
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -290,7 +348,10 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should display validation error for invalid Host prefix format', async ({ mount }) => {
-      const component = await mount(<NetworkingMount defaultValues={{ cidr_default: false }} />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        { defaultValues: { cidr_default: false } }
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -302,7 +363,10 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should allow typing a valid Machine CIDR', async ({ mount }) => {
-      const component = await mount(<NetworkingMount defaultValues={{ cidr_default: false }} />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        { defaultValues: { cidr_default: false } }
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -315,7 +379,9 @@ test.describe('Networking (ROSA HCP)', () => {
     test('should clear CIDR validation errors when "Use default values" is re-checked', async ({
       mount,
     }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
       const { useDefaultsCheckbox, machineInput, serviceInput, podInput, hostInput } =
         await openAdvancedCidrFields(component);
 
@@ -341,7 +407,9 @@ test.describe('Networking (ROSA HCP)', () => {
 
   test.describe('Networking — configure proxy checkbox', () => {
     test('should not be checked by default', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -351,7 +419,9 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should be checkable', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -363,7 +433,10 @@ test.describe('Networking (ROSA HCP)', () => {
     test('should render checked when defaultValues specify configure_proxy true', async ({
       mount,
     }) => {
-      const component = await mount(<NetworkingMount defaultValues={{ configure_proxy: true }} />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        { defaultValues: { configure_proxy: true } }
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -376,7 +449,8 @@ test.describe('Networking (ROSA HCP)', () => {
       mount,
     }) => {
       const component = await mount(
-        <NetworkingMount config={{ hiddenSteps: [STEP_IDS.CLUSTER_WIDE_PROXY] }} />
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        { config: { hiddenSteps: [STEP_IDS.CLUSTER_WIDE_PROXY] } }
       );
 
       await component.getByText(n.advancedToggle).click();
@@ -385,7 +459,10 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should show the proxy checkbox when hiddenSteps is empty', async ({ mount }) => {
-      const component = await mount(<NetworkingMount config={{ hiddenSteps: [] }} />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        { config: { hiddenSteps: [] } }
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -393,7 +470,9 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should show the proxy checkbox when config is not provided', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -403,7 +482,9 @@ test.describe('Networking (ROSA HCP)', () => {
 
   test.describe('Networking — CIDR learn more link', () => {
     test('should render the learn more link in advanced section', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await component.getByText(n.advancedToggle).click();
 
@@ -429,7 +510,8 @@ test.describe('Networking (ROSA HCP)', () => {
       mount,
     }) => {
       const component = await mount(
-        <NetworkingMount defaultValues={{ selected_vpc: 'vpc-12345' }} />
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        { defaultValues: { selected_vpc: 'vpc-12345' } }
       );
 
       await expect(
@@ -441,7 +523,8 @@ test.describe('Networking (ROSA HCP)', () => {
       mount,
     }) => {
       const component = await mount(
-        <NetworkingMount defaultValues={{ selected_vpc: 'vpc-12345' }} />
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        { defaultValues: { selected_vpc: 'vpc-12345' } }
       );
 
       await expect(
@@ -454,12 +537,13 @@ test.describe('Networking (ROSA HCP)', () => {
       mount,
     }) => {
       const component = await mount(
-        <NetworkingMount
-          defaultValues={{
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        {
+          defaultValues: {
             cluster_privacy: ClusterNetwork.internal,
             selected_vpc: 'vpc-12345',
-          }}
-        />
+          },
+        }
       );
 
       await expect(
@@ -471,7 +555,8 @@ test.describe('Networking (ROSA HCP)', () => {
       mount,
     }) => {
       const component = await mount(
-        <NetworkingMount defaultValues={{ selected_vpc: 'vpc-12345' }} />
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        { defaultValues: { selected_vpc: 'vpc-12345' } }
       );
 
       await expect(
@@ -487,12 +572,13 @@ test.describe('Networking (ROSA HCP)', () => {
 
     test('should show public subnet options from the selected VPC', async ({ mount, page }) => {
       const component = await mount(
-        <NetworkingMount
-          defaultValues={{
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        {
+          defaultValues: {
             selected_vpc: 'vpc-12345',
             ...machinePoolSubnetsBothAzs,
-          }}
-        />
+          },
+        }
       );
 
       await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();
@@ -503,12 +589,13 @@ test.describe('Networking (ROSA HCP)', () => {
 
     test('should not list private subnets in the public subnet select', async ({ mount, page }) => {
       const component = await mount(
-        <NetworkingMount
-          defaultValues={{
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        {
+          defaultValues: {
             selected_vpc: 'vpc-12345',
             ...machinePoolSubnetUsEast1a,
-          }}
-        />
+          },
+        }
       );
 
       await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();
@@ -521,12 +608,13 @@ test.describe('Networking (ROSA HCP)', () => {
       page,
     }) => {
       const component = await mount(
-        <NetworkingMount
-          defaultValues={{
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        {
+          defaultValues: {
             selected_vpc: 'vpc-12345',
             ...machinePoolSubnetUsEast1a,
-          }}
-        />
+          },
+        }
       );
 
       await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();
@@ -540,12 +628,13 @@ test.describe('Networking (ROSA HCP)', () => {
       page,
     }) => {
       const component = await mount(
-        <NetworkingMount
-          defaultValues={{
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        {
+          defaultValues: {
             selected_vpc: 'vpc-12345',
             machine_pools_subnets: [{ machine_pool_subnet: 'subnet-005' }],
-          }}
-        />
+          },
+        }
       );
 
       await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();
@@ -556,9 +645,8 @@ test.describe('Networking (ROSA HCP)', () => {
 
     test('should allow selecting a public subnet option', async ({ mount, page }) => {
       const component = await mount(
-        <NetworkingMount
-          defaultValues={{ selected_vpc: 'vpc-12345', ...machinePoolSubnetUsEast1a }}
-        />
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        { defaultValues: { selected_vpc: 'vpc-12345', ...machinePoolSubnetUsEast1a } }
       );
 
       await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();
@@ -573,12 +661,13 @@ test.describe('Networking (ROSA HCP)', () => {
       page,
     }) => {
       const component = await mount(
-        <NetworkingMount
-          defaultValues={{
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount',
+        {
+          defaultValues: {
             selected_vpc: 'vpc-67890',
             machine_pools_subnets: [{ machine_pool_subnet: 'subnet-004' }],
-          }}
-        />
+          },
+        }
       );
 
       await component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') }).click();
@@ -587,7 +676,9 @@ test.describe('Networking (ROSA HCP)', () => {
     });
 
     test('should show no public subnet options when no VPC is selected', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
+      const component = await mount(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Networking/Networking/NetworkingMount'
+      );
 
       await expect(
         component.getByRole('button', { name: new RegExp(n.publicSubnetLabel, 'i') })

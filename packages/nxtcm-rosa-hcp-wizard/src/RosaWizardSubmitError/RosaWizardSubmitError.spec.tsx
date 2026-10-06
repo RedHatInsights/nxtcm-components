@@ -1,11 +1,8 @@
-import { expect, test } from '@playwright/experimental-ct-react';
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
+import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
 
 import { defaultRosaHcpWizardStrings } from '../stringsProvider/rosaHcpWizardStrings.defaults';
 import { checkAccessibility } from '../test-helpers';
-import {
-  RosaWizardSubmitErrorMount,
-  RosaWizardSubmitErrorThenBackMount,
-} from './RosaWizardSubmitError.spec-helpers';
 
 const { submitError: submitErrorStrings } = defaultRosaHcpWizardStrings;
 const ERROR_MESSAGE = 'There has been an error creating the cluster';
@@ -15,11 +12,12 @@ test.describe('RosaWizardSubmitError', () => {
     mount,
   }) => {
     const component = await mount(
-      <RosaWizardSubmitErrorMount
-        onSubmitError={ERROR_MESSAGE}
-        isNavigatingToReview={false}
-        onCancel={() => {}}
-      />
+      'nxtcm-rosa-hcp-wizard/RosaWizardSubmitError/RosaWizardSubmitError/RosaWizardSubmitErrorMount',
+      {
+        onSubmitError: ERROR_MESSAGE,
+        isNavigatingToReview: false,
+        onCancel: storyCallback('onCancel'),
+      }
     );
 
     await expect(component.getByRole('heading', { name: submitErrorStrings.title })).toBeVisible();
@@ -31,11 +29,12 @@ test.describe('RosaWizardSubmitError', () => {
 
   test('shows title only when onSubmitError is boolean true', async ({ mount }) => {
     const component = await mount(
-      <RosaWizardSubmitErrorMount
-        onSubmitError={true}
-        isNavigatingToReview={false}
-        onCancel={() => {}}
-      />
+      'nxtcm-rosa-hcp-wizard/RosaWizardSubmitError/RosaWizardSubmitError/RosaWizardSubmitErrorMount',
+      {
+        onSubmitError: true,
+        isNavigatingToReview: false,
+        onCancel: storyCallback('onCancel'),
+      }
     );
 
     await expect(component.getByRole('heading', { name: submitErrorStrings.title })).toBeVisible();
@@ -44,12 +43,13 @@ test.describe('RosaWizardSubmitError', () => {
 
   test('shows Back to the wizard when onBackToReviewStep is provided', async ({ mount }) => {
     const component = await mount(
-      <RosaWizardSubmitErrorMount
-        onSubmitError={ERROR_MESSAGE}
-        onBackToReviewStep={() => {}}
-        isNavigatingToReview={false}
-        onCancel={() => {}}
-      />
+      'nxtcm-rosa-hcp-wizard/RosaWizardSubmitError/RosaWizardSubmitError/RosaWizardSubmitErrorMount',
+      {
+        onSubmitError: ERROR_MESSAGE,
+        onBackToReviewStep: storyCallback('onBackToReviewStep'),
+        isNavigatingToReview: false,
+        onCancel: storyCallback('onCancel'),
+      }
     );
 
     await expect(
@@ -59,11 +59,12 @@ test.describe('RosaWizardSubmitError', () => {
 
   test('hides Back to the wizard when onBackToReviewStep is not provided', async ({ mount }) => {
     const component = await mount(
-      <RosaWizardSubmitErrorMount
-        onSubmitError={ERROR_MESSAGE}
-        isNavigatingToReview={false}
-        onCancel={() => {}}
-      />
+      'nxtcm-rosa-hcp-wizard/RosaWizardSubmitError/RosaWizardSubmitError/RosaWizardSubmitErrorMount',
+      {
+        onSubmitError: ERROR_MESSAGE,
+        isNavigatingToReview: false,
+        onCancel: storyCallback('onCancel'),
+      }
     );
 
     await expect(
@@ -72,46 +73,43 @@ test.describe('RosaWizardSubmitError', () => {
   });
 
   test('calls onCancel when Exit wizard is clicked', async ({ mount }) => {
-    let cancelCalled = false;
     const component = await mount(
-      <RosaWizardSubmitErrorMount
-        onSubmitError={ERROR_MESSAGE}
-        isNavigatingToReview={false}
-        onCancel={() => {
-          cancelCalled = true;
-        }}
-      />
+      'nxtcm-rosa-hcp-wizard/RosaWizardSubmitError/RosaWizardSubmitError/RosaWizardSubmitErrorMount',
+      {
+        onSubmitError: ERROR_MESSAGE,
+        isNavigatingToReview: false,
+        onCancel: storyCallback('onCancel'),
+      }
     );
 
     await component.getByRole('button', { name: submitErrorStrings.exitWizard }).click();
-    expect(cancelCalled).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onCancel')).toHaveLength(1);
   });
 
   test('calls onBackToReviewStep when Back to the wizard is clicked', async ({ mount }) => {
-    let backToReviewCalled = false;
     const component = await mount(
-      <RosaWizardSubmitErrorMount
-        onSubmitError={ERROR_MESSAGE}
-        onBackToReviewStep={() => {
-          backToReviewCalled = true;
-        }}
-        isNavigatingToReview={false}
-        onCancel={() => {}}
-      />
+      'nxtcm-rosa-hcp-wizard/RosaWizardSubmitError/RosaWizardSubmitError/RosaWizardSubmitErrorMount',
+      {
+        onSubmitError: ERROR_MESSAGE,
+        onBackToReviewStep: storyCallback('onBackToReviewStep'),
+        isNavigatingToReview: false,
+        onCancel: storyCallback('onCancel'),
+      }
     );
 
     await component.getByRole('button', { name: submitErrorStrings.backToReviewStep }).click();
-    expect(backToReviewCalled).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onBackToReviewStep')).toHaveLength(1);
   });
 
   test('disables Back to the wizard while isNavigatingToReview is true', async ({ mount }) => {
     const component = await mount(
-      <RosaWizardSubmitErrorMount
-        onSubmitError={ERROR_MESSAGE}
-        onBackToReviewStep={() => {}}
-        isNavigatingToReview
-        onCancel={() => {}}
-      />
+      'nxtcm-rosa-hcp-wizard/RosaWizardSubmitError/RosaWizardSubmitError/RosaWizardSubmitErrorMount',
+      {
+        onSubmitError: ERROR_MESSAGE,
+        onBackToReviewStep: storyCallback('onBackToReviewStep'),
+        isNavigatingToReview: true,
+        onCancel: storyCallback('onCancel'),
+      }
     );
 
     await expect(
@@ -122,7 +120,10 @@ test.describe('RosaWizardSubmitError', () => {
   test('clears error view after Back to the wizard when parent clears onSubmitError', async ({
     mount,
   }) => {
-    const component = await mount(<RosaWizardSubmitErrorThenBackMount onCancel={() => {}} />);
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/RosaWizardSubmitError/RosaWizardSubmitError/RosaWizardSubmitErrorThenBackMount',
+      { onCancel: storyCallback('onCancel') }
+    );
 
     await expect(component.getByRole('heading', { name: submitErrorStrings.title })).toBeVisible();
     await component.getByRole('button', { name: submitErrorStrings.backToReviewStep }).click();
@@ -136,12 +137,13 @@ test.describe('RosaWizardSubmitError', () => {
   test('passes accessibility tests in the error state', async ({ mount }) => {
     test.setTimeout(60_000);
     const component = await mount(
-      <RosaWizardSubmitErrorMount
-        onSubmitError={ERROR_MESSAGE}
-        onBackToReviewStep={() => {}}
-        isNavigatingToReview={false}
-        onCancel={() => {}}
-      />
+      'nxtcm-rosa-hcp-wizard/RosaWizardSubmitError/RosaWizardSubmitError/RosaWizardSubmitErrorMount',
+      {
+        onSubmitError: ERROR_MESSAGE,
+        onBackToReviewStep: storyCallback('onBackToReviewStep'),
+        isNavigatingToReview: false,
+        onCancel: storyCallback('onCancel'),
+      }
     );
 
     await checkAccessibility({ component });

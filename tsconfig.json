@@ -1,40 +1,35 @@
 {
-    "compilerOptions": {
-        "target": "ES6",
-        "module": "esnext",
-        "jsx": "react-jsx",
-        "declaration": true,
-        "outDir": "dist",
-        "strict": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "moduleResolution": "bundler",
-        "resolveJsonModule": true,
-        "paths": {
-            "@redhat-cloud-services/nxtcm-dashboard": ["./packages/nxtcm-dashboard/src"],
-            "@redhat-cloud-services/nxtcm-dashboard/*": ["./packages/nxtcm-dashboard/src/*"],
-            "@redhat-cloud-services/nxtcm-rosa-hcp-wizard": ["./packages/nxtcm-rosa-hcp-wizard/src"],
-            "@redhat-cloud-services/nxtcm-rosa-hcp-wizard/*": ["./packages/nxtcm-rosa-hcp-wizard/src/*"],
-            "@/*": ["./*"]
-        },
-        "lib": [
-            "dom",
-            "dom.iterable",
-            "esnext"
-        ],
-        "types": ["node", "jest", "@testing-library/jest-dom"]
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "esnext",
+    "jsx": "react-jsx",
+    "declaration": true,
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "paths": {
+      "@redhat-cloud-services/nxtcm-dashboard": ["./packages/nxtcm-dashboard/src"],
+      "@redhat-cloud-services/nxtcm-dashboard/*": ["./packages/nxtcm-dashboard/src/*"],
+      "@redhat-cloud-services/nxtcm-rosa-hcp-wizard": ["./packages/nxtcm-rosa-hcp-wizard/src"],
+      "@redhat-cloud-services/nxtcm-rosa-hcp-wizard/*": ["./packages/nxtcm-rosa-hcp-wizard/src/*"],
+      "@/*": ["./*"]
     },
-    "include": [
-        ".storybook/**/*",
-        "packages/nxtcm-dashboard/src/**/*",
-        "packages/nxtcm-rosa-hcp-wizard/src/**/*",
-        "e2e-app/**/*",
-        "playwright/**/*",
-        "test-helpers.ts",
-        "vite-env.d.ts"
-    ],
-    "exclude": [
-        "node_modules",
-        "dist",
-    ]
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["node", "jest", "@testing-library/jest-dom"]
+  },
+  "include": [
+    ".storybook/**/*",
+    "packages/nxtcm-dashboard/src/**/*",
+    "packages/nxtcm-rosa-hcp-wizard/src/**/*",
+    "e2e-app/**/*",
+    "playwright/**/*",
+    "ct-fixture.ts",
+    "playwright-ct.config.ts",
+    "test-helpers.ts",
+    "vite-env.d.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
 }

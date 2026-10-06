@@ -1,26 +1,11 @@
-import React from 'react';
-
+// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import { expect, test } from '../../../../ct-fixture';
-import { RosaHcpWizardStringsProvider } from '../stringsProvider/RosaHcpWizardStringsContext';
-import { FieldWithAPIErrorAlert } from './FieldWithAPIErrorAlert';
-
-/** `FieldWithAPIErrorAlert` uses `useRosaWizardStrings` (ROSA HCP strings context), which requires this provider. */
-function withRosaStrings(ui: React.ReactElement) {
-  return <RosaHcpWizardStringsProvider>{ui}</RosaHcpWizardStringsProvider>;
-}
 
 test.describe('FieldWithAPIErrorAlert', () => {
   test('shows alert and message body when string error is provided', async ({ mount, page }) => {
     const component = await mount(
-      withRosaStrings(
-        <FieldWithAPIErrorAlert
-          error="There has been an error"
-          isFetching={false}
-          fieldName="region"
-        >
-          <div>Field content</div>
-        </FieldWithAPIErrorAlert>
-      )
+      'nxtcm-rosa-hcp-wizard/components/FieldWithAPIErrorAlert/FieldWithAPIErrorAlertStory',
+      { error: 'There has been an error' }
     );
 
     await expect(component.getByText('Field content')).toBeVisible();
@@ -34,11 +19,8 @@ test.describe('FieldWithAPIErrorAlert', () => {
     page,
   }) => {
     const component = await mount(
-      withRosaStrings(
-        <FieldWithAPIErrorAlert error={true} isFetching={false} fieldName="region">
-          <div>Field content</div>
-        </FieldWithAPIErrorAlert>
-      )
+      'nxtcm-rosa-hcp-wizard/components/FieldWithAPIErrorAlert/FieldWithAPIErrorAlertStory',
+      { error: true }
     );
 
     await expect(component.getByText('Field content')).toBeVisible();
@@ -50,16 +32,8 @@ test.describe('FieldWithAPIErrorAlert', () => {
 
   test('does not show alert when isFetching is true', async ({ mount, page }) => {
     const component = await mount(
-      withRosaStrings(
-        <FieldWithAPIErrorAlert
-          error="There has been an error"
-          isFetching
-          fieldName="region"
-          isValidation
-        >
-          <div>Field content</div>
-        </FieldWithAPIErrorAlert>
-      )
+      'nxtcm-rosa-hcp-wizard/components/FieldWithAPIErrorAlert/FieldWithAPIErrorAlertStory',
+      { error: 'There has been an error', isFetching: true, isValidation: true }
     );
 
     await expect(component.getByText('Field content')).toBeVisible();

@@ -1,19 +1,27 @@
-import { test as base, expect } from '@playwright/experimental-ct-react';
-import type { MountResult } from '@playwright/experimental-ct-react';
-import { writeFileSync, mkdirSync } from 'fs';
-import { join } from 'path';
+import { expect, type Locator, test as base } from '@playwright/test';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 export { expect };
-export type { MountResult };
+export { storyCallback, storyCallbackCalls } from './playwright/story-callbacks';
+
+declare global {
+  interface Window {
+    __coverage__?: unknown;
+  }
+}
+
+export type MountResult = Locator & {
+  update(props?: unknown): Promise<void>;
+  unmount(): Promise<void>;
+};
 
 export const test = base.extend<{ _coverageCapture: void }>({
   _coverageCapture: [
-    async ({ page }, use) => {
-      await use();
+    async ({ page }, runFixture) => {
+      await runFixture();
       try {
-        const coverage = await page.evaluate(
-          () => (window as unknown as { __coverage__?: unknown }).__coverage__
-        );
+        const coverage = await page.evaluate(() => window.__coverage__);
         if (!coverage) return;
         mkdirSync('.nyc_output', { recursive: true });
         const filename = join(

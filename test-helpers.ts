@@ -1,6 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect } from '@playwright/experimental-ct-react';
-import type { MountResult } from '@playwright/experimental-ct-react';
+import { expect, type Locator } from '@playwright/test';
 
 /**
  * Shared test utilities for Playwright Component Tests.
@@ -28,7 +27,7 @@ import type { MountResult } from '@playwright/experimental-ct-react';
  * import { checkAccessibility } from '../../test-helpers';
  *
  * test('has no accessibility violations', async ({ mount }) => {
- *   const component = await mount(<MyComponent />);
+ *   const component = await mount('workspace/path/MyComponent');
  *   await checkAccessibility({ component });
  * });
  * ```
@@ -38,7 +37,7 @@ export async function checkAccessibility({
   ignoreRules = [],
   enforceAllRules,
 }: {
-  component: MountResult;
+  component: Locator;
   ignoreRules?: string[];
   enforceAllRules?: boolean;
 }): Promise<void> {
