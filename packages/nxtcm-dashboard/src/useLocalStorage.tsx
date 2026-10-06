@@ -34,6 +34,7 @@ export function useLocalStorageWithObject<T>(
   initialValue: T
 ): [T, Dispatch<SetStateAction<T>>, () => void] {
   const [state, setState, clear] = useLocalStorage(key, JSON.stringify(initialValue));
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- JSON.parse returns `any`; consumer validates shape via initialValue type
   const item: T = JSON.parse(state);
   const setItem = (value: SetStateAction<T>) => {
     if (value instanceof Function) {

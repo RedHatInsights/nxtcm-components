@@ -36,7 +36,7 @@ describe('Storybook convention parser fixtures', () => {
   it('detects re-exported Default', () => {
     const code = `
       const meta = {
-        title: 'Components/Dashboard/LoadingPanel',
+        title: 'Components/Dashboard/Sample',
         tags: ['autodocs'],
       };
       export default meta;
@@ -101,8 +101,6 @@ describe('Storybook repository story convention contract (Layer B)', () => {
       'Components/Dashboard/ClusterRecommendations',
     'packages/nxtcm-dashboard/src/Subscriptions/Subscriptions.stories.tsx':
       'Components/Dashboard/Subscriptions',
-    'packages/nxtcm-dashboard/src/LoadingPanel/LoadingPanel.stories.tsx':
-      'Components/Dashboard/LoadingPanel',
     'packages/nxtcm-dashboard/src/TotalClusters/TotalClusters.stories.tsx':
       'Components/Dashboard/TotalClusters',
     'packages/nxtcm-dashboard/src/TotalClusters/ClusterProviders.stories.tsx':

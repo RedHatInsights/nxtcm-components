@@ -51,7 +51,6 @@ export const DashboardSummary = () => (
 - `ClusterRecommendations` - recommendation summary card
 - `Subscriptions` - subscription status and counts card
 - `UpgradeRisks` - upgrade risk severity card
-- `LoadingPanel` - generic loading state panel
 - `NotificationsPanel` - notifications table card
 
 ## Publishing

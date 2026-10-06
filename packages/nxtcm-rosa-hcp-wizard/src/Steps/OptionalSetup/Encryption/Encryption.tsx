@@ -9,7 +9,8 @@ import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
 import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { FIELD_NAME } from '../../../constants';
-import { awsLinks, useGetDocsVersion } from '../../../constants/links';
+import { useGetDocsVersion } from '../../../constants/links';
+import { awsLinks } from '../../../constants/rawLinks';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { ClusterEncryptionKeys, ROSAHCPCluster } from '../../../types';
 import { clusterValidationSchema } from '../../../yupSchemas';
@@ -20,7 +21,10 @@ export const Encryption = () => {
   const e = useRosaHcpWizardStrings().encryption;
   const yupDescribeOptions = useEncryptionYupDescribeOptions();
 
-  const clusterVersion = useWatch({ name: FIELD_NAME.CLUSTER_VERSION }) ?? '';
+  const clusterVersion =
+    useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({
+      name: FIELD_NAME.CLUSTER_VERSION,
+    }) ?? '';
   const links = useGetDocsVersion(clusterVersion);
   const customKmsSelected = useWatch<ROSAHCPCluster>({
     name: FIELD_NAME.ENCRYPTION.ENCRYPTION_KEYS,
