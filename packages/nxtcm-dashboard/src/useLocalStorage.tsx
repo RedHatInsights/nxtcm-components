@@ -38,6 +38,7 @@ export function useLocalStorageWithObject<T>(
   const item: T = JSON.parse(state);
   const setItem = (value: SetStateAction<T>) => {
     if (value instanceof Function) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- JSON.parse returns `any`; consumer validates shape via initialValue type
       setState((prevState) => JSON.stringify(value(JSON.parse(prevState))));
       return;
     }
