@@ -405,6 +405,7 @@ export const YUP = {
         LABEL_KEY: 'details.clusterNameLabel',
         PLACEHOLDER_KEY: 'details.clusterNamePlaceholder',
         LABEL_HELP_KEY: 'details.clusterNameHelp',
+        HELPER_TEXT_KEY: 'details.clusterNameHelperText',
         STEP_ID: STEP_IDS.DETAILS,
         FIELD_TYPE: 'text',
         NO_EDIT_AFTER_SUBMIT: true,

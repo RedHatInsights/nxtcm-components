@@ -256,6 +256,7 @@ export type RosaHcpWizardStrings = {
     clusterNameLabel: string;
     clusterNamePlaceholder: string;
     clusterNameHelp: string;
+    clusterNameHelperText: string;
     openShiftVersionLabel: string;
     openShiftVersionPlaceholder: string;
     openShiftVersionOptionDisabledDescription: string;

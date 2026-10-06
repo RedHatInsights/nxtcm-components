@@ -141,6 +141,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     clusterNamePlaceholder: 'Enter the cluster name',
     clusterNameHelp:
       'This name appears in the OpenShift cluster list and forms part of the cluster console subdomain.',
+    clusterNameHelperText: 'Must be lowercase letters, numbers, or hyphens. Max 54 characters.',
     openShiftVersionLabel: 'OpenShift version',
     openShiftVersionPlaceholder: 'Select an OpenShift version',
     openShiftVersionOptionDisabledDescription:
