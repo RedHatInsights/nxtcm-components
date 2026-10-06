@@ -1,5 +1,5 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
 
 import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { checkAccessibility } from '../../test-helpers';
@@ -91,13 +91,11 @@ test.describe('RosaHcpSchemaPanel', () => {
   });
 
   test('calls onClose when the close button is clicked', async ({ mount, page }) => {
-    let closed = false;
-    await mount('nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpSchemaPanel/SchemaPanelMount', {
-      onClose: () => {
-        closed = true;
-      },
-    });
+    const component = await mount(
+      'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpSchemaPanel/SchemaPanelMount',
+      { onClose: storyCallback('onClose') }
+    );
     await page.getByRole('button', { name: s.schemaToggleAriaLabel }).click();
-    await expect.poll(() => closed).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onClose')).toHaveLength(1);
   });
 });

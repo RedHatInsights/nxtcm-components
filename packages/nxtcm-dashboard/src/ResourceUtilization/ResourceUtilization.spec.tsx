@@ -1,5 +1,5 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
 
 import { ResourceUtilizationData } from './ResourceUtilization';
 
@@ -130,7 +130,10 @@ test.describe('ResourceUtilization', () => {
   test('should show View more button when onViewMore is provided', async ({ mount }) => {
     const component = await mount(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
-      { data: defaultData, onViewMore: () => {} }
+      {
+        data: defaultData,
+        onViewMore: storyCallback('onViewMore'),
+      }
     );
     await expect(component.getByRole('button', { name: /View more/i })).toBeVisible();
   });
@@ -144,18 +147,15 @@ test.describe('ResourceUtilization', () => {
   });
 
   test('should call onViewMore when button is clicked', async ({ mount }) => {
-    let clicked = false;
     const component = await mount(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       {
         data: defaultData,
-        onViewMore: () => {
-          clicked = true;
-        },
+        onViewMore: storyCallback('onViewMore'),
       }
     );
     await component.getByRole('button', { name: /View more/i }).click();
-    await expect.poll(() => clicked).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onViewMore')).toHaveLength(1);
   });
 
   test('should handle zero usage gracefully', async ({ mount }) => {

@@ -1,5 +1,5 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
 
 import { SeverityCounts } from './AdvisorSeverity';
@@ -15,7 +15,10 @@ test.describe('AdvisorSeverity', () => {
   test('should pass accessibility tests', async ({ mount }) => {
     const component = await mount(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorSeverity/AdvisorSeverityStory',
-      { severity: defaultSeverity, onViewMore: () => {} }
+      {
+        severity: defaultSeverity,
+        onViewMore: storyCallback('onViewMore'),
+      }
     );
     await checkAccessibility({ component });
   });
@@ -54,21 +57,18 @@ test.describe('AdvisorSeverity', () => {
   });
 
   test('should render the view more link when onViewMore is provided', async ({ mount }) => {
-    let clicked = false;
     const component = await mount(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorSeverity/AdvisorSeverityStory',
       {
         severity: defaultSeverity,
-        onViewMore: () => {
-          clicked = true;
-        },
+        onViewMore: storyCallback('onViewMore'),
       }
     );
     const link = component.getByTestId('view-more-link');
     await expect(link).toBeVisible();
     await expect(link).toHaveText('View more in Red Hat Advisor');
     await link.click();
-    await expect.poll(() => clicked).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onViewMore')).toHaveLength(1);
   });
 
   test('should not render the view more link when onViewMore is omitted', async ({ mount }) => {

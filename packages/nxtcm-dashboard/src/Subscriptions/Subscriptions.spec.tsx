@@ -1,5 +1,5 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
 
 import { SubscriptionsProps } from './Subscriptions';
 
@@ -103,7 +103,10 @@ test.describe('Subscriptions', () => {
   }) => {
     const component = await mount(
       'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
-      { ...defaultProps, onViewSubscriptions: () => {} }
+      {
+        ...defaultProps,
+        onViewSubscriptions: storyCallback('onViewSubscriptions'),
+      }
     );
 
     const viewButton = component.getByRole('button', { name: /View subscriptions/i });
@@ -111,19 +114,17 @@ test.describe('Subscriptions', () => {
   });
 
   test('should call onViewSubscriptions when button is clicked', async ({ mount }) => {
-    let onViewSubscriptionsCalled = false;
-    const handleViewSubscriptions = () => {
-      onViewSubscriptionsCalled = true;
-    };
-
     const component = await mount(
       'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
-      { ...defaultProps, onViewSubscriptions: handleViewSubscriptions }
+      {
+        ...defaultProps,
+        onViewSubscriptions: storyCallback('onViewSubscriptions'),
+      }
     );
 
     await component.getByRole('button', { name: /View subscriptions/i }).click();
 
-    await expect.poll(() => onViewSubscriptionsCalled).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onViewSubscriptions')).toHaveLength(1);
   });
 
   test('should render subscription count as span when onSubscriptionsClick is not provided', async ({
@@ -146,26 +147,27 @@ test.describe('Subscriptions', () => {
   }) => {
     const component = await mount(
       'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
-      { ...defaultProps, onSubscriptionsClick: () => {} }
+      {
+        ...defaultProps,
+        onSubscriptionsClick: storyCallback('onSubscriptionsClick'),
+      }
     );
 
     await expect(component.getByRole('button', { name: '3' })).toBeVisible();
   });
 
   test('should call onSubscriptionsClick when subscription count is clicked', async ({ mount }) => {
-    let onSubscriptionsClickCalled = false;
-    const handleSubscriptionsClick = () => {
-      onSubscriptionsClickCalled = true;
-    };
-
     const component = await mount(
       'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
-      { ...defaultProps, onSubscriptionsClick: handleSubscriptionsClick }
+      {
+        ...defaultProps,
+        onSubscriptionsClick: storyCallback('onSubscriptionsClick'),
+      }
     );
 
     await component.getByRole('button', { name: '3' }).click();
 
-    await expect.poll(() => onSubscriptionsClickCalled).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onSubscriptionsClick')).toHaveLength(1);
   });
 
   test('should render instance count as span when onInstancesClick is not provided', async ({
@@ -188,26 +190,27 @@ test.describe('Subscriptions', () => {
   }) => {
     const component = await mount(
       'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
-      { ...defaultProps, onInstancesClick: () => {} }
+      {
+        ...defaultProps,
+        onInstancesClick: storyCallback('onInstancesClick'),
+      }
     );
 
     await expect(component.getByRole('button', { name: '11' })).toBeVisible();
   });
 
   test('should call onInstancesClick when instance count is clicked', async ({ mount }) => {
-    let onInstancesClickCalled = false;
-    const handleInstancesClick = () => {
-      onInstancesClickCalled = true;
-    };
-
     const component = await mount(
       'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
-      { ...defaultProps, onInstancesClick: handleInstancesClick }
+      {
+        ...defaultProps,
+        onInstancesClick: storyCallback('onInstancesClick'),
+      }
     );
 
     await component.getByRole('button', { name: '11' }).click();
 
-    await expect.poll(() => onInstancesClickCalled).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onInstancesClick')).toHaveLength(1);
   });
 
   test('should render both counts as clickable when both callbacks are provided', async ({
@@ -215,7 +218,11 @@ test.describe('Subscriptions', () => {
   }) => {
     const component = await mount(
       'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
-      { ...defaultProps, onSubscriptionsClick: () => {}, onInstancesClick: () => {} }
+      {
+        ...defaultProps,
+        onSubscriptionsClick: storyCallback('onSubscriptionsClick'),
+        onInstancesClick: storyCallback('onInstancesClick'),
+      }
     );
 
     await expect(component.getByRole('button', { name: '3' })).toBeVisible();
@@ -225,28 +232,21 @@ test.describe('Subscriptions', () => {
   test('should call correct callback when multiple clickable counts are clicked', async ({
     mount,
   }) => {
-    let subscriptionsClicked = false;
-    let instancesClicked = false;
-
     const component = await mount(
       'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
       {
         ...defaultProps,
-        onSubscriptionsClick: () => {
-          subscriptionsClicked = true;
-        },
-        onInstancesClick: () => {
-          instancesClicked = true;
-        },
+        onSubscriptionsClick: storyCallback('onSubscriptionsClick'),
+        onInstancesClick: storyCallback('onInstancesClick'),
       }
     );
 
     await component.getByRole('button', { name: '3' }).click();
-    await expect.poll(() => subscriptionsClicked).toBe(true);
-    await expect.poll(() => instancesClicked).toBe(false);
+    await expect.poll(() => storyCallbackCalls(component, 'onSubscriptionsClick')).toHaveLength(1);
+    await expect.poll(() => storyCallbackCalls(component, 'onInstancesClick')).toHaveLength(0);
 
     await component.getByRole('button', { name: '11' }).click();
-    await expect.poll(() => instancesClicked).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onInstancesClick')).toHaveLength(1);
   });
 
   test('should render icons correctly', async ({ mount, page }) => {
@@ -259,40 +259,33 @@ test.describe('Subscriptions', () => {
   });
 
   test('should handle all callbacks together', async ({ mount }) => {
-    let viewSubscriptionsCalled = false;
-    let subscriptionsClickCalled = false;
-    let instancesClickCalled = false;
-
     const component = await mount(
       'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
       {
         ...defaultProps,
-        onViewSubscriptions: () => {
-          viewSubscriptionsCalled = true;
-        },
-        onSubscriptionsClick: () => {
-          subscriptionsClickCalled = true;
-        },
-        onInstancesClick: () => {
-          instancesClickCalled = true;
-        },
+        onViewSubscriptions: storyCallback('onViewSubscriptions'),
+        onSubscriptionsClick: storyCallback('onSubscriptionsClick'),
+        onInstancesClick: storyCallback('onInstancesClick'),
       }
     );
 
     await component.getByRole('button', { name: '3' }).click();
-    await expect.poll(() => subscriptionsClickCalled).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onSubscriptionsClick')).toHaveLength(1);
 
     await component.getByRole('button', { name: '11' }).click();
-    await expect.poll(() => instancesClickCalled).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onInstancesClick')).toHaveLength(1);
 
     await component.getByRole('button', { name: /View subscriptions/i }).click();
-    await expect.poll(() => viewSubscriptionsCalled).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onViewSubscriptions')).toHaveLength(1);
   });
 
   test('should render only subscription count as clickable', async ({ mount, page }) => {
     const component = await mount(
       'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
-      { ...defaultProps, onSubscriptionsClick: () => {} }
+      {
+        ...defaultProps,
+        onSubscriptionsClick: storyCallback('onSubscriptionsClick'),
+      }
     );
 
     await expect(component.getByRole('button', { name: '3' })).toBeVisible();
@@ -305,7 +298,10 @@ test.describe('Subscriptions', () => {
   test('should render only instance count as clickable', async ({ mount, page }) => {
     const component = await mount(
       'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
-      { ...defaultProps, onInstancesClick: () => {} }
+      {
+        ...defaultProps,
+        onInstancesClick: storyCallback('onInstancesClick'),
+      }
     );
 
     await expect(component.getByRole('button', { name: '11' })).toBeVisible();

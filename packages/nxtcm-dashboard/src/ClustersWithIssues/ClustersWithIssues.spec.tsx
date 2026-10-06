@@ -1,5 +1,5 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
 
 import { ClustersWithIssuesProps } from './ClustersWithIssues';
@@ -104,7 +104,10 @@ test.describe('ClustersWithIssues', () => {
   }) => {
     const component = await mount(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
-      { data: defaultData, onClusterClick: () => {} }
+      {
+        data: defaultData,
+        onClusterClick: storyCallback('onClusterClick'),
+      }
     );
 
     await expect(component.getByTestId('cluster-link-c1')).toBeVisible();
@@ -112,20 +115,18 @@ test.describe('ClustersWithIssues', () => {
   });
 
   test('should call onClusterClick when a cluster name is clicked', async ({ mount }) => {
-    let clickedCluster: { id: string; name: string } | null = null;
-    const handleClick = (cluster: { id: string; name: string }) => {
-      clickedCluster = cluster;
-    };
-
     const component = await mount(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
-      { data: defaultData, onClusterClick: handleClick }
+      {
+        data: defaultData,
+        onClusterClick: storyCallback('onClusterClick'),
+      }
     );
 
     await component.getByTestId('cluster-link-c1').click();
-    await expect.poll(() => clickedCluster).not.toBeNull();
-    expect(clickedCluster!.id).toBe('c1');
-    expect(clickedCluster!.name).toBe('cluster1');
+    await expect
+      .poll(async () => (await storyCallbackCalls(component, 'onClusterClick'))[0]?.[0])
+      .toMatchObject({ id: 'c1', name: 'cluster1' });
   });
 
   test('should render cluster names as plain text when onClusterClick is not provided', async ({

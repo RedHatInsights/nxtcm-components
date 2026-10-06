@@ -1,7 +1,7 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import type { Page } from '@playwright/test';
 
-import { expect, type MountResult, test } from '@/ct-fixture';
+import { expect, type MountResult, storyCallback, test } from '@/ct-fixture';
 
 import fixtures from '../../../ROSAHCPWizard.fixtures';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
@@ -70,8 +70,8 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     const component = await mount(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
       {
-        roles: { data: [], isFetching: false, error: null, fetch: async () => {} },
-        oidcConfig: { data: [], isFetching: false, error: null, fetch: async () => {} },
+        roles: { data: [], isFetching: false, error: null, fetch: storyCallback('fetch') },
+        oidcConfig: { data: [], isFetching: false, error: null, fetch: storyCallback('fetch') },
       }
     );
 
@@ -106,7 +106,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     test('should show loading state for installer role when loading', async ({ mount }) => {
       const component = await mount(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
-        { roles: { data: [], isFetching: true, error: null, fetch: async () => {} } }
+        { roles: { data: [], isFetching: true, error: null, fetch: storyCallback('fetch') } }
       );
 
       await expect(installerRoleCombo(component)).toHaveValue('Loading...');
@@ -115,7 +115,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     test('should show spinner in installer role dropdown when loading', async ({ mount, page }) => {
       const component = await mount(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
-        { roles: { data: [], isFetching: true, error: null, fetch: async () => {} } }
+        { roles: { data: [], isFetching: true, error: null, fetch: storyCallback('fetch') } }
       );
 
       await installerRoleCombo(component).click();
@@ -126,7 +126,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     test('should disable refresh button for installer role when loading', async ({ mount }) => {
       const component = await mount(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
-        { roles: { data: [], isFetching: true, error: null, fetch: async () => {} } }
+        { roles: { data: [], isFetching: true, error: null, fetch: storyCallback('fetch') } }
       );
 
       const refreshButton = component
@@ -153,7 +153,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
         ],
         isFetching: false,
         error: null,
-        fetch: async () => {},
+        fetch: storyCallback('fetch'),
       };
       const component = await mount(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
@@ -184,7 +184,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
         ],
         isFetching: false,
         error: null,
-        fetch: async () => {},
+        fetch: storyCallback('fetch'),
       };
       await mount(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
@@ -330,7 +330,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     test('should show loading state for OIDC config when loading', async ({ mount }) => {
       const component = await mount(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
-        { oidcConfig: { data: [], isFetching: true, error: null, fetch: async () => {} } }
+        { oidcConfig: { data: [], isFetching: true, error: null, fetch: storyCallback('fetch') } }
       );
 
       await expect(oidcConfigCombo(component)).toHaveValue('Loading...');
@@ -339,7 +339,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     test('should show spinner in OIDC config dropdown when loading', async ({ mount, page }) => {
       const component = await mount(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
-        { oidcConfig: { data: [], isFetching: true, error: null, fetch: async () => {} } }
+        { oidcConfig: { data: [], isFetching: true, error: null, fetch: storyCallback('fetch') } }
       );
 
       await oidcConfigCombo(component).click();
@@ -350,7 +350,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     test('should disable refresh button for OIDC config when loading', async ({ mount }) => {
       const component = await mount(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
-        { oidcConfig: { data: [], isFetching: true, error: null, fetch: async () => {} } }
+        { oidcConfig: { data: [], isFetching: true, error: null, fetch: storyCallback('fetch') } }
       );
 
       const refreshButton = component
@@ -396,7 +396,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
             data: [],
             isFetching: false,
             error: null,
-            fetch: async () => {},
+            fetch: storyCallback('fetch'),
             ocmRoleError: null,
             userRoleError: null,
           },
@@ -417,7 +417,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
             data: [],
             isFetching: false,
             error: null,
-            fetch: async () => {},
+            fetch: storyCallback('fetch'),
             ocmRoleError: null,
             userRoleError: null,
           },
@@ -443,7 +443,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
         ],
         isFetching: false,
         error: null,
-        fetch: async () => {},
+        fetch: storyCallback('fetch'),
         ocmRoleError: null,
         userRoleError: null,
       };
@@ -469,7 +469,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
             data: mockRoles,
             isFetching: false,
             error: null,
-            fetch: async () => {},
+            fetch: storyCallback('fetch'),
             ocmRoleError: null,
             userRoleError: 'User role is not linked',
           },
@@ -492,7 +492,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
             data: mockRoles,
             isFetching: false,
             error: null,
-            fetch: async () => {},
+            fetch: storyCallback('fetch'),
             ocmRoleError: ocmError,
             userRoleError: null,
           },
@@ -514,7 +514,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
             data: mockRoles,
             isFetching: false,
             error: null,
-            fetch: async () => {},
+            fetch: storyCallback('fetch'),
             ocmRoleError: ocmError,
             userRoleError: 'User role is not linked',
           },

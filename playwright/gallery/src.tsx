@@ -7,6 +7,8 @@ import * as monaco from 'monaco-editor';
 import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker.js?worker';
 import YamlWorker from 'monaco-yaml/yaml.worker.js?worker';
 
+import type { StoryCallbackDescriptor } from '../story-callbacks';
+
 import '@patternfly/react-core/dist/styles/base.css';
 
 type StoryProps = Record<string, unknown>;
@@ -25,6 +27,47 @@ for (const [modulePath, loadModule] of Object.entries(modules)) {
 }
 
 let root: Root | undefined;
+window.__storyCallbackCalls = {};
+
+function isStoryCallbackDescriptor(value: object): value is StoryCallbackDescriptor {
+  return '__storyCallback' in value && typeof value.__storyCallback === 'string';
+}
+
+function serializeCallbackArgument(value: unknown, seen = new WeakSet<object>()): unknown {
+  if (value == null || ['string', 'number', 'boolean'].includes(typeof value)) return value;
+  if (Array.isArray(value)) return value.map((item) => serializeCallbackArgument(item, seen));
+  if (value instanceof Event) {
+    const currentTarget = value.currentTarget;
+    return {
+      type: value.type,
+      currentTargetTagName: currentTarget instanceof Element ? currentTarget.tagName : null,
+    };
+  }
+  if (value instanceof Node) return null;
+  if (typeof value !== 'object' || seen.has(value)) return null;
+  seen.add(value);
+  const output: Record<string, unknown> = {};
+  for (const [key, nested] of Object.entries(value)) {
+    if (typeof nested !== 'function') output[key] = serializeCallbackArgument(nested, seen);
+  }
+  return output;
+}
+
+function reviveStoryCallbacks(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(reviveStoryCallbacks);
+  if (!value || typeof value !== 'object') return value;
+  if (isStoryCallbackDescriptor(value)) {
+    const { __storyCallback: name, options } = value;
+    return (...args: unknown[]): unknown => {
+      const calls = (window.__storyCallbackCalls[name] ??= []);
+      calls.push(args.map((argument) => serializeCallbackArgument(argument)));
+      return options?.async ? Promise.resolve(options.result) : options?.result;
+    };
+  }
+  return Object.fromEntries(
+    Object.entries(value).map(([key, nested]) => [key, reviveStoryCallbacks(nested)])
+  );
+}
 
 function initializeStrykerActiveMutant(): void {
   const activeMutant = import.meta.env.STRYKER_ACTIVE_MUTANT as string | undefined;
@@ -68,7 +111,8 @@ async function mount({ story, props = {} }: MountRequest): Promise<void> {
   if (!container) throw new Error('Gallery root element #root is missing.');
   root = root ?? createRoot(container);
   try {
-    flushSync(() => root?.render(React.createElement(StoryExport as Story, props)));
+    const browserProps = reviveStoryCallbacks(props) as StoryProps;
+    flushSync(() => root?.render(React.createElement(StoryExport as Story, browserProps)));
     await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

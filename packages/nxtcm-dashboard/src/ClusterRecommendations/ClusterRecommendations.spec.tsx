@@ -1,8 +1,6 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, MountResult, test } from '@/ct-fixture';
+import { expect, MountResult, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
-
-import { Category } from './RecommendationByCategory';
 
 const defaultProps = {
   count: 25,
@@ -10,8 +8,8 @@ const defaultProps = {
   performance: 20,
   security: 15,
   faultTolerance: 5,
-  onViewRecommendations: () => {},
-  onCategoryClick: () => {},
+  onViewRecommendations: storyCallback('onViewRecommendations'),
+  onCategoryClick: storyCallback('onCategoryClick'),
 };
 
 const getCriticalCount = (component: MountResult, value: string) => {
@@ -64,19 +62,17 @@ test.describe('ClusterRecommendations', () => {
   test('should call onViewRecommendations when View recommendations button is clicked', async ({
     mount,
   }) => {
-    let onViewRecommendationsCalled = false;
-    const handleViewRecommendations = () => {
-      onViewRecommendationsCalled = true;
-    };
-
     const component = await mount(
       'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
-      { ...defaultProps, onViewRecommendations: handleViewRecommendations }
+      {
+        ...defaultProps,
+        onViewRecommendations: storyCallback('onViewRecommendations'),
+      }
     );
 
     await component.getByRole('button', { name: /View recommendations/i }).click();
 
-    await expect.poll(() => onViewRecommendationsCalled).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onViewRecommendations')).toHaveLength(1);
   });
 
   test('should display all category counts in RecommendationByCategory section', async ({
@@ -94,19 +90,19 @@ test.describe('ClusterRecommendations', () => {
   });
 
   test('should call onCategoryClick when a category is clicked', async ({ mount }) => {
-    let clickedCategory: Category | undefined;
-    const handleCategoryClick = (category: Category) => {
-      clickedCategory = category;
-    };
-
     const component = await mount(
       'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
-      { ...defaultProps, onCategoryClick: handleCategoryClick }
+      {
+        ...defaultProps,
+        onCategoryClick: storyCallback('onCategoryClick'),
+      }
     );
     //  Performance
     await component.getByRole('button', { name: /Performance/ }).click();
 
-    await expect.poll(() => clickedCategory).toBe('performance');
+    await expect
+      .poll(async () => (await storyCallbackCalls(component, 'onCategoryClick'))[0]?.[0])
+      .toBe('performance');
   });
 
   test('should render with different critical count', async ({ mount }) => {
@@ -182,23 +178,20 @@ test.describe('ClusterRecommendations', () => {
   });
 
   test('should handle multiple category clicks', async ({ mount }) => {
-    let clickCount = 0;
-    const categories: Category[] = [];
-    const handleCategoryClick = (category: Category) => {
-      clickCount++;
-      categories.push(category);
-    };
-
     const component = await mount(
       'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
-      { ...defaultProps, onCategoryClick: handleCategoryClick }
+      {
+        ...defaultProps,
+        onCategoryClick: storyCallback('onCategoryClick'),
+      }
     );
 
     await component.getByRole('button', { name: /Service availability/ }).click();
     await component.getByRole('button', { name: /Security/ }).click();
 
-    await expect.poll(() => clickCount).toBe(2);
-    await expect.poll(() => categories).toEqual(['serviceAvailability', 'security']);
+    await expect
+      .poll(() => storyCallbackCalls(component, 'onCategoryClick'))
+      .toEqual([['serviceAvailability'], ['security']]);
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
@@ -217,12 +210,14 @@ test.describe('ClusterRecommendations', () => {
       'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
       {
         isLoading: true,
-        onViewRecommendations: () => {},
+        onViewRecommendations: storyCallback(
+          'ClusterRecommendations.spec.tsx:220:onViewRecommendations'
+        ),
         serviceAvailability: 0,
         performance: 0,
         security: 0,
         faultTolerance: 0,
-        onCategoryClick: () => {},
+        onCategoryClick: storyCallback('onCategoryClick'),
       }
     );
     await expect(component.getByText('Loading cluster recommendations')).toBeVisible();

@@ -1,5 +1,5 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
 
 test.describe('TotalClusters', () => {
@@ -64,24 +64,21 @@ test.describe('TotalClusters', () => {
   test('should render count as clickable link when onViewMore is provided', async ({ mount }) => {
     const component = await mount(
       'nxtcm-dashboard/TotalClusters/TotalClusters/TotalClustersStory',
-      { data: { total: 67 }, onViewMore: () => {} }
+      { data: { total: 67 }, onViewMore: storyCallback('onViewMore') }
     );
     await expect(component.getByRole('button', { name: '67' })).toBeVisible();
   });
 
   test('should call onViewMore when count is clicked', async ({ mount }) => {
-    let viewMoreCalled = false;
     const component = await mount(
       'nxtcm-dashboard/TotalClusters/TotalClusters/TotalClustersStory',
       {
         data: { total: 67 },
-        onViewMore: () => {
-          viewMoreCalled = true;
-        },
+        onViewMore: storyCallback('onViewMore'),
       }
     );
     await component.getByRole('button', { name: '67' }).click();
-    await expect.poll(() => viewMoreCalled).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onViewMore')).toHaveLength(1);
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {

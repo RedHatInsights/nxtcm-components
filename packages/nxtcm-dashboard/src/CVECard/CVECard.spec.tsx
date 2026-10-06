@@ -1,5 +1,5 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
 
 import { CVEData } from './CVECard';
@@ -9,14 +9,14 @@ const mockCVEData: CVEData[] = [
     severity: 'critical',
     count: 24,
     label: 'Critical severity CVEs on your associated',
-    onViewClick: () => {},
+    onViewClick: storyCallback('onViewClick'),
     viewLinkText: 'View critical CVEs',
   },
   {
     severity: 'important',
     count: 147,
     label: 'Important severity CVEs on your associated',
-    onViewClick: () => {},
+    onViewClick: storyCallback('onViewClick'),
     viewLinkText: 'View important CVEs',
   },
 ];
@@ -108,16 +108,12 @@ test.describe('CVECard', () => {
   });
 
   test('should call onViewClick when critical CVE link is clicked', async ({ mount }) => {
-    let criticalOnViewClickCount = 0;
-    const criticalOnViewClick = () => {
-      criticalOnViewClickCount++;
-    };
     const data: CVEData[] = [
       {
         severity: 'critical',
         count: 24,
         label: 'Critical severity CVEs',
-        onViewClick: criticalOnViewClick,
+        onViewClick: storyCallback('onViewClick'),
         viewLinkText: 'View critical CVEs',
       },
     ];
@@ -128,20 +124,16 @@ test.describe('CVECard', () => {
     const criticalLink = component.getByText('View critical CVEs');
     await criticalLink.click();
 
-    await expect.poll(() => criticalOnViewClickCount).toBe(1);
+    await expect.poll(() => storyCallbackCalls(component, 'onViewClick')).toHaveLength(1);
   });
 
   test('should call onViewClick when important CVE link is clicked', async ({ mount }) => {
-    let importantOnViewClickCount = 0;
-    const importantOnViewClick = () => {
-      importantOnViewClickCount++;
-    };
     const data: CVEData[] = [
       {
         severity: 'important',
         count: 147,
         label: 'Important severity CVEs',
-        onViewClick: importantOnViewClick,
+        onViewClick: storyCallback('onViewClick'),
         viewLinkText: 'View important CVEs',
       },
     ];
@@ -152,7 +144,7 @@ test.describe('CVECard', () => {
     const importantLink = component.getByRole('button', { name: 'View important CVEs' });
     await importantLink.click();
 
-    await expect.poll(() => importantOnViewClickCount).toBe(1);
+    await expect.poll(() => storyCallbackCalls(component, 'onViewClick')).toHaveLength(1);
   });
 
   test('should not render view link when onViewClick is not provided', async ({ mount }) => {
@@ -188,15 +180,12 @@ test.describe('CVECard', () => {
   });
 
   test('should use default view link text when not provided', async ({ mount }) => {
-    let onViewClickCalled = false;
     const data: CVEData[] = [
       {
         severity: 'critical',
         count: 5,
         label: 'Critical CVEs',
-        onViewClick: () => {
-          onViewClickCalled = true;
-        },
+        onViewClick: storyCallback('onViewClick'),
       },
     ];
 
@@ -206,7 +195,7 @@ test.describe('CVECard', () => {
     const viewLink = component.getByText('View critical CVEs');
     await expect(viewLink).toBeVisible();
     await viewLink.click();
-    await expect.poll(() => onViewClickCalled).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onViewClick')).toHaveLength(1);
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
@@ -232,7 +221,7 @@ test('should render with single CVE severity', async ({ mount }) => {
       severity: 'critical',
       count: 10,
       label: 'Critical severity CVEs',
-      onViewClick: () => {},
+      onViewClick: storyCallback('onViewClick'),
     },
   ];
 
@@ -255,7 +244,7 @@ test('should render CVE with count of 0', async ({ mount }) => {
       severity: 'critical',
       count: 0,
       label: 'Critical CVEs',
-      onViewClick: () => {},
+      onViewClick: storyCallback('onViewClick'),
     },
   ];
   const component = await mount('nxtcm-dashboard/CVECard/CVECard/CVECardStory', { cveData: data });
@@ -291,13 +280,13 @@ test('should handle multiple CVE severities in order', async ({ mount }) => {
       severity: 'critical',
       count: 10,
       label: 'Critical CVEs',
-      onViewClick: () => {},
+      onViewClick: storyCallback('onViewClick'),
     },
     {
       severity: 'important',
       count: 20,
       label: 'Important CVEs',
-      onViewClick: () => {},
+      onViewClick: storyCallback('onViewClick'),
     },
   ];
   const component = await mount('nxtcm-dashboard/CVECard/CVECard/CVECardStory', {
@@ -314,7 +303,7 @@ test('should render with only critical severity data', async ({ mount }) => {
       severity: 'critical',
       count: 42,
       label: 'Critical severity CVEs',
-      onViewClick: () => {},
+      onViewClick: storyCallback('onViewClick'),
     },
   ];
 
@@ -331,7 +320,7 @@ test('should render with only important severity data', async ({ mount }) => {
       severity: 'important',
       count: 73,
       label: 'Important severity CVEs',
-      onViewClick: () => {},
+      onViewClick: storyCallback('onViewClick'),
     },
   ];
 
@@ -348,7 +337,7 @@ test('should handle large CVE counts', async ({ mount }) => {
       severity: 'critical',
       count: 9999,
       label: 'Critical CVEs',
-      onViewClick: () => {},
+      onViewClick: storyCallback('onViewClick'),
     },
   ];
 
@@ -411,7 +400,7 @@ test('should handle CVE data with custom view link text', async ({ mount }) => {
       severity: 'critical',
       count: 5,
       label: 'Critical CVEs',
-      onViewClick: () => {},
+      onViewClick: storyCallback('onViewClick'),
       viewLinkText: 'See All Critical Issues',
     },
   ];
@@ -428,13 +417,13 @@ test('should render multiple CVE types with different counts', async ({ mount })
       severity: 'critical',
       count: 5,
       label: 'Critical Issues',
-      onViewClick: () => {},
+      onViewClick: storyCallback('onViewClick'),
     },
     {
       severity: 'important',
       count: 150,
       label: 'Important Issues',
-      onViewClick: () => {},
+      onViewClick: storyCallback('onViewClick'),
     },
   ];
 
@@ -462,15 +451,12 @@ test('should render with minimal props', async ({ mount }) => {
 });
 
 test('should handle clicking view link multiple times', async ({ mount }) => {
-  let clickCount = 0;
   const dataWithCounter: CVEData[] = [
     {
       severity: 'critical',
       count: 10,
       label: 'Critical CVEs',
-      onViewClick: () => {
-        clickCount++;
-      },
+      onViewClick: storyCallback('onViewClick'),
     },
   ];
 
@@ -483,7 +469,7 @@ test('should handle clicking view link multiple times', async ({ mount }) => {
   await viewButton.click();
   await viewButton.click();
 
-  await expect.poll(() => clickCount).toBe(3);
+  await expect.poll(() => storyCallbackCalls(component, 'onViewClick')).toHaveLength(3);
 });
 
 test('should display correct icon colors for severity levels', async ({ mount }) => {

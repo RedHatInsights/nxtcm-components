@@ -1,7 +1,7 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import type { Locator } from '@playwright/test';
 
-import { expect, test } from '@/ct-fixture';
+import { expect, storyCallback, test } from '@/ct-fixture';
 
 // Helper to wait for Monaco editor to be ready
 
@@ -81,9 +81,7 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
       const component = await mount(
         'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepMount',
         {
-          onClose: () => {
-            // Callback provided
-          },
+          onClose: storyCallback('onClose'),
         }
       );
 
@@ -95,9 +93,7 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
       const component = await mount(
         'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepMount',
         {
-          onCancel: () => {
-            // Callback provided
-          },
+          onCancel: storyCallback('onCancel'),
         }
       );
 

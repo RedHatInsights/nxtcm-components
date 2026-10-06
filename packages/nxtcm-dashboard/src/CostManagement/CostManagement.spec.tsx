@@ -1,7 +1,7 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, storyCallback, test } from '@/ct-fixture';
 
-import { ClusterCost, CostManagementProps } from './CostManagement';
+import { CostManagementProps } from './CostManagement';
 
 const sampleClusters: CostManagementProps['clusters'] = [
   { id: 'prod-east-1', name: 'prod-east-1', cost: 700 },
@@ -63,13 +63,12 @@ test.describe('CostManagement', () => {
   });
 
   test('renders cluster names as links when onClusterClick is provided', async ({ mount }) => {
-    const clicks: string[] = [];
     const component = await mount(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       {
         totalCost: 3000,
         clusters: sampleClusters,
-        onClusterClick: (cluster: ClusterCost) => clicks.push(cluster.id),
+        onClusterClick: storyCallback('onClusterClick'),
       }
     );
     const link = component.getByRole('button', { name: 'prod-east-1' });
@@ -88,7 +87,11 @@ test.describe('CostManagement', () => {
   test('shows "View more in Cost Management" link when onViewMore is set', async ({ mount }) => {
     const component = await mount(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
-      { totalCost: 3000, clusters: sampleClusters, onViewMore: () => {} }
+      {
+        totalCost: 3000,
+        clusters: sampleClusters,
+        onViewMore: storyCallback('onViewMore'),
+      }
     );
     await expect(
       component.getByRole('button', { name: 'View more in Cost Management' })

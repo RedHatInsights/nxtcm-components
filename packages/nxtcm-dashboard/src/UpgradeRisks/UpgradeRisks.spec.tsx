@@ -1,5 +1,5 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
 
 test.describe('UpgradeRisks', () => {
@@ -53,18 +53,14 @@ test.describe('UpgradeRisks', () => {
   });
 
   test('should render View upgrade risks link when onViewRisks is provided', async ({ mount }) => {
-    let handleViewRisksCalled = false;
-    const handleViewRisks = () => {
-      handleViewRisksCalled = true;
-    };
     const component = await mount('nxtcm-dashboard/UpgradeRisks/UpgradeRisks/UpgradeRisksStory', {
       ...defaultProps,
-      onViewRisks: handleViewRisks,
+      onViewRisks: storyCallback('onViewRisks'),
     });
 
     const viewLink = component.getByRole('button', { name: 'View upgrade risks' });
     await viewLink.click();
-    await expect.poll(() => handleViewRisksCalled).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onViewRisks')).toHaveLength(1);
   });
 
   test('should not render View upgrade risks link when onViewRisks is not provided', async ({
@@ -78,19 +74,15 @@ test.describe('UpgradeRisks', () => {
   });
 
   test('should call onViewRisks when link is clicked', async ({ mount }) => {
-    let handleViewRisksCalled = false;
-    const handleViewRisks = () => {
-      handleViewRisksCalled = true;
-    };
     const component = await mount('nxtcm-dashboard/UpgradeRisks/UpgradeRisks/UpgradeRisksStory', {
       ...defaultProps,
-      onViewRisks: handleViewRisks,
+      onViewRisks: storyCallback('onViewRisks'),
     });
 
     const viewLink = component.getByRole('button', { name: 'View upgrade risks' });
     await viewLink.click();
 
-    await expect.poll(() => handleViewRisksCalled).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onViewRisks')).toHaveLength(1);
   });
 
   test('should display zero counts correctly', async ({ mount }) => {

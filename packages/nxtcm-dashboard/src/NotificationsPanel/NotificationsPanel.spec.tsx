@@ -1,5 +1,5 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
 
 import { NotificationItem } from './NotificationsPanel';
@@ -94,15 +94,12 @@ test.describe('NotificationsPanel', () => {
   });
 
   test('should call onNotificationClick when a notification is clicked', async ({ mount }) => {
-    // Create a mock function to track calls
-    const mockCalls: NotificationItem[] = [];
-    const onNotificationClick = (notification: NotificationItem) => {
-      mockCalls.push(notification);
-    };
-
     const component = await mount(
       'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
-      { notifications: mockNotifications, onNotificationClick: onNotificationClick }
+      {
+        notifications: mockNotifications,
+        onNotificationClick: storyCallback('onNotificationClick'),
+      }
     );
 
     // Click the first notification row
@@ -111,22 +108,19 @@ test.describe('NotificationsPanel', () => {
       .filter({ hasText: mockNotifications[0].title });
     await firstNotificationRow.click();
 
-    await expect.poll(() => mockCalls).toHaveLength(1);
-    expect(mockCalls[0]).toEqual(mockNotifications[0]);
+    await expect
+      .poll(async () => (await storyCallbackCalls(component, 'onNotificationClick'))[0]?.[0])
+      .toEqual(mockNotifications[0]);
   });
 
   test("should call notification's specific onClick handler", async ({ mount }) => {
-    const mockCalls: string[] = [];
-    const onClickMock = () => {
-      mockCalls.push('clicked');
-    };
     const notificationsWithHandler: NotificationItem[] = [
       {
         id: 1,
         title: 'Test Notification',
         type: 'Security',
         time: 'Now',
-        onClick: onClickMock,
+        onClick: storyCallback('onClick'),
       },
     ];
 
@@ -137,7 +131,7 @@ test.describe('NotificationsPanel', () => {
 
     await component.getByText('Test Notification').click();
 
-    await expect.poll(() => mockCalls).toHaveLength(1);
+    await expect.poll(() => storyCallbackCalls(component, 'onClick')).toHaveLength(1);
   });
 
   test.describe('pagination', () => {
@@ -285,34 +279,28 @@ test.describe('NotificationsPanel', () => {
   });
 
   test('should call both onClick handlers when both are provided', async ({ mount }) => {
-    let itemClickCalled = false;
-    let panelClickCalled = false;
-
     const notificationsWithHandler: NotificationItem[] = [
       {
         id: 1,
         title: 'Test Notification',
         type: 'Security',
         time: 'Now',
-        onClick: () => {
-          itemClickCalled = true;
-        },
+        onClick: storyCallback('onClick'),
       },
     ];
 
-    const onNotificationClick = () => {
-      panelClickCalled = true;
-    };
-
     const component = await mount(
       'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
-      { notifications: notificationsWithHandler, onNotificationClick: onNotificationClick }
+      {
+        notifications: notificationsWithHandler,
+        onNotificationClick: storyCallback('onNotificationClick'),
+      }
     );
 
     await component.getByText('Test Notification').click();
 
-    await expect.poll(() => itemClickCalled).toBe(true);
-    await expect.poll(() => panelClickCalled).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onClick')).toHaveLength(1);
+    await expect.poll(() => storyCallbackCalls(component, 'onNotificationClick')).toHaveLength(1);
   });
 
   test('should render with different notification types', async ({ mount }) => {
@@ -433,16 +421,13 @@ test.describe('NotificationsPanel', () => {
   });
 
   test('should handle clicking same notification multiple times', async ({ mount }) => {
-    let clickCount = 0;
     const notification: NotificationItem[] = [
       {
         id: 1,
         title: 'Test',
         type: 'Security',
         time: 'Now',
-        onClick: () => {
-          clickCount++;
-        },
+        onClick: storyCallback('onClick'),
       },
     ];
 
@@ -455,7 +440,7 @@ test.describe('NotificationsPanel', () => {
     await component.getByText('Test').click();
     await component.getByText('Test').click();
 
-    await expect.poll(() => clickCount).toBe(3);
+    await expect.poll(() => storyCallbackCalls(component, 'onClick')).toHaveLength(3);
   });
 
   test('should render bell icon in header', async ({ mount }) => {

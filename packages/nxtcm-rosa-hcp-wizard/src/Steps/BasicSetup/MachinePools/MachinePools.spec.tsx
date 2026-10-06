@@ -1,7 +1,7 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import type { Page } from '@playwright/test';
 
-import { expect, type MountResult, test } from '@/ct-fixture';
+import { expect, type MountResult, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
 
 import { FIELD_NAME } from '../../../constants';
 import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
@@ -128,15 +128,11 @@ test.describe('MachinePools (ROSA HCP)', () => {
   });
 
   test('should fetch machine types when region is present', async ({ mount }) => {
-    const fetchedRegions: string[] = [];
     const machineTypes = makeMachineTypesResource({
-      fetch: (args) => {
-        fetchedRegions.push(args.region);
-        return Promise.resolve();
-      },
+      fetch: storyCallback('fetchMachineTypes'),
     });
 
-    await mount(
+    const component = await mount(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
       {
         machineTypes: machineTypes,
@@ -148,7 +144,20 @@ test.describe('MachinePools (ROSA HCP)', () => {
     );
 
     await expect
-      .poll(() => fetchedRegions.length > 0 && fetchedRegions.every((r) => r === 'us-east-1'))
+      .poll(async () => {
+        const calls = await storyCallbackCalls(component, 'fetchMachineTypes');
+        return (
+          calls.length > 0 &&
+          calls.every(([request]) =>
+            Boolean(
+              request &&
+              typeof request === 'object' &&
+              'region' in request &&
+              request.region === 'us-east-1'
+            )
+          )
+        );
+      })
       .toBe(true);
   });
 
@@ -351,12 +360,8 @@ test.describe('MachinePools (ROSA HCP)', () => {
   });
 
   test('should refetch vpc list when security groups refresh is pressed', async ({ mount }) => {
-    let fetchCount = 0;
     const vpcList = makeVpcListResource({
-      fetch: () => {
-        fetchCount += 1;
-        return Promise.resolve();
-      },
+      fetch: storyCallback('vpcFetch'),
     });
 
     const component = await mount(
@@ -376,19 +381,17 @@ test.describe('MachinePools (ROSA HCP)', () => {
     const refreshButton = advancedSection.getByTestId('multiselect-refresh');
 
     await expect(refreshButton).toBeVisible();
-    const fetchCountBeforeRefresh = fetchCount;
+    const fetchCountBeforeRefresh = (await storyCallbackCalls(component, 'vpcFetch')).length;
     await refreshButton.click();
 
-    await expect.poll(() => fetchCount).toBe(fetchCountBeforeRefresh + 1);
+    await expect
+      .poll(async () => (await storyCallbackCalls(component, 'vpcFetch')).length)
+      .toBe(fetchCountBeforeRefresh + 1);
   });
 
   test('should refetch vpc list from empty security groups refresh control', async ({ mount }) => {
-    let fetchCount = 0;
     const vpcList = makeVpcListResource({
-      fetch: () => {
-        fetchCount += 1;
-        return Promise.resolve();
-      },
+      fetch: storyCallback('vpcFetch'),
     });
 
     const component = await mount(
@@ -406,16 +409,18 @@ test.describe('MachinePools (ROSA HCP)', () => {
 
     const refreshButton = component.getByTestId('security-groups-refresh');
     await expect(refreshButton).toBeVisible();
-    const fetchCountBeforeRefresh = fetchCount;
+    const fetchCountBeforeRefresh = (await storyCallbackCalls(component, 'vpcFetch')).length;
     await refreshButton.click();
 
-    await expect.poll(() => fetchCount).toBe(fetchCountBeforeRefresh + 1);
+    await expect
+      .poll(async () => (await storyCallbackCalls(component, 'vpcFetch')).length)
+      .toBe(fetchCountBeforeRefresh + 1);
   });
 
   test('should disable security groups refresh while vpc list is fetching', async ({ mount }) => {
     const vpcList = makeVpcListResource({
       isFetching: true,
-      fetch: () => Promise.resolve(),
+      fetch: storyCallback('fetch'),
     });
 
     const component = await mount(
@@ -442,7 +447,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
     const vpcList = makeVpcListResource({
       data: [],
       isFetching: true,
-      fetch: async () => {},
+      fetch: storyCallback('fetch'),
     });
 
     const component = await mount(

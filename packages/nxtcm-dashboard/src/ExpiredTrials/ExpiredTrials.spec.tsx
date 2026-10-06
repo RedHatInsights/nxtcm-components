@@ -1,5 +1,5 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
 
 import { ExpiredTrialsProps } from './ExpiredTrials';
@@ -46,7 +46,7 @@ test.describe('ExpiredTrials', () => {
   test('should render names as links when onTrialClick is provided', async ({ mount }) => {
     const component = await mount(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
-      { data: defaultData, onTrialClick: () => {} }
+      { data: defaultData, onTrialClick: storyCallback('onTrialClick') }
     );
 
     await expect(component.getByTestId('trial-link-s1')).toBeVisible();
@@ -55,20 +55,15 @@ test.describe('ExpiredTrials', () => {
   });
 
   test('should call onTrialClick when a cluster name is clicked', async ({ mount }) => {
-    let clickedTrial: { id: string; name: string } | null = null;
-    const handleClick = (trial: { id: string; name: string }) => {
-      clickedTrial = trial;
-    };
-
     const component = await mount(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
-      { data: defaultData, onTrialClick: handleClick }
+      { data: defaultData, onTrialClick: storyCallback('onTrialClick') }
     );
 
     await component.getByTestId('trial-link-s2').click();
-    await expect.poll(() => clickedTrial).not.toBeNull();
-    expect(clickedTrial!.id).toBe('s2');
-    expect(clickedTrial!.name).toBe('test');
+    await expect
+      .poll(async () => (await storyCallbackCalls(component, 'onTrialClick'))[0]?.[0])
+      .toEqual({ id: 's2', name: 'test' });
   });
 
   test('should render names as plain text when onTrialClick is not provided', async ({ mount }) => {
@@ -114,7 +109,10 @@ test.describe('ExpiredTrials', () => {
   test('should render pagination when onPageChange is provided', async ({ mount }) => {
     const component = await mount(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
-      { data: { ...defaultData, totalCount: 25 }, onPageChange: () => {} }
+      {
+        data: { ...defaultData, totalCount: 25 },
+        onPageChange: storyCallback('onPageChange'),
+      }
     );
 
     await expect(component.locator('.pf-v6-c-pagination')).toBeVisible();
@@ -130,38 +128,36 @@ test.describe('ExpiredTrials', () => {
   });
 
   test('should call onPageChange when next page is clicked', async ({ mount }) => {
-    let changedPage: number | null = null;
     const component = await mount(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
       {
         data: { ...defaultData, totalCount: 25 },
-        onPageChange: (page: number) => {
-          changedPage = page;
-        },
+        onPageChange: storyCallback('onPageChange'),
       }
     );
 
     await component.getByRole('button', { name: 'Go to next page' }).click();
-    await expect.poll(() => changedPage).toBe(2);
+    await expect
+      .poll(async () => (await storyCallbackCalls(component, 'onPageChange'))[0]?.[0])
+      .toBe(2);
   });
 
   test('should call onPageSizeChange when per-page is changed', async ({ mount, page }) => {
-    let changedSize: number | null = null;
     const component = await mount(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
       {
         data: { ...defaultData, totalCount: 25 },
-        onPageChange: () => {},
-        onPageSizeChange: (size: number) => {
-          changedSize = size;
-        },
+        onPageChange: storyCallback('onPageChange'),
+        onPageSizeChange: storyCallback('onPageSizeChange'),
       }
     );
 
     // pf6 portals the dropdown menu to document body, so query via page
     await component.locator('.pf-v6-c-pagination .pf-v6-c-menu-toggle').click();
     await page.getByRole('menuitem', { name: /20 per page/i }).click();
-    await expect.poll(() => changedSize).toBe(20);
+    await expect
+      .poll(async () => (await storyCallbackCalls(component, 'onPageSizeChange'))[0]?.[0])
+      .toBe(20);
   });
 
   test('should handle single trial', async ({ mount }) => {
@@ -173,7 +169,7 @@ test.describe('ExpiredTrials', () => {
     };
     const component = await mount(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
-      { data: data, onTrialClick: () => {} }
+      { data: data, onTrialClick: storyCallback('onTrialClick') }
     );
 
     await expect(component.getByTestId('trial-link-s1')).toContainText('my-expired-cluster');

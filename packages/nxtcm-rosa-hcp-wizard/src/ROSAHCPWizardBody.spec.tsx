@@ -1,7 +1,7 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import type { Page } from '@playwright/test';
 
-import { expect, type MountResult, test } from '@/ct-fixture';
+import { expect, type MountResult, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
 
 import { defaultRosaHcpWizardStrings } from './stringsProvider/rosaHcpWizardStrings.defaults';
 import { checkAccessibility } from './test-helpers';
@@ -49,7 +49,7 @@ test.describe('ROSAHCPWizardBody', () => {
     test('shows Back to the wizard when onBackToReviewStep is provided', async ({ mount }) => {
       const component = await mount(
         'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount',
-        { onSubmitError: ERROR_MESSAGE, onBackToReviewStep: () => {} }
+        { onSubmitError: ERROR_MESSAGE, onBackToReviewStep: storyCallback('onBackToReviewStep') }
       );
 
       await expect(
@@ -58,35 +58,29 @@ test.describe('ROSAHCPWizardBody', () => {
     });
 
     test('calls onCancel when Exit wizard is clicked', async ({ mount }) => {
-      let cancelCalled = false;
       const component = await mount(
         'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount',
         {
           onSubmitError: ERROR_MESSAGE,
-          onCancel: () => {
-            cancelCalled = true;
-          },
+          onCancel: storyCallback('onCancel'),
         }
       );
 
       await component.getByRole('button', { name: submitErrorStrings.exitWizard }).click();
-      await expect.poll(() => cancelCalled).toBe(true);
+      await expect.poll(() => storyCallbackCalls(component, 'onCancel')).toHaveLength(1);
     });
 
     test('calls onBackToReviewStep when Back to the wizard is clicked', async ({ mount }) => {
-      let backToReviewCalled = false;
       const component = await mount(
         'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount',
         {
           onSubmitError: ERROR_MESSAGE,
-          onBackToReviewStep: () => {
-            backToReviewCalled = true;
-          },
+          onBackToReviewStep: storyCallback('onBackToReviewStep'),
         }
       );
 
       await component.getByRole('button', { name: submitErrorStrings.backToReviewStep }).click();
-      await expect.poll(() => backToReviewCalled).toBe(true);
+      await expect.poll(() => storyCallbackCalls(component, 'onBackToReviewStep')).toHaveLength(1);
     });
 
     test('hides error view and shows wizard when Back to the wizard clears the error', async ({
@@ -111,7 +105,7 @@ test.describe('ROSAHCPWizardBody', () => {
       test.setTimeout(60_000);
       const component = await mount(
         'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount',
-        { onSubmitError: ERROR_MESSAGE, onBackToReviewStep: () => {} }
+        { onSubmitError: ERROR_MESSAGE, onBackToReviewStep: storyCallback('onBackToReviewStep') }
       );
 
       await checkAccessibility({ component });

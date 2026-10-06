@@ -16,6 +16,18 @@ export function StatefulGalleryStory({
   );
 }
 
+export function CallbackGalleryStory({
+  onAction,
+}: {
+  onAction: (value: string) => void;
+}): React.ReactElement {
+  return (
+    <button type="button" onClick={() => onAction('browser-value')}>
+      Invoke callback
+    </button>
+  );
+}
+
 export const NonComponentExport = 'not a component';
 
 export function ThrowingGalleryStory(): never {

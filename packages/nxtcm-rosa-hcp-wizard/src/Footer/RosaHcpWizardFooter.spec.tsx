@@ -1,7 +1,7 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import * as yaml from 'js-yaml';
 
-import { expect, type MountResult, test } from '@/ct-fixture';
+import { expect, type MountResult, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
 
 import { STEP_IDS } from '../constants';
 import fixtures from '../ROSAHCPWizard.fixtures';
@@ -468,15 +468,11 @@ test.describe('RosaHcpWizardFooter — submission payload', () => {
   test('calls onSubmit with a parseable YAML string when the Review step passes validation', async ({
     mount,
   }) => {
-    let receivedPayload: string | undefined;
     const component = await mount(
       'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
       {
         defaultValues: VALID_REVIEW_SUBMIT_FORM_VALUES,
-        onSubmit: (yamlString: string) => {
-          receivedPayload = yamlString;
-          return Promise.resolve();
-        },
+        onSubmit: storyCallback('onSubmit'),
       }
     );
 
@@ -485,9 +481,12 @@ test.describe('RosaHcpWizardFooter — submission payload', () => {
 
     await component.getByRole('button', { name: FOOTER_SUBMIT }).click();
 
-    await expect.poll(() => receivedPayload).toBe(EXPECTED_SUBMIT_YAML);
+    await expect
+      .poll(async () => (await storyCallbackCalls(component, 'onSubmit'))[0]?.[0])
+      .toBe(EXPECTED_SUBMIT_YAML);
 
     // Verify consuming applications receive valid, parseable YAML.
+    const [[receivedPayload]] = await storyCallbackCalls(component, 'onSubmit');
     const parsed = yaml.load(receivedPayload as string) as Record<string, unknown>;
     expect(typeof parsed).toBe('object');
     expect(typeof parsed['kind']).toBe('string');

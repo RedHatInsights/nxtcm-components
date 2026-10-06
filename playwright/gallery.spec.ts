@@ -1,4 +1,4 @@
-import { expect, test } from '../ct-fixture';
+import { expect, storyCallback, storyCallbackCalls, test } from '../ct-fixture';
 
 const statefulStory = 'nxtcm-dashboard/playwrightGallery/StatefulGalleryStory';
 
@@ -18,6 +18,14 @@ test('unmounts the active gallery story', async ({ mount }) => {
   const component = await mount(statefulStory);
   await component.unmount();
   await expect(component.getByRole('button')).toHaveCount(0);
+});
+
+test('records story callbacks entirely in the browser', async ({ mount, page }) => {
+  const component = await mount('nxtcm-dashboard/playwrightGallery/CallbackGalleryStory', {
+    onAction: storyCallback('action'),
+  });
+  await component.getByRole('button', { name: 'Invoke callback' }).click();
+  await expect.poll(() => storyCallbackCalls(page, 'action')).toEqual([['browser-value']]);
 });
 
 test('rejects invalid gallery story IDs and render failures', async ({ mount }) => {

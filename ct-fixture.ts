@@ -3,6 +3,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 export { expect };
+export { storyCallback, storyCallbackCalls } from './playwright/story-callbacks';
 
 declare global {
   interface Window {

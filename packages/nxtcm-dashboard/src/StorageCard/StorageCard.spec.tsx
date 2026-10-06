@@ -1,5 +1,5 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
 import { checkAccessibility } from '@/test-helpers';
 
 import { StorageCardProps } from './StorageCard';
@@ -93,18 +93,14 @@ test.describe('StorageCard', () => {
   });
 
   test('should show "View more" button when onViewMore callback is provided', async ({ mount }) => {
-    let handleViewMoreCalled = false;
-    const handleViewMore = () => {
-      handleViewMoreCalled = true;
-    };
     const component = await mount('nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory', {
       storageData: mockStorageData,
-      onViewMore: handleViewMore,
+      onViewMore: storyCallback('onViewMore'),
     });
     const viewMoreButton = component.getByText('View more');
     await expect(viewMoreButton).toBeVisible();
     await viewMoreButton.click();
-    await expect.poll(() => handleViewMoreCalled).toBe(true);
+    await expect.poll(() => storyCallbackCalls(component, 'onViewMore')).toHaveLength(1);
   });
 
   test('should calculate percentage correctly for high usage', async ({ mount }) => {
