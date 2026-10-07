@@ -10,7 +10,6 @@ import PencilAltIcon from '@patternfly/react-icons/dist/esm/icons/pencil-alt-ico
 import { useWatch } from 'react-hook-form';
 
 import { Section } from '../../components/Section';
-import { STEP_IDS } from '../../constants';
 import { getRosaHcpWizardStringByLabelKey } from '../../stringsProvider/getRosaHcpWizardStringByLabelKey';
 import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
@@ -91,7 +90,6 @@ export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
   return (
     <Section
       label={review.sectionLabel}
-      id={STEP_IDS.REVIEW}
       isForm={false}
       labelActions={
         onOpenYamlEditor ? (

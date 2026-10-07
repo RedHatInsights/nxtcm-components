@@ -6,17 +6,12 @@ import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
 import { Split, SplitItem } from '@patternfly/react-core/dist/dynamic/layouts/Split';
 import { Stack, StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 
-import { LabelHelp } from './Fields/LabelHelp';
-
 import './Section.css';
 
 type SectionProps = {
-  id?: string;
   label?: string | ReactNode;
   description?: ReactNode;
   children?: ReactNode;
-  labelHelpTitle?: string;
-  labelHelp?: string;
   /** Optional actions rendered beside the section title (e.g. Review "Edit in YAML"). */
   labelActions?: ReactNode;
   /** When false, step body is not wrapped in PatternFly Form (e.g. Review). Defaults to true. */
@@ -24,18 +19,7 @@ type SectionProps = {
 };
 
 export const Section: React.FunctionComponent<SectionProps> = (props) => {
-  const {
-    isForm = true,
-    children,
-    description,
-    id: idProp,
-    label,
-    labelHelp,
-    labelHelpTitle,
-    labelActions,
-  } = props;
-  const id =
-    idProp ?? (typeof label === 'string' ? label.toLowerCase().split(' ').join('-') : undefined);
+  const { isForm = true, children, description, label, labelActions } = props;
   const sectionHeader = label ? (
     <Content>
       <Split hasGutter>
@@ -43,9 +27,6 @@ export const Section: React.FunctionComponent<SectionProps> = (props) => {
           <Title headingLevel="h3" size="md">
             {label}
           </Title>
-          {idProp && (
-            <LabelHelp id={idProp} labelHelp={labelHelp} labelHelpTitle={labelHelpTitle} />
-          )}
         </SplitItem>
         {labelActions ? <SplitItem>{labelActions}</SplitItem> : null}
       </Split>
@@ -54,13 +35,11 @@ export const Section: React.FunctionComponent<SectionProps> = (props) => {
   ) : null;
 
   return (
-    <div id={id}>
-      <Stack hasGutter>
-        {sectionHeader ? <StackItem>{sectionHeader}</StackItem> : null}
-        <StackItem>
-          {isForm ? <Form onSubmit={(event) => event.preventDefault()}>{children}</Form> : children}
-        </StackItem>
-      </Stack>
-    </div>
+    <Stack hasGutter>
+      {sectionHeader ? <StackItem>{sectionHeader}</StackItem> : null}
+      <StackItem>
+        {isForm ? <Form onSubmit={(event) => event.preventDefault()}>{children}</Form> : children}
+      </StackItem>
+    </Stack>
   );
 };
