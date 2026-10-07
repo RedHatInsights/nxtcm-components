@@ -167,6 +167,16 @@ export function wizFieldShowsErrorMessage(
 }
 
 /**
+ * RHF returns null outside FormProvider, despite declaring a non-null return type.
+ * A nullable hook return keeps this possibility visible to control-only consumers.
+ */
+export function useOptionalWizFormContext<
+  TFieldValues extends FieldValues,
+>(): UseFormReturn<TFieldValues> | null {
+  return useFormContext<TFieldValues>();
+}
+
+/**
  * Resolves {@link Control} from props or react-hook-form context.
  * Throws a consistent error message when neither is available.
  */
@@ -174,8 +184,7 @@ export function useWizRhfControl<TFieldValues extends FieldValues>(
   componentDisplayName: string,
   controlProp?: Control<TFieldValues>
 ): Control<TFieldValues> {
-  /** RHF default context is `null` when `FormProvider` is not used. */
-  const formContext: UseFormReturn<TFieldValues> | null = useFormContext<TFieldValues>();
+  const formContext = useOptionalWizFormContext<TFieldValues>();
   const control = controlProp ?? formContext?.control;
 
   if (control == null) {

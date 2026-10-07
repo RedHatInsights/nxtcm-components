@@ -14,7 +14,6 @@ import {
   type SetValueConfig,
   useController,
   type UseControllerReturn,
-  useFormContext,
   type UseFormGetFieldState,
   type UseFormReturn,
   type UseFormSetValue,
@@ -30,6 +29,7 @@ import { TextInput, type TextInputProps } from '../../Fields/TextInput';
 import { FieldWithAPIErrorAlert } from '../../FieldWithAPIErrorAlert';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
 import {
+  useOptionalWizFormContext,
   useWizRhfControl,
   wizFieldShowsErrorMessage,
   type WizRhfBoundFieldProps,
@@ -294,11 +294,14 @@ export function WizTextInput<TFieldValues extends FieldValues = WizardFormValues
   );
 
   const control = useWizRhfControl<TFieldValues>('WizTextInput', controlProp);
-  /** RHF default context is `null` when `FormProvider` is not used (control-only harness). */
-  const formContext: UseFormReturn<TFieldValues> | null = useFormContext<TFieldValues>();
+  const formContext = useOptionalWizFormContext<TFieldValues>();
 
-  if (validateOnBlur && formContext == null) {
-    throw new Error(WIZ_TEXT_INPUT_VALIDATE_ON_BLUR_CONTROL_ONLY_ERROR);
+  let blurValidationForm: UseFormReturn<TFieldValues> | undefined;
+  if (validateOnBlur) {
+    if (formContext == null) {
+      throw new Error(WIZ_TEXT_INPUT_VALIDATE_ON_BLUR_CONTROL_ONLY_ERROR);
+    }
+    blurValidationForm = formContext;
   }
 
   const formState = useFormState({ control });
@@ -337,11 +340,11 @@ export function WizTextInput<TFieldValues extends FieldValues = WizardFormValues
     validationRevealed: stepValidationRevealed,
   };
 
-  const textInput = validateOnBlur ? (
+  const textInput = blurValidationForm ? (
     <WizTextInputValidateOnBlur
       {...boundProps}
-      setValue={formContext.setValue}
-      trigger={formContext.trigger}
+      setValue={blurValidationForm.setValue}
+      trigger={blurValidationForm.trigger}
     />
   ) : (
     <WizTextInputStandard {...boundProps} />
