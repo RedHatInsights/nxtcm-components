@@ -8,8 +8,10 @@ import {
 
 import {
   type FieldPath,
+  type FieldPathByValue,
   type FieldPathValue,
   type FieldValues,
+  type SetValueConfig,
   useController,
   type UseControllerReturn,
   useFormContext,
@@ -21,6 +23,7 @@ import {
 } from 'react-hook-form';
 
 import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
+import type { WizardFormValues } from '../../../types';
 import { requiredFromYup } from '../../../utilities/yupFieldRequired';
 import { wizardFieldMetaByPath } from '../../../yupSchemas';
 import { TextInput, type TextInputProps } from '../../Fields/TextInput';
@@ -66,18 +69,21 @@ type WizTextInputSpreadProps = Omit<
     >
   >;
 
-type WizTextInputValueBinding<TFieldValues extends FieldValues> = {
-  [TName in FieldPath<TFieldValues>]: {
-    name: TName;
-    /** Converts input text to the named field's value type. */
-    parseValue: (text: string) => FieldPathValue<TFieldValues, TName>;
-  };
-}[FieldPath<TFieldValues>];
+/** Text fields must accept any string; exclude string literals and enums. */
+type WizTextInputFieldPath<TFieldValues extends FieldValues> = {
+  [TName in FieldPathByValue<TFieldValues, string | undefined>]: string extends FieldPathValue<
+    TFieldValues,
+    TName
+  >
+    ? TName
+    : never;
+}[FieldPathByValue<TFieldValues, string | undefined>];
 
-export type WizTextInputProps<TFieldValues extends FieldValues = FieldValues> =
+export type WizTextInputProps<TFieldValues extends FieldValues = WizardFormValues> =
   WizTextInputSpreadProps &
-    WizRhfBoundFieldProps<TFieldValues> &
-    WizTextInputValueBinding<TFieldValues> & {
+    Omit<WizRhfBoundFieldProps<TFieldValues>, 'name'> & {
+      /** Path to a string field; infer custom form shapes from control, not name. */
+      name: NoInfer<WizTextInputFieldPath<TFieldValues>>;
       /**
        * Optional API/load failure content shown in `FieldWithAPIErrorAlert` when set.
        */
@@ -107,8 +113,7 @@ type WizTextInputResolvedPresentation = {
 
 type WizTextInputBoundFieldProps<TFieldValues extends FieldValues> = {
   rest: WizTextInputSpreadProps;
-  name: FieldPath<TFieldValues>;
-  parseValue: (text: string) => FieldPathValue<TFieldValues, FieldPath<TFieldValues>>;
+  name: WizTextInputFieldPath<TFieldValues>;
   requiredProp: boolean | undefined;
   presentation: WizTextInputResolvedPresentation;
   controller: UseControllerReturn<TFieldValues, FieldPath<TFieldValues>>;
@@ -137,15 +142,25 @@ const EMPTY_SUBSCRIBED_FIELD_STATE = {
   error: undefined,
 } satisfies ReturnType<UseFormGetFieldState<FieldValues>>;
 
+function setTextFieldValue<TFieldValues extends FieldValues>(
+  setValue: UseFormSetValue<TFieldValues>,
+  name: WizTextInputFieldPath<TFieldValues>,
+  value: string,
+  options: SetValueConfig
+): void {
+  // The path constraint guarantees that this field accepts any string. TypeScript
+  // cannot resolve that conditional relationship inside a generic RHF setter.
+  setValue(name, value as FieldPathValue<TFieldValues, typeof name>, options);
+}
+
 async function handleWizTextInputValidateOnBlur<TFieldValues extends FieldValues>(
   event: FocusEvent<HTMLInputElement>,
-  name: FieldPath<TFieldValues>,
+  name: WizTextInputFieldPath<TFieldValues>,
   setValue: UseFormSetValue<TFieldValues>,
   trigger: UseFormTrigger<TFieldValues>,
-  parseValue: (text: string) => FieldPathValue<TFieldValues, FieldPath<TFieldValues>>,
   onBlurProp?: FocusEventHandler<HTMLInputElement>
 ): Promise<void> {
-  setValue(name, parseValue(event.target.value), {
+  setTextFieldValue(setValue, name, event.target.value, {
     shouldTouch: true,
   });
   await trigger(name);
@@ -202,13 +217,13 @@ function renderWizTextInputField<TFieldValues extends FieldValues>({
 function WizTextInputStandard<TFieldValues extends FieldValues>(
   props: WizTextInputBoundFieldProps<TFieldValues>
 ) {
-  const { controller, onBlurProp, parseValue } = props;
+  const { controller, onBlurProp } = props;
   const { field } = controller;
 
   return renderWizTextInputField({
     ...props,
     onChange: (_event, value) => {
-      field.onChange(parseValue(value));
+      field.onChange(value);
     },
     onBlur: (event) => {
       field.onBlur();
@@ -226,18 +241,18 @@ function WizTextInputValidateOnBlur<TFieldValues extends FieldValues>(
     trigger: UseFormTrigger<TFieldValues>;
   }
 ) {
-  const { name, onBlurProp, setValue, trigger, parseValue } = props;
+  const { name, onBlurProp, setValue, trigger } = props;
 
   return renderWizTextInputField({
     ...props,
     onChange: (_event, value) => {
-      setValue(name, parseValue(value), {
+      setTextFieldValue(setValue, name, value, {
         shouldValidate: false,
         shouldDirty: true,
       });
     },
     onBlur: (event) => {
-      void handleWizTextInputValidateOnBlur(event, name, setValue, trigger, parseValue, onBlurProp);
+      void handleWizTextInputValidateOnBlur(event, name, setValue, trigger, onBlurProp);
     },
   });
 }
@@ -248,12 +263,11 @@ function WizTextInputValidateOnBlur<TFieldValues extends FieldValues>(
  * You may set `id`, `label`, `placeholder`, `helperText`, `labelHelp`, and `labelHelpTitle` via props. When omitted, Yup `.meta()` may supply inline copy or `*Key` paths resolved from `RosaHcpWizardStringsProvider`.
  * Pass `isRequired` (and optionally native `required`) to override; when `isRequired` is omitted and `schema` is set, required UI follows Yup for this path. `TextInput` applies `required={isRequired || required}` on the input.
  */
-export function WizTextInput<TFieldValues extends FieldValues = FieldValues>(
+export function WizTextInput<TFieldValues extends FieldValues = WizardFormValues>(
   props: WizTextInputProps<TFieldValues>
 ) {
   const {
     name,
-    parseValue,
     control: controlProp,
     schema,
     yupDescribeOptions,
@@ -309,7 +323,6 @@ export function WizTextInput<TFieldValues extends FieldValues = FieldValues>(
   const boundProps: WizTextInputBoundFieldProps<TFieldValues> = {
     rest,
     name,
-    parseValue,
     requiredProp,
     presentation: {
       ...presentationProps,

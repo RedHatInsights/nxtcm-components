@@ -31,25 +31,16 @@ export const ClusterWideProxy = () => {
       <ExternalLink href={links.CONFIGURE_PROXY_URL}>{cw.learnMoreLink}</ExternalLink>
       <Alert variant="info" isInline isPlain title={cw.alertConfigureFields} />
       <FieldWrapper size="lg">
-        <WizTextInput
-          name={FIELD_NAME.HTTP_PROXY_URL}
-          schema={clusterValidationSchema}
-          parseValue={(value: string): string => value}
-        />
+        <WizTextInput name={FIELD_NAME.HTTP_PROXY_URL} schema={clusterValidationSchema} />
       </FieldWrapper>
       <FieldWrapper size="lg">
-        <WizTextInput
-          name={FIELD_NAME.HTTPS_PROXY_URL}
-          schema={clusterValidationSchema}
-          parseValue={(value: string): string => value}
-        />
+        <WizTextInput name={FIELD_NAME.HTTPS_PROXY_URL} schema={clusterValidationSchema} />
       </FieldWrapper>
       <FieldWrapper size="lg">
         <WizTextInput
           isDisabled={disableNoProxyDomains}
           name={FIELD_NAME.NO_PROXY_DOMAINS}
           schema={clusterValidationSchema}
-          parseValue={(value: string): string => value}
         />
       </FieldWrapper>
       <FieldWrapper size="lg">

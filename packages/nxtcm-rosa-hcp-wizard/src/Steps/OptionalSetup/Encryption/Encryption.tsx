@@ -59,11 +59,10 @@ export const Encryption = () => {
 
       {customKmsSelected === 'custom' ? (
         <FieldWrapper size="lg">
-          <WizTextInput<ROSAHCPCluster>
+          <WizTextInput
             name={FIELD_NAME.ENCRYPTION.KMS_KEY_ARN}
             schema={clusterValidationSchema}
             yupDescribeOptions={yupDescribeOptions}
-            parseValue={(value: string): string => value}
           />
         </FieldWrapper>
       ) : null}
@@ -83,11 +82,10 @@ export const Encryption = () => {
       </FieldWrapper>
       {etcdIsChecked ? (
         <FieldWrapper size="lg">
-          <WizTextInput<ROSAHCPCluster>
+          <WizTextInput
             name={FIELD_NAME.ENCRYPTION.ETCD_KEY_ARN}
             schema={clusterValidationSchema}
             yupDescribeOptions={yupDescribeOptions}
-            parseValue={(value: string): string => value}
           />
         </FieldWrapper>
       ) : null}

@@ -146,7 +146,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
           </FieldWrapper>
 
           <FieldWrapper size="lg">
-            <WizTextInput<ROSAHCPCluster>
+            <WizTextInput
               name={FIELD_NAME.NETWORK_MACHINE_CIDR}
               schema={clusterValidationSchema}
               isDisabled={cidrDefaultChecked}
@@ -157,11 +157,10 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
                   learnMoreLink={n.cidrFieldLearnMoreLink}
                 />
               }
-              parseValue={(value: string): string => value}
             />
           </FieldWrapper>
           <FieldWrapper size="lg">
-            <WizTextInput<ROSAHCPCluster>
+            <WizTextInput
               name={FIELD_NAME.NETWORK_SERVICE_CIDR}
               schema={clusterValidationSchema}
               isDisabled={cidrDefaultChecked}
@@ -172,11 +171,10 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
                   learnMoreLink={n.cidrFieldLearnMoreLink}
                 />
               }
-              parseValue={(value: string): string => value}
             />
           </FieldWrapper>
           <FieldWrapper size="lg">
-            <WizTextInput<ROSAHCPCluster>
+            <WizTextInput
               name={FIELD_NAME.NETWORK_POD_CIDR}
               schema={clusterValidationSchema}
               isDisabled={cidrDefaultChecked}
@@ -187,11 +185,10 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
                   learnMoreLink={n.cidrFieldLearnMoreLink}
                 />
               }
-              parseValue={(value: string): string => value}
             />
           </FieldWrapper>
           <FieldWrapper size="lg">
-            <WizTextInput<ROSAHCPCluster>
+            <WizTextInput
               name={FIELD_NAME.NETWORK_HOST_PREFIX}
               schema={clusterValidationSchema}
               isDisabled={cidrDefaultChecked}
@@ -202,7 +199,6 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
                   learnMoreLink={n.cidrFieldLearnMoreLink}
                 />
               }
-              parseValue={(value: string): string => value}
             />
           </FieldWrapper>
         </NestedFields>

@@ -28,7 +28,9 @@ const schema: yup.ObjectSchema<DemoFormValues> = yup.object({
     }),
 });
 
-function WizTextInputFormDemo(args: WizTextInputProps) {
+type TextInputStoryArgs = Omit<WizTextInputProps, 'name' | 'control'>;
+
+function WizTextInputFormDemo(args: TextInputStoryArgs) {
   const [lastSubmit, setLastSubmit] = useState<DemoFormValues | null>(null);
   const methods = useForm<DemoFormValues>({
     resolver: yupResolver(schema),
@@ -45,12 +47,7 @@ function WizTextInputFormDemo(args: WizTextInputProps) {
           })(e);
         }}
       >
-        <WizTextInput
-          {...args}
-          name={CLUSTER_NAME_PATH}
-          schema={schema}
-          parseValue={(value: string): string => value}
-        />
+        <WizTextInput<DemoFormValues> {...args} name={CLUSTER_NAME_PATH} schema={schema} />
         <Button type="submit" className="pf-v6-u-mt-md">
           Submit
         </Button>
@@ -82,7 +79,7 @@ const passwordSchema: yup.ObjectSchema<PasswordDemoFormValues> = yup.object({
     }),
 });
 
-function WizTextInputPasswordFormDemo(args: WizTextInputProps) {
+function WizTextInputPasswordFormDemo(args: TextInputStoryArgs) {
   const [lastSubmit, setLastSubmit] = useState<PasswordDemoFormValues | null>(null);
   const methods = useForm<PasswordDemoFormValues>({
     resolver: yupResolver(passwordSchema),
@@ -99,11 +96,10 @@ function WizTextInputPasswordFormDemo(args: WizTextInputProps) {
           })(e);
         }}
       >
-        <WizTextInput
+        <WizTextInput<PasswordDemoFormValues>
           {...args}
           name={ADMIN_PASSWORD_PATH}
           schema={passwordSchema}
-          parseValue={(value: string): string => value}
         />
         <Button type="submit" className="pf-v6-u-mt-md">
           Submit
