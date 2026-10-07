@@ -90,8 +90,7 @@ describe('useWizRhfControl', () => {
       act(() => {
         root.render(
           React.createElement(WizTextInput, {
-            name: 'onlyName',
-            parseValue: (value: string): string => value,
+            name: 'name',
           })
         );
       });
@@ -111,7 +110,6 @@ describe('useWizRhfControl', () => {
       return React.createElement(WizTextInput<{ notes: string }>, {
         control: methods.control,
         name: 'notes',
-        parseValue: (value: string): string => value,
         validateOnBlur: true,
       });
     }
