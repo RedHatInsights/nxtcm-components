@@ -1,4 +1,6 @@
-import { clusterValidationSchema } from './clusterValidationSchema';
+import type { ISchema } from 'yup';
+
+import { clusterValidationFields } from './clusterValidationSchema';
 import { readWizardFieldMeta } from './readWizardFieldMeta';
 import type {
   WizardFieldDerivedSyncKey,
@@ -43,11 +45,9 @@ type WizardFieldMetaChangeRegistry = {
   derivedSyncEntries: WizardFieldDerivedSyncEntry[];
 };
 
-function isWizardFormFieldName(name: string): name is WizardFormFieldName {
-  return Object.hasOwn(clusterValidationSchema.fields, name);
-}
-
-function buildWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
+function buildWizardFieldMetaChangeRegistry<TName extends WizardFormFieldName>(
+  fieldSchemas: Record<TName, ISchema<unknown>>
+): WizardFieldMetaChangeRegistry {
   const fieldPathsByStep: Record<string, WizardFormFieldName[]> = {};
   const selectFieldPaths = new Set<string>();
   const resets = new Map<WizardFormFieldName, readonly WizardFormFieldName[]>();
@@ -60,12 +60,13 @@ function buildWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
   const syncEntries: WizardFieldSyncEntry[] = [];
   const derivedSyncEntries: WizardFieldDerivedSyncEntry[] = [];
 
-  for (const [fieldName, fieldSchema] of Object.entries(clusterValidationSchema.fields)) {
-    if (!isWizardFormFieldName(fieldName)) {
-      throw new Error(`Unknown wizard field: ${fieldName}`);
+  // Generic record iteration preserves the key type; Object.entries would widen it to string.
+  for (const fieldName in fieldSchemas) {
+    if (!Object.hasOwn(fieldSchemas, fieldName)) {
+      continue;
     }
 
-    const meta = readWizardFieldMeta(fieldSchema);
+    const meta = readWizardFieldMeta(fieldSchemas[fieldName]);
     if (!meta) {
       continue;
     }
@@ -128,7 +129,7 @@ function buildWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
 let registryCache: WizardFieldMetaChangeRegistry | undefined;
 
 function getWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
-  registryCache ??= buildWizardFieldMetaChangeRegistry();
+  registryCache ??= buildWizardFieldMetaChangeRegistry(clusterValidationFields);
   return registryCache;
 }
 
