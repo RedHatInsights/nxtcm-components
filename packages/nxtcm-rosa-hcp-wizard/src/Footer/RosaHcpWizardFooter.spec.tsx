@@ -243,7 +243,9 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
 
     await advancePastDetailsStep(component);
     await component.getByRole('button', { name: FOOTER_NEXT }).click();
-    await expect(component.locator('#machine-pools-section')).toBeVisible();
+    await expect(
+      component.getByRole('heading', { name: mp.sectionLabel, exact: true })
+    ).toBeVisible();
 
     await component.getByRole('combobox', { name: vpcSelectToggle, exact: true }).click();
     await page.getByRole('option', { name: mockVpc.name, exact: true }).click();
