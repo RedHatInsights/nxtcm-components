@@ -131,9 +131,7 @@ export const FIELD_NAME = {
   NO_PROXY_DOMAINS: 'no_proxy_domains',
   ADDITIONAL_TRUST_BUNDLE: 'additional_trust_bundle',
   UPGRADE_POLICY: 'upgrade_policy',
-  UPGRADE_SCHEDULE: {
-    NAME: 'upgrade_schedule',
-  },
+  UPGRADE_SCHEDULE: 'upgrade_schedule',
   ENCRYPTION: {
     ENCRYPTION_KEYS: 'encryption_keys',
     KMS_KEY_ARN: 'kms_key_arn',

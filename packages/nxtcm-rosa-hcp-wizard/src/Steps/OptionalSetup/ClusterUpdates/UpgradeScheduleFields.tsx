@@ -38,9 +38,9 @@ export const UpgradeScheduleFields = () => {
   const cu = useRosaHcpWizardStrings().clusterUpdates;
   const { setValue, formState, getFieldState } = useFormContext<ROSAHCPCluster>();
   const upgradeSchedule =
-    useWatch<ROSAHCPCluster, 'upgrade_schedule'>({ name: FIELD_NAME.UPGRADE_SCHEDULE.NAME }) ?? '';
-  const scheduleFieldState = getFieldState(FIELD_NAME.UPGRADE_SCHEDULE.NAME, formState);
-  const stepValidationRevealed = useWizStepValidationRevealed(FIELD_NAME.UPGRADE_SCHEDULE.NAME);
+    useWatch<ROSAHCPCluster, 'upgrade_schedule'>({ name: FIELD_NAME.UPGRADE_SCHEDULE }) ?? '';
+  const scheduleFieldState = getFieldState(FIELD_NAME.UPGRADE_SCHEDULE, formState);
+  const stepValidationRevealed = useWizStepValidationRevealed(FIELD_NAME.UPGRADE_SCHEDULE);
   const showError = wizFieldShowsError(
     scheduleFieldState.invalid,
     scheduleFieldState.isTouched,
@@ -61,7 +61,7 @@ export const UpgradeScheduleFields = () => {
 
   const syncUpgradeSchedule = (day: string, hour: string) => {
     if (day !== '' && hour !== '') {
-      setValue(FIELD_NAME.UPGRADE_SCHEDULE.NAME, buildUpgradeScheduleCron(day, hour), {
+      setValue(FIELD_NAME.UPGRADE_SCHEDULE, buildUpgradeScheduleCron(day, hour), {
         shouldDirty: true,
         shouldTouch: true,
         shouldValidate: true,
@@ -70,7 +70,7 @@ export const UpgradeScheduleFields = () => {
     }
 
     if (upgradeSchedule) {
-      setValue(FIELD_NAME.UPGRADE_SCHEDULE.NAME, undefined, {
+      setValue(FIELD_NAME.UPGRADE_SCHEDULE, undefined, {
         shouldDirty: true,
         shouldTouch: true,
         shouldValidate: true,
