@@ -8,9 +8,7 @@ import { clusterValidationSchema } from '../yupSchemas/clusterValidationSchema';
 import { buildClusterValidationSchemaContext } from './buildClusterValidationSchemaContext';
 import { schemaHasRosaRequiredPresentTest } from './yupFieldRequired';
 
-const clusterYupResolver = yupResolver(clusterValidationSchema) as Resolver<
-  Partial<ROSAHCPCluster>
->;
+const clusterYupResolver = yupResolver(clusterValidationSchema);
 
 const ABSENT_REQUIRED_COERCIONS: Partial<Record<string, '' | Record<string, never>>> = {};
 

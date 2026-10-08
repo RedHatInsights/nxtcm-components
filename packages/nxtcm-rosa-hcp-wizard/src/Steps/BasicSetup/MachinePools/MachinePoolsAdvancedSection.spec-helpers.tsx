@@ -6,7 +6,7 @@ import React, { useMemo } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
-import { FormProvider, type Resolver, useForm, useWatch } from 'react-hook-form';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
 
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
 import { FIELD_NAME } from '../../../constants';
@@ -71,7 +71,7 @@ export const MachinePoolsAdvancedSectionMount: React.FC<MachinePoolsAdvancedSect
       cluster_version: clusterVersion,
       ...defaultValues,
     },
-    resolver: yupResolver(clusterValidationSchema) as Resolver<Partial<ROSAHCPCluster>>,
+    resolver: yupResolver(clusterValidationSchema),
     context: validationContext,
     mode: 'onTouched',
   });
