@@ -5,7 +5,7 @@
 import React, { useCallback, useMemo } from 'react';
 
 import { Wizard, WizardStep } from '@patternfly/react-core/dist/dynamic/components/Wizard';
-import { FormProvider, type Resolver, useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 
 import { withRosaCt } from '../components/WizFields/wizFieldCtSpecHelpers';
 import { STEP_IDS } from '../constants';
@@ -72,7 +72,7 @@ export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMount
 
   const methods = useForm<ROSAHCPCluster>({
     defaultValues: { ...FOOTER_CT_BASE_FORM_VALUES, ...defaultValues },
-    resolver: resolver as Resolver<ROSAHCPCluster>,
+    resolver,
     mode: 'onTouched',
   });
 

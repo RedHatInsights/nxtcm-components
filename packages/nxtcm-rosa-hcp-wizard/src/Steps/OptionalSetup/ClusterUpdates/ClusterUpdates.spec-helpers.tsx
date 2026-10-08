@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 
 import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
-import { FormProvider, type Resolver, useForm, useFormContext } from 'react-hook-form';
+import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
 import { STEP_IDS } from '../../../constants';
@@ -75,7 +75,7 @@ export const ClusterUpdatesMount: React.FC<ClusterUpdatesMountProps> = ({ defaul
 
   const methods = useForm<ROSAHCPCluster>({
     defaultValues: { ...DEFAULT_ROSA_HCP_CT_FORM_VALUES, ...defaultValues },
-    resolver: resolver as Resolver<ROSAHCPCluster>,
+    resolver,
     mode: 'onTouched',
   });
 

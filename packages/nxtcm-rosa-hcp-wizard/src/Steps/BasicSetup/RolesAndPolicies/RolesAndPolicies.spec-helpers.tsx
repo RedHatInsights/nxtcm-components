@@ -3,7 +3,7 @@
  */
 import React, { useMemo } from 'react';
 
-import { FormProvider, type Resolver, useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
 import fixtures from '../../../ROSAHCPWizard.fixtures';
@@ -73,7 +73,7 @@ export const RolesAndPoliciesMount: React.FC<RolesAndPoliciesMountProps> = ({
 
   const methods = useForm<ROSAHCPCluster>({
     defaultValues: { ...DEFAULT_ROSA_HCP_CT_FORM_VALUES, ...defaultValues },
-    resolver: resolver as Resolver<ROSAHCPCluster>,
+    resolver,
     mode: 'onTouched',
   });
 

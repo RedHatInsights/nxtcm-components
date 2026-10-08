@@ -24,7 +24,7 @@ type Story = StoryObj<typeof ComponentName>;
 | Kind | Story? | Conventions |
 | --- | --- | --- |
 | New exported React component (re-exported from `packages/*/src/index.ts`) | **Required** | `tags: ['autodocs']`. Title: `Components/Dashboard/<Name>` or `Wizards/<Name>`. Visible everywhere (local dev, CI static build, GitHub Pages). |
-| New internal React component (not re-exported from package index) | **Required** | `tags: ['autodocs', 'internal']`. Title must begin with `Internal/` (e.g. `Internal/Form Elements/<Name>`). Local `npm run storybook` shows them in the sidebar; `storybook build` (CI and GitHub Pages) hides them from the sidebar and docs via `excludeFromSidebar` and `excludeFromDocsStories`. They remain in `index.json`, and a direct URL still opens them. |
+| New internal React component (not re-exported from package index) | **Optional** | Write one for a shared component, or for a component with many states that are hard to reach from the parent story. When you write one: `tags: ['autodocs', 'internal']`. Title must begin with `Internal/` (e.g. `Internal/Form Elements/<Name>`). Local `npm run storybook` shows them in the sidebar; `storybook build` (CI and GitHub Pages) hides them from the sidebar and docs via `excludeFromSidebar` and `excludeFromDocsStories`. They remain in `index.json`, and a direct URL still opens them. |
 | Hook / schema / type / context / helper | **No story** | Never write stories for non-UI elements. |
 
 Do **not** rename internal story files to `*.private.stories.tsx` — visibility is controlled by Storybook tags and title prefixes.
