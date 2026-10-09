@@ -146,8 +146,8 @@ pass the **component** `.tsx` file, not the `.spec.tsx`.
 ### Running
 
 ```bash
-npm run storybook        # dev server on port 6006
-npm run build-storybook  # static build
+npm run storybook          # dev server on port 6006
+npm run build-storybook    # static build
 ```
 
 storybook is also published on github pages for external viewing: [redhatinsights.github.io/nxtcm-components](https://redhatinsights.github.io/nxtcm-components/?path=/docs/components-dashboard-advisorcategories--docs).
@@ -255,7 +255,7 @@ npm run build -w @redhat-cloud-services/nxtcm-dashboard
 npm run build -w @redhat-cloud-services/nxtcm-rosa-hcp-wizard
 ```
 
-both packages use the shared `vite.config.ts` with `NXTCM_LIB_NAME` to differentiate output. see [docs/architecture.md](docs/architecture.md) for details on the build system.
+Both packages use the shared `vite.config.ts`, which selects the entry point and output directory from the workspace's working directory. Each package emits ES modules, CommonJS, CSS, and declarations for both module formats. See [docs/architecture.md](docs/architecture.md) for details on the build system.
 
 ---
 
