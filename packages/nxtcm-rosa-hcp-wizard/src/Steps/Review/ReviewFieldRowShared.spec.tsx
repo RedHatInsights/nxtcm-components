@@ -21,7 +21,7 @@ test.describe('ReviewFieldValueWithLock', () => {
         Value
       </ReviewFieldValueWithLockMount>
     );
-    await expect(component.getByText(srText)).not.toBeVisible();
+    await expect(component.getByText(srText)).toBeHidden();
     await expect(component.getByText('Value')).toBeVisible();
   });
 

@@ -7,6 +7,7 @@ import importPlugin from 'eslint-plugin-import';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import playwright from 'eslint-plugin-playwright';
 import storybook from 'eslint-plugin-storybook';
 import globals from 'globals';
 import enforceFieldNameConstants from './eslint-rules/enforce-field-name-constants.js';
@@ -148,6 +149,26 @@ export default [
     files: ['**/*.spec.tsx'],
     rules: {
       'import/no-duplicates': 'off',
+    },
+  },
+
+  // Playwright recommended rules for component and E2E specs
+  {
+    ...playwright.configs['flat/recommended'],
+    files: ['**/*.spec.tsx', 'playwright/e2e/**/*.spec.ts'],
+    rules: {
+      ...playwright.configs['flat/recommended'].rules,
+      // These helpers internally call expect()
+      'playwright/expect-expect': [
+        'warn',
+        {
+          assertFunctionNames: [
+            'checkAccessibility',
+            'expectWizardNavError',
+            'expectWizardNavNoError',
+          ],
+        },
+      ],
     },
   },
 

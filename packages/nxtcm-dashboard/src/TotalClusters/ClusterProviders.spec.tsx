@@ -78,7 +78,7 @@ test.describe('ClusterProviders', () => {
   test('should render skeleton when isLoading is true', async ({ mount }) => {
     const component = await mount(<ClusterProviders isLoading />);
     await expect(component.getByText('Loading cluster providers')).toBeVisible();
-    await expect(component.getByTestId('providers-chart')).not.toBeVisible();
+    await expect(component.getByTestId('providers-chart')).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {

@@ -75,9 +75,7 @@ test.describe('WizNumberInput', () => {
     await mounted.getByRole('button', { name: 'Plus' }).click();
 
     await mounted.getByRole('button', { name: 'Submit' }).click();
-    await expect(
-      mounted.getByText(WIZ_NUMBER_INPUT_SUBMIT_ERROR, { exact: true })
-    ).not.toBeVisible();
+    await expect(mounted.getByText(WIZ_NUMBER_INPUT_SUBMIT_ERROR, { exact: true })).toBeHidden();
   });
 
   test('uses dotted-path fallback for nested fields and updates watched values via Plus', async ({

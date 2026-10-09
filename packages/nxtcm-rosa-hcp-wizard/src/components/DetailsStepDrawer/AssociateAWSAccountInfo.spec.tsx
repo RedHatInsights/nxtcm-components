@@ -17,7 +17,7 @@ test.describe('AssociateAWSAccountInfo', () => {
       </AssociateAWSAccountInfoMount>
     );
     // Content should not be visible when collapsed
-    await expect(component.getByText('Hidden content')).not.toBeVisible();
+    await expect(component.getByText('Hidden content')).toBeHidden();
   });
 
   test('should be expanded when initiallyExpanded is true', async ({ mount }) => {
@@ -52,7 +52,7 @@ test.describe('AssociateAWSAccountInfo', () => {
     const toggle = component.getByRole('button');
     await toggle.click();
 
-    await expect(component.getByText('Collapsible content')).not.toBeVisible();
+    await expect(component.getByText('Collapsible content')).toBeHidden();
   });
 
   test('should render children content', async ({ mount }) => {

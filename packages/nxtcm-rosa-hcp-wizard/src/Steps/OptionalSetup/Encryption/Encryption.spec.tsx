@@ -62,7 +62,7 @@ test.describe('Encryption (ROSA HCP)', () => {
   test.describe('Encryption — custom KMS key', () => {
     test('should not show Key ARN input when default KMS is selected', async ({ mount }) => {
       const component = await mount(<EncryptionMount />);
-      await expect(component.getByRole('textbox', { name: e.keyArnLabel })).not.toBeVisible();
+      await expect(component.getByRole('textbox', { name: e.keyArnLabel })).toBeHidden();
     });
 
     test('should show Key ARN input when custom KMS is selected', async ({ mount }) => {
@@ -87,7 +87,7 @@ test.describe('Encryption (ROSA HCP)', () => {
 
       await expect(component.locator('#kms_key_arn-form-group')).toBeVisible();
       await component.getByRole('radio', { name: e.defaultKms }).click();
-      await expect(component.locator('#kms_key_arn-form-group')).not.toBeVisible();
+      await expect(component.locator('#kms_key_arn-form-group')).toBeHidden();
     });
 
     test('should clear custom KMS Key ARN validation when default KMS is selected', async ({
@@ -109,8 +109,8 @@ test.describe('Encryption (ROSA HCP)', () => {
 
       await component.getByRole('radio', { name: e.defaultKms }).click();
 
-      await expect(component.getByText(v.invalidArn)).not.toBeVisible();
-      await expect(component.getByText(requiredMessage)).not.toBeVisible();
+      await expect(component.getByText(v.invalidArn)).toBeHidden();
+      await expect(component.getByText(requiredMessage)).toBeHidden();
     });
 
     test('should display validation error when custom KMS Key ARN is empty', async ({ mount }) => {
@@ -201,9 +201,9 @@ test.describe('Encryption (ROSA HCP)', () => {
       );
       await arnInput.blur();
 
-      await expect(component.getByText(v.noWhitespace)).not.toBeVisible();
-      await expect(component.getByText(v.invalidArn)).not.toBeVisible();
-      await expect(component.getByText(v.wrongRegion)).not.toBeVisible();
+      await expect(component.getByText(v.noWhitespace)).toBeHidden();
+      await expect(component.getByText(v.invalidArn)).toBeHidden();
+      await expect(component.getByText(v.wrongRegion)).toBeHidden();
     });
   });
 
@@ -213,7 +213,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     }) => {
       const component = await mount(<EncryptionMount />);
       await expect(component.getByRole('checkbox', { name: e.etcdLabel })).not.toBeChecked();
-      await expect(component.locator('#etcd_key_arn-form-group')).not.toBeVisible();
+      await expect(component.locator('#etcd_key_arn-form-group')).toBeHidden();
     });
 
     test('should show etcd Key ARN input when etcd encryption is checked', async ({ mount }) => {
@@ -234,7 +234,7 @@ test.describe('Encryption (ROSA HCP)', () => {
 
       await expect(component.getByRole('textbox', { name: e.keyArnLabel })).toBeVisible();
       await component.getByRole('checkbox', { name: e.etcdLabel }).uncheck();
-      await expect(component.locator('#etcd_key_arn-form-group')).not.toBeVisible();
+      await expect(component.locator('#etcd_key_arn-form-group')).toBeHidden();
     });
 
     test('should clear etcd Key ARN validation when etcd encryption is unchecked', async ({
@@ -256,8 +256,8 @@ test.describe('Encryption (ROSA HCP)', () => {
 
       await component.getByRole('checkbox', { name: e.etcdLabel }).uncheck();
 
-      await expect(component.getByText(v.invalidArn)).not.toBeVisible();
-      await expect(component.getByText(requiredMessage)).not.toBeVisible();
+      await expect(component.getByText(v.invalidArn)).toBeHidden();
+      await expect(component.getByText(requiredMessage)).toBeHidden();
     });
 
     test('should display validation error when etcd Key ARN is empty', async ({ mount }) => {

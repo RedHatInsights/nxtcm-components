@@ -76,7 +76,7 @@ test.describe('AdvisorCategories', () => {
   test('should render skeleton when isLoading is true', async ({ mount }) => {
     const component = await mount(<AdvisorCategories isLoading />);
     await expect(component.getByText('Loading category data')).toBeVisible();
-    await expect(component.getByTestId('category-chart')).not.toBeVisible();
+    await expect(component.getByTestId('category-chart')).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
