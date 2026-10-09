@@ -9,14 +9,19 @@
     "url": "https://github.com/RedHatInsights/nxtcm-components.git",
     "directory": "packages/nxtcm-dashboard"
   },
-  "main": "dist/index.umd.js",
-  "module": "dist/index.js",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.umd.js"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./index.css": "./dist/index.css",
     "./dist/nxtcm-dashboard.css": "./dist/index.css",
@@ -41,7 +46,7 @@
   "scripts": {
     "prepack": "cp ../../LICENSE LICENSE",
     "postpack": "rm -f LICENSE",
-    "build": "rm -rf dist && NXTCM_LIB_NAME=NXTCM-DASHBOARD vite build --config ../../vite.config.ts",
+    "build": "rm -rf dist && vite build --config ../../vite.config.ts",
     "type-check": "tsc --noEmit",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
