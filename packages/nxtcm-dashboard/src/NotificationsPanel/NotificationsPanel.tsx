@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import {
   EmptyState,
@@ -58,17 +58,19 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(itemsPerPage);
+  const [prevItemsPerPage, setPrevItemsPerPage] = useState(itemsPerPage);
+
+  if (prevItemsPerPage !== itemsPerPage) {
+    setPrevItemsPerPage(itemsPerPage);
+    setPerPage(itemsPerPage);
+  }
 
   const totalItems = notifications?.length ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / perPage));
 
-  useEffect(() => {
-    setPerPage(itemsPerPage);
-  }, [itemsPerPage]);
-
-  useEffect(() => {
-    setCurrentPage((prev) => Math.min(prev, totalPages));
-  }, [totalPages]);
+  if (currentPage > totalPages) {
+    setCurrentPage(totalPages);
+  }
 
   const startIndex = (currentPage - 1) * perPage;
   const endIndex = Math.min(startIndex + perPage, totalItems);
