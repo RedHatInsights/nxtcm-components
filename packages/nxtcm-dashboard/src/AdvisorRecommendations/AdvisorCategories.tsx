@@ -109,7 +109,9 @@ export const AdvisorCategories: React.FC<AdvisorCategoriesProps> = ({
                   })
                 )}
                 colorScale={categoryColors}
-                labels={({ datum }) => `${datum.x}: ${datum.y}`}
+                labels={({ datum }: { datum: { x: string; y: number } }) =>
+                  `${datum.x}: ${datum.y}`
+                }
                 padAngle={1}
                 width={120}
                 height={120}
