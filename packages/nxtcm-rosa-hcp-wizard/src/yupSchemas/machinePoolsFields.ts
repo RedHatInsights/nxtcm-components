@@ -92,7 +92,7 @@ export const autoscalingSchema = yup
   } satisfies WizardFieldMeta);
 
 export const nodesComputeSchema = yup
-  .number<number, ValidationSchemaContext>()
+  .number()
   .default(YUP.MACHINE_POOLS.NODES_COMPUTE_SCHEMA.DEFAULT)
   .optional()
   .meta({
@@ -175,7 +175,7 @@ export const maxReplicasSchema = yup
   });
 
 export const computeRootVolumeSchema = yup
-  .number<number, ValidationSchemaContext>()
+  .number()
   .default(YUP.MACHINE_POOLS.COMPUTE_ROOT_VOLUME_SCHEMA.DEFAULT)
   .optional()
   .meta({
@@ -219,8 +219,8 @@ export const imdsSchema = yup
   } satisfies WizardFieldMeta);
 
 export const securityGroupsWorkerSchema = yup
-  .array<ValidationSchemaContext>()
-  .of(yup.string<string, ValidationSchemaContext>())
+  .array()
+  .of(yup.string())
   .default([...YUP.MACHINE_POOLS.SECURITY_GROUPS_WORKER_SCHEMA.DEFAULT])
   .optional()
   .test(FIELD_NAME.SECURITY_GROUPS_WORKER, '', function (value) {

@@ -37,15 +37,15 @@ export type RosaHcpYamlEditorStepProps = {
 
 export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEditorStepProps>(
   ({ onClose, onCancel: _onCancel, resourceGenerator }, ref) => {
-    const watchedValues = useWatch({
-      compute: (values: Partial<ROSAHCPCluster>): Partial<ROSAHCPCluster> => values,
-    });
+    const watchedValues = useWatch<Partial<ROSAHCPCluster>>();
 
     const { yamlEditor: yamlStrings } = useRosaHcpWizardStrings();
 
     const generator = resourceGenerator;
 
-    const [yamlContent, setYamlContent] = useState(() => generator.renderYaml(watchedValues));
+    const [yamlContent, setYamlContent] = useState(() =>
+      generator.renderYaml(watchedValues as Partial<ROSAHCPCluster>)
+    );
     const [parseError, setParseError] = useState('');
     const [showSchema, setShowSchema] = useState(true);
 
@@ -105,7 +105,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
 
     useEffect(() => {
       if (!hasFocusRef.current && !userHasEditedRef.current) {
-        const rendered = generator.renderYaml(watchedValues);
+        const rendered = generator.renderYaml(watchedValues as Partial<ROSAHCPCluster>);
         if (rendered === pendingYamlRef.current) {
           return;
         }

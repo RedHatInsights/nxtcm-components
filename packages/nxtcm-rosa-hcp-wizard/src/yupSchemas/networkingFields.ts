@@ -42,7 +42,7 @@ export const clusterPrivacySchema = rosaRequiredStringField()
   } satisfies WizardFieldMeta);
 
 export const clusterPrivacyPublicSubnetIdSchema = yup
-  .string<string, ValidationSchemaContext>()
+  .string()
   .meta({
     id: YUP.NETWORKING.CLUSTER_PRIVACY_PUBLIC_SUBNET_ID_SCHEMA.META.ID,
     labelKey: YUP.NETWORKING.CLUSTER_PRIVACY_PUBLIC_SUBNET_ID_SCHEMA.META.LABEL_KEY,
@@ -314,7 +314,7 @@ export const networkPodCidrSchema = yup
   });
 
 export const networkHostPrefixSchema = yup
-  .string<string, ValidationSchemaContext>()
+  .string()
   .default(YUP.NETWORKING.NETWORK_HOST_PREFIX_SCHEMA.DEFAULT)
   .optional()
   .meta({
@@ -326,7 +326,7 @@ export const networkHostPrefixSchema = yup
     advanced: YUP.NETWORKING.NETWORK_HOST_PREFIX_SCHEMA.META.ADVANCED,
     noEditAfterSubmit: YUP.NETWORKING.NETWORK_HOST_PREFIX_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
   } satisfies WizardFieldMeta)
-  .test('host-prefix', '', function (this: ClusterTestContext, value) {
+  .test('host-prefix', '', function (value) {
     if (!value) return true;
     const { msgs } = ctx(this);
 

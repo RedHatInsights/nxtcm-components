@@ -8,7 +8,6 @@ import { encryptionFields } from './encryptionFields';
 import { machinePoolsFields } from './machinePoolsFields';
 import { networkingFields } from './networkingFields';
 import { rolesAndPoliciesFields } from './rolesAndPoliciesFields';
-import { ValidationSchemaContext } from './types';
 
 /**
  * Composed Yup schema for `ROSAHCPCluster` — built from individual
@@ -17,8 +16,7 @@ import { ValidationSchemaContext } from './types';
  * Kept in a dedicated module so {@link wizardFieldMetaChangeRegistry} can import
  * it without circular imports through `index.ts`.
  */
-
-const fields = {
+export const clusterValidationSchema = yup.object({
   ...detailsFields,
   ...rolesAndPoliciesFields,
   ...machinePoolsFields,
@@ -26,12 +24,4 @@ const fields = {
   ...clusterWideProxyFields,
   ...encryptionFields,
   ...clusterUpdatesFields,
-};
-
-const schema = yup.object<ValidationSchemaContext, typeof fields>(fields);
-
-export const clusterValidationSchema = schema as yup.ObjectSchema<
-  Partial<ROSAHCPCluster>,
-  ValidationSchemaContext,
-  ReturnType<typeof schema.getDefault>
->;
+}) as yup.ObjectSchema<Partial<ROSAHCPCluster>>;
