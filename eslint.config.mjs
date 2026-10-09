@@ -97,8 +97,7 @@ export default [
       'no-console': 'error',
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unsafe-assignment': 'error',
-      // no-unsafe-argument and no-unsafe-member-access remain intentionally disabled.
-      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'error',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-return': 'error',
       '@typescript-eslint/no-unsafe-call': 'error',
