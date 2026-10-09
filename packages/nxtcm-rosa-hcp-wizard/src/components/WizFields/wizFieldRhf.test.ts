@@ -88,7 +88,11 @@ describe('useWizRhfControl', () => {
     const root = createRoot(container);
     expect(() => {
       act(() => {
-        root.render(React.createElement(WizTextInput, { name: 'onlyName' }));
+        root.render(
+          React.createElement(WizTextInput, {
+            name: 'name',
+          })
+        );
       });
     }).toThrow(
       'WizTextInput: pass `control` from useForm(), or wrap the form with <FormProvider {...methods}> from react-hook-form.'

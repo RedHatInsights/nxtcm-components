@@ -1,4 +1,4 @@
-import type { FieldPath, FieldValues, UseFormGetFieldState } from 'react-hook-form';
+import type { FieldValues, Path, UseFormGetFieldState } from 'react-hook-form';
 
 import { wizFieldShowsError } from '../components/WizFields/wizFieldRhf';
 import { STEP_IDS } from '../constants';
@@ -13,7 +13,7 @@ const OPTIONAL_SETUP_CHILD_STEP_IDS = new Set<string>([
 ]);
 
 function visibleLeafStepIdsFromSections(
-  sections: readonly RosaHcpWizardReviewSection[],
+  sections: readonly { id: string }[],
   includeClusterWideProxy: boolean
 ): readonly string[] {
   return sections
@@ -22,7 +22,7 @@ function visibleLeafStepIdsFromSections(
 }
 
 function groupChildStepIdsFromSections(
-  sections: readonly RosaHcpWizardReviewSection[],
+  sections: readonly { id: string }[],
   visibleStepIds: ReadonlySet<string>,
   group: 'basic' | 'optional'
 ): readonly string[] {
@@ -39,7 +39,7 @@ function groupChildStepIdsFromSections(
 
 /** Linear nav order for leaf wizard steps (cluster-wide proxy only when enabled). */
 export function buildOrderedWizardNavStepIds(
-  sections: readonly RosaHcpWizardReviewSection[],
+  sections: readonly { id: string }[],
   includeClusterWideProxy: boolean
 ): readonly string[] {
   return [...visibleLeafStepIdsFromSections(sections, includeClusterWideProxy), STEP_IDS.REVIEW];
@@ -47,7 +47,7 @@ export function buildOrderedWizardNavStepIds(
 
 /** Wizard steps that participate in nav status (cluster-wide proxy only when enabled). */
 export function buildVisibleWizardStepIds(
-  sections: readonly RosaHcpWizardReviewSection[],
+  sections: readonly { id: string }[],
   includeClusterWideProxy: boolean
 ): ReadonlySet<string> {
   return new Set(
@@ -59,7 +59,7 @@ export function buildVisibleWizardStepIds(
 
 /** True when any field on the step shows a validation error in the form UI or left-nav icon. */
 export function stepHasVisibleValidationErrors<TFieldValues extends FieldValues>(
-  fieldPaths: readonly string[],
+  fieldPaths: readonly Path<TFieldValues>[],
   stepId: string,
   getFieldState: UseFormGetFieldState<TFieldValues>,
   validationAttemptedStepIds: ReadonlySet<string>
@@ -68,8 +68,7 @@ export function stepHasVisibleValidationErrors<TFieldValues extends FieldValues>
   const selectFieldPaths = getWizardSelectFieldPaths();
 
   return fieldPaths.some((path) => {
-    const fieldPath = path as FieldPath<TFieldValues>;
-    const { invalid, isTouched } = getFieldState(fieldPath);
+    const { invalid, isTouched } = getFieldState(path);
     if (selectFieldPaths.has(path)) {
       return invalid && validationRevealed;
     }
@@ -82,7 +81,7 @@ export function stepHasVisibleValidationErrors<TFieldValues extends FieldValues>
  * before the inline error or nav icon is shown.
  */
 export function stepHasNavBlockingValidationErrors<TFieldValues extends FieldValues>(
-  fieldPaths: readonly string[],
+  fieldPaths: readonly Path<TFieldValues>[],
   stepId: string,
   getFieldState: UseFormGetFieldState<TFieldValues>,
   validationAttemptedStepIds: ReadonlySet<string>
@@ -90,27 +89,25 @@ export function stepHasNavBlockingValidationErrors<TFieldValues extends FieldVal
   const validationRevealed = validationAttemptedStepIds.has(stepId);
 
   return fieldPaths.some((path) => {
-    const fieldPath = path as FieldPath<TFieldValues>;
-    const { invalid, isTouched } = getFieldState(fieldPath);
+    const { invalid, isTouched } = getFieldState(path);
     return wizFieldShowsError(invalid, isTouched, validationRevealed);
   });
 }
 
 /** True when any field on the step has async validation in progress. */
 export function stepHasPendingAsyncValidation<TFieldValues extends FieldValues>(
-  fieldPaths: readonly string[],
+  fieldPaths: readonly Path<TFieldValues>[],
   getFieldState: UseFormGetFieldState<TFieldValues>
 ): boolean {
   return fieldPaths.some((path) => {
-    const fieldPath = path as FieldPath<TFieldValues>;
-    return getFieldState(fieldPath).isValidating;
+    return getFieldState(path).isValidating;
   });
 }
 
 /** True when a step has in-flight async validation tracked by RHF or wizard validation context. */
 export function stepHasAsyncValidationInProgress<TFieldValues extends FieldValues>(
   stepId: string,
-  fieldPaths: readonly string[],
+  fieldPaths: readonly Path<TFieldValues>[],
   getFieldState: UseFormGetFieldState<TFieldValues>,
   asyncValidatingStepIds?: ReadonlySet<string>
 ): boolean {
@@ -130,7 +127,7 @@ function parentStepHasChildErrors(
 
 /** Maps wizard step ids to PatternFly nav status for visible validation errors. */
 export function buildRosaHcpWizardNavStepStatuses<TFieldValues extends FieldValues>(params: {
-  sections: readonly RosaHcpWizardReviewSection[];
+  sections: readonly RosaHcpWizardReviewSection<TFieldValues>[];
   getFieldState: UseFormGetFieldState<TFieldValues>;
   validationAttemptedStepIds: ReadonlySet<string>;
   visibleStepIds: ReadonlySet<string>;
@@ -170,7 +167,7 @@ export function findFirstWizardNavStepIndexWithBlockingErrors<
   TFieldValues extends FieldValues,
 >(params: {
   orderedStepIds: readonly string[];
-  sections: readonly RosaHcpWizardReviewSection[];
+  sections: readonly RosaHcpWizardReviewSection<TFieldValues>[];
   getFieldState: UseFormGetFieldState<TFieldValues>;
   validationAttemptedStepIds: ReadonlySet<string>;
 }): number | undefined {
@@ -199,7 +196,7 @@ export function findActiveWizardNavStepIndexWithPendingValidation<
   TFieldValues extends FieldValues,
 >(params: {
   orderedStepIds: readonly string[];
-  sections: readonly RosaHcpWizardReviewSection[];
+  sections: readonly RosaHcpWizardReviewSection<TFieldValues>[];
   getFieldState: UseFormGetFieldState<TFieldValues>;
   activeStepId?: string;
   asyncValidatingStepIds?: ReadonlySet<string>;
@@ -242,7 +239,7 @@ export function buildRosaHcpWizardNavStepDisabledByValidation<
   TFieldValues extends FieldValues,
 >(params: {
   orderedStepIds: readonly string[];
-  sections: readonly RosaHcpWizardReviewSection[];
+  sections: readonly RosaHcpWizardReviewSection<TFieldValues>[];
   getFieldState: UseFormGetFieldState<TFieldValues>;
   validationAttemptedStepIds: ReadonlySet<string>;
   activeStepId?: string;
