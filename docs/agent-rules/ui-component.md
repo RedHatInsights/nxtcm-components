@@ -5,6 +5,7 @@ Rules for UI components patterns used in nxtcm-components. Read this before work
 Always read the related guidelines before proceeding:
 
 - [TypeScript guidelines](typescript.md) - patterns and rules specifically for TS
+- PatternFly UI: [patternfly.md](patternfly.md) (MCP gate and PF conventions)
 
 ## file structure (mandatory)
 
