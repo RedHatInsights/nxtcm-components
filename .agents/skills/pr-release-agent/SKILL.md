@@ -67,17 +67,18 @@ git diff --cached
 ```
 
 **Commits and patches authored by `AUTHOR_EMAIL` only** — use these for narrative
-scope (titles, bullets, Focus Areas):
+scope (titles, bullets, Focus Areas). `--author` is a regular expression;
+`--fixed-strings` matches `AUTHOR_EMAIL` literally:
 
 ```bash
-git log "${MB}"..HEAD --author="${AUTHOR_EMAIL}" --oneline
-git log "${MB}"..HEAD --author="${AUTHOR_EMAIL}" --stat
+git log "${MB}"..HEAD --fixed-strings --author="${AUTHOR_EMAIL}" --oneline
+git log "${MB}"..HEAD --fixed-strings --author="${AUTHOR_EMAIL}" --stat
 ```
 
 For finer detail when summarizing behaviour, restrict to authored commits:
 
 ```bash
-git log "${MB}"..HEAD --author="${AUTHOR_EMAIL}" -p
+git log "${MB}"..HEAD --fixed-strings --author="${AUTHOR_EMAIL}" -p
 ```
 
 **(Optional)** For awareness only — **do not** copy summaries from these into the PR
@@ -95,7 +96,7 @@ If no match, leave the Jira field blank.
 **Stopping**
 
 - **No authored work**: If **`git diff` and `git diff --cached`** are empty **and**
-  **`git log "${MB}"..HEAD --author="${AUTHOR_EMAIL}"`** is empty, stop and explain.
+  **`git log "${MB}"..HEAD --fixed-strings --author="${AUTHOR_EMAIL}"`** is empty, stop and explain.
   Optionally note that `main..HEAD` still has other commits if
   `git log main..HEAD --oneline` is non-empty.
 
@@ -111,7 +112,7 @@ Fill every section using **`AUTHOR_EMAIL`-scoped commits and patches**, **plus**
 
 | Template section | How to fill |
 |---|---|
-| **Description** | Summarize **only** the purpose of **your** authored commits and current local edits (`git log "${MB}"..HEAD --author=…`, `git show`/`git log -p` as needed). Do **not** describe unrelated commits **or reuse wording from merged PR descriptions** appearing elsewhere on the branch. If the GitHub branch includes others’ commits, you may add **one short line** under **Additional Notes** stating that broader history exists on this branch—but keep the template body about **your** scope. |
+| **Description** | Summarize **only** the purpose of **your** authored commits and current local edits (`git log "${MB}"..HEAD --fixed-strings --author=…`, `git show`/`git log -p` as needed). Do **not** describe unrelated commits **or reuse wording from merged PR descriptions** appearing elsewhere on the branch. If the GitHub branch includes others’ commits, you may add **one short line** under **Additional Notes** stating that broader history exists on this branch—but keep the template body about **your** scope. |
 | **Jira issue #** | Insert a Markdown link: `[TICKET-ID](https://redhat.atlassian.net/browse/TICKET-ID)` (or leave blank if no ticket). |
 | **Backport of** | Leave blank unless commits reference a backport. |
 | **Type of Change** | Mark the checkbox(es) from **your** diff/patch scope only. |
@@ -149,10 +150,18 @@ Write the filled-out template to `pr_draft.md` in the workspace root.
 
 ### Step 4 — Stage and commit
 
-If there are uncommitted or untracked changes, stage and commit them:
+If there are uncommitted or untracked changes other than `pr_draft.md`, stage and commit them.
+
+`git add -u` stages modifications and deletions of tracked files and keeps what is already staged. It does not add new files, so follow it with a pathspec add that picks up untracked files and leaves `pr_draft.md` unstaged:
 
 ```bash
 git add -u
+git add -- . ':(exclude)pr_draft.md'
+```
+
+If `git diff --cached --quiet` exits 0, nothing was staged. Skip the commit. That happens when every real change is already committed and the only untracked file is `pr_draft.md`. Otherwise:
+
+```bash
 git commit -S -m "TICKET-ID: <short summary>" -m "Co-authored-by: cursor-agent <noreply@cursor.com>"
 ```
 
@@ -164,7 +173,7 @@ Example commit messages:
 - `FCN-340: add pr-release-agent Cursor skill`
 - `OCMQE-1234: refactor cluster name validation hook`
 
-If all changes were already committed (no dirty working tree), skip this step.
+If every change other than `pr_draft.md` is already committed, skip this step.
 
 ### Step 5 — Push the branch
 
@@ -179,14 +188,19 @@ If the push fails (e.g. no upstream), surface the error and stop.
 Determine whether there is an **open** PR for this branch’s **head**. Do **not**
 reuse a **closed** or **merged** PR: in those cases **create** a new PR instead.
 
-Substitute `<branch>` with the output of `git branch --show-current`. If the repo
-uses a fork, use the `--head` form `OWNER:<branch>` (same value `gh push` /
-GitHub associates with the branch).
+Substitute `<branch>` with the output of `git branch --show-current`. `gh pr list --head` takes that branch name only. It does not accept `OWNER:<branch>`.
 
 **List open PRs for this head** (recommended):
 
 ```bash
-gh pr list --head "<branch>" --state open --json number,url --jq '.[0].number'
+gh pr list --head "<branch>" --state open --json number,url --jq '.[0].number // empty'
+```
+
+For a fork, `<owner>` is the head repository owner (the `OWNER` in `gh pr create --head OWNER:<branch>`). Do not pass `OWNER:<branch>` to `--head`. Filter the list by `headRefName` and `headRepositoryOwner`:
+
+```bash
+gh pr list --state open --limit 100 --json number,headRefName,headRepositoryOwner \
+  --jq '([.[] | select(.headRefName == "<branch>" and .headRepositoryOwner.login == "<owner>")][0].number) // empty'
 ```
 
 - **If the command prints a PR number**: **update** that PR:
@@ -203,7 +217,8 @@ gh pr list --head "<branch>" --state open --json number,url --jq '.[0].number'
   ```
 
   Omit `--head` when the current branch on `origin` is unambiguous for the repo
-  (same as default `gh pr create`); keep `--head OWNER:<branch>` for forks.
+  (same as default `gh pr create`). For a fork, `gh pr create` does accept
+  `--head OWNER:<branch>`. That form is only for create, not for `gh pr list --head`.
 
   **Alternative:** `gh pr view --json number,url,state` — **edit only if
   `state` is `OPEN`**; if `MERGED` or `CLOSED` or the command fails, **create**

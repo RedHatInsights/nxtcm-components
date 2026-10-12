@@ -4,11 +4,13 @@ single source of truth for testing YAML/Monaco integration in this repo (ROSA HC
 
 ## critical constraint
 
-**Monaco `setValue()` does not fire `onChange`.** Debounced validation that listens to `onDidChangeModelContent` / React `onChange` will not run when content is set programmatically.
+**Monaco `setValue()` emits a model content-change event.** `onDidChangeModelContent` listeners run. `@monaco-editor/react` forwards that event to React `onChange`, except while it applies the controlled `value` prop.
 
-- **E2E:** do not assert validation errors via `setValue()` or `page.evaluate` content edits
+This editor does not drop that event. `handleCodeChange` schedules `setEditorMarkers(value, false)` after 300ms, so markers update. The validation alert stays suppressed on that path (`showBanner` is false) until the banner is already visible, or until blur / `hasSchemaErrors()` calls `setEditorMarkers` with the banner enabled.
+
+- **E2E:** `setValue()` does run that path. Do not expect `role="alert"` from `setValue()` alone. Assert markers only after the debounce, or use a path that enables the banner.
 - **E2E:** do not drive the editor with `page.keyboard.type()`. Monaco's textarea sits under editor layers, so the click times out and keystrokes never reach the model
-- **CT:** do not rely on `setValue()` alone to trigger validation UI; mock editor events or call validation paths directly
+- **CT:** `setValue()` reaches `onCodeChange`. The missing alert is the `showBanner: false` suppression above, not a missing Monaco event.
 - **Jest:** test pure validators and parsers without Monaco
 
 ## what to test where
@@ -28,7 +30,7 @@ Reference specs:
 
 ## CT limitations
 
-1. **`setValue()` / evaluate edits** — validation handlers may not run
+1. **`setValue()` / evaluate edits** — `onCodeChange` runs. The alert does not, because `handleCodeChange` passes `showBanner: false`
 2. **Click interception** — Monaco margins/overlays block clicks on nearby buttons; avoid flaky click chains through `.monaco-editor`
 3. **Focus / keyboard** — internal focus management is unreliable in CT; prefer role-based checks on surrounding UI
 
@@ -72,7 +74,7 @@ await page.waitForTimeout(500); // initial value applied
 
 ## E2E anti-patterns
 
-- Setting invalid YAML via `monacoEditor.setValue()` then expecting `role="alert"` validation
+- Expecting `role="alert"` from `monacoEditor.setValue()` alone (`onCodeChange` keeps `showBanner` false)
 - Typing YAML with `page.keyboard.type()` or clicking the Monaco textarea
 - Asserting every schema field in the side panel
 - Bidirectional YAML ↔ form sync via automation
