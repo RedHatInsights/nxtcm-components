@@ -54,7 +54,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
     const monacoYamlDisposeRef = useRef<(() => void) | null>(null);
     const editorListenersDisposeRef = useRef<(() => void) | null>(null);
     const hasFocusRef = useRef(false);
-    const validationTimerRef = useRef<ReturnType<typeof setTimeout>>();
+    const validationTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
     const isInitializedRef = useRef(false);
     const pendingYamlRef = useRef(yamlContent);
     const userHasEditedRef = useRef(false);
