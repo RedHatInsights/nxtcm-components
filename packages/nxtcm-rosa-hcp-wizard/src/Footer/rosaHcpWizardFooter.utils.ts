@@ -1,4 +1,4 @@
-import type { FieldErrors, FieldPath, FieldValues, UseFormGetFieldState } from 'react-hook-form';
+import type { FieldErrors, FieldValues, Path, UseFormGetFieldState } from 'react-hook-form';
 
 import { STEP_IDS } from '../constants';
 
@@ -33,14 +33,13 @@ export type PathsHaveValidationIssuesOptions = {
  * Prefer this over {@link getFieldState} alone — `invalid` can lag after `trigger()` in onTouched forms.
  */
 export function pathsHaveValidationIssues<TFieldValues extends FieldValues>(
-  fieldPaths: readonly string[],
+  fieldPaths: readonly Path<TFieldValues>[],
   getFieldState: UseFormGetFieldState<TFieldValues>,
   errors: FieldErrors<TFieldValues>,
   options?: PathsHaveValidationIssuesOptions
 ): boolean {
   return fieldPaths.some((path) => {
-    const fieldPath = path as FieldPath<TFieldValues>;
-    if (getFieldState(fieldPath).invalid) {
+    if (getFieldState(path).invalid) {
       return true;
     }
     if (options?.ignoreResolverErrors) {

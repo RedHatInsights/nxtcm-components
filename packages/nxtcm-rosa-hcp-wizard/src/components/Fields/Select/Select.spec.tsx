@@ -51,6 +51,26 @@ test.describe('Select', () => {
     await expect(combo).toHaveValue('subnet-a');
   });
 
+  test('shows selected label when typeahead mounts with a preselected value', async ({
+    mount,
+    page,
+  }) => {
+    await mount(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/PreselectedTypeaheadHarness'
+    );
+    const combo = page.getByRole('combobox', { name: /select the subnet/i });
+
+    // Typeahead input must display the preselected option label, not blank
+    await expect(combo).toHaveValue('subnet-a');
+    await expect(page.getByTestId('ta-preselected-val')).toHaveText('subnet-a');
+
+    // Opening should show all options (no leftover filter)
+    await combo.click();
+    await expect(page.getByRole('option', { name: 'subnet-a' })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'subnet-b' })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'other-net' })).toBeVisible();
+  });
+
   test('disables the typeahead combobox when isDisabled is set', async ({ mount, page }) => {
     await mount('nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/DisabledTypeaheadHarness');
     await expect(page.getByRole('combobox', { name: /select the subnet/i })).toBeDisabled();

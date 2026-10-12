@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 
 import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
-import { FormProvider, type Resolver, useForm, useFormContext } from 'react-hook-form';
+import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 
 import { withRosaCt } from '../../../components/WizFields/wizFieldCtSpecHelpers';
 import { FIELD_NAME, STEP_IDS } from '../../../constants';
@@ -60,7 +60,7 @@ function ClusterUpdatesValidateButton() {
       type="button"
       onClick={() => {
         markValidationAttempted(STEP_IDS.CLUSTER_UPDATES);
-        void trigger([FIELD_NAME.UPGRADE_POLICY, FIELD_NAME.UPGRADE_SCHEDULE.NAME]);
+        void trigger([FIELD_NAME.UPGRADE_POLICY, FIELD_NAME.UPGRADE_SCHEDULE]);
       }}
     >
       Validate
@@ -76,7 +76,7 @@ export const ClusterUpdatesMount: React.FC<ClusterUpdatesMountProps> = ({ defaul
 
   const methods = useForm<ROSAHCPCluster>({
     defaultValues: { ...DEFAULT_ROSA_HCP_CT_FORM_VALUES, ...defaultValues },
-    resolver: resolver as Resolver<ROSAHCPCluster>,
+    resolver,
     mode: 'onTouched',
   });
 

@@ -190,7 +190,7 @@ export const Details = ({
             />
           </FieldWrapper>
           <FieldWrapper>
-            <WizTextInput<ROSAHCPCluster>
+            <WizTextInput
               name={FIELD_NAME.CLUSTER_NAME}
               schema={clusterValidationSchema}
               onBlur={() => {

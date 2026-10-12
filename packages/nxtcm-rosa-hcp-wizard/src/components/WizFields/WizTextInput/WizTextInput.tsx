@@ -8,11 +8,12 @@ import {
 
 import {
   type FieldPath,
+  type FieldPathByValue,
   type FieldPathValue,
   type FieldValues,
+  type SetValueConfig,
   useController,
   type UseControllerReturn,
-  useFormContext,
   type UseFormGetFieldState,
   type UseFormReturn,
   type UseFormSetValue,
@@ -21,12 +22,14 @@ import {
 } from 'react-hook-form';
 
 import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
+import type { WizardFormValues } from '../../../types';
 import { requiredFromYup } from '../../../utilities/yupFieldRequired';
 import { wizardFieldMetaByPath } from '../../../yupSchemas';
 import { TextInput, type TextInputProps } from '../../Fields/TextInput';
 import { FieldWithAPIErrorAlert } from '../../FieldWithAPIErrorAlert';
 import { useWizFieldPresentation } from '../wizFieldPresentation';
 import {
+  useOptionalWizFormContext,
   useWizRhfControl,
   wizFieldShowsErrorMessage,
   type WizRhfBoundFieldProps,
@@ -66,9 +69,21 @@ type WizTextInputSpreadProps = Omit<
     >
   >;
 
-export type WizTextInputProps<TFieldValues extends FieldValues = FieldValues> =
+/** Text fields must accept any string; exclude string literals and enums. */
+type WizTextInputFieldPath<TFieldValues extends FieldValues> = {
+  [TName in FieldPathByValue<TFieldValues, string | undefined>]: string extends FieldPathValue<
+    TFieldValues,
+    TName
+  >
+    ? TName
+    : never;
+}[FieldPathByValue<TFieldValues, string | undefined>];
+
+export type WizTextInputProps<TFieldValues extends FieldValues = WizardFormValues> =
   WizTextInputSpreadProps &
-    WizRhfBoundFieldProps<TFieldValues> & {
+    Omit<WizRhfBoundFieldProps<TFieldValues>, 'name'> & {
+      /** Path to a string field; infer custom form shapes from control, not name. */
+      name: NoInfer<WizTextInputFieldPath<TFieldValues>>;
       /**
        * Optional API/load failure content shown in `FieldWithAPIErrorAlert` when set.
        */
@@ -97,14 +112,8 @@ type WizTextInputResolvedPresentation = {
 };
 
 type WizTextInputBoundFieldProps<TFieldValues extends FieldValues> = {
-  rest: Omit<
-    WizTextInputProps<TFieldValues>,
-    | keyof WizRhfBoundFieldProps<TFieldValues>
-    | 'validateOnBlur'
-    | 'onBlur'
-    | 'supplementalErrorMessage'
-  >;
-  name: FieldPath<TFieldValues>;
+  rest: WizTextInputSpreadProps;
+  name: WizTextInputFieldPath<TFieldValues>;
   requiredProp: boolean | undefined;
   presentation: WizTextInputResolvedPresentation;
   controller: UseControllerReturn<TFieldValues, FieldPath<TFieldValues>>;
@@ -131,17 +140,27 @@ const EMPTY_SUBSCRIBED_FIELD_STATE = {
   isTouched: false,
   isValidating: false,
   error: undefined,
-} as ReturnType<UseFormGetFieldState<FieldValues>>;
+} satisfies ReturnType<UseFormGetFieldState<FieldValues>>;
+
+function setTextFieldValue<TFieldValues extends FieldValues>(
+  setValue: UseFormSetValue<TFieldValues>,
+  name: WizTextInputFieldPath<TFieldValues>,
+  value: string,
+  options: SetValueConfig
+): void {
+  // The path constraint guarantees that this field accepts any string. TypeScript
+  // cannot resolve that conditional relationship inside a generic RHF setter.
+  setValue(name, value as FieldPathValue<TFieldValues, typeof name>, options);
+}
 
 async function handleWizTextInputValidateOnBlur<TFieldValues extends FieldValues>(
   event: FocusEvent<HTMLInputElement>,
-  name: FieldPath<TFieldValues>,
+  name: WizTextInputFieldPath<TFieldValues>,
   setValue: UseFormSetValue<TFieldValues>,
   trigger: UseFormTrigger<TFieldValues>,
   onBlurProp?: FocusEventHandler<HTMLInputElement>
 ): Promise<void> {
-  const value = event.target.value;
-  setValue(name, value as FieldPathValue<TFieldValues, typeof name>, {
+  setTextFieldValue(setValue, name, event.target.value, {
     shouldTouch: true,
   });
   await trigger(name);
@@ -227,7 +246,7 @@ function WizTextInputValidateOnBlur<TFieldValues extends FieldValues>(
   return renderWizTextInputField({
     ...props,
     onChange: (_event, value) => {
-      setValue(name, value as FieldPathValue<TFieldValues, typeof name>, {
+      setTextFieldValue(setValue, name, value, {
         shouldValidate: false,
         shouldDirty: true,
       });
@@ -244,7 +263,7 @@ function WizTextInputValidateOnBlur<TFieldValues extends FieldValues>(
  * You may set `id`, `label`, `placeholder`, `helperText`, `labelHelp`, and `labelHelpTitle` via props. When omitted, Yup `.meta()` may supply inline copy or `*Key` paths resolved from `RosaHcpWizardStringsProvider`.
  * Pass `isRequired` (and optionally native `required`) to override; when `isRequired` is omitted and `schema` is set, required UI follows Yup for this path. `TextInput` applies `required={isRequired || required}` on the input.
  */
-export function WizTextInput<TFieldValues extends FieldValues = FieldValues>(
+export function WizTextInput<TFieldValues extends FieldValues = WizardFormValues>(
   props: WizTextInputProps<TFieldValues>
 ) {
   const {
@@ -275,11 +294,14 @@ export function WizTextInput<TFieldValues extends FieldValues = FieldValues>(
   );
 
   const control = useWizRhfControl<TFieldValues>('WizTextInput', controlProp);
-  /** RHF default context is `null` when `FormProvider` is not used (control-only harness). */
-  const formContext = useFormContext<TFieldValues>() as UseFormReturn<TFieldValues> | null;
+  const formContext = useOptionalWizFormContext<TFieldValues>();
 
-  if (validateOnBlur && formContext == null) {
-    throw new Error(WIZ_TEXT_INPUT_VALIDATE_ON_BLUR_CONTROL_ONLY_ERROR);
+  let blurValidationForm: UseFormReturn<TFieldValues> | undefined;
+  if (validateOnBlur) {
+    if (formContext == null) {
+      throw new Error(WIZ_TEXT_INPUT_VALIDATE_ON_BLUR_CONTROL_ONLY_ERROR);
+    }
+    blurValidationForm = formContext;
   }
 
   const formState = useFormState({ control });
@@ -318,11 +340,11 @@ export function WizTextInput<TFieldValues extends FieldValues = FieldValues>(
     validationRevealed: stepValidationRevealed,
   };
 
-  const textInput = validateOnBlur ? (
+  const textInput = blurValidationForm ? (
     <WizTextInputValidateOnBlur
       {...boundProps}
-      setValue={formContext!.setValue}
-      trigger={formContext!.trigger}
+      setValue={blurValidationForm.setValue}
+      trigger={blurValidationForm.trigger}
     />
   ) : (
     <WizTextInputStandard {...boundProps} />

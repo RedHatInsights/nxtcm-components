@@ -38,7 +38,10 @@ export function useClusterNameUniquenessValidation({
   const uniquenessRequestIdRef = useRef(0);
   const asyncValidatingRequestIdRef = useRef<number | null>(null);
   const lastCheckedRef = useRef<LastCheckedPair | null>(null);
-  checkClusterNameUniquenessRef.current = checkClusterNameUniqueness;
+
+  useEffect(() => {
+    checkClusterNameUniquenessRef.current = checkClusterNameUniqueness;
+  });
 
   const clearPendingDebounce = useCallback(() => {
     if (debounceTimeoutRef.current) {

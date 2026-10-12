@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 import { Alert, AlertVariant } from '@patternfly/react-core/dist/dynamic/components/Alert';
 import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { useWizardContext } from '@patternfly/react-core/dist/dynamic/components/Wizard';
@@ -10,7 +8,6 @@ import PencilAltIcon from '@patternfly/react-icons/dist/esm/icons/pencil-alt-ico
 import { useWatch } from 'react-hook-form';
 
 import { Section } from '../../components/Section';
-import { STEP_IDS } from '../../constants';
 import { getRosaHcpWizardStringByLabelKey } from '../../stringsProvider/getRosaHcpWizardStringByLabelKey';
 import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
@@ -75,15 +72,9 @@ export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
       : {}),
   } as Partial<ROSAHCPCluster>;
 
-  const selectedVPC = useMemo(
-    () => resolveSelectedVpc(formValues.selected_vpc, vpcList.data),
-    [formValues.selected_vpc, vpcList.data]
-  );
-
-  const reviewSelectOptions = useMemo(
-    () => buildMachinePoolsReviewSelectOptions(selectedVPC, vpcList.data),
-    [selectedVPC, vpcList.data]
-  );
+  const vpcData = vpcList.data;
+  const selectedVPC = resolveSelectedVpc(formValues.selected_vpc, vpcData);
+  const reviewSelectOptions = buildMachinePoolsReviewSelectOptions(selectedVPC, vpcData);
   const reviewSections = useRosaHcpWizardReviewSections();
   const rosaStrings = useRosaHcpWizardStrings();
   const { review } = rosaStrings;
@@ -91,7 +82,6 @@ export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
   return (
     <Section
       label={review.sectionLabel}
-      id={STEP_IDS.REVIEW}
       isForm={false}
       labelActions={
         onOpenYamlEditor ? (

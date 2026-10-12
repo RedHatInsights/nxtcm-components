@@ -1,21 +1,21 @@
 import * as yup from 'yup';
 
 import { FIELD_NAME } from '../constants';
-import { ClusterEncryptionKeys, ROSAHCPCluster } from '../types';
+import { ClusterEncryptionKeys } from '../types';
 import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
 import { validateAWSKMSKeyARN } from '../validators';
 import { YUP } from './constants';
 import { ctx, rosaCommonRequiredNonEmptyTest } from './helpers';
-import type { WizardFieldMeta } from './types';
+import type { ClusterTestContext, ValidationSchemaContext, WizardFieldMeta } from './types';
 
 /** ARN format/region checks (required when shown is enforced via `.when()` on the field schema). */
 function validateKmsArn(
-  this: yup.TestContext,
+  this: ClusterTestContext,
   value: string | undefined
 ): boolean | yup.ValidationError {
   if (!value) return true;
   const { msgs } = ctx(this);
-  const region = (this.parent as Partial<ROSAHCPCluster>).region;
+  const region = this.parent.region;
   const error = validateAWSKMSKeyARN(value, region, msgs.kmsKeyArn);
   return error ? this.createError({ message: error }) : true;
 }
@@ -46,7 +46,7 @@ export const encryptionKeysSchema = yup
   } satisfies WizardFieldMeta);
 
 export const kmsKeyArnSchema = yup
-  .string()
+  .string<string, ValidationSchemaContext>()
   .meta({
     id: YUP.ENCRYPTION.KMS_KEY_ARN_SCHEMA.META.ID,
     labelKey: YUP.ENCRYPTION.KMS_KEY_ARN_SCHEMA.META.LABEL_KEY,
@@ -82,7 +82,7 @@ export const etcdEncryptionSchema = yup
   } satisfies WizardFieldMeta);
 
 export const etcdKeyArnSchema = yup
-  .string()
+  .string<string, ValidationSchemaContext>()
   .meta({
     id: YUP.ENCRYPTION.ETCD_KEY_ARN_SCHEMA.META.ID,
     labelKey: YUP.ENCRYPTION.ETCD_KEY_ARN_SCHEMA.META.LABEL_KEY,

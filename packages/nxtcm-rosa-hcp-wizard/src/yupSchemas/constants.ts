@@ -389,7 +389,7 @@ export const YUP = {
     },
     UPGRADE_SCHEDULE_SCHEMA: {
       META: {
-        ID: FIELD_NAME.UPGRADE_SCHEDULE.NAME,
+        ID: FIELD_NAME.UPGRADE_SCHEDULE,
         LABEL_KEY: 'clusterUpdates.dayTimeLabel',
         REVIEW_LABEL: 'clusterUpdates.upgradeScheduleLabel',
         STEP_ID: STEP_IDS.CLUSTER_UPDATES,

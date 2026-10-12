@@ -110,7 +110,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
         >
           <Radio
             labelHelp={n.publicPopover}
-            id={FIELD_NAME.CLUSTER_PRIVACY_FIELD.EXTERNAL}
+            id={ClusterNetwork.external}
             value={ClusterNetwork.external}
             label={n.publicLabel}
           >
@@ -125,7 +125,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
 
           <Radio
             labelHelp={n.privatePopover}
-            id={FIELD_NAME.CLUSTER_PRIVACY_FIELD.INTERNAL}
+            id={ClusterNetwork.internal}
             value={ClusterNetwork.internal}
             label={n.privateLabel}
           />
@@ -155,7 +155,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
           </FieldWrapper>
 
           <FieldWrapper size="lg">
-            <WizTextInput<ROSAHCPCluster>
+            <WizTextInput
               name={FIELD_NAME.NETWORK_MACHINE_CIDR}
               schema={clusterValidationSchema}
               isDisabled={cidrDefaultChecked}
@@ -169,7 +169,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
             />
           </FieldWrapper>
           <FieldWrapper size="lg">
-            <WizTextInput<ROSAHCPCluster>
+            <WizTextInput
               name={FIELD_NAME.NETWORK_SERVICE_CIDR}
               schema={clusterValidationSchema}
               isDisabled={cidrDefaultChecked}
@@ -183,7 +183,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
             />
           </FieldWrapper>
           <FieldWrapper size="lg">
-            <WizTextInput<ROSAHCPCluster>
+            <WizTextInput
               name={FIELD_NAME.NETWORK_POD_CIDR}
               schema={clusterValidationSchema}
               isDisabled={cidrDefaultChecked}
@@ -197,7 +197,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
             />
           </FieldWrapper>
           <FieldWrapper size="lg">
-            <WizTextInput<ROSAHCPCluster>
+            <WizTextInput
               name={FIELD_NAME.NETWORK_HOST_PREFIX}
               schema={clusterValidationSchema}
               isDisabled={cidrDefaultChecked}

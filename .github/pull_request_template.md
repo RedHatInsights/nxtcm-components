@@ -55,8 +55,7 @@
 
 
 ## Screenshots/Recordings
-<!-- If applicable, add screenshots or recordings to help explain your changes -->
-<!-- For UI changes, before/after screenshots are highly recommended -->
+<!-- Add screenshots for UI changes -->
 
 ### Before
 <!-- Screenshot or description of the previous behavior -->
