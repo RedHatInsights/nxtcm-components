@@ -86,7 +86,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
             >
               <NestedFields>
                 <FieldWrapper size="lg">
-                  <WizTextInput<ROSAHCPCluster>
+                  <WizTextInput
                     isRequired
                     schema={clusterValidationSchema}
                     name={FIELD_NAME.SUPPORT_ROLE_ARN}
@@ -95,7 +95,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
                   />
                 </FieldWrapper>
                 <FieldWrapper size="lg">
-                  <WizTextInput<ROSAHCPCluster>
+                  <WizTextInput
                     isRequired
                     schema={clusterValidationSchema}
                     name={FIELD_NAME.WORKER_ROLE_ARN}
@@ -142,7 +142,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
             >
               <NestedFields>
                 <FieldWrapper size="sm">
-                  <WizTextInput<ROSAHCPCluster>
+                  <WizTextInput
                     name={FIELD_NAME.CUSTOM_OPERATOR_ROLES_PREFIX}
                     schema={clusterValidationSchema}
                     label={rp.operatorPrefixLabel}

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { type FieldPath, useFormContext, useFormState, useWatch } from 'react-hook-form';
+import { useFormContext, useFormState, useWatch } from 'react-hook-form';
 
 import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
 import { useRosaHcpWizardReviewSections } from '../Steps/Review/ROSAHCPWizardReviewSections';
@@ -32,8 +32,7 @@ export function useRosaHcpWizardNavStepStatuses(
     () =>
       buildRosaHcpWizardNavStepStatuses({
         sections: reviewSections,
-        getFieldState: (path, state) =>
-          getFieldState(path as FieldPath<Partial<ROSAHCPCluster>>, state ?? formState),
+        getFieldState: (path, state) => getFieldState(path, state ?? formState),
         validationAttemptedStepIds,
         visibleStepIds,
       }),

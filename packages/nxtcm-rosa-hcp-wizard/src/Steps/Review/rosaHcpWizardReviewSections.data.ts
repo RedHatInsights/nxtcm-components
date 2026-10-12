@@ -7,16 +7,19 @@
  * on case-insensitive filesystems (macOS).
  */
 
+import { FieldValues, Path } from 'react-hook-form';
+
 import { STEP_IDS } from '../../constants';
+import { WizardFormValues } from '../../types';
 import { getFieldPathsByStepId } from '../../yupSchemas/wizardFieldMetaChangeRegistry';
 
-export interface RosaHcpWizardReviewSection {
+export interface RosaHcpWizardReviewSection<TFieldValues extends FieldValues = WizardFormValues> {
   /** PatternFly `WizardStep` id (e.g. `expand-steps-sub-a`) */
   id: string;
   label: string;
   /** When true, omit the review section if every listed field matches defaults */
   hideIfUnchanged?: boolean;
-  fieldPaths: readonly string[];
+  fieldPaths: readonly Path<TFieldValues>[];
 }
 
 export type RosaHcpWizardReviewStepLabels = {
@@ -75,9 +78,9 @@ export function buildRosaHcpWizardReviewSections(
 }
 
 /** Field paths for a wizard step, used when validating on Next. */
-export function getFieldPathsForWizardStepId(
-  sections: readonly RosaHcpWizardReviewSection[],
+export function getFieldPathsForWizardStepId<TFieldValues extends FieldValues>(
+  sections: readonly RosaHcpWizardReviewSection<TFieldValues>[],
   stepId: string
-): readonly string[] {
+): readonly Path<TFieldValues>[] {
   return sections.find((section) => section.id === stepId)?.fieldPaths ?? [];
 }

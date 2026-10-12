@@ -197,7 +197,7 @@ export function WizTextInputBlurValidationHarness() {
   return withRosaCt(
     <FormProvider {...methods}>
       <Form>
-        <WizTextInput
+        <WizTextInput<{ alias: string }>
           name="alias"
           schema={blurAliasSchema}
           label={WIZ_TEXT_INPUT_ALIAS_BLUR_LABEL}

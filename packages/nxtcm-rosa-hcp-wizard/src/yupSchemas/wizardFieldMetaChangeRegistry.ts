@@ -1,4 +1,6 @@
-import { clusterValidationSchema } from './clusterValidationSchema';
+import type { ISchema } from 'yup';
+
+import { clusterValidationFields } from './clusterValidationSchema';
 import { readWizardFieldMeta } from './readWizardFieldMeta';
 import type {
   WizardFieldDerivedSyncKey,
@@ -29,7 +31,7 @@ export type WizardFieldDerivedSyncEntry = {
 
 type WizardFieldMetaChangeRegistry = {
   /** Top-level form field paths grouped by {@link WizardFieldMeta.stepId}. */
-  fieldPathsByStepId: Readonly<Record<string, readonly string[]>>;
+  fieldPathsByStepId: Readonly<Record<string, readonly WizardFormFieldName[]>>;
   /** Top-level paths with Yup `.meta({ fieldType: 'select' })` (WizSelect / WizMultiSelect). */
   selectFieldPaths: ReadonlySet<string>;
   sourceFields: WizardFormFieldName[];
@@ -43,8 +45,10 @@ type WizardFieldMetaChangeRegistry = {
   derivedSyncEntries: WizardFieldDerivedSyncEntry[];
 };
 
-function buildWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
-  const fieldPathsByStep: Record<string, string[]> = {};
+function buildWizardFieldMetaChangeRegistry<TName extends WizardFormFieldName>(
+  fieldSchemas: Record<TName, ISchema<unknown>>
+): WizardFieldMetaChangeRegistry {
+  const fieldPathsByStep: Record<string, WizardFormFieldName[]> = {};
   const selectFieldPaths = new Set<string>();
   const resets = new Map<WizardFormFieldName, readonly WizardFormFieldName[]>();
   const refetches = new Map<WizardFormFieldName, readonly WizardResourceRefetchOnChange[]>();
@@ -56,8 +60,13 @@ function buildWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
   const syncEntries: WizardFieldSyncEntry[] = [];
   const derivedSyncEntries: WizardFieldDerivedSyncEntry[] = [];
 
-  for (const [fieldName, fieldSchema] of Object.entries(clusterValidationSchema.fields)) {
-    const meta = readWizardFieldMeta(fieldSchema);
+  // Generic record iteration preserves the key type; Object.entries would widen it to string.
+  for (const fieldName in fieldSchemas) {
+    if (!Object.hasOwn(fieldSchemas, fieldName)) {
+      continue;
+    }
+
+    const meta = readWizardFieldMeta(fieldSchemas[fieldName]);
     if (!meta) {
       continue;
     }
@@ -73,7 +82,7 @@ function buildWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
       selectFieldPaths.add(fieldName);
     }
 
-    const sourceField = fieldName as WizardFormFieldName;
+    const sourceField = fieldName;
 
     if (meta.resetsFieldsToDefaultOnChange?.length) {
       resets.set(sourceField, meta.resetsFieldsToDefaultOnChange);
@@ -120,7 +129,7 @@ function buildWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
 let registryCache: WizardFieldMetaChangeRegistry | undefined;
 
 function getWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
-  registryCache ??= buildWizardFieldMetaChangeRegistry();
+  registryCache ??= buildWizardFieldMetaChangeRegistry(clusterValidationFields);
   return registryCache;
 }
 
@@ -128,7 +137,7 @@ function getWizardFieldMetaChangeRegistry(): WizardFieldMetaChangeRegistry {
  * Top-level form field paths per wizard step id, from Yup `.meta({ stepId })`.
  * Built in the same schema scan as {@link listWizardFieldMetaChangeSourceFields}.
  */
-export function getFieldPathsByStepId(): Readonly<Record<string, readonly string[]>> {
+export function getFieldPathsByStepId(): Readonly<Record<string, readonly WizardFormFieldName[]>> {
   return getWizardFieldMetaChangeRegistry().fieldPathsByStepId;
 }
 

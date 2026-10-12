@@ -1,6 +1,7 @@
-import type { FieldValues, UseFormGetFieldState } from 'react-hook-form';
+import type { UseFormGetFieldState } from 'react-hook-form';
 
 import { STEP_IDS } from '../constants';
+import { WizardFieldPath, WizardFormValues } from '../types';
 import {
   isRosaHcpWizardBackDisabled,
   isRosaHcpWizardSkipToReviewVisible,
@@ -8,15 +9,15 @@ import {
 } from './rosaHcpWizardFooter.utils';
 
 const mockGetFieldState = (
-  impl: (path: string) => { invalid: boolean }
-): UseFormGetFieldState<FieldValues> =>
-  jest.fn((path: string) => ({
+  impl: (path: WizardFieldPath) => { invalid: boolean }
+): UseFormGetFieldState<WizardFormValues> =>
+  jest.fn((path: WizardFieldPath) => ({
     invalid: impl(path).invalid,
     isTouched: false,
     isDirty: false,
     isValidating: false,
     error: undefined,
-  })) as UseFormGetFieldState<FieldValues>;
+  }));
 
 describe('isRosaHcpWizardBackDisabled', () => {
   it('disables Back on the Details step', () => {

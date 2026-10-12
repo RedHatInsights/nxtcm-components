@@ -1,4 +1,5 @@
 import { STEP_IDS } from '../constants';
+import { clusterValidationSchema } from './clusterValidationSchema';
 import {
   getFieldPathsByStepId,
   getWizardFieldDerivedSyncKeyForSourceField,
@@ -26,7 +27,7 @@ describe('wizardFieldMetaChangeRegistry', () => {
       const allPaths = Object.values(fieldPathsByStepId).flat();
       const unique = new Set(allPaths);
       expect(unique.size).toBe(allPaths.length);
-      expect(allPaths.length).toBeGreaterThan(0);
+      expect([...unique].sort()).toEqual(Object.keys(clusterValidationSchema.fields).sort());
     });
 
     it('does not include parent or review step ids', () => {
