@@ -31,7 +31,7 @@ export function useClusterNameUniquenessValidation({
   const { control, getValues, setError, clearErrors, getFieldState } =
     useFormContext<Partial<ROSAHCPCluster>>();
   const region = useWatch({ control, name: FIELD_NAME.REGION });
-  const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const previousRegionRef = useRef<string | undefined>(undefined);
   const hasInitializedRegionRef = useRef(false);
   const checkClusterNameUniquenessRef = useRef(checkClusterNameUniqueness);

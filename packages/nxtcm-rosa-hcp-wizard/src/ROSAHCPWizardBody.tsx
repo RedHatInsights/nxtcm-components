@@ -1,7 +1,11 @@
 import React, { lazy, Suspense, useCallback, useMemo, useRef, useState } from 'react';
 
 import { Spinner } from '@patternfly/react-core/dist/dynamic/components/Spinner';
-import { Wizard, WizardStep } from '@patternfly/react-core/dist/dynamic/components/Wizard';
+import {
+  Wizard,
+  WizardStep,
+  type WizardStepProps,
+} from '@patternfly/react-core/dist/dynamic/components/Wizard';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 import { FIELD_NAME, STEP_IDS } from './constants';
@@ -186,7 +190,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
                 <ClusterUpdates />
               </WizardStep>
             ),
-          ].filter((s): s is React.ReactElement => Boolean(s));
+          ].filter((s): s is React.ReactElement<WizardStepProps> => Boolean(s));
 
           if (optionalSteps.length === 0) return null;
 

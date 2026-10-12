@@ -137,7 +137,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   const [typeaheadQuery, setTypeaheadQuery] = useState('');
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const textInputRef = useRef<HTMLInputElement>(null);
-  const tooltipTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const tooltipTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const showTooltip = useCallback(() => {
     clearTimeout(tooltipTimerRef.current);

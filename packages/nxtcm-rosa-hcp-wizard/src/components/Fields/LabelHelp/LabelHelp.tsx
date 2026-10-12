@@ -1,4 +1,4 @@
-import { type ComponentProps, type ReactNode, useRef } from 'react';
+import { type ComponentProps, type ReactElement, type ReactNode, useRef } from 'react';
 
 import { Button, ButtonVariant } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { FormGroupLabelHelp } from '@patternfly/react-core/dist/dynamic/components/Form';
@@ -18,7 +18,7 @@ export interface LabelHelpProps extends Omit<
   useButton?: boolean;
 }
 
-export function LabelHelp(props: LabelHelpProps): JSX.Element | null {
+export function LabelHelp(props: LabelHelpProps): ReactElement | null {
   const {
     moreInfo = 'More info',
     id,
