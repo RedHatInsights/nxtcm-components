@@ -18,7 +18,7 @@ export type SchemaPanelMountProps = {
   schema?: object;
 };
 
-export function SchemaPanelMount({
+function SchemaPanelMountComponent({
   onClose = () => {},
   schema = defaultSchema,
 }: SchemaPanelMountProps = {}) {
@@ -28,5 +28,37 @@ export function SchemaPanelMount({
         <DrawerContentBody>YAML editor content</DrawerContentBody>
       </DrawerContent>
     </Drawer>
+  );
+}
+
+type BrowserProps = NonNullable<React.ComponentProps<typeof SchemaPanelMountComponent>>;
+
+export type SchemaPanelMountGalleryProps = Omit<BrowserProps, 'onClose'> & {
+  onClose?: boolean;
+};
+
+export function SchemaPanelMount(props: SchemaPanelMountGalleryProps): React.ReactElement {
+  const [onCloseCalls, setOnCloseCalls] = React.useState<
+    Parameters<NonNullable<BrowserProps['onClose']>>[]
+  >([]);
+  const browserProps = React.useMemo<BrowserProps>(
+    () => ({
+      ...props,
+      onClose: props.onClose
+        ? () => {
+            setOnCloseCalls((calls) => [...calls, []]);
+          }
+        : undefined,
+    }),
+    [props]
+  );
+  return (
+    <>
+      <SchemaPanelMountComponent {...browserProps} />
+      <div hidden>
+        <input data-testid="onClose-calls" readOnly value={JSON.stringify(onCloseCalls)} />
+        <input data-testid="onClose-count" readOnly value={String(onCloseCalls.length)} />
+      </div>
+    </>
   );
 }

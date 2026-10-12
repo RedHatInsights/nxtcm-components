@@ -1,6 +1,7 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
+import type { SecretHarness, TextInputHarness } from './TextInput.story';
 import {
   API_TOKEN_FIELD_LABEL,
   CLUSTER_NAME_FIELD_LABEL,
@@ -15,7 +16,7 @@ import {
 
 test.describe('TextInput', () => {
   test('renders label, placeholder, and helper text', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof TextInputHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/TextInput/TextInput/TextInputHarness'
     );
     const clusterNameInput = mounted.getByRole('textbox', { name: CLUSTER_NAME_FIELD_LABEL });
@@ -25,7 +26,7 @@ test.describe('TextInput', () => {
   });
 
   test('updates value when the user types', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof TextInputHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/TextInput/TextInput/TextInputHarness'
     );
     const input = mounted.getByRole('textbox', { name: CLUSTER_NAME_FIELD_LABEL });
@@ -34,7 +35,7 @@ test.describe('TextInput', () => {
   });
 
   test('reveals and hides secret value when the control button is used', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof SecretHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/TextInput/TextInput/SecretHarness'
     );
     const input = mounted.getByRole('textbox', { name: API_TOKEN_FIELD_LABEL });
@@ -49,7 +50,7 @@ test.describe('TextInput', () => {
     mount,
     page,
   }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof SecretHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/TextInput/TextInput/SecretHarness'
     );
     const input = mounted.getByRole('textbox', { name: API_TOKEN_FIELD_LABEL });

@@ -1,3 +1,5 @@
+import React from 'react';
+
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import { FormProvider, useForm } from 'react-hook-form';
 
@@ -37,7 +39,7 @@ spec:
 export type YamlEditorStepMountProps = Partial<RosaHcpYamlEditorStepProps>;
 
 // Mountable gallery story for Monaco rendering and configuration tests.
-export function YamlEditorStepMount({
+function YamlEditorStepMountComponent({
   onClose,
   onCancel,
   resourceGenerator = mockResourceGenerator,
@@ -78,5 +80,48 @@ function YamlEditorStepMountInner({
         resourceGenerator={resourceGenerator}
       />
     </FormProvider>
+  );
+}
+
+type BrowserProps = NonNullable<React.ComponentProps<typeof YamlEditorStepMountComponent>>;
+
+export type YamlEditorStepMountGalleryProps = Omit<BrowserProps, 'onClose' | 'onCancel'> & {
+  onClose?: boolean;
+  onCancel?: boolean;
+};
+
+export function YamlEditorStepMount(props: YamlEditorStepMountGalleryProps): React.ReactElement {
+  const [onCloseCalls, setOnCloseCalls] = React.useState<
+    Parameters<NonNullable<BrowserProps['onClose']>>[]
+  >([]);
+  const [onCancelCalls, setOnCancelCalls] = React.useState<
+    Parameters<NonNullable<BrowserProps['onCancel']>>[]
+  >([]);
+  const browserProps = React.useMemo<BrowserProps>(
+    () => ({
+      ...props,
+      onClose: props.onClose
+        ? () => {
+            setOnCloseCalls((calls) => [...calls, []]);
+          }
+        : undefined,
+      onCancel: props.onCancel
+        ? () => {
+            setOnCancelCalls((calls) => [...calls, []]);
+          }
+        : undefined,
+    }),
+    [props]
+  );
+  return (
+    <>
+      <YamlEditorStepMountComponent {...browserProps} />
+      <div hidden>
+        <input data-testid="onClose-calls" readOnly value={JSON.stringify(onCloseCalls)} />
+        <input data-testid="onClose-count" readOnly value={String(onCloseCalls.length)} />
+        <input data-testid="onCancel-calls" readOnly value={JSON.stringify(onCancelCalls)} />
+        <input data-testid="onCancel-count" readOnly value={String(onCancelCalls.length)} />
+      </div>
+    </>
   );
 }

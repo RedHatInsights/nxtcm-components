@@ -57,7 +57,7 @@ export type RosaHcpWizardValidationMountProps = {
 /** Minimal YAML stub returned by getYaml when onSubmit is wired in tests. */
 const STUB_FORM_YAML = 'kind: ROSAControlPlane\nmetadata:\n  name: stub';
 
-export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMountProps> = ({
+const RosaHcpWizardValidationMountComponent: React.FC<RosaHcpWizardValidationMountProps> = ({
   defaultValues = {},
   onSubmit,
 }) => {
@@ -236,3 +236,38 @@ export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMount
     </FormProvider>
   );
 };
+
+type BrowserProps = NonNullable<React.ComponentProps<typeof RosaHcpWizardValidationMountComponent>>;
+
+export type RosaHcpWizardValidationMountGalleryProps = Omit<BrowserProps, 'onSubmit'> & {
+  onSubmit?: boolean;
+};
+
+export function RosaHcpWizardValidationMount(
+  props: RosaHcpWizardValidationMountGalleryProps
+): React.ReactElement {
+  const [onSubmitCalls, setOnSubmitCalls] = React.useState<
+    Parameters<NonNullable<BrowserProps['onSubmit']>>[]
+  >([]);
+  const browserProps = React.useMemo<BrowserProps>(
+    () => ({
+      ...props,
+      onSubmit: props.onSubmit
+        ? (...args) => {
+            setOnSubmitCalls((calls) => [...calls, args]);
+            return Promise.resolve();
+          }
+        : undefined,
+    }),
+    [props]
+  );
+  return (
+    <>
+      <RosaHcpWizardValidationMountComponent {...browserProps} />
+      <div hidden>
+        <input data-testid="onSubmit-calls" readOnly value={JSON.stringify(onSubmitCalls)} />
+        <input data-testid="onSubmit-count" readOnly value={String(onSubmitCalls.length)} />
+      </div>
+    </>
+  );
+}

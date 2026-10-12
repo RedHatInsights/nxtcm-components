@@ -1,8 +1,9 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
-import { checkAccessibility } from '@/test-helpers';
+import { expect, test } from '@/playwright/ct-fixture';
+import { checkAccessibility } from '@/playwright/test-helpers';
 
 import { ExpiredTrialsProps } from './ExpiredTrials';
+import type { ExpiredTrialsStory, ExpiredTrialsWithActions } from './ExpiredTrials.story';
 
 const defaultData: ExpiredTrialsProps['data'] = {
   trials: [
@@ -17,7 +18,7 @@ const defaultData: ExpiredTrialsProps['data'] = {
 
 test.describe('ExpiredTrials', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ExpiredTrialsStory>(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
       { data: defaultData }
     );
@@ -25,7 +26,7 @@ test.describe('ExpiredTrials', () => {
   });
 
   test('should render cluster names in the table', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ExpiredTrialsStory>(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
       { data: defaultData }
     );
@@ -36,7 +37,7 @@ test.describe('ExpiredTrials', () => {
   });
 
   test('should render table header as Cluster name', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ExpiredTrialsStory>(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
       { data: defaultData }
     );
@@ -44,9 +45,9 @@ test.describe('ExpiredTrials', () => {
   });
 
   test('should render names as links when onTrialClick is provided', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ExpiredTrialsStory>(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
-      { data: defaultData, onTrialClick: storyCallback('onTrialClick') }
+      { data: defaultData, onTrialClick: true }
     );
 
     await expect(component.getByTestId('trial-link-s1')).toBeVisible();
@@ -55,19 +56,26 @@ test.describe('ExpiredTrials', () => {
   });
 
   test('should call onTrialClick when a cluster name is clicked', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ExpiredTrialsStory>(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
-      { data: defaultData, onTrialClick: storyCallback('onTrialClick') }
+      { data: defaultData, onTrialClick: true }
     );
 
     await component.getByTestId('trial-link-s2').click();
     await expect
-      .poll(async () => (await storyCallbackCalls(component, 'onTrialClick'))[0]?.[0])
+      .poll(
+        async () =>
+          (
+            await component
+              .getByTestId('onTrialClick-calls')
+              .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+          )[0]?.[0]
+      )
       .toEqual({ id: 's2', name: 'test' });
   });
 
   test('should render names as plain text when onTrialClick is not provided', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ExpiredTrialsStory>(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
       { data: defaultData }
     );
@@ -78,7 +86,7 @@ test.describe('ExpiredTrials', () => {
   });
 
   test('should show empty state when no trials', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ExpiredTrialsStory>(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
       { data: { trials: [], totalCount: 0, currentPage: 1, pageSize: 10 } }
     );
@@ -87,7 +95,7 @@ test.describe('ExpiredTrials', () => {
   });
 
   test('should render kebab actions when rowActions is provided', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ExpiredTrialsWithActions>(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsWithActions',
       { data: defaultData }
     );
@@ -97,7 +105,7 @@ test.describe('ExpiredTrials', () => {
   });
 
   test('should not render kebab column when rowActions is not provided', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ExpiredTrialsStory>(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
       { data: defaultData }
     );
@@ -107,11 +115,11 @@ test.describe('ExpiredTrials', () => {
   });
 
   test('should render pagination when onPageChange is provided', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ExpiredTrialsStory>(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
       {
         data: { ...defaultData, totalCount: 25 },
-        onPageChange: storyCallback('onPageChange'),
+        onPageChange: true,
       }
     );
 
@@ -119,7 +127,7 @@ test.describe('ExpiredTrials', () => {
   });
 
   test('should not render pagination when onPageChange is not provided', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ExpiredTrialsStory>(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
       { data: defaultData }
     );
@@ -128,27 +136,34 @@ test.describe('ExpiredTrials', () => {
   });
 
   test('should call onPageChange when next page is clicked', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ExpiredTrialsStory>(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
       {
         data: { ...defaultData, totalCount: 25 },
-        onPageChange: storyCallback('onPageChange'),
+        onPageChange: true,
       }
     );
 
     await component.getByRole('button', { name: 'Go to next page' }).click();
     await expect
-      .poll(async () => (await storyCallbackCalls(component, 'onPageChange'))[0]?.[0])
+      .poll(
+        async () =>
+          (
+            await component
+              .getByTestId('onPageChange-calls')
+              .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+          )[0]?.[0]
+      )
       .toBe(2);
   });
 
   test('should call onPageSizeChange when per-page is changed', async ({ mount, page }) => {
-    const component = await mount(
+    const component = await mount<typeof ExpiredTrialsStory>(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
       {
         data: { ...defaultData, totalCount: 25 },
-        onPageChange: storyCallback('onPageChange'),
-        onPageSizeChange: storyCallback('onPageSizeChange'),
+        onPageChange: true,
+        onPageSizeChange: true,
       }
     );
 
@@ -156,7 +171,14 @@ test.describe('ExpiredTrials', () => {
     await component.locator('.pf-v6-c-pagination .pf-v6-c-menu-toggle').click();
     await page.getByRole('menuitem', { name: /20 per page/i }).click();
     await expect
-      .poll(async () => (await storyCallbackCalls(component, 'onPageSizeChange'))[0]?.[0])
+      .poll(
+        async () =>
+          (
+            await component
+              .getByTestId('onPageSizeChange-calls')
+              .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+          )[0]?.[0]
+      )
       .toBe(20);
   });
 
@@ -167,16 +189,16 @@ test.describe('ExpiredTrials', () => {
       currentPage: 1,
       pageSize: 10,
     };
-    const component = await mount(
+    const component = await mount<typeof ExpiredTrialsStory>(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
-      { data: data, onTrialClick: storyCallback('onTrialClick') }
+      { data: data, onTrialClick: true }
     );
 
     await expect(component.getByTestId('trial-link-s1')).toContainText('my-expired-cluster');
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ExpiredTrialsStory>(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
       { isLoading: true }
     );
@@ -185,7 +207,7 @@ test.describe('ExpiredTrials', () => {
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ExpiredTrialsStory>(
       'nxtcm-dashboard/ExpiredTrials/ExpiredTrials/ExpiredTrialsStory',
       { isLoading: true }
     );

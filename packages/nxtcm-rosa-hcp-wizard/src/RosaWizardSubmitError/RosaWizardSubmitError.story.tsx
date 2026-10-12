@@ -10,14 +10,14 @@ import { RosaWizardSubmitError } from './RosaWizardSubmitError';
 
 export type RosaWizardSubmitErrorMountProps = React.ComponentProps<typeof RosaWizardSubmitError>;
 
-export function RosaWizardSubmitErrorMount(props: RosaWizardSubmitErrorMountProps) {
+function RosaWizardSubmitErrorMountComponent(props: RosaWizardSubmitErrorMountProps) {
   return withRosaCt(<RosaWizardSubmitError {...props} />);
 }
 
 /** Starts in submit error state and clears error when "Back to the wizard" is clicked. */
 export function RosaWizardSubmitErrorThenBackMount(
   props: Omit<
-    RosaWizardSubmitErrorMountProps,
+    RosaWizardSubmitErrorMountGalleryProps,
     'onSubmitError' | 'onBackToReviewStep' | 'isNavigatingToReview'
   >
 ) {
@@ -40,9 +40,66 @@ export function RosaWizardSubmitErrorThenBackMount(
   return withRosaCt(
     <RosaWizardSubmitError
       {...props}
+      onCancel={() => {}}
       onSubmitError={submitError}
       onBackToReviewStep={onBackToReviewStep}
       isNavigatingToReview={isNavigatingToReview}
     />
+  );
+}
+
+type BrowserProps = NonNullable<React.ComponentProps<typeof RosaWizardSubmitErrorMountComponent>>;
+
+export type RosaWizardSubmitErrorMountGalleryProps = Omit<
+  BrowserProps,
+  'onCancel' | 'onBackToReviewStep'
+> & {
+  onCancel?: boolean;
+  onBackToReviewStep?: boolean;
+};
+
+export function RosaWizardSubmitErrorMount(
+  props: RosaWizardSubmitErrorMountGalleryProps
+): React.ReactElement {
+  const [onCancelCalls, setOnCancelCalls] = React.useState<
+    Parameters<NonNullable<BrowserProps['onCancel']>>[]
+  >([]);
+  const [onBackToReviewStepCalls, setOnBackToReviewStepCalls] = React.useState<
+    Parameters<NonNullable<BrowserProps['onBackToReviewStep']>>[]
+  >([]);
+  const browserProps = React.useMemo<BrowserProps>(
+    () => ({
+      ...props,
+      onCancel: props.onCancel
+        ? () => {
+            setOnCancelCalls((calls) => [...calls, []]);
+          }
+        : () => {},
+      onBackToReviewStep: props.onBackToReviewStep
+        ? () => {
+            setOnBackToReviewStepCalls((calls) => [...calls, []]);
+          }
+        : undefined,
+    }),
+    [props]
+  );
+  return (
+    <>
+      <RosaWizardSubmitErrorMountComponent {...browserProps} />
+      <div hidden>
+        <input data-testid="onCancel-calls" readOnly value={JSON.stringify(onCancelCalls)} />
+        <input data-testid="onCancel-count" readOnly value={String(onCancelCalls.length)} />
+        <input
+          data-testid="onBackToReviewStep-calls"
+          readOnly
+          value={JSON.stringify(onBackToReviewStepCalls)}
+        />
+        <input
+          data-testid="onBackToReviewStep-count"
+          readOnly
+          value={String(onBackToReviewStepCalls.length)}
+        />
+      </div>
+    </>
   );
 }

@@ -17,7 +17,7 @@ export type YamlEditorFooterMountProps = {
   onSubmit?: (yamlString: string) => Promise<void>;
 };
 
-export function YamlEditorFooterMount({
+function YamlEditorFooterMountComponent({
   hasSchemaErrors = false,
   yamlContent = '',
   onClose = () => {},
@@ -63,5 +63,65 @@ function YamlEditorFooterMountInner({
         />
       </RosaHcpWizardValidationProvider>
     </FormProvider>
+  );
+}
+
+type BrowserProps = NonNullable<React.ComponentProps<typeof YamlEditorFooterMountComponent>>;
+
+export type YamlEditorFooterMountGalleryProps = Omit<
+  BrowserProps,
+  'onClose' | 'onCancel' | 'onSubmit'
+> & {
+  onClose?: boolean;
+  onCancel?: boolean;
+  onSubmit?: boolean;
+};
+
+export function YamlEditorFooterMount(
+  props: YamlEditorFooterMountGalleryProps
+): React.ReactElement {
+  const [onCloseCalls, setOnCloseCalls] = React.useState<
+    Parameters<NonNullable<BrowserProps['onClose']>>[]
+  >([]);
+  const [onCancelCalls, setOnCancelCalls] = React.useState<
+    Parameters<NonNullable<BrowserProps['onCancel']>>[]
+  >([]);
+  const [onSubmitCalls, setOnSubmitCalls] = React.useState<
+    Parameters<NonNullable<BrowserProps['onSubmit']>>[]
+  >([]);
+  const browserProps = React.useMemo<BrowserProps>(
+    () => ({
+      ...props,
+      onClose: props.onClose
+        ? () => {
+            setOnCloseCalls((calls) => [...calls, []]);
+          }
+        : undefined,
+      onCancel: props.onCancel
+        ? () => {
+            setOnCancelCalls((calls) => [...calls, []]);
+          }
+        : undefined,
+      onSubmit: props.onSubmit
+        ? (...args) => {
+            setOnSubmitCalls((calls) => [...calls, args]);
+            return Promise.resolve();
+          }
+        : undefined,
+    }),
+    [props]
+  );
+  return (
+    <>
+      <YamlEditorFooterMountComponent {...browserProps} />
+      <div hidden>
+        <input data-testid="onClose-calls" readOnly value={JSON.stringify(onCloseCalls)} />
+        <input data-testid="onClose-count" readOnly value={String(onCloseCalls.length)} />
+        <input data-testid="onCancel-calls" readOnly value={JSON.stringify(onCancelCalls)} />
+        <input data-testid="onCancel-count" readOnly value={String(onCancelCalls.length)} />
+        <input data-testid="onSubmit-calls" readOnly value={JSON.stringify(onSubmitCalls)} />
+        <input data-testid="onSubmit-count" readOnly value={String(onSubmitCalls.length)} />
+      </div>
+    </>
   );
 }

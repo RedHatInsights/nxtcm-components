@@ -1,11 +1,12 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
 import { checkAccessibility } from '../../test-helpers';
+import type { AssociateAWSAccountInfoMount } from './AssociateAWSAccountInfo.story';
 
 test.describe('AssociateAWSAccountInfo', () => {
   test('should render expandable section with title', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AssociateAWSAccountInfoMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/AssociateAWSAccountInfo/AssociateAWSAccountInfoMount',
       { title: 'Step 1: Login' }
     );
@@ -14,7 +15,7 @@ test.describe('AssociateAWSAccountInfo', () => {
   });
 
   test('should be collapsed by default', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AssociateAWSAccountInfoMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/AssociateAWSAccountInfo/AssociateAWSAccountInfoMount',
       { childVariant: 'hidden' }
     );
@@ -23,7 +24,7 @@ test.describe('AssociateAWSAccountInfo', () => {
   });
 
   test('should be expanded when initiallyExpanded is true', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AssociateAWSAccountInfoMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/AssociateAWSAccountInfo/AssociateAWSAccountInfoMount',
       { initiallyExpanded: true, childVariant: 'visible' }
     );
@@ -31,7 +32,7 @@ test.describe('AssociateAWSAccountInfo', () => {
   });
 
   test('should expand when toggle is clicked', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AssociateAWSAccountInfoMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/AssociateAWSAccountInfo/AssociateAWSAccountInfoMount',
       { childVariant: 'expandable' }
     );
@@ -43,7 +44,7 @@ test.describe('AssociateAWSAccountInfo', () => {
   });
 
   test('should collapse when toggle is clicked again', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AssociateAWSAccountInfoMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/AssociateAWSAccountInfo/AssociateAWSAccountInfoMount',
       { initiallyExpanded: true, childVariant: 'collapsible' }
     );
@@ -55,7 +56,7 @@ test.describe('AssociateAWSAccountInfo', () => {
   });
 
   test('should render children content', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AssociateAWSAccountInfoMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/AssociateAWSAccountInfo/AssociateAWSAccountInfoMount',
       { initiallyExpanded: true, childVariant: 'complex' }
     );
@@ -65,14 +66,14 @@ test.describe('AssociateAWSAccountInfo', () => {
   });
 
   test('should pass accessibility tests when collapsed', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AssociateAWSAccountInfoMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/AssociateAWSAccountInfo/AssociateAWSAccountInfoMount'
     );
     await checkAccessibility({ component });
   });
 
   test('should pass accessibility tests when expanded', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AssociateAWSAccountInfoMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/AssociateAWSAccountInfo/AssociateAWSAccountInfoMount',
       { initiallyExpanded: true }
     );

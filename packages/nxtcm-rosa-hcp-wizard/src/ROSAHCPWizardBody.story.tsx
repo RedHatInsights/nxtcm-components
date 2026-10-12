@@ -62,7 +62,7 @@ const defaultWizardProps: RosaHCPWizardProps = {
 
 export type RosaHcpWizardBodyMountProps = Partial<RosaHCPWizardProps>;
 
-export function RosaHcpWizardBodyMount(props: RosaHcpWizardBodyMountProps = {}) {
+function RosaHcpWizardBodyMountComponent(props: RosaHcpWizardBodyMountProps = {}) {
   return (
     <RosaHcpWizardStringsProvider>
       <RosaHcpWizardFormProvider {...defaultWizardProps} {...props} />
@@ -77,10 +77,66 @@ export function RosaHcpWizardBodyErrorThenBackMount(props: RosaHcpWizardBodyMoun
   );
 
   return (
-    <RosaHcpWizardBodyMount
+    <RosaHcpWizardBodyMountComponent
       {...props}
       onSubmitError={submitError}
       onBackToReviewStep={() => setSubmitError(false)}
     />
+  );
+}
+
+type BrowserProps = NonNullable<React.ComponentProps<typeof RosaHcpWizardBodyMountComponent>>;
+
+export type RosaHcpWizardBodyMountGalleryProps = Omit<
+  BrowserProps,
+  'onCancel' | 'onBackToReviewStep'
+> & {
+  onCancel?: boolean;
+  onBackToReviewStep?: boolean;
+};
+
+export function RosaHcpWizardBodyMount(
+  props: RosaHcpWizardBodyMountGalleryProps
+): React.ReactElement {
+  const [onCancelCalls, setOnCancelCalls] = React.useState<
+    Parameters<NonNullable<BrowserProps['onCancel']>>[]
+  >([]);
+  const [onBackToReviewStepCalls, setOnBackToReviewStepCalls] = React.useState<
+    Parameters<NonNullable<BrowserProps['onBackToReviewStep']>>[]
+  >([]);
+  const browserProps = React.useMemo<BrowserProps>(
+    () => ({
+      ...props,
+      onCancel: props.onCancel
+        ? () => {
+            setOnCancelCalls((calls) => [...calls, []]);
+          }
+        : undefined,
+      onBackToReviewStep: props.onBackToReviewStep
+        ? () => {
+            setOnBackToReviewStepCalls((calls) => [...calls, []]);
+          }
+        : undefined,
+    }),
+    [props]
+  );
+  return (
+    <>
+      <RosaHcpWizardBodyMountComponent {...browserProps} />
+      <div hidden>
+        <input data-testid="onCancel-calls" readOnly value={JSON.stringify(onCancelCalls)} />
+        <input data-testid="onCancel-count" readOnly value={String(onCancelCalls.length)} />
+        <input
+          data-testid="onBackToReviewStep-calls"
+          readOnly
+          value={JSON.stringify(onBackToReviewStepCalls)}
+        />
+        <input
+          data-testid="onBackToReviewStep-count"
+          readOnly
+          value={String(onBackToReviewStepCalls.length)}
+        />
+      </div>
+    </>
   );
 }

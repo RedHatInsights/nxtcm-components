@@ -1,12 +1,14 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
+
+import type { NumberHarness } from './NumberInput.story';
 
 // Match NUMBER_HARNESS_FIELD_LABEL in the gallery story.
 const workerCountLabel = 'Worker count';
 
 test.describe('NumberInput', () => {
   test('renders label and default placeholder from label', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof NumberHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness'
     );
     await expect(mounted.getByText(workerCountLabel)).toBeVisible();
@@ -17,7 +19,7 @@ test.describe('NumberInput', () => {
   });
 
   test('increments value when the plus control is activated', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof NumberHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness',
       { initial: 1 }
     );
@@ -27,7 +29,7 @@ test.describe('NumberInput', () => {
   });
 
   test('decrements to zero in the field when zeroIsUndefined is true', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof NumberHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness',
       { zeroIsUndefined: true, initial: 1 }
     );

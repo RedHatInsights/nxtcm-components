@@ -1,6 +1,7 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
+import type { TwoRadioHarness } from './Radio.story';
 import {
   RADIO_HARNESS_EAST_DESCRIPTION,
   RADIO_HARNESS_SELECTED_STATUS_LABEL,
@@ -10,14 +11,14 @@ import {
 
 test.describe('Radio (with RadioGroupContext)', () => {
   test('renders description on the selected radio', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof TwoRadioHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Radio/Radio/TwoRadioHarness'
     );
     await expect(mounted.getByText(RADIO_HARNESS_EAST_DESCRIPTION)).toBeVisible();
   });
 
   test('calls context setValue when a radio is selected', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof TwoRadioHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Radio/Radio/TwoRadioHarness'
     );
     await mounted.getByRole('radio', { name: RADIO_HARNESS_US_WEST_LABEL }).click();

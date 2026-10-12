@@ -1,5 +1,5 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
 import {
   FILE_UPLOAD_HARNESS_HELPER_TEXT,

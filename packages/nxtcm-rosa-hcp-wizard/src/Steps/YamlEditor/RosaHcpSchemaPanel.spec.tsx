@@ -1,35 +1,36 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
 import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { checkAccessibility } from '../../test-helpers';
+import type { SchemaPanelMount } from './RosaHcpSchemaPanel.story';
 
 const s = defaultRosaHcpWizardStrings.yamlEditor;
 
 test.describe('RosaHcpSchemaPanel', () => {
   test('should pass accessibility checks', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof SchemaPanelMount>(
       'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpSchemaPanel/SchemaPanelMount'
     );
     await checkAccessibility({ component });
   });
 
   test('renders the panel title', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof SchemaPanelMount>(
       'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpSchemaPanel/SchemaPanelMount'
     );
     await expect(component.getByRole('heading', { name: s.schemaTitle })).toBeVisible();
   });
 
   test('renders a search input with the correct placeholder', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof SchemaPanelMount>(
       'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpSchemaPanel/SchemaPanelMount'
     );
     await expect(component.getByPlaceholder(s.schemaSearchPlaceholder)).toBeVisible();
   });
 
   test('renders schema fields from the ROSAControlPlane spec', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof SchemaPanelMount>(
       'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpSchemaPanel/SchemaPanelMount'
     );
     await expect(component.getByText('region', { exact: true })).toBeVisible();
@@ -37,7 +38,7 @@ test.describe('RosaHcpSchemaPanel', () => {
   });
 
   test('filters fields when a search term is entered', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof SchemaPanelMount>(
       'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpSchemaPanel/SchemaPanelMount'
     );
     await component.getByPlaceholder(s.schemaSearchPlaceholder).fill('region');
@@ -46,7 +47,7 @@ test.describe('RosaHcpSchemaPanel', () => {
   });
 
   test('shows all fields again after clearing the search', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof SchemaPanelMount>(
       'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpSchemaPanel/SchemaPanelMount'
     );
     const searchInput = component.getByPlaceholder(s.schemaSearchPlaceholder);
@@ -58,7 +59,7 @@ test.describe('RosaHcpSchemaPanel', () => {
   });
 
   test('shows an expand button on object-type fields with nested properties', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof SchemaPanelMount>(
       'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpSchemaPanel/SchemaPanelMount'
     );
     await expect(
@@ -67,7 +68,7 @@ test.describe('RosaHcpSchemaPanel', () => {
   });
 
   test('expands a nested object field to reveal child properties', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof SchemaPanelMount>(
       'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpSchemaPanel/SchemaPanelMount'
     );
     await component.getByPlaceholder(s.schemaSearchPlaceholder).fill('autoNode');
@@ -79,7 +80,7 @@ test.describe('RosaHcpSchemaPanel', () => {
   });
 
   test('collapses an expanded field when clicked again', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof SchemaPanelMount>(
       'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpSchemaPanel/SchemaPanelMount'
     );
     await component.getByPlaceholder(s.schemaSearchPlaceholder).fill('autoNode');
@@ -91,11 +92,17 @@ test.describe('RosaHcpSchemaPanel', () => {
   });
 
   test('calls onClose when the close button is clicked', async ({ mount, page }) => {
-    const component = await mount(
+    const component = await mount<typeof SchemaPanelMount>(
       'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpSchemaPanel/SchemaPanelMount',
-      { onClose: storyCallback('onClose') }
+      { onClose: true }
     );
     await page.getByRole('button', { name: s.schemaToggleAriaLabel }).click();
-    await expect.poll(() => storyCallbackCalls(component, 'onClose')).toHaveLength(1);
+    await expect
+      .poll(() =>
+        component
+          .getByTestId('onClose-calls')
+          .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+      )
+      .toHaveLength(1);
   });
 });

@@ -1,17 +1,14 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import type { Page } from '@playwright/test';
 
-import { expect, type MountResult, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
+import { expect, type MountResult, test } from '@/playwright/ct-fixture';
 
 import { FIELD_NAME } from '../../../constants';
 import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import {
-  makeMachineTypesResource,
-  makeVpcListResource,
-} from '../../../test/rosaHcpWizardCtSpecHelpers';
 import { checkAccessibility } from '../../../test-helpers';
 import { maxReplicasSchema, minReplicasSchema, nodesComputeSchema } from '../../../yupSchemas';
+import type { MachinePoolsMount } from './MachinePools.story';
 
 const mp = defaultRosaHcpWizardStrings.machinePools;
 const a = defaultRosaHcpWizardStrings.autoscaling;
@@ -47,7 +44,7 @@ async function selectVpc(component: MountResult, page: Page, vpcName: string) {
 
 test.describe('MachinePools (ROSA HCP)', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
     );
     await checkAccessibility({ component });
@@ -56,7 +53,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
   test('should render machine pool section with instance type and autoscaling', async ({
     mount,
   }) => {
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
     );
     await expect(component.getByText(mp.sectionLabel, { exact: true })).toBeVisible();
@@ -69,7 +66,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
   });
 
   test('should disable private subnet select until a VPC is selected', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
     );
 
@@ -84,7 +81,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
     mount,
     page,
   }) => {
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
     );
 
@@ -103,7 +100,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
   });
 
   test('should reset subnet and security groups when VPC changes', async ({ mount, page }) => {
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
       {
         defaultValues: {
@@ -128,11 +125,13 @@ test.describe('MachinePools (ROSA HCP)', () => {
   });
 
   test('should fetch machine types when region is present', async ({ mount }) => {
-    const machineTypes = makeMachineTypesResource({
-      fetch: storyCallback('fetchMachineTypes'),
-    });
+    const machineTypes = {
+      data: rosaHcpWizardFixtures.mockMachineTypes,
+      isFetching: false,
+      error: null,
+    };
 
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
       {
         machineTypes: machineTypes,
@@ -145,7 +144,9 @@ test.describe('MachinePools (ROSA HCP)', () => {
 
     await expect
       .poll(async () => {
-        const calls = await storyCallbackCalls(component, 'fetchMachineTypes');
+        const calls = await component
+          .getByTestId('fetchMachineTypes-calls')
+          .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][]);
         return (
           calls.length > 0 &&
           calls.every(([request]) =>
@@ -165,7 +166,9 @@ test.describe('MachinePools (ROSA HCP)', () => {
     mount,
     page,
   }) => {
-    const machineTypes = makeMachineTypesResource({
+    const machineTypes = {
+      isFetching: false,
+      error: null,
       data: [
         {
           id: 'c5.2xlarge',
@@ -196,9 +199,9 @@ test.describe('MachinePools (ROSA HCP)', () => {
           category: 'General Purpose',
         },
       ],
-    });
+    };
 
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
       { machineTypes: machineTypes, defaultValues: { selected_vpc: '' } }
     );
@@ -217,7 +220,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
   });
 
   test('should hide compute node count when configured in hiddenFields', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
       { config: { hiddenFields: [FIELD_NAME.NODES_COMPUTE] } }
     );
@@ -230,7 +233,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
   test('should show compute node count by default and min/max when autoscaling is enabled', async ({
     mount,
   }) => {
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
     );
 
@@ -255,7 +258,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
   });
 
   test('should disable min replica plus button at max replica bound', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
     );
 
@@ -269,7 +272,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
   });
 
   test('should disable max replica minus button at min replica bound', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
     );
 
@@ -285,7 +288,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
   test('should set replica defaults when autoscaling is enabled and restore compute count when disabled', async ({
     mount,
   }) => {
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
     );
 
@@ -311,7 +314,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
   test('should show advanced machine pool controls inside expandable section', async ({
     mount,
   }) => {
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount'
     );
 
@@ -328,7 +331,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
   test('should show security groups inside advanced section when a VPC is selected on a compatible version', async ({
     mount,
   }) => {
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
       { defaultValues: { selected_vpc: fixtureVpc1.id } }
     );
@@ -344,7 +347,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
   test('should show incompatible version message for security groups when cluster version is too old', async ({
     mount,
   }) => {
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
       {
         defaultValues: {
@@ -360,11 +363,9 @@ test.describe('MachinePools (ROSA HCP)', () => {
   });
 
   test('should refetch vpc list when security groups refresh is pressed', async ({ mount }) => {
-    const vpcList = makeVpcListResource({
-      fetch: storyCallback('vpcFetch'),
-    });
+    const vpcList = { data: rosaHcpWizardFixtures.mockVPCs, isFetching: false, error: null };
 
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
       {
         vpcList: vpcList,
@@ -381,20 +382,29 @@ test.describe('MachinePools (ROSA HCP)', () => {
     const refreshButton = advancedSection.getByTestId('multiselect-refresh');
 
     await expect(refreshButton).toBeVisible();
-    const fetchCountBeforeRefresh = (await storyCallbackCalls(component, 'vpcFetch')).length;
+    const fetchCountBeforeRefresh = (
+      await component
+        .getByTestId('vpcFetch-calls')
+        .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+    ).length;
     await refreshButton.click();
 
     await expect
-      .poll(async () => (await storyCallbackCalls(component, 'vpcFetch')).length)
+      .poll(
+        async () =>
+          (
+            await component
+              .getByTestId('vpcFetch-calls')
+              .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+          ).length
+      )
       .toBe(fetchCountBeforeRefresh + 1);
   });
 
   test('should refetch vpc list from empty security groups refresh control', async ({ mount }) => {
-    const vpcList = makeVpcListResource({
-      fetch: storyCallback('vpcFetch'),
-    });
+    const vpcList = { data: rosaHcpWizardFixtures.mockVPCs, isFetching: false, error: null };
 
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
       {
         vpcList: vpcList,
@@ -409,21 +419,34 @@ test.describe('MachinePools (ROSA HCP)', () => {
 
     const refreshButton = component.getByTestId('security-groups-refresh');
     await expect(refreshButton).toBeVisible();
-    const fetchCountBeforeRefresh = (await storyCallbackCalls(component, 'vpcFetch')).length;
+    const fetchCountBeforeRefresh = (
+      await component
+        .getByTestId('vpcFetch-calls')
+        .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+    ).length;
     await refreshButton.click();
 
     await expect
-      .poll(async () => (await storyCallbackCalls(component, 'vpcFetch')).length)
+      .poll(
+        async () =>
+          (
+            await component
+              .getByTestId('vpcFetch-calls')
+              .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+          ).length
+      )
       .toBe(fetchCountBeforeRefresh + 1);
   });
 
   test('should disable security groups refresh while vpc list is fetching', async ({ mount }) => {
-    const vpcList = makeVpcListResource({
-      isFetching: true,
-      fetch: storyCallback('fetch'),
-    });
+    const vpcList = {
+      data: rosaHcpWizardFixtures.mockVPCs,
 
-    const component = await mount(
+      error: null,
+      isFetching: true,
+    };
+
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
       {
         vpcList: vpcList,
@@ -444,13 +467,13 @@ test.describe('MachinePools (ROSA HCP)', () => {
   });
 
   test('should show loading state on VPC select when vpc list is fetching', async ({ mount }) => {
-    const vpcList = makeVpcListResource({
+    const vpcList = {
+      error: null,
       data: [],
       isFetching: true,
-      fetch: storyCallback('fetch'),
-    });
+    };
 
-    const component = await mount(
+    const component = await mount<typeof MachinePoolsMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePools/MachinePoolsMount',
       { vpcList: vpcList }
     );

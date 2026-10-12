@@ -1,10 +1,12 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
-import { checkAccessibility } from '@/test-helpers';
+import { expect, test } from '@/playwright/ct-fixture';
+import { checkAccessibility } from '@/playwright/test-helpers';
+
+import type { TotalClustersStory } from './TotalClusters.story';
 
 test.describe('TotalClusters', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TotalClustersStory>(
       'nxtcm-dashboard/TotalClusters/TotalClusters/TotalClustersStory',
       { data: { total: 67 } }
     );
@@ -12,7 +14,7 @@ test.describe('TotalClusters', () => {
   });
 
   test('should display the total cluster count', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TotalClustersStory>(
       'nxtcm-dashboard/TotalClusters/TotalClusters/TotalClustersStory',
       { data: { total: 67 } }
     );
@@ -20,7 +22,7 @@ test.describe('TotalClusters', () => {
   });
 
   test('should render the default title', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TotalClustersStory>(
       'nxtcm-dashboard/TotalClusters/TotalClusters/TotalClustersStory',
       { data: { total: 67 } }
     );
@@ -30,7 +32,7 @@ test.describe('TotalClusters', () => {
   });
 
   test('should display the total label', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TotalClustersStory>(
       'nxtcm-dashboard/TotalClusters/TotalClusters/TotalClustersStory',
       { data: { total: 67 } }
     );
@@ -38,7 +40,7 @@ test.describe('TotalClusters', () => {
   });
 
   test('should render with zero total', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TotalClustersStory>(
       'nxtcm-dashboard/TotalClusters/TotalClusters/TotalClustersStory',
       { data: { total: 0 } }
     );
@@ -46,7 +48,7 @@ test.describe('TotalClusters', () => {
   });
 
   test('should render with high counts', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TotalClustersStory>(
       'nxtcm-dashboard/TotalClusters/TotalClusters/TotalClustersStory',
       { data: { total: 9999 } }
     );
@@ -54,7 +56,7 @@ test.describe('TotalClusters', () => {
   });
 
   test('should render count as plain text when onViewMore is not provided', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TotalClustersStory>(
       'nxtcm-dashboard/TotalClusters/TotalClusters/TotalClustersStory',
       { data: { total: 67 } }
     );
@@ -62,27 +64,33 @@ test.describe('TotalClusters', () => {
   });
 
   test('should render count as clickable link when onViewMore is provided', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TotalClustersStory>(
       'nxtcm-dashboard/TotalClusters/TotalClusters/TotalClustersStory',
-      { data: { total: 67 }, onViewMore: storyCallback('onViewMore') }
+      { data: { total: 67 }, onViewMore: true }
     );
     await expect(component.getByRole('button', { name: '67' })).toBeVisible();
   });
 
   test('should call onViewMore when count is clicked', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TotalClustersStory>(
       'nxtcm-dashboard/TotalClusters/TotalClusters/TotalClustersStory',
       {
         data: { total: 67 },
-        onViewMore: storyCallback('onViewMore'),
+        onViewMore: true,
       }
     );
     await component.getByRole('button', { name: '67' }).click();
-    await expect.poll(() => storyCallbackCalls(component, 'onViewMore')).toHaveLength(1);
+    await expect
+      .poll(() =>
+        component
+          .getByTestId('onViewMore-calls')
+          .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+      )
+      .toHaveLength(1);
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TotalClustersStory>(
       'nxtcm-dashboard/TotalClusters/TotalClusters/TotalClustersStory',
       { isLoading: true }
     );
@@ -91,7 +99,7 @@ test.describe('TotalClusters', () => {
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TotalClustersStory>(
       'nxtcm-dashboard/TotalClusters/TotalClusters/TotalClustersStory',
       { isLoading: true }
     );
@@ -99,7 +107,7 @@ test.describe('TotalClusters', () => {
   });
 
   test('should still show title when loading', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TotalClustersStory>(
       'nxtcm-dashboard/TotalClusters/TotalClusters/TotalClustersStory',
       { isLoading: true }
     );

@@ -1,25 +1,26 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
 import {
   defaultRosaHcpWizardStrings,
   defaultRosaHcpWizardValidatorStrings,
 } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { ClusterUpgrade } from '../../../types';
+import type { ClusterUpdatesMount } from './ClusterUpdates.story';
 
 const cu = defaultRosaHcpWizardStrings.clusterUpdates;
 const REQUIRED_FIELD_MESSAGE = defaultRosaHcpWizardValidatorStrings.commonRequired;
 
 test.describe('ClusterUpdates (ROSA HCP)', () => {
   test('should render the cluster update strategy section', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterUpdatesMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount'
     );
     await expect(component.getByText(cu.sectionLabel, { exact: true })).toBeVisible();
   });
 
   test('should render upgrade strategy radio options', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterUpdatesMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount'
     );
     await expect(component.getByRole('radio', { name: cu.individualLabel })).toBeVisible();
@@ -27,7 +28,7 @@ test.describe('ClusterUpdates (ROSA HCP)', () => {
   });
 
   test('should not render a duplicate upgrade policy field label', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterUpdatesMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount'
     );
     await expect(component.getByText(cu.upgradePolicyLabel, { exact: true })).toHaveCount(1);
@@ -39,7 +40,7 @@ test.describe('ClusterUpdates (ROSA HCP)', () => {
   test('should show day and time selectors when recurring updates is selected by default', async ({
     mount,
   }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterUpdatesMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount'
     );
     await expect(component.getByRole('radio', { name: cu.recurringLabel })).toBeChecked();
@@ -51,7 +52,7 @@ test.describe('ClusterUpdates (ROSA HCP)', () => {
     mount,
     page,
   }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterUpdatesMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount'
     );
 
@@ -63,7 +64,7 @@ test.describe('ClusterUpdates (ROSA HCP)', () => {
   test('should show day and time selectors after selecting recurring updates', async ({
     mount,
   }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterUpdatesMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount',
       { defaultValues: { upgrade_policy: ClusterUpgrade.manual } }
     );
@@ -75,7 +76,7 @@ test.describe('ClusterUpdates (ROSA HCP)', () => {
   });
 
   test('should update upgrade schedule when day and time are selected', async ({ mount, page }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterUpdatesMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount',
       { defaultValues: { upgrade_policy: ClusterUpgrade.automatic } }
     );
@@ -93,7 +94,7 @@ test.describe('ClusterUpdates (ROSA HCP)', () => {
   test('should require day and time when automatic updates is selected without a schedule', async ({
     mount,
   }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterUpdatesMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount',
       { defaultValues: { upgrade_policy: ClusterUpgrade.automatic, upgrade_schedule: '' } }
     );

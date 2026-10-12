@@ -1,6 +1,11 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
+import type {
+  RadioGroupHarness,
+  RadioGroupWithoutLabelHarness,
+  RadioWithChildHarness,
+} from './RadioGroup.story';
 import {
   RADIO_GROUP_HARNESS_HELPER_TEXT,
   RADIO_GROUP_HARNESS_LARGE_LABEL,
@@ -14,7 +19,7 @@ import {
 
 test.describe('RadioGroup', () => {
   test('renders radios inside a radiogroup with helper text', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof RadioGroupHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/RadioGroup/RadioGroup/RadioGroupHarness'
     );
     await expect(
@@ -30,7 +35,7 @@ test.describe('RadioGroup', () => {
   });
 
   test('updates selection when a different radio is chosen', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof RadioGroupHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/RadioGroup/RadioGroup/RadioGroupHarness'
     );
     await mounted.getByRole('radio', { name: RADIO_GROUP_HARNESS_LARGE_LABEL }).click();
@@ -43,7 +48,7 @@ test.describe('RadioGroup', () => {
   });
 
   test('renders radios without a FormGroup label when label is omitted', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof RadioGroupWithoutLabelHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/RadioGroup/RadioGroup/RadioGroupWithoutLabelHarness'
     );
     const radiogroup = mounted.getByRole('radiogroup');
@@ -56,7 +61,7 @@ test.describe('RadioGroup', () => {
   });
 
   test('shows radio body content only for the selected option', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof RadioWithChildHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/RadioGroup/RadioGroup/RadioWithChildHarness'
     );
     await expect(mounted.getByText(RADIO_GROUP_HARNESS_PLAN_A_EXTRA_DETAILS)).toBeVisible();

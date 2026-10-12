@@ -1,8 +1,12 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import type { Page } from '@playwright/test';
 
-import { expect, type MountResult, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
+import { expect, type MountResult, test } from '@/playwright/ct-fixture';
 
+import type {
+  RosaHcpWizardBodyErrorThenBackMount,
+  RosaHcpWizardBodyMount,
+} from './ROSAHCPWizardBody.story';
 import { defaultRosaHcpWizardStrings } from './stringsProvider/rosaHcpWizardStrings.defaults';
 import { checkAccessibility } from './test-helpers';
 
@@ -14,7 +18,9 @@ const rosaDocsBase = (version: string): string =>
 
 test.describe('ROSAHCPWizardBody', () => {
   test('shows the wizard when onSubmitError is not set', async ({ mount }) => {
-    const component = await mount('nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount');
+    const component = await mount<typeof RosaHcpWizardBodyMount>(
+      'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount'
+    );
 
     await expect(
       component.getByRole('button', { name: wizard.stepLabels.basicSetup })
@@ -24,14 +30,16 @@ test.describe('ROSAHCPWizardBody', () => {
 
   test('passes accessibility tests when showing the wizard', async ({ mount }) => {
     test.setTimeout(60_000);
-    const component = await mount('nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount');
+    const component = await mount<typeof RosaHcpWizardBodyMount>(
+      'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount'
+    );
 
     await checkAccessibility({ component });
   });
 
   test.describe('submit error state', () => {
     test('shows error EmptyState and hides wizard when onSubmitError is set', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof RosaHcpWizardBodyMount>(
         'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount',
         { onSubmitError: ERROR_MESSAGE }
       );
@@ -47,9 +55,9 @@ test.describe('ROSAHCPWizardBody', () => {
     });
 
     test('shows Back to the wizard when onBackToReviewStep is provided', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof RosaHcpWizardBodyMount>(
         'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount',
-        { onSubmitError: ERROR_MESSAGE, onBackToReviewStep: storyCallback('onBackToReviewStep') }
+        { onSubmitError: ERROR_MESSAGE, onBackToReviewStep: true }
       );
 
       await expect(
@@ -58,35 +66,47 @@ test.describe('ROSAHCPWizardBody', () => {
     });
 
     test('calls onCancel when Exit wizard is clicked', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof RosaHcpWizardBodyMount>(
         'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount',
         {
           onSubmitError: ERROR_MESSAGE,
-          onCancel: storyCallback('onCancel'),
+          onCancel: true,
         }
       );
 
       await component.getByRole('button', { name: submitErrorStrings.exitWizard }).click();
-      await expect.poll(() => storyCallbackCalls(component, 'onCancel')).toHaveLength(1);
+      await expect
+        .poll(() =>
+          component
+            .getByTestId('onCancel-calls')
+            .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+        )
+        .toHaveLength(1);
     });
 
     test('calls onBackToReviewStep when Back to the wizard is clicked', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof RosaHcpWizardBodyMount>(
         'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount',
         {
           onSubmitError: ERROR_MESSAGE,
-          onBackToReviewStep: storyCallback('onBackToReviewStep'),
+          onBackToReviewStep: true,
         }
       );
 
       await component.getByRole('button', { name: submitErrorStrings.backToReviewStep }).click();
-      await expect.poll(() => storyCallbackCalls(component, 'onBackToReviewStep')).toHaveLength(1);
+      await expect
+        .poll(() =>
+          component
+            .getByTestId('onBackToReviewStep-calls')
+            .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+        )
+        .toHaveLength(1);
     });
 
     test('hides error view and shows wizard when Back to the wizard clears the error', async ({
       mount,
     }) => {
-      const component = await mount(
+      const component = await mount<typeof RosaHcpWizardBodyErrorThenBackMount>(
         'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyErrorThenBackMount'
       );
 
@@ -103,9 +123,9 @@ test.describe('ROSAHCPWizardBody', () => {
 
     test('passes accessibility tests when showing the error state', async ({ mount }) => {
       test.setTimeout(60_000);
-      const component = await mount(
+      const component = await mount<typeof RosaHcpWizardBodyMount>(
         'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount',
-        { onSubmitError: ERROR_MESSAGE, onBackToReviewStep: storyCallback('onBackToReviewStep') }
+        { onSubmitError: ERROR_MESSAGE, onBackToReviewStep: true }
       );
 
       await checkAccessibility({ component });
@@ -138,7 +158,7 @@ test.describe('ROSAHCPWizardBody', () => {
       mount,
       page,
     }) => {
-      const component = await mount(
+      const component = await mount<typeof RosaHcpWizardBodyMount>(
         'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount',
         { enableAllWizardNavSteps: true }
       );
@@ -158,7 +178,7 @@ test.describe('ROSAHCPWizardBody', () => {
       mount,
       page,
     }) => {
-      const component = await mount(
+      const component = await mount<typeof RosaHcpWizardBodyMount>(
         'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount',
         { enableAllWizardNavSteps: true, docsVersions: ['4', '5'] }
       );
@@ -178,7 +198,7 @@ test.describe('ROSAHCPWizardBody', () => {
       mount,
       page,
     }) => {
-      const component = await mount(
+      const component = await mount<typeof RosaHcpWizardBodyMount>(
         'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount',
         { enableAllWizardNavSteps: true, docsVersions: ['4', '5'] }
       );

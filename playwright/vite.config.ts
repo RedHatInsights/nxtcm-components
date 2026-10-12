@@ -21,7 +21,9 @@ export default defineConfig({
   root: path.join(__dirname, 'gallery'),
   logLevel: process.env.QUIET === 'true' ? 'warn' : 'info',
   plugins: [react(), ...(istanbulPlugin ? [istanbulPlugin] : [])],
-  cacheDir: strykerCacheDir ? path.join(strykerCacheDir, 'vite-deps') : undefined,
+  cacheDir: strykerCacheDir
+    ? path.join(strykerCacheDir, 'vite-deps')
+    : path.join(repoRoot, 'node_modules/.vite/components'),
   define: strykerActiveMutant
     ? { 'import.meta.env.STRYKER_ACTIVE_MUTANT': JSON.stringify(strykerActiveMutant) }
     : undefined,

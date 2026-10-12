@@ -1,8 +1,9 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
-import { checkAccessibility } from '@/test-helpers';
+import { expect, test } from '@/playwright/ct-fixture';
+import { checkAccessibility } from '@/playwright/test-helpers';
 
 import { StorageCardProps } from './StorageCard';
+import type { StorageCardStory } from './StorageCard.story';
 
 const mockStorageData: StorageCardProps['storageData'] = {
   rosaClusters: 63.02,
@@ -13,16 +14,22 @@ const mockStorageData: StorageCardProps['storageData'] = {
 
 test.describe('StorageCard', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount('nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory', {
-      storageData: mockStorageData,
-    });
+    const component = await mount<typeof StorageCardStory>(
+      'nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory',
+      {
+        storageData: mockStorageData,
+      }
+    );
     await checkAccessibility({ component });
   });
 
   test('should display the total storage used', async ({ mount }) => {
-    const component = await mount('nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory', {
-      storageData: mockStorageData,
-    });
+    const component = await mount<typeof StorageCardStory>(
+      'nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory',
+      {
+        storageData: mockStorageData,
+      }
+    );
 
     const totalUsed = (
       mockStorageData.rosaClusters +
@@ -39,9 +46,12 @@ test.describe('StorageCard', () => {
   });
 
   test('should display the correct usage percentage', async ({ mount }) => {
-    const component = await mount('nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory', {
-      storageData: mockStorageData,
-    });
+    const component = await mount<typeof StorageCardStory>(
+      'nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory',
+      {
+        storageData: mockStorageData,
+      }
+    );
     const totalUsed =
       mockStorageData.rosaClusters + mockStorageData.aroClusters + mockStorageData.osdClusters;
     const totalStorage = totalUsed + mockStorageData.available;
@@ -51,56 +61,80 @@ test.describe('StorageCard', () => {
   });
 
   test('should display ROSA clusters storage', async ({ mount }) => {
-    const component = await mount('nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory', {
-      storageData: mockStorageData,
-    });
+    const component = await mount<typeof StorageCardStory>(
+      'nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory',
+      {
+        storageData: mockStorageData,
+      }
+    );
 
     const rosaClustersContainer = component.getByText('ROSA clusters').locator('..');
     await expect(rosaClustersContainer).toContainText(`${mockStorageData.rosaClusters} TiB`);
   });
 
   test('should display ARO clusters storage', async ({ mount }) => {
-    const component = await mount('nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory', {
-      storageData: mockStorageData,
-    });
+    const component = await mount<typeof StorageCardStory>(
+      'nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory',
+      {
+        storageData: mockStorageData,
+      }
+    );
 
     const aroClustersContainer = component.getByText('ARO Clusters').locator('..');
     await expect(aroClustersContainer).toContainText(`${mockStorageData.aroClusters} TiB`);
   });
 
   test('should display OSD clusters storage', async ({ mount }) => {
-    const component = await mount('nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory', {
-      storageData: mockStorageData,
-    });
+    const component = await mount<typeof StorageCardStory>(
+      'nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory',
+      {
+        storageData: mockStorageData,
+      }
+    );
 
     const osdClustersContainer = component.getByText('OSD Clusters').locator('..');
     await expect(osdClustersContainer).toContainText(`${mockStorageData.osdClusters} TiB`);
   });
 
   test('should display available storage', async ({ mount }) => {
-    const component = await mount('nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory', {
-      storageData: mockStorageData,
-    });
+    const component = await mount<typeof StorageCardStory>(
+      'nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory',
+      {
+        storageData: mockStorageData,
+      }
+    );
     const availableContainer = component.getByText('Available').locator('..');
     await expect(availableContainer).toContainText(`${mockStorageData.available} TiB`);
   });
 
   test('should not show "View more" button when onViewMore is not provided', async ({ mount }) => {
-    const component = await mount('nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory', {
-      storageData: mockStorageData,
-    });
+    const component = await mount<typeof StorageCardStory>(
+      'nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory',
+      {
+        storageData: mockStorageData,
+      }
+    );
     await expect(component.getByText('View more')).not.toBeVisible();
   });
 
   test('should show "View more" button when onViewMore callback is provided', async ({ mount }) => {
-    const component = await mount('nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory', {
-      storageData: mockStorageData,
-      onViewMore: storyCallback('onViewMore'),
-    });
+    const component = await mount<typeof StorageCardStory>(
+      'nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory',
+      {
+        storageData: mockStorageData,
+        onViewMore: true,
+      }
+    );
     const viewMoreButton = component.getByText('View more');
     await expect(viewMoreButton).toBeVisible();
     await viewMoreButton.click();
-    await expect.poll(() => storyCallbackCalls(component, 'onViewMore')).toHaveLength(1);
+    await expect
+      .poll(() =>
+        component
+          .getByTestId('onViewMore-calls')
+          .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+      )
+      .toHaveLength(1);
   });
 
   test('should calculate percentage correctly for high usage', async ({ mount }) => {
@@ -110,9 +144,12 @@ test.describe('StorageCard', () => {
       osdClusters: 5.3,
       available: 4.0,
     };
-    const component = await mount('nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory', {
-      storageData: highUsageData,
-    });
+    const component = await mount<typeof StorageCardStory>(
+      'nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory',
+      {
+        storageData: highUsageData,
+      }
+    );
 
     const totalUsed =
       highUsageData.rosaClusters + highUsageData.aroClusters + highUsageData.osdClusters;
@@ -129,9 +166,12 @@ test.describe('StorageCard', () => {
       osdClusters: 3.3,
       available: 81.0,
     };
-    const component = await mount('nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory', {
-      storageData: lowUsageData,
-    });
+    const component = await mount<typeof StorageCardStory>(
+      'nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory',
+      {
+        storageData: lowUsageData,
+      }
+    );
 
     const totalUsed =
       lowUsageData.rosaClusters + lowUsageData.aroClusters + lowUsageData.osdClusters;
@@ -148,9 +188,12 @@ test.describe('StorageCard', () => {
       osdClusters: 12.345,
       available: 67.89,
     };
-    const component = await mount('nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory', {
-      storageData: preciseData,
-    });
+    const component = await mount<typeof StorageCardStory>(
+      'nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory',
+      {
+        storageData: preciseData,
+      }
+    );
 
     const rosaClustersContainer = component.getByText('ROSA clusters').locator('..');
     await expect(rosaClustersContainer).toContainText(`${preciseData.rosaClusters.toFixed(2)} TiB`);
@@ -166,33 +209,45 @@ test.describe('StorageCard', () => {
   });
 
   test('should render utilization chart', async ({ mount, page }) => {
-    await mount('nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory', {
-      storageData: mockStorageData,
-    });
+    await mount<typeof StorageCardStory>(
+      'nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory',
+      {
+        storageData: mockStorageData,
+      }
+    );
     const chart = page.getByRole('img', { name: 'Storage utilization chart' });
     await expect(chart).toBeVisible();
   });
 
   test('should display total storage label correctly', async ({ mount }) => {
-    const component = await mount('nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory', {
-      storageData: mockStorageData,
-    });
+    const component = await mount<typeof StorageCardStory>(
+      'nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory',
+      {
+        storageData: mockStorageData,
+      }
+    );
     await expect(component.getByText('Total storage used')).toBeVisible();
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
-    const component = await mount('nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory', {
-      isLoading: true,
-      storageData: mockStorageData,
-    });
+    const component = await mount<typeof StorageCardStory>(
+      'nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory',
+      {
+        isLoading: true,
+        storageData: mockStorageData,
+      }
+    );
     await expect(component.getByText('Loading storage data')).toBeVisible();
     await expect(component.getByTestId('percentage')).not.toBeVisible();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount('nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory', {
-      isLoading: true,
-    });
+    const component = await mount<typeof StorageCardStory>(
+      'nxtcm-dashboard/StorageCard/StorageCard/StorageCardStory',
+      {
+        isLoading: true,
+      }
+    );
     await expect(component.getByText('Loading storage data')).toBeVisible();
   });
 });

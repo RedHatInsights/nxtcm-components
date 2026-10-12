@@ -1,9 +1,11 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
+
+import type { CollapsedReviewSection, ExpandedReviewSection } from './ReviewExpandSection.story';
 
 test.describe('ReviewExpandSection', () => {
   test('shows children when initialExpanded is true', async ({ mount }) => {
-    const c = await mount(
+    const c = await mount<typeof ExpandedReviewSection>(
       'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewExpandSection/ExpandedReviewSection'
     );
 
@@ -13,7 +15,7 @@ test.describe('ReviewExpandSection', () => {
   });
 
   test('hides children when initialExpanded is false', async ({ mount }) => {
-    const c = await mount(
+    const c = await mount<typeof CollapsedReviewSection>(
       'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewExpandSection/CollapsedReviewSection'
     );
 

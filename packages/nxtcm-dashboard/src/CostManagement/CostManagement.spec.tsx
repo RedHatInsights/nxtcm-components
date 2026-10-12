@@ -1,7 +1,8 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, storyCallback, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
 import { CostManagementProps } from './CostManagement';
+import type { CostManagementStory } from './CostManagement.story';
 
 const sampleClusters: CostManagementProps['clusters'] = [
   { id: 'prod-east-1', name: 'prod-east-1', cost: 700 },
@@ -10,7 +11,7 @@ const sampleClusters: CostManagementProps['clusters'] = [
 
 test.describe('CostManagement', () => {
   test('renders the title', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       { totalCost: 3000, clusters: sampleClusters }
     );
@@ -18,7 +19,7 @@ test.describe('CostManagement', () => {
   });
 
   test('displays the formatted total cost', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       { totalCost: 3000, clusters: sampleClusters }
     );
@@ -26,7 +27,7 @@ test.describe('CostManagement', () => {
   });
 
   test('displays month-to-date label', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       { totalCost: 3000, clusters: sampleClusters }
     );
@@ -34,7 +35,7 @@ test.describe('CostManagement', () => {
   });
 
   test('displays top clusters heading', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       { totalCost: 3000, clusters: sampleClusters }
     );
@@ -42,7 +43,7 @@ test.describe('CostManagement', () => {
   });
 
   test('renders cluster names', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       { totalCost: 3000, clusters: sampleClusters }
     );
@@ -51,7 +52,7 @@ test.describe('CostManagement', () => {
   });
 
   test('renders cluster costs with percentages', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       { totalCost: 3000, clusters: sampleClusters }
     );
@@ -63,12 +64,12 @@ test.describe('CostManagement', () => {
   });
 
   test('renders cluster names as links when onClusterClick is provided', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       {
         totalCost: 3000,
         clusters: sampleClusters,
-        onClusterClick: storyCallback('onClusterClick'),
+        onClusterClick: true,
       }
     );
     const link = component.getByRole('button', { name: 'prod-east-1' });
@@ -76,7 +77,7 @@ test.describe('CostManagement', () => {
   });
 
   test('renders cluster names as plain text without onClusterClick', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       { totalCost: 3000, clusters: sampleClusters }
     );
@@ -85,12 +86,12 @@ test.describe('CostManagement', () => {
   });
 
   test('shows "View more in Cost Management" link when onViewMore is set', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       {
         totalCost: 3000,
         clusters: sampleClusters,
-        onViewMore: storyCallback('onViewMore'),
+        onViewMore: true,
       }
     );
     await expect(
@@ -99,7 +100,7 @@ test.describe('CostManagement', () => {
   });
 
   test('hides "View more" link when onViewMore is not set', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       { totalCost: 3000, clusters: sampleClusters }
     );
@@ -109,7 +110,7 @@ test.describe('CostManagement', () => {
   });
 
   test('renders a divider between total cost and clusters', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       { totalCost: 3000, clusters: sampleClusters }
     );
@@ -117,7 +118,7 @@ test.describe('CostManagement', () => {
   });
 
   test('hides cluster list and divider when clusters is empty', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       { totalCost: 0, clusters: [] }
     );
@@ -127,7 +128,7 @@ test.describe('CostManagement', () => {
   });
 
   test('supports custom currency', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       { totalCost: 3000, clusters: sampleClusters, currency: 'EUR' }
     );
@@ -136,7 +137,7 @@ test.describe('CostManagement', () => {
 
   test('handles zero total cost without division errors', async ({ mount }) => {
     const clusters = [{ id: 'a', name: 'cluster-a', cost: 0 }];
-    const component = await mount(
+    const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       { totalCost: 0, clusters: clusters }
     );
@@ -145,7 +146,7 @@ test.describe('CostManagement', () => {
   });
 
   test('formats large costs with thousands separators', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       { totalCost: 1000000, clusters: [{ id: 'big', name: 'big-cluster', cost: 500000 }] }
     );
@@ -155,7 +156,7 @@ test.describe('CostManagement', () => {
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       { isLoading: true }
     );
@@ -164,7 +165,7 @@ test.describe('CostManagement', () => {
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
       { isLoading: true }
     );

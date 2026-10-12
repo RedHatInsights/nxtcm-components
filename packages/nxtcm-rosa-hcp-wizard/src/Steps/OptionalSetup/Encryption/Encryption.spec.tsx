@@ -1,5 +1,5 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
 import {
   defaultRosaHcpWizardStrings,
@@ -7,6 +7,7 @@ import {
 } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { checkAccessibility } from '../../../test-helpers';
 import { ClusterEncryptionKeys } from '../../../types';
+import type { EncryptionMount } from './Encryption.story';
 
 const e = defaultRosaHcpWizardStrings.encryption;
 const v = defaultRosaHcpWizardValidatorStrings.kmsKeyArn;
@@ -14,42 +15,42 @@ const requiredMessage = defaultRosaHcpWizardValidatorStrings.commonRequired;
 
 test.describe('Encryption (ROSA HCP)', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof EncryptionMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount'
     );
     await checkAccessibility({ component });
   });
 
   test('should render the Advanced encryption section title', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof EncryptionMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount'
     );
     await expect(component.getByText(e.sectionLabel, { exact: true })).toBeVisible();
   });
 
   test('should render the Encryption Keys radio group', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof EncryptionMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount'
     );
     await expect(component.getByText(e.keysGroupLabel, { exact: true })).toBeVisible();
   });
 
   test('should render the default KMS radio option', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof EncryptionMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount'
     );
     await expect(component.getByRole('radio', { name: e.defaultKms })).toBeVisible();
   });
 
   test('should render the custom KMS radio option', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof EncryptionMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount'
     );
     await expect(component.getByRole('radio', { name: e.customKms })).toBeVisible();
   });
 
   test('should have default KMS selected by default', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof EncryptionMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount'
     );
     await expect(component.getByRole('radio', { name: e.defaultKms })).toBeChecked();
@@ -57,21 +58,21 @@ test.describe('Encryption (ROSA HCP)', () => {
   });
 
   test('should render the Learn more link for encryption keys', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof EncryptionMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount'
     );
     await expect(component.getByText(e.keysLearnMore).first()).toBeVisible();
   });
 
   test('should render the etcd encryption checkbox', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof EncryptionMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount'
     );
     await expect(component.getByRole('checkbox', { name: e.etcdLabel })).toBeVisible();
   });
 
   test('should render the info alert about encryption keys', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof EncryptionMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount'
     );
     await expect(component.getByText(e.keysNoteAlert)).toBeVisible();
@@ -79,14 +80,14 @@ test.describe('Encryption (ROSA HCP)', () => {
 
   test.describe('Encryption — custom KMS key', () => {
     test('should not show Key ARN input when default KMS is selected', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount'
       );
       await expect(component.getByRole('textbox', { name: e.keyArnLabel })).not.toBeVisible();
     });
 
     test('should show Key ARN input when custom KMS is selected', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount',
         { defaultValues: { encryption_keys: ClusterEncryptionKeys.custom } }
       );
@@ -94,7 +95,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     });
 
     test('should show Key ARN input after clicking custom KMS radio', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount'
       );
 
@@ -104,7 +105,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     });
 
     test('should hide Key ARN input when switching back to default KMS', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount',
         { defaultValues: { encryption_keys: ClusterEncryptionKeys.custom } }
       );
@@ -117,7 +118,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     test('should clear custom KMS Key ARN validation when default KMS is selected', async ({
       mount,
     }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount',
         {
           defaultValues: {
@@ -139,7 +140,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     });
 
     test('should display validation error when custom KMS Key ARN is empty', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount',
         {
           defaultValues: {
@@ -157,7 +158,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     });
 
     test('should display validation error for KMS ARN with whitespace', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount',
         {
           defaultValues: {
@@ -175,7 +176,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     });
 
     test('should display validation error for invalid KMS ARN format', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount',
         {
           defaultValues: {
@@ -195,7 +196,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     test('should display validation error when KMS ARN region does not match selected region', async ({
       mount,
     }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount',
         {
           defaultValues: {
@@ -215,7 +216,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     });
 
     test('should accept a valid KMS ARN matching the selected region', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount',
         {
           defaultValues: {
@@ -241,7 +242,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     test('should not show etcd Key ARN input when etcd encryption is unchecked', async ({
       mount,
     }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount'
       );
       await expect(component.getByRole('checkbox', { name: e.etcdLabel })).not.toBeChecked();
@@ -249,7 +250,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     });
 
     test('should show etcd Key ARN input when etcd encryption is checked', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount',
         { defaultValues: { etcd_encryption: true } }
       );
@@ -257,7 +258,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     });
 
     test('should show etcd Key ARN input after checking etcd encryption', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount'
       );
 
@@ -267,7 +268,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     });
 
     test('should hide etcd Key ARN input after unchecking etcd encryption', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount',
         { defaultValues: { etcd_encryption: true } }
       );
@@ -280,7 +281,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     test('should clear etcd Key ARN validation when etcd encryption is unchecked', async ({
       mount,
     }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount',
         {
           defaultValues: {
@@ -302,7 +303,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     });
 
     test('should display validation error when etcd Key ARN is empty', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount',
         {
           defaultValues: {
@@ -320,7 +321,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     });
 
     test('should display validation error for etcd KMS ARN with whitespace', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount',
         {
           defaultValues: {
@@ -338,7 +339,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     });
 
     test('should display validation error for invalid etcd KMS ARN format', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount',
         {
           defaultValues: {
@@ -358,7 +359,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     test('should display validation error when etcd KMS ARN region does not match', async ({
       mount,
     }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount',
         {
           defaultValues: {
@@ -378,7 +379,7 @@ test.describe('Encryption (ROSA HCP)', () => {
     });
 
     test('should render the Learn more link for etcd encryption', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof EncryptionMount>(
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount'
       );
       await expect(component.getByText(e.etcdLearnMore).last()).toBeVisible();

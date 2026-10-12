@@ -1,7 +1,8 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
 import { ResourceUtilizationData } from './ResourceUtilization';
+import type { ResourceUtilizationStory } from './ResourceUtilization.story';
 
 const defaultData: ResourceUtilizationData = {
   vCPU: { used: 32, total: 128, unit: 'Cores' },
@@ -10,7 +11,7 @@ const defaultData: ResourceUtilizationData = {
 
 test.describe('ResourceUtilization', () => {
   test('should render the default "Resource usage" title', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: defaultData }
     );
@@ -18,7 +19,7 @@ test.describe('ResourceUtilization', () => {
   });
 
   test('should render a custom title when provided', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: defaultData, title: 'CPU and Memory utilization' }
     );
@@ -26,7 +27,7 @@ test.describe('ResourceUtilization', () => {
   });
 
   test('should hide the title when empty string is passed', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: defaultData, title: '' }
     );
@@ -34,7 +35,7 @@ test.describe('ResourceUtilization', () => {
   });
 
   test('should render vCPU metric section', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: defaultData }
     );
@@ -42,7 +43,7 @@ test.describe('ResourceUtilization', () => {
   });
 
   test('should render Memory metric section', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: defaultData }
     );
@@ -50,7 +51,7 @@ test.describe('ResourceUtilization', () => {
   });
 
   test('should display vCPU title', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: defaultData }
     );
@@ -59,7 +60,7 @@ test.describe('ResourceUtilization', () => {
   });
 
   test('should display Memory title', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: defaultData }
     );
@@ -68,7 +69,7 @@ test.describe('ResourceUtilization', () => {
   });
 
   test('should calculate and display vCPU percentage (25%)', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: defaultData }
     );
@@ -77,7 +78,7 @@ test.describe('ResourceUtilization', () => {
   });
 
   test('should calculate and display Memory percentage (19%)', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: defaultData }
     );
@@ -86,7 +87,7 @@ test.describe('ResourceUtilization', () => {
   });
 
   test('should display vCPU subtitle with total and unit', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: defaultData }
     );
@@ -95,7 +96,7 @@ test.describe('ResourceUtilization', () => {
   });
 
   test('should display Memory subtitle with total and unit', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: defaultData }
     );
@@ -104,7 +105,7 @@ test.describe('ResourceUtilization', () => {
   });
 
   test('should not render Storage when not provided', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: defaultData }
     );
@@ -116,7 +117,7 @@ test.describe('ResourceUtilization', () => {
       ...defaultData,
       storage: { used: 500, total: 2048, unit: 'GiB' },
     };
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: dataWithStorage }
     );
@@ -128,18 +129,18 @@ test.describe('ResourceUtilization', () => {
   });
 
   test('should show View more button when onViewMore is provided', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       {
         data: defaultData,
-        onViewMore: storyCallback('onViewMore'),
+        onViewMore: true,
       }
     );
     await expect(component.getByRole('button', { name: /View more/i })).toBeVisible();
   });
 
   test('should not show View more button when onViewMore is omitted', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: defaultData }
     );
@@ -147,15 +148,21 @@ test.describe('ResourceUtilization', () => {
   });
 
   test('should call onViewMore when button is clicked', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       {
         data: defaultData,
-        onViewMore: storyCallback('onViewMore'),
+        onViewMore: true,
       }
     );
     await component.getByRole('button', { name: /View more/i }).click();
-    await expect.poll(() => storyCallbackCalls(component, 'onViewMore')).toHaveLength(1);
+    await expect
+      .poll(() =>
+        component
+          .getByTestId('onViewMore-calls')
+          .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+      )
+      .toHaveLength(1);
   });
 
   test('should handle zero usage gracefully', async ({ mount }) => {
@@ -163,7 +170,7 @@ test.describe('ResourceUtilization', () => {
       vCPU: { used: 0, total: 128, unit: 'Cores' },
       memory: { used: 0, total: 256, unit: 'GiB' },
     };
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: zeroData }
     );
@@ -178,7 +185,7 @@ test.describe('ResourceUtilization', () => {
       vCPU: { used: 126, total: 128, unit: 'Cores' },
       memory: { used: 250, total: 256, unit: 'GiB' },
     };
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: highData }
     );
@@ -193,7 +200,7 @@ test.describe('ResourceUtilization', () => {
       vCPU: { used: 0, total: 0, unit: 'Cores' },
       memory: { used: 0, total: 0, unit: 'GiB' },
     };
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: zeroTotal }
     );
@@ -206,7 +213,7 @@ test.describe('ResourceUtilization', () => {
       vCPU: { used: 500, total: 10000, unit: 'Cores' },
       memory: { used: 2048, total: 8192, unit: 'GiB' },
     };
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: largeData }
     );
@@ -215,7 +222,7 @@ test.describe('ResourceUtilization', () => {
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { isLoading: true }
     );
@@ -224,7 +231,7 @@ test.describe('ResourceUtilization', () => {
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { isLoading: true }
     );

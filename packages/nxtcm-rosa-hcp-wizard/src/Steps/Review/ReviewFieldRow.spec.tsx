@@ -1,11 +1,12 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
 import { checkAccessibility } from '../../test-helpers';
+import type { ReviewFieldRowMount } from './ReviewFieldRow.story';
 
 test.describe('ReviewFieldRow', () => {
   test('should render label and value', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ReviewFieldRowMount>(
       'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRow/ReviewFieldRowMount',
       { labelText: 'Cluster Name', value: 'my-cluster' }
     );
@@ -14,7 +15,7 @@ test.describe('ReviewFieldRow', () => {
   });
 
   test('should not render when hideInReview is true', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ReviewFieldRowMount>(
       'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRow/ReviewFieldRowMount',
       { labelText: 'Hidden Field', hideInReview: true }
     );
@@ -22,7 +23,7 @@ test.describe('ReviewFieldRow', () => {
   });
 
   test('should show lock icon when noEditAfterStep is true', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ReviewFieldRowMount>(
       'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRow/ReviewFieldRowMount',
       { labelText: 'Locked Field', noEditAfterStep: true }
     );
@@ -32,7 +33,7 @@ test.describe('ReviewFieldRow', () => {
   });
 
   test('should not show lock icon when noEditAfterStep is false', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ReviewFieldRowMount>(
       'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRow/ReviewFieldRowMount',
       { labelText: 'Editable Field', value: 'Test', noEditAfterStep: false }
     );
@@ -42,7 +43,7 @@ test.describe('ReviewFieldRow', () => {
 
   test('should show screen reader text for locked settings', async ({ mount }) => {
     const srText = 'Cannot change after creation';
-    const component = await mount(
+    const component = await mount<typeof ReviewFieldRowMount>(
       'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRow/ReviewFieldRowMount',
       { noEditAfterStep: true, lockedSettingsScreenReaderText: srText }
     );
@@ -50,7 +51,7 @@ test.describe('ReviewFieldRow', () => {
   });
 
   test('should show expandable toggle when collapseOnRequired is true', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ReviewFieldRowMount>(
       'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRow/ReviewFieldRowMount',
       { labelText: 'Long Field', value: 'Very long content here', collapseOnRequired: true }
     );
@@ -61,7 +62,7 @@ test.describe('ReviewFieldRow', () => {
   test('should not show value directly when collapseOnRequired is true and not expanded', async ({
     mount,
   }) => {
-    const component = await mount(
+    const component = await mount<typeof ReviewFieldRowMount>(
       'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRow/ReviewFieldRowMount',
       { labelText: 'Collapsed Field', value: 'Hidden content', collapseOnRequired: true }
     );
@@ -71,7 +72,7 @@ test.describe('ReviewFieldRow', () => {
   });
 
   test('should expand to show value when toggle clicked', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ReviewFieldRowMount>(
       'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRow/ReviewFieldRowMount',
       { labelText: 'Expandable Field', value: 'Expandable content', collapseOnRequired: true }
     );
@@ -84,7 +85,7 @@ test.describe('ReviewFieldRow', () => {
   });
 
   test('should change toggle text when expanded', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ReviewFieldRowMount>(
       'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRow/ReviewFieldRowMount',
       { collapseOnRequired: true }
     );
@@ -96,7 +97,7 @@ test.describe('ReviewFieldRow', () => {
   });
 
   test('should collapse when toggle clicked again', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ReviewFieldRowMount>(
       'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRow/ReviewFieldRowMount',
       { value: 'Collapsible content', collapseOnRequired: true }
     );
@@ -112,7 +113,7 @@ test.describe('ReviewFieldRow', () => {
   });
 
   test('should show value directly when collapseOnRequired is false', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ReviewFieldRowMount>(
       'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRow/ReviewFieldRowMount',
       { labelText: 'Normal Field', value: 'Direct value', collapseOnRequired: false }
     );
@@ -122,7 +123,7 @@ test.describe('ReviewFieldRow', () => {
   });
 
   test('should pass accessibility tests in collapsed state', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ReviewFieldRowMount>(
       'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRow/ReviewFieldRowMount',
       { collapseOnRequired: true }
     );
@@ -130,7 +131,7 @@ test.describe('ReviewFieldRow', () => {
   });
 
   test('should pass accessibility tests in expanded state', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ReviewFieldRowMount>(
       'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRow/ReviewFieldRowMount',
       { collapseOnRequired: true }
     );
@@ -140,7 +141,7 @@ test.describe('ReviewFieldRow', () => {
   });
 
   test('should pass accessibility tests with locked field', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ReviewFieldRowMount>(
       'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRow/ReviewFieldRowMount',
       { noEditAfterStep: true }
     );

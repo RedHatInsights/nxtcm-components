@@ -1,8 +1,9 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
-import { checkAccessibility } from '@/test-helpers';
+import { expect, test } from '@/playwright/ct-fixture';
+import { checkAccessibility } from '@/playwright/test-helpers';
 
 import { ProviderBreakdown } from './ClusterProviders';
+import type { ClusterProvidersStory } from './ClusterProviders.story';
 
 const defaultProviders: ProviderBreakdown[] = [
   { label: 'ROSA', count: 42 },
@@ -12,7 +13,7 @@ const defaultProviders: ProviderBreakdown[] = [
 
 test.describe('ClusterProviders', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterProvidersStory>(
       'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
       { providers: defaultProviders }
     );
@@ -20,7 +21,7 @@ test.describe('ClusterProviders', () => {
   });
 
   test('should render the default title', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterProvidersStory>(
       'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
       { providers: defaultProviders }
     );
@@ -30,7 +31,7 @@ test.describe('ClusterProviders', () => {
   });
 
   test('should render a custom title', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterProvidersStory>(
       'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
       { providers: defaultProviders, title: 'Provider breakdown' }
     );
@@ -38,7 +39,7 @@ test.describe('ClusterProviders', () => {
   });
 
   test('should render the donut chart', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterProvidersStory>(
       'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
       { providers: defaultProviders }
     );
@@ -46,7 +47,7 @@ test.describe('ClusterProviders', () => {
   });
 
   test('should render legend items with counts', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterProvidersStory>(
       'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
       { providers: defaultProviders }
     );
@@ -57,7 +58,7 @@ test.describe('ClusterProviders', () => {
   });
 
   test('should handle a single provider', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterProvidersStory>(
       'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
       { providers: [{ label: 'ROSA', count: 25 }] }
     );
@@ -71,7 +72,7 @@ test.describe('ClusterProviders', () => {
       { label: 'OSD', count: 20 },
       { label: 'Other', count: 10 },
     ];
-    const component = await mount(
+    const component = await mount<typeof ClusterProvidersStory>(
       'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
       { providers: providers }
     );
@@ -87,7 +88,7 @@ test.describe('ClusterProviders', () => {
       { label: 'ROSA', count: 0 },
       { label: 'ARO', count: 0 },
     ];
-    const component = await mount(
+    const component = await mount<typeof ClusterProvidersStory>(
       'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
       { providers: providers }
     );
@@ -96,7 +97,7 @@ test.describe('ClusterProviders', () => {
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterProvidersStory>(
       'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
       { isLoading: true }
     );
@@ -105,7 +106,7 @@ test.describe('ClusterProviders', () => {
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterProvidersStory>(
       'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
       { isLoading: true }
     );

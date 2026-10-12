@@ -5,8 +5,8 @@
  * Validation logic is tested separately in Component Tests where we can reliably trigger Monaco editor events.
  */
 
-import { test, expect } from './fixtures';
-import { navigateToYamlEditor, getMonacoYaml } from './helpers/yaml-editor-helpers';
+import { expect, test } from './fixtures';
+import { getMonacoYaml, navigateToYamlEditor } from './helpers/yaml-editor-helpers';
 
 test.describe('ROSA Wizard - YAML Editor', () => {
   test.beforeEach(async ({ page }) => {

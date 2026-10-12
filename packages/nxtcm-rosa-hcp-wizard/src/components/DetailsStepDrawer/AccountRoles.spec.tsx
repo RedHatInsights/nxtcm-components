@@ -1,11 +1,12 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
 import { checkAccessibility } from '../../test-helpers';
+import type { AccountRolesMount } from './AccountRoles.story';
 
 test.describe('AccountRoles', () => {
   test('should render account roles copy instruction', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AccountRolesMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/AccountRoles/AccountRolesMount'
     );
     const copyInstruction = component.getByTestId('copy-rosa-create-account-role');
@@ -18,7 +19,7 @@ test.describe('AccountRoles', () => {
   });
 
   test('should render info alert about manual instructions', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AccountRolesMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/AccountRoles/AccountRolesMount'
     );
     const alert = component.locator('.pf-v6-c-alert.pf-m-info');
@@ -26,7 +27,7 @@ test.describe('AccountRoles', () => {
   });
 
   test('should render external link to AWS CLI documentation', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AccountRolesMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/AccountRoles/AccountRolesMount'
     );
     const link = component.getByRole('link');
@@ -35,7 +36,7 @@ test.describe('AccountRoles', () => {
   });
 
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AccountRolesMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/AccountRoles/AccountRolesMount'
     );
     await checkAccessibility({ component });

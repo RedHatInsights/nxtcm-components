@@ -1,8 +1,12 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
-import { checkAccessibility } from '@/test-helpers';
+import { expect, test } from '@/playwright/ct-fixture';
+import { checkAccessibility } from '@/playwright/test-helpers';
 
 import { ClustersWithIssuesProps } from './ClustersWithIssues';
+import type {
+  ClustersWithIssuesStory,
+  ClustersWithIssuesWithConsoleLink,
+} from './ClustersWithIssues.story';
 
 const defaultData: ClustersWithIssuesProps['data'] = {
   totalUnhealthy: 4,
@@ -25,7 +29,7 @@ const paginatedData: ClustersWithIssuesProps['data'] = {
 
 test.describe('ClustersWithIssues', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: defaultData }
     );
@@ -33,7 +37,7 @@ test.describe('ClustersWithIssues', () => {
   });
 
   test('should display the total unhealthy count', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: defaultData }
     );
@@ -41,7 +45,7 @@ test.describe('ClustersWithIssues', () => {
   });
 
   test('should display the danger icon', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: defaultData }
     );
@@ -49,7 +53,7 @@ test.describe('ClustersWithIssues', () => {
   });
 
   test('should render cluster names in the table', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: defaultData }
     );
@@ -61,7 +65,7 @@ test.describe('ClustersWithIssues', () => {
   });
 
   test('should render issue counts in the table', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: defaultData }
     );
@@ -73,7 +77,7 @@ test.describe('ClustersWithIssues', () => {
   });
 
   test('should render the card title', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: defaultData }
     );
@@ -81,7 +85,7 @@ test.describe('ClustersWithIssues', () => {
   });
 
   test('should render a divider after the cluster count', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: defaultData }
     );
@@ -90,7 +94,7 @@ test.describe('ClustersWithIssues', () => {
   });
 
   test('should render table headers', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: defaultData }
     );
@@ -102,11 +106,11 @@ test.describe('ClustersWithIssues', () => {
   test('should render cluster names as links when onClusterClick is provided', async ({
     mount,
   }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       {
         data: defaultData,
-        onClusterClick: storyCallback('onClusterClick'),
+        onClusterClick: true,
       }
     );
 
@@ -115,24 +119,31 @@ test.describe('ClustersWithIssues', () => {
   });
 
   test('should call onClusterClick when a cluster name is clicked', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       {
         data: defaultData,
-        onClusterClick: storyCallback('onClusterClick'),
+        onClusterClick: true,
       }
     );
 
     await component.getByTestId('cluster-link-c1').click();
     await expect
-      .poll(async () => (await storyCallbackCalls(component, 'onClusterClick'))[0]?.[0])
+      .poll(
+        async () =>
+          (
+            await component
+              .getByTestId('onClusterClick-calls')
+              .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+          )[0]?.[0]
+      )
       .toMatchObject({ id: 'c1', name: 'cluster1' });
   });
 
   test('should render cluster names as plain text when onClusterClick is not provided', async ({
     mount,
   }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: defaultData }
     );
@@ -142,7 +153,7 @@ test.describe('ClustersWithIssues', () => {
   });
 
   test('should show empty state when no clusters', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: { totalUnhealthy: 0, clusters: [] } }
     );
@@ -152,7 +163,7 @@ test.describe('ClustersWithIssues', () => {
   });
 
   test('should not show pagination when no clusters', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: { totalUnhealthy: 0, clusters: [] } }
     );
@@ -165,7 +176,7 @@ test.describe('ClustersWithIssues', () => {
       totalUnhealthy: 1,
       clusters: [{ id: 'c1', name: 'prod-east', issues: 3 }],
     };
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: data }
     );
@@ -180,7 +191,7 @@ test.describe('ClustersWithIssues', () => {
       totalUnhealthy: 999,
       clusters: [{ id: 'c1', name: 'big-cluster', issues: 500 }],
     };
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: data }
     );
@@ -192,7 +203,7 @@ test.describe('ClustersWithIssues', () => {
 
 test.describe('ClustersWithIssues — open console link', () => {
   test('should render "Open console" links when onOpenConsole is provided', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesWithConsoleLink>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesWithConsoleLink',
       { data: defaultData }
     );
@@ -202,7 +213,7 @@ test.describe('ClustersWithIssues — open console link', () => {
   });
 
   test('should render external link icon in each console link', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesWithConsoleLink>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesWithConsoleLink',
       { data: defaultData }
     );
@@ -212,7 +223,7 @@ test.describe('ClustersWithIssues — open console link', () => {
   });
 
   test('should not render console column when onOpenConsole is not provided', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: defaultData }
     );
@@ -221,7 +232,7 @@ test.describe('ClustersWithIssues — open console link', () => {
   });
 
   test('should render console links for all visible rows', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesWithConsoleLink>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesWithConsoleLink',
       { data: defaultData }
     );
@@ -234,7 +245,7 @@ test.describe('ClustersWithIssues — open console link', () => {
 
 test.describe('ClustersWithIssues — title tooltip', () => {
   test('should render the tooltip icon by default', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: defaultData }
     );
@@ -242,7 +253,7 @@ test.describe('ClustersWithIssues — title tooltip', () => {
   });
 
   test('should hide the tooltip icon when titleTooltip is empty', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: defaultData, titleTooltip: '' }
     );
@@ -250,7 +261,7 @@ test.describe('ClustersWithIssues — title tooltip', () => {
   });
 
   test('should have an accessible label on the tooltip icon', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: defaultData }
     );
@@ -262,7 +273,7 @@ test.describe('ClustersWithIssues — title tooltip', () => {
 
 test.describe('ClustersWithIssues — pagination', () => {
   test('should show only first page of clusters by default', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: paginatedData, perPage: 5 }
     );
@@ -275,7 +286,7 @@ test.describe('ClustersWithIssues — pagination', () => {
   });
 
   test('should show pagination controls', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: paginatedData, perPage: 5 }
     );
@@ -284,7 +295,7 @@ test.describe('ClustersWithIssues — pagination', () => {
   });
 
   test('should navigate to next page', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: paginatedData, perPage: 5 }
     );
@@ -297,7 +308,7 @@ test.describe('ClustersWithIssues — pagination', () => {
   });
 
   test('should navigate to last page', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: paginatedData, perPage: 5 }
     );
@@ -319,7 +330,7 @@ test.describe('ClustersWithIssues — pagination', () => {
         { id: 'c3', name: 'c', issues: 3 },
       ],
     };
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: smallData, perPage: 5 }
     );
@@ -330,7 +341,7 @@ test.describe('ClustersWithIssues — pagination', () => {
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { isLoading: true }
     );
@@ -339,7 +350,7 @@ test.describe('ClustersWithIssues — pagination', () => {
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { isLoading: true }
     );
@@ -349,7 +360,7 @@ test.describe('ClustersWithIssues — pagination', () => {
   test('should render skeleton when isLoading is true even if data is provided', async ({
     mount,
   }) => {
-    const component = await mount(
+    const component = await mount<typeof ClustersWithIssuesStory>(
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: defaultData, isLoading: true }
     );

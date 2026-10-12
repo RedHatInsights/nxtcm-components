@@ -1,6 +1,13 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
+import type {
+  WizMultiSelectApiErrorHarness,
+  WizMultiSelectExplicitControlOnlyHarness,
+  WizMultiSelectExplicitHarness,
+  WizMultiSelectSubmitValidationHarness,
+  WizMultiSelectYupMetaHarness,
+} from './WizMultiSelect.story';
 import {
   WIZ_MULTI_API_ERROR_DETAIL,
   WIZ_MULTI_API_ERROR_FIELD_LABEL,
@@ -18,7 +25,7 @@ import {
 
 test.describe('WizMultiSelect', () => {
   test('renders explicit label and helper text', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof WizMultiSelectExplicitHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizMultiSelect/WizMultiSelect/WizMultiSelectExplicitHarness'
     );
     await expect(mounted.getByText(WIZ_MULTI_EXPLICIT_LABEL, { exact: true })).toBeVisible();
@@ -26,7 +33,7 @@ test.describe('WizMultiSelect', () => {
   });
 
   test('writes selected options to react-hook-form', async ({ mount, page }) => {
-    await mount(
+    await mount<typeof WizMultiSelectExplicitHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizMultiSelect/WizMultiSelect/WizMultiSelectExplicitHarness'
     );
     const status = page.getByRole('status', { name: WIZ_MULTI_VALUE_STATUS_LABEL });
@@ -44,7 +51,7 @@ test.describe('WizMultiSelect', () => {
   test('derives label and helper text from Yup schema meta when those props are omitted', async ({
     mount,
   }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof WizMultiSelectYupMetaHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizMultiSelect/WizMultiSelect/WizMultiSelectYupMetaHarness'
     );
     await expect(mounted.getByText(WIZ_MULTI_YUP_META_LABEL, { exact: true })).toBeVisible();
@@ -52,7 +59,7 @@ test.describe('WizMultiSelect', () => {
   });
 
   test('shows Yup validation after submit when nothing is selected', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof WizMultiSelectSubmitValidationHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizMultiSelect/WizMultiSelect/WizMultiSelectSubmitValidationHarness'
     );
     await mounted.getByRole('button', { name: 'Submit', exact: true }).click();
@@ -63,7 +70,7 @@ test.describe('WizMultiSelect', () => {
     mount,
     page,
   }) => {
-    await mount(
+    await mount<typeof WizMultiSelectSubmitValidationHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizMultiSelect/WizMultiSelect/WizMultiSelectSubmitValidationHarness'
     );
     await page.getByRole('button', { name: 'Submit', exact: true }).click();
@@ -80,7 +87,7 @@ test.describe('WizMultiSelect', () => {
   });
 
   test('binds through the control prop without a FormProvider wrapper', async ({ mount, page }) => {
-    await mount(
+    await mount<typeof WizMultiSelectExplicitControlOnlyHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizMultiSelect/WizMultiSelect/WizMultiSelectExplicitControlOnlyHarness'
     );
     const status = page.getByRole('status', { name: WIZ_MULTI_CONTROL_ONLY_STATUS });
@@ -97,7 +104,7 @@ test.describe('WizMultiSelect', () => {
     mount,
     page,
   }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof WizMultiSelectApiErrorHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizMultiSelect/WizMultiSelect/WizMultiSelectApiErrorHarness'
     );
     await expect(

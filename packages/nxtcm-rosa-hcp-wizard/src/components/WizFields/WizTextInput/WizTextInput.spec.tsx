@@ -1,6 +1,17 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
+import type {
+  WizTextInputBlurValidationHarness,
+  WizTextInputExplicitControlOnlyHarness,
+  WizTextInputExplicitHarness,
+  WizTextInputExplicitIsRequiredHarness,
+  WizTextInputExplicitPropsOverrideMetaHarness,
+  WizTextInputNestedFallbackHarness,
+  WizTextInputNumericMetaLabelHarness,
+  WizTextInputSubmitValidationHarness,
+  WizTextInputYupMetaHarness,
+} from './WizTextInput.story';
 import {
   WIZ_TEXT_INPUT_ALIAS_BLUR_ERROR,
   WIZ_TEXT_INPUT_ALIAS_BLUR_PLACEHOLDER,
@@ -21,7 +32,7 @@ import {
 
 test.describe('WizTextInput', () => {
   test('renders explicit label and helper text', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof WizTextInputExplicitHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizTextInput/WizTextInput/WizTextInputExplicitHarness'
     );
     await expect(mounted.getByText(WIZ_TEXT_INPUT_EXPLICIT_LABEL, { exact: true })).toBeVisible();
@@ -32,7 +43,7 @@ test.describe('WizTextInput', () => {
   });
 
   test('writes the string value to react-hook-form when the user types', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof WizTextInputExplicitHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizTextInput/WizTextInput/WizTextInputExplicitHarness'
     );
     const status = mounted.getByRole('status', { name: WIZ_TEXT_INPUT_VALUE_STATUS_LABEL });
@@ -51,7 +62,7 @@ test.describe('WizTextInput', () => {
   test('derives label and helper text from Yup schema meta when those props are omitted', async ({
     mount,
   }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof WizTextInputYupMetaHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizTextInput/WizTextInput/WizTextInputYupMetaHarness'
     );
     await expect(mounted.getByText(WIZ_TEXT_INPUT_YUP_META_LABEL, { exact: true })).toBeVisible();
@@ -59,7 +70,7 @@ test.describe('WizTextInput', () => {
   });
 
   test('shows Yup validation after submit when the field is empty', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof WizTextInputSubmitValidationHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizTextInput/WizTextInput/WizTextInputSubmitValidationHarness'
     );
     await mounted.getByRole('button', { name: 'Submit' }).click();
@@ -69,7 +80,7 @@ test.describe('WizTextInput', () => {
   test('clears Yup validation after the user enters a valid value and submits again', async ({
     mount,
   }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof WizTextInputSubmitValidationHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizTextInput/WizTextInput/WizTextInputSubmitValidationHarness'
     );
     await mounted.getByRole('button', { name: 'Submit' }).click();
@@ -84,7 +95,7 @@ test.describe('WizTextInput', () => {
   test('uses the last segment of a nested path as the field name when no label or Yup schema', async ({
     mount,
   }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof WizTextInputNestedFallbackHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizTextInput/WizTextInput/WizTextInputNestedFallbackHarness'
     );
     await expect(
@@ -93,7 +104,7 @@ test.describe('WizTextInput', () => {
   });
 
   test('prefers explicit label and helper props over Yup .meta()', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof WizTextInputExplicitPropsOverrideMetaHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizTextInput/WizTextInput/WizTextInputExplicitPropsOverrideMetaHarness'
     );
     await expect(
@@ -111,7 +122,7 @@ test.describe('WizTextInput', () => {
   });
 
   test('shows string or numeric Yup .meta() labels as the TextInput caption', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof WizTextInputNumericMetaLabelHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizTextInput/WizTextInput/WizTextInputNumericMetaLabelHarness'
     );
     await expect(mounted.getByText(String(2025), { exact: true })).toBeVisible();
@@ -123,7 +134,7 @@ test.describe('WizTextInput', () => {
   test('shows Yup validation after the field is blurred when validateOnBlur is set', async ({
     mount,
   }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof WizTextInputBlurValidationHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizTextInput/WizTextInput/WizTextInputBlurValidationHarness'
     );
     const input = mounted.getByPlaceholder(WIZ_TEXT_INPUT_ALIAS_BLUR_PLACEHOLDER);
@@ -135,7 +146,7 @@ test.describe('WizTextInput', () => {
   test('does not validate while the user is typing when validateOnBlur is set', async ({
     mount,
   }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof WizTextInputBlurValidationHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizTextInput/WizTextInput/WizTextInputBlurValidationHarness'
     );
     const input = mounted.getByPlaceholder(WIZ_TEXT_INPUT_ALIAS_BLUR_PLACEHOLDER);
@@ -149,7 +160,7 @@ test.describe('WizTextInput', () => {
   test('shows required UI when isRequired is set even though Yup treats the leaf as optional', async ({
     mount,
   }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof WizTextInputExplicitIsRequiredHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizTextInput/WizTextInput/WizTextInputExplicitIsRequiredHarness'
     );
     await expect(
@@ -161,7 +172,7 @@ test.describe('WizTextInput', () => {
   });
 
   test('binds through the control prop without a FormProvider wrapper', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof WizTextInputExplicitControlOnlyHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizTextInput/WizTextInput/WizTextInputExplicitControlOnlyHarness'
     );
     const status = mounted.getByRole('status', {

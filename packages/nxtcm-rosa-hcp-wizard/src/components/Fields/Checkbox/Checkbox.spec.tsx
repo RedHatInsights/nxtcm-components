@@ -1,6 +1,7 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
+import type { CheckboxErrorStory, CheckboxHarness } from './Checkbox.story';
 import {
   CHECKBOX_HARNESS_HELPER_TEXT,
   CHECKBOX_HARNESS_LABEL,
@@ -9,7 +10,7 @@ import {
 
 test.describe('Checkbox', () => {
   test('renders title, label, and helper text', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof CheckboxHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Checkbox/Checkbox/CheckboxHarness'
     );
     await expect(mounted.getByRole('group', { name: CHECKBOX_HARNESS_TITLE })).toBeVisible();
@@ -18,7 +19,7 @@ test.describe('Checkbox', () => {
   });
 
   test('toggles checked state when the user clicks the checkbox', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof CheckboxHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Checkbox/Checkbox/CheckboxHarness'
     );
     const checkboxInput = mounted.getByRole('checkbox', {
@@ -32,7 +33,7 @@ test.describe('Checkbox', () => {
   });
 
   test('shows error helper when isError and errorMessage are set', async ({ mount }) => {
-    const mounted = await mount(
+    const mounted = await mount<typeof CheckboxErrorStory>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Checkbox/Checkbox/CheckboxErrorStory'
     );
     await expect(mounted.getByText('You must accept to continue.')).toBeVisible();

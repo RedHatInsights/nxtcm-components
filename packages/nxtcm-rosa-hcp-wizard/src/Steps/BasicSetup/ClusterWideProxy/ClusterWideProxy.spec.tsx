@@ -1,35 +1,36 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { checkAccessibility } from '../../../test-helpers';
+import type { ClusterWideProxyMount } from './ClusterWideProxy.story';
 
 const cw = defaultRosaHcpWizardStrings.clusterWideProxy;
 
 test.describe('ClusterWideProxy (ROSA HCP)', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterWideProxyMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
     );
     await checkAccessibility({ component });
   });
 
   test('should render the section title', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterWideProxyMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
     );
     await expect(component.getByText(cw.sectionLabel, { exact: true })).toBeVisible();
   });
 
   test('should render the intro text', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterWideProxyMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
     );
     await expect(component.getByText(cw.intro)).toBeVisible();
   });
 
   test('should render the learn more link', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterWideProxyMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
     );
     await expect(component.getByText(cw.learnMoreLink)).toBeVisible();
@@ -46,7 +47,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
       test(`should link to OpenShift ${docsVersion} docs when cluster version is ${clusterVersion} (${reason})`, async ({
         mount,
       }) => {
-        const component = await mount(
+        const component = await mount<typeof ClusterWideProxyMount>(
           'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount',
           { defaultValues: { cluster_version: clusterVersion } }
         );
@@ -63,7 +64,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
       test(`should link to OpenShift ${docsVersion} docs when both v4 and v5 are published and cluster version is ${clusterVersion}`, async ({
         mount,
       }) => {
-        const component = await mount(
+        const component = await mount<typeof ClusterWideProxyMount>(
           'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount',
           {
             defaultValues: { cluster_version: clusterVersion },
@@ -77,14 +78,14 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
   });
 
   test('should render the configure at least 1 field alert', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterWideProxyMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
     );
     await expect(component.getByText(cw.alertConfigureFields)).toBeVisible();
   });
 
   test('should render the HTTP proxy URL input', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterWideProxyMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
     );
     await expect(component.getByText(cw.httpLabel, { exact: true })).toBeVisible();
@@ -92,7 +93,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
   });
 
   test('should render the HTTPS proxy URL input', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterWideProxyMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
     );
     await expect(component.getByText(cw.httpsLabel, { exact: true })).toBeVisible();
@@ -100,7 +101,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
   });
 
   test('should render the No Proxy domains input', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterWideProxyMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
     );
     await expect(component.getByText(cw.noProxyLabel, { exact: true })).toBeVisible();
@@ -108,7 +109,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
   });
 
   test('should render the Additional trust bundle field', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof ClusterWideProxyMount>(
       'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
     );
     await expect(component.getByText(cw.trustBundleLabel, { exact: true })).toBeVisible();
@@ -116,7 +117,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
 
   test.describe('ClusterWideProxy — HTTP proxy URL validation', () => {
     test('should allow typing a valid HTTP proxy URL', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
       );
       const input = component.getByRole('textbox', { name: cw.httpLabel });
@@ -125,7 +126,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     });
 
     test('should show error for an invalid URL', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
       );
       const input = component.getByRole('textbox', { name: cw.httpLabel });
@@ -135,7 +136,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     });
 
     test('should show error for HTTPS scheme in HTTP proxy field', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
       );
       const input = component.getByRole('textbox', { name: cw.httpLabel });
@@ -147,7 +148,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     });
 
     test('should not show error when HTTP proxy URL is empty', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
       );
       const input = component.getByRole('textbox', { name: cw.httpLabel });
@@ -159,7 +160,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
 
   test.describe('ClusterWideProxy — HTTPS proxy URL validation', () => {
     test('should allow typing a valid HTTPS proxy URL', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
       );
       const input = component.getByRole('textbox', { name: cw.httpsLabel });
@@ -168,7 +169,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     });
 
     test('should allow HTTP scheme in HTTPS proxy field', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
       );
       const input = component.getByRole('textbox', { name: cw.httpsLabel });
@@ -178,7 +179,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     });
 
     test('should show error for an invalid URL in HTTPS proxy field', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
       );
       const input = component.getByRole('textbox', { name: cw.httpsLabel });
@@ -188,7 +189,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     });
 
     test('should show error for FTP scheme in HTTPS proxy field', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
       );
       const input = component.getByRole('textbox', { name: cw.httpsLabel });
@@ -200,7 +201,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     });
 
     test('should not show error when HTTPS proxy URL is empty', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
       );
       const input = component.getByRole('textbox', { name: cw.httpsLabel });
@@ -214,7 +215,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     test('should disable No Proxy domains when both HTTP and HTTPS proxy are empty', async ({
       mount,
     }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount'
       );
       const noProxyInput = component.getByRole('textbox', { name: cw.noProxyLabel });
@@ -224,7 +225,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     test('should enable No Proxy domains when a valid HTTP proxy is provided', async ({
       mount,
     }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount',
         { defaultValues: { http_proxy_url: 'http://proxy.example.com:8080' } }
       );
@@ -235,7 +236,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     test('should enable No Proxy domains when a valid HTTPS proxy is provided', async ({
       mount,
     }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount',
         { defaultValues: { https_proxy_url: 'https://proxy.example.com:443' } }
       );
@@ -244,7 +245,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     });
 
     test('should show error for an invalid No Proxy domain', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount',
         { defaultValues: { http_proxy_url: 'http://proxy.example.com:8080' } }
       );
@@ -255,7 +256,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     });
 
     test('should allow a valid No Proxy domain', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount',
         { defaultValues: { http_proxy_url: 'http://proxy.example.com:8080' } }
       );
@@ -266,7 +267,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     });
 
     test('should allow multiple comma-separated valid No Proxy domains', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount',
         { defaultValues: { http_proxy_url: 'http://proxy.example.com:8080' } }
       );
@@ -279,7 +280,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
 
   test.describe('ClusterWideProxy — No Proxy domains reset on proxy change', () => {
     test('should reset No Proxy domains when HTTP proxy URL changes', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount',
         {
           defaultValues: {
@@ -300,7 +301,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
 
   test.describe('ClusterWideProxy — pre-populated default values', () => {
     test('should render with pre-populated HTTP proxy URL', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount',
         { defaultValues: { http_proxy_url: 'http://my-proxy.com:3128' } }
       );
@@ -309,7 +310,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     });
 
     test('should render with pre-populated HTTPS proxy URL', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount',
         { defaultValues: { https_proxy_url: 'https://my-proxy.com:443' } }
       );
@@ -318,7 +319,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     });
 
     test('should render with pre-populated No Proxy domains', async ({ mount }) => {
-      const component = await mount(
+      const component = await mount<typeof ClusterWideProxyMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy/ClusterWideProxyMount',
         {
           defaultValues: {

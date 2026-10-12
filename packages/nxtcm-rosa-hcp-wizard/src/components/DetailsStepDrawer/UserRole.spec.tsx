@@ -1,18 +1,19 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
 import { checkAccessibility } from '../../test-helpers';
+import type { UserRoleMount } from './UserRole.story';
 
 test.describe('UserRole', () => {
   test('should render check linked section', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof UserRoleMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/UserRole/UserRoleMount'
     );
     await expect(component.getByText(/check if a role exists and is linked/i)).toBeVisible();
   });
 
   test('should render list user-role copy instruction', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof UserRoleMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/UserRole/UserRoleMount'
     );
     const copyInstruction = component.getByTestId('copy-rosa-list-user-role');
@@ -21,7 +22,7 @@ test.describe('UserRole', () => {
   });
 
   test('should render info alert about existing linked role', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof UserRoleMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/UserRole/UserRoleMount'
     );
     const alert = component.locator('.pf-v6-c-alert.pf-m-info');
@@ -29,7 +30,7 @@ test.describe('UserRole', () => {
   });
 
   test('should render TabGroup with two tabs', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof UserRoleMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/UserRole/UserRoleMount'
     );
     const createTab = component.getByTestId('copy-user-role-tab-no');
@@ -39,7 +40,7 @@ test.describe('UserRole', () => {
   });
 
   test('should show create user role instruction in first tab', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof UserRoleMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/UserRole/UserRoleMount'
     );
     const copyInstruction = component.getByTestId('copy-rosa-create-user-role');
@@ -48,7 +49,7 @@ test.describe('UserRole', () => {
   });
 
   test('should show popover hint for user role', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof UserRoleMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/UserRole/UserRoleMount'
     );
     const hintButton = component.getByRole('button', { name: /more information/i });
@@ -56,7 +57,7 @@ test.describe('UserRole', () => {
   });
 
   test('should show link existing user role when second tab clicked', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof UserRoleMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/UserRole/UserRoleMount'
     );
 
@@ -69,7 +70,7 @@ test.describe('UserRole', () => {
   });
 
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof UserRoleMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/UserRole/UserRoleMount'
     );
     await checkAccessibility({ component });

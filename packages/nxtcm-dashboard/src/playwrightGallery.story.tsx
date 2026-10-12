@@ -16,15 +16,17 @@ export function StatefulGalleryStory({
   );
 }
 
-export function CallbackGalleryStory({
-  onAction,
-}: {
-  onAction: (value: string) => void;
-}): React.ReactElement {
+export function CallbackGalleryStory(): React.ReactElement {
+  const [action, setAction] = useState('');
   return (
-    <button type="button" onClick={() => onAction('browser-value')}>
-      Invoke callback
-    </button>
+    <>
+      <button type="button" onClick={() => setAction('browser-value')}>
+        Invoke callback
+      </button>
+      <div hidden>
+        <input data-testid="action" readOnly value={action} />
+      </div>
+    </>
   );
 }
 

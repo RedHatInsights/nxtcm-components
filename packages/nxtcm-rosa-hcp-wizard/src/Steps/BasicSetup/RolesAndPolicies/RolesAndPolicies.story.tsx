@@ -1,7 +1,4 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-/**
- * Playwright CT mount target. Components from *.story.tsx cannot be mounted (see playwright.dev/test-components#test-stories).
- */
 import React, { useMemo } from 'react';
 
 import { FormProvider, useForm } from 'react-hook-form';
@@ -60,7 +57,7 @@ export type RolesAndPoliciesMountProps = {
   selectedSecret?: SelectedSecret;
 };
 
-export const RolesAndPoliciesMount: React.FC<RolesAndPoliciesMountProps> = ({
+const RolesAndPoliciesMountComponent: React.FC<RolesAndPoliciesMountProps> = ({
   roles,
   oidcConfig,
   defaultValues = {},
@@ -122,3 +119,42 @@ export const RolesAndPoliciesMount: React.FC<RolesAndPoliciesMountProps> = ({
     </FormProvider>
   );
 };
+
+type BrowserProps = NonNullable<React.ComponentProps<typeof RolesAndPoliciesMountComponent>>;
+
+export type RolesAndPoliciesMountGalleryProps = Omit<BrowserProps, 'roles' | 'oidcConfig'> & {
+  roles?: Omit<NonNullable<BrowserProps['roles']>, 'fetch'>;
+  oidcConfig?: Omit<NonNullable<BrowserProps['oidcConfig']>, 'fetch'>;
+};
+
+export function RolesAndPoliciesMount(
+  props: RolesAndPoliciesMountGalleryProps
+): React.ReactElement {
+  const browserProps = React.useMemo<BrowserProps>(
+    () => ({
+      ...props,
+      roles: props.roles
+        ? {
+            ...props.roles,
+            fetch: () => {
+              return Promise.resolve();
+            },
+          }
+        : undefined,
+      oidcConfig: props.oidcConfig
+        ? {
+            ...props.oidcConfig,
+            fetch: () => {
+              return Promise.resolve();
+            },
+          }
+        : undefined,
+    }),
+    [props]
+  );
+  return (
+    <>
+      <RolesAndPoliciesMountComponent {...browserProps} /> <div hidden></div>
+    </>
+  );
+}

@@ -1,4 +1,4 @@
-import { test, expect, Page } from './fixtures';
+import { expect, Page, test } from './fixtures';
 
 async function expandOperatorPrefixSection(page: Page) {
   await page.getByRole('button', { name: /operator roles prefix/i }).click();

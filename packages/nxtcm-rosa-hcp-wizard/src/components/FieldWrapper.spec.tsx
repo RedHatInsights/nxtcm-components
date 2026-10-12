@@ -1,10 +1,12 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '../../../../ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
+
 import { type FieldWrapperSize } from './FieldWrapper';
+import type { FieldWrapperStory } from './FieldWrapper.story';
 
 test.describe('FieldWrapper', () => {
   test('renders field content', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof FieldWrapperStory>(
       'nxtcm-rosa-hcp-wizard/components/FieldWrapper/FieldWrapperStory',
       { variant: 'field' }
     );
@@ -13,7 +15,7 @@ test.describe('FieldWrapper', () => {
   });
 
   test('renders additional content below the field', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof FieldWrapperStory>(
       'nxtcm-rosa-hcp-wizard/components/FieldWrapper/FieldWrapperStory',
       { variant: 'additional' }
     );
@@ -31,10 +33,13 @@ test.describe('FieldWrapper', () => {
       mount,
       page,
     }) => {
-      await mount('nxtcm-rosa-hcp-wizard/components/FieldWrapper/FieldWrapperStory', {
-        variant: 'sized',
-        size,
-      });
+      await mount<typeof FieldWrapperStory>(
+        'nxtcm-rosa-hcp-wizard/components/FieldWrapper/FieldWrapperStory',
+        {
+          variant: 'sized',
+          size,
+        }
+      );
 
       const wrapper = page.getByTestId('rosa-hcp-field-wrapper');
       await expect(page.getByText('Sized field')).toBeVisible();
@@ -54,7 +59,7 @@ test.describe('FieldWrapper', () => {
   }
 
   test('renders full-width blocks alongside fields', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof FieldWrapperStory>(
       'nxtcm-rosa-hcp-wizard/components/FieldWrapper/FieldWrapperStory',
       { variant: 'full' }
     );

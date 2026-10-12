@@ -1,7 +1,4 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-/**
- * Playwright CT mount target. Components from *.story.tsx cannot be mounted (see playwright.dev/test-components#test-stories).
- */
 import React, { useMemo } from 'react';
 
 import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
@@ -33,7 +30,7 @@ export type MachinePoolsMountProps = {
   config?: WizardConfig;
 };
 
-export const MachinePoolsMount: React.FC<MachinePoolsMountProps> = ({
+const MachinePoolsMountComponent: React.FC<MachinePoolsMountProps> = ({
   vpcList,
   machineTypes,
   defaultValues = {},
@@ -80,3 +77,62 @@ export const MachinePoolsMount: React.FC<MachinePoolsMountProps> = ({
     </WizardConfigProvider>
   );
 };
+
+type BrowserProps = NonNullable<React.ComponentProps<typeof MachinePoolsMountComponent>>;
+
+export type MachinePoolsMountGalleryProps = Omit<BrowserProps, 'vpcList' | 'machineTypes'> & {
+  vpcList?: Omit<NonNullable<BrowserProps['vpcList']>, 'fetch'>;
+  machineTypes?: Omit<NonNullable<BrowserProps['machineTypes']>, 'fetch'>;
+};
+
+export function MachinePoolsMount(props: MachinePoolsMountGalleryProps): React.ReactElement {
+  const [vpcFetchCalls, setVpcFetchCalls] = React.useState<
+    Parameters<NonNullable<NonNullable<BrowserProps['vpcList']>['fetch']>>[]
+  >([]);
+  const [fetchMachineTypesCalls, setFetchMachineTypesCalls] = React.useState<
+    Parameters<NonNullable<NonNullable<BrowserProps['machineTypes']>['fetch']>>[]
+  >([]);
+  const browserProps = React.useMemo<BrowserProps>(
+    () => ({
+      ...props,
+      vpcList: props.vpcList
+        ? {
+            ...props.vpcList,
+            fetch: (...args) => {
+              setVpcFetchCalls((calls) => [...calls, args]);
+              return Promise.resolve();
+            },
+          }
+        : undefined,
+      machineTypes: props.machineTypes
+        ? {
+            ...props.machineTypes,
+            fetch: (...args) => {
+              setFetchMachineTypesCalls((calls) => [...calls, args]);
+              return Promise.resolve();
+            },
+          }
+        : undefined,
+    }),
+    [props]
+  );
+  return (
+    <>
+      <MachinePoolsMountComponent {...browserProps} />
+      <div hidden>
+        <input data-testid="vpcFetch-calls" readOnly value={JSON.stringify(vpcFetchCalls)} />
+        <input data-testid="vpcFetch-count" readOnly value={String(vpcFetchCalls.length)} />
+        <input
+          data-testid="fetchMachineTypes-calls"
+          readOnly
+          value={JSON.stringify(fetchMachineTypesCalls)}
+        />
+        <input
+          data-testid="fetchMachineTypes-count"
+          readOnly
+          value={String(fetchMachineTypesCalls.length)}
+        />
+      </div>
+    </>
+  );
+}

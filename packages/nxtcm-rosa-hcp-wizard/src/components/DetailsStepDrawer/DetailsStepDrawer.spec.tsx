@@ -1,18 +1,19 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
 import { checkAccessibility } from '../../test-helpers';
+import type { DetailsStepDrawerMount } from './DetailsStepDrawer.story';
 
 test.describe('DetailsStepDrawer', () => {
   test('should render main content', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof DetailsStepDrawerMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount'
     );
     await expect(component.getByTestId('drawer-main-content')).toBeVisible();
   });
 
   test('should not show drawer panel when collapsed', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof DetailsStepDrawerMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
       { initiallyExpanded: false }
     );
@@ -24,7 +25,7 @@ test.describe('DetailsStepDrawer', () => {
   });
 
   test('should show drawer panel when expanded', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof DetailsStepDrawerMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
       { initiallyExpanded: true }
     );
@@ -35,7 +36,7 @@ test.describe('DetailsStepDrawer', () => {
   });
 
   test('should render close button in drawer header', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof DetailsStepDrawerMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
       { initiallyExpanded: true }
     );
@@ -44,7 +45,7 @@ test.describe('DetailsStepDrawer', () => {
   });
 
   test('should close drawer when close button clicked', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof DetailsStepDrawerMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
       { initiallyExpanded: true }
     );
@@ -60,7 +61,7 @@ test.describe('DetailsStepDrawer', () => {
   });
 
   test('should render all instruction sections when expanded', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof DetailsStepDrawerMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
       { initiallyExpanded: true }
     );
@@ -73,7 +74,7 @@ test.describe('DetailsStepDrawer', () => {
   });
 
   test('should render intro text', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof DetailsStepDrawerMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
       { initiallyExpanded: true }
     );
@@ -81,7 +82,7 @@ test.describe('DetailsStepDrawer', () => {
   });
 
   test('should render close button at bottom', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof DetailsStepDrawerMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
       { initiallyExpanded: true }
     );
@@ -92,7 +93,7 @@ test.describe('DetailsStepDrawer', () => {
   });
 
   test('should close drawer when bottom close button clicked', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof DetailsStepDrawerMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
       { initiallyExpanded: true }
     );
@@ -109,7 +110,7 @@ test.describe('DetailsStepDrawer', () => {
   });
 
   test('should pass product prop to LoginStep', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof DetailsStepDrawerMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
       { initiallyExpanded: true, product: 'ocm' }
     );
@@ -118,7 +119,7 @@ test.describe('DetailsStepDrawer', () => {
   });
 
   test('should render resizable panel', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof DetailsStepDrawerMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
       { initiallyExpanded: true }
     );
@@ -128,7 +129,7 @@ test.describe('DetailsStepDrawer', () => {
   });
 
   test('should pass accessibility tests when collapsed', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof DetailsStepDrawerMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
       { initiallyExpanded: false }
     );
@@ -136,7 +137,7 @@ test.describe('DetailsStepDrawer', () => {
   });
 
   test('should pass accessibility tests when expanded', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof DetailsStepDrawerMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
       { initiallyExpanded: true }
     );

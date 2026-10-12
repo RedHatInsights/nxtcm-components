@@ -1,9 +1,11 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '../../../../ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
+
+import type { FieldWithAPIErrorAlertStory } from './FieldWithAPIErrorAlert.story';
 
 test.describe('FieldWithAPIErrorAlert', () => {
   test('shows alert and message body when string error is provided', async ({ mount, page }) => {
-    const component = await mount(
+    const component = await mount<typeof FieldWithAPIErrorAlertStory>(
       'nxtcm-rosa-hcp-wizard/components/FieldWithAPIErrorAlert/FieldWithAPIErrorAlertStory',
       { error: 'There has been an error' }
     );
@@ -18,7 +20,7 @@ test.describe('FieldWithAPIErrorAlert', () => {
     mount,
     page,
   }) => {
-    const component = await mount(
+    const component = await mount<typeof FieldWithAPIErrorAlertStory>(
       'nxtcm-rosa-hcp-wizard/components/FieldWithAPIErrorAlert/FieldWithAPIErrorAlertStory',
       { error: true }
     );
@@ -31,7 +33,7 @@ test.describe('FieldWithAPIErrorAlert', () => {
   });
 
   test('does not show alert when isFetching is true', async ({ mount, page }) => {
-    const component = await mount(
+    const component = await mount<typeof FieldWithAPIErrorAlertStory>(
       'nxtcm-rosa-hcp-wizard/components/FieldWithAPIErrorAlert/FieldWithAPIErrorAlertStory',
       { error: 'There has been an error', isFetching: true, isValidation: true }
     );

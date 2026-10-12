@@ -1,8 +1,9 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, storyCallback, storyCallbackCalls, test } from '@/ct-fixture';
-import { checkAccessibility } from '@/test-helpers';
+import { expect, test } from '@/playwright/ct-fixture';
+import { checkAccessibility } from '@/playwright/test-helpers';
 
 import { SeverityCounts } from './AdvisorSeverity';
+import type { AdvisorSeverityStory } from './AdvisorSeverity.story';
 
 const defaultSeverity: SeverityCounts = {
   critical: 3,
@@ -13,18 +14,18 @@ const defaultSeverity: SeverityCounts = {
 
 test.describe('AdvisorSeverity', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorSeverityStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorSeverity/AdvisorSeverityStory',
       {
         severity: defaultSeverity,
-        onViewMore: storyCallback('onViewMore'),
+        onViewMore: true,
       }
     );
     await checkAccessibility({ component });
   });
 
   test('should render all four severity counts', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorSeverityStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorSeverity/AdvisorSeverityStory',
       { severity: defaultSeverity }
     );
@@ -35,7 +36,7 @@ test.describe('AdvisorSeverity', () => {
   });
 
   test('should render severity labels', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorSeverityStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorSeverity/AdvisorSeverityStory',
       { severity: defaultSeverity }
     );
@@ -46,7 +47,7 @@ test.describe('AdvisorSeverity', () => {
   });
 
   test('should render severity icons', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorSeverityStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorSeverity/AdvisorSeverityStory',
       { severity: defaultSeverity }
     );
@@ -57,22 +58,28 @@ test.describe('AdvisorSeverity', () => {
   });
 
   test('should render the view more link when onViewMore is provided', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorSeverityStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorSeverity/AdvisorSeverityStory',
       {
         severity: defaultSeverity,
-        onViewMore: storyCallback('onViewMore'),
+        onViewMore: true,
       }
     );
     const link = component.getByTestId('view-more-link');
     await expect(link).toBeVisible();
     await expect(link).toHaveText('View more in Red Hat Advisor');
     await link.click();
-    await expect.poll(() => storyCallbackCalls(component, 'onViewMore')).toHaveLength(1);
+    await expect
+      .poll(() =>
+        component
+          .getByTestId('onViewMore-calls')
+          .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+      )
+      .toHaveLength(1);
   });
 
   test('should not render the view more link when onViewMore is omitted', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorSeverityStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorSeverity/AdvisorSeverityStory',
       { severity: defaultSeverity }
     );
@@ -80,7 +87,7 @@ test.describe('AdvisorSeverity', () => {
   });
 
   test('should handle all-zero severity counts', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorSeverityStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorSeverity/AdvisorSeverityStory',
       { severity: { critical: 0, important: 0, moderate: 0, low: 0 } }
     );
@@ -91,7 +98,7 @@ test.describe('AdvisorSeverity', () => {
   });
 
   test('should handle large counts', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorSeverityStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorSeverity/AdvisorSeverityStory',
       { severity: { critical: 500, important: 2000, moderate: 9999, low: 123 } }
     );
@@ -100,7 +107,7 @@ test.describe('AdvisorSeverity', () => {
   });
 
   test('should render the default card title', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorSeverityStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorSeverity/AdvisorSeverityStory',
       { severity: defaultSeverity }
     );
@@ -110,7 +117,7 @@ test.describe('AdvisorSeverity', () => {
   });
 
   test('should render a custom card title', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorSeverityStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorSeverity/AdvisorSeverityStory',
       { severity: defaultSeverity, title: 'Custom title' }
     );
@@ -118,7 +125,7 @@ test.describe('AdvisorSeverity', () => {
   });
 
   test('should hide the card title when title is empty', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorSeverityStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorSeverity/AdvisorSeverityStory',
       { severity: defaultSeverity, title: '' }
     );
@@ -126,7 +133,7 @@ test.describe('AdvisorSeverity', () => {
   });
 
   test('should render the lightspeed badge by default', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorSeverityStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorSeverity/AdvisorSeverityStory',
       { severity: defaultSeverity }
     );
@@ -136,7 +143,7 @@ test.describe('AdvisorSeverity', () => {
   });
 
   test('should hide the lightspeed badge when showLightspeedBadge is false', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorSeverityStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorSeverity/AdvisorSeverityStory',
       { severity: defaultSeverity, showLightspeedBadge: false }
     );
@@ -144,7 +151,7 @@ test.describe('AdvisorSeverity', () => {
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorSeverityStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorSeverity/AdvisorSeverityStory',
       { isLoading: true }
     );
@@ -153,7 +160,7 @@ test.describe('AdvisorSeverity', () => {
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorSeverityStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorSeverity/AdvisorSeverityStory',
       { isLoading: true }
     );

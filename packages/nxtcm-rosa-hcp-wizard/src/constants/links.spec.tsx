@@ -1,5 +1,7 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
+
+import type { UseGetDocsVersionMount } from './links.story';
 
 const story = 'nxtcm-rosa-hcp-wizard/constants/links/UseGetDocsVersionMount';
 
@@ -10,22 +12,26 @@ const rosaDocsBase = (version: string): string =>
 test.describe('useGetDocsVersion', () => {
   test.describe('version resolution — fallback behavior (no published overrides)', () => {
     test('should default to v4 docs when no clusterVersion is provided', async ({ mount }) => {
-      const component = await mount(story);
+      const component = await mount<typeof UseGetDocsVersionMount>(story);
       await expect(component.getByTestId('IAM_RESOURCES')).toContainText(rosaDocsBase('4'));
     });
 
     test('should resolve to v4 docs for a v4 cluster version', async ({ mount }) => {
-      const component = await mount(story, { clusterVersion: '4.16.2' });
+      const component = await mount<typeof UseGetDocsVersionMount>(story, {
+        clusterVersion: '4.16.2',
+      });
       await expect(component.getByTestId('IAM_RESOURCES')).toContainText(rosaDocsBase('4'));
     });
 
     test('should fall back to v4 docs when cluster major is not published', async ({ mount }) => {
-      const component = await mount(story, { clusterVersion: '5.1.0' });
+      const component = await mount<typeof UseGetDocsVersionMount>(story, {
+        clusterVersion: '5.1.0',
+      });
       await expect(component.getByTestId('IAM_RESOURCES')).toContainText(rosaDocsBase('4'));
     });
 
     test('should fall back to v4 docs for an empty string cluster version', async ({ mount }) => {
-      const component = await mount(story, { clusterVersion: '' });
+      const component = await mount<typeof UseGetDocsVersionMount>(story, { clusterVersion: '' });
       await expect(component.getByTestId('IAM_RESOURCES')).toContainText(rosaDocsBase('4'));
     });
   });
@@ -34,7 +40,7 @@ test.describe('useGetDocsVersion', () => {
     test('should resolve to v4 docs when v4 cluster is selected and both v4 and v5 are published', async ({
       mount,
     }) => {
-      const component = await mount(story, {
+      const component = await mount<typeof UseGetDocsVersionMount>(story, {
         clusterVersion: '4.16.2',
         docsVersions: ['4', '5'],
       });
@@ -44,14 +50,17 @@ test.describe('useGetDocsVersion', () => {
     test('should resolve to v5 docs when v5 cluster is selected and v5 is published', async ({
       mount,
     }) => {
-      const component = await mount(story, { clusterVersion: '5.1.0', docsVersions: ['5'] });
+      const component = await mount<typeof UseGetDocsVersionMount>(story, {
+        clusterVersion: '5.1.0',
+        docsVersions: ['5'],
+      });
       await expect(component.getByTestId('IAM_RESOURCES')).toContainText(rosaDocsBase('5'));
     });
 
     test('should resolve to v5 docs when v5 cluster is selected and both v4 and v5 are published', async ({
       mount,
     }) => {
-      const component = await mount(story, {
+      const component = await mount<typeof UseGetDocsVersionMount>(story, {
         clusterVersion: '5.1.0',
         docsVersions: ['4', '5'],
       });
@@ -61,7 +70,7 @@ test.describe('useGetDocsVersion', () => {
     test('should fall back to v4 docs when cluster major is 6 and only v4 and v5 are published', async ({
       mount,
     }) => {
-      const component = await mount(story, {
+      const component = await mount<typeof UseGetDocsVersionMount>(story, {
         clusterVersion: '6.0.0',
         docsVersions: ['4', '5'],
       });
@@ -94,7 +103,7 @@ test.describe('useGetDocsVersion', () => {
 
     for (const key of linkKeys) {
       test(`${key} should contain the v5 docs base URL when v5 is resolved`, async ({ mount }) => {
-        const component = await mount(story, {
+        const component = await mount<typeof UseGetDocsVersionMount>(story, {
           clusterVersion: '5.1.0',
           docsVersions: ['5'],
         });

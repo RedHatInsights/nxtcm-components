@@ -1,8 +1,9 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
-import { checkAccessibility } from '@/test-helpers';
+import { expect, test } from '@/playwright/ct-fixture';
+import { checkAccessibility } from '@/playwright/test-helpers';
 
 import { CategoryCounts } from './AdvisorCategories';
+import type { AdvisorCategoriesStory } from './AdvisorCategories.story';
 
 const defaultCategories: CategoryCounts = {
   serviceAvailability: 25,
@@ -13,7 +14,7 @@ const defaultCategories: CategoryCounts = {
 
 test.describe('AdvisorCategories', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorCategoriesStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorCategories/AdvisorCategoriesStory',
       { categories: defaultCategories }
     );
@@ -21,7 +22,7 @@ test.describe('AdvisorCategories', () => {
   });
 
   test('should render the default title', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorCategoriesStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorCategories/AdvisorCategoriesStory',
       { categories: defaultCategories }
     );
@@ -31,7 +32,7 @@ test.describe('AdvisorCategories', () => {
   });
 
   test('should render a custom title', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorCategoriesStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorCategories/AdvisorCategoriesStory',
       { categories: defaultCategories, title: 'Issue categories' }
     );
@@ -39,7 +40,7 @@ test.describe('AdvisorCategories', () => {
   });
 
   test('should render the category chart', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorCategoriesStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorCategories/AdvisorCategoriesStory',
       { categories: defaultCategories }
     );
@@ -47,7 +48,7 @@ test.describe('AdvisorCategories', () => {
   });
 
   test('should render all category legend items with counts', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorCategoriesStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorCategories/AdvisorCategoriesStory',
       { categories: defaultCategories }
     );
@@ -58,7 +59,7 @@ test.describe('AdvisorCategories', () => {
   });
 
   test('should handle all-zero category counts', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorCategoriesStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorCategories/AdvisorCategoriesStory',
       { categories: { serviceAvailability: 0, performance: 0, security: 0, faultTolerance: 0 } }
     );
@@ -69,7 +70,7 @@ test.describe('AdvisorCategories', () => {
   });
 
   test('should handle large counts', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorCategoriesStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorCategories/AdvisorCategoriesStory',
       {
         categories: {
@@ -85,7 +86,7 @@ test.describe('AdvisorCategories', () => {
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorCategoriesStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorCategories/AdvisorCategoriesStory',
       { isLoading: true }
     );
@@ -94,7 +95,7 @@ test.describe('AdvisorCategories', () => {
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof AdvisorCategoriesStory>(
       'nxtcm-dashboard/AdvisorRecommendations/AdvisorCategories/AdvisorCategoriesStory',
       { isLoading: true }
     );

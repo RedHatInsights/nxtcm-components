@@ -1,11 +1,12 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
 import { checkAccessibility } from '../../test-helpers';
+import type { TabGroupMount } from './TabGroup.story';
 
 test.describe('TabGroup', () => {
   test('should render all tab buttons', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TabGroupMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/TabGroup/TabGroupMount'
     );
     await expect(component.getByRole('button', { name: 'Tab 1' })).toBeVisible();
@@ -14,7 +15,7 @@ test.describe('TabGroup', () => {
   });
 
   test('should show first tab content by default', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TabGroupMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/TabGroup/TabGroupMount'
     );
     await expect(component.getByText('Tab 1 Content')).toBeVisible();
@@ -23,7 +24,7 @@ test.describe('TabGroup', () => {
   });
 
   test('should have first tab selected by default', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TabGroupMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/TabGroup/TabGroupMount'
     );
     const firstTab = component.getByRole('button', { name: 'Tab 1' });
@@ -31,7 +32,7 @@ test.describe('TabGroup', () => {
   });
 
   test('should switch to second tab when clicked', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TabGroupMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/TabGroup/TabGroupMount'
     );
 
@@ -44,7 +45,7 @@ test.describe('TabGroup', () => {
   });
 
   test('should switch to third tab when clicked', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TabGroupMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/TabGroup/TabGroupMount'
     );
 
@@ -57,7 +58,7 @@ test.describe('TabGroup', () => {
   });
 
   test('should switch between tabs multiple times', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TabGroupMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/TabGroup/TabGroupMount'
     );
 
@@ -72,7 +73,7 @@ test.describe('TabGroup', () => {
   });
 
   test('should support custom testids on tabs', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TabGroupMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/TabGroup/TabGroupMount'
     );
     await expect(component.getByTestId('tab-1')).toBeVisible();
@@ -81,7 +82,7 @@ test.describe('TabGroup', () => {
   });
 
   test('should render complex tab content', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TabGroupMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/TabGroup/TabGroupMount',
       { variant: 'complex' }
     );
@@ -92,14 +93,14 @@ test.describe('TabGroup', () => {
   });
 
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TabGroupMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/TabGroup/TabGroupMount'
     );
     await checkAccessibility({ component });
   });
 
   test('should pass accessibility tests after tab switch', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof TabGroupMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/TabGroup/TabGroupMount'
     );
     await component.getByRole('button', { name: 'Tab 2' }).click();

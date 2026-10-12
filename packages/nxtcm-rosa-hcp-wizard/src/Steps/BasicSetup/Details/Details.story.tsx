@@ -1,7 +1,4 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-/**
- * Playwright CT mount target. Components from *.story.tsx cannot be mounted (see playwright.dev/test-components#test-stories).
- */
 import React, { useMemo } from 'react';
 
 import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
@@ -96,7 +93,7 @@ const DetailsFormValuesProbe: React.FC = () => {
   );
 };
 
-export const DetailsMount: React.FC<DetailsMountProps> = ({
+const DetailsMountComponent: React.FC<DetailsMountProps> = ({
   versions,
   awsInfrastructureAccounts,
   awsBillingAccounts,
@@ -224,3 +221,120 @@ export const DetailsMount: React.FC<DetailsMountProps> = ({
     </RosaHcpWizardValidationProvider>
   );
 };
+
+type BrowserProps = NonNullable<React.ComponentProps<typeof DetailsMountComponent>>;
+
+export type DetailsMountGalleryProps = Omit<
+  BrowserProps,
+  | 'versions'
+  | 'awsInfrastructureAccounts'
+  | 'awsBillingAccounts'
+  | 'regions'
+  | 'roles'
+  | 'vpcList'
+  | 'checkClusterNameUniqueness'
+  | 'onClusterNameUniquenessCheck'
+> & {
+  versions?: Omit<NonNullable<BrowserProps['versions']>, 'fetch'>;
+  awsInfrastructureAccounts?: Omit<NonNullable<BrowserProps['awsInfrastructureAccounts']>, 'fetch'>;
+  awsBillingAccounts?: Omit<NonNullable<BrowserProps['awsBillingAccounts']>, 'fetch'>;
+  regions?: Omit<NonNullable<BrowserProps['regions']>, 'fetch'>;
+  roles?: Omit<NonNullable<BrowserProps['roles']>, 'fetch'>;
+  vpcList?: Omit<NonNullable<BrowserProps['vpcList']>, 'fetch'>;
+};
+
+export function DetailsMount(props: DetailsMountGalleryProps): React.ReactElement {
+  const [checkClusterNameUniquenessCalls, setCheckClusterNameUniquenessCalls] = React.useState<
+    Parameters<NonNullable<BrowserProps['onClusterNameUniquenessCheck']>>[]
+  >([]);
+  const [vpcFetchCalls, setVpcFetchCalls] = React.useState<
+    Parameters<NonNullable<NonNullable<BrowserProps['vpcList']>['fetch']>>[]
+  >([]);
+  const browserProps = React.useMemo<BrowserProps>(
+    () => ({
+      ...props,
+      versions: props.versions
+        ? {
+            ...props.versions,
+            fetch: () => {
+              return Promise.resolve();
+            },
+          }
+        : undefined,
+      awsInfrastructureAccounts: props.awsInfrastructureAccounts
+        ? {
+            ...props.awsInfrastructureAccounts,
+            fetch: () => {
+              return Promise.resolve();
+            },
+          }
+        : undefined,
+      awsBillingAccounts: props.awsBillingAccounts
+        ? {
+            ...props.awsBillingAccounts,
+            fetch: () => {
+              return Promise.resolve();
+            },
+          }
+        : undefined,
+      regions: props.regions
+        ? {
+            ...props.regions,
+            fetch: () => {
+              return Promise.resolve();
+            },
+          }
+        : undefined,
+      roles: props.roles
+        ? {
+            ...props.roles,
+            fetch: () => {
+              return Promise.resolve();
+            },
+          }
+        : undefined,
+      vpcList: props.vpcList
+        ? {
+            ...props.vpcList,
+            fetch: (...args) => {
+              setVpcFetchCalls((calls) => [...calls, args]);
+              return Promise.resolve();
+            },
+          }
+        : undefined,
+      onClusterNameUniquenessCheck: (...args) => {
+        setCheckClusterNameUniquenessCalls((calls) => [...calls, args]);
+      },
+    }),
+    [props]
+  );
+  return (
+    <>
+      <DetailsMountComponent {...browserProps} />
+      <div hidden>
+        <input data-testid="vpcFetch-calls" readOnly value={JSON.stringify(vpcFetchCalls)} />
+        <input data-testid="vpcFetch-count" readOnly value={String(vpcFetchCalls.length)} />
+        <input
+          data-testid="checkClusterNameUniqueness-calls"
+          readOnly
+          value={JSON.stringify(checkClusterNameUniquenessCalls)}
+        />
+        <input
+          data-testid="checkClusterNameUniqueness-count"
+          readOnly
+          value={String(checkClusterNameUniquenessCalls.length)}
+        />
+        <input
+          data-testid="onClusterNameUniquenessCheck-calls"
+          readOnly
+          value={JSON.stringify(checkClusterNameUniquenessCalls)}
+        />
+        <input
+          data-testid="onClusterNameUniquenessCheck-count"
+          readOnly
+          value={String(checkClusterNameUniquenessCalls.length)}
+        />
+      </div>
+    </>
+  );
+}

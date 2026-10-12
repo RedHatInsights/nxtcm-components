@@ -1,11 +1,12 @@
 // See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
-import { expect, test } from '@/ct-fixture';
+import { expect, test } from '@/playwright/ct-fixture';
 
 import { checkAccessibility } from '../../test-helpers';
+import type { LoginStepMount } from './LoginStep.story';
 
 test.describe('LoginStep', () => {
   test('should render ROSA login instruction', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof LoginStepMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/LoginStep/LoginStepMount'
     );
     // RosaLoginInstruction should render copy instructions
@@ -13,7 +14,7 @@ test.describe('LoginStep', () => {
   });
 
   test('should render for ACM product by default', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof LoginStepMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/LoginStep/LoginStepMount',
       { product: 'acm' }
     );
@@ -25,7 +26,7 @@ test.describe('LoginStep', () => {
   });
 
   test('should render for OCM product', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof LoginStepMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/LoginStep/LoginStepMount',
       { product: 'ocm' }
     );
@@ -39,7 +40,7 @@ test.describe('LoginStep', () => {
   });
 
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(
+    const component = await mount<typeof LoginStepMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/LoginStep/LoginStepMount'
     );
     await checkAccessibility({ component });
