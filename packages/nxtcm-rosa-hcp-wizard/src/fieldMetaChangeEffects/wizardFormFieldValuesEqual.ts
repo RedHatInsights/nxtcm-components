@@ -1,4 +1,5 @@
 import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
+import { isObjectRecord } from '../utilities/typeGuards';
 
 /** Normalizes select-backed form values (string id or `{ id }` object) for comparison. */
 function normalizeSelectBackedFormValue(value: unknown): unknown {
@@ -6,7 +7,7 @@ function normalizeSelectBackedFormValue(value: unknown): unknown {
     return value;
   }
   if (value != null && typeof value === 'object' && 'id' in value) {
-    const id = (value as { id?: unknown }).id;
+    const id = value.id;
     if (typeof id === 'string' && id !== '') {
       return id;
     }
@@ -38,22 +39,13 @@ export function wizardFormFieldValuesEqual(left: unknown, right: unknown): boole
     );
   }
 
-  if (
-    left != null &&
-    right != null &&
-    typeof left === 'object' &&
-    typeof right === 'object' &&
-    !Array.isArray(left) &&
-    !Array.isArray(right)
-  ) {
-    const leftRecord = left as Record<string, unknown>;
-    const rightRecord = right as Record<string, unknown>;
-    const leftKeys = Object.keys(leftRecord);
-    const rightKeys = Object.keys(rightRecord);
+  if (isObjectRecord(left) && isObjectRecord(right)) {
+    const leftKeys = Object.keys(left);
+    const rightKeys = Object.keys(right);
     if (leftKeys.length !== rightKeys.length) {
       return false;
     }
-    return leftKeys.every((key) => wizardFormFieldValuesEqual(leftRecord[key], rightRecord[key]));
+    return leftKeys.every((key) => wizardFormFieldValuesEqual(left[key], right[key]));
   }
 
   return false;
