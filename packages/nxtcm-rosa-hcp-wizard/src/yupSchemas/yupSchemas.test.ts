@@ -1490,19 +1490,19 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
     it('returns meta for name field', () => {
       const meta = wizardFieldMetaByPath('name');
       expect(meta).toBeDefined();
-      expect(meta!.id).toBe('name');
-      expect(meta!.labelKey).toBe('details.clusterNameLabel');
-      expect(meta!.fieldType).toBe('text');
+      expect(meta?.id).toBe('name');
+      expect(meta?.labelKey).toBe('details.clusterNameLabel');
+      expect(meta?.fieldType).toBe('text');
     });
 
     it('returns meta for region field', () => {
       const meta = wizardFieldMetaByPath('region');
       expect(meta).toBeDefined();
-      expect(meta!.id).toBe('region');
-      expect(meta!.labelKey).toBe('details.regionLabel');
-      expect(meta!.fieldType).toBe('select');
-      expect(meta!.noEditAfterSubmit).toBe(true);
-      expect(meta!.refetchesResourcesOnChange).toEqual([
+      expect(meta?.id).toBe('region');
+      expect(meta?.labelKey).toBe('details.regionLabel');
+      expect(meta?.fieldType).toBe('select');
+      expect(meta?.noEditAfterSubmit).toBe(true);
+      expect(meta?.refetchesResourcesOnChange).toEqual([
         {
           resource: 'vpcList',
           argsFromFields: {
@@ -1525,7 +1525,7 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
     it('returns refetch metadata for associated_aws_id field', () => {
       const meta = wizardFieldMetaByPath('associated_aws_id');
       expect(meta).toBeDefined();
-      expect(meta!.refetchesResourcesOnChange).toEqual([
+      expect(meta?.refetchesResourcesOnChange).toEqual([
         { resource: 'regions', argFromField: 'associated_aws_id' },
         { resource: 'roles', argFromField: 'associated_aws_id' },
         { resource: 'oidcConfig', argFromField: 'associated_aws_id' },
@@ -1535,14 +1535,14 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
     it('returns meta for compute_root_volume field', () => {
       const meta = wizardFieldMetaByPath('compute_root_volume');
       expect(meta).toBeDefined();
-      expect(meta!.unit).toBe('GiB');
-      expect(meta!.advanced).toBe(true);
+      expect(meta?.unit).toBe('GiB');
+      expect(meta?.advanced).toBe(true);
     });
 
     it('returns meta with reviewLabel override', () => {
       const meta = wizardFieldMetaByPath('billing_account_id');
       expect(meta).toBeDefined();
-      expect(meta!.reviewLabel).toBe('AWS billing account');
+      expect(meta?.reviewLabel).toBe('AWS billing account');
     });
 
     it('returns undefined for non-existent path', () => {
@@ -1553,8 +1553,8 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
     it('returns collapseOnRequired for additional_trust_bundle', () => {
       const meta = wizardFieldMetaByPath('additional_trust_bundle');
       expect(meta).toBeDefined();
-      expect(meta!.collapseOnRequired).toBe(true);
-      expect(meta!.noEditAfterSubmit).toBeUndefined();
+      expect(meta?.collapseOnRequired).toBe(true);
+      expect(meta?.noEditAfterSubmit).toBeUndefined();
     });
   });
 
