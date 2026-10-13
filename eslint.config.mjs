@@ -159,7 +159,7 @@ export default [
       ...playwright.configs['flat/recommended'].rules,
       // These helpers internally call expect()
       'playwright/expect-expect': [
-        'warn',
+        'error',
         {
           assertFunctionNames: [
             'checkAccessibility',
@@ -168,6 +168,8 @@ export default [
           ],
         },
       ],
+      // Tests are intentionally skipped when needed (e.g. upstream PF issues)
+      'playwright/no-skipped-test': 'off',
     },
   },
 
