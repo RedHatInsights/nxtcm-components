@@ -7,9 +7,10 @@
   },
   "include": [
     "playwright/**/*",
-    "e2e-app/**/*",
-    "ct-fixture.ts",
+    "playwright.config.ts",
     "playwright-ct.config.ts",
+    "vite.e2e.config.ts",
+    "e2e-app/**/*",
     "vite-env.d.ts"
   ],
   "exclude": ["node_modules"]

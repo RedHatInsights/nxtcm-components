@@ -26,9 +26,9 @@
     "packages/nxtcm-rosa-hcp-wizard/src/**/*",
     "e2e-app/**/*",
     "playwright/**/*",
-    "ct-fixture.ts",
+    "playwright.config.ts",
     "playwright-ct.config.ts",
-    "test-helpers.ts",
+    "vite.e2e.config.ts",
     "vite-env.d.ts"
   ],
   "exclude": ["node_modules", "dist"]

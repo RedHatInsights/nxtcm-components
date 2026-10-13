@@ -116,10 +116,10 @@ skip formal bodies unless something really needs a sentence of context.
 npx jest path/to/file.test.ts
 
 # single CT spec
-npx playwright test -c playwright-ct.config.ts path/to/Component.spec.tsx
+npx playwright test --project=components path/to/Component.spec.tsx
 
 # CT with UI mode (interactive debugging)
-npx playwright test -c playwright-ct.config.ts --ui
+npx playwright test --project=components --ui
 ```
 
 ### Test guidelines

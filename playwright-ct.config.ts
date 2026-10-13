@@ -4,7 +4,7 @@ const parsedPort = Number(process.env.STRYKER_CT_PORT ?? 3100);
 const galleryPort = Number.isFinite(parsedPort) ? parsedPort : 3100;
 
 export default defineConfig({
-  testDir: '.',
+  testDir: __dirname,
   testMatch: [
     'playwright/gallery.spec.ts',
     'src/**/*.spec.tsx',
@@ -24,6 +24,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
+    cwd: __dirname,
     command: `npx vite --config playwright/vite.config.ts --host 127.0.0.1 --port ${galleryPort}`,
     port: galleryPort,
     reuseExistingServer: !process.env.CI && !process.env.STRYKER_CT_CACHE_DIR,
@@ -33,7 +34,7 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'chromium',
+      name: 'components',
       use: { ...devices['Desktop Chrome'] },
     },
   ],

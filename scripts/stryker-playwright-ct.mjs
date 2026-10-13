@@ -54,19 +54,20 @@ if (process.env.STRYKER_CT_DEBUG === '1') {
   );
 }
 
-const nodeExecutable = process.execPath;
-const playwrightCli = path.join(workingDir, 'node_modules', '@playwright', 'test', 'cli.js');
 const playwrightArgs = [
-  playwrightCli,
+  'exec',
+  '--',
+  'playwright',
   'test',
   '-c',
   'playwright-ct.config.ts',
+  '--project=components',
   '--reporter=list',
   '--workers=1',
   ...specs,
 ];
 
-const result = spawnSync(nodeExecutable, playwrightArgs, {
+const result = spawnSync('npm', playwrightArgs, {
   cwd: workingDir,
   stdio: 'inherit',
   env: {

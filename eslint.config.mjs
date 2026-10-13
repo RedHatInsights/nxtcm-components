@@ -21,8 +21,9 @@ export default [
       '**/coverage/',
       '*.config.js',
       '*.config.ts',
-      '!playwright-ct.config.ts',
-      '!playwright/vite.config.ts',
+      '!playwright/**/*.config.ts',
+      '!playwright*.config.ts',
+      '!vite.e2e.config.ts',
     ],
   },
 
@@ -163,7 +164,7 @@ export default [
 
   // Root Playwright infrastructure runs in Node and is part of the lint/type-check surface.
   {
-    files: ['ct-fixture.ts', 'playwright-ct.config.ts'],
+    files: ['playwright/**/*.{ts,tsx}', 'playwright*.config.ts', 'vite.e2e.config.ts'],
     languageOptions: {
       globals: {
         ...globals.node,

@@ -6,7 +6,7 @@ rules for writing and modifying Playwright CT specs in this repo.
 
 - `ComponentName.spec.tsx` — co-located next to the component
 - `ComponentName.story.tsx` — gallery stories (providers, mock data, wrapper components)
-- config: `playwright-ct.config.ts` at repo root
+- config: root `playwright.config.ts` defines the component and E2E projects; root `playwright-ct.config.ts` also supports isolated component runs
 
 ## selector rules (hard constraints)
 
@@ -45,14 +45,19 @@ export const MyComponentStory = ({ title = defaultProps.title }): ReactElement =
 );
 ```
 
-then in the spec:
+then in the spec (import the story type only and type every mount):
 
 ```tsx
+import type { MyComponentStory } from './MyComponent.story';
+
 test('renders with default props', async ({ mount }) => {
-  const component = await mount('nxtcm-dashboard/MyComponent/MyComponent/MyComponentStory');
+  const component = await mount<typeof MyComponentStory>('nxtcm-dashboard/MyComponent/MyComponent/MyComponentStory');
   // assertions...
 });
 ```
+
+Record callback outcomes in browser-side React state and expose them in hidden, read-only inputs.
+Assert those inputs with `toHaveValue()`; specs pass data and callback-enable flags, never functions or callback descriptors.
 
 ## test structure
 
@@ -62,7 +67,7 @@ follow arrange-act-assert:
 test('shows error when data fails to load', async ({ mount }) => {
   // arrange
   // act
-  const component = await mount('nxtcm-dashboard/MyComponent/MyComponent/MyComponentStory', {
+  const component = await mount<typeof MyComponentStory>('nxtcm-dashboard/MyComponent/MyComponent/MyComponentStory', {
     state: 'error',
   });
 

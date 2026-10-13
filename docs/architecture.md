@@ -128,10 +128,10 @@ The `@/` alias is **not consistent** across tools:
 | `vite.config.ts` | `./` (repo root) |
 | `tsconfig.json` | `./` (repo root) |
 | `.storybook/main.ts` | `src/` |
-| `playwright-ct.config.ts` | `src/` |
+| `playwright/vite.config.ts` | `./` (repo root) |
 | `jest.config.js` | `src/` |
 
-Because of this inconsistency, prefer the package aliases above for new code. Imports like `@/packages/...` can resolve in Vite/TypeScript but fail in Jest/Storybook/Playwright CT where `@/` resolves to `src/`.
+Because of this inconsistency, prefer the package aliases above for new code. Imports like `@/packages/...` can resolve in Vite/TypeScript/Playwright but fail in Jest/Storybook where `@/` resolves to `src/`.
 
 ---
 
