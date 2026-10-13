@@ -92,10 +92,7 @@ test.describe('Review', () => {
     mount,
   }) => {
     const vpc = rosaHcpWizardFixtures.mockVPCs[0];
-    const privateSubnet = vpc.aws_subnets.find((subnet) => subnet.name.includes('private'));
-    if (!privateSubnet) {
-      throw new Error('fixture VPC is missing a private subnet');
-    }
+    const privateSubnet = vpc.aws_subnets.find((subnet) => subnet.name.includes('private'))!;
     const c = await mount(
       <ReviewHarness
         formOverrides={{
