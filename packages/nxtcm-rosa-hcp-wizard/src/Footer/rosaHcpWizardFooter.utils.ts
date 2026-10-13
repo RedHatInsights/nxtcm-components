@@ -1,21 +1,18 @@
 import type { FieldErrors, FieldValues, Path, UseFormGetFieldState } from 'react-hook-form';
 
 import { STEP_IDS } from '../constants';
+import { getNestedValue } from '../utilities/helpers';
 
-function hasErrorAtPath(errors: FieldErrors, path: string): boolean {
-  const segments = path.split('.');
-  let current: unknown = errors;
-  for (const segment of segments) {
-    if (current === null || current === undefined || typeof current !== 'object') {
-      return false;
-    }
-    current = (current as Record<string, unknown>)[segment];
-  }
+function hasErrorAtPath<TFieldValues extends FieldValues>(
+  errors: FieldErrors<TFieldValues>,
+  path: Path<TFieldValues>
+): boolean {
+  const current = getNestedValue(errors, path);
   if (current === null || current === undefined) {
     return false;
   }
   if (typeof current === 'object' && 'message' in current) {
-    return (current as { message?: unknown }).message !== undefined;
+    return current.message !== undefined;
   }
   return true;
 }
