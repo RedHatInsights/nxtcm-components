@@ -21,7 +21,7 @@ export default [
       '**/coverage/',
       '*.config.js',
       '*.config.ts',
-      '!playwright/**/*.config.ts',
+      // CLI targets do not override global ignores; allow the root test configs through.
       '!playwright*.config.ts',
       '!vite.e2e.config.ts',
     ],

@@ -1,4 +1,3 @@
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import {
   WIZ_FILE_UPLOAD_CONTROL_BODY_STATUS,
   WIZ_FILE_UPLOAD_DOC_CLEAR_STATUS,

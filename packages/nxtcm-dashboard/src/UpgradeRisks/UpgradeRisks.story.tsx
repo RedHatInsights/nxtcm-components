@@ -1,6 +1,5 @@
 import React from 'react';
 
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import { UpgradeRisks as UpgradeRisksStoryComponent } from './UpgradeRisks';
 
 type BrowserProps = NonNullable<React.ComponentProps<typeof UpgradeRisksStoryComponent>>;

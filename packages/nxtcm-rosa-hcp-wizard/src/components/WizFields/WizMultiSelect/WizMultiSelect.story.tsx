@@ -1,4 +1,3 @@
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import {
   WIZ_MULTI_API_ERROR_DETAIL,
   WIZ_MULTI_API_ERROR_FIELD_LABEL,

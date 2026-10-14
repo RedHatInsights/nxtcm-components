@@ -1,4 +1,3 @@
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import { useState } from 'react';
 
 export interface StatefulGalleryStoryProps {

@@ -14,10 +14,17 @@ type Story = ComponentType<StoryProps>;
 type StoryModule = Record<string, unknown>;
 type MountRequest = { story: string; props?: StoryProps };
 
-const modules = import.meta.glob<StoryModule>('../../packages/*/src/**/*.story.tsx');
+const modules = import.meta.glob<StoryModule>([
+  '../../packages/*/src/**/*.story.tsx',
+  './*.story.tsx',
+]);
 const stories = new Map<string, () => Promise<StoryModule>>();
 
 for (const [modulePath, loadModule] of Object.entries(modules)) {
+  if (modulePath.startsWith('./')) {
+    stories.set(`gallery/${modulePath.slice(2, -'.story.tsx'.length)}`, loadModule);
+    continue;
+  }
   const match = modulePath.match(/^\.\.\/\.\.\/packages\/([^/]+)\/src\/(.+)\.story\.tsx$/);
   if (!match) continue;
   const [, workspace, storyPath] = match;

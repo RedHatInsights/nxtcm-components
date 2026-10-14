@@ -1,4 +1,3 @@
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import React, { useMemo } from 'react';
 
 import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';

@@ -6,7 +6,7 @@ const galleryPort = Number.isFinite(parsedPort) ? parsedPort : 3100;
 export default defineConfig({
   testDir: __dirname,
   testMatch: [
-    'playwright/gallery.spec.ts',
+    'playwright/gallery/gallery.spec.ts',
     'src/**/*.spec.tsx',
     'packages/nxtcm-dashboard/src/**/*.spec.tsx',
     'packages/nxtcm-rosa-hcp-wizard/src/**/*.spec.tsx',

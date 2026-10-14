@@ -1,4 +1,3 @@
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 export { HelperText as HelperTextStory } from './HelperText';
 
 import { HelperText } from './HelperText';

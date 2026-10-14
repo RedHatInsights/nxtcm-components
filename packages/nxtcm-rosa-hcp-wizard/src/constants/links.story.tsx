@@ -1,4 +1,3 @@
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 /**
  * Playwright CT mount harness for the useGetDocsVersion hook.
  * Renders each link key into a data-testid span so tests can assert resolved URLs.

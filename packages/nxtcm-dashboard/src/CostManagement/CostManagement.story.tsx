@@ -1,6 +1,5 @@
 import React from 'react';
 
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import { CostManagement as CostManagementStoryComponent } from './CostManagement';
 
 type BrowserProps = NonNullable<React.ComponentProps<typeof CostManagementStoryComponent>>;

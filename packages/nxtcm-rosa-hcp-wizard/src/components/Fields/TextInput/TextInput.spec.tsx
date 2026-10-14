@@ -1,4 +1,3 @@
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import { expect, test } from '@/playwright/ct-fixture';
 
 import type { SecretHarness, TextInputHarness } from './TextInput.story';

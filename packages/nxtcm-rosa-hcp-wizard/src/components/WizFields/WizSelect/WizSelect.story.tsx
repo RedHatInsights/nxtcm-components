@@ -1,4 +1,3 @@
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import {
   WIZ_SELECT_CONTROL_ONLY_STATUS,
   WIZ_SELECT_DEFER_REVEAL_BUTTON,

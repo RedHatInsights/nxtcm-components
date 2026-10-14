@@ -1,4 +1,3 @@
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import { expect, test } from '@/playwright/ct-fixture';
 
 import { FIELD_NAME, IMDS } from '../../constants';

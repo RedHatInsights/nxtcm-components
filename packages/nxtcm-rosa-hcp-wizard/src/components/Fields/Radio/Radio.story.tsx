@@ -1,4 +1,3 @@
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import {
   RADIO_HARNESS_EAST_DESCRIPTION,
   RADIO_HARNESS_SELECTED_STATUS_LABEL,

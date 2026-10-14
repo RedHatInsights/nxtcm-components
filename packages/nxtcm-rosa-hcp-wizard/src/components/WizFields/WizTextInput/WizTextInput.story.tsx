@@ -1,4 +1,3 @@
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import {
   WIZ_TEXT_INPUT_ALIAS_BLUR_ERROR,
   WIZ_TEXT_INPUT_EXPLICIT_HELPER,

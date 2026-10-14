@@ -1,4 +1,3 @@
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import {
   FILE_UPLOAD_HARNESS_HELPER_TEXT,
   FILE_UPLOAD_HARNESS_LABEL,

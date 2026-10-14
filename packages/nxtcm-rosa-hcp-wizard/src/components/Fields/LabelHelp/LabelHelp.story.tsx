@@ -1,4 +1,3 @@
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 export { LabelHelp as LabelHelpStory } from './LabelHelp';
 
 import { LabelHelp } from './LabelHelp';

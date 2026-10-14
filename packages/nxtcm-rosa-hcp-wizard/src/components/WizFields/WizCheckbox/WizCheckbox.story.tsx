@@ -1,4 +1,3 @@
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import {
   WIZ_CHECKBOX_EXPLICIT_HELPER,
   WIZ_CHECKBOX_EXPLICIT_LABEL,

@@ -1,4 +1,3 @@
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import { RosaHcpWizardStringsProvider } from '../stringsProvider/RosaHcpWizardStringsContext';
 import { FieldWithAPIErrorAlert } from './FieldWithAPIErrorAlert';
 

@@ -1,6 +1,5 @@
 import React from 'react';
 
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import { TotalClusters as TotalClustersStoryComponent } from './TotalClusters';
 
 type BrowserProps = NonNullable<React.ComponentProps<typeof TotalClustersStoryComponent>>;

@@ -1,6 +1,5 @@
 import React from 'react';
 
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import { Subscriptions as SubscriptionsStoryComponent } from './Subscriptions';
 
 type BrowserProps = NonNullable<React.ComponentProps<typeof SubscriptionsStoryComponent>>;

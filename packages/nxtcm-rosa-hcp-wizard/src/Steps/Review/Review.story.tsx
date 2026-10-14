@@ -1,4 +1,3 @@
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import React from 'react';
 
 import { Wizard, WizardStep } from '@patternfly/react-core/dist/dynamic/components/Wizard';

@@ -1,6 +1,5 @@
 import React from 'react';
 
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import { StorageCard as StorageCardStoryComponent } from './StorageCard';
 
 type BrowserProps = NonNullable<React.ComponentProps<typeof StorageCardStoryComponent>>;

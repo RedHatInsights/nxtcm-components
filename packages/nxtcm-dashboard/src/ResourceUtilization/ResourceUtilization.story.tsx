@@ -1,6 +1,5 @@
 import React from 'react';
 
-// See docs/agent-rules/playwright-ct.md for Playwright component test conventions.
 import { ResourceUtilization as ResourceUtilizationStoryComponent } from './ResourceUtilization';
 
 type BrowserProps = NonNullable<React.ComponentProps<typeof ResourceUtilizationStoryComponent>>;
