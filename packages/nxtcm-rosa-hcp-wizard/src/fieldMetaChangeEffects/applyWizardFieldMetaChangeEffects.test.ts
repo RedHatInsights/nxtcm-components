@@ -404,9 +404,27 @@ describe('applyWizardFieldMetaChangeEffects', () => {
         id: 'vpc-123',
         name: 'test-vpc',
         aws_subnets: [
-          { subnet_id: 'sub-1', name: 's1', availability_zone: 'us-east-1a', public: true },
-          { subnet_id: 'sub-2', name: 's2', availability_zone: 'us-east-1b', public: false },
-          { subnet_id: 'sub-3', name: 's3', availability_zone: 'us-east-1a', public: false },
+          {
+            subnet_id: 'sub-1',
+            name: 's1',
+            availability_zone: 'us-east-1a',
+            public: true,
+            cidr_block: '10.0.0.0/20',
+          },
+          {
+            subnet_id: 'sub-2',
+            name: 's2',
+            availability_zone: 'us-east-1b',
+            public: false,
+            cidr_block: '10.0.128.0/20',
+          },
+          {
+            subnet_id: 'sub-3',
+            name: 's3',
+            availability_zone: 'us-east-1a',
+            public: false,
+            cidr_block: '10.0.144.0/20',
+          },
         ],
       },
     ];
@@ -440,8 +458,20 @@ describe('applyWizardFieldMetaChangeEffects', () => {
       id: 'vpc-456',
       name: 'resolved-vpc',
       aws_subnets: [
-        { subnet_id: 'sub-a', name: 'sa', availability_zone: 'us-west-2a', public: true },
-        { subnet_id: 'sub-b', name: 'sb', availability_zone: 'us-west-2b', public: false },
+        {
+          subnet_id: 'sub-a',
+          name: 'sa',
+          availability_zone: 'us-west-2a',
+          public: true,
+          cidr_block: '10.0.0.0/20',
+        },
+        {
+          subnet_id: 'sub-b',
+          name: 'sb',
+          availability_zone: 'us-west-2b',
+          public: false,
+          cidr_block: '10.0.128.0/20',
+        },
       ],
     };
 

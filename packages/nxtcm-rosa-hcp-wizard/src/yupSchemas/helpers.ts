@@ -14,7 +14,7 @@ export function isValidCidr(value: string): boolean {
   return CIDR_REGEXP.test(value);
 }
 
-export function isCidrSubnetAddress(value: string): boolean {
+export function isSubnetAddress(value: string): boolean {
   const parts = value.split('/');
   const binaryStr = parts[0]
     .split('.')
