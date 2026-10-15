@@ -1,6 +1,6 @@
 # test verification and coverage infrastructure
 
-reference for Playwright CT/E2E runs, Istanbul coverage, and common failure modes. use the **verify-tests** skill for tiered execution; this doc holds troubleshooting detail.
+reference for Playwright CT/E2E runs, Istanbul coverage, and common failure modes.
 
 ## suite scale (approximate)
 
@@ -10,29 +10,6 @@ reference for Playwright CT/E2E runs, Istanbul coverage, and common failure mode
 | E2E | `npm run test:e2e` | ~45 tests in 2 files |
 | CT + coverage | `npm run test:ct:coverage` | same CT count; slower build |
 | E2E + coverage | `npm run test:e2e:coverage` | same E2E count |
-
-## smoke grep (infrastructure check)
-
-Use a single fast CT test to verify the pipeline without running the full suite:
-
-```bash
-rm -rf playwright/.cache && \
-npx playwright test -c playwright-ct.config.ts --grep "CVECard.*should render the card with default title" --max-failures=1
-```
-
-Coverage instrumentation smoke:
-
-```bash
-rm -rf playwright/.cache .nyc_output && \
-COVERAGE=true npx playwright test -c playwright-ct.config.ts --grep "CVECard.*should render the card with default title" && \
-ls -la .nyc_output/
-```
-
-Then:
-
-```bash
-npx nyc report --reporter=text-summary
-```
 
 ## configuration files
 

@@ -35,7 +35,6 @@ load the matching package overlay when the task is package-specific.
 ## task routing
 
 - ui component work: `docs/agent-rules/ui-component.md`
-- patternfly UI: `docs/agent-rules/patternfly.md`
 - playwright CT: `docs/agent-rules/playwright-ct.md`
 - playwright E2E: `docs/agent-rules/playwright-e2e.md`
 - test / coverage infrastructure: `docs/agent-rules/test-verification.md`
