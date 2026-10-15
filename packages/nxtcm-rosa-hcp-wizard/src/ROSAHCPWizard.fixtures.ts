@@ -1,7 +1,6 @@
 import {
   AWSBillingAccounts,
   AWSInfrastructureAccounts,
-  CIDRSubnet,
   MachineTypesDropdownType,
   OIDCConfig,
   OpenShiftVersionsData,
@@ -293,7 +292,7 @@ const mockVPCs: VPC[] = [
         availability_zone: 'us-east-1b',
         cidr_block: '10.0.144.0/20',
       },
-    ] as CIDRSubnet[],
+    ],
     aws_security_groups: mockSecurityGroups,
   },
   {
@@ -305,24 +304,28 @@ const mockVPCs: VPC[] = [
         public: false,
         availability_zone: 'us-east-1a',
         subnet_id: 'subnet-0b5b55dvdv12236d',
+        cidr_block: '10.0.128.0/20',
       },
       {
         name: 'test-subnet-public1-us-east-1a',
         public: true,
         availability_zone: 'us-east-1a',
         subnet_id: 'subnet-0b5b33hgvdv12236d',
+        cidr_block: '10.0.0.0/20',
       },
       {
         name: 'test-subnet-private1-us-east-1b',
         public: false,
         availability_zone: 'us-east-1b',
         subnet_id: 'subnet-0b5b5611aser12236d',
+        cidr_block: '10.0.144.0/20',
       },
       {
         name: 'test-subnet-public1-us-east-1b',
         public: true,
         availability_zone: 'us-east-1b',
         subnet_id: 'subnet-0b776hbdfdfdv12236d',
+        cidr_block: '10.0.16.0/20',
       },
     ],
   },
@@ -335,24 +338,28 @@ const mockAdditionalVPCs: VPC[] = [
     aws_subnets: [
       {
         subnet_id: 'subnet-mp-private-1a',
+        cidr_block: '10.0.128.0/20',
         name: 'prod-vpc-subnet-private1-us-east-1a',
         public: false,
         availability_zone: 'us-east-1a',
       },
       {
         subnet_id: 'subnet-mp-public-1a',
+        cidr_block: '10.0.0.0/20',
         name: 'prod-vpc-subnet-public1-us-east-1a',
         public: true,
         availability_zone: 'us-east-1a',
       },
       {
         subnet_id: 'subnet-mp-private-1b',
+        cidr_block: '10.0.144.0/20',
         name: 'prod-vpc-subnet-private1-us-east-1b',
         public: false,
         availability_zone: 'us-east-1b',
       },
       {
         subnet_id: 'subnet-mp-public-1b',
+        cidr_block: '10.0.16.0/20',
         name: 'prod-vpc-subnet-public1-us-east-1b',
         public: true,
         availability_zone: 'us-east-1b',
@@ -415,24 +422,28 @@ const mockUpdatedVPCList: VPC[] = [
     aws_subnets: [
       {
         subnet_id: 'subnet-ref-priv-1a',
+        cidr_block: '10.0.128.0/20',
         name: 'refreshed-prod-subnet-private1-us-west-2a',
         public: false,
         availability_zone: 'us-west-2a',
       },
       {
         subnet_id: 'subnet-ref-pub-1a',
+        cidr_block: '10.0.0.0/20',
         name: 'refreshed-prod-subnet-public1-us-west-2a',
         public: true,
         availability_zone: 'us-west-2a',
       },
       {
         subnet_id: 'subnet-ref-priv-1b',
+        cidr_block: '10.0.144.0/20',
         name: 'refreshed-prod-subnet-private1-us-west-2b',
         public: false,
         availability_zone: 'us-west-2b',
       },
       {
         subnet_id: 'subnet-ref-pub-1b',
+        cidr_block: '10.0.16.0/20',
         name: 'refreshed-prod-subnet-public1-us-west-2b',
         public: true,
         availability_zone: 'us-west-2b',
@@ -449,12 +460,14 @@ const mockUpdatedVPCList: VPC[] = [
     aws_subnets: [
       {
         subnet_id: 'subnet-ref-stg-priv-1a',
+        cidr_block: '10.0.128.0/20',
         name: 'refreshed-staging-subnet-private1-eu-west-1a',
         public: false,
         availability_zone: 'eu-west-1a',
       },
       {
         subnet_id: 'subnet-ref-stg-pub-1a',
+        cidr_block: '10.0.0.0/20',
         name: 'refreshed-staging-subnet-public1-eu-west-1a',
         public: true,
         availability_zone: 'eu-west-1a',
@@ -467,12 +480,14 @@ const mockUpdatedVPCList: VPC[] = [
     aws_subnets: [
       {
         subnet_id: 'subnet-ref-dev-priv-1a',
+        cidr_block: '10.0.128.0/20',
         name: 'refreshed-dev-subnet-private1-ap-southeast-1a',
         public: false,
         availability_zone: 'ap-southeast-1a',
       },
       {
         subnet_id: 'subnet-ref-dev-pub-1a',
+        cidr_block: '10.0.0.0/20',
         name: 'refreshed-dev-subnet-public1-ap-southeast-1a',
         public: true,
         availability_zone: 'ap-southeast-1a',
@@ -532,24 +547,28 @@ const mockExtensiveNumVPCs: VPC[] = Array.from({ length: 5 }, (_, i) => ({
   aws_subnets: [
     {
       subnet_id: `subnet-ext-private-${i}-a`,
+      cidr_block: '10.0.128.0/20',
       name: `extensive-vpc-${i + 3}-subnet-private1-us-east-1a`,
       public: false,
       availability_zone: 'us-east-1a',
     },
     {
       subnet_id: `subnet-ext-public-${i}-a`,
+      cidr_block: '10.0.0.0/20',
       name: `extensive-vpc-${i + 3}-subnet-public1-us-east-1a`,
       public: true,
       availability_zone: 'us-east-1a',
     },
     {
       subnet_id: `subnet-ext-private-${i}-b`,
+      cidr_block: '10.0.144.0/20',
       name: `extensive-vpc-${i + 3}-subnet-private1-us-east-1b`,
       public: false,
       availability_zone: 'us-east-1b',
     },
     {
       subnet_id: `subnet-ext-public-${i}-b`,
+      cidr_block: '10.0.16.0/20',
       name: `extensive-vpc-${i + 3}-subnet-public1-us-east-1b`,
       public: true,
       availability_zone: 'us-east-1b',

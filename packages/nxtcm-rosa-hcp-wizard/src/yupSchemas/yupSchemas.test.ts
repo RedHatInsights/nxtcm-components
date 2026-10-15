@@ -58,11 +58,11 @@ import {
 } from '../constants';
 import { defaultRosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
-  CIDRSubnet,
   ClusterEncryptionKeys,
   ClusterNetwork,
   ClusterUpgrade,
   ROSAHCPCluster,
+  Subnet,
 } from '../types';
 import { coerceAbsentRequiredFieldValues } from '../utilities/clusterValidationResolver';
 import {
@@ -103,7 +103,7 @@ function buildFormData(overrides: Partial<ROSAHCPCluster> = {}): Partial<ROSAHCP
     selected_vpc: 'vpc-123',
     machine_pools_subnets: [{ machine_pool_subnet: 'subnet-123' }],
     machine_type: 'm5.xlarge',
-    cluster_privacy: 'external' as ROSAHCPCluster['cluster_privacy'],
+    cluster_privacy: ClusterNetwork.external,
     cluster_privacy_public_subnet_id: 'subnet-public-123',
     network_machine_cidr: '10.0.0.0/16',
     network_service_cidr: '172.30.0.0/16',
@@ -783,7 +783,7 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
     });
 
     it('rejects when machine CIDR does not include subnet starting IP', async () => {
-      const subnets: CIDRSubnet[] = [
+      const subnets: Subnet[] = [
         {
           cidr_block: '192.168.1.0/24',
           name: 'my-subnet',
@@ -866,7 +866,7 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
     });
 
     it('rejects when service CIDR includes subnet starting IP', async () => {
-      const subnets: CIDRSubnet[] = [
+      const subnets: Subnet[] = [
         {
           cidr_block: '172.30.0.0/24',
           name: 'svc-subnet',
@@ -961,7 +961,7 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
     });
 
     it('rejects when pod CIDR includes subnet starting IP', async () => {
-      const subnets: CIDRSubnet[] = [
+      const subnets: Subnet[] = [
         {
           cidr_block: '10.128.0.0/24',
           name: 'pod-subnet',

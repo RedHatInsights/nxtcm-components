@@ -5,7 +5,6 @@ import {
   ClusterUpgrade,
   MachinePoolSubnetEntry,
   ROSAHCPCluster,
-  VPC,
 } from '../../types';
 import type { LabelValueOption } from '../../utilities/helpers';
 import {
@@ -46,7 +45,8 @@ function selectedVpcId(raw: unknown): string {
     return raw;
   }
   if (raw && typeof raw === 'object' && 'id' in raw) {
-    return (raw as VPC).id ?? '';
+    const id = raw.id;
+    return typeof id === 'string' ? id : '';
   }
   return '';
 }
@@ -63,8 +63,8 @@ function formatSelectedVpcForReview(raw: unknown, vpcOptions?: ReviewSelectOptio
   }
 
   if (raw && typeof raw === 'object' && 'name' in raw) {
-    const vpc = raw as VPC;
-    return vpc.name ?? id;
+    const name = raw.name;
+    return typeof name === 'string' ? name : id;
   }
 
   return id;
@@ -121,14 +121,21 @@ export function formatReviewFieldValue(
   }
 
   if (path === 'machine_pools_subnets' && Array.isArray(raw)) {
-    const subnetIds = (raw as MachinePoolSubnetEntry[])
-      .map((entry) => entry?.machine_pool_subnet?.trim() ?? '')
+    const subnetIds = raw
+      .filter(
+        (entry: unknown): entry is MachinePoolSubnetEntry =>
+          entry !== null &&
+          typeof entry === 'object' &&
+          'machine_pool_subnet' in entry &&
+          typeof entry.machine_pool_subnet === 'string'
+      )
+      .map((entry) => entry.machine_pool_subnet.trim())
       .filter((id) => id !== '');
     return formatIdsAsOptionLabels(subnetIds, reviewOptions?.subnet);
   }
 
   if (path === 'cluster_privacy') {
-    const privacy = raw as ROSAHCPCluster['cluster_privacy'];
+    const privacy = raw;
     if (privacy === ClusterNetwork.external) {
       return strings.networking.publicLabel;
     }

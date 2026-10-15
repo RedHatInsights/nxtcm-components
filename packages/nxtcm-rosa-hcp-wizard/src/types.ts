@@ -72,14 +72,7 @@ export type Subnet = {
   name: string;
   availability_zone: string;
   public: boolean;
-};
-
-export type CIDRSubnet = {
   cidr_block: string;
-  name: string;
-  public: boolean;
-  subnet_id: string;
-  availability_zone: string;
 };
 
 export type VPC = {
