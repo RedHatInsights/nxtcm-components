@@ -127,9 +127,7 @@ test.describe('RosaWizardSubmitError', () => {
     await expect(component.getByRole('heading', { name: submitErrorStrings.title })).toBeVisible();
     await component.getByRole('button', { name: submitErrorStrings.backToReviewStep }).click();
 
-    await expect(
-      component.getByRole('heading', { name: submitErrorStrings.title })
-    ).not.toBeVisible();
+    await expect(component.getByRole('heading', { name: submitErrorStrings.title })).toBeHidden();
     await expect(component.getByText('Wizard content restored')).toBeVisible();
   });
 

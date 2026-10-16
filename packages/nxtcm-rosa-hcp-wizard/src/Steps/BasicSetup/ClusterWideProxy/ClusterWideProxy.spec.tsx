@@ -125,7 +125,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
       const input = component.getByRole('textbox', { name: cw.httpLabel });
       await input.click();
       await input.blur();
-      await expect(component.getByText('Invalid URL')).not.toBeVisible();
+      await expect(component.getByText('Invalid URL')).toBeHidden();
     });
   });
 
@@ -142,7 +142,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
       const input = component.getByRole('textbox', { name: cw.httpsLabel });
       await input.fill('http://proxy.example.com:8080');
       await input.blur();
-      await expect(component.getByText('Invalid URL')).not.toBeVisible();
+      await expect(component.getByText('Invalid URL')).toBeHidden();
     });
 
     test('should show error for an invalid URL in HTTPS proxy field', async ({ mount }) => {
@@ -168,7 +168,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
       const input = component.getByRole('textbox', { name: cw.httpsLabel });
       await input.click();
       await input.blur();
-      await expect(component.getByText('Invalid URL')).not.toBeVisible();
+      await expect(component.getByText('Invalid URL')).toBeHidden();
     });
   });
 
@@ -226,7 +226,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
       const noProxyInput = component.getByRole('textbox', { name: cw.noProxyLabel });
       await noProxyInput.fill('example.com');
       await noProxyInput.blur();
-      await expect(component.getByText(/isn't valid/)).not.toBeVisible();
+      await expect(component.getByText(/isn't valid/)).toBeHidden();
     });
 
     test('should allow multiple comma-separated valid No Proxy domains', async ({ mount }) => {
@@ -238,7 +238,7 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
       const noProxyInput = component.getByRole('textbox', { name: cw.noProxyLabel });
       await noProxyInput.fill('example.com,sub.domain.org');
       await noProxyInput.blur();
-      await expect(component.getByText(/isn't valid/)).not.toBeVisible();
+      await expect(component.getByText(/isn't valid/)).toBeHidden();
     });
   });
 
