@@ -7,10 +7,10 @@ import {
 } from '../constants';
 import { securityGroupsSort } from '../Steps/BasicSetup/MachinePools/SecurityGroupSection/helpers';
 import {
-  CIDRSubnet,
   ClusterUpgrade,
   MachinePoolSubnetEntry,
   ROSAHCPCluster,
+  SecurityGroup,
   Subnet,
   VPC,
 } from '../types';
@@ -143,7 +143,7 @@ const createOperatorRolesPrefix = (clusterName?: string) => {
 
 const stringToArray = (str?: string) => str && str.trim().split(',');
 
-const parseCIDRSubnetLength = (value?: string): number | undefined => {
+const parseSubnetLength = (value?: string): number | undefined => {
   if (!value) {
     return undefined;
   }
@@ -151,7 +151,7 @@ const parseCIDRSubnetLength = (value?: string): number | undefined => {
   return parseInt(value.split('/').pop() ?? '', 10);
 };
 
-const constructSelectedSubnets = (formValues?: ROSAHCPCluster): CIDRSubnet[] => {
+const constructSelectedSubnets = (formValues?: ROSAHCPCluster): Subnet[] => {
   if (!formValues?.selected_vpc) {
     return [];
   }
@@ -168,14 +168,12 @@ const constructSelectedSubnets = (formValues?: ROSAHCPCluster): CIDRSubnet[] => 
     return [];
   }
 
-  // aws_subnets contains CIDRSubnet data at runtime even though VPC types it as Subnet[]
-  const subnets = selectedVpc.aws_subnets as CIDRSubnet[];
+  // aws_subnets contains Subnet data at runtime even though VPC types it as Subnet[]
+  const subnets = selectedVpc.aws_subnets;
 
-  const privateSubnets = subnets.filter((obj: CIDRSubnet) =>
-    privateSubnetIds.includes(obj.subnet_id)
-  );
+  const privateSubnets = subnets.filter((obj: Subnet) => privateSubnetIds.includes(obj.subnet_id));
 
-  const publicSubnets = subnets.filter((obj: CIDRSubnet) =>
+  const publicSubnets = subnets.filter((obj: Subnet) =>
     publicSubnetId ? obj.subnet_id === publicSubnetId : false
   );
 
@@ -305,10 +303,51 @@ const formatUpgradePolicyForReview = (
   return labels.recurringLabel;
 };
 
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+};
+
+const isSubnet = (value: unknown): value is Subnet => {
+  return (
+    isRecord(value) &&
+    typeof value.subnet_id === 'string' &&
+    typeof value.name === 'string' &&
+    typeof value.availability_zone === 'string' &&
+    typeof value.public === 'boolean' &&
+    typeof value.cidr_block === 'string'
+  );
+};
+
+const isSecurityGroup = (value: unknown): value is SecurityGroup => {
+  return (
+    isRecord(value) &&
+    typeof value.id === 'string' &&
+    typeof value.name === 'string' &&
+    (value.red_hat_managed === undefined || typeof value.red_hat_managed === 'boolean')
+  );
+};
+
+const isSelectedVpcValue = (value: unknown): value is ROSAHCPCluster['selected_vpc'] => {
+  if (value === undefined || typeof value === 'string') {
+    return true;
+  }
+
+  return (
+    isRecord(value) &&
+    typeof value.id === 'string' &&
+    typeof value.name === 'string' &&
+    Array.isArray(value.aws_subnets) &&
+    value.aws_subnets.every(isSubnet) &&
+    (value.aws_security_groups === undefined ||
+      (Array.isArray(value.aws_security_groups) &&
+        value.aws_security_groups.every(isSecurityGroup)))
+  );
+};
+
 export {
   createOperatorRolesPrefix,
   stringToArray,
-  parseCIDRSubnetLength,
+  parseSubnetLength,
   constructSelectedSubnets,
   truncateTextWithEllipsis,
   canSelectImds,
@@ -317,4 +356,5 @@ export {
   parseUpdateSchedule,
   formatUpgradeScheduleForReview,
   formatUpgradePolicyForReview,
+  isSelectedVpcValue,
 };

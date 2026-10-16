@@ -1,17 +1,21 @@
-import '@patternfly/react-core/dist/styles/base.css';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import * as monaco from 'monaco-editor';
+
 import { loader } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor';
 import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker.js?worker';
 import YamlWorker from 'monaco-yaml/yaml.worker.js?worker';
-import { RosaHCPWizard } from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
+
 import type { ROSAHCPWizardData } from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
+import { RosaHCPWizard } from '@redhat-cloud-services/nxtcm-rosa-hcp-wizard';
+
 import { createAcmCapaGenerator } from '../packages/nxtcm-rosa-hcp-wizard/src/test/acmGeneratorFixtures/acmCapaGenerator';
-import rosaControlPlaneSchema from '../packages/nxtcm-rosa-hcp-wizard/src/test/acmGeneratorFixtures/schemas/rosaControlPlaneSchema.json';
-import managedClusterSchema from '../packages/nxtcm-rosa-hcp-wizard/src/test/acmGeneratorFixtures/schemas/managedClusterSchema.json';
 import capiClusterSchema from '../packages/nxtcm-rosa-hcp-wizard/src/test/acmGeneratorFixtures/schemas/capiClusterSchema.json';
+import managedClusterSchema from '../packages/nxtcm-rosa-hcp-wizard/src/test/acmGeneratorFixtures/schemas/managedClusterSchema.json';
 import rosaClusterSchema from '../packages/nxtcm-rosa-hcp-wizard/src/test/acmGeneratorFixtures/schemas/rosaClusterSchema.json';
+import rosaControlPlaneSchema from '../packages/nxtcm-rosa-hcp-wizard/src/test/acmGeneratorFixtures/schemas/rosaControlPlaneSchema.json';
+
+import '@patternfly/react-core/dist/styles/base.css';
 
 // Required before the wizard is rendered - see packages/nxtcm-rosa-hcp-wizard/README.md#monaco-worker-setup
 window.MonacoEnvironment = {
@@ -143,36 +147,42 @@ const mockWizardData: ROSAHCPWizardData = {
         aws_subnets: [
           {
             subnet_id: 'subnet-0cd89766e94deb008',
+            cidr_block: '10.0.16.0/20',
             name: 'test-1-subnet-public1-us-east-1b',
             public: true,
             availability_zone: 'us-east-1b',
           },
           {
             subnet_id: 'subnet-032asd766e94deb008',
+            cidr_block: '10.0.128.0/20',
             name: 'test-1-subnet-private1-us-east-1a',
             public: false,
             availability_zone: 'us-east-1a',
           },
           {
             subnet_id: 'subnet-032as34ty2a6e94deb008',
+            cidr_block: '10.0.160.0/20',
             name: 'test-1-subnet-public1-us-east-1a',
             public: true,
             availability_zone: 'us-east-1a',
           },
           {
             subnet_id: 'subnet-03aas45qwe94deb008',
+            cidr_block: '10.0.144.0/20',
             name: 'test-1-subnet-private1-us-east-1b',
             public: false,
             availability_zone: 'us-east-1b',
           },
           {
             subnet_id: 'subnet-03azxc15qwe94deb008',
+            cidr_block: '10.0.32.0/20',
             name: 'test-1-subnet-public1-us-east-1c',
             public: true,
             availability_zone: 'us-east-1c',
           },
           {
             subnet_id: 'subnet-03aas45qzxc123deb008',
+            cidr_block: '10.0.176.0/20',
             name: 'test-1-subnet-private1-us-east-1c',
             public: false,
             availability_zone: 'us-east-1c',
@@ -192,12 +202,14 @@ const mockWizardData: ROSAHCPWizardData = {
             availability_zone: 'us-east-1a',
             public: false,
             subnet_id: 'subnet-0b5b55dvdv12236d',
+            cidr_block: '10.0.128.0/20',
           },
           {
             name: 'test-subnet-public1-us-east-1a',
             availability_zone: 'us-east-1a',
             public: true,
             subnet_id: 'subnet-0b5b33hgvdv12236d',
+            cidr_block: '10.0.0.0/20',
           },
         ],
       },

@@ -14,14 +14,14 @@ import {
   POD_NODES_MIN,
   SERVICE_CIDR_MAX,
 } from '../constants';
-import { parseCIDRSubnetLength } from '../utilities/helpers';
+import { parseSubnetLength } from '../utilities/helpers';
 import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
 import { YUP } from './constants';
 import {
   ctx,
   findOverlappingCidrFields,
   getStartingIP,
-  isCidrSubnetAddress,
+  isSubnetAddress,
   isValidCidr,
   rosaCommonRequiredNonEmptyTest,
   rosaRequiredStringField,
@@ -98,11 +98,11 @@ export const networkMachineCidrSchema = yup
     if (!isValidCidr(value)) {
       return this.createError({ message: msgs.cidr.invalidNotation(value) });
     }
-    if (!isCidrSubnetAddress(value)) {
+    if (!isSubnetAddress(value)) {
       return this.createError({ message: msgs.validateRange.notSubnetAddress });
     }
 
-    const prefixLength = parseCIDRSubnetLength(value);
+    const prefixLength = parseSubnetLength(value);
     const formData = this.parent;
     const isMultiAz = formData.multi_az === 'true';
 
@@ -179,11 +179,11 @@ export const networkServiceCidrSchema = yup
     if (!isValidCidr(value)) {
       return this.createError({ message: msgs.cidr.invalidNotation(value) });
     }
-    if (!isCidrSubnetAddress(value)) {
+    if (!isSubnetAddress(value)) {
       return this.createError({ message: msgs.validateRange.notSubnetAddress });
     }
 
-    const prefixLength = parseCIDRSubnetLength(value);
+    const prefixLength = parseSubnetLength(value);
     if (prefixLength != null && prefixLength > SERVICE_CIDR_MAX) {
       const maxServices = 2 ** (32 - SERVICE_CIDR_MAX) - 2;
       return this.createError({
@@ -257,19 +257,19 @@ export const networkPodCidrSchema = yup
     if (!isValidCidr(value)) {
       return this.createError({ message: msgs.cidr.invalidNotation(value) });
     }
-    if (!isCidrSubnetAddress(value)) {
+    if (!isSubnetAddress(value)) {
       return this.createError({ message: msgs.validateRange.notSubnetAddress });
     }
 
     const formData = this.parent;
-    const prefixLength = parseCIDRSubnetLength(value);
+    const prefixLength = parseSubnetLength(value);
 
     if (prefixLength != null) {
       if (prefixLength > POD_CIDR_MAX) {
         return this.createError({ message: msgs.podCidr.maskTooSmall(POD_CIDR_MAX) });
       }
 
-      const hostPrefixLen = parseCIDRSubnetLength(formData.network_host_prefix) || 23;
+      const hostPrefixLen = parseSubnetLength(formData.network_host_prefix) || 23;
       const maxPodIPs = 2 ** (32 - hostPrefixLen);
       const maxPodNodes = Math.floor(2 ** (32 - prefixLength) / maxPodIPs);
       if (maxPodNodes < POD_NODES_MIN) {
@@ -334,7 +334,7 @@ export const networkHostPrefixSchema = yup
       return this.createError({ message: msgs.hostPrefix.invalidMaskFormat(value) });
     }
 
-    const prefixLength = parseCIDRSubnetLength(value);
+    const prefixLength = parseSubnetLength(value);
     if (prefixLength != null) {
       if (prefixLength < HOST_PREFIX_MIN) {
         const maxPodIPs = 2 ** (32 - HOST_PREFIX_MIN) - 2;
