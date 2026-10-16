@@ -1,6 +1,9 @@
 import React from 'react';
 
+import { DeepPartial } from 'react-hook-form';
+
 import fixtures, { sleep, STORY_API_ERROR_MESSAGE } from './ROSAHCPWizard.fixtures';
+import { RosaHcpWizardStrings } from './stringsProvider/rosaHcpWizardStrings.types';
 import type {
   AWSInfrastructureAccounts,
   OpenShiftVersionsData,
@@ -309,4 +312,10 @@ export const rosaHcpWizardDetailsFieldsAllApiErrorsData: ROSAHCPWizardData = {
     isFetching: false,
     fetch: async () => {},
   },
+};
+
+export const createPartialWizardStrings = (
+  overrides: DeepPartial<RosaHcpWizardStrings>
+): RosaHcpWizardStrings => {
+  return overrides as RosaHcpWizardStrings;
 };
