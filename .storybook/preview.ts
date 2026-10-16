@@ -33,6 +33,8 @@ const preview: Preview = {
       themes: {
         light: '',
         dark: 'pf-v6-theme-dark',
+        'felt light': 'pf-v6-theme-felt',
+        'felt dark': 'pf-v6-theme-felt pf-v6-theme-dark',
       },
       defaultTheme: 'light',
       parentSelector: 'html',
