@@ -464,9 +464,9 @@ test.describe('RosaHcpWizardFooter — submission payload', () => {
     await expect.poll(() => receivedPayload).toBe(EXPECTED_SUBMIT_YAML);
 
     // Verify consuming applications receive valid, parseable YAML.
-    const parsed = yaml.load(receivedPayload as string) as Record<string, unknown>;
-    expect(typeof parsed).toBe('object');
-    expect(typeof parsed['kind']).toBe('string');
+    if (receivedPayload === undefined) throw new Error('Expected a submitted YAML payload');
+    const parsed: unknown = yaml.load(receivedPayload);
+    expect(parsed).toEqual(expect.objectContaining({ kind: expect.any(String) }));
   });
 });
 

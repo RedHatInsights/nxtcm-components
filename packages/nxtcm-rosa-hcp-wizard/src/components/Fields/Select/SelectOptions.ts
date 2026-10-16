@@ -36,10 +36,11 @@ export function toDisplayString(v: unknown): string {
   if (typeof v === 'string') return v;
   if (typeof v === 'number') return String(v);
   if (typeof v === 'object' && !Array.isArray(v)) {
-    const o = v as Record<string, unknown>;
-    if (typeof o.label === 'string') return o.label;
-    if (typeof o.value === 'string') return o.value;
-    if (typeof o.value === 'number') return String(o.value);
+    if ('label' in v && typeof v.label === 'string') return v.label;
+    if ('value' in v) {
+      if (typeof v.value === 'string') return v.value;
+      if (typeof v.value === 'number') return String(v.value);
+    }
   }
   return '';
 }
