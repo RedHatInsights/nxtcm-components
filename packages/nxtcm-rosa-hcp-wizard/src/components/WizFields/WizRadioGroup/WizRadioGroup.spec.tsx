@@ -1,8 +1,6 @@
-import React from 'react';
+import { expect, test } from '@/playwright/ct-fixture';
 
-import { expect, test } from '@playwright/experimental-ct-react';
-
-import {
+import type {
   WizRadioGroupExplicitControlOnlyHarness,
   WizRadioGroupExplicitHarness,
   WizRadioGroupExplicitPropsOverrideMetaHarness,
@@ -11,7 +9,7 @@ import {
   WizRadioGroupNumericMetaLabelHarness,
   WizRadioGroupSubmitValidationHarness,
   WizRadioGroupYupMetaHarness,
-} from './WizRadioGroup.spec-helpers';
+} from './WizRadioGroup.story';
 import {
   WIZ_RADIO_GROUP_CONTROL_ONLY_STATUS,
   WIZ_RADIO_GROUP_EXPLICIT_HELPER,
@@ -28,11 +26,13 @@ import {
   WIZ_RADIO_GROUP_VALUE_STATUS_LABEL,
   WIZ_RADIO_GROUP_YUP_META_HELPER,
   WIZ_RADIO_GROUP_YUP_META_LABEL,
-} from './WizRadioGroup.spec-helpers';
+} from './WizRadioGroup.story-data';
 
 test.describe('WizRadioGroup', () => {
   test('renders explicit label and helper text', async ({ mount }) => {
-    const mounted = await mount(<WizRadioGroupExplicitHarness />);
+    const mounted = await mount<typeof WizRadioGroupExplicitHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupExplicitHarness'
+    );
     await expect(mounted.getByText(WIZ_RADIO_GROUP_EXPLICIT_LABEL, { exact: true })).toBeVisible();
     await expect(mounted.getByText(WIZ_RADIO_GROUP_EXPLICIT_HELPER, { exact: true })).toBeVisible();
     await expect(
@@ -44,7 +44,9 @@ test.describe('WizRadioGroup', () => {
   });
 
   test('writes the selected value to react-hook-form when a radio is chosen', async ({ mount }) => {
-    const mounted = await mount(<WizRadioGroupExplicitHarness />);
+    const mounted = await mount<typeof WizRadioGroupExplicitHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupExplicitHarness'
+    );
     const status = mounted.getByRole('status', { name: WIZ_RADIO_GROUP_VALUE_STATUS_LABEL });
     await expect(status).toHaveText('(empty)');
 
@@ -62,13 +64,17 @@ test.describe('WizRadioGroup', () => {
   test('derives label and helper text from Yup schema meta when those props are omitted', async ({
     mount,
   }) => {
-    const mounted = await mount(<WizRadioGroupYupMetaHarness />);
+    const mounted = await mount<typeof WizRadioGroupYupMetaHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupYupMetaHarness'
+    );
     await expect(mounted.getByText(WIZ_RADIO_GROUP_YUP_META_LABEL, { exact: true })).toBeVisible();
     await expect(mounted.getByText(WIZ_RADIO_GROUP_YUP_META_HELPER, { exact: true })).toBeVisible();
   });
 
   test('shows Yup validation after submit when no option is selected', async ({ mount }) => {
-    const mounted = await mount(<WizRadioGroupSubmitValidationHarness />);
+    const mounted = await mount<typeof WizRadioGroupSubmitValidationHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupSubmitValidationHarness'
+    );
     await mounted.getByRole('button', { name: 'Submit' }).click();
     await expect(mounted.getByText(WIZ_RADIO_GROUP_SUBMIT_ERROR, { exact: true })).toBeVisible();
   });
@@ -76,7 +82,9 @@ test.describe('WizRadioGroup', () => {
   test('clears Yup validation after the user selects a valid option and submits again', async ({
     mount,
   }) => {
-    const mounted = await mount(<WizRadioGroupSubmitValidationHarness />);
+    const mounted = await mount<typeof WizRadioGroupSubmitValidationHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupSubmitValidationHarness'
+    );
     await mounted.getByRole('button', { name: 'Submit' }).click();
     await expect(mounted.getByText(WIZ_RADIO_GROUP_SUBMIT_ERROR, { exact: true })).toBeVisible();
 
@@ -91,7 +99,9 @@ test.describe('WizRadioGroup', () => {
   });
 
   test('binds dotted field paths via fallback labeling when Yup is omitted', async ({ mount }) => {
-    const mounted = await mount(<WizRadioGroupNestedFallbackHarness />);
+    const mounted = await mount<typeof WizRadioGroupNestedFallbackHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupNestedFallbackHarness'
+    );
     await expect(mounted.getByRole('radiogroup', { name: /\btarget\b/i })).toBeVisible();
     const status = mounted.getByRole('status', { name: WIZ_RADIO_GROUP_NESTED_STATUS_LABEL });
     await expect(status).toHaveText('(empty)');
@@ -100,7 +110,9 @@ test.describe('WizRadioGroup', () => {
   });
 
   test('prefers explicit group label/helper over Yup meta', async ({ mount }) => {
-    const mounted = await mount(<WizRadioGroupExplicitPropsOverrideMetaHarness />);
+    const mounted = await mount<typeof WizRadioGroupExplicitPropsOverrideMetaHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupExplicitPropsOverrideMetaHarness'
+    );
     await expect(
       mounted.getByText(WIZ_RADIO_GROUP_OVERRIDE_RADIO_LABEL_WIN, { exact: true })
     ).toBeVisible();
@@ -116,14 +128,18 @@ test.describe('WizRadioGroup', () => {
   });
 
   test('coerces Yup numeric meta labels into string group captions', async ({ mount }) => {
-    const mounted = await mount(<WizRadioGroupNumericMetaLabelHarness />);
+    const mounted = await mount<typeof WizRadioGroupNumericMetaLabelHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupNumericMetaLabelHarness'
+    );
     await expect(mounted.getByText(String(909), { exact: true })).toBeVisible();
   });
 
   test('omits the group label when hideLabel is set even if Yup meta defines one', async ({
     mount,
   }) => {
-    const mounted = await mount(<WizRadioGroupHideLabelHarness />);
+    const mounted = await mount<typeof WizRadioGroupHideLabelHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupHideLabelHarness'
+    );
     await expect(
       mounted.getByText(WIZ_RADIO_GROUP_HIDE_LABEL_YUP_LABEL, { exact: true })
     ).toHaveCount(0);
@@ -134,7 +150,9 @@ test.describe('WizRadioGroup', () => {
   });
 
   test('binds through the control prop without a FormProvider wrapper', async ({ mount }) => {
-    const mounted = await mount(<WizRadioGroupExplicitControlOnlyHarness />);
+    const mounted = await mount<typeof WizRadioGroupExplicitControlOnlyHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupExplicitControlOnlyHarness'
+    );
     const status = mounted.getByRole('status', { name: WIZ_RADIO_GROUP_CONTROL_ONLY_STATUS });
     await expect(status).toHaveText('(empty)');
     await mounted.getByRole('radio', { name: /tier standalone b/i }).click();

@@ -1,10 +1,8 @@
-import React from 'react';
+import { expect, test } from '@/playwright/ct-fixture';
+import { checkAccessibility } from '@/playwright/test-helpers';
 
-import { expect, test } from '@playwright/experimental-ct-react';
-
-import { checkAccessibility } from '@/test-helpers';
-
-import { ClusterProviders, ProviderBreakdown } from './ClusterProviders';
+import { ProviderBreakdown } from './ClusterProviders';
+import type { ClusterProvidersStory } from './ClusterProviders.story';
 
 const defaultProviders: ProviderBreakdown[] = [
   { label: 'ROSA', count: 42 },
@@ -14,31 +12,44 @@ const defaultProviders: ProviderBreakdown[] = [
 
 test.describe('ClusterProviders', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(<ClusterProviders providers={defaultProviders} />);
+    const component = await mount<typeof ClusterProvidersStory>(
+      'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
+      { providers: defaultProviders }
+    );
     await checkAccessibility({ component });
   });
 
   test('should render the default title', async ({ mount }) => {
-    const component = await mount(<ClusterProviders providers={defaultProviders} />);
+    const component = await mount<typeof ClusterProvidersStory>(
+      'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
+      { providers: defaultProviders }
+    );
     const title = component.getByTestId('providers-title');
     await expect(title).toBeVisible();
     await expect(title).toHaveText('Clusters by provider');
   });
 
   test('should render a custom title', async ({ mount }) => {
-    const component = await mount(
-      <ClusterProviders providers={defaultProviders} title="Provider breakdown" />
+    const component = await mount<typeof ClusterProvidersStory>(
+      'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
+      { providers: defaultProviders, title: 'Provider breakdown' }
     );
     await expect(component.getByTestId('providers-title')).toHaveText('Provider breakdown');
   });
 
   test('should render the donut chart', async ({ mount }) => {
-    const component = await mount(<ClusterProviders providers={defaultProviders} />);
+    const component = await mount<typeof ClusterProvidersStory>(
+      'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
+      { providers: defaultProviders }
+    );
     await expect(component.getByTestId('providers-chart')).toBeVisible();
   });
 
   test('should render legend items with counts', async ({ mount }) => {
-    const component = await mount(<ClusterProviders providers={defaultProviders} />);
+    const component = await mount<typeof ClusterProvidersStory>(
+      'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
+      { providers: defaultProviders }
+    );
     const legend = component.getByTestId('providers-legend');
     await expect(legend.getByText('ROSA: 42')).toBeVisible();
     await expect(legend.getByText('ARO: 15')).toBeVisible();
@@ -46,7 +57,10 @@ test.describe('ClusterProviders', () => {
   });
 
   test('should handle a single provider', async ({ mount }) => {
-    const component = await mount(<ClusterProviders providers={[{ label: 'ROSA', count: 25 }]} />);
+    const component = await mount<typeof ClusterProvidersStory>(
+      'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
+      { providers: [{ label: 'ROSA', count: 25 }] }
+    );
     await expect(component.getByText('ROSA: 25')).toBeVisible();
   });
 
@@ -57,7 +71,10 @@ test.describe('ClusterProviders', () => {
       { label: 'OSD', count: 20 },
       { label: 'Other', count: 10 },
     ];
-    const component = await mount(<ClusterProviders providers={providers} />);
+    const component = await mount<typeof ClusterProvidersStory>(
+      'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
+      { providers: providers }
+    );
     const legend = component.getByTestId('providers-legend');
     await expect(legend.getByText('ROSA: 40')).toBeVisible();
     await expect(legend.getByText('ARO: 30')).toBeVisible();
@@ -70,19 +87,28 @@ test.describe('ClusterProviders', () => {
       { label: 'ROSA', count: 0 },
       { label: 'ARO', count: 0 },
     ];
-    const component = await mount(<ClusterProviders providers={providers} />);
+    const component = await mount<typeof ClusterProvidersStory>(
+      'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
+      { providers: providers }
+    );
     await expect(component.getByText('ROSA: 0')).toBeVisible();
     await expect(component.getByText('ARO: 0')).toBeVisible();
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
-    const component = await mount(<ClusterProviders isLoading />);
+    const component = await mount<typeof ClusterProvidersStory>(
+      'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
+      { isLoading: true }
+    );
     await expect(component.getByText('Loading cluster providers')).toBeVisible();
     await expect(component.getByTestId('providers-chart')).not.toBeVisible();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(<ClusterProviders isLoading />);
+    const component = await mount<typeof ClusterProvidersStory>(
+      'nxtcm-dashboard/TotalClusters/ClusterProviders/ClusterProvidersStory',
+      { isLoading: true }
+    );
     await expect(component.getByText('Loading cluster providers')).toBeVisible();
   });
 });

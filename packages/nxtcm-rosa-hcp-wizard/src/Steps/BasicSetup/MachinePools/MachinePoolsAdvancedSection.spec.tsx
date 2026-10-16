@@ -1,10 +1,10 @@
-import { expect, type MountResult, test } from '@playwright/experimental-ct-react';
+import { expect, type MountResult, test } from '@/playwright/ct-fixture';
 
 import { IMDS } from '../../../constants';
 import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { checkAccessibility } from '../../../test-helpers';
-import { MachinePoolsAdvancedSectionMount } from './MachinePoolsAdvancedSection.spec-helpers';
+import type { MachinePoolsAdvancedSectionMount } from './MachinePoolsAdvancedSection.story';
 
 const mp = defaultRosaHcpWizardStrings.machinePools;
 const sg = defaultRosaHcpWizardStrings.securityGroups;
@@ -25,13 +25,18 @@ async function expandAdvancedSection(component: MountResult) {
 
 test.describe('MachinePoolsAdvancedSection (ROSA HCP)', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(<MachinePoolsAdvancedSectionMount selectedVPC={fixtureVpc1} />);
+    const component = await mount<typeof MachinePoolsAdvancedSectionMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePoolsAdvancedSection/MachinePoolsAdvancedSectionMount',
+      { selectedVPC: fixtureVpc1 }
+    );
     await expandAdvancedSection(component);
     await checkAccessibility({ component });
   });
 
   test('should render the advanced expandable toggle', async ({ mount }) => {
-    const component = await mount(<MachinePoolsAdvancedSectionMount />);
+    const component = await mount<typeof MachinePoolsAdvancedSectionMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePoolsAdvancedSection/MachinePoolsAdvancedSectionMount'
+    );
     await expect(
       component.getByRole('button', { name: mp.advancedToggle, exact: true })
     ).toBeVisible();
@@ -40,7 +45,10 @@ test.describe('MachinePoolsAdvancedSection (ROSA HCP)', () => {
   test('should show IMDS options when cluster version supports IMDS selection', async ({
     mount,
   }) => {
-    const component = await mount(<MachinePoolsAdvancedSectionMount wrongVersionForIMDS={false} />);
+    const component = await mount<typeof MachinePoolsAdvancedSectionMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePoolsAdvancedSection/MachinePoolsAdvancedSectionMount',
+      { wrongVersionForIMDS: false }
+    );
     await expandAdvancedSection(component);
 
     await expect(component.getByText(mp.imdsLabel, { exact: true })).toBeVisible();
@@ -53,7 +61,10 @@ test.describe('MachinePoolsAdvancedSection (ROSA HCP)', () => {
   });
 
   test('should default IMDS to optional (both IMDSv1 and IMDSv2)', async ({ mount }) => {
-    const component = await mount(<MachinePoolsAdvancedSectionMount wrongVersionForIMDS={false} />);
+    const component = await mount<typeof MachinePoolsAdvancedSectionMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePoolsAdvancedSection/MachinePoolsAdvancedSectionMount',
+      { wrongVersionForIMDS: false }
+    );
     await expandAdvancedSection(component);
 
     await expect(
@@ -66,7 +77,10 @@ test.describe('MachinePoolsAdvancedSection (ROSA HCP)', () => {
   });
 
   test('should set imds form value to required when IMDSv2 only is selected', async ({ mount }) => {
-    const component = await mount(<MachinePoolsAdvancedSectionMount wrongVersionForIMDS={false} />);
+    const component = await mount<typeof MachinePoolsAdvancedSectionMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePoolsAdvancedSection/MachinePoolsAdvancedSectionMount',
+      { wrongVersionForIMDS: false }
+    );
     await expandAdvancedSection(component);
 
     await component.getByRole('radio', { name: new RegExp(`^${mp.imdsV2Label}`) }).click();
@@ -80,7 +94,10 @@ test.describe('MachinePoolsAdvancedSection (ROSA HCP)', () => {
   test('should hide IMDS options when cluster version does not support IMDS selection', async ({
     mount,
   }) => {
-    const component = await mount(<MachinePoolsAdvancedSectionMount wrongVersionForIMDS />);
+    const component = await mount<typeof MachinePoolsAdvancedSectionMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePoolsAdvancedSection/MachinePoolsAdvancedSectionMount',
+      { wrongVersionForIMDS: true }
+    );
     await expandAdvancedSection(component);
 
     await expect(component.getByText(mp.imdsLabel, { exact: true })).not.toBeVisible();
@@ -93,18 +110,19 @@ test.describe('MachinePoolsAdvancedSection (ROSA HCP)', () => {
   });
 
   test('should clear stale imds form value when IMDS selection is hidden', async ({ mount }) => {
-    const component = await mount(
-      <MachinePoolsAdvancedSectionMount
-        wrongVersionForIMDS
-        defaultValues={{ imds: IMDS.REQUIRED }}
-      />
+    const component = await mount<typeof MachinePoolsAdvancedSectionMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePoolsAdvancedSection/MachinePoolsAdvancedSectionMount',
+      { wrongVersionForIMDS: true, defaultValues: { imds: IMDS.REQUIRED } }
     );
 
     await expect(component.getByTestId('ct-imds-value')).toHaveText('');
   });
 
   test('should always show root disk size input inside advanced section', async ({ mount }) => {
-    const component = await mount(<MachinePoolsAdvancedSectionMount wrongVersionForIMDS />);
+    const component = await mount<typeof MachinePoolsAdvancedSectionMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePoolsAdvancedSection/MachinePoolsAdvancedSectionMount',
+      { wrongVersionForIMDS: true }
+    );
     await expandAdvancedSection(component);
 
     await expect(
@@ -115,8 +133,9 @@ test.describe('MachinePoolsAdvancedSection (ROSA HCP)', () => {
   test('should show security groups when a VPC is selected on a compatible cluster version', async ({
     mount,
   }) => {
-    const component = await mount(
-      <MachinePoolsAdvancedSectionMount selectedVPC={fixtureVpc1} clusterVersion="4.16.2" />
+    const component = await mount<typeof MachinePoolsAdvancedSectionMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePoolsAdvancedSection/MachinePoolsAdvancedSectionMount',
+      { selectedVPC: fixtureVpc1, clusterVersion: '4.16.2' }
     );
     await expandAdvancedSection(component);
 
@@ -129,8 +148,9 @@ test.describe('MachinePoolsAdvancedSection (ROSA HCP)', () => {
   test('should show incompatible version message for security groups when cluster version is too old', async ({
     mount,
   }) => {
-    const component = await mount(
-      <MachinePoolsAdvancedSectionMount selectedVPC={fixtureVpc1} clusterVersion="4.13.0" />
+    const component = await mount<typeof MachinePoolsAdvancedSectionMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePoolsAdvancedSection/MachinePoolsAdvancedSectionMount',
+      { selectedVPC: fixtureVpc1, clusterVersion: '4.13.0' }
     );
     await expandAdvancedSection(component);
 
@@ -138,7 +158,10 @@ test.describe('MachinePoolsAdvancedSection (ROSA HCP)', () => {
   });
 
   test('should not show security groups when no VPC is selected', async ({ mount }) => {
-    const component = await mount(<MachinePoolsAdvancedSectionMount selectedVPC={undefined} />);
+    const component = await mount<typeof MachinePoolsAdvancedSectionMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/MachinePools/MachinePoolsAdvancedSection/MachinePoolsAdvancedSectionMount',
+      { selectedVPC: undefined }
+    );
     await expandAdvancedSection(component);
 
     await expect(component.getByText(sg.formLabel, { exact: true })).not.toBeVisible();

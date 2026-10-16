@@ -1,10 +1,7 @@
-import React from 'react';
+import { expect, MountResult, test } from '@/playwright/ct-fixture';
+import { checkAccessibility } from '@/playwright/test-helpers';
 
-import { expect, MountResult, test } from '@/ct-fixture';
-import { checkAccessibility } from '@/test-helpers';
-
-import { ClusterRecommendations } from './ClusterRecommendations';
-import { Category } from './RecommendationByCategory';
+import type { ClusterRecommendationsStory } from './ClusterRecommendations.story';
 
 const defaultProps = {
   count: 25,
@@ -12,8 +9,8 @@ const defaultProps = {
   performance: 20,
   security: 15,
   faultTolerance: 5,
-  onViewRecommendations: () => {},
-  onCategoryClick: () => {},
+  onViewRecommendations: true,
+  onCategoryClick: true,
 };
 
 const getCriticalCount = (component: MountResult, value: string) => {
@@ -26,12 +23,18 @@ const getCriticalCount = (component: MountResult, value: string) => {
 
 test.describe('ClusterRecommendations', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(<ClusterRecommendations {...defaultProps} />);
+    const component = await mount<typeof ClusterRecommendationsStory>(
+      'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
+      { ...defaultProps }
+    );
     await checkAccessibility({ component });
   });
 
   test('should render both Critical and RecommendationByCategory components', async ({ mount }) => {
-    const component = await mount(<ClusterRecommendations {...defaultProps} />);
+    const component = await mount<typeof ClusterRecommendationsStory>(
+      'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
+      { ...defaultProps }
+    );
 
     // Check for Critical component
     await expect(
@@ -48,7 +51,10 @@ test.describe('ClusterRecommendations', () => {
   });
 
   test('should display View recommendations button', async ({ mount }) => {
-    const component = await mount(<ClusterRecommendations {...defaultProps} />);
+    const component = await mount<typeof ClusterRecommendationsStory>(
+      'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
+      { ...defaultProps }
+    );
 
     const viewButton = component.getByRole('button', { name: /View recommendations/i });
     await expect(viewButton).toBeVisible();
@@ -57,24 +63,32 @@ test.describe('ClusterRecommendations', () => {
   test('should call onViewRecommendations when View recommendations button is clicked', async ({
     mount,
   }) => {
-    let onViewRecommendationsCalled = false;
-    const handleViewRecommendations = () => {
-      onViewRecommendationsCalled = true;
-    };
-
-    const component = await mount(
-      <ClusterRecommendations {...defaultProps} onViewRecommendations={handleViewRecommendations} />
+    const component = await mount<typeof ClusterRecommendationsStory>(
+      'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
+      {
+        ...defaultProps,
+        onViewRecommendations: true,
+      }
     );
 
     await component.getByRole('button', { name: /View recommendations/i }).click();
 
-    expect(onViewRecommendationsCalled).toBe(true);
+    await expect
+      .poll(() =>
+        component
+          .getByTestId('onViewRecommendations-calls')
+          .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+      )
+      .toHaveLength(1);
   });
 
   test('should display all category counts in RecommendationByCategory section', async ({
     mount,
   }) => {
-    const component = await mount(<ClusterRecommendations {...defaultProps} />);
+    const component = await mount<typeof ClusterRecommendationsStory>(
+      'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
+      { ...defaultProps }
+    );
 
     await expect(component.getByText(/Service availability/)).toContainText('10');
     await expect(component.getByText(/Performance/)).toContainText('20');
@@ -83,29 +97,43 @@ test.describe('ClusterRecommendations', () => {
   });
 
   test('should call onCategoryClick when a category is clicked', async ({ mount }) => {
-    let clickedCategory: Category | undefined;
-    const handleCategoryClick = (category: Category) => {
-      clickedCategory = category;
-    };
-
-    const component = await mount(
-      <ClusterRecommendations {...defaultProps} onCategoryClick={handleCategoryClick} />
+    const component = await mount<typeof ClusterRecommendationsStory>(
+      'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
+      {
+        ...defaultProps,
+        onCategoryClick: true,
+      }
     );
     //  Performance
     await component.getByRole('button', { name: /Performance/ }).click();
 
-    expect(clickedCategory).toBe('performance');
+    await expect
+      .poll(
+        async () =>
+          (
+            await component
+              .getByTestId('onCategoryClick-calls')
+              .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+          )[0]?.[0]
+      )
+      .toBe('performance');
   });
 
   test('should render with different critical count', async ({ mount }) => {
-    const component = await mount(<ClusterRecommendations {...defaultProps} count={100} />);
+    const component = await mount<typeof ClusterRecommendationsStory>(
+      'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
+      { ...defaultProps, count: 100 }
+    );
     const criticalCount = getCriticalCount(component, '100');
 
     await expect(criticalCount).toBeVisible();
   });
 
   test('should render with zero critical recommendations', async ({ mount }) => {
-    const component = await mount(<ClusterRecommendations {...defaultProps} count={0} />);
+    const component = await mount<typeof ClusterRecommendationsStory>(
+      'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
+      { ...defaultProps, count: 0 }
+    );
     const criticalCount = getCriticalCount(component, '0');
     await expect(criticalCount).toBeVisible();
 
@@ -123,7 +151,10 @@ test.describe('ClusterRecommendations', () => {
       faultTolerance: 5,
     };
 
-    const component = await mount(<ClusterRecommendations {...customProps} />);
+    const component = await mount<typeof ClusterRecommendationsStory>(
+      'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
+      { ...customProps }
+    );
     await expect(component.getByText(/Service availability/)).toContainText('50');
     await expect(component.getByText(/Performance/)).toContainText('30');
     await expect(component.getByText(/Security/)).toContainText('15');
@@ -131,7 +162,10 @@ test.describe('ClusterRecommendations', () => {
   });
 
   test('should render critical icons', async ({ mount, page }) => {
-    await mount(<ClusterRecommendations {...defaultProps} />);
+    await mount<typeof ClusterRecommendationsStory>(
+      'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
+      { ...defaultProps }
+    );
 
     // NOTE svgs are hidden so won't be picked up by .getByRole('img')
     // I'm not sure this test is providing any value
@@ -140,7 +174,10 @@ test.describe('ClusterRecommendations', () => {
   });
 
   test('should have proper component structure with both sections', async ({ mount }) => {
-    const component = await mount(<ClusterRecommendations {...defaultProps} />);
+    const component = await mount<typeof ClusterRecommendationsStory>(
+      'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
+      { ...defaultProps }
+    );
 
     // Verify both main sections exist
     await expect(
@@ -155,26 +192,31 @@ test.describe('ClusterRecommendations', () => {
   });
 
   test('should handle multiple category clicks', async ({ mount }) => {
-    let clickCount = 0;
-    const categories: Category[] = [];
-    const handleCategoryClick = (category: Category) => {
-      clickCount++;
-      categories.push(category);
-    };
-
-    const component = await mount(
-      <ClusterRecommendations {...defaultProps} onCategoryClick={handleCategoryClick} />
+    const component = await mount<typeof ClusterRecommendationsStory>(
+      'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
+      {
+        ...defaultProps,
+        onCategoryClick: true,
+      }
     );
 
     await component.getByRole('button', { name: /Service availability/ }).click();
     await component.getByRole('button', { name: /Security/ }).click();
 
-    expect(clickCount).toBe(2);
-    expect(categories).toEqual(['serviceAvailability', 'security']);
+    await expect
+      .poll(() =>
+        component
+          .getByTestId('onCategoryClick-calls')
+          .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+      )
+      .toEqual([['serviceAvailability'], ['security']]);
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
-    const component = await mount(<ClusterRecommendations isLoading {...defaultProps} />);
+    const component = await mount<typeof ClusterRecommendationsStory>(
+      'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
+      { isLoading: true, ...defaultProps }
+    );
     await expect(component.getByText('Loading cluster recommendations')).toBeVisible();
     await expect(
       component.getByRole('heading', { name: 'Critical recommendations' })
@@ -182,16 +224,17 @@ test.describe('ClusterRecommendations', () => {
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(
-      <ClusterRecommendations
-        isLoading
-        onViewRecommendations={() => {}}
-        serviceAvailability={0}
-        performance={0}
-        security={0}
-        faultTolerance={0}
-        onCategoryClick={() => {}}
-      />
+    const component = await mount<typeof ClusterRecommendationsStory>(
+      'nxtcm-dashboard/ClusterRecommendations/ClusterRecommendations/ClusterRecommendationsStory',
+      {
+        isLoading: true,
+        onViewRecommendations: true,
+        serviceAvailability: 0,
+        performance: 0,
+        security: 0,
+        faultTolerance: 0,
+        onCategoryClick: true,
+      }
     );
     await expect(component.getByText('Loading cluster recommendations')).toBeVisible();
   });

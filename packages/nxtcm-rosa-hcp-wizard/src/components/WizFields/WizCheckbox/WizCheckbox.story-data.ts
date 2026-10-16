@@ -1,0 +1,15 @@
+export const WIZ_CHECKBOX_EXPLICIT_TITLE = 'Explicit title';
+export const WIZ_CHECKBOX_EXPLICIT_LABEL = 'Explicit checkbox label';
+export const WIZ_CHECKBOX_EXPLICIT_HELPER = 'Explicit helper text.';
+export const WIZ_CHECKBOX_VALUE_STATUS_LABEL = 'acceptTerms form value';
+export const WIZ_CHECKBOX_YUP_META_TITLE = 'Yup meta title';
+export const WIZ_CHECKBOX_YUP_META_LABEL = 'Yup meta label';
+export const WIZ_CHECKBOX_YUP_META_HELPER = 'Yup meta helper text.';
+export const WIZ_CHECKBOX_SUBMIT_ERROR = 'You must accept the terms to continue.';
+export const WIZ_CHECKBOX_META_LOSE_TITLE = 'Checkbox meta-only title';
+export const WIZ_CHECKBOX_META_LOSE_LABEL = 'Checkbox meta-only label';
+export const WIZ_CHECKBOX_META_LOSE_HELPER = 'Checkbox meta-only helper';
+export const WIZ_CHECKBOX_OVERRIDE_TITLE_PROPS = 'Explicit title defeats Yup meta';
+export const WIZ_CHECKBOX_OVERRIDE_LABEL_PROPS = 'Explicit label defeats Yup meta';
+export const WIZ_CHECKBOX_OVERRIDE_HELPER_PROPS = 'Explicit helper defeats Yup meta';
+export const WIZ_CHECKBOX_SOLO_CONTROL_STATUS = 'solo checkbox form value';

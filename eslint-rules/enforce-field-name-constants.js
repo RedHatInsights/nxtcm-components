@@ -48,22 +48,13 @@ const KNOWN_FIELD_NAMES = buildKnownFieldNames();
  * React Hook Form APIs whose first argument is a single field name path.
  * These do NOT accept arrays.
  */
-const RHF_SCALAR_FUNCTIONS = new Set([
-  'setValue',
-  'setError',
-  'clearErrors',
-  'getFieldState',
-]);
+const RHF_SCALAR_FUNCTIONS = new Set(['setValue', 'setError', 'clearErrors', 'getFieldState']);
 
 /**
  * React Hook Form APIs whose first argument can be a single field name path
  * OR an array of field name paths.
  */
-const RHF_SCALAR_OR_ARRAY_FUNCTIONS = new Set([
-  'getValues',
-  'watch',
-  'trigger',
-]);
+const RHF_SCALAR_OR_ARRAY_FUNCTIONS = new Set(['getValues', 'watch', 'trigger']);
 
 /**
  * Metadata property names whose array values contain field name strings.
@@ -84,10 +75,7 @@ function getCalleeName(node) {
   if (node.type === 'Identifier') {
     return node.name;
   }
-  if (
-    node.type === 'MemberExpression' &&
-    node.property.type === 'Identifier'
-  ) {
+  if (node.type === 'MemberExpression' && node.property.type === 'Identifier') {
     return node.property.name;
   }
   return null;
@@ -119,12 +107,7 @@ function isInsideFieldNameDefinition(node) {
  */
 function getParentPropertyKeyName(node) {
   const parent = node.parent;
-  if (
-    parent &&
-    parent.type === 'Property' &&
-    parent.value === node &&
-    parent.key
-  ) {
+  if (parent && parent.type === 'Property' && parent.value === node && parent.key) {
     if (parent.key.type === 'Identifier') return parent.key.name;
     if (parent.key.type === 'Literal') return String(parent.key.value);
   }
@@ -152,8 +135,7 @@ module.exports = {
       recommended: true,
     },
     messages: {
-      useFieldNameConstant:
-        "Use {{ constant }} instead of the magic string '{{ value }}'.",
+      useFieldNameConstant: "Use {{ constant }} instead of the magic string '{{ value }}'.",
     },
     schema: [],
   },
