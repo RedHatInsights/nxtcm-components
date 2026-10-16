@@ -106,6 +106,6 @@ const meta: Meta<typeof ComponentName> = {
 after writing a story:
 1. run `npm run storybook`
 2. navigate to the story in browser
-3. verify rendering in both light and dark mode
+3. verify rendering in all four theme switcher options: light, dark, felt light, and felt dark
 4. check controls panel works
 5. verify autodocs page generates correctly
