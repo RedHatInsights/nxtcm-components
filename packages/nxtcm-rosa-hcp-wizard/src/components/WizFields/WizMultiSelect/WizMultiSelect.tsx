@@ -3,6 +3,7 @@ import { type ReactNode, useState } from 'react';
 import { type FieldValues, useController } from 'react-hook-form';
 
 import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
+import { coerceToArray } from '../../../utilities/typeCoercion';
 import { requiredFromYup } from '../../../utilities/yupFieldRequired';
 import { MultiSelect, type MultiSelectProps } from '../../Fields/MultiSelect';
 import { FieldWithAPIErrorAlert } from '../../FieldWithAPIErrorAlert';
@@ -101,7 +102,7 @@ export function WizMultiSelect<TFieldValues extends FieldValues = FieldValues, T
   const handleBlur = useWizMenuFieldBlur(field.onBlur, isMenuOpen);
 
   const raw = field.value;
-  const value = Array.isArray(raw) ? (raw as TOption[]) : [];
+  const value = coerceToArray<TOption>(raw);
 
   const multiSelect = (
     <MultiSelect<TOption>
