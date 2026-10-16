@@ -3,11 +3,6 @@
   "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
   "packageRules": [
     {
-      "description": "Disable all major updates",
-      "matchUpdateTypes": ["major"],
-      "enabled": false
-    },
-    {
       "description": "Group ESLint ecosystem packages into a single PR",
       "matchPackageNames": ["eslint", "@eslint/**", "@typescript-eslint/**", "eslint-*"],
       "groupName": "eslint packages"
