@@ -153,7 +153,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
 
   const [open, setOpen] = useState(false);
   const [tooltipVisible, setTooltipVisible] = useState(false);
-  const tooltipTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const tooltipTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const showTooltip = useCallback(() => {
     clearTimeout(tooltipTimerRef.current);

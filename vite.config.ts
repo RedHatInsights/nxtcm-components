@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import dts from 'unplugin-dts/vite';
 import path from 'path';
@@ -6,11 +6,10 @@ import { resolve } from 'path';
 const repoRoot = __dirname;
 const libRoot = process.cwd() === repoRoot ? repoRoot : process.cwd();
 const libEntry = resolve(libRoot, 'src/index.ts');
-const libName = process.env.NXTCM_LIB_NAME ?? 'NXTCM-COMPONENTS';
 const libOutDir = resolve(libRoot, 'dist');
 const libRollupExternal = [
-  'react',
-  'react-dom',
+  /^react(?:$|\/)/,
+  /^react-dom(?:$|\/)/,
   /^@patternfly\/.*/,
   'js-yaml',
   'yaml',
@@ -18,78 +17,55 @@ const libRollupExternal = [
   /^monaco-yaml/,
 ];
 
-/** Convert kebab-case (e.g. lock-icon) to PascalCase (LockIcon) for UMD globals. */
-const kebabToPascalCase = (value: string): string =>
-  value
-    .replace(/\.js(\?url)?$/, '')
-    .split('-')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join('');
+const fullySpecifiedPatternFlyImports: Plugin = {
+  name: 'fully-specified-patternfly-imports',
 
-/** Convert @patternfly package ids to Rollup-compatible UMD global names. */
-const patternflyPackageToGlobal = (id: string): string => {
-  const packagePath = id.replace(/^@patternfly\//, '');
-  const segments = packagePath.split('/');
+  outputOptions(options): typeof options {
+    const directory = options.format === 'cjs' ? 'js' : 'esm';
 
-  if (segments.length > 1 && segments[0] === 'react-charts') {
-    return segments[segments.length - 1];
-  }
+    return {
+      ...options,
+      paths: (id: string): string => {
+        const dynamic = id.match(
+          /^(@patternfly\/(?:react-core|react-table))\/dist\/dynamic\/(.+)$/
+        );
 
-  return segments[0]
-    .split('-')
-    .map((part, index) => (index === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)))
-    .join('');
+        if (dynamic) {
+          return `${dynamic[1]}/dist/${directory}/${dynamic[2]}/index.js`;
+        }
+
+        if (id.startsWith('@patternfly/react-icons/dist/esm/icons/')) {
+          const target = id.replace('/dist/esm/', `/dist/${directory}/`);
+          return target.endsWith('.js') ? target : `${target}.js`;
+        }
+
+        const charts = id.match(/^@patternfly\/react-charts\/(victory|echarts)$/);
+
+        if (charts) {
+          return `@patternfly/react-charts/dist/${directory}/${charts[1]}/index.js`;
+        }
+
+        return id;
+      },
+    };
+  },
 };
 
-const libUmdGlobals: Record<string, string> = {
-  react: 'React',
-  'react-dom': 'ReactDOM',
-  '@patternfly/react-core': 'reactCore',
-  '@patternfly/react-icons': 'reactIcons',
-  '@patternfly/react-table': 'reactTable',
-  '@patternfly/widgetized-dashboard': 'widgetizedDashboard',
-  '@patternfly/react-charts/victory': 'victory',
-  yaml: 'YAML',
-  'js-yaml': 'yaml',
-  'monaco-editor': 'monaco',
-  'monaco-yaml': 'monacoYaml',
-  'monaco-editor/esm/vs/editor/editor.worker.js?url': 'editorWorkerUrl',
-  'monaco-yaml/yaml.worker.js?url': 'yamlWorkerUrl',
-};
-
-const resolveUmdGlobal = (id: string): string => {
-  if (id in libUmdGlobals) {
-    return libUmdGlobals[id];
-  }
-
-  const iconMatch = id.match(/^@patternfly\/react-icons\/dist\/esm\/icons\/(.+)$/);
-  if (iconMatch) {
-    return kebabToPascalCase(iconMatch[1]);
-  }
-
-  if (id.startsWith('@patternfly/')) {
-    return patternflyPackageToGlobal(id);
-  }
-
-  if (id.startsWith('monaco-editor')) {
-    return 'monaco';
-  }
-
-  if (id.startsWith('monaco-yaml')) {
-    return 'monacoYaml';
-  }
-
-  return id;
-};
 // https://vitejs.dev/config/
 export default defineConfig({
   root: libRoot,
   plugins: [
     react(),
+    fullySpecifiedPatternFlyImports,
     dts({
       processor: 'ts',
       tsconfigPath: resolve(libRoot, 'tsconfig.json'),
       bundleTypes: true,
+      outDirs: [
+        { dir: libOutDir },
+        { dir: libOutDir, moduleFormat: 'esm' },
+        { dir: libOutDir, moduleFormat: 'cjs' },
+      ],
       exclude: [
         '**/*.spec.tsx',
         '**/*.spec-helpers.tsx',
@@ -127,16 +103,14 @@ export default defineConfig({
   build: {
     lib: {
       entry: libEntry,
-      name: libName,
-      formats: ['umd', 'es'],
-      fileName: (format) => `index.${format === 'es' ? 'js' : format + '.js'}`,
+      formats: ['es', 'cjs'],
+      fileName: (format) => (format === 'es' ? 'index.mjs' : 'index.cjs'),
     },
     outDir: libOutDir,
     rollupOptions: {
       external: libRollupExternal,
       output: {
         inlineDynamicImports: true,
-        globals: resolveUmdGlobal,
         assetFileNames: (assetInfo) => {
           const assetNames = assetInfo.names ?? (assetInfo.name ? [assetInfo.name] : []);
           if (assetNames.some((name) => name.endsWith('.css'))) {
