@@ -15,6 +15,14 @@ const cu = defaultRosaHcpWizardStrings.clusterUpdates;
 const cw = defaultRosaHcpWizardStrings.clusterWideProxy;
 const reviewStrings = defaultRosaHcpWizardStrings.review;
 
+const fixtureVpc = rosaHcpWizardFixtures.mockVPCs[0];
+const fixturePrivateSubnet = fixtureVpc.aws_subnets.find((subnet) =>
+  subnet.name.includes('private')
+);
+if (!fixturePrivateSubnet) {
+  throw new Error('fixture VPC is missing a private subnet');
+}
+
 const validTrustBundlePem = `-----BEGIN CERTIFICATE-----
 MIIBkTCB+wIJAKHBfpHYbpHTMA0GCSqGSIb3DQEBCwUAMBExDzANBgNVBAMMBnRl
 c3RjYTAeFw0yMzAxMDEwMDAwMDBaFw0yNDAxMDEwMDAwMDBaMBExDzANBgNVBAMM
@@ -91,19 +99,17 @@ test.describe('Review', () => {
   test('machine pools review shows selected VPC label and private subnet label', async ({
     mount,
   }) => {
-    const vpc = rosaHcpWizardFixtures.mockVPCs[0];
-    const privateSubnet = vpc.aws_subnets.find((subnet) => subnet.name.includes('private'))!;
     const c = await mount(
       <ReviewHarness
         formOverrides={{
-          selected_vpc: vpc.id,
-          machine_pools_subnets: [{ machine_pool_subnet: privateSubnet.subnet_id }],
+          selected_vpc: fixtureVpc.id,
+          machine_pools_subnets: [{ machine_pool_subnet: fixturePrivateSubnet.subnet_id }],
         }}
       />
     );
 
-    await expect(c.getByText(vpc.name)).toBeVisible();
-    await expect(c.getByText(privateSubnet.name)).toBeVisible();
+    await expect(c.getByText(fixtureVpc.name)).toBeVisible();
+    await expect(c.getByText(fixturePrivateSubnet.name)).toBeVisible();
     await expect(c.getByText(mp.subnetLabel)).toBeVisible();
   });
 

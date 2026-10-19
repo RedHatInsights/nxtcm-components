@@ -43,6 +43,12 @@ export default [
   // Storybook config
   ...storybook.configs['flat/recommended'],
 
+  // Playwright recommended for component and E2E specs
+  {
+    ...playwright.configs['flat/recommended'],
+    files: ['**/*.spec.tsx', 'playwright/e2e/**/*.spec.ts'],
+  },
+
   // Prettier (must be last to override conflicting rules)
   eslintConfigPrettier,
   eslintPluginPrettier,
@@ -151,12 +157,10 @@ export default [
     },
   },
 
-  // Playwright recommended rules for component and E2E specs
+  // Playwright overrides
   {
-    ...playwright.configs['flat/recommended'],
     files: ['**/*.spec.tsx', 'playwright/e2e/**/*.spec.ts'],
     rules: {
-      ...playwright.configs['flat/recommended'].rules,
       // These helpers internally call expect()
       'playwright/expect-expect': [
         'error',
