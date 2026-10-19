@@ -4,9 +4,9 @@ repo-wide typescript rules for writing and refactoring code.
 
 ## no `any` and no unsafe type-aware operations
 
-`@typescript-eslint/no-explicit-any`, `@typescript-eslint/no-unsafe-return`, and
-`@typescript-eslint/no-unsafe-call` are errors. Use proper types and keep values typed
-through function boundaries:
+All `@typescript-eslint` no-unsafe rules (`no-unsafe-argument`, `no-unsafe-assignment`,
+`no-unsafe-call`, `no-unsafe-member-access`, `no-unsafe-return`) and `no-explicit-any`
+are errors. Use proper types and keep values typed through function boundaries:
 
 ```tsx
 // don't
@@ -18,7 +18,6 @@ const handleData = (data: ClusterPayload) => { ... }
 const handleData = (data: unknown) => { ... }
 ```
 
-The related `no-unsafe-argument` is an error. `no-unsafe-member-access` remains off for now.
 Do not add `any` or `as any` to work around a violation.
 
 If a third-party boundary cannot be typed, use a line-level suppression only, with an
