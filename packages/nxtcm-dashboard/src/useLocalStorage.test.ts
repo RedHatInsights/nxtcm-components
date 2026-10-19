@@ -32,12 +32,12 @@ describe('hasMatchingStructure', () => {
       expect(hasMatchingStructure(undefined, 'default')).toBe(false);
     });
 
-    it('accepts any value when reference is null', () => {
-      expect(hasMatchingStructure({ a: 1 }, null)).toBe(true);
+    it('rejects non-null value when reference is null', () => {
+      expect(hasMatchingStructure({ a: 1 }, null)).toBe(false);
     });
 
-    it('accepts any value when reference is undefined', () => {
-      expect(hasMatchingStructure('hello', undefined)).toBe(true);
+    it('rejects non-undefined value when reference is undefined', () => {
+      expect(hasMatchingStructure('hello', undefined)).toBe(false);
     });
   });
 
@@ -50,6 +50,27 @@ describe('hasMatchingStructure', () => {
       expect(hasMatchingStructure([], [1, 2])).toBe(true);
     });
 
+    it('accepts arrays with empty reference (no element validation)', () => {
+      expect(hasMatchingStructure(['hello', 42], [])).toBe(true);
+    });
+
+    it('rejects arrays with mismatched element types', () => {
+      expect(hasMatchingStructure(['hello', 'world'], [0])).toBe(false);
+    });
+
+    it('rejects arrays with mixed element types when reference has numbers', () => {
+      expect(hasMatchingStructure([1, 'oops', 3], [0])).toBe(false);
+    });
+
+    it('accepts arrays with matching object elements', () => {
+      const reference = [{ id: 0, name: '' }];
+      const value = [
+        { id: 1, name: 'Alice' },
+        { id: 2, name: 'Bob' },
+      ];
+      expect(hasMatchingStructure(value, reference)).toBe(true);
+    });
+
     it('rejects arrays when reference is a plain object', () => {
       expect(hasMatchingStructure([1, 2], { a: 1 })).toBe(false);
     });
@@ -60,7 +81,7 @@ describe('hasMatchingStructure', () => {
   });
 
   describe('objects', () => {
-    it('accepts objects with all reference keys', () => {
+    it('accepts objects with all reference keys and matching value types', () => {
       const reference = { name: '', age: 0, active: false };
       const parsed = { name: 'Alice', age: 30, active: true };
       expect(hasMatchingStructure(parsed, reference)).toBe(true);
@@ -76,6 +97,26 @@ describe('hasMatchingStructure', () => {
       const reference = { name: '', age: 0, active: false };
       const parsed = { name: 'Alice' };
       expect(hasMatchingStructure(parsed, reference)).toBe(false);
+    });
+
+    it('rejects objects with mismatched value types', () => {
+      const reference = { sm: [1, 2], md: [3, 4] };
+      const parsed = { sm: null, md: [5, 6] };
+      expect(hasMatchingStructure(parsed, reference)).toBe(false);
+    });
+
+    it('rejects objects with wrong primitive types for values', () => {
+      const reference = { name: '', count: 0 };
+      const parsed = { name: 42, count: 'hello' };
+      expect(hasMatchingStructure(parsed, reference)).toBe(false);
+    });
+
+    it('validates nested object shapes recursively', () => {
+      const reference = { settings: { theme: 'light', fontSize: 14 } };
+      const validParsed = { settings: { theme: 'dark', fontSize: 16 } };
+      const invalidParsed = { settings: { theme: 'dark' } };
+      expect(hasMatchingStructure(validParsed, reference)).toBe(true);
+      expect(hasMatchingStructure(invalidParsed, reference)).toBe(false);
     });
 
     it('accepts empty objects when reference is also empty', () => {

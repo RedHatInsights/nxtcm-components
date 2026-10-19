@@ -3,7 +3,8 @@ import React, { Dispatch, SetStateAction } from 'react';
 /**
  * Runtime type guard that validates a parsed value has a compatible structure
  * with the reference value. Checks typeof match for primitives, array vs object
- * distinction, and top-level key presence for objects.
+ * distinction, and recursively validates property value shapes and array element
+ * types for objects and arrays.
  *
  * Returns true (narrowing `value` to `T`) when the parsed value is structurally
  * compatible with `reference`. Returns false when the value is malformed, causing
@@ -15,7 +16,7 @@ export function hasMatchingStructure<T>(value: unknown, reference: T): value is 
   }
 
   if (reference === null || reference === undefined) {
-    return true;
+    return value === null || value === undefined;
   }
 
   if (typeof value !== typeof reference) {
@@ -32,13 +33,20 @@ export function hasMatchingStructure<T>(value: unknown, reference: T): value is 
     return false;
   }
 
-  // Arrays: element types can't be validated generically; structural match is enough
-  if (Array.isArray(reference)) {
-    return true;
+  // Arrays: validate element types against first reference element when available
+  if (Array.isArray(reference) && Array.isArray(value)) {
+    if (reference.length === 0 || value.length === 0) {
+      return true;
+    }
+    return value.every((element: unknown) => hasMatchingStructure(element, reference[0]));
   }
 
-  // Objects: verify every top-level key from the reference exists in the parsed value
-  return Object.keys(reference).every((key) => key in value);
+  // Objects: verify every key from the reference exists with a matching value shape
+  const refRecord = reference as Record<string, unknown>;
+  const valRecord = value as Record<string, unknown>;
+  return Object.keys(refRecord).every(
+    (key) => key in valRecord && hasMatchingStructure(valRecord[key], refRecord[key])
+  );
 }
 
 function useLocalStorage(
