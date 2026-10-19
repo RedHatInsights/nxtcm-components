@@ -1,6 +1,6 @@
 {
   "name": "@redhat-cloud-services/nxtcm-dashboard",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "description": "PatternFly dashboard widget components for ACM and OCM console home views",
   "author": "Red Hat",
   "license": "Apache-2.0",
@@ -62,8 +62,8 @@
     "@patternfly/react-icons": "^6.3.1",
     "@patternfly/react-table": "^6.0.0",
     "@patternfly/widgetized-dashboard": "^1.0.0-prerelease.6",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
   },
   "devDependencies": {
     "@patternfly/react-charts": "^8.4.0",
