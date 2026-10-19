@@ -1,14 +1,6 @@
 import React, { Dispatch, SetStateAction } from 'react';
 
 /**
- * Type-safe wrapper around JSON.parse that returns `unknown` instead of `any`,
- * containing the untyped boundary to a single expression.
- */
-export function safeJsonParse(json: string): unknown {
-  return JSON.parse(json) as unknown;
-}
-
-/**
  * Runtime type guard that validates a parsed value has a compatible structure
  * with the reference value. Checks typeof match for primitives, array vs object
  * distinction, and top-level key presence for objects.
@@ -83,12 +75,12 @@ export function useLocalStorageWithObject<T>(
   initialValue: T
 ): [T, Dispatch<SetStateAction<T>>, () => void] {
   const [state, setState, clear] = useLocalStorage(key, JSON.stringify(initialValue));
-  const parsed = safeJsonParse(state);
+  const parsed = JSON.parse(state) as unknown;
   const item: T = hasMatchingStructure(parsed, initialValue) ? parsed : initialValue;
   const setItem = (value: SetStateAction<T>) => {
     if (value instanceof Function) {
       setState((prevState) => {
-        const prevParsed = safeJsonParse(prevState);
+        const prevParsed = JSON.parse(prevState) as unknown;
         const prevValidated: T = hasMatchingStructure(prevParsed, initialValue)
           ? prevParsed
           : initialValue;
