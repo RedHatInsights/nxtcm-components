@@ -10,7 +10,7 @@
     {
       "description": "Group non-security patch updates into a single PR",
       "matchUpdateTypes": ["patch"],
-      "matchIsVulnerability": false,
+      "matchJsonata": ["isVulnerabilityAlert != true"],
       "groupName": "all patch updates"
     },
     {
