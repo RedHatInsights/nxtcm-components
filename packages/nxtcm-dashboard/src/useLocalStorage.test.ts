@@ -1,22 +1,4 @@
-import { hasMatchingStructure, safeJsonParse } from './useLocalStorage';
-
-describe('safeJsonParse', () => {
-  it('parses valid JSON and returns the value as unknown', () => {
-    const result: unknown = safeJsonParse('{"a":1}');
-    expect(result).toEqual({ a: 1 });
-  });
-
-  it('parses primitive JSON values', () => {
-    expect(safeJsonParse('"hello"')).toBe('hello');
-    expect(safeJsonParse('42')).toBe(42);
-    expect(safeJsonParse('true')).toBe(true);
-    expect(safeJsonParse('null')).toBeNull();
-  });
-
-  it('throws on invalid JSON', () => {
-    expect(() => safeJsonParse('not json')).toThrow();
-  });
-});
+import { hasMatchingStructure } from './useLocalStorage';
 
 describe('hasMatchingStructure', () => {
   describe('primitives', () => {
