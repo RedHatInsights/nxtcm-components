@@ -4,9 +4,10 @@ repo-wide typescript rules for writing and refactoring code.
 
 ## no `any` and no unsafe type-aware operations
 
-All `@typescript-eslint` no-unsafe rules (`no-unsafe-argument`, `no-unsafe-assignment`,
-`no-unsafe-call`, `no-unsafe-member-access`, `no-unsafe-return`) and `no-explicit-any`
-are errors. Use proper types and keep values typed through function boundaries:
+The configured `@typescript-eslint` rules `no-unsafe-argument`, `no-unsafe-assignment`,
+`no-unsafe-call`, `no-unsafe-member-access`, `no-unsafe-return`, and `no-explicit-any`
+are errors. `no-unsafe-function-type` is a warning. Use proper types and keep values
+typed through function boundaries:
 
 ```tsx
 // don't
