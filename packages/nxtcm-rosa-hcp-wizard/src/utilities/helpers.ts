@@ -1,3 +1,5 @@
+import type { Path, PathValue } from 'react-hook-form';
+
 import {
   MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH,
   MAX_ROOT_DISK_SIZE_NEW_OPENSHIFT,
@@ -14,6 +16,7 @@ import {
   Subnet,
   VPC,
 } from '../types';
+import { hasObjectProperty } from './typeGuards';
 
 export type LabelValueOption = { label: string; value: string };
 
@@ -25,12 +28,18 @@ export type MachinePoolsReviewSelectOptions = {
 };
 
 /** Dot-separated path lookup on plain objects (e.g. `metadata.name`). */
+export function getNestedValue<T, P extends Path<T>>(
+  source: T,
+  path: P
+): PathValue<T, P> | undefined;
+/** Dynamic paths and untyped inputs require the caller to narrow the result. */
+export function getNestedValue(source: unknown, path: string): unknown;
 export function getNestedValue(source: unknown, path: string): unknown {
   if (source == null || path === '') return undefined;
   let current: unknown = source;
   for (const key of path.split('.')) {
-    if (current == null || typeof current !== 'object') return undefined;
-    current = (current as Record<string, unknown>)[key];
+    if (!hasObjectProperty(current, key)) return undefined;
+    current = current[key];
   }
   return current;
 }

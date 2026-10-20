@@ -8,6 +8,7 @@
  * are filled from {@link defaultRosaHcpWizardStrings} and {@link defaultRosaHcpWizardValidatorStrings}.
  */
 
+import { isObjectRecord } from '../utilities/typeGuards';
 import {
   defaultRosaHcpWizardStrings,
   defaultRosaHcpWizardValidatorStrings,
@@ -22,24 +23,23 @@ import type {
 export * from './rosaHcpWizardStrings.types';
 export * from './rosaHcpWizardStrings.defaults';
 
-function isPlainRecord(v: unknown): v is Record<string, unknown> {
-  return typeof v === 'object' && v !== null && !Array.isArray(v);
-}
-
-function mergeDeep<T>(base: T, patch: DeepPartial<T> | undefined): T {
+function mergeDeep<T extends object>(base: T, patch: DeepPartial<T> | undefined): T {
   if (!patch) return base;
-  const result = { ...base } as Record<string, unknown>;
-  for (const key of Object.keys(patch) as (keyof T & string)[]) {
-    const baseVal = (base as Record<string, unknown>)[key];
-    const patchVal = (patch as Record<string, unknown>)[key];
+  const result = { ...base };
+  for (const key in patch) {
+    if (!Object.prototype.hasOwnProperty.call(patch, key)) continue;
+    const baseVal = base[key];
+    const patchVal = patch[key];
     if (patchVal === undefined) continue;
-    if (isPlainRecord(baseVal) && isPlainRecord(patchVal)) {
+    if (isObjectRecord(baseVal) && isObjectRecord(patchVal)) {
       result[key] = mergeDeep(baseVal, patchVal as DeepPartial<typeof baseVal>);
     } else {
-      result[key] = patchVal;
+      // DeepPartial preserves leaf types; TypeScript cannot narrow its conditional
+      // mapped type after the recursive object branch has been ruled out.
+      result[key] = patchVal as T[typeof key];
     }
   }
-  return result as T;
+  return result;
 }
 
 export function mergeRosaHcpWizardStrings(
