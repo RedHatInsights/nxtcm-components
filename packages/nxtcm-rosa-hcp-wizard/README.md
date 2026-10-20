@@ -16,6 +16,19 @@ See [`peerDependencies` in `package.json`](./package.json) for the full list and
 
 **`monaco-editor` must be `<0.55.0`.** Monaco 0.55 made a breaking change to `editor.createWebWorker()`: it dropped the `moduleId`/`label`/`createData` options and now requires the caller to construct and pass a `Worker` instance directly. `monaco-yaml`'s worker manager (as of `monaco-yaml@5.4.1`/`monaco-worker-manager@2.0.1`) hasn't been updated for this yet, so pairing it with Monaco `>=0.55` doesn't throw — it silently falls back to Monaco's generic in-process worker, which lacks YAML-specific RPC methods.
 
+### Styles
+
+This package requires PatternFly base styles to be loaded by the host application. Import them in your main application entry file (e.g., `index.ts` or `App.tsx`):
+
+```ts
+import '@patternfly/react-core/dist/styles/base.css';
+import '@patternfly/patternfly/patternfly.css'; // requires the @patternfly/patternfly package
+```
+
+If your application serves the PatternFly CSS as a public asset, use that served URL in your HTML.
+
+The package's own stylesheet is imported separately, as shown in [Usage](#usage).
+
 ### Monaco worker setup
 
 `monaco-editor` and `monaco-yaml` run language features in web workers. You **must** configure `window.MonacoEnvironment` in your application entry point **before** this wizard is imported or rendered. Omitting this will cause the YAML editor to fail silently or throw at runtime.
@@ -109,6 +122,8 @@ export const CreateClusterWizard = ({ wizardData }: { wizardData: ROSAHCPWizardD
 
 - `RosaHCPWizard` - full ROSA HCP cluster creation wizard
 
+An interactive example is available on the [public Storybook](https://redhatinsights.github.io/nxtcm-components/).
+
 ## Publishing
 
-This package is published when a GitHub Release is created on `main` with tag `nxtcm-rosa-hcp-wizard-v{version}` matching `package.json`. See the [repository publishing guide](../../README.md#publishing-packages).
+This package is published when a GitHub Release is created on `main` with tag `nxtcm-rosa-hcp-wizard-v{version}` matching `package.json`. See the [repository publishing guide](../../docs/publishing.md).
