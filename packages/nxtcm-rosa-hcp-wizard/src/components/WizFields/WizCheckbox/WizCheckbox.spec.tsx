@@ -75,7 +75,7 @@ test.describe('WizCheckbox', () => {
 
     await mounted.getByRole('checkbox', { name: /accept the terms/i }).click();
     await mounted.getByRole('button', { name: 'Submit' }).click();
-    await expect(mounted.getByText(WIZ_CHECKBOX_SUBMIT_ERROR, { exact: true })).not.toBeVisible();
+    await expect(mounted.getByText(WIZ_CHECKBOX_SUBMIT_ERROR, { exact: true })).toBeHidden();
   });
 
   test('uses nested path segment fallback for the checkbox accessible name without Yup', async ({

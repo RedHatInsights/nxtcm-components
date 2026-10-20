@@ -15,7 +15,7 @@ test.describe('DetailsStepDrawer', () => {
     const panelTitle = component.getByRole('heading', {
       name: /how to associate a new aws account/i,
     });
-    await expect(panelTitle).not.toBeVisible();
+    await expect(panelTitle).toBeHidden();
   });
 
   test('should show drawer panel when expanded', async ({ mount }) => {
@@ -42,7 +42,7 @@ test.describe('DetailsStepDrawer', () => {
     const panelTitle = component.getByRole('heading', {
       name: /how to associate a new aws account/i,
     });
-    await expect(panelTitle).not.toBeVisible();
+    await expect(panelTitle).toBeHidden();
   });
 
   test('should render all instruction sections when expanded', async ({ mount }) => {
@@ -79,7 +79,7 @@ test.describe('DetailsStepDrawer', () => {
     const panelTitle = component.getByRole('heading', {
       name: /how to associate a new aws account/i,
     });
-    await expect(panelTitle).not.toBeVisible();
+    await expect(panelTitle).toBeHidden();
   });
 
   test('should pass product prop to LoginStep', async ({ mount }) => {

@@ -14,8 +14,8 @@ test.describe('TabGroup', () => {
   test('should show first tab content by default', async ({ mount }) => {
     const component = await mount(<TabGroupMount />);
     await expect(component.getByText('Tab 1 Content')).toBeVisible();
-    await expect(component.getByText('Tab 2 Content')).not.toBeVisible();
-    await expect(component.getByText('Tab 3 Content')).not.toBeVisible();
+    await expect(component.getByText('Tab 2 Content')).toBeHidden();
+    await expect(component.getByText('Tab 3 Content')).toBeHidden();
   });
 
   test('should have first tab selected by default', async ({ mount }) => {
@@ -31,7 +31,7 @@ test.describe('TabGroup', () => {
     await secondTab.click();
 
     await expect(component.getByText('Tab 2 Content')).toBeVisible();
-    await expect(component.getByText('Tab 1 Content')).not.toBeVisible();
+    await expect(component.getByText('Tab 1 Content')).toBeHidden();
     await expect(secondTab).toHaveAttribute('aria-pressed', 'true');
   });
 
@@ -42,8 +42,8 @@ test.describe('TabGroup', () => {
     await thirdTab.click();
 
     await expect(component.getByText('Tab 3 Content')).toBeVisible();
-    await expect(component.getByText('Tab 1 Content')).not.toBeVisible();
-    await expect(component.getByText('Tab 2 Content')).not.toBeVisible();
+    await expect(component.getByText('Tab 1 Content')).toBeHidden();
+    await expect(component.getByText('Tab 2 Content')).toBeHidden();
   });
 
   test('should switch between tabs multiple times', async ({ mount }) => {

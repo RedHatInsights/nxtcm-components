@@ -150,7 +150,7 @@ test.describe('CVECard', () => {
     ];
 
     const component = await mount(<CVECard cveData={data} />);
-    await expect(component.getByText(/View critical CVEs/i)).not.toBeVisible();
+    await expect(component.getByText(/View critical CVEs/i)).toBeHidden();
   });
 
   test('should render multiple CVE severities', async ({ mount }) => {
@@ -188,7 +188,7 @@ test.describe('CVECard', () => {
   test('should render skeleton when isLoading is true', async ({ mount }) => {
     const component = await mount(<CVECard isLoading cveData={mockCVEData} />);
     await expect(component.getByText('Loading CVE data')).toBeVisible();
-    await expect(component.getByRole('button', { name: 'View critical CVEs' })).not.toBeVisible();
+    await expect(component.getByRole('button', { name: 'View critical CVEs' })).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
@@ -331,7 +331,7 @@ test('should not render buttons when no onViewClick provided', async ({ mount })
   ];
 
   const component = await mount(<CVECard cveData={dataWithoutCallback} />);
-  await expect(component.getByRole('button')).not.toBeVisible();
+  await expect(component.getByRole('button')).toBeHidden();
 });
 
 test('should render custom title and description', async ({ mount }) => {
