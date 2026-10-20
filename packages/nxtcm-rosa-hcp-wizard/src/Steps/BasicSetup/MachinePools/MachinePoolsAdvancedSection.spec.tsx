@@ -100,13 +100,13 @@ test.describe('MachinePoolsAdvancedSection (ROSA HCP)', () => {
     );
     await expandAdvancedSection(component);
 
-    await expect(component.getByText(mp.imdsLabel, { exact: true })).not.toBeVisible();
+    await expect(component.getByText(mp.imdsLabel, { exact: true })).toBeHidden();
     await expect(
       component.getByRole('radio', { name: new RegExp(`^${mp.imdsBothLabel}`) })
-    ).not.toBeVisible();
+    ).toBeHidden();
     await expect(
       component.getByRole('radio', { name: new RegExp(`^${mp.imdsV2Label}`) })
-    ).not.toBeVisible();
+    ).toBeHidden();
   });
 
   test('should clear stale imds form value when IMDS selection is hidden', async ({ mount }) => {
@@ -164,9 +164,9 @@ test.describe('MachinePoolsAdvancedSection (ROSA HCP)', () => {
     );
     await expandAdvancedSection(component);
 
-    await expect(component.getByText(sg.formLabel, { exact: true })).not.toBeVisible();
+    await expect(component.getByText(sg.formLabel, { exact: true })).toBeHidden();
     await expect(
       component.getByRole('button', { name: sg.optionsMenuAria, exact: true })
-    ).not.toBeVisible();
+    ).toBeHidden();
   });
 });

@@ -34,6 +34,12 @@ const encryption = defaultRosaHcpWizardStrings.encryption;
 /** PatternFly danger Alert exposes the title as a heading (e.g. "Danger alert: …"). */
 const validationAlertHeading = { name: new RegExp(FIX_VALIDATION_ALERT) };
 
+function parseSubmittedYaml(payload: unknown): unknown {
+  if (typeof payload !== 'string') throw new Error('Expected a submitted YAML payload');
+  const parsed: unknown = yaml.load(payload);
+  return parsed;
+}
+
 async function expectWizardNavError(component: MountResult, stepId: string): Promise<void> {
   await expect(component.locator(`#${stepId}`)).toContainText(', error');
 }
@@ -201,7 +207,7 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
 
     await component.getByRole('textbox', { name: /Cluster name/i }).fill('mycluster');
 
-    await expect(component.getByRole('heading', validationAlertHeading)).not.toBeVisible();
+    await expect(component.getByRole('heading', validationAlertHeading)).toBeHidden();
   });
 
   test('does not show the validation alert on the next step after advancing with a valid Details step', async ({
@@ -215,7 +221,7 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
     await component.getByRole('button', { name: FOOTER_NEXT }).click();
 
     await expect(component.getByText(rp.accountRolesSection, { exact: true })).toBeVisible();
-    await expect(component.getByRole('heading', validationAlertHeading)).not.toBeVisible();
+    await expect(component.getByRole('heading', validationAlertHeading)).toBeHidden();
     await expect(component.getByRole('button', { name: FOOTER_BACK })).toBeEnabled();
     await expect(component.locator('#installer_role_arn-form-group')).not.toContainText(
       REQUIRED_FIELD_MESSAGE
@@ -295,7 +301,7 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
       .getByRole('button', { name: 'Clear selection' })
       .click();
 
-    await expect(component.getByText(REQUIRED_FIELD_MESSAGE)).not.toBeVisible();
+    await expect(component.getByText(REQUIRED_FIELD_MESSAGE)).toBeHidden();
     await expectWizardNavNoError(component, STEP_IDS.DETAILS);
     await expect(
       component.getByRole('button', { name: w.stepLabels.rolesAndPolicies, exact: true })
@@ -341,7 +347,7 @@ test.describe('RosaHcpWizardFooter — Skip to review', () => {
     const component = await mount<typeof RosaHcpWizardValidationMount>(
       'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount'
     );
-    await expect(component.getByRole('button', { name: SKIP_TO_REVIEW })).not.toBeVisible();
+    await expect(component.getByRole('button', { name: SKIP_TO_REVIEW })).toBeHidden();
   });
 
   test('shows Skip to review on an Additional setup step', async ({ mount }) => {
@@ -438,7 +444,7 @@ test.describe('RosaHcpWizardFooter — Skip to review', () => {
     await component.getByRole('button', { name: SKIP_TO_REVIEW }).click();
 
     await expect(component.getByText(review.sectionLabel, { exact: true })).toBeVisible();
-    await expect(component.getByRole('button', { name: SKIP_TO_REVIEW })).not.toBeVisible();
+    await expect(component.getByRole('button', { name: SKIP_TO_REVIEW })).toBeHidden();
   });
 });
 
@@ -462,7 +468,7 @@ test.describe('RosaHcpWizardFooter — Review Submit validation alert', () => {
 
     await nameInput.fill('mycluster');
 
-    await expect(component.getByRole('heading', validationAlertHeading)).not.toBeVisible();
+    await expect(component.getByRole('heading', validationAlertHeading)).toBeHidden();
   });
 });
 
@@ -498,9 +504,8 @@ test.describe('RosaHcpWizardFooter — submission payload', () => {
     const [[receivedPayload]] = await component
       .getByTestId('onSubmit-calls')
       .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][]);
-    const parsed = yaml.load(receivedPayload as string) as Record<string, unknown>;
-    expect(typeof parsed).toBe('object');
-    expect(typeof parsed['kind']).toBe('string');
+    const parsed = parseSubmittedYaml(receivedPayload);
+    expect(parsed).toEqual(expect.objectContaining({ kind: expect.any(String) }));
   });
 });
 
@@ -529,6 +534,6 @@ test.describe('RosaHcpWizardFooter — validation alert after failed Review Subm
     await component.getByTestId('oidc-config-select').getByRole('combobox').click();
     await page.getByRole('option', { name: fixtures.mockOicdConfig[0].label }).click();
 
-    await expect(component.getByRole('heading', validationAlertHeading)).not.toBeVisible();
+    await expect(component.getByRole('heading', validationAlertHeading)).toBeHidden();
   });
 });

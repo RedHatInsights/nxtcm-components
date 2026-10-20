@@ -81,7 +81,7 @@ test.describe('ExpiredTrials', () => {
 
     await expect(component.getByText('test')).toBeVisible();
     const trialButtons = component.locator('[data-testid^="trial-link-"]');
-    expect(await trialButtons.count()).toBe(0);
+    await expect(trialButtons).toHaveCount(0);
   });
 
   test('should show empty state when no trials', async ({ mount }) => {
@@ -100,7 +100,7 @@ test.describe('ExpiredTrials', () => {
     );
 
     const kebabs = component.locator('[aria-label="Kebab toggle"]');
-    expect(await kebabs.count()).toBe(defaultData.trials.length);
+    await expect(kebabs).toHaveCount(defaultData.trials.length);
   });
 
   test('should not render kebab column when rowActions is not provided', async ({ mount }) => {
@@ -110,7 +110,7 @@ test.describe('ExpiredTrials', () => {
     );
 
     const kebabs = component.locator('[aria-label="Kebab toggle"]');
-    expect(await kebabs.count()).toBe(0);
+    await expect(kebabs).toHaveCount(0);
   });
 
   test('should render pagination when onPageChange is provided', async ({ mount }) => {
@@ -131,7 +131,7 @@ test.describe('ExpiredTrials', () => {
       { data: defaultData }
     );
 
-    expect(await component.locator('.pf-v6-c-pagination').count()).toBe(0);
+    await expect(component.locator('.pf-v6-c-pagination')).toHaveCount(0);
   });
 
   test('should call onPageChange when next page is clicked', async ({ mount }) => {
@@ -202,7 +202,7 @@ test.describe('ExpiredTrials', () => {
       { isLoading: true }
     );
     await expect(component.getByText('Loading expired trials')).toBeVisible();
-    await expect(component.getByTestId('empty-state')).not.toBeVisible();
+    await expect(component.getByTestId('empty-state')).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {

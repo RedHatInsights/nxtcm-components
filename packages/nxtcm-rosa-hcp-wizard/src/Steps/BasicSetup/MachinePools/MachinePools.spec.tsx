@@ -120,7 +120,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
       exact: true,
     });
     await expect(subnetCombo).toHaveValue('');
-    await expect(component.getByText('default', { exact: true })).not.toBeVisible();
+    await expect(component.getByText('default', { exact: true })).toBeHidden();
   });
 
   test('should fetch machine types when region is present', async ({ mount }) => {
@@ -239,9 +239,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
     await expect(
       component.getByRole('spinbutton', { name: a.computeCountLabel, exact: true })
     ).toBeVisible();
-    await expect(
-      component.getByRole('spinbutton', { name: a.minLabel, exact: true })
-    ).not.toBeVisible();
+    await expect(component.getByRole('spinbutton', { name: a.minLabel, exact: true })).toBeHidden();
 
     await component.getByRole('checkbox', { name: a.enableLabel, exact: true }).click();
 
@@ -253,7 +251,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
     ).toBeVisible();
     await expect(
       component.getByRole('spinbutton', { name: a.computeCountLabel, exact: true })
-    ).not.toBeVisible();
+    ).toBeHidden();
   });
 
   test('should disable min replica plus button at max replica bound', async ({ mount }) => {
@@ -305,9 +303,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
     await expect(
       component.getByRole('spinbutton', { name: a.computeCountLabel, exact: true })
     ).toHaveValue(defaultNodesCompute);
-    await expect(
-      component.getByRole('spinbutton', { name: a.minLabel, exact: true })
-    ).not.toBeVisible();
+    await expect(component.getByRole('spinbutton', { name: a.minLabel, exact: true })).toBeHidden();
   });
 
   test('should show advanced machine pool controls inside expandable section', async ({

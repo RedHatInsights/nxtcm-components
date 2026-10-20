@@ -503,7 +503,7 @@ test.describe('Details (ROSA HCP)', () => {
       await expect(
         component.getByText(/This value can only contain lowercase alphanumeric characters/)
       ).toBeVisible();
-      await expect(component.getByText('Cluster name already exists.')).not.toBeVisible();
+      await expect(component.getByText('Cluster name already exists.')).toBeHidden();
       await expect
         .poll(() =>
           component
@@ -531,7 +531,7 @@ test.describe('Details (ROSA HCP)', () => {
       await expect(
         component.getByText(/This value can only contain lowercase alphanumeric characters/)
       ).toBeVisible();
-      await expect(component.getByText('Cluster name already exists.')).not.toBeVisible();
+      await expect(component.getByText('Cluster name already exists.')).toBeHidden();
     });
 
     test('should call checkClusterNameUniqueness when a valid name is blurred', async ({
@@ -666,7 +666,7 @@ test.describe('Details (ROSA HCP)', () => {
         .fill('Oregon');
       await page.getByRole('option', { name: 'US West (Oregon)', exact: true }).click();
 
-      await expect(component.getByText('Cluster name already exists.')).not.toBeVisible();
+      await expect(component.getByText('Cluster name already exists.')).toBeHidden();
     });
 
     test('should call checkClusterNameUniqueness when region changes and a valid name exists', async ({
@@ -887,12 +887,8 @@ test.describe('Details (ROSA HCP)', () => {
     await expect(
       page.getByRole('heading', { name: 'Previous releases', exact: true })
     ).toBeVisible();
-    await expect(
-      page.getByRole('heading', { name: 'Latest release', exact: true })
-    ).not.toBeVisible();
-    await expect(
-      page.getByRole('heading', { name: 'Default release', exact: true })
-    ).not.toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Latest release', exact: true })).toBeHidden();
+    await expect(page.getByRole('heading', { name: 'Default release', exact: true })).toBeHidden();
 
     const recommendedGroup = page.locator('section').filter({
       has: page.getByRole('heading', { name: 'Default (Recommended)', exact: true }),

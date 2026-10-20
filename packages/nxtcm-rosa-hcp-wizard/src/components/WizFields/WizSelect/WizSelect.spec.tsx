@@ -94,7 +94,7 @@ test.describe('WizSelect', () => {
     await page.getByRole('option', { name: 'eu-west-1' }).click();
     await page.getByRole('button', { name: 'Clear selection' }).click();
 
-    await expect(page.getByText(WIZ_SELECT_SUBMIT_ERROR, { exact: true })).not.toBeVisible();
+    await expect(page.getByText(WIZ_SELECT_SUBMIT_ERROR, { exact: true })).toBeHidden();
 
     await page.getByRole('button', { name: WIZ_SELECT_DEFER_REVEAL_BUTTON, exact: true }).click();
     await expect(page.getByText(WIZ_SELECT_SUBMIT_ERROR, { exact: true })).toBeVisible();
@@ -114,7 +114,7 @@ test.describe('WizSelect', () => {
     await page.getByRole('option', { name: 'us-east-1' }).click();
 
     await page.getByRole('button', { name: 'Submit', exact: true }).click();
-    await expect(page.getByText(WIZ_SELECT_SUBMIT_ERROR, { exact: true })).not.toBeVisible();
+    await expect(page.getByText(WIZ_SELECT_SUBMIT_ERROR, { exact: true })).toBeHidden();
   });
 
   test('uses nested path fallback labels and records the chosen option in the form', async ({

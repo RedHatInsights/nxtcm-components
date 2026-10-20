@@ -113,7 +113,7 @@ test.describe('StorageCard', () => {
         storageData: mockStorageData,
       }
     );
-    await expect(component.getByText('View more')).not.toBeVisible();
+    await expect(component.getByText('View more')).toBeHidden();
   });
 
   test('should show "View more" button when onViewMore callback is provided', async ({ mount }) => {
@@ -237,7 +237,7 @@ test.describe('StorageCard', () => {
       }
     );
     await expect(component.getByText('Loading storage data')).toBeVisible();
-    await expect(component.getByTestId('percentage')).not.toBeVisible();
+    await expect(component.getByTestId('percentage')).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {

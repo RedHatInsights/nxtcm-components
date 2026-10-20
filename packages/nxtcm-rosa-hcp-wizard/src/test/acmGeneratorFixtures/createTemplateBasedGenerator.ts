@@ -102,9 +102,9 @@ export function createTemplateBasedGenerator(
           continue;
         }
 
-        if (document === null || typeof document !== 'object') continue;
+        if (document === null || typeof document !== 'object' || !('kind' in document)) continue;
 
-        const kind = (document as Record<string, unknown>).kind;
+        const { kind } = document;
         if (typeof kind !== 'string') continue;
         seenKinds.add(kind);
 

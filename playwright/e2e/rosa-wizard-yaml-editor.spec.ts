@@ -39,7 +39,7 @@ test.describe('ROSA Wizard - YAML Editor', () => {
 
       // Back to review page
       await expect(page.getByRole('button', { name: /Edit in YAML/i })).toBeVisible();
-      await expect(page.locator('.monaco-editor')).not.toBeVisible();
+      await expect(page.locator('.monaco-editor')).toBeHidden();
     });
 
     test('cancels discard confirmation', async ({ page }) => {
@@ -99,7 +99,7 @@ test.describe('ROSA Wizard - YAML Editor', () => {
       await expect(schemaHeading).toBeVisible();
 
       await toggleButton.click();
-      await expect(schemaHeading).not.toBeVisible();
+      await expect(schemaHeading).toBeHidden();
 
       await toggleButton.click();
       await expect(schemaHeading).toBeVisible();

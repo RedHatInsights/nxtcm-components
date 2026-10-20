@@ -92,7 +92,7 @@ test.describe('UpgradeRisks', () => {
       }
     );
 
-    await expect(component.getByText('View upgrade risks')).not.toBeVisible();
+    await expect(component.getByText('View upgrade risks')).toBeHidden();
   });
 
   test('should call onViewRisks when link is clicked', async ({ mount }) => {
@@ -182,7 +182,7 @@ test.describe('UpgradeRisks', () => {
       }
     );
     await expect(component.getByText('Loading upgrade risks')).toBeVisible();
-    await expect(component.getByTestId('total-risks')).not.toBeVisible();
+    await expect(component.getByTestId('total-risks')).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {

@@ -36,10 +36,11 @@ export function toDisplayString(v: unknown): string {
   if (typeof v === 'string') return v;
   if (typeof v === 'number') return String(v);
   if (typeof v === 'object' && !Array.isArray(v)) {
-    const o = v as Record<string, unknown>;
-    if (typeof o.label === 'string') return o.label;
-    if (typeof o.value === 'string') return o.value;
-    if (typeof o.value === 'number') return String(o.value);
+    if ('label' in v && typeof v.label === 'string') return v.label;
+    if ('value' in v) {
+      if (typeof v.value === 'string') return v.value;
+      if (typeof v.value === 'number') return String(v.value);
+    }
   }
   return '';
 }
@@ -103,11 +104,23 @@ export function optionContainsValue<T>(
   return selected.some((v) => findOptionByValue([opt], v, keyPath) !== undefined);
 }
 
+/**
+ * Extracts the original typed value from a normalized option.
+ *
+ * {@link OptionType.value} is widened to `string | number | T` during normalization
+ * because {@link normalizeOption} handles both primitive and object option shapes.
+ * At runtime the value is always the original `T` provided by the consumer.
+ * This helper isolates that single cast to a documented location.
+ */
+function extractOptionOriginalValue<T>(opt: OptionType<T>): T {
+  return opt.value as T;
+}
+
 export function toggleOptionInValues<T>(current: T[], opt: OptionType<T>, keyPath: string): T[] {
   if (optionContainsValue(opt, current, keyPath)) {
     return current.filter((v) => findOptionByValue([opt], v, keyPath) === undefined);
   }
-  return [...current, opt.value as T];
+  return [...current, extractOptionOriginalValue(opt)];
 }
 
 function findOptionByMenuId<T>(

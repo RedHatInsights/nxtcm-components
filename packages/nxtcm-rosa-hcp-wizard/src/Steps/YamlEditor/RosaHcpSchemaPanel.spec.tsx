@@ -42,7 +42,7 @@ test.describe('RosaHcpSchemaPanel', () => {
     );
     await component.getByPlaceholder(s.schemaSearchPlaceholder).fill('region');
     await expect(component.getByText('region', { exact: true })).toBeVisible();
-    await expect(component.getByText('billingAccount', { exact: true })).not.toBeVisible();
+    await expect(component.getByText('billingAccount', { exact: true })).toBeHidden();
   });
 
   test('shows all fields again after clearing the search', async ({ mount }) => {
@@ -51,7 +51,7 @@ test.describe('RosaHcpSchemaPanel', () => {
     );
     const searchInput = component.getByPlaceholder(s.schemaSearchPlaceholder);
     await searchInput.fill('region');
-    await expect(component.getByText('billingAccount', { exact: true })).not.toBeVisible();
+    await expect(component.getByText('billingAccount', { exact: true })).toBeHidden();
 
     await component.getByRole('button', { name: 'Reset' }).click();
     await expect(component.getByText('billingAccount', { exact: true })).toBeVisible();
@@ -72,7 +72,7 @@ test.describe('RosaHcpSchemaPanel', () => {
     );
     await component.getByPlaceholder(s.schemaSearchPlaceholder).fill('autoNode');
     await expect(component.getByText('autoNode', { exact: true })).toBeVisible();
-    await expect(component.getByText('roleARN', { exact: true })).not.toBeVisible();
+    await expect(component.getByText('roleARN', { exact: true })).toBeHidden();
 
     await component.getByRole('button', { name: 'Expand', exact: true }).click();
     await expect(component.getByText('roleARN', { exact: true })).toBeVisible();
@@ -87,7 +87,7 @@ test.describe('RosaHcpSchemaPanel', () => {
     await expect(component.getByText('roleARN', { exact: true })).toBeVisible();
 
     await component.getByRole('button', { name: 'Collapse', exact: true }).click();
-    await expect(component.getByText('roleARN', { exact: true })).not.toBeVisible();
+    await expect(component.getByText('roleARN', { exact: true })).toBeHidden();
   });
 
   test('calls onClose when the close button is clicked', async ({ mount, page }) => {

@@ -7,6 +7,7 @@ import importPlugin from 'eslint-plugin-import';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import playwright from 'eslint-plugin-playwright';
 import storybook from 'eslint-plugin-storybook';
 import globals from 'globals';
 import enforceFieldNameConstants from './eslint-rules/enforce-field-name-constants.js';
@@ -44,6 +45,12 @@ export default [
 
   // Storybook config
   ...storybook.configs['flat/recommended'],
+
+  // Playwright recommended for component and E2E specs
+  {
+    ...playwright.configs['flat/recommended'],
+    files: ['**/*.spec.tsx', 'playwright/e2e/**/*.spec.ts'],
+  },
 
   // Prettier (must be last to override conflicting rules)
   eslintConfigPrettier,
@@ -171,6 +178,26 @@ export default [
     },
     rules: {
       'react-hooks/rules-of-hooks': 'off',
+    },
+  },
+
+  // Playwright overrides
+  {
+    files: ['**/*.spec.tsx', 'playwright/e2e/**/*.spec.ts'],
+    rules: {
+      // These helpers internally call expect()
+      'playwright/expect-expect': [
+        'error',
+        {
+          assertFunctionNames: [
+            'checkAccessibility',
+            'expectWizardNavError',
+            'expectWizardNavNoError',
+          ],
+        },
+      ],
+      // Tests are intentionally skipped when needed (e.g. upstream PF issues)
+      'playwright/no-skipped-test': 'off',
     },
   },
 

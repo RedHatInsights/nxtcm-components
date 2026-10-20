@@ -278,10 +278,10 @@ test.describe('ClustersWithIssues — pagination', () => {
     );
 
     const rows = component.locator('tbody tr');
-    expect(await rows.count()).toBe(5);
+    await expect(rows).toHaveCount(5);
     await expect(component.getByText('cluster-1')).toBeVisible();
     await expect(component.getByText('cluster-5')).toBeVisible();
-    await expect(component.getByText('cluster-6')).not.toBeVisible();
+    await expect(component.getByText('cluster-6')).toBeHidden();
   });
 
   test('should show pagination controls', async ({ mount }) => {
@@ -303,7 +303,7 @@ test.describe('ClustersWithIssues — pagination', () => {
 
     await expect(component.getByText('cluster-6', { exact: true })).toBeVisible();
     await expect(component.getByText('cluster-10', { exact: true })).toBeVisible();
-    await expect(component.getByText('cluster-1', { exact: true })).not.toBeVisible();
+    await expect(component.getByText('cluster-1', { exact: true })).toBeHidden();
   });
 
   test('should navigate to last page', async ({ mount }) => {
@@ -317,7 +317,7 @@ test.describe('ClustersWithIssues — pagination', () => {
     await expect(component.getByText('cluster-11')).toBeVisible();
     await expect(component.getByText('cluster-12')).toBeVisible();
     const rows = component.locator('tbody tr');
-    expect(await rows.count()).toBe(2);
+    await expect(rows).toHaveCount(2);
   });
 
   test('should show all items on one page when fewer items than perPage', async ({ mount }) => {
@@ -335,7 +335,7 @@ test.describe('ClustersWithIssues — pagination', () => {
     );
 
     const rows = component.locator('tbody tr');
-    expect(await rows.count()).toBe(3);
+    await expect(rows).toHaveCount(3);
     await expect(component.locator('.pf-v6-c-pagination')).toBeVisible();
   });
 
@@ -345,7 +345,7 @@ test.describe('ClustersWithIssues — pagination', () => {
       { isLoading: true }
     );
     await expect(component.getByText('Loading clusters with issues')).toBeVisible();
-    await expect(component.getByTestId('unhealthy-count')).not.toBeVisible();
+    await expect(component.getByTestId('unhealthy-count')).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
@@ -364,6 +364,6 @@ test.describe('ClustersWithIssues — pagination', () => {
       { data: defaultData, isLoading: true }
     );
     await expect(component.getByText('Loading clusters with issues')).toBeVisible();
-    await expect(component.getByTestId('unhealthy-count')).not.toBeVisible();
+    await expect(component.getByTestId('unhealthy-count')).toBeHidden();
   });
 });

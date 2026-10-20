@@ -21,7 +21,7 @@ test.describe('ReviewFieldValueWithLock', () => {
       'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRowShared/ReviewFieldValueWithLockMount',
       { noEditAfterStep: false, lockedSettingsScreenReaderText: srText, children: 'Value' }
     );
-    await expect(component.getByText(srText)).not.toBeVisible();
+    await expect(component.getByText(srText)).toBeHidden();
     await expect(component.getByText('Value')).toBeVisible();
   });
 

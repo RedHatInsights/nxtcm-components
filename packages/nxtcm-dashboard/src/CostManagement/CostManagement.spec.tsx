@@ -160,7 +160,7 @@ test.describe('CostManagement', () => {
       { isLoading: true }
     );
     await expect(component.getByText('Loading cost data')).toBeVisible();
-    await expect(component.getByTestId('total-cost')).not.toBeVisible();
+    await expect(component.getByTestId('total-cost')).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {

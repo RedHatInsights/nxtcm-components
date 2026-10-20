@@ -59,7 +59,7 @@ test.describe('TotalClusters', () => {
       'nxtcm-dashboard/TotalClusters/TotalClusters/TotalClustersStory',
       { data: { total: 67 } }
     );
-    await expect(component.getByRole('button', { name: '67' })).not.toBeVisible();
+    await expect(component.getByRole('button', { name: '67' })).toBeHidden();
   });
 
   test('should render count as clickable link when onViewMore is provided', async ({ mount }) => {
@@ -94,7 +94,7 @@ test.describe('TotalClusters', () => {
       { isLoading: true }
     );
     await expect(component.getByText('Loading cluster count')).toBeVisible();
-    await expect(component.getByTestId('total-clusters')).not.toBeVisible();
+    await expect(component.getByTestId('total-clusters')).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {

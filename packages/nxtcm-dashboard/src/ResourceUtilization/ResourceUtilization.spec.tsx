@@ -108,7 +108,7 @@ test.describe('ResourceUtilization', () => {
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: defaultData }
     );
-    await expect(component.getByTestId('metric-storage-donut')).not.toBeVisible();
+    await expect(component.getByTestId('metric-storage-donut')).toBeHidden();
   });
 
   test('should render Storage when provided', async ({ mount }) => {
@@ -143,7 +143,7 @@ test.describe('ResourceUtilization', () => {
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
       { data: defaultData }
     );
-    await expect(component.getByRole('button', { name: /View more/i })).not.toBeVisible();
+    await expect(component.getByRole('button', { name: /View more/i })).toBeHidden();
   });
 
   test('should call onViewMore when button is clicked', async ({ mount }) => {
@@ -226,7 +226,7 @@ test.describe('ResourceUtilization', () => {
       { isLoading: true }
     );
     await expect(component.getByText('Loading resource utilization')).toBeVisible();
-    await expect(component.getByTestId('metric-vcpu-donut')).not.toBeVisible();
+    await expect(component.getByTestId('metric-vcpu-donut')).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {

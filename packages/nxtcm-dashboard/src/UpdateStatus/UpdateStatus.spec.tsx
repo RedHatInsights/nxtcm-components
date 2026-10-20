@@ -187,7 +187,7 @@ test.describe('UpdateStatus', () => {
       }
     );
     await expect(component.getByText('Loading update status')).toBeVisible();
-    await expect(component.getByTestId('up-to-date-count')).not.toBeVisible();
+    await expect(component.getByTestId('up-to-date-count')).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {

@@ -54,7 +54,7 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
       await expect(schemaHeading).toBeVisible();
 
       await toggleButton.click();
-      await expect(schemaHeading).not.toBeVisible();
+      await expect(schemaHeading).toBeHidden();
 
       await toggleButton.click();
       await expect(schemaHeading).toBeVisible();
@@ -70,7 +70,7 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
       await waitForMonaco(component);
 
       // No error banner should be visible initially (valid YAML from form)
-      await expect(component.getByRole('alert')).not.toBeVisible();
+      await expect(component.getByRole('alert')).toBeHidden();
     });
 
     // Note: Monaco interaction tests (clicking, focusing) are flaky in CT due to Monaco's
