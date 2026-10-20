@@ -16,8 +16,12 @@ test.describe('AccountRoles', () => {
 
   test('should render info alert about manual instructions', async ({ mount }) => {
     const component = await mount(<AccountRolesMount />);
-    const alert = component.locator('.pf-v6-c-alert.pf-m-info');
-    await expect(alert).toBeVisible();
+    await expect(
+      component.getByText(
+        'If you would prefer to manually create the required roles and policies within your AWS account',
+        { exact: false }
+      )
+    ).toBeVisible();
   });
 
   test('should render external link to AWS CLI documentation', async ({ mount }) => {

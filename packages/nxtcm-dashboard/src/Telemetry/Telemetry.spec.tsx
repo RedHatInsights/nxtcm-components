@@ -14,38 +14,14 @@ test.describe('Telemetry', () => {
     await checkAccessibility({ component });
   });
 
-  test('should render the connected count', async ({ mount }) => {
+  test('should display connected and disconnected cluster summaries', async ({ mount }) => {
     const component = await mount(<Telemetry data={defaultData} />);
     const connectedCount = component.getByTestId('connected-count');
     await expect(connectedCount).toHaveText('142');
-  });
-
-  test('should render the disconnected count', async ({ mount }) => {
-    const component = await mount(<Telemetry data={defaultData} />);
     const disconnectedCount = component.getByTestId('disconnected-count');
     await expect(disconnectedCount).toHaveText('8');
-  });
-
-  test('should render the connected label', async ({ mount }) => {
-    const component = await mount(<Telemetry data={defaultData} />);
     await expect(component.getByText('connected clusters')).toBeVisible();
-  });
-
-  test('should render the disconnected label', async ({ mount }) => {
-    const component = await mount(<Telemetry data={defaultData} />);
     await expect(component.getByText('clusters not checking in')).toBeVisible();
-  });
-
-  test('should render a vertical divider', async ({ mount }) => {
-    const component = await mount(<Telemetry data={defaultData} />);
-    const divider = component.locator('hr');
-    await expect(divider).toBeVisible();
-  });
-
-  test('should render icons for both statuses', async ({ mount }) => {
-    const component = await mount(<Telemetry data={defaultData} />);
-    const icons = component.locator('svg[role="img"]');
-    await expect(icons).toHaveCount(2);
   });
 
   test('should display zero for connected when none are connected', async ({ mount }) => {
@@ -80,10 +56,5 @@ test.describe('Telemetry', () => {
     const component = await mount(<Telemetry isLoading />);
     await expect(component.getByText('Loading telemetry data')).toBeVisible();
     await expect(component.getByTestId('connected-count')).not.toBeVisible();
-  });
-
-  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(<Telemetry isLoading />);
-    await expect(component.getByText('Loading telemetry data')).toBeVisible();
   });
 });

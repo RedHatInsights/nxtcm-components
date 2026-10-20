@@ -11,46 +11,22 @@ test.describe('ClusterWideProxy (ROSA HCP)', () => {
     await checkAccessibility({ component });
   });
 
-  test('should render the section title', async ({ mount }) => {
+  test('should explain proxy configuration and link to documentation', async ({ mount }) => {
     const component = await mount(<ClusterWideProxyMount />);
     await expect(component.getByText(cw.sectionLabel, { exact: true })).toBeVisible();
-  });
-
-  test('should render the intro text', async ({ mount }) => {
-    const component = await mount(<ClusterWideProxyMount />);
     await expect(component.getByText(cw.intro)).toBeVisible();
-  });
-
-  test('should render the learn more link', async ({ mount }) => {
-    const component = await mount(<ClusterWideProxyMount />);
-    await expect(component.getByText(cw.learnMoreLink)).toBeVisible();
-  });
-
-  test('should render the configure at least 1 field alert', async ({ mount }) => {
-    const component = await mount(<ClusterWideProxyMount />);
+    await expect(component.getByRole('link', { name: cw.learnMoreLink })).toBeVisible();
     await expect(component.getByText(cw.alertConfigureFields)).toBeVisible();
   });
 
-  test('should render the HTTP proxy URL input', async ({ mount }) => {
+  test('should display the proxy configuration fields', async ({ mount }) => {
     const component = await mount(<ClusterWideProxyMount />);
     await expect(component.getByText(cw.httpLabel, { exact: true })).toBeVisible();
     await expect(component.getByRole('textbox', { name: cw.httpLabel })).toBeVisible();
-  });
-
-  test('should render the HTTPS proxy URL input', async ({ mount }) => {
-    const component = await mount(<ClusterWideProxyMount />);
     await expect(component.getByText(cw.httpsLabel, { exact: true })).toBeVisible();
     await expect(component.getByRole('textbox', { name: cw.httpsLabel })).toBeVisible();
-  });
-
-  test('should render the No Proxy domains input', async ({ mount }) => {
-    const component = await mount(<ClusterWideProxyMount />);
     await expect(component.getByText(cw.noProxyLabel, { exact: true })).toBeVisible();
     await expect(component.getByRole('textbox', { name: cw.noProxyLabel })).toBeVisible();
-  });
-
-  test('should render the Additional trust bundle field', async ({ mount }) => {
-    const component = await mount(<ClusterWideProxyMount />);
     await expect(component.getByText(cw.trustBundleLabel, { exact: true })).toBeVisible();
   });
 

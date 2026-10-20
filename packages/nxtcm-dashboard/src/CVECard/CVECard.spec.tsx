@@ -157,10 +157,9 @@ test.describe('CVECard', () => {
     await expect(component.getByText('147')).toBeVisible();
   });
 
-  test('should apply custom className when provided', async ({ mount, page }) => {
-    await mount(<CVECard cveData={mockCVEData} className="custom-class" />);
-    const customElement = page.locator('.custom-class');
-    await expect(customElement).toBeVisible();
+  test('should apply custom className when provided', async ({ mount }) => {
+    const component = await mount(<CVECard cveData={mockCVEData} className="custom-class" />);
+    await expect(component).toHaveClass(/(?:^|\s)custom-class(?:\s|$)/);
   });
 
   test('should use default view link text when not provided', async ({ mount }) => {
@@ -227,22 +226,6 @@ test('should render CVE with count of 0', async ({ mount }) => {
   ];
   const component = await mount(<CVECard cveData={data} />);
   await expect(component.getByText('0')).toBeVisible();
-});
-
-test('should render links as buttons with correct role', async ({ mount }) => {
-  const component = await mount(<CVECard cveData={mockCVEData} />);
-  await expect(component.getByRole('button', { name: 'View critical CVEs' })).toBeVisible();
-  await expect(component.getByRole('button', { name: 'View important CVEs' })).toBeVisible();
-});
-
-test('should apply custom className when provided', async ({ mount }) => {
-  const component = await mount(<CVECard cveData={mockCVEData} className="custom-class" />);
-  await expect(component.getByText('CVEs').first()).toBeVisible();
-});
-
-test('should render icons for different severity levels', async ({ mount }) => {
-  const component = await mount(<CVECard cveData={mockCVEData} />);
-  await expect(component.locator('svg').first()).toBeVisible();
 });
 
 test('should handle multiple CVE severities in order', async ({ mount }) => {
@@ -419,10 +402,4 @@ test('should handle clicking view link multiple times', async ({ mount }) => {
   await viewButton.click();
 
   expect(clickCount).toBe(3);
-});
-
-test('should display correct icon colors for severity levels', async ({ mount }) => {
-  const component = await mount(<CVECard cveData={mockCVEData} />);
-  const icons = component.locator('svg');
-  await expect(icons.first()).toBeVisible();
 });

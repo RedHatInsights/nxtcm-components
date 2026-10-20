@@ -18,16 +18,12 @@ test.describe('AdvisorSeverity', () => {
     await checkAccessibility({ component });
   });
 
-  test('should render all four severity counts', async ({ mount }) => {
+  test('should display every severity label and count', async ({ mount }) => {
     const component = await mount(<AdvisorSeverity severity={defaultSeverity} />);
     await expect(component.getByTestId('severity-count-critical')).toHaveText('3');
     await expect(component.getByTestId('severity-count-important')).toHaveText('7');
     await expect(component.getByTestId('severity-count-moderate')).toHaveText('15');
     await expect(component.getByTestId('severity-count-low')).toHaveText('2');
-  });
-
-  test('should render severity labels', async ({ mount }) => {
-    const component = await mount(<AdvisorSeverity severity={defaultSeverity} />);
     await expect(component.getByText('Critical')).toBeVisible();
     await expect(component.getByText('Important')).toBeVisible();
     await expect(component.getByText('Moderate')).toBeVisible();
@@ -119,10 +115,5 @@ test.describe('AdvisorSeverity', () => {
     const component = await mount(<AdvisorSeverity isLoading />);
     await expect(component.getByText('Loading severity data')).toBeVisible();
     await expect(component.getByTestId('severity-count-critical')).not.toBeVisible();
-  });
-
-  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(<AdvisorSeverity isLoading />);
-    await expect(component.getByText('Loading severity data')).toBeVisible();
   });
 });

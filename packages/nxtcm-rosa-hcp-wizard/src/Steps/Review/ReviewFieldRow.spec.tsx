@@ -18,21 +18,14 @@ test.describe('ReviewFieldRow', () => {
     await expect(component.getByText('Hidden Field')).not.toBeVisible();
   });
 
-  test('should show lock icon when noEditAfterStep is true', async ({ mount }) => {
-    const component = await mount(
-      <ReviewFieldRowMount labelText="Locked Field" noEditAfterStep={true} />
-    );
-    // Lock icon is rendered as SVG, should be present
-    const icons = component.locator('svg');
-    await expect(icons.first()).toBeVisible();
-  });
-
-  test('should not show lock icon when noEditAfterStep is false', async ({ mount }) => {
+  test('should display editable values without a locked-setting explanation', async ({ mount }) => {
     const component = await mount(
       <ReviewFieldRowMount labelText="Editable Field" value="Test" noEditAfterStep={false} />
     );
-    // When locked settings are false, the value should be visible but no extra icons
     await expect(component.getByText('Test')).toBeVisible();
+    await expect(
+      component.getByText('This setting cannot be changed after cluster creation')
+    ).toHaveCount(0);
   });
 
   test('should show screen reader text for locked settings', async ({ mount }) => {
@@ -66,8 +59,8 @@ test.describe('ReviewFieldRow', () => {
       />
     );
     // Value should not be visible until expanded
-    const preElement = component.locator('pre');
-    await expect(preElement).not.toBeVisible();
+    const value = component.getByText('Hidden content', { exact: true });
+    await expect(value).not.toBeVisible();
   });
 
   test('should expand to show value when toggle clicked', async ({ mount }) => {
@@ -81,8 +74,6 @@ test.describe('ReviewFieldRow', () => {
     const toggle = component.getByRole('button', { name: /show more/i });
     await toggle.click();
 
-    // Value should now be visible in pre tag
-    await expect(component.locator('pre')).toBeVisible();
     await expect(component.getByText('Expandable content')).toBeVisible();
   });
 
@@ -106,8 +97,7 @@ test.describe('ReviewFieldRow', () => {
     const showLessToggle = component.getByRole('button', { name: /show less/i });
     await showLessToggle.click();
 
-    // Pre element should be hidden again
-    await expect(component.locator('pre')).not.toBeVisible();
+    await expect(component.getByText('Collapsible content', { exact: true })).not.toBeVisible();
   });
 
   test('should show value directly when collapseOnRequired is false', async ({ mount }) => {

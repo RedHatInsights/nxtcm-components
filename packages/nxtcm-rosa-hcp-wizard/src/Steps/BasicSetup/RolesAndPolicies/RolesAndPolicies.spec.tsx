@@ -24,23 +24,11 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     await checkAccessibility({ component });
   });
 
-  test('should render the Account roles section title', async ({ mount }) => {
+  test('should display role sections and installer and OIDC selectors', async ({ mount }) => {
     const component = await mount(<RolesAndPoliciesMount />);
     await expect(component.getByText(rp.accountRolesSection, { exact: true })).toBeVisible();
-  });
-
-  test('should render the Operator roles section title', async ({ mount }) => {
-    const component = await mount(<RolesAndPoliciesMount />);
     await expect(component.getByText(rp.operatorRolesSection, { exact: true })).toBeVisible();
-  });
-
-  test('should render the Installer role select', async ({ mount }) => {
-    const component = await mount(<RolesAndPoliciesMount />);
     await expect(component.getByText(rp.installerRoleLabel, { exact: true })).toBeVisible();
-  });
-
-  test('should render the OIDC config ID select', async ({ mount }) => {
-    const component = await mount(<RolesAndPoliciesMount />);
     await expect(component.getByText(rp.oidcLabel, { exact: true })).toBeVisible();
   });
 

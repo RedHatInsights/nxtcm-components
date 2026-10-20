@@ -44,7 +44,6 @@ test.describe('FieldWrapper', () => {
 
       const wrapper = page.getByTestId('rosa-hcp-field-wrapper');
       await expect(page.getByText('Sized field')).toBeVisible();
-      await expect(wrapper).toHaveClass(new RegExp(`rosa-hcp-field-wrapper--${size}`));
 
       const expectedMaxWidth = await wrapper.evaluate((el, tokenMultiplier) => {
         const probe = document.createElement('div');

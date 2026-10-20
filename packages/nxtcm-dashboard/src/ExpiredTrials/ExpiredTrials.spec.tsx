@@ -61,7 +61,7 @@ test.describe('ExpiredTrials', () => {
 
     await expect(component.getByText('test')).toBeVisible();
     const trialButtons = component.locator('[data-testid^="trial-link-"]');
-    expect(await trialButtons.count()).toBe(0);
+    await expect(trialButtons).toHaveCount(0);
   });
 
   test('should show empty state when no trials', async ({ mount }) => {
@@ -75,15 +75,15 @@ test.describe('ExpiredTrials', () => {
   test('should render kebab actions when rowActions is provided', async ({ mount }) => {
     const component = await mount(<ExpiredTrialsWithActions data={defaultData} />);
 
-    const kebabs = component.locator('[aria-label="Kebab toggle"]');
-    expect(await kebabs.count()).toBe(defaultData.trials.length);
+    const kebabs = component.getByRole('button', { name: 'Kebab toggle' });
+    await expect(kebabs).toHaveCount(defaultData.trials.length);
   });
 
   test('should not render kebab column when rowActions is not provided', async ({ mount }) => {
     const component = await mount(<ExpiredTrials data={defaultData} />);
 
-    const kebabs = component.locator('[aria-label="Kebab toggle"]');
-    expect(await kebabs.count()).toBe(0);
+    const kebabs = component.getByRole('button', { name: 'Kebab toggle' });
+    await expect(kebabs).toHaveCount(0);
   });
 
   test('should render pagination when onPageChange is provided', async ({ mount }) => {
@@ -91,13 +91,13 @@ test.describe('ExpiredTrials', () => {
       <ExpiredTrials data={{ ...defaultData, totalCount: 25 }} onPageChange={() => {}} />
     );
 
-    await expect(component.locator('.pf-v6-c-pagination')).toBeVisible();
+    await expect(component.getByRole('navigation', { name: 'Pagination' })).toBeVisible();
   });
 
   test('should not render pagination when onPageChange is not provided', async ({ mount }) => {
     const component = await mount(<ExpiredTrials data={defaultData} />);
 
-    expect(await component.locator('.pf-v6-c-pagination').count()).toBe(0);
+    await expect(component.getByRole('navigation', { name: 'Pagination' })).toHaveCount(0);
   });
 
   test('should call onPageChange when next page is clicked', async ({ mount }) => {
@@ -128,7 +128,7 @@ test.describe('ExpiredTrials', () => {
     );
 
     // pf6 portals the dropdown menu to document body, so query via page
-    await component.locator('.pf-v6-c-pagination .pf-v6-c-menu-toggle').click();
+    await component.getByRole('button', { name: /1 - 10 of 25/ }).click();
     await page.getByRole('menuitem', { name: /20 per page/i }).click();
     expect(changedSize).toBe(20);
   });

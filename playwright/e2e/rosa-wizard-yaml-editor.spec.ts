@@ -1,114 +1,83 @@
-/**
- * E2E tests for the ROSA HCP YAML Editor
- *
- * These tests verify the YAML editor workflow: opening, viewing, editing, discarding, and applying changes.
- * Validation logic is tested separately in Component Tests where we can reliably trigger Monaco editor events.
- */
-
 import { test, expect } from './fixtures';
-import { navigateToYamlEditor, getMonacoYaml } from './helpers/yaml-editor-helpers';
+import {
+  navigateToYamlEditor,
+  getMonacoYaml,
+  appendYamlComment,
+} from './helpers/yaml-editor-helpers';
 
 test.describe('ROSA Wizard - YAML Editor', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
   });
 
-  test.describe('Opening and Navigation', () => {
-    test('opens YAML editor from review page', async ({ page }) => {
-      await navigateToYamlEditor(page);
+  test('opens YAML editor from Review with cluster creation actions', async ({ page }) => {
+    await navigateToYamlEditor(page);
 
-      // Verify Monaco editor is loaded
-      await expect(page.locator('.monaco-editor')).toBeVisible();
-      await expect(page.locator('.view-lines')).toBeVisible();
-    });
-
-    test('closes YAML editor with Discard button and confirmation', async ({ page }) => {
-      await navigateToYamlEditor(page);
-
-      await page
-        .getByRole('button', { name: 'Discard changes and go back to Review step' })
-        .click();
-
-      // Confirmation modal appears
-      await expect(page.getByRole('dialog')).toBeVisible();
-      await expect(
-        page.getByText('Any changes you made to the YAML configuration will be lost.')
-      ).toBeVisible();
-
-      await page.getByRole('button', { name: 'Yes' }).click();
-
-      // Back to review page
-      await expect(page.getByRole('button', { name: 'Edit in YAML' })).toBeVisible();
-      await expect(page.locator('.monaco-editor')).not.toBeVisible();
-    });
-
-    test('cancels discard confirmation', async ({ page }) => {
-      await navigateToYamlEditor(page);
-
-      await page
-        .getByRole('button', { name: 'Discard changes and go back to Review step' })
-        .click();
-      await page.getByRole('button', { name: 'Cancel' }).click();
-
-      // Still in YAML editor
-      await expect(page.locator('.monaco-editor')).toBeVisible();
-    });
+    await expect(page.getByRole('textbox', { name: /Editor content/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Create cluster', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Cancel cluster creation' })).toBeVisible();
   });
 
-  test.describe('YAML Content', () => {
-    test('displays initial YAML generated from form data', async ({ page }) => {
-      await navigateToYamlEditor(page);
+  test('discards edited YAML after confirmation and returns to Review', async ({ page }) => {
+    await navigateToYamlEditor(page);
+    await appendYamlComment(page, 'discard this change');
+    await page.getByRole('button', { name: 'Discard changes and go back to Review step' }).click();
 
-      const yaml = await getMonacoYaml(page);
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    await expect(
+      dialog.getByText('Any changes you made to the YAML configuration will be lost.')
+    ).toBeVisible();
+    await dialog.getByRole('button', { name: 'Yes', exact: true }).click();
 
-      // Verify YAML structure contains expected fields from wizard form
-      expect(yaml).toContain('kind: ROSAControlPlane');
-      expect(yaml).toContain('apiVersion: controlplane.cluster.x-k8s.io/v1beta2');
-      expect(yaml).toContain("rosaClusterName: 'test-cluster'");
-      expect(yaml).toContain("version: '4.12.0'");
-      expect(yaml).toContain("region: 'us-east-1'");
-    });
-
-    test('YAML content is editable in Monaco editor', async ({ page }) => {
-      await navigateToYamlEditor(page);
-
-      // Verify the editor is interactive by checking Monaco is ready
-      const isEditable = await page.evaluate(() => {
-        const editor = (window as Window & { monacoEditor?: { getModel: () => unknown } })
-          .monacoEditor;
-        return editor && editor.getModel() !== null;
-      });
-
-      expect(isEditable).toBe(true);
-    });
+    await expect(page.getByRole('button', { name: 'Edit in YAML' })).toBeVisible();
+    await expect(page.getByRole('textbox', { name: /Editor content/ })).toHaveCount(0);
+    await page.getByRole('button', { name: 'Edit in YAML' }).click();
+    await expect(page.getByRole('textbox', { name: /Editor content/ })).toBeVisible();
+    await expect.poll(() => getMonacoYaml(page)).toContain('kind: ROSAControlPlane');
+    await expect.poll(() => getMonacoYaml(page)).not.toContain('# discard this change');
   });
 
-  test.describe('Schema Panel', () => {
-    test('schema panel toggle button is available', async ({ page }) => {
-      await navigateToYamlEditor(page);
+  test('keeps edited YAML when discard confirmation is canceled', async ({ page }) => {
+    await navigateToYamlEditor(page);
+    await appendYamlComment(page, 'keep this change');
+    await page.getByRole('button', { name: 'Discard changes and go back to Review step' }).click();
+    const dialog = page.getByRole('dialog');
+    await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
 
-      const toggleButton = page.getByRole('button', { name: 'Toggle schema panel' }).first();
-      await toggleButton.waitFor({ state: 'visible', timeout: 10000 });
-
-      // Button should be visible and enabled
-      await expect(toggleButton).toBeVisible();
-      await expect(toggleButton).toBeEnabled();
-    });
+    await expect(dialog).not.toBeVisible();
+    await expect(page.getByRole('textbox', { name: /Editor content/ })).toBeVisible();
+    await expect.poll(() => getMonacoYaml(page)).toContain('# keep this change');
   });
 
-  test.describe('Form Integration', () => {
-    test('create cluster button is visible', async ({ page }) => {
-      await navigateToYamlEditor(page);
+  test('displays initial YAML generated from form data', async ({ page }) => {
+    await navigateToYamlEditor(page);
+    const yaml = await getMonacoYaml(page);
 
-      // The footer should show "Create cluster" button when in YAML editor
-      await expect(page.getByRole('button', { name: 'Create cluster' })).toBeVisible();
-    });
+    expect(yaml).toContain('kind: ROSAControlPlane');
+    expect(yaml).toContain('apiVersion: controlplane.cluster.x-k8s.io/v1beta2');
+    expect(yaml).toContain("rosaClusterName: 'test-cluster'");
+    expect(yaml).toContain("version: '4.12.0'");
+    expect(yaml).toContain("region: 'us-east-1'");
+  });
 
-    test('cancel button is visible', async ({ page }) => {
-      await navigateToYamlEditor(page);
+  test('updates the YAML document through keyboard editing', async ({ page }) => {
+    await navigateToYamlEditor(page);
+    const initialYaml = await getMonacoYaml(page);
+    await appendYamlComment(page, 'keyboard edit');
 
-      // Cancel button should be available
-      await expect(page.getByRole('button', { name: 'Cancel cluster creation' })).toBeVisible();
-    });
+    const editedYaml = await getMonacoYaml(page);
+    expect(editedYaml).not.toBe(initialYaml);
+    expect(editedYaml).toContain("rosaClusterName: 'test-cluster'");
+  });
+
+  test('hides and reopens the schema panel', async ({ page }) => {
+    await navigateToYamlEditor(page);
+    const schema = page.getByRole('heading', { name: 'ROSAControlPlane schema' });
+    await expect(schema).toBeVisible();
+    await page.getByRole('button', { name: 'Toggle schema panel' }).first().click();
+    await expect(schema).not.toBeVisible();
+    await page.getByRole('button', { name: 'Toggle schema panel' }).click();
+    await expect(schema).toBeVisible();
   });
 });

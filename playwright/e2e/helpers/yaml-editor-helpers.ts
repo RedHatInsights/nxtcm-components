@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 
 /**
  * Navigate from wizard start to YAML editor
@@ -15,19 +15,8 @@ export async function navigateToYamlEditor(page: Page): Promise<void> {
   // Open YAML editor from review page
   await page.getByRole('button', { name: 'Edit in YAML' }).click();
 
-  // Wait for Monaco editor to be fully initialized
-  await page.locator('.monaco-editor').waitFor({ state: 'visible' });
-
-  // Wait for Monaco editor to be available on window
-  await page.waitForFunction(
-    () => {
-      return (window as Window & { monacoEditor?: unknown }).monacoEditor !== undefined;
-    },
-    { timeout: 5000 }
-  );
-
-  // Give Monaco a moment to load content
-  await page.waitForTimeout(500);
+  await expect(page.getByRole('textbox', { name: /Editor content/ })).toBeVisible();
+  await expect.poll(() => getMonacoYaml(page)).toContain('kind: ROSAControlPlane');
 }
 
 /**
@@ -38,6 +27,16 @@ export async function getMonacoYaml(page: Page): Promise<string> {
     const editor = (window as Window & { monacoEditor?: { getValue: () => string } }).monacoEditor;
     return editor ? editor.getValue() : '';
   });
+}
+
+/** Type through Monaco's keyboard surface and wait for the resulting document. */
+export async function appendYamlComment(page: Page, comment: string): Promise<void> {
+  const editor = page.getByRole('textbox', { name: /Editor content/ });
+  await editor.press('ControlOrMeta+End');
+  await editor.press('End');
+  await editor.press('Enter');
+  await editor.pressSequentially(`# ${comment}`);
+  await expect.poll(() => getMonacoYaml(page)).toContain(`# ${comment}`);
 }
 
 /**

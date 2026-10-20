@@ -8,34 +8,18 @@ const sampleClusters: CostManagementProps['clusters'] = [
 ];
 
 test.describe('CostManagement', () => {
-  test('renders the title', async ({ mount }) => {
+  test('displays the cost summary with a formatted total', async ({ mount }) => {
     const component = await mount(<CostManagement totalCost={3000} clusters={sampleClusters} />);
     await expect(component.getByRole('heading', { name: 'Cost Management' })).toBeVisible();
-  });
-
-  test('displays the formatted total cost', async ({ mount }) => {
-    const component = await mount(<CostManagement totalCost={3000} clusters={sampleClusters} />);
     await expect(component.getByTestId('total-cost')).toContainText('$3,000.00');
-  });
-
-  test('displays month-to-date label', async ({ mount }) => {
-    const component = await mount(<CostManagement totalCost={3000} clusters={sampleClusters} />);
     await expect(component.getByText('Month-to-date cost')).toBeVisible();
   });
 
-  test('displays top clusters heading', async ({ mount }) => {
+  test('displays top clusters with their costs and percentages', async ({ mount }) => {
     const component = await mount(<CostManagement totalCost={3000} clusters={sampleClusters} />);
     await expect(component.getByText('Top clusters')).toBeVisible();
-  });
-
-  test('renders cluster names', async ({ mount }) => {
-    const component = await mount(<CostManagement totalCost={3000} clusters={sampleClusters} />);
     await expect(component.getByTestId('cluster-name-prod-east-1')).toContainText('prod-east-1');
     await expect(component.getByTestId('cluster-name-prod-west-2')).toContainText('prod-west-2');
-  });
-
-  test('renders cluster costs with percentages', async ({ mount }) => {
-    const component = await mount(<CostManagement totalCost={3000} clusters={sampleClusters} />);
     // 700/3000 = 23%, 2300/3000 = 77%
     await expect(component.getByTestId('cluster-cost-prod-east-1')).toContainText('$700.00');
     await expect(component.getByTestId('cluster-cost-prod-east-1')).toContainText('23%');
@@ -43,7 +27,7 @@ test.describe('CostManagement', () => {
     await expect(component.getByTestId('cluster-cost-prod-west-2')).toContainText('77%');
   });
 
-  test('renders cluster names as links when onClusterClick is provided', async ({ mount }) => {
+  test('calls onClusterClick with the selected cluster', async ({ mount }) => {
     const clicks: string[] = [];
     const component = await mount(
       <CostManagement
@@ -53,7 +37,10 @@ test.describe('CostManagement', () => {
       />
     );
     const link = component.getByRole('button', { name: 'prod-east-1' });
-    await expect(link).toBeVisible();
+    await link.click();
+    expect(clicks).toEqual(['prod-east-1']);
+    await component.getByRole('button', { name: 'prod-west-2' }).click();
+    expect(clicks).toEqual(['prod-east-1', 'prod-west-2']);
   });
 
   test('renders cluster names as plain text without onClusterClick', async ({ mount }) => {
@@ -62,13 +49,19 @@ test.describe('CostManagement', () => {
     await expect(component.getByRole('button', { name: 'prod-east-1' })).toHaveCount(0);
   });
 
-  test('shows "View more in Cost Management" link when onViewMore is set', async ({ mount }) => {
+  test('calls onViewMore from the cost management action', async ({ mount }) => {
+    let calls = 0;
     const component = await mount(
-      <CostManagement totalCost={3000} clusters={sampleClusters} onViewMore={() => {}} />
+      <CostManagement
+        totalCost={3000}
+        clusters={sampleClusters}
+        onViewMore={() => {
+          calls += 1;
+        }}
+      />
     );
-    await expect(
-      component.getByRole('button', { name: 'View more in Cost Management' })
-    ).toBeVisible();
+    await component.getByRole('button', { name: 'View more in Cost Management' }).click();
+    expect(calls).toBe(1);
   });
 
   test('hides "View more" link when onViewMore is not set', async ({ mount }) => {
@@ -120,10 +113,5 @@ test.describe('CostManagement', () => {
     const component = await mount(<CostManagement isLoading />);
     await expect(component.getByText('Loading cost data')).toBeVisible();
     await expect(component.getByTestId('total-cost')).not.toBeVisible();
-  });
-
-  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(<CostManagement isLoading />);
-    await expect(component.getByText('Loading cost data')).toBeVisible();
   });
 });

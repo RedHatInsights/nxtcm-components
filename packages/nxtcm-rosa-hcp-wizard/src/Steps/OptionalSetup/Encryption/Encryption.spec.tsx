@@ -17,45 +17,23 @@ test.describe('Encryption (ROSA HCP)', () => {
     await checkAccessibility({ component });
   });
 
-  test('should render the Advanced encryption section title', async ({ mount }) => {
+  test('should display encryption choices with default KMS selected and guidance', async ({
+    mount,
+  }) => {
     const component = await mount(<EncryptionMount />);
     await expect(component.getByText(e.sectionLabel, { exact: true })).toBeVisible();
-  });
-
-  test('should render the Encryption Keys radio group', async ({ mount }) => {
-    const component = await mount(<EncryptionMount />);
     await expect(component.getByText(e.keysGroupLabel, { exact: true })).toBeVisible();
-  });
-
-  test('should render the default KMS radio option', async ({ mount }) => {
-    const component = await mount(<EncryptionMount />);
     await expect(component.getByRole('radio', { name: e.defaultKms })).toBeVisible();
-  });
-
-  test('should render the custom KMS radio option', async ({ mount }) => {
-    const component = await mount(<EncryptionMount />);
     await expect(component.getByRole('radio', { name: e.customKms })).toBeVisible();
-  });
-
-  test('should have default KMS selected by default', async ({ mount }) => {
-    const component = await mount(<EncryptionMount />);
     await expect(component.getByRole('radio', { name: e.defaultKms })).toBeChecked();
     await expect(component.getByRole('radio', { name: e.customKms })).not.toBeChecked();
-  });
-
-  test('should render the Learn more link for encryption keys', async ({ mount }) => {
-    const component = await mount(<EncryptionMount />);
     await expect(component.getByText(e.keysLearnMore).first()).toBeVisible();
+    await expect(component.getByText(e.keysNoteAlert)).toBeVisible();
   });
 
   test('should render the etcd encryption checkbox', async ({ mount }) => {
     const component = await mount(<EncryptionMount />);
     await expect(component.getByRole('checkbox', { name: e.etcdLabel })).toBeVisible();
-  });
-
-  test('should render the info alert about encryption keys', async ({ mount }) => {
-    const component = await mount(<EncryptionMount />);
-    await expect(component.getByText(e.keysNoteAlert)).toBeVisible();
   });
 
   test.describe('Encryption — custom KMS key', () => {

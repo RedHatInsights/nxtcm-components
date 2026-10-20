@@ -3,22 +3,14 @@ import { checkAccessibility } from '../../test-helpers';
 import { TabGroupMount } from './TabGroup.spec-helpers';
 
 test.describe('TabGroup', () => {
-  test('should render all tab buttons', async ({ mount }) => {
+  test('should display all tabs with only the first selected and visible', async ({ mount }) => {
     const component = await mount(<TabGroupMount />);
     await expect(component.getByRole('button', { name: 'Tab 1' })).toBeVisible();
     await expect(component.getByRole('button', { name: 'Tab 2' })).toBeVisible();
     await expect(component.getByRole('button', { name: 'Tab 3' })).toBeVisible();
-  });
-
-  test('should show first tab content by default', async ({ mount }) => {
-    const component = await mount(<TabGroupMount />);
     await expect(component.getByText('Tab 1 Content')).toBeVisible();
     await expect(component.getByText('Tab 2 Content')).not.toBeVisible();
     await expect(component.getByText('Tab 3 Content')).not.toBeVisible();
-  });
-
-  test('should have first tab selected by default', async ({ mount }) => {
-    const component = await mount(<TabGroupMount />);
     const firstTab = component.getByRole('button', { name: 'Tab 1' });
     await expect(firstTab).toHaveAttribute('aria-pressed', 'true');
   });

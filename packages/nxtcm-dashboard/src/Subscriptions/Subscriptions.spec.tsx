@@ -8,44 +8,17 @@ const defaultProps: SubscriptionsProps = {
 };
 
 test.describe('Subscriptions', () => {
-  test('should render the component with correct counts', async ({ mount }) => {
+  test('should display subscription and instance summaries', async ({ mount }) => {
     const component = await mount(<Subscriptions {...defaultProps} />);
 
     await expect(component.getByText('3')).toBeVisible();
     await expect(component.getByText('11')).toBeVisible();
-  });
-
-  test('should display subscription count', async ({ mount }) => {
-    const component = await mount(<Subscriptions {...defaultProps} />);
-
-    await expect(component.getByText('3')).toBeVisible();
-  });
-
-  test('should display instance count', async ({ mount }) => {
-    const component = await mount(<Subscriptions {...defaultProps} />);
-
-    await expect(component.getByText('11')).toBeVisible();
-  });
-
-  test('should display description text', async ({ mount }) => {
-    const component = await mount(<Subscriptions {...defaultProps} />);
-
     await expect(
       component.getByText(
         'Monitor your OpenShift usage for both Annual and On-Demand subscriptions.'
       )
     ).toBeVisible();
-  });
-
-  test('should display "Subscriptions" label', async ({ mount }) => {
-    const component = await mount(<Subscriptions {...defaultProps} />);
-
     await expect(component.getByText('Subscriptions', { exact: true }).last()).toBeVisible();
-  });
-
-  test('should display "Instances" label', async ({ mount }) => {
-    const component = await mount(<Subscriptions {...defaultProps} />);
-
     await expect(component.getByText('Instances')).toBeVisible();
   });
 
@@ -70,17 +43,6 @@ test.describe('Subscriptions', () => {
     await expect(component.getByRole('button', { name: /View subscriptions/i })).not.toBeVisible();
   });
 
-  test('should show View subscriptions button when onViewSubscriptions is provided', async ({
-    mount,
-  }) => {
-    const component = await mount(
-      <Subscriptions {...defaultProps} onViewSubscriptions={() => {}} />
-    );
-
-    const viewButton = component.getByRole('button', { name: /View subscriptions/i });
-    await expect(viewButton).toBeVisible();
-  });
-
   test('should call onViewSubscriptions when button is clicked', async ({ mount }) => {
     let onViewSubscriptionsCalled = false;
     const handleViewSubscriptions = () => {
@@ -96,27 +58,12 @@ test.describe('Subscriptions', () => {
     expect(onViewSubscriptionsCalled).toBe(true);
   });
 
-  test('should render subscription count as span when onSubscriptionsClick is not provided', async ({
-    mount,
-    page,
-  }) => {
-    await mount(<Subscriptions {...defaultProps} />);
-
-    const subscriptionCount = page.getByText('3').first();
-    await expect(subscriptionCount).toBeVisible();
-
-    const tagName = await subscriptionCount.evaluate((el) => el.tagName.toLowerCase());
-    expect(tagName).toBe('span');
-  });
-
-  test('should render subscription count as button when onSubscriptionsClick is provided', async ({
+  test('should display 3 without a count action when its callback is omitted', async ({
     mount,
   }) => {
-    const component = await mount(
-      <Subscriptions {...defaultProps} onSubscriptionsClick={() => {}} />
-    );
-
-    await expect(component.getByRole('button', { name: '3' })).toBeVisible();
+    const component = await mount(<Subscriptions {...defaultProps} />);
+    await expect(component.getByText('3', { exact: true })).toBeVisible();
+    await expect(component.getByRole('button', { name: '3', exact: true })).toHaveCount(0);
   });
 
   test('should call onSubscriptionsClick when subscription count is clicked', async ({ mount }) => {
@@ -134,25 +81,12 @@ test.describe('Subscriptions', () => {
     expect(onSubscriptionsClickCalled).toBe(true);
   });
 
-  test('should render instance count as span when onInstancesClick is not provided', async ({
-    mount,
-    page,
-  }) => {
-    await mount(<Subscriptions {...defaultProps} />);
-
-    const instanceCount = page.getByText('11').first();
-    await expect(instanceCount).toBeVisible();
-
-    const tagName = await instanceCount.evaluate((el) => el.tagName.toLowerCase());
-    expect(tagName).toBe('span');
-  });
-
-  test('should render instance count as button when onInstancesClick is provided', async ({
+  test('should display 11 without a count action when its callback is omitted', async ({
     mount,
   }) => {
-    const component = await mount(<Subscriptions {...defaultProps} onInstancesClick={() => {}} />);
-
-    await expect(component.getByRole('button', { name: '11' })).toBeVisible();
+    const component = await mount(<Subscriptions {...defaultProps} />);
+    await expect(component.getByText('11', { exact: true })).toBeVisible();
+    await expect(component.getByRole('button', { name: '11', exact: true })).toHaveCount(0);
   });
 
   test('should call onInstancesClick when instance count is clicked', async ({ mount }) => {
@@ -168,21 +102,6 @@ test.describe('Subscriptions', () => {
     await component.getByRole('button', { name: '11' }).click();
 
     expect(onInstancesClickCalled).toBe(true);
-  });
-
-  test('should render both counts as clickable when both callbacks are provided', async ({
-    mount,
-  }) => {
-    const component = await mount(
-      <Subscriptions
-        {...defaultProps}
-        onSubscriptionsClick={() => {}}
-        onInstancesClick={() => {}}
-      />
-    );
-
-    await expect(component.getByRole('button', { name: '3' })).toBeVisible();
-    await expect(component.getByRole('button', { name: '11' })).toBeVisible();
   });
 
   test('should call correct callback when multiple clickable counts are clicked', async ({
@@ -209,13 +128,6 @@ test.describe('Subscriptions', () => {
 
     await component.getByRole('button', { name: '11' }).click();
     expect(instancesClicked).toBe(true);
-  });
-
-  test('should render icons correctly', async ({ mount, page }) => {
-    await mount(<Subscriptions {...defaultProps} />);
-
-    const icons = page.locator('svg');
-    expect(await icons.count()).toBeGreaterThan(0);
   });
 
   test('should handle all callbacks together', async ({ mount }) => {
@@ -248,26 +160,24 @@ test.describe('Subscriptions', () => {
     expect(viewSubscriptionsCalled).toBe(true);
   });
 
-  test('should render only subscription count as clickable', async ({ mount, page }) => {
+  test('should render only subscription count as clickable', async ({ mount }) => {
     const component = await mount(
       <Subscriptions {...defaultProps} onSubscriptionsClick={() => {}} />
     );
 
     await expect(component.getByRole('button', { name: '3' })).toBeVisible();
 
-    const instanceCount = page.getByText('11').first();
-    const instTagName = await instanceCount.evaluate((el) => el.tagName.toLowerCase());
-    expect(instTagName).toBe('span');
+    await expect(component.getByText('11', { exact: true })).toBeVisible();
+    await expect(component.getByRole('button', { name: '11', exact: true })).toHaveCount(0);
   });
 
-  test('should render only instance count as clickable', async ({ mount, page }) => {
+  test('should render only instance count as clickable', async ({ mount }) => {
     const component = await mount(<Subscriptions {...defaultProps} onInstancesClick={() => {}} />);
 
     await expect(component.getByRole('button', { name: '11' })).toBeVisible();
 
-    const subscriptionCount = page.getByText('3').first();
-    const subTagName = await subscriptionCount.evaluate((el) => el.tagName.toLowerCase());
-    expect(subTagName).toBe('span');
+    await expect(component.getByText('3', { exact: true })).toBeVisible();
+    await expect(component.getByRole('button', { name: '3', exact: true })).toHaveCount(0);
   });
 
   test('should render with single digit counts', async ({ mount }) => {

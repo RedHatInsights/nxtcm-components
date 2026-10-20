@@ -15,11 +15,16 @@ test.describe('ClusterProviders', () => {
     await checkAccessibility({ component });
   });
 
-  test('should render the default title', async ({ mount }) => {
+  test('should display the provider chart, title and legend counts', async ({ mount }) => {
     const component = await mount(<ClusterProviders providers={defaultProviders} />);
     const title = component.getByTestId('providers-title');
     await expect(title).toBeVisible();
     await expect(title).toHaveText('Clusters by provider');
+    await expect(component.getByTestId('providers-chart')).toBeVisible();
+    const legend = component.getByTestId('providers-legend');
+    await expect(legend.getByText('ROSA: 42')).toBeVisible();
+    await expect(legend.getByText('ARO: 15')).toBeVisible();
+    await expect(legend.getByText('OSD: 10')).toBeVisible();
   });
 
   test('should render a custom title', async ({ mount }) => {
@@ -27,19 +32,6 @@ test.describe('ClusterProviders', () => {
       <ClusterProviders providers={defaultProviders} title="Provider breakdown" />
     );
     await expect(component.getByTestId('providers-title')).toHaveText('Provider breakdown');
-  });
-
-  test('should render the donut chart', async ({ mount }) => {
-    const component = await mount(<ClusterProviders providers={defaultProviders} />);
-    await expect(component.getByTestId('providers-chart')).toBeVisible();
-  });
-
-  test('should render legend items with counts', async ({ mount }) => {
-    const component = await mount(<ClusterProviders providers={defaultProviders} />);
-    const legend = component.getByTestId('providers-legend');
-    await expect(legend.getByText('ROSA: 42')).toBeVisible();
-    await expect(legend.getByText('ARO: 15')).toBeVisible();
-    await expect(legend.getByText('OSD: 10')).toBeVisible();
   });
 
   test('should handle a single provider', async ({ mount }) => {
@@ -76,10 +68,5 @@ test.describe('ClusterProviders', () => {
     const component = await mount(<ClusterProviders isLoading />);
     await expect(component.getByText('Loading cluster providers')).toBeVisible();
     await expect(component.getByTestId('providers-chart')).not.toBeVisible();
-  });
-
-  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(<ClusterProviders isLoading />);
-    await expect(component.getByText('Loading cluster providers')).toBeVisible();
   });
 });

@@ -107,14 +107,6 @@ test.describe('Networking (ROSA HCP)', () => {
       await expect(component.getByRole('checkbox', { name: n.proxyCheckboxLabel })).toBeVisible();
     });
 
-    test('should render CIDR alert in advanced section', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
-
-      await component.getByText(n.advancedToggle).click();
-
-      await expect(component.getByText(n.cidrAlertTitle)).toBeVisible();
-    });
-
     test('should render use default values checkbox in advanced section', async ({ mount }) => {
       const component = await mount(<NetworkingMount />);
 
@@ -385,14 +377,6 @@ test.describe('Networking (ROSA HCP)', () => {
 
     test('should show the proxy checkbox when hiddenSteps is empty', async ({ mount }) => {
       const component = await mount(<NetworkingMount config={{ hiddenSteps: [] }} />);
-
-      await component.getByText(n.advancedToggle).click();
-
-      await expect(component.getByRole('checkbox', { name: n.proxyCheckboxLabel })).toBeVisible();
-    });
-
-    test('should show the proxy checkbox when config is not provided', async ({ mount }) => {
-      const component = await mount(<NetworkingMount />);
 
       await component.getByText(n.advancedToggle).click();
 

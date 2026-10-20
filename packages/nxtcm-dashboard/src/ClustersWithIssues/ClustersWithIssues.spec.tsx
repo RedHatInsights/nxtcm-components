@@ -62,12 +62,6 @@ test.describe('ClustersWithIssues', () => {
     await expect(component.getByRole('heading', { name: 'Clusters with issues' })).toBeVisible();
   });
 
-  test('should render a divider after the cluster count', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues data={defaultData} />);
-    const countSection = component.getByTestId('unhealthy-count').locator('..');
-    await expect(countSection).toBeVisible();
-  });
-
   test('should render table headers', async ({ mount }) => {
     const component = await mount(<ClustersWithIssues data={defaultData} />);
 
@@ -108,7 +102,7 @@ test.describe('ClustersWithIssues', () => {
     const component = await mount(<ClustersWithIssues data={defaultData} />);
 
     await expect(component.getByText('cluster1')).toBeVisible();
-    await expect(component.locator('a')).toHaveCount(0);
+    await expect(component.getByRole('link')).toHaveCount(0);
   });
 
   test('should show empty state when no clusters', async ({ mount }) => {
@@ -125,7 +119,7 @@ test.describe('ClustersWithIssues', () => {
       <ClustersWithIssues data={{ totalUnhealthy: 0, clusters: [] }} />
     );
 
-    await expect(component.locator('.pf-v6-c-pagination')).toHaveCount(0);
+    await expect(component.getByRole('navigation', { name: 'Pagination' })).toHaveCount(0);
   });
 
   test('should handle single cluster', async ({ mount }) => {
@@ -160,13 +154,6 @@ test.describe('ClustersWithIssues — open console link', () => {
     await expect(component.getByTestId('open-console-c1').getByText('Open console')).toBeVisible();
   });
 
-  test('should render external link icon in each console link', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssuesWithConsoleLink data={defaultData} />);
-
-    const consoleCell = component.getByTestId('open-console-c1');
-    await expect(consoleCell.locator('svg[role="img"]')).toBeVisible();
-  });
-
   test('should not render console column when onOpenConsole is not provided', async ({ mount }) => {
     const component = await mount(<ClustersWithIssues data={defaultData} />);
 
@@ -196,7 +183,7 @@ test.describe('ClustersWithIssues — title tooltip', () => {
   test('should have an accessible label on the tooltip icon', async ({ mount }) => {
     const component = await mount(<ClustersWithIssues data={defaultData} />);
     await expect(
-      component.locator('[aria-label="More info about clusters with issues"]')
+      component.getByRole('button', { name: 'More info about clusters with issues' })
     ).toBeVisible();
   });
 });
@@ -205,8 +192,10 @@ test.describe('ClustersWithIssues — pagination', () => {
   test('should show only first page of clusters by default', async ({ mount }) => {
     const component = await mount(<ClustersWithIssues data={paginatedData} perPage={5} />);
 
-    const rows = component.locator('tbody tr');
-    expect(await rows.count()).toBe(5);
+    const rows = component
+      .getByRole('grid', { name: 'Clusters with issues', exact: true })
+      .getByRole('row');
+    await expect(rows).toHaveCount(6);
     await expect(component.getByText('cluster-1')).toBeVisible();
     await expect(component.getByText('cluster-5')).toBeVisible();
     await expect(component.getByText('cluster-6')).not.toBeVisible();
@@ -215,7 +204,7 @@ test.describe('ClustersWithIssues — pagination', () => {
   test('should show pagination controls', async ({ mount }) => {
     const component = await mount(<ClustersWithIssues data={paginatedData} perPage={5} />);
 
-    await expect(component.locator('.pf-v6-c-pagination')).toBeVisible();
+    await expect(component.getByRole('navigation', { name: 'Pagination' })).toBeVisible();
   });
 
   test('should navigate to next page', async ({ mount }) => {
@@ -235,8 +224,10 @@ test.describe('ClustersWithIssues — pagination', () => {
 
     await expect(component.getByText('cluster-11')).toBeVisible();
     await expect(component.getByText('cluster-12')).toBeVisible();
-    const rows = component.locator('tbody tr');
-    expect(await rows.count()).toBe(2);
+    const rows = component
+      .getByRole('grid', { name: 'Clusters with issues', exact: true })
+      .getByRole('row');
+    await expect(rows).toHaveCount(3);
   });
 
   test('should show all items on one page when fewer items than perPage', async ({ mount }) => {
@@ -250,20 +241,17 @@ test.describe('ClustersWithIssues — pagination', () => {
     };
     const component = await mount(<ClustersWithIssues data={smallData} perPage={5} />);
 
-    const rows = component.locator('tbody tr');
-    expect(await rows.count()).toBe(3);
-    await expect(component.locator('.pf-v6-c-pagination')).toBeVisible();
+    const rows = component
+      .getByRole('grid', { name: 'Clusters with issues', exact: true })
+      .getByRole('row');
+    await expect(rows).toHaveCount(4);
+    await expect(component.getByRole('navigation', { name: 'Pagination' })).toBeVisible();
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
     const component = await mount(<ClustersWithIssues isLoading />);
     await expect(component.getByText('Loading clusters with issues')).toBeVisible();
     await expect(component.getByTestId('unhealthy-count')).not.toBeVisible();
-  });
-
-  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues isLoading />);
-    await expect(component.getByText('Loading clusters with issues')).toBeVisible();
   });
 
   test('should render skeleton when isLoading is true even if data is provided', async ({

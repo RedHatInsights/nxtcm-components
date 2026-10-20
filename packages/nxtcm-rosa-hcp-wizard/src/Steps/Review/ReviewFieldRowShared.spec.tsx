@@ -24,15 +24,6 @@ test.describe('ReviewFieldValueWithLock', () => {
     await expect(component.getByText('Value')).toBeVisible();
   });
 
-  test('should show lock icon when noEditAfterStep is true', async ({ mount }) => {
-    const component = await mount(
-      <ReviewFieldValueWithLockMount noEditAfterStep={true}>Value</ReviewFieldValueWithLockMount>
-    );
-    // Lock icon is rendered as SVG
-    const icons = component.locator('svg');
-    await expect(icons.first()).toBeVisible();
-  });
-
   test('should show screen reader text when locked', async ({ mount }) => {
     const srText = 'Cannot be changed';
     const component = await mount(

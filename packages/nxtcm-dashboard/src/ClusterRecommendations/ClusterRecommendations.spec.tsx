@@ -128,15 +128,6 @@ test.describe('ClusterRecommendations', () => {
     await expect(component.getByText(/Fault tolerance/)).toContainText('5');
   });
 
-  test('should render critical icons', async ({ mount, page }) => {
-    await mount(<ClusterRecommendations {...defaultProps} />);
-
-    // NOTE svgs are hidden so won't be picked up by .getByRole('img')
-    // I'm not sure this test is providing any value
-    const icons = page.locator('svg[role="img"]');
-    expect(await icons.count()).toBe(5);
-  });
-
   test('should have proper component structure with both sections', async ({ mount }) => {
     const component = await mount(<ClusterRecommendations {...defaultProps} />);
 

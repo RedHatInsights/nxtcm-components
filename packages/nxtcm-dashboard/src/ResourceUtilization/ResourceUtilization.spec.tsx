@@ -25,50 +25,20 @@ test.describe('ResourceUtilization', () => {
     await expect(component.getByTestId('card-title')).toHaveCount(0);
   });
 
-  test('should render vCPU metric section', async ({ mount }) => {
+  test('should display the vCPU usage, total and unit', async ({ mount }) => {
     const component = await mount(<ResourceUtilization data={defaultData} />);
-    await expect(component.getByTestId('metric-vcpu-donut')).toBeVisible();
+    const section = component.getByTestId('metric-vcpu-donut');
+    await expect(section.getByRole('heading', { name: 'vCPU' })).toBeVisible();
+    await expect(section).toContainText('25%');
+    await expect(section).toContainText('of 128 Cores');
   });
 
-  test('should render Memory metric section', async ({ mount }) => {
+  test('should display the Memory usage, total and unit', async ({ mount }) => {
     const component = await mount(<ResourceUtilization data={defaultData} />);
-    await expect(component.getByTestId('metric-memory-donut')).toBeVisible();
-  });
-
-  test('should display vCPU title', async ({ mount }) => {
-    const component = await mount(<ResourceUtilization data={defaultData} />);
-    const vcpuSection = component.getByTestId('metric-vcpu-donut');
-    await expect(vcpuSection.getByRole('heading', { name: 'vCPU' })).toBeVisible();
-  });
-
-  test('should display Memory title', async ({ mount }) => {
-    const component = await mount(<ResourceUtilization data={defaultData} />);
-    const memorySection = component.getByTestId('metric-memory-donut');
-    await expect(memorySection.getByRole('heading', { name: 'Memory' })).toBeVisible();
-  });
-
-  test('should calculate and display vCPU percentage (25%)', async ({ mount }) => {
-    const component = await mount(<ResourceUtilization data={defaultData} />);
-    const vcpuSection = component.getByTestId('metric-vcpu-donut');
-    await expect(vcpuSection).toContainText('25%');
-  });
-
-  test('should calculate and display Memory percentage (19%)', async ({ mount }) => {
-    const component = await mount(<ResourceUtilization data={defaultData} />);
-    const memorySection = component.getByTestId('metric-memory-donut');
-    await expect(memorySection).toContainText('19%');
-  });
-
-  test('should display vCPU subtitle with total and unit', async ({ mount }) => {
-    const component = await mount(<ResourceUtilization data={defaultData} />);
-    const vcpuSection = component.getByTestId('metric-vcpu-donut');
-    await expect(vcpuSection).toContainText('of 128 Cores');
-  });
-
-  test('should display Memory subtitle with total and unit', async ({ mount }) => {
-    const component = await mount(<ResourceUtilization data={defaultData} />);
-    const memorySection = component.getByTestId('metric-memory-donut');
-    await expect(memorySection).toContainText('of 256 GiB');
+    const section = component.getByTestId('metric-memory-donut');
+    await expect(section.getByRole('heading', { name: 'Memory' })).toBeVisible();
+    await expect(section).toContainText('19%');
+    await expect(section).toContainText('of 256 GiB');
   });
 
   test('should not render Storage when not provided', async ({ mount }) => {
@@ -87,11 +57,6 @@ test.describe('ResourceUtilization', () => {
     await expect(storageSection.getByRole('heading', { name: 'Storage' })).toBeVisible();
     await expect(storageSection).toContainText('24%');
     await expect(storageSection).toContainText('of 2,048 GiB');
-  });
-
-  test('should show View more button when onViewMore is provided', async ({ mount }) => {
-    const component = await mount(<ResourceUtilization data={defaultData} onViewMore={() => {}} />);
-    await expect(component.getByRole('button', { name: /View more/i })).toBeVisible();
   });
 
   test('should not show View more button when onViewMore is omitted', async ({ mount }) => {
@@ -161,10 +126,5 @@ test.describe('ResourceUtilization', () => {
     const component = await mount(<ResourceUtilization isLoading />);
     await expect(component.getByText('Loading resource utilization')).toBeVisible();
     await expect(component.getByTestId('metric-vcpu-donut')).not.toBeVisible();
-  });
-
-  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(<ResourceUtilization isLoading />);
-    await expect(component.getByText('Loading resource utilization')).toBeVisible();
   });
 });

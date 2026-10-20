@@ -25,12 +25,6 @@ test.describe('DetailsStepDrawer', () => {
     await expect(panelTitle).toBeVisible();
   });
 
-  test('should render close button in drawer header', async ({ mount }) => {
-    const component = await mount(<DetailsStepDrawerMount initiallyExpanded={true} />);
-    const closeButton = component.getByRole('button', { name: /close drawer panel/i });
-    await expect(closeButton).toBeVisible();
-  });
-
   test('should close drawer when close button clicked', async ({ mount }) => {
     const component = await mount(<DetailsStepDrawerMount initiallyExpanded={true} />);
 
@@ -59,14 +53,6 @@ test.describe('DetailsStepDrawer', () => {
     await expect(component.getByText(/security token service/i)).toBeVisible();
   });
 
-  test('should render close button at bottom', async ({ mount }) => {
-    const component = await mount(<DetailsStepDrawerMount initiallyExpanded={true} />);
-    // There should be a secondary button to close the drawer
-    const buttons = component.getByRole('button', { name: /close/i });
-    // At least one close button should exist
-    await expect(buttons.first()).toBeVisible();
-  });
-
   test('should close drawer when bottom close button clicked', async ({ mount }) => {
     const component = await mount(<DetailsStepDrawerMount initiallyExpanded={true} />);
 
@@ -85,15 +71,9 @@ test.describe('DetailsStepDrawer', () => {
     const component = await mount(
       <DetailsStepDrawerMount initiallyExpanded={true} product="ocm" />
     );
-    // LoginStep should be rendered (has clipboard copy)
-    await expect(component.locator('.pf-v6-c-clipboard-copy').first()).toBeVisible();
-  });
-
-  test('should render resizable panel', async ({ mount }) => {
-    const component = await mount(<DetailsStepDrawerMount initiallyExpanded={true} />);
-    // Panel should have resizable class/attribute
-    const panel = component.locator('.pf-v6-c-drawer__panel');
-    await expect(panel).toBeVisible();
+    await expect(component.getByRole('textbox', { name: /rosa login/i })).toHaveValue(
+      /rosa login --use-auth-code --url https:\/\/api\.openshift\.com/
+    );
   });
 
   test('should pass accessibility tests when collapsed', async ({ mount }) => {

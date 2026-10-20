@@ -16,58 +16,19 @@ test.describe('StorageCard', () => {
     await checkAccessibility({ component });
   });
 
-  test('should display the total storage used', async ({ mount }) => {
+  test('should display total storage, utilization and the cluster breakdown', async ({ mount }) => {
     const component = await mount(<StorageCard storageData={mockStorageData} />);
-
-    const totalUsed = (
-      mockStorageData.rosaClusters +
-      mockStorageData.aroClusters +
-      mockStorageData.osdClusters
-    ).toFixed(2);
-    // Find the label, then navigate to its parent container that has both the value and label
-    const totalStorageContainer = component
-      .getByText('Total storage used', { exact: true })
-      .locator('..');
-
-    await expect(totalStorageContainer).toContainText('Total storage used');
-    await expect(totalStorageContainer).toContainText(`${totalUsed} TiB`);
-  });
-
-  test('should display the correct usage percentage', async ({ mount }) => {
-    const component = await mount(<StorageCard storageData={mockStorageData} />);
-    const totalUsed =
-      mockStorageData.rosaClusters + mockStorageData.aroClusters + mockStorageData.osdClusters;
-    const totalStorage = totalUsed + mockStorageData.available;
-    const percentage = Math.round((totalUsed / totalStorage) * 100);
-
-    await expect(component.getByText(`${percentage}%`)).toBeVisible();
-  });
-
-  test('should display ROSA clusters storage', async ({ mount }) => {
-    const component = await mount(<StorageCard storageData={mockStorageData} />);
-
-    const rosaClustersContainer = component.getByText('ROSA clusters').locator('..');
-    await expect(rosaClustersContainer).toContainText(`${mockStorageData.rosaClusters} TiB`);
-  });
-
-  test('should display ARO clusters storage', async ({ mount }) => {
-    const component = await mount(<StorageCard storageData={mockStorageData} />);
-
-    const aroClustersContainer = component.getByText('ARO Clusters').locator('..');
-    await expect(aroClustersContainer).toContainText(`${mockStorageData.aroClusters} TiB`);
-  });
-
-  test('should display OSD clusters storage', async ({ mount }) => {
-    const component = await mount(<StorageCard storageData={mockStorageData} />);
-
-    const osdClustersContainer = component.getByText('OSD Clusters').locator('..');
-    await expect(osdClustersContainer).toContainText(`${mockStorageData.osdClusters} TiB`);
-  });
-
-  test('should display available storage', async ({ mount }) => {
-    const component = await mount(<StorageCard storageData={mockStorageData} />);
-    const availableContainer = component.getByText('Available').locator('..');
-    await expect(availableContainer).toContainText(`${mockStorageData.available} TiB`);
+    await expect(component.getByText('Total storage used', { exact: true })).toBeVisible();
+    await expect(component.getByTestId('total-used')).toHaveText('67.36 TiB');
+    await expect(component.getByText('75%', { exact: true })).toBeVisible();
+    await expect(component.getByText('ROSA clusters:', { exact: true })).toBeVisible();
+    await expect(component.getByTestId('rosaClusters')).toHaveText('63.02 TiB');
+    await expect(component.getByText('ARO Clusters:', { exact: true })).toBeVisible();
+    await expect(component.getByTestId('aroClusters')).toHaveText('2.17 TiB');
+    await expect(component.getByText('OSD Clusters:', { exact: true })).toBeVisible();
+    await expect(component.getByTestId('osdClusters')).toHaveText('2.17 TiB');
+    await expect(component.getByText('Available:', { exact: true })).toBeVisible();
+    await expect(component.getByTestId('available')).toHaveText('21.89 TiB');
   });
 
   test('should not show "View more" button when onViewMore is not provided', async ({ mount }) => {
@@ -132,16 +93,16 @@ test.describe('StorageCard', () => {
     };
     const component = await mount(<StorageCard storageData={preciseData} />);
 
-    const rosaClustersContainer = component.getByText('ROSA clusters').locator('..');
+    const rosaClustersContainer = component.getByTestId('rosaClusters');
     await expect(rosaClustersContainer).toContainText(`${preciseData.rosaClusters.toFixed(2)} TiB`);
 
-    const aroClustersContainer = component.getByText('ARO Clusters').locator('..');
+    const aroClustersContainer = component.getByTestId('aroClusters');
     await expect(aroClustersContainer).toContainText(`${preciseData.aroClusters.toFixed(2)} TiB`);
 
-    const osdClustersContainer = component.getByText('OSD Clusters').locator('..');
+    const osdClustersContainer = component.getByTestId('osdClusters');
     await expect(osdClustersContainer).toContainText(`${preciseData.osdClusters.toFixed(2)} TiB`);
 
-    const availableContainer = component.getByText('Available').locator('..');
+    const availableContainer = component.getByTestId('available');
     await expect(availableContainer).toContainText(`${preciseData.available.toFixed(2)} TiB`);
   });
 
@@ -149,11 +110,6 @@ test.describe('StorageCard', () => {
     await mount(<StorageCard storageData={mockStorageData} />);
     const chart = page.getByRole('img', { name: 'Storage utilization chart' });
     await expect(chart).toBeVisible();
-  });
-
-  test('should display total storage label correctly', async ({ mount }) => {
-    const component = await mount(<StorageCard storageData={mockStorageData} />);
-    await expect(component.getByText('Total storage used')).toBeVisible();
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {

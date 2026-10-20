@@ -17,8 +17,12 @@ test.describe('UserRole', () => {
 
   test('should render info alert about existing linked role', async ({ mount }) => {
     const component = await mount(<UserRoleMount />);
-    const alert = component.locator('.pf-v6-c-alert.pf-m-info');
-    await expect(alert).toBeVisible();
+    await expect(
+      component.getByText(
+        "If there is an existing role and it's already linked to your Red Hat account, you can continue to step 4.",
+        { exact: false }
+      )
+    ).toBeVisible();
   });
 
   test('should render TabGroup with two tabs', async ({ mount }) => {

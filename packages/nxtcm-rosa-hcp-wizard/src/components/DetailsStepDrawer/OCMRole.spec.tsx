@@ -15,8 +15,12 @@ test.describe('OCMRole', () => {
 
   test('should render info alert about existing linked role', async ({ mount }) => {
     const component = await mount(<OCMRoleMount />);
-    const alerts = component.locator('.pf-v6-c-alert.pf-m-info');
-    await expect(alerts.first()).toBeVisible();
+    await expect(
+      component.getByText(
+        "If there is an existing role and it's already linked to your Red Hat account, you can continue to step 3.",
+        { exact: false }
+      )
+    ).toBeVisible();
   });
 
   test('should render TabGroup with two tabs', async ({ mount }) => {

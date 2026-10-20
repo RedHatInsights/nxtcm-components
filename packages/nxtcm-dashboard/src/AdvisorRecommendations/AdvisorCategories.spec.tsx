@@ -16,11 +16,16 @@ test.describe('AdvisorCategories', () => {
     await checkAccessibility({ component });
   });
 
-  test('should render the default title', async ({ mount }) => {
+  test('should display the category chart, title and legend counts', async ({ mount }) => {
     const component = await mount(<AdvisorCategories categories={defaultCategories} />);
     const title = component.getByTestId('category-title');
     await expect(title).toBeVisible();
     await expect(title).toContainText('Advisor recommendations by category');
+    await expect(component.getByTestId('category-chart')).toBeVisible();
+    await expect(component.getByText('Service availability: 25')).toBeVisible();
+    await expect(component.getByText('Performance: 8')).toBeVisible();
+    await expect(component.getByText('Security: 12')).toBeVisible();
+    await expect(component.getByText('Fault tolerance: 4')).toBeVisible();
   });
 
   test('should render a custom title', async ({ mount }) => {
@@ -28,19 +33,6 @@ test.describe('AdvisorCategories', () => {
       <AdvisorCategories categories={defaultCategories} title="Issue categories" />
     );
     await expect(component.getByTestId('category-title')).toHaveText('Issue categories');
-  });
-
-  test('should render the category chart', async ({ mount }) => {
-    const component = await mount(<AdvisorCategories categories={defaultCategories} />);
-    await expect(component.getByTestId('category-chart')).toBeVisible();
-  });
-
-  test('should render all category legend items with counts', async ({ mount }) => {
-    const component = await mount(<AdvisorCategories categories={defaultCategories} />);
-    await expect(component.getByText('Service availability: 25')).toBeVisible();
-    await expect(component.getByText('Performance: 8')).toBeVisible();
-    await expect(component.getByText('Security: 12')).toBeVisible();
-    await expect(component.getByText('Fault tolerance: 4')).toBeVisible();
   });
 
   test('should handle all-zero category counts', async ({ mount }) => {
@@ -74,10 +66,5 @@ test.describe('AdvisorCategories', () => {
     const component = await mount(<AdvisorCategories isLoading />);
     await expect(component.getByText('Loading category data')).toBeVisible();
     await expect(component.getByTestId('category-chart')).not.toBeVisible();
-  });
-
-  test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(<AdvisorCategories isLoading />);
-    await expect(component.getByText('Loading category data')).toBeVisible();
   });
 });

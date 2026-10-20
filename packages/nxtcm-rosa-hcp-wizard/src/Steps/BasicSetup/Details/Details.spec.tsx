@@ -30,14 +30,26 @@ test.describe('Details (ROSA HCP)', () => {
     await checkAccessibility({ component });
   });
 
-  test('should render the Details section title', async ({ mount }) => {
+  test('should display cluster details fields and the account association action', async ({
+    mount,
+  }) => {
     const component = await mount(<DetailsMount />);
     await expect(component.getByText('Cluster details', { exact: true })).toBeVisible();
-  });
-
-  test('should render OpenShift version select', async ({ mount }) => {
-    const component = await mount(<DetailsMount />);
-    await expect(component.getByText('OpenShift version', { exact: true })).toBeVisible();
+    await expect(
+      component.getByRole('combobox', { name: 'Select an OpenShift version' })
+    ).toBeVisible();
+    await expect(component.getByText('Cluster name', { exact: true })).toBeVisible();
+    await expect(component.getByRole('textbox', { name: 'Cluster name' })).toBeVisible();
+    await expect(
+      component.getByRole('combobox', { name: 'Select an AWS infrastructure account' })
+    ).toBeVisible();
+    await expect(
+      component.getByRole('combobox', { name: 'Select an AWS billing account' })
+    ).toBeVisible();
+    await expect(component.getByRole('combobox', { name: 'Select a region' })).toBeVisible();
+    await expect(
+      component.getByRole('button', { name: 'Associate a new AWS account' })
+    ).toBeVisible();
   });
 
   test('should render with empty options', async ({ mount }) => {
@@ -57,41 +69,6 @@ test.describe('Details (ROSA HCP)', () => {
 
     await expect(component.getByText('Cluster details', { exact: true })).toBeVisible();
     await expect(component.getByText('Cluster name', { exact: true })).toBeVisible();
-  });
-
-  test('should render the Cluster name input', async ({ mount }) => {
-    const component = await mount(<DetailsMount />);
-
-    await expect(component.getByText('Cluster name', { exact: true })).toBeVisible();
-    await expect(component.getByRole('textbox', { name: 'Cluster name' })).toBeVisible();
-  });
-
-  test('should render the Associated AWS infrastructure account select', async ({ mount }) => {
-    const component = await mount(<DetailsMount />);
-
-    await expect(
-      component.getByText('Associated AWS infrastructure account', { exact: true })
-    ).toBeVisible();
-  });
-
-  test('should render the Associated AWS billing account select', async ({ mount }) => {
-    const component = await mount(<DetailsMount />);
-
-    await expect(
-      component.getByText('Associated AWS billing account', { exact: true })
-    ).toBeVisible();
-  });
-
-  test('should render the Region select', async ({ mount }) => {
-    const component = await mount(<DetailsMount />);
-
-    await expect(component.getByText('Region', { exact: true })).toBeVisible();
-  });
-
-  test('should render the Associate a new AWS account button', async ({ mount }) => {
-    const component = await mount(<DetailsMount />);
-
-    await expect(component.getByText('Associate a new AWS account')).toBeVisible();
   });
 
   test.describe('Details — cluster name validation', () => {
@@ -326,7 +303,7 @@ test.describe('Details (ROSA HCP)', () => {
         />
       );
 
-      await expect(component.getByText('Region', { exact: true })).toBeVisible();
+      await expect(component.getByRole('combobox', { name: 'Select a region' })).toBeVisible();
     });
 
     test('should select a region', async ({ mount, page }) => {
@@ -415,7 +392,9 @@ test.describe('Details (ROSA HCP)', () => {
         />
       );
 
-      await expect(component.getByText('OpenShift version', { exact: true })).toBeVisible();
+      await expect(
+        component.getByRole('combobox', { name: 'Select an OpenShift version' })
+      ).toBeVisible();
     });
 
     test('should select an OpenShift version', async ({ mount, page }) => {
