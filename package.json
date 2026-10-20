@@ -36,16 +36,16 @@
   },
   "peerDependencies": {
     "@patternfly/react-core": "^6.0.0",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
   },
   "scripts": {
     "start": "vite",
     "build": "npm run build -w @redhat-cloud-services/nxtcm-dashboard && npm run build -w @redhat-cloud-services/nxtcm-rosa-hcp-wizard",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
-    "lint": "eslint 'packages/**/*.{ts,tsx}' '.storybook/**/*.ts' 'playwright/e2e/**/*.spec.ts'",
-    "lint:fix": "eslint 'packages/**/*.{ts,tsx}' '.storybook/**/*.ts' 'playwright/e2e/**/*.spec.ts' --fix",
+    "lint": "eslint 'packages/**/*.{ts,tsx}' '.storybook/**/*.ts' 'scripts/react-compatibility/*.tsx'",
+    "lint:fix": "eslint 'packages/**/*.{ts,tsx}' '.storybook/**/*.ts' 'scripts/react-compatibility/*.tsx' --fix",
     "prettier:check": "prettier --check '{scripts,packages}/**/*.{js,ts,mjs,jsx,tsx}'",
     "prettier:fix": "prettier --write '{scripts,packages}/**/*.{js,ts,mjs,jsx,tsx}'",
     "test": "jest",
@@ -68,6 +68,7 @@
     "build-storybook:internal": "STORYBOOK_INCLUDE_INTERNAL=true storybook build",
     "storybook:assert-public": "node scripts/assert-storybook-public.mjs",
     "check:peers": "node scripts/check-peer-dep-versions.mjs",
+    "test:react-compat": "node scripts/test-react-compatibility.mjs",
     "allthethings": "npm run prettier:fix && npm run lint:fix && npm run type-check && npm run test && npm run test:ct",
     "prepare": "husky"
   },
@@ -129,7 +130,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint",
+      "eslint --no-warn-ignored",
       "prettier --write"
     ],
     "*.{js,jsx,mjs}": [

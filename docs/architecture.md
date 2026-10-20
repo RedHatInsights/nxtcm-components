@@ -100,7 +100,19 @@ The shared config externalizes `react` and `react-dom` (including their subpaths
 
 The `fullySpecifiedPatternFlyImports` build plugin rewrites external PatternFly component, layout, icon, and chart paths to explicit JavaScript filenames. ES output uses PatternFly's `dist/esm` files; CommonJS output uses its `dist/js` files. This allows strict ES-module resolution without a consumer webpack override for these imports.
 
+Rollup's `interop: 'auto'` unwraps default exports from CommonJS dependencies such as PatternFly icons, so the CommonJS output renders the icon component rather than its module object.
+
 Each workspace's `peerDependencies` declares its own consumer requirements. Monaco is a peer dependency of the wizard package only. See the [dashboard manifest](../packages/nxtcm-dashboard/package.json) and [wizard manifest](../packages/nxtcm-rosa-hcp-wizard/package.json) for the complete contracts.
+
+### React 18 and 19 compatibility
+
+Both packages support React and React DOM `^18.2.0 || ^19.0.0`. Each package is built once; the host provides the matching React, React DOM, and JSX runtime. The `.mjs` and `.cjs` outputs are module formats, not separate React-version builds. Components must use APIs available in both supported React majors.
+
+Development uses React 19. The peer-version check requires development ranges to be a subset of supported peer ranges, and every workspace to cover the root peer contract.
+
+Run `npm run build && npm run test:react-compat` to check the published artifacts. The compatibility check packs each package once, installs those same tarballs into isolated React 18.2.0 and 19.0.0 consumers, checks both import/require declarations against matching React type majors, and renders and interacts with both packages in Chromium using ESM and CommonJS. It also rejects bundled React sources and missing export targets. The check needs npm registry access and Playwright Chromium (`npx playwright install chromium`).
+
+The consumer type checks use bundler resolution and `skipLibCheck`, matching this repo: they validate exported component usage with each React type major rather than checking third-party declaration internals. CI downloads the existing build artifacts for this check, so it exercises the same library build on both runtimes. The regular component and E2E suites use the development runtime. ACM integration must additionally verify that its shared dependency configuration supplies one matching host runtime on both OCP versions.
 
 ### TypeScript compilation
 
@@ -109,7 +121,7 @@ Each package has its own `tsconfig.json` that extends the root. During build, Vi
 1. Vite emits `dist/index.mjs`, `dist/index.cjs`, and `dist/index.css`.
 2. `unplugin-dts` (`bundleTypes: true`) bundles public declarations and emits `index.d.ts`, `index.d.mts`, and `index.d.cts` through its `outDirs` configuration.
 
-The wizard's build runs `npm run type-check` (`tsc --noEmit`) before Vite. The dashboard's build invokes Vite directly; use its `npm run type-check` script for a separate compilation check.
+Both package builds run `npm run type-check` (`tsc --noEmit`) before Vite.
 
 The root `tsconfig.json` includes all workspace packages for IDE type-checking and `npm run type-check`, but each package's tsconfig scopes its own sources.
 

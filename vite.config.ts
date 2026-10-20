@@ -111,6 +111,8 @@ export default defineConfig({
       external: libRollupExternal,
       output: {
         inlineDynamicImports: true,
+        // PatternFly's CJS icon modules expose their component as exports.default.
+        interop: 'auto',
         assetFileNames: (assetInfo) => {
           const assetNames = assetInfo.names ?? (assetInfo.name ? [assetInfo.name] : []);
           if (assetNames.some((name) => name.endsWith('.css'))) {

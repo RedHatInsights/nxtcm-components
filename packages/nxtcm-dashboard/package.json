@@ -46,7 +46,7 @@
   "scripts": {
     "prepack": "cp ../../LICENSE LICENSE",
     "postpack": "rm -f LICENSE",
-    "build": "rm -rf dist && vite build --config ../../vite.config.ts",
+    "build": "npm run type-check && rm -rf dist && vite build --config ../../vite.config.ts",
     "type-check": "tsc --noEmit",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
@@ -62,8 +62,8 @@
     "@patternfly/react-icons": "^6.3.1",
     "@patternfly/react-table": "^6.0.0",
     "@patternfly/widgetized-dashboard": "^1.0.0-prerelease.6",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
   },
   "devDependencies": {
     "@patternfly/react-charts": "^8.4.0",

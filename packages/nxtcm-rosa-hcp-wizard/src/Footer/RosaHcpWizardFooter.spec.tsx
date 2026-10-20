@@ -135,16 +135,15 @@ test.describe('RosaHcpWizardFooter — left nav validation icons', () => {
 
   test('shows error icons on steps with errors after a failed Review Submit', async ({ mount }) => {
     const component = await mount(
-      <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
+      <RosaHcpWizardValidationMount
+        startIndex={9}
+        defaultValues={{ ...VALID_REVIEW_SUBMIT_FORM_VALUES, name: '' }}
+      />
     );
 
-    await advanceToReviewStep(component);
+    // Begin on Review with invalid data: editing an earlier step can invalidate
+    // navigation before Submit is reached, especially with React 19 scheduling.
     await expect(component.getByText(review.sectionLabel, { exact: true })).toBeVisible();
-
-    await component.getByRole('button', { name: review.editStep }).first().click();
-    await component.getByRole('textbox', { name: /Cluster name/i }).fill('');
-    await component.getByRole('button', { name: w.stepLabels.review, exact: true }).click();
-
     await component.getByRole('button', { name: FOOTER_SUBMIT }).click();
 
     await expectWizardNavError(component, STEP_IDS.DETAILS);

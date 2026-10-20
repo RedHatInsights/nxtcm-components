@@ -49,6 +49,8 @@ import { FOOTER_CT_BASE_FORM_VALUES } from './rosaHcpWizardFooter.ctDefaults';
 
 export type RosaHcpWizardValidationMountProps = {
   defaultValues?: Partial<ROSAHCPCluster>;
+  /** One-based initial step, including parent groups (Review is 9). */
+  startIndex?: number;
   /** When provided, a real footer is wired so onSubmit receives the YAML string. */
   onSubmit?: (yamlString: string) => Promise<void>;
 };
@@ -58,6 +60,7 @@ const STUB_FORM_YAML = 'kind: ROSAControlPlane\nmetadata:\n  name: stub';
 
 export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMountProps> = ({
   defaultValues = {},
+  startIndex,
   onSubmit,
 }) => {
   const resolver = useMemo(
@@ -172,7 +175,7 @@ export const RosaHcpWizardValidationMount: React.FC<RosaHcpWizardValidationMount
     <FormProvider {...methods}>
       <RosaHcpWizardValidationProvider>
         <WizardFieldMetaChangeEffectsRunner wizardData={wizardData} />
-        <Wizard height={720} footer={footer} isVisitRequired>
+        <Wizard height={720} footer={footer} startIndex={startIndex} isVisitRequired>
           <WizardStep
             isExpandable
             name={sl.basicSetup}
