@@ -12,9 +12,10 @@
 
 ```bash
 npx lint-staged
+npm run type-check
 ```
 
-**What it does**: Before every commit, automatically runs ESLint and Prettier on only your staged files.
+**What it does**: Before every commit, automatically runs ESLint and Prettier on only your staged files, then runs `npm run type-check` (`tsc --noEmit`) across the whole workspace. If either step fails, the commit is blocked.
 
 ### 3. lint-staged Configuration
 
@@ -214,24 +215,10 @@ git commit -m "fix: typo"
 
 ## 🎯 What About Type Checking?
 
-**Important**: `tsc --noEmit` is **not** included in the pre-commit hook.
+`npm run type-check` (`tsc --noEmit`) runs in the pre-commit hook right after lint-staged.
 
-**Why?**
-- TypeScript needs to check types across the **entire codebase** (not just staged files)
-- This is slow (~10-30s) and would make commits painful
-- CI already runs full type-check on every PR
-
-**Recommendation**: Run `npm run type-check` manually before pushing:
+Unlike lint-staged, it checks the **entire codebase**, not just staged files, so a type error anywhere in the repo can block your commit. To see the errors, run it directly:
 ```bash
-# Before pushing
-npm run type-check  # Full TS check
-git push
-```
-
-Or add a pre-push hook (not implemented yet):
-```bash
-# Future enhancement: pre-push hook
-# .husky/pre-push
 npm run type-check
 ```
 

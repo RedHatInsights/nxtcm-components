@@ -4,6 +4,19 @@ how to set up the repo, make changes, and get them merged.
 
 for architecture details (monorepo structure, build system, testing strategy), see [docs/architecture.md](docs/architecture.md).
 
+## Guidelines
+
+we welcome contributions! please follow these guidelines:
+
+1. **Fork the repository** and create a feature branch
+2. **Follow coding standards**: Pre-commit hooks will automatically check your code
+3. **Write tests**: Add unit tests for new components or features
+4. **Update documentation**: Add or update Storybook stories
+5. **Fill out the PR template**: Provide clear description and testing steps
+6. **Request reviews**: Tag appropriate team members
+
+each step is covered in more detail in the sections below.
+
 ---
 
 ## Setup
@@ -96,6 +109,15 @@ git commit -m "This commit adds a new validation hook for cluster names"
 
 skip formal bodies unless something really needs a sentence of context.
 
+### Pre-commit hooks
+
+the `.husky/pre-commit` hook runs two steps in order before every commit (installed automatically by `npm ci`):
+
+1. `npx lint-staged` runs eslint and prettier on staged files only.
+2. `npm run type-check` runs `tsc --noEmit` across the whole workspace, not just staged files.
+
+if either step fails, the commit is blocked. see [docs/HUSKY_SETUP.md](docs/HUSKY_SETUP.md) for details and troubleshooting.
+
 ---
 
 ## Testing
@@ -137,7 +159,22 @@ stryker runs on top of playwright CT specs to measure test effectiveness. not pa
 npm run test:stryker -- path/to/Component.tsx
 ```
 
-pass the **component** `.tsx` file, not the `.spec.tsx`.
+pass the **component** `.tsx` file, not the `.spec.tsx`. see [docs/mutation-testing.md](docs/mutation-testing.md) for how it works, reports, concurrency, and runtime expectations.
+
+### Testing changes in a host app
+
+to try unreleased changes inside a consuming app (ACM console, uhc-portal), build the package and link it:
+
+```bash
+# in this repo
+npm run build -w @redhat-cloud-services/nxtcm-dashboard
+cd packages/nxtcm-dashboard && npm link
+
+# in the consuming app
+npm link @redhat-cloud-services/nxtcm-dashboard
+```
+
+swap in `nxtcm-rosa-hcp-wizard` for the wizard package. rebuild after each change.
 
 ---
 
@@ -259,6 +296,32 @@ Both packages use the shared `vite.config.ts`, which selects the entry point and
 
 ---
 
+## Configuration files
+
+| file | purpose |
+| --- | --- |
+| `eslint.config.mjs` | ESLint flat config (React, TypeScript, accessibility rules) |
+| `.prettierrc` / `.prettierignore` | Prettier formatting rules and excluded files |
+| `.husky/pre-commit` + `package.json` → `lint-staged` | pre-commit hook: runs `npx lint-staged` (ESLint/Prettier on staged files), then `npm run type-check` (full `tsc --noEmit`). either failing blocks the commit |
+| `tsconfig.json` | root TypeScript config (each package extends it) |
+| `vite.config.ts` | shared library build config for both packages |
+| `vite.e2e.config.ts` | Vite dev server used by the E2E tests |
+| `jest.config.js` / `jest.setup.js` / `babel.config.js` | Jest unit test setup |
+| `playwright-ct.config.ts` | Playwright component tests |
+| `playwright.config.ts` | Playwright E2E tests |
+| `stryker.config.mjs` | Stryker mutation testing |
+| `.storybook/` | Storybook configuration |
+| `renovate.json` | Renovate dependency update rules |
+| `.github/workflows/` | CI, publishing, and Storybook deployment workflows |
+
+---
+
+## Releasing
+
+packages are published to npm from GitHub Releases on `main`. see [docs/publishing.md](docs/publishing.md) for the tag format and maintainer checklist.
+
+---
+
 ## AI-assisted development
 
 this repo includes a root [AGENTS.md](AGENTS.md) for AI coding agents (Cursor, Claude Code, OpenCode, and similar tools). it covers:
@@ -277,8 +340,10 @@ if you're using an AI tool, it will pick up `AGENTS.md` automatically. keep rout
 | ------------------ | --------------------------------------------------------------- |
 | install deps       | `npm ci`                                                        |
 | lint               | `npm run lint`                                                  |
+| lint fix           | `npm run lint:fix`                                              |
 | type-check         | `npm run type-check`                                            |
 | jest tests         | `npm test`                                                      |
+| jest coverage      | `npm run test:coverage`                                         |
 | playwright CT      | `npm run test:ct`                                               |
 | playwright E2E     | `npm run test:e2e`                                              |
 | unit + CT tests    | `npm run test:all`                                              |
@@ -289,4 +354,5 @@ if you're using an AI tool, it will pick up `AGENTS.md` automatically. keep rout
 | prettier check     | `npm run prettier:check`                                        |
 | prettier fix       | `npm run prettier:fix`                                          |
 | mutation testing   | `npm run test:stryker -- path/to/Component.tsx`                 |
+| mutation report    | `npm run test:stryker:report -- path/to/Component.tsx`          |
 | fix everything     | `npm run allthethings`                                          |
