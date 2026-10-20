@@ -206,7 +206,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
          * for typeahead clears.
          */
         if (isTypeAhead) {
-          onChange(undefined as T | string | number | undefined);
+          onChange(undefined);
         }
         setOpen(false);
         syncTypeaheadQueryForOpenState(false);
@@ -336,7 +336,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
       event.stopPropagation();
-      onChange(undefined as T | string | number | undefined);
+      onChange(undefined);
       setTypeaheadQuery('');
       textInputRef.current?.focus();
     },
