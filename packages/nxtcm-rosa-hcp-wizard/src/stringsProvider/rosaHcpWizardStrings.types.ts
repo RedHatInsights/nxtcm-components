@@ -1,6 +1,7 @@
 /**
  * Type definitions for ROSA HCP wizard UI copy and validation messages.
  * Default English values live in {@link ./rosaHcpWizardStrings.defaults}.
+ * Consumer key catalog: `docs/localizable-strings.md`.
  */
 
 export type DeepPartial<T> = {

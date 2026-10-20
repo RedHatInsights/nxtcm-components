@@ -14,6 +14,8 @@
  *
  * Types: import type { RosaHcpWizardStrings, RosaHcpWizardValidatorStrings } from './rosaHcpWizardStrings.types'
  * (or from the package barrel that re-exports them).
+ *
+ * Key catalog, including which sections are unused when a step is hidden: `docs/localizable-strings.md`.
  */
 
 import type {
