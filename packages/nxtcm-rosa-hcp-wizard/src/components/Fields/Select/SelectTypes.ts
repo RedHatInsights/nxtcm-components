@@ -1,5 +1,7 @@
 import type { TooltipProps } from '@patternfly/react-core/dist/dynamic/components/Tooltip';
 
+import { hasObjectProperty } from '../../../utilities/typeGuards';
+
 export type Option<T> = {
   id?: string;
   label: string;
@@ -34,9 +36,9 @@ export function extractOptionValue(v: unknown): string | undefined {
   if (typeof v === 'string') return v;
   if (typeof v === 'number') return String(v);
   if (typeof v === 'object') {
-    const o = v as Record<string, unknown>;
     for (const key of ['value', 'id', 'keyedValue'] as const) {
-      const candidate = o[key];
+      if (!hasObjectProperty(v, key)) continue;
+      const candidate = v[key];
       if (typeof candidate === 'string') return candidate;
       if (typeof candidate === 'number') return String(candidate);
     }
