@@ -5,6 +5,7 @@ import {
   getMachinePoolSubnetIds,
   getNestedValue,
   isSelectedVpcValue,
+  resolveSelectedVpc,
 } from './helpers';
 
 describe('getNestedValue', () => {
@@ -135,6 +136,45 @@ describe('isSelectedVpcValue', () => {
     },
   ])('rejects $description', ({ value }) => {
     expect(isSelectedVpcValue(value)).toBe(false);
+  });
+});
+
+describe('resolveSelectedVpc', () => {
+  it.each([
+    { description: 'a VPC ID', value: mockVpc.id },
+    { description: 'an ID-only object', value: { id: mockVpc.id } },
+    {
+      description: 'an incomplete subnet',
+      value: { ...mockVpc, aws_subnets: [{ availability_zone: 'old-zone' }] },
+    },
+    {
+      description: 'an incomplete security group',
+      value: { ...mockVpc, aws_security_groups: [{ id: 'sg-stale' }] },
+    },
+    {
+      description: 'a complete retained object',
+      value: { ...mockVpc, aws_security_groups: [{ id: 'sg-stale', name: 'stale' }] },
+    },
+  ])('resolves $description using fresh list data', ({ value }) => {
+    expect(resolveSelectedVpc(value, [mockVpc])).toBe(mockVpc);
+  });
+
+  it('falls back to a complete retained object when its ID is absent from the list', () => {
+    expect(resolveSelectedVpc(mockVpc, [{ ...mockVpc, id: 'vpc-other' }])).toBe(mockVpc);
+  });
+
+  it.each([
+    undefined,
+    null,
+    '',
+    'vpc-missing',
+    [mockVpc],
+    { id: 123 },
+    { id: mockVpc.id },
+    { ...mockVpc, aws_subnets: [null] },
+    { ...mockVpc, aws_security_groups: {} },
+  ])('returns undefined for an unresolved incomplete or invalid selection: %p', (value) => {
+    expect(resolveSelectedVpc(value, [])).toBeUndefined();
   });
 });
 

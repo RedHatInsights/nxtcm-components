@@ -1,7 +1,7 @@
 import type { UseFormSetValue } from 'react-hook-form';
 
 import type { ROSAHCPCluster, ROSAHCPWizardData } from '../types';
-import { isSelectedVpcValue, resolveSelectedVpc } from '../utilities/helpers';
+import { resolveSelectedVpc } from '../utilities/helpers';
 import {
   getWizardFieldDerivedSyncKeyForSourceField,
   getWizardFieldResetsForSourceField,
@@ -27,8 +27,7 @@ type ComposedArgResolver = (rawValue: unknown, wizardData: ROSAHCPWizardData) =>
  */
 const COMPOSED_REFETCH_ARG_RESOLVERS: Readonly<Record<string, ComposedArgResolver>> = {
   availability_zones: (rawValue, wizardData) => {
-    const vpcValue = isSelectedVpcValue(rawValue) ? rawValue : undefined;
-    const vpc = resolveSelectedVpc(vpcValue, wizardData.vpcList.data);
+    const vpc = resolveSelectedVpc(rawValue, wizardData.vpcList.data);
     if (!vpc?.aws_subnets?.length) return null;
     return [...new Set(vpc.aws_subnets.map((s) => s.availability_zone))];
   },

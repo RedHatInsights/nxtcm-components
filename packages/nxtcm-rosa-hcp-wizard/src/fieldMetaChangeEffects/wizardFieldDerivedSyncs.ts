@@ -7,7 +7,7 @@ import {
   DEFAULT_FORM_SET_VALUE_OPTS_WITH_VALIDATE,
 } from '../utilities/formSetValueOptions';
 import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
-import { isSelectedVpcValue, resolveSelectedVpc } from '../utilities/helpers';
+import { getSelectedVpcId, resolveSelectedVpc } from '../utilities/helpers';
 import type { WizardFieldDerivedSyncKey } from '../yupSchemas/types';
 import type { WizardFieldDerivedSyncEntry } from '../yupSchemas/wizardFieldMetaChangeRegistry';
 
@@ -21,12 +21,8 @@ export type ApplyWizardFieldDerivedSyncArgs = {
   setValue: UseFormSetValue<Partial<ROSAHCPCluster>>;
 };
 
-function hasSelectedVpcValue(value: unknown): value is string | VPC {
-  if (!isSelectedVpcValue(value) || value === undefined) {
-    return false;
-  }
-
-  return hasRefetchableStringValue(typeof value === 'string' ? value : value.id);
+function hasSelectedVpcValue(value: unknown): boolean {
+  return hasRefetchableStringValue(getSelectedVpcId(value));
 }
 
 /** Whether a derived sync should run/re-run for the current source-field value. */
@@ -58,8 +54,7 @@ export function syncSecurityGroupsWorkerWithVpc(
   vpcListData: readonly VPC[],
   setValue: UseFormSetValue<Partial<ROSAHCPCluster>>
 ): void {
-  const vpcValue = isSelectedVpcValue(selectedVpcRaw) ? selectedVpcRaw : undefined;
-  const vpc = resolveSelectedVpc(vpcValue, [...vpcListData]);
+  const vpc = resolveSelectedVpc(selectedVpcRaw, vpcListData);
   if (!vpc?.id) {
     return;
   }

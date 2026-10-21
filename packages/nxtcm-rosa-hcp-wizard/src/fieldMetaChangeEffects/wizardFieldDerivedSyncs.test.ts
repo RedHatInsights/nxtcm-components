@@ -10,10 +10,14 @@ import {
   syncSecurityGroupsWorkerWithVpc,
 } from './wizardFieldDerivedSyncs';
 
-const malformedVpcValues = [
+const invalidVpcValues = [
   { description: 'null', value: null },
-  { description: 'an ID-only object', value: { id: fixtures.mockVPCs[0].id } },
+  { description: 'an array', value: [fixtures.mockVPCs[0]] },
   { description: 'a numeric ID', value: { ...fixtures.mockVPCs[0], id: 123 } },
+];
+
+const retainedVpcValues = [
+  { description: 'an ID-only object', value: { id: fixtures.mockVPCs[0].id } },
   {
     description: 'a malformed security group list',
     value: { ...fixtures.mockVPCs[0], aws_security_groups: {} },
@@ -28,6 +32,7 @@ describe('hasDerivedSyncSourceValue for VPC security groups', () => {
   it.each([
     { description: 'a VPC ID', value: fixtures.mockVPCs[0].id },
     { description: 'a complete VPC object', value: fixtures.mockVPCs[0] },
+    ...retainedVpcValues,
   ])('accepts $description', ({ value }) => {
     expect(hasDerivedSyncSourceValue('vpcSecurityGroupsWorkerSelection', value)).toBe(true);
   });
@@ -36,7 +41,7 @@ describe('hasDerivedSyncSourceValue for VPC security groups', () => {
     { description: 'undefined', value: undefined },
     { description: 'an empty selection string', value: '' },
     { description: 'an empty VPC ID', value: { ...fixtures.mockVPCs[0], id: '' } },
-    ...malformedVpcValues,
+    ...invalidVpcValues,
   ])('does not run derived synchronization for $description', ({ value }) => {
     expect(hasDerivedSyncSourceValue('vpcSecurityGroupsWorkerSelection', value)).toBe(false);
   });
@@ -107,13 +112,46 @@ describe('syncSecurityGroupsWorkerWithVpc', () => {
     expect(setValue).not.toHaveBeenCalled();
   });
 
-  it.each(malformedVpcValues)('preserves the current selection for $description', ({ value }) => {
+  it.each(invalidVpcValues)('preserves the current selection for $description', ({ value }) => {
     const setValue = jest.fn();
 
     syncSecurityGroupsWorkerWithVpc(value, [sg1, sg2], fixtures.mockVPCs, setValue);
 
     expect(setValue).not.toHaveBeenCalled();
   });
+
+  it.each(retainedVpcValues)(
+    'prunes stale security groups for $description using fresh list data',
+    ({ value }) => {
+      const setValue = jest.fn();
+      const vpcList = [
+        {
+          ...fixtures.mockVPCs[0],
+          aws_security_groups: fixtures.mockSecurityGroups.filter((group) => group.id === sg1),
+        },
+      ];
+
+      syncSecurityGroupsWorkerWithVpc(value, [sg1, staleSg], vpcList, setValue);
+
+      expect(setValue).toHaveBeenCalledTimes(1);
+      expect(setValue).toHaveBeenCalledWith(
+        'security_groups_worker',
+        [sg1],
+        expect.objectContaining({ shouldValidate: true })
+      );
+    }
+  );
+
+  it.each(retainedVpcValues)(
+    'preserves the current selection when $description cannot be resolved',
+    ({ value }) => {
+      const setValue = jest.fn();
+
+      syncSecurityGroupsWorkerWithVpc(value, [sg1, staleSg], [], setValue);
+
+      expect(setValue).not.toHaveBeenCalled();
+    }
+  );
 
   it('prunes stale security groups from a complete VPC object without a list lookup', () => {
     const setValue = jest.fn();
@@ -134,6 +172,44 @@ describe('syncSecurityGroupsWorkerWithVpc', () => {
 });
 
 describe('reapplyWizardFieldDerivedSyncs', () => {
+  it('prunes retained VPC selections when fresh list data arrives', () => {
+    const setValue = jest.fn();
+    const sg1 = fixtures.mockSecurityGroups[0].id;
+    const formValues: Partial<ROSAHCPCluster> = {
+      security_groups_worker: [sg1, 'sg-stale'],
+    };
+    // Restored form values can contain only the VPC identity at runtime.
+    Object.assign(formValues, { selected_vpc: { id: fixtures.mockVPCs[0].id } });
+    const wizardData = createMockRosaHcpWizardData({
+      vpcList: { data: [], error: null, isFetching: false, fetch: jest.fn() },
+    });
+    const reapply = (): void =>
+      reapplyWizardFieldDerivedSyncs({
+        entries: [{ sourceField: 'selected_vpc', syncKey: 'vpcSecurityGroupsWorkerSelection' }],
+        formValues,
+        wizardData,
+        setValue,
+      });
+
+    reapply();
+    expect(setValue).not.toHaveBeenCalled();
+
+    wizardData.vpcList.data = [
+      {
+        ...fixtures.mockVPCs[0],
+        aws_security_groups: fixtures.mockSecurityGroups.filter((group) => group.id === sg1),
+      },
+    ];
+    reapply();
+
+    expect(setValue).toHaveBeenCalledTimes(1);
+    expect(setValue).toHaveBeenCalledWith(
+      'security_groups_worker',
+      [sg1],
+      expect.objectContaining({ shouldValidate: true })
+    );
+  });
+
   it('re-syncs support and worker ARNs when installer role is set', () => {
     const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
     const installerArn = fixtures.mockRoles[0].installerRole.value;

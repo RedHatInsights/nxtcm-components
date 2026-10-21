@@ -44,14 +44,21 @@ export function getNestedValue(source: unknown, path: string): unknown {
   return current;
 }
 
+export function getSelectedVpcId(value: unknown): string | undefined {
+  if (typeof value === 'string') return value;
+  return isRecord(value) && typeof value.id === 'string' ? value.id : undefined;
+}
+
+/** Resolves retained selections against fresh data before validating their shape. */
 export function resolveSelectedVpc(
-  selectedVpcRaw: ROSAHCPCluster['selected_vpc'] | undefined,
-  vpcListData: VPC[]
+  selectedVpcRaw: unknown,
+  vpcListData: readonly VPC[]
 ): VPC | undefined {
-  if (typeof selectedVpcRaw === 'string') {
-    return vpcListData.find((vpc) => vpc.id === selectedVpcRaw);
-  }
-  return selectedVpcRaw;
+  const id = getSelectedVpcId(selectedVpcRaw);
+  const listedVpc = id ? vpcListData.find((vpc) => vpc.id === id) : undefined;
+  const vpc = listedVpc ?? selectedVpcRaw;
+
+  return isSelectedVpcValue(vpc) && typeof vpc !== 'string' ? vpc : undefined;
 }
 
 /** Subnet ids selected for machine pools, omitting empty rows. */
