@@ -12,7 +12,7 @@ import React, { Dispatch, SetStateAction } from 'react';
  */
 export function hasMatchingStructure<T>(value: unknown, reference: T): value is T {
   if (value === null || value === undefined) {
-    return reference === null || reference === undefined;
+    return value === reference;
   }
 
   if (reference === null || reference === undefined) {
@@ -83,12 +83,22 @@ export function useLocalStorageWithObject<T>(
   initialValue: T
 ): [T, Dispatch<SetStateAction<T>>, () => void] {
   const [state, setState, clear] = useLocalStorage(key, JSON.stringify(initialValue));
-  const parsed = JSON.parse(state) as unknown;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(state);
+  } catch {
+    parsed = undefined;
+  }
   const item: T = hasMatchingStructure(parsed, initialValue) ? parsed : initialValue;
   const setItem = (value: SetStateAction<T>) => {
     if (value instanceof Function) {
       setState((prevState) => {
-        const prevParsed = JSON.parse(prevState) as unknown;
+        let prevParsed: unknown;
+        try {
+          prevParsed = JSON.parse(prevState);
+        } catch {
+          prevParsed = undefined;
+        }
         const prevValidated: T = hasMatchingStructure(prevParsed, initialValue)
           ? prevParsed
           : initialValue;
