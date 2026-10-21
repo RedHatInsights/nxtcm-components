@@ -1,5 +1,5 @@
 import { expect, type MountResult, test } from '@playwright/experimental-ct-react';
-import type { Page } from '@playwright/test';
+import type { Page } from 'playwright/test';
 
 import {
   RosaHcpWizardBodyErrorThenBackMount,

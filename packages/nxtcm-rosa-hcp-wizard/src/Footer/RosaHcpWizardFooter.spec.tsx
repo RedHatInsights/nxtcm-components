@@ -73,7 +73,7 @@ async function clickBackTimes(component: MountResult, count: number): Promise<vo
 
 async function selectAwsInfrastructureAccount(
   component: MountResult,
-  page: import('@playwright/test').Page,
+  page: import('playwright/test').Page,
   accountLabel: string
 ): Promise<void> {
   const combo = component.locator('#associated_aws_id-form-group').getByRole('combobox', {
