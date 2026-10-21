@@ -136,7 +136,7 @@ test.describe('ClusterRecommendations', () => {
     // NOTE svgs are hidden so won't be picked up by .getByRole('img')
     // I'm not sure this test is providing any value
     const icons = page.locator('svg[role="img"]');
-    expect(await icons.count()).toBe(5);
+    await expect(icons).toHaveCount(5);
   });
 
   test('should have proper component structure with both sections', async ({ mount }) => {
@@ -176,9 +176,7 @@ test.describe('ClusterRecommendations', () => {
   test('should render skeleton when isLoading is true', async ({ mount }) => {
     const component = await mount(<ClusterRecommendations isLoading {...defaultProps} />);
     await expect(component.getByText('Loading cluster recommendations')).toBeVisible();
-    await expect(
-      component.getByRole('heading', { name: 'Critical recommendations' })
-    ).not.toBeVisible();
+    await expect(component.getByRole('heading', { name: 'Critical recommendations' })).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {

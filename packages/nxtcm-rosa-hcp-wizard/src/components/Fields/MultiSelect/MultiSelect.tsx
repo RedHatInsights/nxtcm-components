@@ -140,10 +140,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
     throw new Error('MultiSelect: use either `options` or `optionGroups`, not both.');
   }
 
-  const value = useMemo(
-    () => (valueProp != null ? valueProp : (EMPTY_MULTISELECT_VALUE as T[])),
-    [valueProp]
-  );
+  const value = useMemo<T[]>(() => valueProp ?? EMPTY_MULTISELECT_VALUE, [valueProp]);
 
   const { normalizedFlat, normalizedGroups, flatForLookup, hasGroups } = useMultiSelectDerived<T>({
     options,
