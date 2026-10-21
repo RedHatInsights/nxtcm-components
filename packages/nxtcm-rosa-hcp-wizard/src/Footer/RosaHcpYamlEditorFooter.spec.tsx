@@ -50,7 +50,7 @@ test.describe('RosaHcpYamlEditorFooter', () => {
     await expect(page.getByRole('heading', { name: s.discardConfirmTitle })).toBeVisible();
 
     await page.getByRole('button', { name: w.cancel }).click();
-    await expect(page.getByRole('heading', { name: s.discardConfirmTitle })).not.toBeVisible();
+    await expect(page.getByRole('heading', { name: s.discardConfirmTitle })).toBeHidden();
   });
 
   test('calls onCancel when the Cancel cluster creation link is clicked', async ({

@@ -81,7 +81,7 @@ test.describe('Telemetry', () => {
   test('should render skeleton when isLoading is true', async ({ mount }) => {
     const component = await mount(<Telemetry isLoading />);
     await expect(component.getByText('Loading telemetry data')).toBeVisible();
-    await expect(component.getByTestId('connected-count')).not.toBeVisible();
+    await expect(component.getByTestId('connected-count')).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {

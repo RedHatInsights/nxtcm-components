@@ -5,8 +5,8 @@
  * Validation logic is tested separately in Component Tests where we can reliably trigger Monaco editor events.
  */
 
-import { test, expect } from './fixtures';
-import { navigateToYamlEditor, getMonacoYaml } from './helpers/yaml-editor-helpers';
+import { expect, test } from './fixtures';
+import { getMonacoYaml, navigateToYamlEditor } from './helpers/yaml-editor-helpers';
 
 test.describe('ROSA Wizard - YAML Editor', () => {
   test.beforeEach(async ({ page }) => {
@@ -39,7 +39,7 @@ test.describe('ROSA Wizard - YAML Editor', () => {
 
       // Back to review page
       await expect(page.getByRole('button', { name: /Edit in YAML/i })).toBeVisible();
-      await expect(page.locator('.monaco-editor')).not.toBeVisible();
+      await expect(page.locator('.monaco-editor')).toBeHidden();
     });
 
     test('cancels discard confirmation', async ({ page }) => {
@@ -99,7 +99,7 @@ test.describe('ROSA Wizard - YAML Editor', () => {
       await expect(schemaHeading).toBeVisible();
 
       await toggleButton.click();
-      await expect(schemaHeading).not.toBeVisible();
+      await expect(schemaHeading).toBeHidden();
 
       await toggleButton.click();
       await expect(schemaHeading).toBeVisible();

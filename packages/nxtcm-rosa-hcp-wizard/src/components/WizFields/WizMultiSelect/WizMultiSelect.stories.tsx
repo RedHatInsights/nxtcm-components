@@ -84,11 +84,10 @@ const meta: Meta<typeof WizMultiSelect> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<WizMultiSelectStoryArgs>;
 
 export const Default: Story = {
-  render: (args) =>
-    WizMultiSelectFormDemo(defaultSchema)(args as unknown as WizMultiSelectStoryArgs),
+  render: (args) => WizMultiSelectFormDemo(defaultSchema)(args),
   args: {
     options: ['alpha', 'bravo', 'charlie'],
     isDisabled: false,

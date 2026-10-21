@@ -3,7 +3,37 @@ import {
   buildMachinePoolsReviewSelectOptions,
   getAvailabilityZonesForSubnetIds,
   getMachinePoolSubnetIds,
+  getNestedValue,
 } from './helpers';
+
+describe('getNestedValue', () => {
+  interface Cluster {
+    metadata?: { name: string };
+    pools: { replicas: number }[];
+    enabled: boolean;
+  }
+
+  const cluster: Cluster = {
+    metadata: { name: 'example' },
+    pools: [{ replicas: 0 }],
+    enabled: false,
+  };
+
+  it('reads domain interfaces, optional nested objects, and array indices', () => {
+    expect(getNestedValue(cluster, 'metadata.name')).toBe('example');
+    expect(getNestedValue(cluster, 'pools.0.replicas')).toBe(0);
+    expect(getNestedValue(cluster, 'enabled')).toBe(false);
+  });
+
+  it('returns undefined for missing paths and stops at non-object values', () => {
+    expect(getNestedValue(cluster, 'missing')).toBeUndefined();
+    expect(getNestedValue(cluster, 'pools.1.replicas')).toBeUndefined();
+    expect(getNestedValue(cluster, 'metadata.name.length')).toBeUndefined();
+    expect(getNestedValue(cluster, '')).toBeUndefined();
+    expect(getNestedValue({ metadata: null }, 'metadata.name')).toBeUndefined();
+    expect(getNestedValue(undefined, 'metadata.name')).toBeUndefined();
+  });
+});
 
 const mockVpc: VPC = {
   id: 'vpc-1',

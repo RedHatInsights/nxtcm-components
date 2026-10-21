@@ -42,7 +42,7 @@ test.describe('ROSAHCPWizardBody', () => {
       await expect(
         component.getByRole('button', { name: submitErrorStrings.exitWizard })
       ).toBeVisible();
-      await expect(component.getByRole('textbox', { name: /Cluster name/i })).not.toBeVisible();
+      await expect(component.getByRole('textbox', { name: /Cluster name/i })).toBeHidden();
     });
 
     test('shows Back to the wizard when onBackToReviewStep is provided', async ({ mount }) => {
@@ -95,9 +95,7 @@ test.describe('ROSAHCPWizardBody', () => {
       ).toBeVisible();
       await component.getByRole('button', { name: submitErrorStrings.backToReviewStep }).click();
 
-      await expect(
-        component.getByRole('heading', { name: submitErrorStrings.title })
-      ).not.toBeVisible();
+      await expect(component.getByRole('heading', { name: submitErrorStrings.title })).toBeHidden();
       await expect(component.getByRole('textbox', { name: /Cluster name/i })).toBeVisible();
     });
 
