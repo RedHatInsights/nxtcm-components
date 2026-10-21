@@ -39,6 +39,11 @@ describe('hasMatchingStructure', () => {
     it('rejects non-undefined value when reference is undefined', () => {
       expect(hasMatchingStructure('hello', undefined)).toBe(false);
     });
+
+    it('distinguishes null from undefined', () => {
+      expect(hasMatchingStructure(null, undefined)).toBe(false);
+      expect(hasMatchingStructure(undefined, null)).toBe(false);
+    });
   });
 
   describe('arrays', () => {
