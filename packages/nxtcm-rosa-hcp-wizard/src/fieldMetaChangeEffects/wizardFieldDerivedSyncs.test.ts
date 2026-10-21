@@ -1,6 +1,7 @@
 import type { UseFormSetValue } from 'react-hook-form';
 
 import fixtures from '../ROSAHCPWizard.fixtures';
+import { createMockRosaHcpWizardData } from '../ROSAHCPWizard.stories.helpers';
 import type { ROSAHCPCluster, ROSAHCPWizardData } from '../types';
 import {
   reapplyWizardFieldDerivedSyncs,
@@ -78,9 +79,17 @@ describe('reapplyWizardFieldDerivedSyncs', () => {
   it('re-syncs support and worker ARNs when installer role is set', () => {
     const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
     const installerArn = fixtures.mockRoles[0].installerRole.value;
-    const wizardData = {
-      roles: { data: fixtures.mockRoles, error: null, isFetching: false, fetch: jest.fn() },
-    } as unknown as ROSAHCPWizardData;
+    const wizardData = createMockRosaHcpWizardData({
+      roles: {
+        data: fixtures.mockRoles,
+        error: null,
+        isFetching: false,
+        fetch: jest.fn(),
+        ocmRoleError: null,
+        userRoleError: null,
+        ocmRoleARN: null,
+      },
+    });
 
     reapplyWizardFieldDerivedSyncs({
       entries: [{ sourceField: 'installer_role_arn', syncKey: 'installerRoleDependentRoles' }],
@@ -100,7 +109,8 @@ describe('reapplyWizardFieldDerivedSyncs', () => {
     const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
     const vpcId = fixtures.mockVPCs[0].id;
     const sg1 = fixtures.mockSecurityGroups[0].id;
-    const wizardData = {
+
+    const wizardData = createMockRosaHcpWizardData({
       vpcList: {
         data: [
           {
@@ -112,7 +122,7 @@ describe('reapplyWizardFieldDerivedSyncs', () => {
         isFetching: false,
         fetch: jest.fn(),
       },
-    } as unknown as ROSAHCPWizardData;
+    });
 
     reapplyWizardFieldDerivedSyncs({
       entries: [{ sourceField: 'selected_vpc', syncKey: 'vpcSecurityGroupsWorkerSelection' }],

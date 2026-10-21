@@ -39,7 +39,7 @@ function MultiSelectRefreshDemo(args: MultiSelectProps<string>) {
   );
 }
 
-const meta: Meta<typeof MultiSelect> = {
+const meta: Meta<MultiSelectProps<string>> = {
   title: 'Internal/Form Elements/MultiSelect',
   component: MultiSelect,
   tags: ['autodocs', 'internal'],
@@ -62,7 +62,7 @@ export const Default: Story = {
     label: 'Regions',
     options: ['us-east-1', 'eu-west-1', 'ap-south-1'],
   },
-  render: (args) => <MultiSelectDemo {...(args as unknown as MultiSelectProps<string>)} />,
+  render: (args) => <MultiSelectDemo {...args} />,
 };
 
 export const WithRefresh: Story = {
@@ -71,5 +71,5 @@ export const WithRefresh: Story = {
     label: 'VPC security groups',
     options: ['sg-a', 'sg-b'],
   },
-  render: (args) => <MultiSelectRefreshDemo {...(args as unknown as MultiSelectProps<string>)} />,
+  render: (args) => <MultiSelectRefreshDemo {...args} />,
 };
