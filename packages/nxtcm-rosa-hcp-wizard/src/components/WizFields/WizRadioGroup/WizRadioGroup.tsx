@@ -7,12 +7,7 @@ import { useWizFieldPresentation } from '../wizFieldPresentation';
 import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizRadioGroupControlledKeys =
-  | 'value'
-  | 'onChange'
-  | 'onBlur'
-  | 'errorMessage'
-  | 'isError'
-  | 'name';
+  'value' | 'onChange' | 'onBlur' | 'errorMessage' | 'isError' | 'name';
 
 type WizRadioGroupSpreadProps = Omit<
   RadioGroupProps,

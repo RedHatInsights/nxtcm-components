@@ -9,12 +9,7 @@ import { useWizFieldPresentation } from '../wizFieldPresentation';
 import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizNumberInputControlledKeys =
-  | 'value'
-  | 'onChange'
-  | 'onBlur'
-  | 'errorMessage'
-  | 'isError'
-  | 'name';
+  'value' | 'onChange' | 'onBlur' | 'errorMessage' | 'isError' | 'name';
 
 type WizNumberInputSpreadProps = Omit<
   NumberInputProps,
