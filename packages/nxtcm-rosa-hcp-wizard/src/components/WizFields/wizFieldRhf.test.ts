@@ -25,9 +25,7 @@ describe('stringLabelFromYupMeta', () => {
 
   it('uses the fallback path when Yup stores a non-primitive label (e.g. JSX)', () => {
     const el = React.createElement('span', {}, 'nested');
-    expect(stringLabelFromYupMeta(el as unknown as ReactNode, 'fallback-name')).toBe(
-      'fallback-name'
-    );
+    expect(stringLabelFromYupMeta(el, 'fallback-name')).toBe('fallback-name');
   });
 });
 
