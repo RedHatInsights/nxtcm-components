@@ -3,12 +3,12 @@
 <!--
 Function: reference catalog of every localizable string on RosaHCPWizard.
 Purpose: a host app translating the wizard can see each key in RosaHcpWizardStrings and
-RosaHcpWizardValidatorStrings, and which of those sections can be left in English when
-config.hiddenSteps hides Cluster-wide proxy or Cluster updates.
-The lists are checked against the English defaults by src/stringsProvider/localizableStringsDoc.test.ts.
+RosaHcpWizardValidatorStrings, the English default, and which keys can be left out when
+a step is hidden or the wizard never reads the key.
+src/stringsProvider/localizableStringsDoc.test.ts checks each table row against the defaults.
 -->
 
-This file is the reference for localizing `RosaHCPWizard`. It lists every UI string key and every validator message key the wizard can show, plus which of those groups are never shown when a step is hidden. A host supplies translations through the `strings` prop. Keys left out of that prop keep the built-in English.
+This file is the reference for localizing `RosaHCPWizard`. It lists every UI string key and every validator message key, with the English default. Translate every string a user can see. A host supplies translations through the `strings` prop. Keys left out of that prop keep the built-in English, so leave a key out only when the wizard will not show it.
 
 `RosaHCPWizard` takes a `strings` prop (`RosaHcpWizardStringsInput`) for UI copy and validator messages. Omitted keys keep the built-in English from `rosaHcpWizardStrings.defaults.ts`. The merge is deep for plain objects: you can override one key inside a section. Functions and arrays replace the default value entirely. `clusterUpdates.daysOfWeek` is a seven-name list, index 0 = Sunday (cron day `0`) through index 6 = Saturday. If you replace it, pass all seven names.
 
@@ -28,61 +28,32 @@ import { RosaHCPWizard, STEP_IDS } from '@redhat-cloud-services/nxtcm-rosa-hcp-w
 />
 ```
 
-Field labels, placeholders, and helper text are often Yup `.meta()` paths into these same keys (`labelKey`, `placeholderKey`, `helperTextKey`, `reviewLabel`). Translating the key covers the control and any review row that uses that path.
+A field's label, placeholder, or helper text and its Review row often share one key. Translating the key covers each place it appears.
 
 Function-valued validator messages must keep the same parameters. The wizard fills in the live values (lengths, CIDRs, field labels) at validation time.
 
 ## Sections safe to omit
 
-Only two steps can be removed, with `config.hiddenSteps`. Hiding a step removes it from navigation and from the Review summary. The keys below are then never shown, so a partial `strings` object can leave them out and users will not see the English fallback.
+`config.hiddenSteps` can hide only two steps. Hiding a step removes it from navigation and from Review. Hiding one does not hide the other.
 
-Hiding one step does not affect the other. Encryption cannot be hidden, so `wizard.stepLabels.additionalSetup` stays on screen even when cluster updates is hidden.
+- `STEP_IDS.CLUSTER_WIDE_PROXY` hides Cluster-wide proxy, its Review section, and the proxy checkbox on Networking. Proxy fields stay empty, so those validation messages are not shown.
+- `STEP_IDS.CLUSTER_UPDATES` hides Cluster updates and its Review section.
 
-`config.hiddenFields` is separate. `FIELD_NAME.NODES_COMPUTE` hides the fixed compute-node count only (`autoscaling.computeCountLabel`, `autoscaling.computeCountHelp`). The `autoscaling` section itself stays, because min and max node counts are still shown when autoscaling is on.
+Encryption cannot be hidden, so `wizard.stepLabels.additionalSetup` stays on screen when cluster updates is hidden.
 
-### Cluster-wide proxy
+Individual keys that disappear with a hidden step are marked in the tables. A section introduction says when that whole section can be omitted. `validators.commonRequired` stays required: the update schedule uses it, and so do required fields on steps that remain visible.
 
-`STEP_IDS.CLUSTER_WIDE_PROXY` (`cluster-wide-proxy-step`) hides the Cluster-wide proxy step, its Review section, and the "Configure a cluster-wide proxy" checkbox on Networking. Proxy fields stay empty, so proxy validation messages are not shown.
+`config.hiddenFields` is separate. `FIELD_NAME.NODES_COMPUTE` hides only the fixed compute-node count (`autoscaling.computeCountLabel` and `autoscaling.computeCountHelp`). Min and max counts stay when autoscaling is on.
 
-Omit these sections:
-
-- `clusterWideProxy`
-- `validators.url`
-- `validators.noProxyDomains`
-- `validators.ca`
-- `validators.proxyConfigureAtLeastOne`
-
-Omit these keys inside sections you still translate:
-
-- `wizard.stepLabels.clusterWideProxy`
-- `networking.proxyCheckboxLabel`
-- `networking.proxyCheckboxHelp`
-- `networking.proxyNextStepInfo`
-
-### Cluster updates
-
-`STEP_IDS.CLUSTER_UPDATES` (`cluster-updates-step`) hides the Cluster updates step and its Review section.
-
-Omit this section:
-
-- `clusterUpdates` (including `clusterUpdates.daysOfWeek`)
-
-Omit these keys inside sections you still translate:
-
-- `wizard.stepLabels.clusterUpdatesOptional`
-- `review.updateStrategy`
-- `review.strategyIndividual`
-- `review.strategyAutomatic`
-
-No validator section belongs only to this step. The schedule uses `validators.commonRequired` when the strategy is automatic, and that same message is used by required fields on steps that stay visible. Keep `validators.commonRequired`.
+**Not read** marks a key that is part of the string type and that the current wizard never reads. Leaving it out does not leave English on screen. The tables list every unread key so a partial `strings` object can skip them. Removing the keys from the types is separate work.
 
 ## UI strings (`RosaHcpWizardStrings`)
 
-Notes:
+Notes in the tables:
 
-- **Omit when cluster-wide proxy is hidden** — see the section above.
-- **Omit when cluster updates is hidden** — see the section above.
-- **Not read** — the key is part of the type, and the current wizard never reads it. Leaving it out does not leave English copy on screen.
+- **Omit when cluster-wide proxy is hidden** — safe to leave out when `STEP_IDS.CLUSTER_WIDE_PROXY` is hidden.
+- **Omit when cluster updates is hidden** — safe to leave out when `STEP_IDS.CLUSTER_UPDATES` is hidden.
+- **Not read** — on the type, never shown. Safe to leave out.
 
 ### `wizard`
 
@@ -121,23 +92,23 @@ Shown when cluster creation fails.
 
 YAML editor opened from Review. Required even when optional steps are hidden.
 
-| Key | Default English |
-| --- | --- |
-| `yamlEditor.title` | YAML Configuration |
-| `yamlEditor.description` | Review and edit the YAML configuration. |
-| `yamlEditor.parseErrorTitle` | YAML Schema Validation Error |
-| `yamlEditor.convertError` | Error converting form data to YAML |
-| `yamlEditor.invalidYaml` | Invalid YAML syntax |
-| `yamlEditor.discardChanges` | Discard changes and go back to Review step |
-| `yamlEditor.discardConfirmTitle` | Discard YAML changes? |
-| `yamlEditor.discardConfirmBody` | Any changes you made to the YAML configuration will be lost. |
-| `yamlEditor.discardConfirmYes` | Yes |
-| `yamlEditor.cancelCreation` | Cancel cluster creation |
-| `yamlEditor.schemaTitle` | ROSAControlPlane schema |
-| `yamlEditor.schemaToggleAriaLabel` | Toggle schema panel |
-| `yamlEditor.schemaShowTooltip` | Show schema |
-| `yamlEditor.schemaHideTooltip` | Hide sidebar |
-| `yamlEditor.schemaSearchPlaceholder` | Search schema fields... |
+| Key | Default English | Notes |
+| --- | --- | --- |
+| `yamlEditor.title` | YAML Configuration | |
+| `yamlEditor.description` | Review and edit the YAML configuration. | Not read |
+| `yamlEditor.parseErrorTitle` | YAML Schema Validation Error | |
+| `yamlEditor.convertError` | Error converting form data to YAML | Not read |
+| `yamlEditor.invalidYaml` | Invalid YAML syntax | Not read |
+| `yamlEditor.discardChanges` | Discard changes and go back to Review step | |
+| `yamlEditor.discardConfirmTitle` | Discard YAML changes? | |
+| `yamlEditor.discardConfirmBody` | Any changes you made to the YAML configuration will be lost. | |
+| `yamlEditor.discardConfirmYes` | Yes | |
+| `yamlEditor.cancelCreation` | Cancel cluster creation | |
+| `yamlEditor.schemaTitle` | ROSAControlPlane schema | |
+| `yamlEditor.schemaToggleAriaLabel` | Toggle schema panel | |
+| `yamlEditor.schemaShowTooltip` | Show schema | |
+| `yamlEditor.schemaHideTooltip` | Hide sidebar | |
+| `yamlEditor.schemaSearchPlaceholder` | Search schema fields... | |
 
 ### `associateAwsDrawer`
 
@@ -156,7 +127,7 @@ YAML editor opened from Review. Required even when optional steps are hidden.
 | `associateAwsDrawer.closeButton` | Close |
 | `associateAwsDrawer.createOCMRoleAriaLabel` | Copyable ROSA create ocm-role |
 | `associateAwsDrawer.createOCMRoleAdminAriaLabel` | Copyable ROSA create ocm-role --admin |
-| `associateAwsDrawer.linkOCMRoleAriaLabel` | Copyable rosa link ocm-role <arn> command |
+| `associateAwsDrawer.linkOCMRoleAriaLabel` | Copyable rosa link ocm-role &lt;arn&gt; command |
 
 ### `ocmRole`
 
@@ -249,38 +220,38 @@ Details step, including the control that opens the associate-account drawer.
 
 Roles and policies step.
 
-| Key | Default English |
-| --- | --- |
-| `rolesAndPolicies.accountRolesSection` | Account roles |
-| `rolesAndPolicies.installerRoleLabel` | Installer role |
-| `rolesAndPolicies.installerPlaceholder` | Select an installer role |
-| `rolesAndPolicies.installerRoleOptionDisabledDescription` | This account role does not support the selected OpenShift version. |
-| `rolesAndPolicies.installerHelpLead` | An AWS IAM role used by the ROSA installer |
-| `rolesAndPolicies.installerLearnMoreLink` | Learn more about roles. |
-| `rolesAndPolicies.arnsToggle` | Amazon Resource Names (ARNs) |
-| `rolesAndPolicies.supportRoleLabel` | Support role |
-| `rolesAndPolicies.supportPlaceholder` | Select a support role |
-| `rolesAndPolicies.supportHelp` | An IAM role used by the Red Hat Site Reliability Engineering (SRE) support team. The role is used with the corresponding policy resource to provide the Red Hat SRE support team with the permissions required to support ROSA clusters. |
-| `rolesAndPolicies.workerRoleLabel` | Worker role |
-| `rolesAndPolicies.workerPlaceholder` | Select a worker role |
-| `rolesAndPolicies.workerHelp` | An IAM role used by the ROSA compute instances. The role is used with the corresponding policy resource to provide the compute instances with the permissions required to manage their components. |
-| `rolesAndPolicies.operatorRolesSection` | Operator roles |
-| `rolesAndPolicies.oidcLabel` | OIDC config ID |
-| `rolesAndPolicies.oidcPlaceholder` | Select an OIDC config ID |
-| `rolesAndPolicies.oidcPopoverTitle` | Create a new OIDC config id |
-| `rolesAndPolicies.operatorPrefixToggle` | Operator roles prefix |
-| `rolesAndPolicies.operatorPrefixLabel` | Operator roles prefix |
-| `rolesAndPolicies.operatorPrefixHelpLead` | You can specify a custom prefix for the Operator AWS IAM roles. |
-| `rolesAndPolicies.operatorPrefixLearnMoreLink` | Learn more and see examples. |
-| `rolesAndPolicies.operatorPrefixHelper` | 32 characters maximum. This is autogenerated by the cluster name, but you can change it. |
-| `rolesAndPolicies.operatorRolesCreateLabel` | Create operator roles |
-| `rolesAndPolicies.operatorRolesCreateInstructions` | Create operator AWS IAM roles by running the following commands in your CLI. You must complete this step before your cluster can be created. |
-| `rolesAndPolicies.operatorRolesCreateCommandAriaLabel` | Copyable ROSA create operator-roles command |
-| `rolesAndPolicies.copyHover` | Copy |
-| `rolesAndPolicies.copyClicked` | Copied |
-| `rolesAndPolicies.rolesAlertTitle` | Some roles are missing |
-| `rolesAndPolicies.accountRolesHelp` | Missing account roles |
-| `rolesAndPolicies.userRolesHelp` | Missing user role |
+| Key | Default English | Notes |
+| --- | --- | --- |
+| `rolesAndPolicies.accountRolesSection` | Account roles | |
+| `rolesAndPolicies.installerRoleLabel` | Installer role | |
+| `rolesAndPolicies.installerPlaceholder` | Select an installer role | |
+| `rolesAndPolicies.installerRoleOptionDisabledDescription` | This account role does not support the selected OpenShift version. | |
+| `rolesAndPolicies.installerHelpLead` | An AWS IAM role used by the ROSA installer | |
+| `rolesAndPolicies.installerLearnMoreLink` | Learn more about roles. | |
+| `rolesAndPolicies.arnsToggle` | Amazon Resource Names (ARNs) | |
+| `rolesAndPolicies.supportRoleLabel` | Support role | |
+| `rolesAndPolicies.supportPlaceholder` | Select a support role | Not read |
+| `rolesAndPolicies.supportHelp` | An IAM role used by the Red Hat Site Reliability Engineering (SRE) support team. The role is used with the corresponding policy resource to provide the Red Hat SRE support team with the permissions required to support ROSA clusters. | |
+| `rolesAndPolicies.workerRoleLabel` | Worker role | |
+| `rolesAndPolicies.workerPlaceholder` | Select a worker role | Not read |
+| `rolesAndPolicies.workerHelp` | An IAM role used by the ROSA compute instances. The role is used with the corresponding policy resource to provide the compute instances with the permissions required to manage their components. | |
+| `rolesAndPolicies.operatorRolesSection` | Operator roles | |
+| `rolesAndPolicies.oidcLabel` | OIDC config ID | |
+| `rolesAndPolicies.oidcPlaceholder` | Select an OIDC config ID | |
+| `rolesAndPolicies.oidcPopoverTitle` | Create a new OIDC config id | |
+| `rolesAndPolicies.operatorPrefixToggle` | Operator roles prefix | |
+| `rolesAndPolicies.operatorPrefixLabel` | Operator roles prefix | |
+| `rolesAndPolicies.operatorPrefixHelpLead` | You can specify a custom prefix for the Operator AWS IAM roles. | |
+| `rolesAndPolicies.operatorPrefixLearnMoreLink` | Learn more and see examples. | |
+| `rolesAndPolicies.operatorPrefixHelper` | 32 characters maximum. This is autogenerated by the cluster name, but you can change it. | |
+| `rolesAndPolicies.operatorRolesCreateLabel` | Create operator roles | |
+| `rolesAndPolicies.operatorRolesCreateInstructions` | Create operator AWS IAM roles by running the following commands in your CLI. You must complete this step before your cluster can be created. | |
+| `rolesAndPolicies.operatorRolesCreateCommandAriaLabel` | Copyable ROSA create operator-roles command | |
+| `rolesAndPolicies.copyHover` | Copy | Not read |
+| `rolesAndPolicies.copyClicked` | Copied | Not read |
+| `rolesAndPolicies.rolesAlertTitle` | Some roles are missing | |
+| `rolesAndPolicies.accountRolesHelp` | Missing account roles | |
+| `rolesAndPolicies.userRolesHelp` | Missing user role | |
 
 ### `oidcHint`
 
@@ -297,7 +268,7 @@ ROSA CLI login instructions. `product="acm"` uses `rosaLogin.instructionsService
 | Key | Default English |
 | --- | --- |
 | `rosaLogin.instructions` | Before you can create or link AWS IAM roles, log in to ROSA from your CLI. Run the following command to authenticate with your Red Hat account. |
-| `rosaLogin.instructionsService` | Before you can create or link AWS IAM roles, log in to ROSA from your CLI. Run the following command to authenticate with your Red Hat account. Replace the `<CLIENT_ID>` and `<CLIENT_SECRET>` placeholders with your service account credentials. |
+| `rosaLogin.instructionsService` | Before you can create or link AWS IAM roles, log in to ROSA from your CLI. Run the following command to authenticate with your Red Hat account. Replace the \`&lt;CLIENT_ID&gt;\` and \`&lt;CLIENT_SECRET&gt;\` placeholders with your service account credentials. |
 | `rosaLogin.copyAriaLabel` | Copyable ROSA login command |
 
 ### `networking`
@@ -345,75 +316,75 @@ Networking step. CIDR copy stays required when the proxy step is hidden. Only th
 
 Machine pools step. Privacy labels from `networking` are also reused when Review displays cluster privacy.
 
-| Key | Default English |
-| --- | --- |
-| `machinePools.sectionLabel` | Machine pool |
-| `machinePools.intro` | Create a machine pool.  Additional machine pools can be created after cluster creation. |
-| `machinePools.vpcLabel` | VPC |
-| `machinePools.vpcLabelPrefix` | Select a VPC to install your machine pool into your selected region: |
-| `machinePools.vpcPlaceholder` | Select a VPC to install your machine pool into |
-| `machinePools.vpcHelpLead` | To create a cluster hosted by Red Hat, you must have a Virtual Private Cloud (VPC) available to create clusters on. |
-| `machinePools.vpcLearnMoreLink` | Learn more about VPCs. |
-| `machinePools.machinePoolLabel` | Machine pool |
-| `machinePools.subnetLabel` | Private subnet name |
-| `machinePools.addPoolButton` | Add machine pool |
-| `machinePools.subnetPlaceholder` | Select private subnet |
-| `machinePools.settingsSectionLabel` | Machine pool settings |
-| `machinePools.instanceTypeLabel` | Compute node instance type |
-| `machinePools.instanceTypeHelpLead` | Instance types are made from varying combinations of CPU, memory, storage, and networking capacity. Instance type availability depends on regional availability and your AWS account configuration. |
-| `machinePools.instanceTypeLearnMore` | Learn more. |
-| `machinePools.advancedToggle` | Advanced machine pool configuration (optional) |
-| `machinePools.imdsHelpTitle` | Amazon EC2 Instance Metadata Service (IMDS) |
-| `machinePools.imdsHelpP1` | Instance metadata is data that is related to an Amazon Elastic Compute Cloud (Amazon EC2) instance that applications can use to configure or manage the running instance. |
-| `machinePools.imdsLabel` | Instance Metadata Service |
-| `machinePools.imdsBothLabel` | Use both IMDSv1 and IMDSv2 |
-| `machinePools.imdsBothDescription` | Allows use of both IMDS versions for backward compatibility |
-| `machinePools.imdsV2Label` | Use IMDSv2 only |
-| `machinePools.imdsV2Description` | A session-oriented method with enhanced security |
-| `machinePools.rootDiskLabel` | Root disk size |
-| `machinePools.rootDiskHelp` | Root disks are AWS EBS volumes attached as the primary disk for AWS EC2 instances. The root disk size for this machine pool group of nodes must be between 75GiB and 16384GiB. |
-| `machinePools.securityGroupsToggle` | Additional security groups (optional) |
+| Key | Default English | Notes |
+| --- | --- | --- |
+| `machinePools.sectionLabel` | Machine pool | |
+| `machinePools.intro` | Create a machine pool.  Additional machine pools can be created after cluster creation. | |
+| `machinePools.vpcLabel` | VPC | |
+| `machinePools.vpcLabelPrefix` | Select a VPC to install your machine pool into your selected region: | |
+| `machinePools.vpcPlaceholder` | Select a VPC to install your machine pool into | |
+| `machinePools.vpcHelpLead` | To create a cluster hosted by Red Hat, you must have a Virtual Private Cloud (VPC) available to create clusters on. | |
+| `machinePools.vpcLearnMoreLink` | Learn more about VPCs. | |
+| `machinePools.machinePoolLabel` | Machine pool | Not read |
+| `machinePools.subnetLabel` | Private subnet name | |
+| `machinePools.addPoolButton` | Add machine pool | Not read |
+| `machinePools.subnetPlaceholder` | Select private subnet | |
+| `machinePools.settingsSectionLabel` | Machine pool settings | Not read |
+| `machinePools.instanceTypeLabel` | Compute node instance type | |
+| `machinePools.instanceTypeHelpLead` | Instance types are made from varying combinations of CPU, memory, storage, and networking capacity. Instance type availability depends on regional availability and your AWS account configuration. | |
+| `machinePools.instanceTypeLearnMore` | Learn more. | |
+| `machinePools.advancedToggle` | Advanced machine pool configuration (optional) | |
+| `machinePools.imdsHelpTitle` | Amazon EC2 Instance Metadata Service (IMDS) | |
+| `machinePools.imdsHelpP1` | Instance metadata is data that is related to an Amazon Elastic Compute Cloud (Amazon EC2) instance that applications can use to configure or manage the running instance. | |
+| `machinePools.imdsLabel` | Instance Metadata Service | |
+| `machinePools.imdsBothLabel` | Use both IMDSv1 and IMDSv2 | |
+| `machinePools.imdsBothDescription` | Allows use of both IMDS versions for backward compatibility | |
+| `machinePools.imdsV2Label` | Use IMDSv2 only | |
+| `machinePools.imdsV2Description` | A session-oriented method with enhanced security | |
+| `machinePools.rootDiskLabel` | Root disk size | |
+| `machinePools.rootDiskHelp` | Root disks are AWS EBS volumes attached as the primary disk for AWS EC2 instances. The root disk size for this machine pool group of nodes must be between 75GiB and 16384GiB. | Not read |
+| `machinePools.securityGroupsToggle` | Additional security groups (optional) | Not read |
 
 ### `autoscaling`
 
 Autoscaling controls on the Machine pools step. `autoscaling.computeCountLabel` and `autoscaling.computeCountHelp` are the fixed node count shown when autoscaling is off. They can be left untranslated when `hiddenFields` includes `FIELD_NAME.NODES_COMPUTE`. The rest of this section is still shown.
 
-| Key | Default English |
-| --- | --- |
-| `autoscaling.title` | Autoscaling |
-| `autoscaling.helperLead` | Autoscaling automatically adds and removes nodes from the machine pool based on resource requirements. |
-| `autoscaling.learnMoreAutoscaling` | Learn more about autscaling with ROSA. |
-| `autoscaling.enableLabel` | Enable autoscaling |
-| `autoscaling.minLabel` | Min compute node count |
-| `autoscaling.minHelp` | The number of compute nodes to provision for your initial machine pool. |
-| `autoscaling.learnMoreNodeCount` | Learn more about compute node count |
-| `autoscaling.maxLabel` | Max compute node count |
-| `autoscaling.maxHelp` | The number of compute nodes to provision for your initial machine pool. |
-| `autoscaling.computeCountLabel` | Compute node count |
-| `autoscaling.computeCountHelp` | The number of compute nodes to provision for your initial machine pool. |
+| Key | Default English | Notes |
+| --- | --- | --- |
+| `autoscaling.title` | Autoscaling | Not read |
+| `autoscaling.helperLead` | Autoscaling automatically adds and removes nodes from the machine pool based on resource requirements. | |
+| `autoscaling.learnMoreAutoscaling` | Learn more about autoscaling with ROSA. | |
+| `autoscaling.enableLabel` | Enable autoscaling | |
+| `autoscaling.minLabel` | Min compute node count | |
+| `autoscaling.minHelp` | The number of compute nodes to provision for your initial machine pool. | |
+| `autoscaling.learnMoreNodeCount` | Learn more about compute node count | |
+| `autoscaling.maxLabel` | Max compute node count | |
+| `autoscaling.maxHelp` | The number of compute nodes to provision for your initial machine pool. | |
+| `autoscaling.computeCountLabel` | Compute node count | |
+| `autoscaling.computeCountHelp` | The number of compute nodes to provision for your initial machine pool. | |
 
 ### `securityGroups`
 
 Additional security groups on the Machine pools step.
 
-| Key | Default English |
-| --- | --- |
-| `securityGroups.emptyTitle` | There are no security groups for this Virtual Private Cloud |
-| `securityGroups.emptyBodyPrefix` | To add security groups, go to the |
-| `securityGroups.emptyBodySuffix` | of your AWS console. |
-| `securityGroups.emptyConsoleLink` | Security groups section |
-| `securityGroups.refreshLink` | Refresh Security Groups |
-| `securityGroups.noEditTitle` | You cannot add or edit security groups associated with machine pools that were created during cluster creation. |
-| `securityGroups.formLabel` | Security groups |
-| `securityGroups.selectToggle` | Select security groups |
-| `securityGroups.refreshTooltip` | Refetch Security Groups list |
-| `securityGroups.readOnlyEmpty` | This machine pool does not have additional security groups. |
-| `securityGroups.badgeSrText` | some items |
-| `securityGroups.optionsMenuAria` | Options menu |
-| `securityGroups.selectAriaLabelledBy` | Select AWS security groups |
-| `securityGroups.noEditViewMoreInfo` | View more information |
-| `securityGroups.noEditAwsConsoleLink` | AWS security groups console |
-| `securityGroups.incompatibleVersion` | To use securityGroups, your cluster must be version 4.14.x or newer. |
+| Key | Default English | Notes |
+| --- | --- | --- |
+| `securityGroups.emptyTitle` | There are no security groups for this Virtual Private Cloud | |
+| `securityGroups.emptyBodyPrefix` | To add security groups, go to the | |
+| `securityGroups.emptyBodySuffix` | of your AWS console. | |
+| `securityGroups.emptyConsoleLink` | Security groups section | |
+| `securityGroups.refreshLink` | Refresh Security Groups | Not read |
+| `securityGroups.noEditTitle` | You cannot add or edit security groups associated with machine pools that were created during cluster creation. | |
+| `securityGroups.formLabel` | Security groups | |
+| `securityGroups.selectToggle` | Select security groups | |
+| `securityGroups.refreshTooltip` | Refetch Security Groups list | |
+| `securityGroups.readOnlyEmpty` | This machine pool does not have additional security groups. | |
+| `securityGroups.badgeSrText` | some items | |
+| `securityGroups.optionsMenuAria` | Options menu | |
+| `securityGroups.selectAriaLabelledBy` | Select AWS security groups | Not read |
+| `securityGroups.noEditViewMoreInfo` | View more information | |
+| `securityGroups.noEditAwsConsoleLink` | AWS security groups console | |
+| `securityGroups.incompatibleVersion` | To use securityGroups, your cluster must be version 4.14.x or newer. | |
 
 ### `clusterWideProxy`
 
@@ -442,29 +413,29 @@ Encryption step under Additional setup. This step cannot be hidden.
 
 `encryption.reviewEtcdEnabledLabel` and `encryption.reviewEtcdDisabledLabel` are the Review values for etcd encryption.
 
-| Key | Default English |
-| --- | --- |
-| `encryption.sectionLabel` | Advanced encryption |
-| `encryption.keysGroupLabel` | Encryption Keys |
-| `encryption.keysHelperLead` | You can use your default or a custom AWS KMS key to encrypt the root disks for your OpenShift nodes. |
-| `encryption.keysLearnMore` | Learn more |
-| `encryption.defaultKms` | Use default AWS KMS key |
-| `encryption.customKms` | Use custom AWS KMS key |
-| `encryption.keyArnLabel` | Key ARN |
-| `encryption.keyArnHelp` | The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID. |
-| `encryption.etcdTitle` | etcd encryption |
-| `encryption.etcdLabel` | Enable additional etcd encryption |
-| `encryption.etcdHelperLead` | Optionally, add a unique customer-managed AWS KMS key to encrypt etcd. |
-| `encryption.etcdLearnMore` | Learn more |
-| `encryption.keysNoteAlert` | Take a note of the keys associated with your cluster. If you delete your keys, the cluster will not be available |
-| `encryption.reviewEtcdDisabledLabel` | disabled |
-| `encryption.reviewEtcdEnabledLabel` | enabled |
+| Key | Default English | Notes |
+| --- | --- | --- |
+| `encryption.sectionLabel` | Advanced encryption | |
+| `encryption.keysGroupLabel` | Encryption Keys | |
+| `encryption.keysHelperLead` | You can use your default or a custom AWS KMS key to encrypt the root disks for your OpenShift nodes. | |
+| `encryption.keysLearnMore` | Learn more | |
+| `encryption.defaultKms` | Use default AWS KMS key | |
+| `encryption.customKms` | Use custom AWS KMS key | |
+| `encryption.keyArnLabel` | Key ARN | |
+| `encryption.keyArnHelp` | The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID. | |
+| `encryption.etcdTitle` | etcd encryption | Not read |
+| `encryption.etcdLabel` | Enable additional etcd encryption | |
+| `encryption.etcdHelperLead` | Optionally, add a unique customer-managed AWS KMS key to encrypt etcd. | |
+| `encryption.etcdLearnMore` | Learn more | |
+| `encryption.keysNoteAlert` | Take a note of the keys associated with your cluster. If you delete your keys, the cluster will not be available | |
+| `encryption.reviewEtcdDisabledLabel` | disabled | |
+| `encryption.reviewEtcdEnabledLabel` | enabled | |
 
 ### `clusterUpdates`
 
 Cluster updates step. Omit this entire section when cluster updates is hidden.
 
-Several sentences are split around links. `clusterUpdates.recurringDescriptionAfterZStream` starts with a space because it follows the z-stream link with no extra space inserted by the component. `clusterUpdates.daysOfWeek` feeds the day dropdown and the Review schedule value.
+Several sentences are split around links. `clusterUpdates.recurringDescriptionBeforeZStream` ends with a space, and `clusterUpdates.recurringDescriptionAfterZStream` starts with a space, because the z-stream link sits between them. `clusterUpdates.daysOfWeek` feeds the day dropdown and the Review schedule value.
 
 | Key | Default English |
 | --- | --- |
@@ -483,7 +454,7 @@ Several sentences are split around links. `clusterUpdates.recurringDescriptionAf
 | `clusterUpdates.individualDescriptionLead` | Schedule each update individually. When planning updates, make sure to consider the end of life dates from the |
 | `clusterUpdates.lifecycleLink` | lifecycle policy |
 | `clusterUpdates.recurringLabel` | Automatic updates |
-| `clusterUpdates.recurringDescriptionBeforeZStream` | The cluster control plan will be automatically updated based on your preferred day and start time when new patch updates |
+| `clusterUpdates.recurringDescriptionBeforeZStream` | `The cluster control plane will be automatically updated based on your preferred day and start time when new patch updates ` |
 | `clusterUpdates.zStreamLinkText` | z-stream |
 | `clusterUpdates.recurringDescriptionAfterZStream` | ` are available. When a new minor version is available, you'll be notified and must manually allow the cluster to update the next minor version. The compute nodes will need to be manually updated.` |
 | `clusterUpdates.dayTimeLabel` | Select a day and start time |
@@ -591,7 +562,7 @@ Encryption step, custom KMS key ARN.
 | --- | --- |
 | `validators.kmsKeyArn.required` | Field is required. |
 | `validators.kmsKeyArn.noWhitespace` | Value must not contain whitespaces. |
-| `validators.kmsKeyArn.invalidArn` | Key provided is not a valid ARN. It should be in the format "arn:aws:kms:<region>:<accountid>:key/<keyid>". |
+| `validators.kmsKeyArn.invalidArn` | Key provided is not a valid ARN. It should be in the format "arn:aws:kms:&lt;region&gt;:&lt;accountid&gt;:key/&lt;keyid&gt;". |
 | `validators.kmsKeyArn.wrongRegion` | Your KMS key must contain your selected region. |
 
 ### `validators.securityGroups`
@@ -656,9 +627,9 @@ Machine pools step, compute node count and autoscaling min/max.
 
 Omit when cluster-wide proxy is hidden. Not read by the current wizard. The step uses `clusterWideProxy.alertConfigureFields` for the same instruction.
 
-| Key | Default English |
-| --- | --- |
-| `validators.proxyConfigureAtLeastOne` | Configure at least one of the cluster-wide proxy fields. |
+| Key | Default English | Notes |
+| --- | --- | --- |
+| `validators.proxyConfigureAtLeastOne` | Configure at least one of the cluster-wide proxy fields. | Omit when cluster-wide proxy is hidden. Not read |
 
 ### `validators.cidr`
 

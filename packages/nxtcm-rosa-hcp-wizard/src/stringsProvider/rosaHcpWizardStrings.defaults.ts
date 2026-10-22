@@ -299,7 +299,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     title: 'Autoscaling',
     helperLead:
       'Autoscaling automatically adds and removes nodes from the machine pool based on resource requirements.',
-    learnMoreAutoscaling: 'Learn more about autscaling with ROSA.',
+    learnMoreAutoscaling: 'Learn more about autoscaling with ROSA.',
     enableLabel: 'Enable autoscaling',
     minLabel: 'Min compute node count',
     minHelp: 'The number of compute nodes to provision for your initial machine pool.',
@@ -384,7 +384,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     lifecycleLink: 'lifecycle policy',
     recurringLabel: 'Automatic updates',
     recurringDescriptionBeforeZStream:
-      'The cluster control plan will be automatically updated based on your preferred day and start time when new patch updates ',
+      'The cluster control plane will be automatically updated based on your preferred day and start time when new patch updates ',
     zStreamLinkText: 'z-stream',
     recurringDescriptionAfterZStream:
       " are available. When a new minor version is available, you'll be notified and must manually allow the cluster to update the next minor version. The compute nodes will need to be manually updated.",
