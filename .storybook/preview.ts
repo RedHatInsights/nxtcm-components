@@ -1,6 +1,6 @@
 import { loader } from '@monaco-editor/react';
 import { withThemeByClassName } from '@storybook/addon-themes';
-import type { Preview } from '@storybook/react';
+import type { Preview } from '@storybook/react-vite';
 import * as monaco from 'monaco-editor';
 import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker.js?worker';
 import YamlWorker from 'monaco-yaml/yaml.worker.js?worker';
