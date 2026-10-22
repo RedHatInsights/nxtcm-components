@@ -5,11 +5,6 @@
   "main": "dist/index.umd.js",
   "module": "dist/index.js",
   "types": "dist/src/index.d.ts",
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/RedHatInsights/nxtcm-components.git"
@@ -141,9 +136,5 @@
   "workspaces": [
     "packages/nxtcm-rosa-hcp-wizard",
     "packages/nxtcm-dashboard"
-  ],
-  "dependencies": {
-    "install": "^0.13.0",
-    "npm": "^12.2.0"
-  }
+  ]
 }
