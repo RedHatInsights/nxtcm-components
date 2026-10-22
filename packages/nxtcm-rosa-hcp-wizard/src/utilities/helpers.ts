@@ -16,7 +16,7 @@ import {
   Subnet,
   VPC,
 } from '../types';
-import { hasObjectProperty } from './typeGuards';
+import { hasObjectProperty, isObjectRecord } from './typeGuards';
 
 export type LabelValueOption = { label: string; value: string };
 
@@ -46,7 +46,7 @@ export function getNestedValue(source: unknown, path: string): unknown {
 
 export function getSelectedVpcId(value: unknown): string | undefined {
   if (typeof value === 'string') return value;
-  return isRecord(value) && typeof value.id === 'string' ? value.id : undefined;
+  return isObjectRecord(value) && typeof value.id === 'string' ? value.id : undefined;
 }
 
 /** Resolves retained selections against fresh data before validating their shape. */
@@ -319,13 +319,9 @@ const formatUpgradePolicyForReview = (
   return labels.recurringLabel;
 };
 
-const isRecord = (value: unknown): value is Record<string, unknown> => {
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
-};
-
 const isSubnet = (value: unknown): value is Subnet => {
   return (
-    isRecord(value) &&
+    isObjectRecord(value) &&
     typeof value.subnet_id === 'string' &&
     typeof value.name === 'string' &&
     typeof value.availability_zone === 'string' &&
@@ -336,7 +332,7 @@ const isSubnet = (value: unknown): value is Subnet => {
 
 const isSecurityGroup = (value: unknown): value is SecurityGroup => {
   return (
-    isRecord(value) &&
+    isObjectRecord(value) &&
     typeof value.id === 'string' &&
     typeof value.name === 'string' &&
     (value.red_hat_managed === undefined || typeof value.red_hat_managed === 'boolean')
@@ -349,7 +345,7 @@ const isSelectedVpcValue = (value: unknown): value is ROSAHCPCluster['selected_v
   }
 
   return (
-    isRecord(value) &&
+    isObjectRecord(value) &&
     typeof value.id === 'string' &&
     typeof value.name === 'string' &&
     Array.isArray(value.aws_subnets) &&
