@@ -2,9 +2,6 @@
   "name": "nxtcm-components",
   "version": "6.0.0",
   "description": "Shared React component library for Red Hat Insights ACM and OCM projects built with PatternFly",
-  "main": "dist/index.umd.js",
-  "module": "dist/index.js",
-  "types": "dist/src/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/RedHatInsights/nxtcm-components.git"
