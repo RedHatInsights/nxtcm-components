@@ -9,12 +9,7 @@ import { useWizFieldPresentation } from '../wizFieldPresentation';
 import { useWizRhfControl, wizFieldShowsError, type WizRhfBoundFieldProps } from '../wizFieldRhf';
 
 type WizCheckboxControlledKeys =
-  | 'isChecked'
-  | 'onChange'
-  | 'onBlur'
-  | 'errorMessage'
-  | 'isError'
-  | 'name';
+  'isChecked' | 'onChange' | 'onBlur' | 'errorMessage' | 'isError' | 'name';
 
 type WizCheckboxSpreadProps = Omit<
   CheckboxProps,
