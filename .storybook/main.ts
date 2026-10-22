@@ -1,4 +1,6 @@
 import type { StorybookConfig } from '@storybook/react-vite';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import path from 'path';
 
 function includeInternalStories(): boolean {
@@ -13,9 +15,9 @@ const config: StorybookConfig = {
     '../packages/nxtcm-dashboard/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
     '../packages/nxtcm-rosa-hcp-wizard/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
   ],
-  addons: ['@storybook/addon-docs', '@storybook/addon-themes'],
+  addons: [getAbsolutePath('@storybook/addon-docs'), getAbsolutePath('@storybook/addon-themes')],
   framework: {
-    name: '@storybook/react-vite',
+    name: getAbsolutePath('@storybook/react-vite'),
     options: {},
   },
   tags: {
@@ -44,13 +46,13 @@ const config: StorybookConfig = {
       base: process.env.STORYBOOK_BASE_PATH || '/',
       resolve: {
         alias: {
-          '@': path.resolve(__dirname, '../src'),
+          '@': path.resolve(import.meta.dirname, '../src'),
           '@redhat-cloud-services/nxtcm-dashboard': path.resolve(
-            __dirname,
+            import.meta.dirname,
             '../packages/nxtcm-dashboard/src'
           ),
           '@redhat-cloud-services/nxtcm-rosa-hcp-wizard': path.resolve(
-            __dirname,
+            import.meta.dirname,
             '../packages/nxtcm-rosa-hcp-wizard/src'
           ),
         },
@@ -62,3 +64,7 @@ const config: StorybookConfig = {
   },
 };
 export default config;
+
+function getAbsolutePath(value: string): string {
+  return dirname(fileURLToPath(import.meta.resolve(`${value}/package.json`)));
+}
