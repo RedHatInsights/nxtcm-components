@@ -30,6 +30,7 @@
         "packages/nxtcm-rosa-hcp-wizard/src/**/*",
         "e2e-app/**/*",
         "playwright/**/*",
+        "scripts/react-compatibility/consumer.tsx",
         "test-helpers.ts",
         "vite-env.d.ts"
     ],

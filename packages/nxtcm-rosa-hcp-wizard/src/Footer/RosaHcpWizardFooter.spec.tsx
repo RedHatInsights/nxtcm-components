@@ -133,7 +133,9 @@ test.describe('RosaHcpWizardFooter — left nav validation icons', () => {
     await expectWizardNavNoError(component, STEP_IDS.BASIC_SETUP);
   });
 
-  test('shows error icons on steps with errors after a failed Review Submit', async ({ mount }) => {
+  test('blocks forward navigation and shows error icons after returning from Review and clearing the cluster name', async ({
+    mount,
+  }) => {
     const component = await mount(
       <RosaHcpWizardValidationMount defaultValues={VALID_REVIEW_SUBMIT_FORM_VALUES} />
     );
@@ -142,11 +144,28 @@ test.describe('RosaHcpWizardFooter — left nav validation icons', () => {
     await expect(component.getByText(review.sectionLabel, { exact: true })).toBeVisible();
 
     await component.getByRole('button', { name: review.editStep }).first().click();
-    await component.getByRole('textbox', { name: /Cluster name/i }).fill('');
-    await component.getByRole('button', { name: w.stepLabels.review, exact: true }).click();
+    const nameInput = component.getByRole('textbox', { name: /Cluster name/i });
+    await nameInput.fill('');
+    await nameInput.blur();
 
-    await component.getByRole('button', { name: FOOTER_SUBMIT }).click();
+    const rolesNav = component.getByRole('button', {
+      name: w.stepLabels.rolesAndPolicies,
+      exact: true,
+    });
+    const reviewNav = component.getByRole('button', { name: w.stepLabels.review, exact: true });
+    await expect(rolesNav).toBeDisabled();
+    await expect(reviewNav).toBeDisabled();
 
+    await component.getByRole('button', { name: FOOTER_NEXT }).click();
+
+    await expect(component.getByRole('heading', validationAlertHeading)).toBeVisible();
+    await expect(nameInput).toHaveAttribute('aria-invalid', 'true');
+    await expect(
+      component.getByRole('heading', { name: d.sectionLabel, exact: true })
+    ).toBeVisible();
+    await expect(component.getByText(review.sectionLabel, { exact: true })).toBeHidden();
+    await expect(rolesNav).toBeDisabled();
+    await expect(reviewNav).toBeDisabled();
     await expectWizardNavError(component, STEP_IDS.DETAILS);
     await expectWizardNavError(component, STEP_IDS.BASIC_SETUP);
   });
