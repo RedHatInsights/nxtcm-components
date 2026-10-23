@@ -4,6 +4,8 @@ import {
   getAvailabilityZonesForSubnetIds,
   getMachinePoolSubnetIds,
   getNestedValue,
+  isSelectedVpcValue,
+  resolveSelectedVpc,
 } from './helpers';
 
 describe('getNestedValue', () => {
@@ -44,27 +46,137 @@ const mockVpc: VPC = {
       name: 'private-a',
       availability_zone: 'us-east-1a',
       public: false,
+      cidr_block: '10.0.128.0/20',
     },
     {
       subnet_id: 'subnet-public-a',
       name: 'public-a',
       availability_zone: 'us-east-1a',
       public: true,
+      cidr_block: '10.0.0.0/20',
     },
     {
       subnet_id: 'subnet-private-b',
       name: 'private-b',
       availability_zone: 'us-east-1b',
       public: false,
+      cidr_block: '10.0.144.0/20',
     },
     {
       subnet_id: 'subnet-public-b',
       name: 'public-b',
       availability_zone: 'us-east-1b',
       public: true,
+      cidr_block: '10.0.16.0/20',
     },
   ],
 };
+
+describe('isSelectedVpcValue', () => {
+  const { cidr_block: _cidrBlock, ...subnetWithoutCidr } = mockVpc.aws_subnets[0];
+
+  it.each([
+    { description: 'undefined', value: undefined },
+    { description: 'an empty selection string', value: '' },
+    { description: 'a VPC ID', value: mockVpc.id },
+    { description: 'a VPC without security groups', value: mockVpc },
+    {
+      description: 'a VPC with an empty security group list',
+      value: { ...mockVpc, aws_security_groups: [] },
+    },
+    {
+      description: 'a VPC with security groups and optional managed flags',
+      value: {
+        ...mockVpc,
+        aws_security_groups: [
+          { id: 'sg-default', name: 'default' },
+          { id: 'sg-managed', name: 'managed', red_hat_managed: true },
+          { id: 'sg-custom', name: 'custom', red_hat_managed: false },
+        ],
+      },
+    },
+  ])('accepts $description', ({ value }) => {
+    expect(isSelectedVpcValue(value)).toBe(true);
+  });
+
+  it.each([
+    { description: 'null', value: null },
+    { description: 'a number', value: 123 },
+    { description: 'an array', value: [mockVpc] },
+    { description: 'an ID-only object', value: { id: mockVpc.id } },
+    { description: 'a numeric VPC ID', value: { ...mockVpc, id: 123 } },
+    { description: 'a non-array subnet list', value: { ...mockVpc, aws_subnets: {} } },
+    { description: 'a null subnet entry', value: { ...mockVpc, aws_subnets: [null] } },
+    {
+      description: 'a subnet missing its CIDR block',
+      value: { ...mockVpc, aws_subnets: [subnetWithoutCidr] },
+    },
+    {
+      description: 'a subnet with a non-string CIDR block',
+      value: { ...mockVpc, aws_subnets: [{ ...subnetWithoutCidr, cidr_block: 123 }] },
+    },
+    {
+      description: 'a non-array security group list',
+      value: { ...mockVpc, aws_security_groups: {} },
+    },
+    {
+      description: 'a null security group entry',
+      value: { ...mockVpc, aws_security_groups: [null] },
+    },
+    {
+      description: 'a numeric security group ID',
+      value: { ...mockVpc, aws_security_groups: [{ id: 123, name: 'default' }] },
+    },
+    {
+      description: 'a non-boolean managed flag',
+      value: {
+        ...mockVpc,
+        aws_security_groups: [{ id: 'sg-default', name: 'default', red_hat_managed: 'false' }],
+      },
+    },
+  ])('rejects $description', ({ value }) => {
+    expect(isSelectedVpcValue(value)).toBe(false);
+  });
+});
+
+describe('resolveSelectedVpc', () => {
+  it.each([
+    { description: 'a VPC ID', value: mockVpc.id },
+    { description: 'an ID-only object', value: { id: mockVpc.id } },
+    {
+      description: 'an incomplete subnet',
+      value: { ...mockVpc, aws_subnets: [{ availability_zone: 'old-zone' }] },
+    },
+    {
+      description: 'an incomplete security group',
+      value: { ...mockVpc, aws_security_groups: [{ id: 'sg-stale' }] },
+    },
+    {
+      description: 'a complete retained object',
+      value: { ...mockVpc, aws_security_groups: [{ id: 'sg-stale', name: 'stale' }] },
+    },
+  ])('resolves $description using fresh list data', ({ value }) => {
+    expect(resolveSelectedVpc(value, [mockVpc])).toBe(mockVpc);
+  });
+
+  it('falls back to a complete retained object when its ID is absent from the list', () => {
+    expect(resolveSelectedVpc(mockVpc, [{ ...mockVpc, id: 'vpc-other' }])).toBe(mockVpc);
+  });
+
+  it.each([
+    undefined,
+    null,
+    '',
+    'vpc-missing',
+    [mockVpc],
+    { id: 123 },
+    { id: mockVpc.id },
+    { ...mockVpc, aws_subnets: [null] },
+    { ...mockVpc, aws_security_groups: {} },
+  ])('returns undefined for an unresolved incomplete or invalid selection: %p', (value) => {
+    expect(resolveSelectedVpc(value, [])).toBeUndefined();
+  });
+});
 
 describe('getMachinePoolSubnetIds', () => {
   it('returns non-empty subnet ids', () => {

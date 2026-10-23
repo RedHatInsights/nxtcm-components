@@ -357,6 +357,32 @@ describe('applyWizardFieldMetaChangeEffects', () => {
     );
   });
 
+  it('applies derived sync on initial mount for an ID-only retained VPC', () => {
+    const currentValue = { id: fixtures.mockVPCs[0].id };
+    const formValues: Partial<ROSAHCPCluster> = { security_groups_worker: ['sg-stale'] };
+    // Restored form values can contain only the VPC identity at runtime.
+    Object.assign(formValues, { selected_vpc: currentValue });
+    const wizardData = makeWizardData({ vpcListData: fixtures.mockVPCs });
+    const setValue = jest.fn();
+
+    applyWizardFieldMetaChangeEffects({
+      sourceField: 'selected_vpc',
+      formValues,
+      previousValue: undefined,
+      currentValue,
+      wizardData,
+      setValue,
+    });
+
+    expect(applyWizardFieldDerivedSyncMock).toHaveBeenCalledWith({
+      syncKey: 'vpcSecurityGroupsWorkerSelection',
+      currentValue,
+      formValues,
+      wizardData,
+      setValue,
+    });
+  });
+
   it('does not run effects when the source value is semantically unchanged', () => {
     const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
     const vpcListFetch = jest.fn();
@@ -395,7 +421,14 @@ describe('applyWizardFieldMetaChangeEffects', () => {
     expect(regionsFetch).not.toHaveBeenCalled();
   });
 
-  it('resolves availability zones from VPC list when selected_vpc is a string id', () => {
+  it.each([
+    { description: 'a string ID', value: 'vpc-123' },
+    { description: 'an ID-only object', value: { id: 'vpc-123' } },
+    {
+      description: 'an object with incomplete retained subnets',
+      value: { id: 'vpc-123', aws_subnets: [{ availability_zone: 'old-zone' }] },
+    },
+  ])('resolves availability zones from fresh VPC list data for $description', ({ value }) => {
     const machineTypesFetch = jest.fn();
     const vpcListFetch = jest.fn();
     const setValue = jest.fn() as jest.MockedFunction<UseFormSetValue<Partial<ROSAHCPCluster>>>;
@@ -404,21 +437,42 @@ describe('applyWizardFieldMetaChangeEffects', () => {
         id: 'vpc-123',
         name: 'test-vpc',
         aws_subnets: [
-          { subnet_id: 'sub-1', name: 's1', availability_zone: 'us-east-1a', public: true },
-          { subnet_id: 'sub-2', name: 's2', availability_zone: 'us-east-1b', public: false },
-          { subnet_id: 'sub-3', name: 's3', availability_zone: 'us-east-1a', public: false },
+          {
+            subnet_id: 'sub-1',
+            name: 's1',
+            availability_zone: 'us-east-1a',
+            public: true,
+            cidr_block: '10.0.0.0/20',
+          },
+          {
+            subnet_id: 'sub-2',
+            name: 's2',
+            availability_zone: 'us-east-1b',
+            public: false,
+            cidr_block: '10.0.128.0/20',
+          },
+          {
+            subnet_id: 'sub-3',
+            name: 's3',
+            availability_zone: 'us-east-1a',
+            public: false,
+            cidr_block: '10.0.144.0/20',
+          },
         ],
       },
     ];
 
+    const formValues: Partial<ROSAHCPCluster> = {
+      region: 'us-east-1',
+      associated_aws_id: 'aws-123',
+      installer_role_arn: 'arn:aws:iam::role/installer',
+    };
+    // Exercise incomplete retained values received at runtime as well as typed IDs.
+    Object.assign(formValues, { selected_vpc: value });
+
     applyWizardFieldMetaChangeEffects({
       sourceField: 'region',
-      formValues: {
-        region: 'us-east-1',
-        associated_aws_id: 'aws-123',
-        installer_role_arn: 'arn:aws:iam::role/installer',
-        selected_vpc: 'vpc-123',
-      },
+      formValues,
       previousValue: undefined,
       currentValue: 'us-east-1',
       wizardData: makeWizardData({ machineTypesFetch, vpcListFetch, vpcListData }),
@@ -440,8 +494,20 @@ describe('applyWizardFieldMetaChangeEffects', () => {
       id: 'vpc-456',
       name: 'resolved-vpc',
       aws_subnets: [
-        { subnet_id: 'sub-a', name: 'sa', availability_zone: 'us-west-2a', public: true },
-        { subnet_id: 'sub-b', name: 'sb', availability_zone: 'us-west-2b', public: false },
+        {
+          subnet_id: 'sub-a',
+          name: 'sa',
+          availability_zone: 'us-west-2a',
+          public: true,
+          cidr_block: '10.0.0.0/20',
+        },
+        {
+          subnet_id: 'sub-b',
+          name: 'sb',
+          availability_zone: 'us-west-2b',
+          public: false,
+          cidr_block: '10.0.128.0/20',
+        },
       ],
     };
 

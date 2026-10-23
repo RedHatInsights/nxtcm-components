@@ -27,10 +27,7 @@ type ComposedArgResolver = (rawValue: unknown, wizardData: ROSAHCPWizardData) =>
  */
 const COMPOSED_REFETCH_ARG_RESOLVERS: Readonly<Record<string, ComposedArgResolver>> = {
   availability_zones: (rawValue, wizardData) => {
-    const vpc = resolveSelectedVpc(
-      rawValue as ROSAHCPCluster['selected_vpc'],
-      wizardData.vpcList.data
-    );
+    const vpc = resolveSelectedVpc(rawValue, wizardData.vpcList.data);
     if (!vpc?.aws_subnets?.length) return null;
     return [...new Set(vpc.aws_subnets.map((s) => s.availability_zone))];
   },
