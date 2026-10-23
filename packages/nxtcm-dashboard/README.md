@@ -8,9 +8,11 @@ PatternFly dashboard widget components for ACM and OCM console home views.
 npm install @redhat-cloud-services/nxtcm-dashboard
 ```
 
-## Peer dependencies
+## Prerequisites
 
-This package expects these dependencies to be provided by the consuming application:
+### Peer dependencies
+
+This package expects these dependencies to be provided by the consuming application (see [`peerDependencies` in `package.json`](./package.json) for the required version ranges):
 
 - `react`
 - `react-dom`
@@ -19,6 +21,23 @@ This package expects these dependencies to be provided by the consuming applicat
 - `@patternfly/react-table`
 - `@patternfly/react-charts`
 - `@patternfly/widgetized-dashboard`
+
+### Styles
+
+This package requires PatternFly base styles to be loaded by the host application. Import them in your main application entry file (e.g., `index.ts` or `App.tsx`):
+
+```ts
+import '@patternfly/react-core/dist/styles/base.css';
+import '@patternfly/patternfly/patternfly.css'; // requires the @patternfly/patternfly package
+```
+
+Or include them in your HTML:
+
+```html
+<link rel="stylesheet" href="node_modules/@patternfly/patternfly/patternfly.css">
+```
+
+The package's own stylesheet is imported separately, as shown in [Usage](#usage).
 
 ## Usage
 
@@ -53,6 +72,8 @@ export const DashboardSummary = () => (
 - `UpgradeRisks` - upgrade risk severity card
 - `NotificationsPanel` - notifications table card
 
+Interactive examples for every widget are available on the [public Storybook](https://redhatinsights.github.io/nxtcm-components/).
+
 ## Publishing
 
-This package is published when a GitHub Release is created on `main` with tag `nxtcm-dashboard-v{version}` matching `package.json`. See the [repository publishing guide](../../README.md#publishing-packages).
+This package is published when a GitHub Release is created on `main` with tag `nxtcm-dashboard-v{version}` matching `package.json`. See the [repository publishing guide](../../docs/publishing.md).
