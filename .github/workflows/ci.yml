@@ -175,6 +175,34 @@ jobs:
             packages/nxtcm-rosa-hcp-wizard/dist/
           retention-days: 7
 
+  react-compatibility:
+    name: Published packages on React 18 and 19
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: 'package.json'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download the shared library build
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: dist
+          path: packages
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Check the same packages with both React runtimes and types
+        run: npm run test:react-compat
+
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest

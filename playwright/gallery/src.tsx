@@ -32,6 +32,7 @@ for (const [modulePath, loadModule] of Object.entries(modules)) {
 }
 
 let root: Root | undefined;
+const renderErrors: unknown[] = [];
 function initializeStrykerActiveMutant(): void {
   const activeMutant = import.meta.env.STRYKER_ACTIVE_MUTANT as string | undefined;
   if (!activeMutant) return;
@@ -72,11 +73,19 @@ async function mount({ story, props = {} }: MountRequest): Promise<void> {
   }
   const container = document.querySelector<HTMLElement>('#root');
   if (!container) throw new Error('Gallery root element #root is missing.');
-  root = root ?? createRoot(container);
+  root =
+    root ??
+    createRoot(container, {
+      onUncaughtError(error: unknown): void {
+        renderErrors.push(error);
+      },
+    });
+  renderErrors.length = 0;
   try {
     const browserProps = props;
     flushSync(() => root?.render(React.createElement(StoryExport as Story, browserProps)));
     await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    if (renderErrors.length > 0) throw renderErrors[0];
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to render story "${story}": ${message}`);

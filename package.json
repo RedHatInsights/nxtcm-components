@@ -2,14 +2,6 @@
   "name": "nxtcm-components",
   "version": "6.0.0",
   "description": "Shared React component library for Red Hat Insights ACM and OCM projects built with PatternFly",
-  "main": "dist/index.umd.js",
-  "module": "dist/index.js",
-  "types": "dist/src/index.d.ts",
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/RedHatInsights/nxtcm-components.git"
@@ -36,18 +28,18 @@
   },
   "peerDependencies": {
     "@patternfly/react-core": "^6.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
   },
   "scripts": {
     "start": "vite",
     "build": "npm run build -w @redhat-cloud-services/nxtcm-dashboard && npm run build -w @redhat-cloud-services/nxtcm-rosa-hcp-wizard",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
-    "lint": "eslint 'packages/**/*.{ts,tsx}' '.storybook/**/*.ts' 'playwright/**/*.{ts,tsx}' 'playwright*.config.ts' vite.e2e.config.ts",
-    "lint:fix": "eslint 'packages/**/*.{ts,tsx}' '.storybook/**/*.ts' 'playwright/**/*.{ts,tsx}' 'playwright*.config.ts' vite.e2e.config.ts --fix",
-    "prettier:check": "prettier --check '{scripts,packages}/**/*.{js,ts,mjs,jsx,tsx}'",
-    "prettier:fix": "prettier --write '{scripts,packages}/**/*.{js,ts,mjs,jsx,tsx}'",
+    "lint": "eslint 'packages/**/*.{ts,tsx}' '.storybook/**/*.ts' 'playwright/**/*.{ts,tsx}' 'playwright*.config.ts' vite.e2e.config.ts 'scripts/react-compatibility/*.tsx'",
+    "lint:fix": "eslint 'packages/**/*.{ts,tsx}' '.storybook/**/*.ts' 'playwright/**/*.{ts,tsx}' 'playwright*.config.ts' vite.e2e.config.ts 'scripts/react-compatibility/*.tsx' --fix",
+    "prettier:check": "prettier --check '{scripts,packages}/**/*.{js,ts,mjs,jsx,tsx,cts}'",
+    "prettier:fix": "prettier --write '{scripts,packages}/**/*.{js,ts,mjs,jsx,tsx,cts}'",
     "test": "jest",
     "test:eslint-rules": "node --test eslint-rules/*.test.js",
     "test:all": "npm run test && npm run test:eslint-rules && npm run test:ct",
@@ -68,6 +60,7 @@
     "build-storybook:internal": "STORYBOOK_INCLUDE_INTERNAL=true storybook build",
     "storybook:assert-public": "node scripts/assert-storybook-public.mjs",
     "check:peers": "node scripts/check-peer-dep-versions.mjs",
+    "test:react-compat": "node scripts/test-react-compatibility.mjs",
     "allthethings": "npm run prettier:fix && npm run lint:fix && npm run type-check && npm run test && npm run test:ct",
     "prepare": "husky"
   },
@@ -89,8 +82,8 @@
     "@stryker-mutator/core": "^9.6.1",
     "@types/jest": "^29.5.12",
     "@types/node": "^24.9.1",
-    "@types/react": "^18.3.26",
-    "@types/react-dom": "^18.2.7",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@types/semver": "^7.8.0",
     "@typescript-eslint/parser": "^8.69.0",
     "@vitejs/plugin-react": "^5.2.0",
@@ -115,8 +108,8 @@
     "nyc": "^18.0.0",
     "prettier": "3.9.10",
     "progress": "^2.0.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "sass": "^1.99.0",
     "semver": "^7.7.4",
     "storybook": "^10.6.2",
@@ -128,7 +121,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint",
+      "eslint --no-warn-ignored",
       "prettier --write"
     ],
     "*.{js,jsx,mjs}": [

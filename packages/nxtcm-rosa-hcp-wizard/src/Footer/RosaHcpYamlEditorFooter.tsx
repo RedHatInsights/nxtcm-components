@@ -21,7 +21,7 @@ import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStrings
 import { useRosaHcpWizardSubmit } from './useRosaHcpWizardSubmit';
 
 export type RosaHcpYamlEditorFooterProps = {
-  editorRef: React.RefObject<YamlEditorHandle>;
+  editorRef: React.RefObject<YamlEditorHandle | null>;
   onClose: () => void;
   onCancel?: () => void;
   onSubmit: (yamlString: string) => Promise<void>;

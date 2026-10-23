@@ -29,6 +29,7 @@
     "playwright.config.ts",
     "playwright-ct.config.ts",
     "vite.e2e.config.ts",
+    "scripts/react-compatibility/consumer.tsx",
     "vite-env.d.ts"
   ],
   "exclude": ["node_modules", "dist"]

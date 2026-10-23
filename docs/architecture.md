@@ -29,7 +29,7 @@ Dashboard widgets and the ROSA wizard serve different consumer apps with differe
 
 ## Build system
 
-The two workspace packages (dashboard, wizard) are built with **one shared `vite.config.ts`**. The differentiation happens via the `NXTCM_LIB_NAME` environment variable.
+The two workspace packages (dashboard, wizard) are built with **one shared `vite.config.ts`**. npm runs each workspace's build script from its package directory, which determines the entry point and output directory.
 
 ### npm workspaces in this repo
 
@@ -58,18 +58,17 @@ Why this setup exists:
 vite.config.ts reads:
   - libRoot   = process.cwd()        (the package directory)
   - libEntry  = <libRoot>/src/index.ts
-  - libName   = env NXTCM_LIB_NAME   (defaults to "NXTCM-COMPONENTS")
   - libOutDir = <libRoot>/dist/
 ```
 
-Each package's build script sets the env var and points at the shared config:
+Each package's build script points at the shared config:
 
 ```bash
 # packages/nxtcm-dashboard/package.json → scripts.build
-rm -rf dist && NXTCM_LIB_NAME=NXTCM-DASHBOARD vite build --config ../../vite.config.ts
+rm -rf dist && vite build --config ../../vite.config.ts
 
 # packages/nxtcm-rosa-hcp-wizard/package.json → scripts.build
-rm -rf dist && NXTCM_LIB_NAME=NXTCM-ROSA-HCP-WIZARD vite build --config ../../vite.config.ts
+npm run type-check && rm -rf dist && vite build --config ../../vite.config.ts
 ```
 
 The root `npm run build` runs the two workspace builds in sequence:
@@ -86,29 +85,43 @@ Each build produces:
 
 | file | format | purpose |
 |------|--------|---------|
-| `dist/index.js` | ESM | tree-shakeable import for modern bundlers |
-| `dist/index.umd.js` | UMD | legacy/CDN consumption |
+| `dist/index.mjs` | ESM | entry selected by `exports.import` and `module` |
+| `dist/index.cjs` | CommonJS | entry selected by `exports.require` and `main` |
 | `dist/index.css` | CSS | component styles |
-| `dist/index.d.ts` | types | bundled TypeScript declarations (via `unplugin-dts`) |
+| `dist/index.d.mts` | ESM types | bundled declarations selected by `exports.import.types` |
+| `dist/index.d.cts` | CommonJS types | bundled declarations selected by `exports.require.types` |
+| `dist/index.d.ts` | types fallback | bundled declarations selected by the top-level `types` field |
+
+JavaScript source maps are emitted alongside both module formats. The CSS subpath exports in each package manifest continue to resolve to `dist/index.css`.
 
 ### What gets externalized
 
-PatternFly, React, and utility libraries are externalized, not bundled. Consumers supply their own copies via `peerDependencies`. The peer contract differs by package:
+The shared config externalizes `react` and `react-dom` (including their subpaths), `@patternfly/*`, `js-yaml`, `yaml`, `monaco-editor`, and `monaco-yaml`. React's `jsx-runtime` and `jsx-dev-runtime` therefore resolve from the consuming application's React installation.
 
-- **root**: `@patternfly/react-core`, `react`, `react-dom`, `js-yaml`, `yaml`
-- **dashboard** (additional): `@patternfly/react-charts`, `@patternfly/react-table`, `@patternfly/widgetized-dashboard`, `@patternfly/react-icons`
-- **wizard** (additional): `@monaco-editor/react`, `monaco-editor`, `monaco-yaml`, `@patternfly/react-code-editor`, `@patternfly/react-icons`
+The `fullySpecifiedPatternFlyImports` build plugin rewrites external PatternFly component, layout, icon, and chart paths to explicit JavaScript filenames. ES output uses PatternFly's `dist/esm` files; CommonJS output uses its `dist/js` files. This allows strict ES-module resolution without a consumer webpack override for these imports.
 
-Monaco is only a peer dep of the wizard package, not the root or dashboard.
+Rollup's `interop: 'auto'` unwraps default exports from CommonJS dependencies such as PatternFly icons, so the CommonJS output renders the icon component rather than its module object.
+
+Each workspace's `peerDependencies` declares its own consumer requirements. Monaco is a peer dependency of the wizard package only. See the [dashboard manifest](../packages/nxtcm-dashboard/package.json) and [wizard manifest](../packages/nxtcm-rosa-hcp-wizard/package.json) for the complete contracts.
+
+### React 18 and 19 compatibility
+
+Both packages support React and React DOM `^18.2.0 || ^19.0.0`. Each package is built once; the host provides the matching React, React DOM, and JSX runtime. The `.mjs` and `.cjs` outputs are module formats, not separate React-version builds. Components must use APIs available in both supported React majors.
+
+Development uses React 19. The peer-version check requires development ranges to be a subset of supported peer ranges, and every workspace to cover the root peer contract.
+
+Run `npm run build && npm run test:react-compat` to check the published artifacts. The compatibility check packs each package once, installs those same tarballs into isolated React 18.2.0 and 19.0.0 consumers, checks both import/require declarations against matching React type majors, and renders and interacts with both packages in Chromium using ESM and CommonJS. It also rejects bundled React sources and missing export targets. The check needs npm registry access and Playwright Chromium (`npx playwright install chromium`).
+
+The consumer type checks use bundler resolution and `skipLibCheck`, matching this repo: they validate exported component usage with each React type major rather than checking third-party declaration internals. CI downloads the existing build artifacts for this check, so it exercises the same library build on both runtimes. The regular component and E2E suites use the development runtime. ACM integration must additionally verify that its shared dependency configuration supplies one matching host runtime on both OCP versions.
 
 ### TypeScript compilation
 
 Each package has its own `tsconfig.json` that extends the root. During build, Vite owns `dist/`:
 
-1. Vite bundles JS + CSS into `dist/index.js` / `dist/index.umd.js`
-2. `unplugin-dts` (`bundleTypes: true`) rolls public types into a single `dist/index.d.ts`
+1. Vite emits `dist/index.mjs`, `dist/index.cjs`, and `dist/index.css`.
+2. `unplugin-dts` (`bundleTypes: true`) bundles public declarations and emits `index.d.ts`, `index.d.mts`, and `index.d.cts` through its `outDirs` configuration.
 
-`tsc` is not part of the package build. Use `npm run type-check` (`tsc --noEmit`) for compilation checking.
+Both package builds run `npm run type-check` (`tsc --noEmit`) before Vite.
 
 The root `tsconfig.json` includes all workspace packages for IDE type-checking and `npm run type-check`, but each package's tsconfig scopes its own sources.
 
