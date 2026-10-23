@@ -3,6 +3,7 @@
  *
  * - **Types:** {@link ./rosaHcpWizardStrings.types}
  * - **Default English copy (safe to copy into your app for translation):** {@link ./rosaHcpWizardStrings.defaults}
+ * - **Key catalog for consumers:** `docs/localizable-strings.md`
  *
  * Pass partial `strings` into {@link RosaHCPWizard} or {@link RosaHcpWizardStringsProvider}; omitted keys
  * are filled from {@link defaultRosaHcpWizardStrings} and {@link defaultRosaHcpWizardValidatorStrings}.

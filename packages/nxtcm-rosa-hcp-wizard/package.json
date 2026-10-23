@@ -24,6 +24,7 @@
   },
   "files": [
     "dist",
+    "docs/localizable-strings.md",
     "README.md",
     "LICENSE"
   ],
