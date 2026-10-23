@@ -320,7 +320,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     refreshTooltip: 'Refetch Security Groups list',
     readOnlyEmpty: 'This machine pool does not have additional security groups.',
     badgeSrText: 'some items',
-    optionsMenuAria: 'Options menu',
+    optionsMenuAria: 'Select security groups',
     selectAriaLabelledBy: 'Select AWS security groups',
     noEditViewMoreInfo: 'View more information',
     noEditAwsConsoleLink: 'AWS security groups console',

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/experimental-ct-react';
-import type { Locator } from '@playwright/test';
+import type { Locator } from 'playwright/test';
 
 import { STEP_IDS } from '../../../constants';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
