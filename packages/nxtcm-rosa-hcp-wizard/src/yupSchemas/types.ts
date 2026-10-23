@@ -1,7 +1,7 @@
 import type * as yup from 'yup';
 
 import type { RosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings';
-import type { CIDRSubnet, ROSAHCPCluster, ROSAHCPWizardData } from '../types';
+import type { ROSAHCPCluster, ROSAHCPWizardData, Subnet } from '../types';
 
 /** Top-level {@link ROSAHCPCluster} keys used in form reset metadata. */
 export type WizardFormFieldName = keyof ROSAHCPCluster;
@@ -177,7 +177,7 @@ export type ValidationSchemaContext = {
   /** Number of machine pools currently configured (affects min-replica lower bound). */
   machinePoolsNumber: number;
   /** VPC subnets currently selected (for CIDR containment checks). */
-  selectedSubnets?: CIDRSubnet[];
+  selectedSubnets?: Subnet[];
   /**
    * Async callback that checks whether a cluster name is already in use.
    * Returns `null` when the name is available, or an error message string
