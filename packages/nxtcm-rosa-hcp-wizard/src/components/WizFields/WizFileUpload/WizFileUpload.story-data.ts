@@ -1,0 +1,10 @@
+export const WIZ_FILE_UPLOAD_EXPLICIT_LABEL = 'Explicit pull secret label';
+export const WIZ_FILE_UPLOAD_EXPLICIT_HELPER = 'Explicit helper text for file upload.';
+export const WIZ_FILE_UPLOAD_VALUE_STATUS_LABEL = 'pullSecret form value';
+export const WIZ_FILE_UPLOAD_YUP_META_LABEL = 'Yup meta file label';
+export const WIZ_FILE_UPLOAD_YUP_META_HELPER = 'Yup meta helper text for file upload.';
+export const WIZ_FILE_UPLOAD_SUBMIT_ERROR = 'Upload a pull secret file.';
+export const WIZ_FILE_UPLOAD_NESTED_MANIFEST_STATUS = 'bundle manifest upload value';
+export const WIZ_FILE_UPLOAD_NESTED_FIELD_LABEL = 'Nested manifest upload';
+export const WIZ_FILE_UPLOAD_DOC_CLEAR_STATUS = 'clear-target document contents';
+export const WIZ_FILE_UPLOAD_CONTROL_BODY_STATUS = 'control-only manifest body';
