@@ -351,7 +351,7 @@ Autoscaling controls on the Machine pools step. `autoscaling.computeCountLabel` 
 | --- | --- | --- |
 | `autoscaling.title` | Autoscaling | Not read |
 | `autoscaling.helperLead` | Autoscaling automatically adds and removes nodes from the machine pool based on resource requirements. | |
-| `autoscaling.learnMoreAutoscaling` | Learn more about autscaling with ROSA. | |
+| `autoscaling.learnMoreAutoscaling` | Learn more about autoscaling with ROSA. | |
 | `autoscaling.enableLabel` | Enable autoscaling | |
 | `autoscaling.minLabel` | Min compute node count | |
 | `autoscaling.minHelp` | The number of compute nodes to provision for your initial machine pool. | |
