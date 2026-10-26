@@ -22,6 +22,9 @@ export default [
       '**/coverage/',
       '*.config.js',
       '*.config.ts',
+      // CLI targets do not override global ignores; allow the root test configs through.
+      '!playwright*.config.ts',
+      '!vite.e2e.config.ts',
     ],
   },
 
@@ -140,6 +143,14 @@ export default [
     },
   },
 
+  // Playwright gallery stories use named function exports, not Storybook CSF defaults.
+  {
+    files: ['**/*.story.tsx', '**/*.story.ts'],
+    rules: {
+      'storybook/default-exports': 'off',
+    },
+  },
+
   // Test files override
   {
     files: ['**/*.test.tsx', '**/*.test.ts'],
@@ -154,6 +165,19 @@ export default [
     files: ['**/*.spec.tsx'],
     rules: {
       'import/no-duplicates': 'off',
+    },
+  },
+
+  // Root Playwright infrastructure runs in Node and is part of the lint/type-check surface.
+  {
+    files: ['playwright/**/*.{ts,tsx}', 'playwright*.config.ts', 'vite.e2e.config.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
     },
   },
 

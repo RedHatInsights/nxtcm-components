@@ -5,30 +5,31 @@ rules for writing and modifying Playwright CT specs in this repo.
 ## file naming and location
 
 - `ComponentName.spec.tsx` — co-located next to the component
-- `ComponentName.spec-helpers.tsx` — shared setup (providers, mock data, wrapper components)
-- config: `playwright-ct.config.ts` at repo root
+- `ComponentName.story.tsx` — gallery stories (providers, mock data, wrapper components)
+- config: root `playwright.config.ts` defines the component and E2E projects; root `playwright-ct.config.ts` also supports isolated component runs
 
 ## selector rules (hard constraints)
 
-| use | avoid |
-|-----|-------|
-| `getByRole('button', { name: /submit/i })` | `.locator('.pf-v6-c-button')` |
-| `getByRole('heading', { name: /title/i })` | `.locator('.pf-v6-c-card__title')` |
-| `getByText(/error message/i)` | `.locator('[class*="error"]')` |
-| `getByTestId('cluster-count')` | `.locator('#cluster-count')` |
-| `getByLabel('Cluster name')` | `.locator('input[name="cluster-name"]')` |
+| use                                        | avoid                                    |
+| ------------------------------------------ | ---------------------------------------- |
+| `getByRole('button', { name: /submit/i })` | `.locator('.pf-v6-c-button')`            |
+| `getByRole('heading', { name: /title/i })` | `.locator('.pf-v6-c-card__title')`       |
+| `getByText(/error message/i)`              | `.locator('[class*="error"]')`           |
+| `getByTestId('cluster-count')`             | `.locator('#cluster-count')`             |
+| `getByLabel('Cluster name')`               | `.locator('input[name="cluster-name"]')` |
 
 **never use CSS class selectors** — CSS modules mangle class names, PatternFly classes change between versions.
 
 priority order: `getByRole` > `getByLabel` > `getByText` > `getByTestId` > `locator` (last resort only)
 
-## spec-helpers pattern
+## gallery story pattern
 
-complex components that need providers or mock data use a `*.spec-helpers.tsx` file:
+Component tests mount named function exports from a `*.story.tsx` gallery module. Keep providers,
+callbacks, JSX children, and complex resources in the story; pass only serializable props from specs.
 
 ```tsx
-// MyComponent.spec-helpers.tsx
-import type { ReactElement, ReactNode } from 'react';
+// MyComponent.story.tsx
+import type { ReactElement } from 'react';
 import { MyComponent, MyComponentProps } from './MyComponent';
 
 export const defaultProps: MyComponentProps = {
@@ -37,31 +38,26 @@ export const defaultProps: MyComponentProps = {
   isLoading: false,
 };
 
-interface TestWrapperProps {
-  children: ReactNode;
-}
-
-export const TestWrapper = ({ children }: TestWrapperProps): ReactElement => (
+export const MyComponentStory = ({ title = defaultProps.title }): ReactElement => (
   <SomeProvider value={mockValue}>
-    {children}
+    <MyComponent {...defaultProps} title={title} />
   </SomeProvider>
 );
 ```
 
-then in the spec:
+then in the spec (import the story type only and type every mount):
 
 ```tsx
-import { defaultProps, TestWrapper } from './MyComponent.spec-helpers';
+import type { MyComponentStory } from './MyComponent.story';
 
 test('renders with default props', async ({ mount }) => {
-  const component = await mount(
-    <TestWrapper>
-      <MyComponent {...defaultProps} />
-    </TestWrapper>
-  );
+  const component = await mount<typeof MyComponentStory>('nxtcm-dashboard/MyComponent/MyComponent/MyComponentStory');
   // assertions...
 });
 ```
+
+Record callback outcomes in browser-side React state and expose them in hidden, read-only inputs.
+Assert those inputs with `toHaveValue()`; specs pass data and callback-enable flags, never functions or callback descriptors.
 
 ## test structure
 
@@ -70,10 +66,10 @@ follow arrange-act-assert:
 ```tsx
 test('shows error when data fails to load', async ({ mount }) => {
   // arrange
-  const props = { ...defaultProps, data: { ...defaultProps.data, error: new Error('fail') } };
-
   // act
-  const component = await mount(<MyComponent {...props} />);
+  const component = await mount<typeof MyComponentStory>('nxtcm-dashboard/MyComponent/MyComponent/MyComponentStory', {
+    state: 'error',
+  });
 
   // assert
   await expect(component.getByRole('alert')).toBeVisible();
@@ -104,7 +100,7 @@ test('shows error when data fails to load', async ({ mount }) => {
 npm run test:ct
 
 # single file
-npx playwright test -c playwright-ct.config.ts path/to/Component.spec.tsx
+npm run test:ct -- path/to/Component.spec.tsx
 
 # with coverage
 npm run test:ct:coverage
@@ -125,9 +121,7 @@ await component.getByRole('button', { name: /advanced/i }).click();
 // wait for all CSS transitions/animations on the component subtree to settle
 await component.evaluate(async (el) => {
   await new Promise(requestAnimationFrame); // yield so transitions start
-  await Promise.allSettled(
-    el.getAnimations({ subtree: true }).map((a) => a.finished)
-  );
+  await Promise.allSettled(el.getAnimations({ subtree: true }).map((a) => a.finished));
 });
 
 // now safe to run axe-core
@@ -138,7 +132,7 @@ await checkAccessibility({ component });
 
 - **CSS class selectors** — will break on PF upgrade. use role-based.
 - **broad locators** like `locator('svg')` — add `data-testid` to the specific element instead.
-- **inline mock data** — extract to spec-helpers for reuse and readability.
+- **inline JSX mounts** — add a named `*.story.tsx` export and mount its exact story ID.
 - **missing `await`** on assertions — playwright assertions are async, always await.
 - **testing component from wrong package** — verify import path matches the package the component lives in.
 - **a11y scan during CSS transition** — axe-core flags intermediate opacity as contrast failure. use `getAnimations()` pattern above.

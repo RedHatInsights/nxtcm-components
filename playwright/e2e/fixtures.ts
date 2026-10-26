@@ -1,6 +1,6 @@
-import { test as base, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { writeFileSync, mkdirSync } from 'fs';
+import { expect, test as base } from '@playwright/test';
+import { mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
 export { expect };

@@ -1,0 +1,126 @@
+import React from 'react';
+
+import { FormProvider, useForm } from 'react-hook-form';
+
+import { RosaHcpWizardStringsProvider } from '../../stringsProvider/RosaHcpWizardStringsContext';
+import type { ROSAHCPCluster } from '../../types';
+import type { RosaHcpYamlEditorStepProps } from './RosaHcpYamlEditorStep';
+import { RosaHcpYamlEditorStep } from './RosaHcpYamlEditorStep';
+import type { YamlResourceGenerator } from './types';
+
+// Mock resource generator for tests
+const mockResourceGenerator: YamlResourceGenerator = {
+  renderYaml: () => `
+kind: ROSAControlPlane
+apiVersion: controlplane.cluster.x-k8s.io/v1beta2
+spec:
+  rosaClusterName: test-cluster
+  version: 4.12.0
+  region: us-east-1
+  channelGroup: stable
+`,
+  validateYaml: () => [],
+  resourceSchemas: [
+    {
+      kind: 'ROSAControlPlane',
+      schema: {
+        type: 'object',
+        properties: {
+          kind: { type: 'string' },
+          spec: { type: 'object' },
+        },
+      },
+      primary: true,
+    },
+  ],
+};
+
+export type YamlEditorStepMountProps = Partial<RosaHcpYamlEditorStepProps>;
+
+// Mountable gallery story for Monaco rendering and configuration tests.
+function YamlEditorStepMountComponent({
+  onClose,
+  onCancel,
+  resourceGenerator = mockResourceGenerator,
+}: YamlEditorStepMountProps = {}) {
+  return (
+    <RosaHcpWizardStringsProvider>
+      <YamlEditorStepMountInner
+        onClose={onClose}
+        onCancel={onCancel}
+        resourceGenerator={resourceGenerator}
+      />
+    </RosaHcpWizardStringsProvider>
+  );
+}
+
+function YamlEditorStepMountInner({
+  onClose,
+  onCancel,
+  resourceGenerator,
+}: {
+  onClose?: () => void;
+  onCancel?: () => void;
+  resourceGenerator: YamlResourceGenerator;
+}) {
+  const methods = useForm<Partial<ROSAHCPCluster>>({
+    defaultValues: {
+      name: 'test-cluster',
+      cluster_version: '4.12.0',
+      region: 'us-east-1',
+    },
+  });
+
+  return (
+    <FormProvider {...methods}>
+      <RosaHcpYamlEditorStep
+        onClose={onClose}
+        onCancel={onCancel}
+        resourceGenerator={resourceGenerator}
+      />
+    </FormProvider>
+  );
+}
+
+type BrowserProps = NonNullable<React.ComponentProps<typeof YamlEditorStepMountComponent>>;
+
+export type YamlEditorStepMountGalleryProps = Omit<BrowserProps, 'onClose' | 'onCancel'> & {
+  onClose?: boolean;
+  onCancel?: boolean;
+};
+
+export function YamlEditorStepMount(props: YamlEditorStepMountGalleryProps): React.ReactElement {
+  const [onCloseCalls, setOnCloseCalls] = React.useState<
+    Parameters<NonNullable<BrowserProps['onClose']>>[]
+  >([]);
+  const [onCancelCalls, setOnCancelCalls] = React.useState<
+    Parameters<NonNullable<BrowserProps['onCancel']>>[]
+  >([]);
+  const browserProps = React.useMemo<BrowserProps>(
+    () => ({
+      ...props,
+      onClose: props.onClose
+        ? () => {
+            setOnCloseCalls((calls) => [...calls, []]);
+          }
+        : undefined,
+      onCancel: props.onCancel
+        ? () => {
+            setOnCancelCalls((calls) => [...calls, []]);
+          }
+        : undefined,
+    }),
+    [props]
+  );
+  return (
+    <>
+      <YamlEditorStepMountComponent {...browserProps} />
+      <div hidden>
+        <input data-testid="onClose-calls" readOnly value={JSON.stringify(onCloseCalls)} />
+        <input data-testid="onClose-count" readOnly value={String(onCloseCalls.length)} />
+        <input data-testid="onCancel-calls" readOnly value={JSON.stringify(onCancelCalls)} />
+        <input data-testid="onCancel-count" readOnly value={String(onCancelCalls.length)} />
+      </div>
+    </>
+  );
+}
