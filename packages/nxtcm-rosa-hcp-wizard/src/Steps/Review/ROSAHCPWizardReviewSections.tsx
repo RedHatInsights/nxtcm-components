@@ -7,12 +7,12 @@
 
 import { useMemo } from 'react';
 
+import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
+import { useWizardConfig } from '../../WizardConfigContext';
 import {
   buildRosaHcpWizardReviewSections,
   type RosaHcpWizardReviewSection,
 } from './rosaHcpWizardReviewSections.data';
-import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
-import { useWizardConfig } from '../../WizardConfigContext';
 
 export type { RosaHcpWizardReviewSection } from './rosaHcpWizardReviewSections.data';
 

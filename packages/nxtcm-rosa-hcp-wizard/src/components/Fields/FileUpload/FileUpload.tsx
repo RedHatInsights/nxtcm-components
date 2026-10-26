@@ -1,5 +1,9 @@
-import { type ComponentProps, type ReactNode, useCallback, useEffect, useState } from 'react';
-import { type DropEvent, FileUpload as PfFileUpload, FormGroup } from '@patternfly/react-core';
+import { type ComponentProps, type ReactNode, useCallback, useState } from 'react';
+
+import { FileUpload as PfFileUpload } from '@patternfly/react-core/dist/dynamic/components/FileUpload';
+import { FormGroup } from '@patternfly/react-core/dist/dynamic/components/Form';
+import { type DropEvent } from '@patternfly/react-core/dist/dynamic/helpers/typeUtils';
+
 import { getValidated, HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
 
@@ -40,6 +44,16 @@ export function FileUpload(props: FileUploadProps) {
 
   const isFilenameControlled = filenameProp !== undefined;
   const [uncontrolledFilename, setUncontrolledFilename] = useState('');
+  const [prevValue, setPrevValue] = useState(value);
+  const [prevIsFilenameControlled, setPrevIsFilenameControlled] = useState(isFilenameControlled);
+
+  if (prevValue !== value || prevIsFilenameControlled !== isFilenameControlled) {
+    setPrevValue(value);
+    setPrevIsFilenameControlled(isFilenameControlled);
+    if (!isFilenameControlled && (value === '' || value === null)) {
+      setUncontrolledFilename('');
+    }
+  }
 
   const displayFilename = isFilenameControlled ? filenameProp : uncontrolledFilename;
 
@@ -62,12 +76,6 @@ export function FileUpload(props: FileUploadProps) {
     },
     [isFilenameControlled, onClearClick]
   );
-
-  useEffect(() => {
-    if (!isFilenameControlled && (value === '' || value === null)) {
-      setUncontrolledFilename('');
-    }
-  }, [value, isFilenameControlled]);
 
   const fileUpload = (
     <>

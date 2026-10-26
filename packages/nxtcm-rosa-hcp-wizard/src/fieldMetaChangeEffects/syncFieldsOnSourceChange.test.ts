@@ -1,6 +1,5 @@
 import type { UseFormSetValue } from 'react-hook-form';
 
-import { syncFieldsOnSourceChange } from './syncFieldsOnSourceChange';
 import type { ROSAHCPCluster } from '../types';
 import {
   getWizardFieldSyncsForSourceField,
@@ -12,6 +11,7 @@ import {
   networkServiceCidrSchema,
   nodesComputeSchema,
 } from '../yupSchemas';
+import { syncFieldsOnSourceChange } from './syncFieldsOnSourceChange';
 
 const autoscalingSyncRules = getWizardFieldSyncsForSourceField('autoscaling');
 const cidrDefaultSyncRules = getWizardFieldSyncsForSourceField('cidr_default');

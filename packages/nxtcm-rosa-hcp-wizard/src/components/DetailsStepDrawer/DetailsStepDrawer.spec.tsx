@@ -1,24 +1,33 @@
-import { expect, test } from '@playwright/experimental-ct-react';
+import { expect, test } from '@/playwright/ct-fixture';
+
 import { checkAccessibility } from '../../test-helpers';
-import { DetailsStepDrawerMount } from './DetailsStepDrawer.spec-helpers';
+import type { DetailsStepDrawerMount } from './DetailsStepDrawer.story';
 
 test.describe('DetailsStepDrawer', () => {
   test('should render main content', async ({ mount }) => {
-    const component = await mount(<DetailsStepDrawerMount />);
+    const component = await mount<typeof DetailsStepDrawerMount>(
+      'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount'
+    );
     await expect(component.getByTestId('drawer-main-content')).toBeVisible();
   });
 
   test('should not show drawer panel when collapsed', async ({ mount }) => {
-    const component = await mount(<DetailsStepDrawerMount initiallyExpanded={false} />);
+    const component = await mount<typeof DetailsStepDrawerMount>(
+      'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
+      { initiallyExpanded: false }
+    );
     // Panel title should not be visible when collapsed
     const panelTitle = component.getByRole('heading', {
       name: /how to associate a new aws account/i,
     });
-    await expect(panelTitle).not.toBeVisible();
+    await expect(panelTitle).toBeHidden();
   });
 
   test('should show drawer panel when expanded', async ({ mount }) => {
-    const component = await mount(<DetailsStepDrawerMount initiallyExpanded={true} />);
+    const component = await mount<typeof DetailsStepDrawerMount>(
+      'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
+      { initiallyExpanded: true }
+    );
     const panelTitle = component.getByRole('heading', {
       name: /how to associate a new aws account/i,
     });
@@ -26,7 +35,10 @@ test.describe('DetailsStepDrawer', () => {
   });
 
   test('should close drawer when close button clicked', async ({ mount }) => {
-    const component = await mount(<DetailsStepDrawerMount initiallyExpanded={true} />);
+    const component = await mount<typeof DetailsStepDrawerMount>(
+      'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
+      { initiallyExpanded: true }
+    );
 
     const closeButton = component.getByRole('button', { name: /close drawer panel/i });
     await closeButton.click();
@@ -35,11 +47,14 @@ test.describe('DetailsStepDrawer', () => {
     const panelTitle = component.getByRole('heading', {
       name: /how to associate a new aws account/i,
     });
-    await expect(panelTitle).not.toBeVisible();
+    await expect(panelTitle).toBeHidden();
   });
 
   test('should render all instruction sections when expanded', async ({ mount }) => {
-    const component = await mount(<DetailsStepDrawerMount initiallyExpanded={true} />);
+    const component = await mount<typeof DetailsStepDrawerMount>(
+      'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
+      { initiallyExpanded: true }
+    );
 
     // Check for expandable sections (they use h3 wrapper)
     await expect(component.getByRole('button', { name: /log in/i })).toBeVisible();
@@ -49,12 +64,18 @@ test.describe('DetailsStepDrawer', () => {
   });
 
   test('should render intro text', async ({ mount }) => {
-    const component = await mount(<DetailsStepDrawerMount initiallyExpanded={true} />);
+    const component = await mount<typeof DetailsStepDrawerMount>(
+      'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
+      { initiallyExpanded: true }
+    );
     await expect(component.getByText(/security token service/i)).toBeVisible();
   });
 
   test('should close drawer when bottom close button clicked', async ({ mount }) => {
-    const component = await mount(<DetailsStepDrawerMount initiallyExpanded={true} />);
+    const component = await mount<typeof DetailsStepDrawerMount>(
+      'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
+      { initiallyExpanded: true }
+    );
 
     // Click the secondary close button (not the X button)
     const closeButtons = component.getByRole('button', { name: /^close$/i });
@@ -64,12 +85,13 @@ test.describe('DetailsStepDrawer', () => {
     const panelTitle = component.getByRole('heading', {
       name: /how to associate a new aws account/i,
     });
-    await expect(panelTitle).not.toBeVisible();
+    await expect(panelTitle).toBeHidden();
   });
 
   test('should pass product prop to LoginStep', async ({ mount }) => {
-    const component = await mount(
-      <DetailsStepDrawerMount initiallyExpanded={true} product="ocm" />
+    const component = await mount<typeof DetailsStepDrawerMount>(
+      'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
+      { initiallyExpanded: true, product: 'ocm' }
     );
     await expect(component.getByRole('textbox', { name: /rosa login/i })).toHaveValue(
       /rosa login --use-auth-code --url https:\/\/api\.openshift\.com/
@@ -77,12 +99,18 @@ test.describe('DetailsStepDrawer', () => {
   });
 
   test('should pass accessibility tests when collapsed', async ({ mount }) => {
-    const component = await mount(<DetailsStepDrawerMount initiallyExpanded={false} />);
+    const component = await mount<typeof DetailsStepDrawerMount>(
+      'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
+      { initiallyExpanded: false }
+    );
     await checkAccessibility({ component });
   });
 
   test('should pass accessibility tests when expanded', async ({ mount }) => {
-    const component = await mount(<DetailsStepDrawerMount initiallyExpanded={true} />);
+    const component = await mount<typeof DetailsStepDrawerMount>(
+      'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
+      { initiallyExpanded: true }
+    );
     await checkAccessibility({ component });
   });
 });

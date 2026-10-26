@@ -1,6 +1,8 @@
 import React, { type FormEvent } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Form } from '@patternfly/react-core';
+
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+
 import { Checkbox, type CheckboxProps } from './Checkbox';
 
 function CheckboxDemo(args: CheckboxProps) {
@@ -17,9 +19,9 @@ function CheckboxDemo(args: CheckboxProps) {
 }
 
 const meta: Meta<typeof Checkbox> = {
-  title: 'Form Elements/Checkbox',
+  title: 'Internal/Form Elements/Checkbox',
   component: Checkbox,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   parameters: {
     layout: 'padded',
   },

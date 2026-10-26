@@ -1,4 +1,5 @@
 import React, { createContext, useContext } from 'react';
+
 import type { WizardConfig } from './types';
 
 const WizardConfigContext = createContext<WizardConfig>({});

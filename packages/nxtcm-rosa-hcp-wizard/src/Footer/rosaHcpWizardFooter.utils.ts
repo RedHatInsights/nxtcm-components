@@ -1,20 +1,18 @@
-import type { FieldErrors, FieldPath, FieldValues, UseFormGetFieldState } from 'react-hook-form';
-import { STEP_IDS } from '../constants';
+import type { FieldErrors, FieldValues, Path, UseFormGetFieldState } from 'react-hook-form';
 
-function hasErrorAtPath(errors: FieldErrors, path: string): boolean {
-  const segments = path.split('.');
-  let current: unknown = errors;
-  for (const segment of segments) {
-    if (current === null || current === undefined || typeof current !== 'object') {
-      return false;
-    }
-    current = (current as Record<string, unknown>)[segment];
-  }
+import { STEP_IDS } from '../constants';
+import { getNestedValue } from '../utilities/helpers';
+
+function hasErrorAtPath<TFieldValues extends FieldValues>(
+  errors: FieldErrors<TFieldValues>,
+  path: Path<TFieldValues>
+): boolean {
+  const current = getNestedValue(errors, path);
   if (current === null || current === undefined) {
     return false;
   }
   if (typeof current === 'object' && 'message' in current) {
-    return (current as { message?: unknown }).message !== undefined;
+    return current.message !== undefined;
   }
   return true;
 }
@@ -32,14 +30,13 @@ export type PathsHaveValidationIssuesOptions = {
  * Prefer this over {@link getFieldState} alone — `invalid` can lag after `trigger()` in onTouched forms.
  */
 export function pathsHaveValidationIssues<TFieldValues extends FieldValues>(
-  fieldPaths: readonly string[],
+  fieldPaths: readonly Path<TFieldValues>[],
   getFieldState: UseFormGetFieldState<TFieldValues>,
   errors: FieldErrors<TFieldValues>,
   options?: PathsHaveValidationIssuesOptions
 ): boolean {
   return fieldPaths.some((path) => {
-    const fieldPath = path as FieldPath<TFieldValues>;
-    if (getFieldState(fieldPath).invalid) {
+    if (getFieldState(path).invalid) {
       return true;
     }
     if (options?.ignoreResolverErrors) {

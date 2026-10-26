@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { type FieldPath, useFormContext, type FieldValues } from 'react-hook-form';
+
+import { type FieldPath, type FieldValues, useFormContext } from 'react-hook-form';
 
 /**
  * Clears a conditionally shown field and its validation state when it becomes hidden

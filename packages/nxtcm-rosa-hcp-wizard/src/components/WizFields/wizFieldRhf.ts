@@ -1,24 +1,17 @@
-import {
-  type FocusEvent,
-  type FocusEventHandler,
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-} from 'react';
+import { type FocusEventHandler, type ReactNode, useCallback, useEffect, useRef } from 'react';
+
 import {
   type Control,
   type FieldPath,
   type FieldValues,
-  type UseFormReturn,
   useFormContext,
+  type UseFormReturn,
 } from 'react-hook-form';
 import * as yup from 'yup';
 
-import { type YupFieldDescribeOptions } from '../../utilities/yupFieldRequired';
-
-import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.types';
 import { getRosaHcpWizardStringByLabelKey } from '../../stringsProvider/getRosaHcpWizardStringByLabelKey';
+import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.types';
+import { type YupFieldDescribeOptions } from '../../utilities/yupFieldRequired';
 
 /**
  * Shared react-hook-form + Yup wiring for ROSA HCP wizard `Wiz*` fields.
@@ -135,29 +128,29 @@ export function wizFieldShowsError(
  * before the new value lands.
  */
 export function useWizMenuFieldBlur(
-  onBlur: FocusEventHandler<HTMLElement>,
+  onBlur: () => void,
   isMenuOpen: boolean
 ): FocusEventHandler<HTMLElement> {
   const wasMenuOpenRef = useRef(false);
   const onBlurRef = useRef(onBlur);
-  onBlurRef.current = onBlur;
+
+  useEffect(() => {
+    onBlurRef.current = onBlur;
+  });
 
   useEffect(() => {
     if (wasMenuOpenRef.current && !isMenuOpen) {
-      onBlurRef.current({ type: 'blur' } as FocusEvent<HTMLElement>);
+      onBlurRef.current();
     }
     wasMenuOpenRef.current = isMenuOpen;
   }, [isMenuOpen]);
 
-  return useCallback(
-    (event: FocusEvent<HTMLElement>) => {
-      if (isMenuOpen) {
-        return;
-      }
-      onBlur(event);
-    },
-    [isMenuOpen, onBlur]
-  );
+  return useCallback((): void => {
+    if (isMenuOpen) {
+      return;
+    }
+    onBlur();
+  }, [isMenuOpen, onBlur]);
 }
 
 /** Like {@link wizFieldShowsError}, but keyed on a resolved error message string. */
@@ -177,6 +170,16 @@ export function wizFieldShowsErrorMessage(
 }
 
 /**
+ * RHF returns null outside FormProvider, despite declaring a non-null return type.
+ * A nullable hook return keeps this possibility visible to control-only consumers.
+ */
+export function useOptionalWizFormContext<
+  TFieldValues extends FieldValues,
+>(): UseFormReturn<TFieldValues> | null {
+  return useFormContext<TFieldValues>();
+}
+
+/**
  * Resolves {@link Control} from props or react-hook-form context.
  * Throws a consistent error message when neither is available.
  */
@@ -184,8 +187,7 @@ export function useWizRhfControl<TFieldValues extends FieldValues>(
   componentDisplayName: string,
   controlProp?: Control<TFieldValues>
 ): Control<TFieldValues> {
-  /** RHF default context is `null` when `FormProvider` is not used. */
-  const formContext = useFormContext<TFieldValues>() as UseFormReturn<TFieldValues> | null;
+  const formContext = useOptionalWizFormContext<TFieldValues>();
   const control = controlProp ?? formContext?.control;
 
   if (control == null) {

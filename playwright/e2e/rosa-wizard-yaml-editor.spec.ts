@@ -1,8 +1,8 @@
-import { test, expect } from './fixtures';
+import { expect, test } from './fixtures';
 import {
-  navigateToYamlEditor,
-  getMonacoYaml,
   appendYamlComment,
+  getMonacoYaml,
+  navigateToYamlEditor,
 } from './helpers/yaml-editor-helpers';
 
 test.describe('ROSA Wizard - YAML Editor', () => {
@@ -45,7 +45,7 @@ test.describe('ROSA Wizard - YAML Editor', () => {
     const dialog = page.getByRole('dialog');
     await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
 
-    await expect(dialog).not.toBeVisible();
+    await expect(dialog).toBeHidden();
     await expect(page.getByRole('textbox', { name: /Editor content/ })).toBeVisible();
     await expect.poll(() => getMonacoYaml(page)).toContain('# keep this change');
   });
@@ -76,7 +76,7 @@ test.describe('ROSA Wizard - YAML Editor', () => {
     const schema = page.getByRole('heading', { name: 'ROSAControlPlane schema' });
     await expect(schema).toBeVisible();
     await page.getByRole('button', { name: 'Toggle schema panel' }).first().click();
-    await expect(schema).not.toBeVisible();
+    await expect(schema).toBeHidden();
     await page.getByRole('button', { name: 'Toggle schema panel' }).click();
     await expect(schema).toBeVisible();
   });

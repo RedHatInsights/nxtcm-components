@@ -45,32 +45,32 @@ jest.mock('ip-cidr', () => {
 });
 
 import {
-  clusterValidationSchema,
-  getClusterValidationSchemaDefaultValues,
-  wizardFieldMetaByPath,
-} from './index';
-import { coerceAbsentRequiredFieldValues } from '../utilities/clusterValidationResolver';
-import type { ValidationSchemaContext } from './types';
+  AWS_MACHINE_CIDR_MAX_MULTI_AZ,
+  AWS_MACHINE_CIDR_MAX_SINGLE_AZ,
+  AWS_MACHINE_CIDR_MIN,
+  HOST_PREFIX_MAX,
+  HOST_PREFIX_MIN,
+  IMDS,
+  MAX_CA_SIZE_BYTES,
+  MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH,
+  POD_CIDR_MAX,
+  SERVICE_CIDR_MAX,
+} from '../constants';
 import { defaultRosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings.defaults';
 import {
-  MAX_CUSTOM_OPERATOR_ROLES_PREFIX_LENGTH,
-  HOST_PREFIX_MIN,
-  HOST_PREFIX_MAX,
-  AWS_MACHINE_CIDR_MIN,
-  AWS_MACHINE_CIDR_MAX_SINGLE_AZ,
-  AWS_MACHINE_CIDR_MAX_MULTI_AZ,
-  SERVICE_CIDR_MAX,
-  POD_CIDR_MAX,
-  MAX_CA_SIZE_BYTES,
-  IMDS,
-} from '../constants';
-import {
-  CIDRSubnet,
   ClusterEncryptionKeys,
   ClusterNetwork,
   ClusterUpgrade,
   ROSAHCPCluster,
+  Subnet,
 } from '../types';
+import { coerceAbsentRequiredFieldValues } from '../utilities/clusterValidationResolver';
+import {
+  clusterValidationSchema,
+  getClusterValidationSchemaDefaultValues,
+  wizardFieldMetaByPath,
+} from './index';
+import type { ValidationSchemaContext } from './types';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -103,7 +103,7 @@ function buildFormData(overrides: Partial<ROSAHCPCluster> = {}): Partial<ROSAHCP
     selected_vpc: 'vpc-123',
     machine_pools_subnets: [{ machine_pool_subnet: 'subnet-123' }],
     machine_type: 'm5.xlarge',
-    cluster_privacy: 'external' as ROSAHCPCluster['cluster_privacy'],
+    cluster_privacy: ClusterNetwork.external,
     cluster_privacy_public_subnet_id: 'subnet-public-123',
     network_machine_cidr: '10.0.0.0/16',
     network_service_cidr: '172.30.0.0/16',
@@ -783,7 +783,7 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
     });
 
     it('rejects when machine CIDR does not include subnet starting IP', async () => {
-      const subnets: CIDRSubnet[] = [
+      const subnets: Subnet[] = [
         {
           cidr_block: '192.168.1.0/24',
           name: 'my-subnet',
@@ -866,7 +866,7 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
     });
 
     it('rejects when service CIDR includes subnet starting IP', async () => {
-      const subnets: CIDRSubnet[] = [
+      const subnets: Subnet[] = [
         {
           cidr_block: '172.30.0.0/24',
           name: 'svc-subnet',
@@ -961,7 +961,7 @@ describe('yupSchemas – composed clusterValidationSchema', () => {
     });
 
     it('rejects when pod CIDR includes subnet starting IP', async () => {
-      const subnets: CIDRSubnet[] = [
+      const subnets: Subnet[] = [
         {
           cidr_block: '10.128.0.0/24',
           name: 'pod-subnet',
@@ -1490,19 +1490,19 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
     it('returns meta for name field', () => {
       const meta = wizardFieldMetaByPath('name');
       expect(meta).toBeDefined();
-      expect(meta!.id).toBe('name');
-      expect(meta!.labelKey).toBe('details.clusterNameLabel');
-      expect(meta!.fieldType).toBe('text');
+      expect(meta?.id).toBe('name');
+      expect(meta?.labelKey).toBe('details.clusterNameLabel');
+      expect(meta?.fieldType).toBe('text');
     });
 
     it('returns meta for region field', () => {
       const meta = wizardFieldMetaByPath('region');
       expect(meta).toBeDefined();
-      expect(meta!.id).toBe('region');
-      expect(meta!.labelKey).toBe('details.regionLabel');
-      expect(meta!.fieldType).toBe('select');
-      expect(meta!.noEditAfterSubmit).toBe(true);
-      expect(meta!.refetchesResourcesOnChange).toEqual([
+      expect(meta?.id).toBe('region');
+      expect(meta?.labelKey).toBe('details.regionLabel');
+      expect(meta?.fieldType).toBe('select');
+      expect(meta?.noEditAfterSubmit).toBe(true);
+      expect(meta?.refetchesResourcesOnChange).toEqual([
         {
           resource: 'vpcList',
           argsFromFields: {
@@ -1525,7 +1525,7 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
     it('returns refetch metadata for associated_aws_id field', () => {
       const meta = wizardFieldMetaByPath('associated_aws_id');
       expect(meta).toBeDefined();
-      expect(meta!.refetchesResourcesOnChange).toEqual([
+      expect(meta?.refetchesResourcesOnChange).toEqual([
         { resource: 'regions', argFromField: 'associated_aws_id' },
         { resource: 'roles', argFromField: 'associated_aws_id' },
         { resource: 'oidcConfig', argFromField: 'associated_aws_id' },
@@ -1535,14 +1535,14 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
     it('returns meta for compute_root_volume field', () => {
       const meta = wizardFieldMetaByPath('compute_root_volume');
       expect(meta).toBeDefined();
-      expect(meta!.unit).toBe('GiB');
-      expect(meta!.advanced).toBe(true);
+      expect(meta?.unit).toBe('GiB');
+      expect(meta?.advanced).toBe(true);
     });
 
     it('returns meta with reviewLabel override', () => {
       const meta = wizardFieldMetaByPath('billing_account_id');
       expect(meta).toBeDefined();
-      expect(meta!.reviewLabel).toBe('AWS billing account');
+      expect(meta?.reviewLabel).toBe('AWS billing account');
     });
 
     it('returns undefined for non-existent path', () => {
@@ -1553,8 +1553,8 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
     it('returns collapseOnRequired for additional_trust_bundle', () => {
       const meta = wizardFieldMetaByPath('additional_trust_bundle');
       expect(meta).toBeDefined();
-      expect(meta!.collapseOnRequired).toBe(true);
-      expect(meta!.noEditAfterSubmit).toBeUndefined();
+      expect(meta?.collapseOnRequired).toBe(true);
+      expect(meta?.noEditAfterSubmit).toBeUndefined();
     });
   });
 

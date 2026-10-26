@@ -1,19 +1,25 @@
-import {
-  Button,
-  Flex,
-  FlexItem,
-  Icon,
-  Bullseye,
-  Pagination,
-  Skeleton,
-  Title,
-  Tooltip,
-} from '@patternfly/react-core';
-import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import React, { useState } from 'react';
+
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Icon } from '@patternfly/react-core/dist/dynamic/components/Icon';
+import { Pagination } from '@patternfly/react-core/dist/dynamic/components/Pagination';
+import { Skeleton } from '@patternfly/react-core/dist/dynamic/components/Skeleton';
+import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
+import { Tooltip } from '@patternfly/react-core/dist/dynamic/components/Tooltip';
+import { Bullseye } from '@patternfly/react-core/dist/dynamic/layouts/Bullseye';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-circle-icon';
 import ExternalLinkAltIcon from '@patternfly/react-icons/dist/esm/icons/external-link-alt-icon';
 import OutlinedQuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/outlined-question-circle-icon';
-import React, { useState } from 'react';
+import {
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@patternfly/react-table/dist/dynamic/components/Table';
+
 import styles from './ClustersWithIssues.module.scss';
 
 const DEFAULT_PER_PAGE = 5;

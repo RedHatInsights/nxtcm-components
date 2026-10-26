@@ -6,7 +6,10 @@ import {
   type SyntheticEvent,
   useCallback,
 } from 'react';
-import { FormGroup, NumberInput as PfNumberInput } from '@patternfly/react-core';
+
+import { FormGroup } from '@patternfly/react-core/dist/dynamic/components/Form';
+import { NumberInput as PfNumberInput } from '@patternfly/react-core/dist/dynamic/components/NumberInput';
+
 import { getValidated, HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
 

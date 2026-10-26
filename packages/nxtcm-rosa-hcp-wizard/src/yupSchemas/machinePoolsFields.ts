@@ -1,20 +1,20 @@
 import * as yup from 'yup';
 
 import {
-  MIN_ROOT_DISK_SIZE_GIB,
-  MAX_ROOT_DISK_SIZE_OLD_OPENSHIFT,
-  MAX_ROOT_DISK_SIZE_NEW_OPENSHIFT,
   FIELD_NAME,
+  MAX_ROOT_DISK_SIZE_NEW_OPENSHIFT,
+  MAX_ROOT_DISK_SIZE_OLD_OPENSHIFT,
+  MIN_ROOT_DISK_SIZE_GIB,
 } from '../constants';
-import type { WizardFieldMeta } from './types';
+import { validateSecurityGroups } from '../validators';
+import { YUP } from './constants';
 import {
   ctx,
   rosaRequiredArrayField,
   rosaRequiredMixedField,
   rosaRequiredStringField,
 } from './helpers';
-import { validateSecurityGroups } from '../validators';
-import { YUP } from './constants';
+import type { ClusterTestContext, ValidationSchemaContext, WizardFieldMeta } from './types';
 
 export const selectedVpcSchema = rosaRequiredMixedField().meta({
   id: YUP.MACHINE_POOLS.SELECTED_VPC_SCHEMA.META.ID,
@@ -114,7 +114,7 @@ export const nodesComputeSchema = yup
   });
 
 export const minReplicasSchema = yup
-  .number()
+  .number<number, ValidationSchemaContext>()
   .default(YUP.MACHINE_POOLS.MIN_REPLICAS_SCHEMA.DEFAULT)
   .optional()
   .meta({
@@ -123,7 +123,7 @@ export const minReplicasSchema = yup
     stepId: YUP.MACHINE_POOLS.MIN_REPLICAS_SCHEMA.META.STEP_ID,
     fieldType: YUP.MACHINE_POOLS.MIN_REPLICAS_SCHEMA.META.FIELD_TYPE,
   } satisfies WizardFieldMeta)
-  .test(FIELD_NAME.MIN_REPLICAS, '', function (value) {
+  .test(FIELD_NAME.MIN_REPLICAS, '', function (this: ClusterTestContext, value) {
     if (value === undefined || value === null) return true;
     const { msgs, machinePoolsNumber } = ctx(this);
     if (!Number.isInteger(value)) {
@@ -135,7 +135,7 @@ export const minReplicasSchema = yup
     if (value > 500) {
       return this.createError({ message: msgs.replicas.maxNodes(500) });
     }
-    const maxReplicas = this.parent?.max_replicas as number | undefined;
+    const maxReplicas = this.parent?.max_replicas;
     if (maxReplicas !== undefined && value > maxReplicas) {
       return this.createError({ message: msgs.replicas.minGreaterThanMax });
     }
@@ -146,7 +146,7 @@ export const minReplicasSchema = yup
   });
 
 export const maxReplicasSchema = yup
-  .number()
+  .number<number, ValidationSchemaContext>()
   .default(YUP.MACHINE_POOLS.MAX_REPLICAS_SCHEMA.DEFAULT)
   .optional()
   .meta({
@@ -155,7 +155,7 @@ export const maxReplicasSchema = yup
     stepId: YUP.MACHINE_POOLS.MAX_REPLICAS_SCHEMA.META.STEP_ID,
     fieldType: YUP.MACHINE_POOLS.MAX_REPLICAS_SCHEMA.META.FIELD_TYPE,
   } satisfies WizardFieldMeta)
-  .test(FIELD_NAME.MAX_REPLICAS, '', function (value) {
+  .test(FIELD_NAME.MAX_REPLICAS, '', function (this: ClusterTestContext, value) {
     if (value === undefined || value === null) return true;
     const { msgs, maxAutoscalingNodes } = ctx(this);
     if (!Number.isInteger(value)) {
@@ -167,7 +167,7 @@ export const maxReplicasSchema = yup
     if (value > maxAutoscalingNodes) {
       return this.createError({ message: msgs.replicas.maxNodes(maxAutoscalingNodes) });
     }
-    const minReplicas = this.parent?.min_replicas as number | undefined;
+    const minReplicas = this.parent?.min_replicas;
     if (minReplicas !== undefined && value < minReplicas) {
       return this.createError({ message: msgs.replicas.maxLessThanMin });
     }

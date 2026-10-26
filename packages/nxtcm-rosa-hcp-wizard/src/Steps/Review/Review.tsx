@@ -1,36 +1,28 @@
-import { useMemo } from 'react';
-import {
-  Alert,
-  AlertVariant,
-  Button,
-  Split,
-  SplitItem,
-  Stack,
-  StackItem,
-  useWizardContext,
-} from '@patternfly/react-core';
+import { Alert, AlertVariant } from '@patternfly/react-core/dist/dynamic/components/Alert';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { useWizardContext } from '@patternfly/react-core/dist/dynamic/components/Wizard';
+import { Split, SplitItem } from '@patternfly/react-core/dist/dynamic/layouts/Split';
+import { Stack, StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 import LockIcon from '@patternfly/react-icons/dist/esm/icons/lock-icon';
 import PencilAltIcon from '@patternfly/react-icons/dist/esm/icons/pencil-alt-icon';
 import { useWatch } from 'react-hook-form';
 
+import { Section } from '../../components/Section';
+import { getRosaHcpWizardStringByLabelKey } from '../../stringsProvider/getRosaHcpWizardStringByLabelKey';
+import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings';
+import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster, ROSAHCPWizardData } from '../../types';
-
 import {
   buildMachinePoolsReviewSelectOptions,
   getNestedValue,
   resolveSelectedVpc,
 } from '../../utilities/helpers';
-import { Section } from '../../components/Section';
-import { STEP_IDS } from '../../constants';
 import { useWizardConfig } from '../../WizardConfigContext';
-import { useRosaHcpWizardReviewSections } from './ROSAHCPWizardReviewSections';
-import type { RosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings';
-import { getRosaHcpWizardStringByLabelKey } from '../../stringsProvider/getRosaHcpWizardStringByLabelKey';
-import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { getClusterValidationSchemaDefaultValues, wizardFieldMetaByPath } from '../../yupSchemas';
+import { formatReviewFieldValue, normalizeEmptyFormValue } from './formatReviewValueDisplay';
 import { ReviewExpandSection } from './ReviewExpandSection';
 import { ReviewFieldRow } from './ReviewFieldRow';
-import { formatReviewFieldValue, normalizeEmptyFormValue } from './formatReviewValueDisplay';
+import { useRosaHcpWizardReviewSections } from './ROSAHCPWizardReviewSections';
 import { shouldHideReviewRow } from './shouldHideReviewRow';
 
 /** Stable string for comparing a field to defaults (includes arrays/objects). */
@@ -80,15 +72,9 @@ export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
       : {}),
   } as Partial<ROSAHCPCluster>;
 
-  const selectedVPC = useMemo(
-    () => resolveSelectedVpc(formValues.selected_vpc, vpcList.data),
-    [formValues.selected_vpc, vpcList.data]
-  );
-
-  const reviewSelectOptions = useMemo(
-    () => buildMachinePoolsReviewSelectOptions(selectedVPC, vpcList.data),
-    [selectedVPC, vpcList.data]
-  );
+  const vpcData = vpcList.data;
+  const selectedVPC = resolveSelectedVpc(formValues.selected_vpc, vpcData);
+  const reviewSelectOptions = buildMachinePoolsReviewSelectOptions(selectedVPC, vpcData);
   const reviewSections = useRosaHcpWizardReviewSections();
   const rosaStrings = useRosaHcpWizardStrings();
   const { review } = rosaStrings;
@@ -96,7 +82,6 @@ export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
   return (
     <Section
       label={review.sectionLabel}
-      id={STEP_IDS.REVIEW}
       isForm={false}
       labelActions={
         onOpenYamlEditor ? (

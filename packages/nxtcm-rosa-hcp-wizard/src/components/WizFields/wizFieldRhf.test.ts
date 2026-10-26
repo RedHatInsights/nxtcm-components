@@ -1,7 +1,8 @@
 import React, { act, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
+
 import { useForm } from 'react-hook-form';
-import { WizTextInput } from './WizTextInput/WizTextInput';
+
 import {
   stringLabelFromYupMeta,
   wizFallbackFieldId,
@@ -9,6 +10,7 @@ import {
   wizFieldShowsError,
   wizFieldShowsErrorMessage,
 } from './wizFieldRhf';
+import { WizTextInput } from './WizTextInput/WizTextInput';
 
 describe('stringLabelFromYupMeta', () => {
   it('uses the field-path fallback when Yup meta has no string or number label', () => {
@@ -23,9 +25,7 @@ describe('stringLabelFromYupMeta', () => {
 
   it('uses the fallback path when Yup stores a non-primitive label (e.g. JSX)', () => {
     const el = React.createElement('span', {}, 'nested');
-    expect(stringLabelFromYupMeta(el as unknown as ReactNode, 'fallback-name')).toBe(
-      'fallback-name'
-    );
+    expect(stringLabelFromYupMeta(el, 'fallback-name')).toBe('fallback-name');
   });
 });
 
@@ -86,7 +86,11 @@ describe('useWizRhfControl', () => {
     const root = createRoot(container);
     expect(() => {
       act(() => {
-        root.render(React.createElement(WizTextInput, { name: 'onlyName' }));
+        root.render(
+          React.createElement(WizTextInput, {
+            name: 'name',
+          })
+        );
       });
     }).toThrow(
       'WizTextInput: pass `control` from useForm(), or wrap the form with <FormProvider {...methods}> from react-hook-form.'

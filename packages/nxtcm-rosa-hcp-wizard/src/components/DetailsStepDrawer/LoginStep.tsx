@@ -1,5 +1,5 @@
-import { RosaLoginInstruction } from '../RosaLoginInstruction';
 import type { RosaLoginProduct } from '../rosaLoginCommand';
+import { RosaLoginInstruction } from '../RosaLoginInstruction';
 
 type LoginStepProps = {
   product?: RosaLoginProduct;

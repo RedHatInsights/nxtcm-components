@@ -2,9 +2,9 @@ import * as yup from 'yup';
 
 import { BASE_DOMAIN_REGEXP, FIELD_NAME, MAX_CA_SIZE_BYTES } from '../constants';
 import { stringToArray } from '../utilities/helpers';
-import type { WizardFieldMeta } from './types';
-import { ctx } from './helpers';
 import { YUP } from './constants';
+import { ctx } from './helpers';
+import type { WizardFieldMeta } from './types';
 
 export const httpProxyUrlSchema = yup
   .string()

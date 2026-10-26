@@ -1,6 +1,10 @@
 import React from 'react';
-import { Flex, FlexItem, Skeleton, Title } from '@patternfly/react-core';
+
 import { ChartDonut } from '@patternfly/react-charts/victory';
+import { Skeleton } from '@patternfly/react-core/dist/dynamic/components/Skeleton';
+import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
+
 import styles from './AdvisorRecommendations.module.scss';
 
 export type CategoryCounts = {
@@ -105,7 +109,9 @@ export const AdvisorCategories: React.FC<AdvisorCategoriesProps> = ({
                   })
                 )}
                 colorScale={categoryColors}
-                labels={({ datum }) => `${datum.x}: ${datum.y}`}
+                labels={({ datum }: { datum: { x: string; y: number } }) =>
+                  `${datum.x}: ${datum.y}`
+                }
                 padAngle={1}
                 width={120}
                 height={120}

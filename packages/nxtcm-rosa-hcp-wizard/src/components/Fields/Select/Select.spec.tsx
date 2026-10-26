@@ -1,21 +1,27 @@
-import { expect, test } from '@playwright/experimental-ct-react';
-import {
+import { expect, test } from '@/playwright/ct-fixture';
+
+import type {
+  DisabledTypeaheadHarness,
   PlainMenuHarness,
+  PreselectedTypeaheadHarness,
   RefreshHarness,
   TypeaheadHarness,
-  DisabledTypeaheadHarness,
-} from './Select.spec-helpers';
+} from './Select.story';
 
 test.describe('Select', () => {
   test('selects an option from a plain menu and updates value', async ({ mount, page }) => {
-    await mount(<PlainMenuHarness />);
+    await mount<typeof PlainMenuHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/PlainMenuHarness'
+    );
     await page.getByRole('button', { name: /select the region/i }).click();
     await page.getByRole('option', { name: 'eu-west-1' }).click();
     await expect(page.getByTestId('menu-val')).toHaveText('eu-west-1');
   });
 
   test('filters options in typeahead mode', async ({ mount, page }) => {
-    await mount(<TypeaheadHarness />);
+    await mount<typeof TypeaheadHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/TypeaheadHarness'
+    );
     const combo = page.getByRole('combobox', { name: /select the subnet/i });
     await combo.click();
     await combo.fill('subnet');
@@ -24,7 +30,9 @@ test.describe('Select', () => {
   });
 
   test('shows all options when reopening a typeahead after selection', async ({ mount, page }) => {
-    await mount(<TypeaheadHarness />);
+    await mount<typeof TypeaheadHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/TypeaheadHarness'
+    );
     const combo = page.getByRole('combobox', { name: /select the subnet/i });
 
     // Select an option
@@ -39,7 +47,9 @@ test.describe('Select', () => {
   });
 
   test('re-selecting the same typeahead option keeps the selection', async ({ mount, page }) => {
-    await mount(<TypeaheadHarness />);
+    await mount<typeof TypeaheadHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/TypeaheadHarness'
+    );
     const combo = page.getByRole('combobox', { name: /select the subnet/i });
 
     // Select an option
@@ -56,13 +66,37 @@ test.describe('Select', () => {
     await expect(combo).toHaveValue('subnet-a');
   });
 
+  test('shows selected label when typeahead mounts with a preselected value', async ({
+    mount,
+    page,
+  }) => {
+    await mount<typeof PreselectedTypeaheadHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/PreselectedTypeaheadHarness'
+    );
+    const combo = page.getByRole('combobox', { name: /select the subnet/i });
+
+    // Typeahead input must display the preselected option label, not blank
+    await expect(combo).toHaveValue('subnet-a');
+    await expect(page.getByTestId('ta-preselected-val')).toHaveText('subnet-a');
+
+    // Opening should show all options (no leftover filter)
+    await combo.click();
+    await expect(page.getByRole('option', { name: 'subnet-a' })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'subnet-b' })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'other-net' })).toBeVisible();
+  });
+
   test('disables the typeahead combobox when isDisabled is set', async ({ mount, page }) => {
-    await mount(<DisabledTypeaheadHarness />);
+    await mount<typeof DisabledTypeaheadHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/DisabledTypeaheadHarness'
+    );
     await expect(page.getByRole('combobox', { name: /select the subnet/i })).toBeDisabled();
   });
 
   test('invokes onRefresh when the refresh control is pressed', async ({ mount, page }) => {
-    await mount(<RefreshHarness />);
+    await mount<typeof RefreshHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/RefreshHarness'
+    );
     await page.getByRole('button', { name: 'Refresh' }).click();
     await expect(page.getByTestId('refresh-count')).toHaveText('1');
   });

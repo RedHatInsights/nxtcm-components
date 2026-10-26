@@ -1,6 +1,6 @@
 import Handlebars from 'handlebars';
 
-import type { YamlResourceGenerator, ResourceSchema } from '../../Steps/YamlEditor/types';
+import type { ResourceSchema, YamlResourceGenerator } from '../../Steps/YamlEditor/types';
 import { createTemplateBasedGenerator } from './createTemplateBasedGenerator';
 import rosaHcpTemplateRaw from './templates/rosa-hcp-template.hbs?raw';
 

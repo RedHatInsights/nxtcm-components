@@ -1,6 +1,8 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Form } from '@patternfly/react-core';
+
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+
 import { Radio } from '../Radio';
 import { RadioGroup, type RadioGroupProps } from './RadioGroup';
 
@@ -17,9 +19,9 @@ function RadioGroupStoryDemo(args: RadioGroupProps) {
 }
 
 const meta: Meta<typeof RadioGroup> = {
-  title: 'Form Elements/RadioGroup',
+  title: 'Internal/Form Elements/RadioGroup',
   component: RadioGroup,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   parameters: {
     layout: 'padded',
   },

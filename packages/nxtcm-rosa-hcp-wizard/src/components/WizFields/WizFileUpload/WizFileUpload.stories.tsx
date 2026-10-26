@@ -1,7 +1,9 @@
 import { useState } from 'react';
+
 import { yupResolver } from '@hookform/resolvers/yup';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Button, Form } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
@@ -58,9 +60,9 @@ function WizFileUploadFormDemo(args: WizFileUploadProps) {
 }
 
 const meta: Meta<typeof WizFileUpload> = {
-  title: 'Form Elements/Connected Form Elements/WizFileUpload',
+  title: 'Internal/Form Elements/Connected Form Elements/WizFileUpload',
   component: WizFileUpload,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   decorators: [
     (Story) => (
       <RosaHcpWizardStringsProvider>

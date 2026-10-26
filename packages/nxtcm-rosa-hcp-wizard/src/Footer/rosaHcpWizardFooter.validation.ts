@@ -1,12 +1,13 @@
 import type {
   FieldErrors,
-  FieldPath,
   FieldValues,
+  Path,
   UseFormGetFieldState,
   UseFormGetValues,
   UseFormSetValue,
   UseFormTrigger,
 } from 'react-hook-form';
+
 import type { RosaHcpWizardReviewSection } from '../Steps/Review/rosaHcpWizardReviewSections.data';
 import { pathsHaveValidationIssues } from './rosaHcpWizardFooter.utils';
 
@@ -14,13 +15,12 @@ export type WizardFieldValidationOutcome = 'valid' | 'invalid' | 'stale';
 
 /** Touches invalid fields so errors show under onTouched validation. */
 export function touchInvalidPaths<TFieldValues extends FieldValues>(
-  fieldPaths: readonly string[],
+  fieldPaths: readonly Path<TFieldValues>[],
   getFieldState: UseFormGetFieldState<TFieldValues>,
   getValues: UseFormGetValues<TFieldValues>,
   setValue: UseFormSetValue<TFieldValues>
 ): void {
-  for (const path of fieldPaths) {
-    const fieldPath = path as FieldPath<TFieldValues>;
+  for (const fieldPath of fieldPaths) {
     if (!getFieldState(fieldPath).invalid) {
       continue;
     }
@@ -33,7 +33,7 @@ export function touchInvalidPaths<TFieldValues extends FieldValues>(
 
 /** Marks each review section (and optionally the review step) that still has invalid fields. */
 export function markSectionsWithValidationErrors<TFieldValues extends FieldValues>(
-  sections: readonly RosaHcpWizardReviewSection[],
+  sections: readonly RosaHcpWizardReviewSection<TFieldValues>[],
   getFieldState: UseFormGetFieldState<TFieldValues>,
   errors: FieldErrors<TFieldValues>,
   markValidationAttempted: (stepId: string) => void,
@@ -53,7 +53,7 @@ export function markSectionsWithValidationErrors<TFieldValues extends FieldValue
 export async function validateWizardStepFields<TFieldValues extends FieldValues>(params: {
   stepIdWhenStarted: string;
   getCurrentStepId: () => string;
-  fieldPaths: readonly string[];
+  fieldPaths: readonly Path<TFieldValues>[];
   trigger: UseFormTrigger<TFieldValues>;
   validateAllFields?: boolean;
 }): Promise<WizardFieldValidationOutcome> {
@@ -65,7 +65,7 @@ export async function validateWizardStepFields<TFieldValues extends FieldValues>
 
   const isValid = validateAllFields
     ? await trigger()
-    : await trigger(fieldPaths as FieldPath<TFieldValues>[], { shouldFocus: false });
+    : await trigger(fieldPaths, { shouldFocus: false });
 
   if (getCurrentStepId() !== stepIdWhenStarted) {
     return 'stale';
@@ -75,7 +75,7 @@ export async function validateWizardStepFields<TFieldValues extends FieldValues>
 }
 
 function stepPathsAreValid<TFieldValues extends FieldValues>(
-  fieldPaths: readonly string[],
+  fieldPaths: readonly Path<TFieldValues>[],
   getFieldState: UseFormGetFieldState<TFieldValues>,
   errors: FieldErrors<TFieldValues>,
   options?: { ignoreResolverErrors?: boolean }
@@ -91,8 +91,8 @@ export async function reconcileValidationAttemptedFlags<TFieldValues extends Fie
   isReviewStep: boolean;
   stepIdAtStart: string;
   getCurrentStepId: () => string;
-  stepFieldPaths: readonly string[];
-  reviewSections: readonly RosaHcpWizardReviewSection[];
+  stepFieldPaths: readonly Path<TFieldValues>[];
+  reviewSections: readonly RosaHcpWizardReviewSection<TFieldValues>[];
   trigger: UseFormTrigger<TFieldValues>;
   getFieldState: UseFormGetFieldState<TFieldValues>;
   errors: FieldErrors<TFieldValues>;
@@ -117,7 +117,7 @@ export async function reconcileValidationAttemptedFlags<TFieldValues extends Fie
   const triggerPassed = isReviewStep
     ? await trigger()
     : stepFieldPaths.length > 0
-      ? await trigger(stepFieldPaths as FieldPath<TFieldValues>[], { shouldFocus: false })
+      ? await trigger(stepFieldPaths, { shouldFocus: false })
       : false;
 
   if (getCurrentStepId() !== stepIdAtStart) {

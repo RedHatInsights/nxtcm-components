@@ -1,59 +1,60 @@
-import { expect, test } from '@playwright/experimental-ct-react';
+import { expect, test } from '@/playwright/ct-fixture';
+
 import { checkAccessibility } from '../../test-helpers';
-import { ReviewFieldValueWithLockMount } from './ReviewFieldRowShared.spec-helpers';
+import type {
+  ReviewFieldValueWithComplexChildren,
+  ReviewFieldValueWithLockMount,
+} from './ReviewFieldRowShared.story';
 
 test.describe('ReviewFieldValueWithLock', () => {
   test('should render children content', async ({ mount }) => {
-    const component = await mount(
-      <ReviewFieldValueWithLockMount>Custom Value</ReviewFieldValueWithLockMount>
+    const component = await mount<typeof ReviewFieldValueWithLockMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRowShared/ReviewFieldValueWithLockMount',
+      { children: 'Custom Value' }
     );
     await expect(component.getByText('Custom Value')).toBeVisible();
   });
 
   test('should not show screen reader text when not locked', async ({ mount }) => {
     const srText = 'Cannot be changed';
-    const component = await mount(
-      <ReviewFieldValueWithLockMount
-        noEditAfterStep={false}
-        lockedSettingsScreenReaderText={srText}
-      >
-        Value
-      </ReviewFieldValueWithLockMount>
+    const component = await mount<typeof ReviewFieldValueWithLockMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRowShared/ReviewFieldValueWithLockMount',
+      { noEditAfterStep: false, lockedSettingsScreenReaderText: srText, children: 'Value' }
     );
-    await expect(component.getByText(srText)).not.toBeVisible();
+    await expect(component.getByText(srText)).toBeHidden();
     await expect(component.getByText('Value')).toBeVisible();
   });
 
   test('should show screen reader text when locked', async ({ mount }) => {
     const srText = 'Cannot be changed';
-    const component = await mount(
-      <ReviewFieldValueWithLockMount noEditAfterStep={true} lockedSettingsScreenReaderText={srText}>
-        Value
-      </ReviewFieldValueWithLockMount>
+    const component = await mount<typeof ReviewFieldValueWithLockMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRowShared/ReviewFieldValueWithLockMount',
+      { noEditAfterStep: true, lockedSettingsScreenReaderText: srText, children: 'Value' }
     );
     await expect(component.getByText(srText)).toBeVisible();
   });
 
   test('should support ReactNode as children', async ({ mount }) => {
-    const complexChildren = (
-      <div>
-        <span>Part 1</span> <strong>Part 2</strong>
-      </div>
-    );
-    const component = await mount(
-      <ReviewFieldValueWithLockMount>{complexChildren}</ReviewFieldValueWithLockMount>
+    const component = await mount<typeof ReviewFieldValueWithComplexChildren>(
+      'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRowShared/ReviewFieldValueWithComplexChildren'
     );
     await expect(component.getByText('Part 1')).toBeVisible();
     await expect(component.getByText('Part 2')).toBeVisible();
   });
 
   test('should pass accessibility tests without lock', async ({ mount }) => {
-    const component = await mount(<ReviewFieldValueWithLockMount noEditAfterStep={false} />);
+    const component = await mount<typeof ReviewFieldValueWithLockMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRowShared/ReviewFieldValueWithLockMount',
+      { noEditAfterStep: false }
+    );
     await checkAccessibility({ component });
   });
 
   test('should pass accessibility tests with lock', async ({ mount }) => {
-    const component = await mount(<ReviewFieldValueWithLockMount noEditAfterStep={true} />);
+    const component = await mount<typeof ReviewFieldValueWithLockMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/Review/ReviewFieldRowShared/ReviewFieldValueWithLockMount',
+      { noEditAfterStep: true }
+    );
     await checkAccessibility({ component });
   });
 });

@@ -1,9 +1,11 @@
-import { test, expect } from '@/ct-fixture';
-import React from 'react';
-import { NotificationsPanel, NotificationItem } from './NotificationsPanel';
-import { checkAccessibility } from '@/test-helpers';
+import { expect, test } from '@/playwright/ct-fixture';
+import { checkAccessibility } from '@/playwright/test-helpers';
 
-const mockNotifications: NotificationItem[] = [
+import type { NotificationsPanelStory } from './NotificationsPanel.story';
+
+const mockNotifications: NonNullable<
+  NonNullable<React.ComponentProps<typeof NotificationsPanelStory>>['notifications']
+> = [
   {
     id: 1,
     title: 'New CVE: CVE-2023-0091',
@@ -44,12 +46,18 @@ const mockNotifications: NotificationItem[] = [
 
 test.describe('NotificationsPanel', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(<NotificationsPanel notifications={mockNotifications} />);
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: mockNotifications }
+    );
     await checkAccessibility({ component });
   });
 
   test('should render the panel with notification count badge', async ({ mount }) => {
-    const component = await mount(<NotificationsPanel notifications={mockNotifications} />);
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: mockNotifications }
+    );
     await expect(component.getByText('New notifications', { exact: true })).toBeVisible();
 
     // Find the notification count within a div that contains "New notifications"
@@ -57,7 +65,10 @@ test.describe('NotificationsPanel', () => {
   });
 
   test('should render empty panel when there are no notifications', async ({ mount }) => {
-    const component = await mount(<NotificationsPanel notifications={[]} />);
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: [] }
+    );
     await expect(component.getByText('New notifications', { exact: true })).toBeVisible();
     await expect(component.getByTestId('notification-count')).toBeVisible();
   });
@@ -65,8 +76,9 @@ test.describe('NotificationsPanel', () => {
   test.describe('should display all notification items', () => {
     for (const notification of mockNotifications) {
       test(`should display notification: ${notification.title}`, async ({ mount }) => {
-        const component = await mount(
-          <NotificationsPanel notifications={mockNotifications} enablePagination={false} />
+        const component = await mount<typeof NotificationsPanelStory>(
+          'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+          { notifications: mockNotifications, enablePagination: false }
         );
 
         // Find the table row containing this notification
@@ -79,17 +91,12 @@ test.describe('NotificationsPanel', () => {
   });
 
   test('should call onNotificationClick when a notification is clicked', async ({ mount }) => {
-    // Create a mock function to track calls
-    const mockCalls: NotificationItem[] = [];
-    const onNotificationClick = (notification: NotificationItem) => {
-      mockCalls.push(notification);
-    };
-
-    const component = await mount(
-      <NotificationsPanel
-        notifications={mockNotifications}
-        onNotificationClick={onNotificationClick}
-      />
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      {
+        notifications: mockNotifications,
+        onNotificationClick: true,
+      }
     );
 
     // Click the first notification row
@@ -98,34 +105,51 @@ test.describe('NotificationsPanel', () => {
       .filter({ hasText: mockNotifications[0].title });
     await firstNotificationRow.click();
 
-    expect(mockCalls).toHaveLength(1);
-    expect(mockCalls[0]).toEqual(mockNotifications[0]);
+    await expect
+      .poll(
+        async () =>
+          (
+            await component
+              .getByTestId('onNotificationClick-calls')
+              .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+          )[0]?.[0]
+      )
+      .toEqual(mockNotifications[0]);
   });
 
   test("should call notification's specific onClick handler", async ({ mount }) => {
-    const mockCalls: string[] = [];
-    const onClickMock = () => {
-      mockCalls.push('clicked');
-    };
-    const notificationsWithHandler: NotificationItem[] = [
+    const notificationsWithHandler: NonNullable<
+      NonNullable<React.ComponentProps<typeof NotificationsPanelStory>>['notifications']
+    > = [
       {
         id: 1,
         title: 'Test Notification',
         type: 'Security',
         time: 'Now',
-        onClick: onClickMock,
+        onClick: true,
       },
     ];
 
-    const component = await mount(<NotificationsPanel notifications={notificationsWithHandler} />);
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: notificationsWithHandler }
+    );
 
     await component.getByText('Test Notification').click();
 
-    expect(mockCalls).toHaveLength(1);
+    await expect
+      .poll(() =>
+        component
+          .getByTestId('onClick-calls')
+          .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+      )
+      .toHaveLength(1);
   });
 
   test.describe('pagination', () => {
-    const manyNotifications: NotificationItem[] = Array.from({ length: 20 }, (_, i) => ({
+    const manyNotifications: NonNullable<
+      NonNullable<React.ComponentProps<typeof NotificationsPanelStory>>['notifications']
+    > = Array.from({ length: 20 }, (_, i) => ({
       id: i + 1,
       title: `Notification ${i + 1}`,
       type: 'Security',
@@ -135,12 +159,9 @@ test.describe('NotificationsPanel', () => {
     test('should display pagination controls when enabled and there are multiple pages', async ({
       mount,
     }) => {
-      const component = await mount(
-        <NotificationsPanel
-          notifications={manyNotifications}
-          enablePagination={true}
-          itemsPerPage={6}
-        />
+      const component = await mount<typeof NotificationsPanelStory>(
+        'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+        { notifications: manyNotifications, enablePagination: true, itemsPerPage: 6 }
       );
 
       await expect(component.getByText('1 - 6 of 20')).toBeVisible();
@@ -149,60 +170,43 @@ test.describe('NotificationsPanel', () => {
     });
 
     test('should navigate to next page when next button is clicked', async ({ mount }) => {
-      const component = await mount(
-        <NotificationsPanel
-          notifications={manyNotifications}
-          enablePagination={true}
-          itemsPerPage={6}
-        />
+      const component = await mount<typeof NotificationsPanelStory>(
+        'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+        { notifications: manyNotifications, enablePagination: true, itemsPerPage: 6 }
       );
 
       await expect(component.getByText(manyNotifications[0].title, { exact: true })).toBeVisible();
-      await expect(
-        component.getByText(manyNotifications[6].title, { exact: true })
-      ).not.toBeVisible();
+      await expect(component.getByText(manyNotifications[6].title, { exact: true })).toBeHidden();
 
       await component.getByRole('button', { name: /Next page/i }).click();
 
       await expect(component.getByText('7 - 12 of 20')).toBeVisible();
       await expect(component.getByText(manyNotifications[6].title, { exact: true })).toBeVisible();
-      await expect(
-        component.getByText(manyNotifications[0].title, { exact: true })
-      ).not.toBeVisible();
+      await expect(component.getByText(manyNotifications[0].title, { exact: true })).toBeHidden();
     });
 
     test('should navigate to previous page when previous button is clicked', async ({ mount }) => {
-      const component = await mount(
-        <NotificationsPanel
-          notifications={manyNotifications}
-          enablePagination={true}
-          itemsPerPage={6}
-        />
+      const component = await mount<typeof NotificationsPanelStory>(
+        'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+        { notifications: manyNotifications, enablePagination: true, itemsPerPage: 6 }
       );
 
       await component.getByRole('button', { name: /Next page/i }).click();
 
-      await expect(
-        component.getByText(manyNotifications[0].title, { exact: true })
-      ).not.toBeVisible();
+      await expect(component.getByText(manyNotifications[0].title, { exact: true })).toBeHidden();
       await expect(component.getByText(manyNotifications[6].title, { exact: true })).toBeVisible();
 
       await component.getByRole('button', { name: /Previous page/i }).click();
 
       await expect(component.getByText('1 - 6 of 20')).toBeVisible();
       await expect(component.getByText(manyNotifications[0].title, { exact: true })).toBeVisible();
-      await expect(
-        component.getByText(manyNotifications[6].title, { exact: true })
-      ).not.toBeVisible();
+      await expect(component.getByText(manyNotifications[6].title, { exact: true })).toBeHidden();
     });
 
     test('should disable previous button on first page', async ({ mount }) => {
-      const component = await mount(
-        <NotificationsPanel
-          notifications={manyNotifications}
-          enablePagination={true}
-          itemsPerPage={6}
-        />
+      const component = await mount<typeof NotificationsPanelStory>(
+        'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+        { notifications: manyNotifications, enablePagination: true, itemsPerPage: 6 }
       );
 
       const prevButton = component.getByRole('button', { name: /Previous page/i });
@@ -210,12 +214,9 @@ test.describe('NotificationsPanel', () => {
     });
 
     test('should disable next button on last page', async ({ mount }) => {
-      const component = await mount(
-        <NotificationsPanel
-          notifications={manyNotifications}
-          enablePagination={true}
-          itemsPerPage={6}
-        />
+      const component = await mount<typeof NotificationsPanelStory>(
+        'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+        { notifications: manyNotifications, enablePagination: true, itemsPerPage: 6 }
       );
 
       // Navigate to last page
@@ -230,17 +231,21 @@ test.describe('NotificationsPanel', () => {
     });
 
     test('should not display pagination when disabled', async ({ mount }) => {
-      const component = await mount(
-        <NotificationsPanel notifications={manyNotifications} enablePagination={false} />
+      const component = await mount<typeof NotificationsPanelStory>(
+        'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+        { notifications: manyNotifications, enablePagination: false }
       );
 
-      await expect(component.getByText(/of 20/)).not.toBeVisible();
-      await expect(component.getByRole('button', { name: /Previous page/i })).not.toBeVisible();
+      await expect(component.getByText(/of 20/)).toBeHidden();
+      await expect(component.getByRole('button', { name: /Previous page/i })).toBeHidden();
     });
   });
 
   test('should render column headers', async ({ mount }) => {
-    const component = await mount(<NotificationsPanel notifications={mockNotifications} />);
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: mockNotifications }
+    );
 
     await expect(component.getByRole('columnheader', { name: 'Notification' })).toBeVisible();
     await expect(component.getByRole('columnheader', { name: 'Type' })).toBeVisible();
@@ -248,14 +253,18 @@ test.describe('NotificationsPanel', () => {
   });
 
   test('should display empty state when no notifications', async ({ mount }) => {
-    const component = await mount(<NotificationsPanel notifications={[]} />);
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: [] }
+    );
 
     await expect(component.getByText('No notifications found')).toBeVisible();
   });
 
   test('should render notification types correctly', async ({ mount }) => {
-    const component = await mount(
-      <NotificationsPanel notifications={mockNotifications} enablePagination={false} />
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: mockNotifications, enablePagination: false }
     );
 
     await expect(component.getByRole('gridcell', { name: 'Advisor', exact: true })).toBeVisible();
@@ -266,8 +275,9 @@ test.describe('NotificationsPanel', () => {
   });
 
   test('should render notification times correctly', async ({ mount }) => {
-    const component = await mount(
-      <NotificationsPanel notifications={mockNotifications} enablePagination={false} />
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: mockNotifications, enablePagination: false }
     );
 
     const timeElements = component.getByText('Nov. 28 12:09 UTC');
@@ -275,48 +285,57 @@ test.describe('NotificationsPanel', () => {
   });
 
   test('should call both onClick handlers when both are provided', async ({ mount }) => {
-    let itemClickCalled = false;
-    let panelClickCalled = false;
-
-    const notificationsWithHandler: NotificationItem[] = [
+    const notificationsWithHandler: NonNullable<
+      NonNullable<React.ComponentProps<typeof NotificationsPanelStory>>['notifications']
+    > = [
       {
         id: 1,
         title: 'Test Notification',
         type: 'Security',
         time: 'Now',
-        onClick: () => {
-          itemClickCalled = true;
-        },
+        onClick: true,
       },
     ];
 
-    const onNotificationClick = () => {
-      panelClickCalled = true;
-    };
-
-    const component = await mount(
-      <NotificationsPanel
-        notifications={notificationsWithHandler}
-        onNotificationClick={onNotificationClick}
-      />
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      {
+        notifications: notificationsWithHandler,
+        onNotificationClick: true,
+      }
     );
 
     await component.getByText('Test Notification').click();
 
-    expect(itemClickCalled).toBe(true);
-    expect(panelClickCalled).toBe(true);
+    await expect
+      .poll(() =>
+        component
+          .getByTestId('onClick-calls')
+          .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+      )
+      .toHaveLength(1);
+    await expect
+      .poll(() =>
+        component
+          .getByTestId('onNotificationClick-calls')
+          .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+      )
+      .toHaveLength(1);
   });
 
   test('should render with different notification types', async ({ mount }) => {
-    const mixedTypes: NotificationItem[] = [
+    const mixedTypes: NonNullable<
+      NonNullable<React.ComponentProps<typeof NotificationsPanelStory>>['notifications']
+    > = [
       { id: 1, title: 'Security Alert', type: 'Security', time: 'Now' },
       { id: 2, title: 'Advisor Tip', type: 'Advisor', time: 'Now' },
       { id: 3, title: 'Risk Update', type: 'Update risks', time: 'Now' },
       { id: 4, title: 'Status Change', type: 'Status', time: 'Now' },
     ];
 
-    const component = await mount(
-      <NotificationsPanel notifications={mixedTypes} enablePagination={false} />
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: mixedTypes, enablePagination: false }
     );
 
     await expect(component.getByRole('gridcell', { name: 'Security', exact: true })).toBeVisible();
@@ -328,7 +347,9 @@ test.describe('NotificationsPanel', () => {
   });
 
   test('should handle notification with long title', async ({ mount }) => {
-    const longTitleNotification: NotificationItem[] = [
+    const longTitleNotification: NonNullable<
+      NonNullable<React.ComponentProps<typeof NotificationsPanelStory>>['notifications']
+    > = [
       {
         id: 1,
         title: 'This is a very long notification title that should still be displayed correctly',
@@ -337,7 +358,10 @@ test.describe('NotificationsPanel', () => {
       },
     ];
 
-    const component = await mount(<NotificationsPanel notifications={longTitleNotification} />);
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: longTitleNotification }
+    );
     await expect(
       component.getByText(
         'This is a very long notification title that should still be displayed correctly'
@@ -346,7 +370,9 @@ test.describe('NotificationsPanel', () => {
   });
 
   test('should handle notification with special characters in title', async ({ mount }) => {
-    const specialChars: NotificationItem[] = [
+    const specialChars: NonNullable<
+      NonNullable<React.ComponentProps<typeof NotificationsPanelStory>>['notifications']
+    > = [
       {
         id: 1,
         title: 'CVE-2023-0001: Critical <script> vulnerability',
@@ -355,26 +381,28 @@ test.describe('NotificationsPanel', () => {
       },
     ];
 
-    const component = await mount(<NotificationsPanel notifications={specialChars} />);
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: specialChars }
+    );
     await expect(
       component.getByText('CVE-2023-0001: Critical <script> vulnerability')
     ).toBeVisible();
   });
 
   test('should reset to first page when new notifications are loaded', async ({ mount }) => {
-    const manyNotifications: NotificationItem[] = Array.from({ length: 20 }, (_, i) => ({
+    const manyNotifications: NonNullable<
+      NonNullable<React.ComponentProps<typeof NotificationsPanelStory>>['notifications']
+    > = Array.from({ length: 20 }, (_, i) => ({
       id: i + 1,
       title: `Notification ${i + 1}`,
       type: 'Security',
       time: 'Now',
     }));
 
-    const component = await mount(
-      <NotificationsPanel
-        notifications={manyNotifications}
-        enablePagination={true}
-        itemsPerPage={6}
-      />
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: manyNotifications, enablePagination: true, itemsPerPage: 6 }
     );
 
     await component.getByRole('button', { name: /Next page/i }).click();
@@ -382,13 +410,16 @@ test.describe('NotificationsPanel', () => {
   });
 
   test('should render correctly with string IDs', async ({ mount }) => {
-    const stringIdNotifications: NotificationItem[] = [
+    const stringIdNotifications: NonNullable<
+      NonNullable<React.ComponentProps<typeof NotificationsPanelStory>>['notifications']
+    > = [
       { id: 'notification-1', title: 'First', type: 'Security', time: 'Now' },
       { id: 'notification-2', title: 'Second', type: 'Advisor', time: 'Now' },
     ];
 
-    const component = await mount(
-      <NotificationsPanel notifications={stringIdNotifications} enablePagination={false} />
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: stringIdNotifications, enablePagination: false }
     );
 
     await expect(component.getByText('First')).toBeVisible();
@@ -396,63 +427,83 @@ test.describe('NotificationsPanel', () => {
   });
 
   test('should handle edge case with exactly itemsPerPage notifications', async ({ mount }) => {
-    const exactCount: NotificationItem[] = Array.from({ length: 6 }, (_, i) => ({
+    const exactCount: NonNullable<
+      NonNullable<React.ComponentProps<typeof NotificationsPanelStory>>['notifications']
+    > = Array.from({ length: 6 }, (_, i) => ({
       id: i + 1,
       title: `Notification ${i + 1}`,
       type: 'Security',
       time: 'Now',
     }));
 
-    const component = await mount(
-      <NotificationsPanel notifications={exactCount} enablePagination={true} itemsPerPage={6} />
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: exactCount, enablePagination: true, itemsPerPage: 6 }
     );
 
-    await expect(component.getByRole('button', { name: /Next page/i })).not.toBeVisible();
+    await expect(component.getByRole('button', { name: /Next page/i })).toBeHidden();
   });
 
   test('should display correct count with zero notifications', async ({ mount }) => {
-    const component = await mount(<NotificationsPanel notifications={[]} />);
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: [] }
+    );
     await expect(component.getByText('0')).toBeVisible();
   });
 
   test('should handle clicking same notification multiple times', async ({ mount }) => {
-    let clickCount = 0;
-    const notification: NotificationItem[] = [
+    const notification: NonNullable<
+      NonNullable<React.ComponentProps<typeof NotificationsPanelStory>>['notifications']
+    > = [
       {
         id: 1,
         title: 'Test',
         type: 'Security',
         time: 'Now',
-        onClick: () => {
-          clickCount++;
-        },
+        onClick: true,
       },
     ];
 
-    const component = await mount(<NotificationsPanel notifications={notification} />);
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: notification }
+    );
 
     await component.getByText('Test').click();
     await component.getByText('Test').click();
     await component.getByText('Test').click();
 
-    expect(clickCount).toBe(3);
+    await expect
+      .poll(() =>
+        component
+          .getByTestId('onClick-calls')
+          .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+      )
+      .toHaveLength(3);
   });
 
   test('should render table structure correctly', async ({ mount }) => {
-    const component = await mount(<NotificationsPanel notifications={mockNotifications} />);
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: mockNotifications }
+    );
     const table = component.getByRole('grid');
     await expect(table).toBeVisible();
   });
 
   test('should handle notifications with time in different formats', async ({ mount }) => {
-    const differentTimes: NotificationItem[] = [
+    const differentTimes: NonNullable<
+      NonNullable<React.ComponentProps<typeof NotificationsPanelStory>>['notifications']
+    > = [
       { id: 1, title: 'Recent', type: 'Security', time: 'Just now' },
       { id: 2, title: 'Minutes ago', type: 'Security', time: '5 minutes ago' },
       { id: 3, title: 'Full date', type: 'Security', time: '2024-01-15 10:30 UTC' },
     ];
 
-    const component = await mount(
-      <NotificationsPanel notifications={differentTimes} enablePagination={false} />
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { notifications: differentTimes, enablePagination: false }
     );
 
     await expect(component.getByText('Just now')).toBeVisible();
@@ -461,15 +512,19 @@ test.describe('NotificationsPanel', () => {
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
-    const component = await mount(
-      <NotificationsPanel isLoading notifications={mockNotifications} />
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { isLoading: true, notifications: mockNotifications }
     );
     await expect(component.getByText('Loading notifications')).toBeVisible();
-    await expect(component.getByTestId('notification-1')).not.toBeVisible();
+    await expect(component.getByTestId('notification-1')).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true without data', async ({ mount }) => {
-    const component = await mount(<NotificationsPanel isLoading />);
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      { isLoading: true }
+    );
     await expect(component.getByText('Loading notifications')).toBeVisible();
   });
 });

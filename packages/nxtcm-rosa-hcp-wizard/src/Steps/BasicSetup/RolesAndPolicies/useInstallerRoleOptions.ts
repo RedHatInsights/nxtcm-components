@@ -1,13 +1,17 @@
 import React from 'react';
-import semver from 'semver';
-import { RolesResource } from '../../../types';
-import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+
 import { useWatch } from 'react-hook-form';
+import semver from 'semver';
+
 import { FIELD_NAME } from '../../../constants';
+import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+import { RolesResource, type ROSAHCPCluster } from '../../../types';
 
 export const useInstallerRoleOptions = (roles: RolesResource) => {
   const rp = useRosaHcpWizardStrings().rolesAndPolicies;
-  const selectedClusterVersion = useWatch({ name: FIELD_NAME.CLUSTER_VERSION });
+  const selectedClusterVersion = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({
+    name: FIELD_NAME.CLUSTER_VERSION,
+  });
   const installerRoleOptions = React.useMemo(() => {
     const clusterVer =
       selectedClusterVersion && semver.valid(semver.coerce(selectedClusterVersion));

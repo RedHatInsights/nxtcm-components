@@ -1,12 +1,15 @@
-import { expect, test } from '@playwright/experimental-ct-react';
-import { NumberHarness } from './NumberInput.spec-helpers';
+import { expect, test } from '@/playwright/ct-fixture';
 
-// Match NUMBER_HARNESS_FIELD_LABEL in spec-helpers (importing both breaks Playwright CT mount).
+import type { NumberHarness } from './NumberInput.story';
+
+// Match NUMBER_HARNESS_FIELD_LABEL in the gallery story.
 const workerCountLabel = 'Worker count';
 
 test.describe('NumberInput', () => {
   test('renders label and default placeholder from label', async ({ mount }) => {
-    const mounted = await mount(<NumberHarness />);
+    const mounted = await mount<typeof NumberHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness'
+    );
     await expect(mounted.getByText(workerCountLabel)).toBeVisible();
     await expect(
       mounted.getByRole('spinbutton', { name: new RegExp(workerCountLabel, 'i') })
@@ -15,14 +18,20 @@ test.describe('NumberInput', () => {
   });
 
   test('increments value when the plus control is activated', async ({ mount }) => {
-    const mounted = await mount(<NumberHarness initial={1} />);
+    const mounted = await mount<typeof NumberHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness',
+      { initial: 1 }
+    );
     const spinbutton = mounted.getByRole('spinbutton', { name: new RegExp(workerCountLabel, 'i') });
     await mounted.getByRole('button', { name: 'Plus' }).click();
     await expect(spinbutton).toHaveValue('2');
   });
 
   test('decrements to zero in the field when zeroIsUndefined is true', async ({ mount }) => {
-    const mounted = await mount(<NumberHarness zeroIsUndefined initial={1} />);
+    const mounted = await mount<typeof NumberHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness',
+      { zeroIsUndefined: true, initial: 1 }
+    );
     const spinbutton = mounted.getByRole('spinbutton', { name: new RegExp(workerCountLabel, 'i') });
     await mounted.getByRole('button', { name: 'Minus' }).click();
     await expect(spinbutton).toHaveValue('');

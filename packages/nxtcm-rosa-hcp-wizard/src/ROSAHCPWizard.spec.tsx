@@ -1,10 +1,13 @@
-import { expect, test } from '@playwright/experimental-ct-react';
+import { expect, test } from '@/playwright/ct-fixture';
+
+import type { ROSAHCPWizardMount } from './ROSAHCPWizard.story';
 import { checkAccessibility } from './test-helpers';
-import { ROSAHCPWizardMount } from './ROSAHCPWizard.spec-helpers';
 
 test.describe('ROSAHCPWizard', () => {
   test('should open Details with step navigation and footer actions', async ({ mount }) => {
-    const component = await mount(<ROSAHCPWizardMount />);
+    const component = await mount<typeof ROSAHCPWizardMount>(
+      'nxtcm-rosa-hcp-wizard/ROSAHCPWizard/ROSAHCPWizardMount'
+    );
     const nav = component.getByRole('navigation');
     await expect(nav).toBeVisible();
     await expect(nav.getByText('Details', { exact: true })).toBeVisible();
@@ -21,19 +24,25 @@ test.describe('ROSAHCPWizard', () => {
   });
 
   test('should support custom strings', async ({ mount }) => {
-    const component = await mount(<ROSAHCPWizardMount strings={{ wizard: { next: 'Proceed' } }} />);
+    const component = await mount<typeof ROSAHCPWizardMount>(
+      'nxtcm-rosa-hcp-wizard/ROSAHCPWizard/ROSAHCPWizardMount',
+      {
+        strings: { wizard: { next: 'Proceed' } },
+      }
+    );
     await expect(component.getByRole('button', { name: /proceed/i })).toBeVisible();
   });
 
   test('should support hidden steps via config', async ({ mount }) => {
-    const component = await mount(
-      <ROSAHCPWizardMount
-        wizardProps={{
+    const component = await mount<typeof ROSAHCPWizardMount>(
+      'nxtcm-rosa-hcp-wizard/ROSAHCPWizard/ROSAHCPWizardMount',
+      {
+        wizardProps: {
           config: {
             hiddenSteps: ['cluster-updates-step' as const],
           },
-        }}
-      />
+        },
+      }
     );
     const nav = component.getByRole('navigation');
     await expect(
@@ -50,7 +59,9 @@ test.describe('ROSAHCPWizard', () => {
   });
 
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(<ROSAHCPWizardMount />);
+    const component = await mount<typeof ROSAHCPWizardMount>(
+      'nxtcm-rosa-hcp-wizard/ROSAHCPWizard/ROSAHCPWizardMount'
+    );
     await checkAccessibility({ component });
   });
 });

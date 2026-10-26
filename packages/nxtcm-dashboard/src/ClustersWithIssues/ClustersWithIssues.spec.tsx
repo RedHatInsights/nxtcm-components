@@ -1,8 +1,11 @@
-import { test, expect } from '@playwright/experimental-ct-react';
-import React from 'react';
-import { ClustersWithIssues, ClustersWithIssuesProps } from './ClustersWithIssues';
-import { ClustersWithIssuesWithConsoleLink } from './ClustersWithIssues.spec-helpers';
-import { checkAccessibility } from '@/test-helpers';
+import { expect, test } from '@/playwright/ct-fixture';
+import { checkAccessibility } from '@/playwright/test-helpers';
+
+import { ClustersWithIssuesProps } from './ClustersWithIssues';
+import type {
+  ClustersWithIssuesStory,
+  ClustersWithIssuesWithConsoleLink,
+} from './ClustersWithIssues.story';
 
 const defaultData: ClustersWithIssuesProps['data'] = {
   totalUnhealthy: 4,
@@ -25,22 +28,34 @@ const paginatedData: ClustersWithIssuesProps['data'] = {
 
 test.describe('ClustersWithIssues', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues data={defaultData} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: defaultData }
+    );
     await checkAccessibility({ component });
   });
 
   test('should display the total unhealthy count', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues data={defaultData} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: defaultData }
+    );
     await expect(component.getByTestId('unhealthy-count')).toContainText('4');
   });
 
   test('should display the danger icon', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues data={defaultData} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: defaultData }
+    );
     await expect(component.getByTestId('unhealthy-icon')).toBeVisible();
   });
 
   test('should render cluster names in the table', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues data={defaultData} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: defaultData }
+    );
 
     await expect(component.getByText('cluster1')).toBeVisible();
     await expect(component.getByText('cluster2')).toBeVisible();
@@ -49,7 +64,10 @@ test.describe('ClustersWithIssues', () => {
   });
 
   test('should render issue counts in the table', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues data={defaultData} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: defaultData }
+    );
 
     await expect(component.getByTestId('issues-c1')).toContainText('1');
     await expect(component.getByTestId('issues-c2')).toContainText('12');
@@ -58,12 +76,18 @@ test.describe('ClustersWithIssues', () => {
   });
 
   test('should render the card title', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues data={defaultData} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: defaultData }
+    );
     await expect(component.getByRole('heading', { name: 'Clusters with issues' })).toBeVisible();
   });
 
   test('should render table headers', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues data={defaultData} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: defaultData }
+    );
 
     await expect(component.getByRole('columnheader', { name: 'Cluster name' })).toBeVisible();
     await expect(component.getByRole('columnheader', { name: 'Issues' })).toBeVisible();
@@ -72,8 +96,12 @@ test.describe('ClustersWithIssues', () => {
   test('should render cluster names as links when onClusterClick is provided', async ({
     mount,
   }) => {
-    const component = await mount(
-      <ClustersWithIssues data={defaultData} onClusterClick={() => {}} />
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      {
+        data: defaultData,
+        onClusterClick: true,
+      }
     );
 
     await expect(component.getByTestId('cluster-link-c1')).toBeVisible();
@@ -81,33 +109,43 @@ test.describe('ClustersWithIssues', () => {
   });
 
   test('should call onClusterClick when a cluster name is clicked', async ({ mount }) => {
-    let clickedCluster: { id: string; name: string } | null = null;
-    const handleClick = (cluster: { id: string; name: string }) => {
-      clickedCluster = cluster;
-    };
-
-    const component = await mount(
-      <ClustersWithIssues data={defaultData} onClusterClick={handleClick} />
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      {
+        data: defaultData,
+        onClusterClick: true,
+      }
     );
 
     await component.getByTestId('cluster-link-c1').click();
-    expect(clickedCluster).not.toBeNull();
-    expect(clickedCluster!.id).toBe('c1');
-    expect(clickedCluster!.name).toBe('cluster1');
+    await expect
+      .poll(
+        async () =>
+          (
+            await component
+              .getByTestId('onClusterClick-calls')
+              .evaluate((input: HTMLInputElement) => JSON.parse(input.value) as unknown[][])
+          )[0]?.[0]
+      )
+      .toMatchObject({ id: 'c1', name: 'cluster1' });
   });
 
   test('should render cluster names as plain text when onClusterClick is not provided', async ({
     mount,
   }) => {
-    const component = await mount(<ClustersWithIssues data={defaultData} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: defaultData }
+    );
 
     await expect(component.getByText('cluster1')).toBeVisible();
     await expect(component.getByRole('link')).toHaveCount(0);
   });
 
   test('should show empty state when no clusters', async ({ mount }) => {
-    const component = await mount(
-      <ClustersWithIssues data={{ totalUnhealthy: 0, clusters: [] }} />
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: { totalUnhealthy: 0, clusters: [] } }
     );
 
     await expect(component.getByTestId('unhealthy-count')).toContainText('0');
@@ -115,8 +153,9 @@ test.describe('ClustersWithIssues', () => {
   });
 
   test('should not show pagination when no clusters', async ({ mount }) => {
-    const component = await mount(
-      <ClustersWithIssues data={{ totalUnhealthy: 0, clusters: [] }} />
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: { totalUnhealthy: 0, clusters: [] } }
     );
 
     await expect(component.getByRole('navigation', { name: 'Pagination' })).toHaveCount(0);
@@ -127,7 +166,10 @@ test.describe('ClustersWithIssues', () => {
       totalUnhealthy: 1,
       clusters: [{ id: 'c1', name: 'prod-east', issues: 3 }],
     };
-    const component = await mount(<ClustersWithIssues data={data} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: data }
+    );
 
     await expect(component.getByTestId('unhealthy-count')).toContainText('1');
     await expect(component.getByText('prod-east')).toBeVisible();
@@ -139,7 +181,10 @@ test.describe('ClustersWithIssues', () => {
       totalUnhealthy: 999,
       clusters: [{ id: 'c1', name: 'big-cluster', issues: 500 }],
     };
-    const component = await mount(<ClustersWithIssues data={data} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: data }
+    );
 
     await expect(component.getByTestId('unhealthy-count')).toContainText('999');
     await expect(component.getByTestId('issues-c1')).toContainText('500');
@@ -148,20 +193,29 @@ test.describe('ClustersWithIssues', () => {
 
 test.describe('ClustersWithIssues — open console link', () => {
   test('should render "Open console" links when onOpenConsole is provided', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssuesWithConsoleLink data={defaultData} />);
+    const component = await mount<typeof ClustersWithIssuesWithConsoleLink>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesWithConsoleLink',
+      { data: defaultData }
+    );
 
     await expect(component.getByTestId('open-console-c1')).toBeVisible();
     await expect(component.getByTestId('open-console-c1').getByText('Open console')).toBeVisible();
   });
 
   test('should not render console column when onOpenConsole is not provided', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues data={defaultData} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: defaultData }
+    );
 
     await expect(component.getByTestId('open-console-c1')).toHaveCount(0);
   });
 
   test('should render console links for all visible rows', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssuesWithConsoleLink data={defaultData} />);
+    const component = await mount<typeof ClustersWithIssuesWithConsoleLink>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesWithConsoleLink',
+      { data: defaultData }
+    );
 
     for (const cluster of defaultData.clusters) {
       await expect(component.getByTestId(`open-console-${cluster.id}`)).toBeVisible();
@@ -171,17 +225,26 @@ test.describe('ClustersWithIssues — open console link', () => {
 
 test.describe('ClustersWithIssues — title tooltip', () => {
   test('should render the tooltip icon by default', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues data={defaultData} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: defaultData }
+    );
     await expect(component.getByTestId('title-tooltip-icon')).toBeVisible();
   });
 
   test('should hide the tooltip icon when titleTooltip is empty', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues data={defaultData} titleTooltip="" />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: defaultData, titleTooltip: '' }
+    );
     await expect(component.getByTestId('title-tooltip-icon')).toHaveCount(0);
   });
 
   test('should have an accessible label on the tooltip icon', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues data={defaultData} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: defaultData }
+    );
     await expect(
       component.getByRole('button', { name: 'More info about clusters with issues' })
     ).toBeVisible();
@@ -190,7 +253,10 @@ test.describe('ClustersWithIssues — title tooltip', () => {
 
 test.describe('ClustersWithIssues — pagination', () => {
   test('should show only first page of clusters by default', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues data={paginatedData} perPage={5} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: paginatedData, perPage: 5 }
+    );
 
     const rows = component
       .getByRole('grid', { name: 'Clusters with issues', exact: true })
@@ -198,27 +264,36 @@ test.describe('ClustersWithIssues — pagination', () => {
     await expect(rows).toHaveCount(6);
     await expect(component.getByText('cluster-1')).toBeVisible();
     await expect(component.getByText('cluster-5')).toBeVisible();
-    await expect(component.getByText('cluster-6')).not.toBeVisible();
+    await expect(component.getByText('cluster-6')).toBeHidden();
   });
 
   test('should show pagination controls', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues data={paginatedData} perPage={5} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: paginatedData, perPage: 5 }
+    );
 
     await expect(component.getByRole('navigation', { name: 'Pagination' })).toBeVisible();
   });
 
   test('should navigate to next page', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues data={paginatedData} perPage={5} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: paginatedData, perPage: 5 }
+    );
 
     await component.getByLabel('Go to next page').click();
 
     await expect(component.getByText('cluster-6', { exact: true })).toBeVisible();
     await expect(component.getByText('cluster-10', { exact: true })).toBeVisible();
-    await expect(component.getByText('cluster-1', { exact: true })).not.toBeVisible();
+    await expect(component.getByText('cluster-1', { exact: true })).toBeHidden();
   });
 
   test('should navigate to last page', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues data={paginatedData} perPage={5} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: paginatedData, perPage: 5 }
+    );
 
     await component.getByLabel('Go to last page').click();
 
@@ -239,7 +314,10 @@ test.describe('ClustersWithIssues — pagination', () => {
         { id: 'c3', name: 'c', issues: 3 },
       ],
     };
-    const component = await mount(<ClustersWithIssues data={smallData} perPage={5} />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: smallData, perPage: 5 }
+    );
 
     const rows = component
       .getByRole('grid', { name: 'Clusters with issues', exact: true })
@@ -249,16 +327,22 @@ test.describe('ClustersWithIssues — pagination', () => {
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {
-    const component = await mount(<ClustersWithIssues isLoading />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { isLoading: true }
+    );
     await expect(component.getByText('Loading clusters with issues')).toBeVisible();
-    await expect(component.getByTestId('unhealthy-count')).not.toBeVisible();
+    await expect(component.getByTestId('unhealthy-count')).toBeHidden();
   });
 
   test('should render skeleton when isLoading is true even if data is provided', async ({
     mount,
   }) => {
-    const component = await mount(<ClustersWithIssues data={defaultData} isLoading />);
+    const component = await mount<typeof ClustersWithIssuesStory>(
+      'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
+      { data: defaultData, isLoading: true }
+    );
     await expect(component.getByText('Loading clusters with issues')).toBeVisible();
-    await expect(component.getByTestId('unhealthy-count')).not.toBeVisible();
+    await expect(component.getByTestId('unhealthy-count')).toBeHidden();
   });
 });

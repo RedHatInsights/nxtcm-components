@@ -1,20 +1,32 @@
+import React, { useState } from 'react';
+
 import {
   EmptyState,
   EmptyStateBody,
-  Flex,
-  FlexItem,
+} from '@patternfly/react-core/dist/dynamic/components/EmptyState';
+import {
   Pagination,
   PaginationVariant,
+} from '@patternfly/react-core/dist/dynamic/components/Pagination';
+import {
   Panel,
   PanelHeader,
   PanelMain,
   PanelMainBody,
-  Skeleton,
-  Title,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/dist/dynamic/components/Panel';
+import { Skeleton } from '@patternfly/react-core/dist/dynamic/components/Skeleton';
+import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 import BellIcon from '@patternfly/react-icons/dist/esm/icons/bell-icon';
-import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
-import React, { useEffect, useState } from 'react';
+import {
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@patternfly/react-table/dist/dynamic/components/Table';
+
 import styles from './NotificationsPanel.module.scss';
 
 export type NotificationType = 'Security' | 'Advisor' | 'Update risks' | 'Status';
@@ -46,17 +58,19 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(itemsPerPage);
+  const [prevItemsPerPage, setPrevItemsPerPage] = useState(itemsPerPage);
+
+  if (prevItemsPerPage !== itemsPerPage) {
+    setPrevItemsPerPage(itemsPerPage);
+    setPerPage(itemsPerPage);
+  }
 
   const totalItems = notifications?.length ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / perPage));
 
-  useEffect(() => {
-    setPerPage(itemsPerPage);
-  }, [itemsPerPage]);
-
-  useEffect(() => {
-    setCurrentPage((prev) => Math.min(prev, totalPages));
-  }, [totalPages]);
+  if (currentPage > totalPages) {
+    setCurrentPage(totalPages);
+  }
 
   const startIndex = (currentPage - 1) * perPage;
   const endIndex = Math.min(startIndex + perPage, totalItems);

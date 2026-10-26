@@ -1,10 +1,12 @@
-import { test, expect } from '@playwright/experimental-ct-react';
+import { expect, test } from '@/playwright/ct-fixture';
 
-import { YamlEditorStepMount } from './RosaHcpYamlEditorStep.spec-helpers';
+import type { YamlEditorStepMount } from './RosaHcpYamlEditorStep.story';
 
 test.describe('RosaHcpYamlEditorStep', () => {
   test('initializes the editor with schema and export controls and no error', async ({ mount }) => {
-    const component = await mount(<YamlEditorStepMount />);
+    const component = await mount<typeof YamlEditorStepMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepMount'
+    );
 
     await expect(component.getByRole('textbox', { name: /Editor content/ })).toBeVisible();
     await expect(component.getByRole('heading', { name: 'ROSAControlPlane schema' })).toBeVisible();

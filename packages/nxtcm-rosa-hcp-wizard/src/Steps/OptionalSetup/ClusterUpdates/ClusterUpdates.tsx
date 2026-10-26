@@ -1,14 +1,18 @@
-import { Button, Content, ContentVariants, useWizardContext } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
+import { useWizardContext } from '@patternfly/react-core/dist/dynamic/components/Wizard';
 import { useWatch } from 'react-hook-form';
-import { Section } from '../../../components/Section';
+
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../constants/links';
-import { FIELD_NAME, STEP_IDS } from '../../../constants';
-import { clusterValidationSchema } from '../../../yupSchemas';
-import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
 import { Radio } from '../../../components/Fields/RadioGroup';
+import { Section } from '../../../components/Section';
+import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
+import { FIELD_NAME, STEP_IDS } from '../../../constants';
+import { useGetDocsVersion } from '../../../constants/links';
+import { securityLinks } from '../../../constants/rawLinks';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { ClusterUpgrade, type ROSAHCPCluster } from '../../../types';
+import { clusterValidationSchema } from '../../../yupSchemas';
 import { UpgradeScheduleFields } from './UpgradeScheduleFields';
 
 export const ClusterUpdates = () => {
@@ -18,6 +22,8 @@ export const ClusterUpdates = () => {
   const clusterVersion = useWatch<ROSAHCPCluster, 'cluster_version'>({
     name: FIELD_NAME.CLUSTER_VERSION,
   });
+
+  const links = useGetDocsVersion(clusterVersion);
 
   return (
     <Section label={cu.sectionLabel}>
@@ -35,7 +41,7 @@ export const ClusterUpdates = () => {
         </Content>
         <Content component={ContentVariants.p}>
           {cu.cveLead}{' '}
-          <ExternalLink href={links.SECURITY_CLASSIFICATION_CRITICAL}>
+          <ExternalLink href={securityLinks.SECURITY_CLASSIFICATION_CRITICAL}>
             {cu.criticalConcernsLink}
           </ExternalLink>{' '}
           {cu.cveTail}

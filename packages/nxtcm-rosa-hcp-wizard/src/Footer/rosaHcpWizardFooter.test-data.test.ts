@@ -1,6 +1,6 @@
+import { defaultRosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings.defaults';
 import { clusterValidationSchema } from '../yupSchemas';
 import type { ValidationSchemaContext } from '../yupSchemas/types';
-import { defaultRosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings.defaults';
 import { FOOTER_CT_BASE_FORM_VALUES } from './rosaHcpWizardFooter.ctDefaults';
 import { VALID_REVIEW_SUBMIT_FORM_VALUES } from './rosaHcpWizardFooter.test-data';
 

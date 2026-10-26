@@ -1,6 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
+
+import type { Meta, StoryObj } from '@storybook/react-vite';
+
+import { FIELD_NAME, STEP_IDS } from './constants';
 import ROSAHCPWizard from './ROSAHCPWizard';
+import fixtures from './ROSAHCPWizard.fixtures';
 import {
   createMockRosaHcpWizardData,
   createMockRosaHcpWizardDataWithFetchLogging,
@@ -13,15 +17,13 @@ import {
   useRefetchReplacingData,
   useStoryClusterNameValidation,
 } from './ROSAHCPWizard.stories.helpers';
-import fixtures from './ROSAHCPWizard.fixtures';
-import { MachineTypesDropdownType, OIDCConfig, Region, Role, ROSAHCPWizardData } from './types';
-import { FIELD_NAME, STEP_IDS } from './constants';
 import { defaultRosaHcpWizardStrings } from './stringsProvider/rosaHcpWizardStrings.defaults';
 import { createAcmCapaGenerator } from './test/acmGeneratorFixtures/acmCapaGenerator';
-import rosaControlPlaneSchema from './test/acmGeneratorFixtures/schemas/rosaControlPlaneSchema.json';
-import managedClusterSchema from './test/acmGeneratorFixtures/schemas/managedClusterSchema.json';
 import capiClusterSchema from './test/acmGeneratorFixtures/schemas/capiClusterSchema.json';
+import managedClusterSchema from './test/acmGeneratorFixtures/schemas/managedClusterSchema.json';
 import rosaClusterSchema from './test/acmGeneratorFixtures/schemas/rosaClusterSchema.json';
+import rosaControlPlaneSchema from './test/acmGeneratorFixtures/schemas/rosaControlPlaneSchema.json';
+import { MachineTypesDropdownType, OIDCConfig, Region, Role, ROSAHCPWizardData } from './types';
 
 const storyAcmGenerator = createAcmCapaGenerator([
   { kind: 'ROSAControlPlane', schema: rosaControlPlaneSchema, primary: true },
@@ -90,7 +92,7 @@ function DefaultWithInitialLoading(props: React.ComponentProps<typeof ROSAHCPWiz
     }),
     [props.wizardData, isFetching]
   );
-  return <ROSAHCPWizard {...props} wizardData={wizardData} />;
+  return <ROSAHCPWizard {...props} wizardData={wizardData} docsVersions={['5']} />;
 }
 
 /** Default story wrapper: initial resource loading plus logged cluster name validation. */
@@ -116,7 +118,7 @@ function DefaultStoryWrapper(props: React.ComponentProps<typeof ROSAHCPWizard>) 
     }),
     [props.wizardData, isFetching, clusterNameValidation, checkClusterNameUniqueness]
   );
-  return <ROSAHCPWizard {...props} wizardData={wizardData} />;
+  return <ROSAHCPWizard {...props} wizardData={wizardData} docsVersions={['5']} />;
 }
 
 /**

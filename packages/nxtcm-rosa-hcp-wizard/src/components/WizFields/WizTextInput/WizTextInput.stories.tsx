@@ -1,7 +1,9 @@
 import { useState } from 'react';
+
 import { yupResolver } from '@hookform/resolvers/yup';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Button, Form } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
@@ -26,7 +28,9 @@ const schema: yup.ObjectSchema<DemoFormValues> = yup.object({
     }),
 });
 
-function WizTextInputFormDemo(args: WizTextInputProps) {
+type TextInputStoryArgs = Omit<WizTextInputProps, 'name' | 'control'>;
+
+function WizTextInputFormDemo(args: TextInputStoryArgs) {
   const [lastSubmit, setLastSubmit] = useState<DemoFormValues | null>(null);
   const methods = useForm<DemoFormValues>({
     resolver: yupResolver(schema),
@@ -43,7 +47,7 @@ function WizTextInputFormDemo(args: WizTextInputProps) {
           })(e);
         }}
       >
-        <WizTextInput {...args} name={CLUSTER_NAME_PATH} schema={schema} />
+        <WizTextInput<DemoFormValues> {...args} name={CLUSTER_NAME_PATH} schema={schema} />
         <Button type="submit" className="pf-v6-u-mt-md">
           Submit
         </Button>
@@ -75,7 +79,7 @@ const passwordSchema: yup.ObjectSchema<PasswordDemoFormValues> = yup.object({
     }),
 });
 
-function WizTextInputPasswordFormDemo(args: WizTextInputProps) {
+function WizTextInputPasswordFormDemo(args: TextInputStoryArgs) {
   const [lastSubmit, setLastSubmit] = useState<PasswordDemoFormValues | null>(null);
   const methods = useForm<PasswordDemoFormValues>({
     resolver: yupResolver(passwordSchema),
@@ -92,7 +96,11 @@ function WizTextInputPasswordFormDemo(args: WizTextInputProps) {
           })(e);
         }}
       >
-        <WizTextInput {...args} name={ADMIN_PASSWORD_PATH} schema={passwordSchema} />
+        <WizTextInput<PasswordDemoFormValues>
+          {...args}
+          name={ADMIN_PASSWORD_PATH}
+          schema={passwordSchema}
+        />
         <Button type="submit" className="pf-v6-u-mt-md">
           Submit
         </Button>
@@ -107,9 +115,9 @@ function WizTextInputPasswordFormDemo(args: WizTextInputProps) {
 }
 
 const meta: Meta<typeof WizTextInput> = {
-  title: 'Form Elements/Connected Form Elements/WizTextInput',
+  title: 'Internal/Form Elements/Connected Form Elements/WizTextInput',
   component: WizTextInput,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   decorators: [
     (Story) => (
       <RosaHcpWizardStringsProvider>

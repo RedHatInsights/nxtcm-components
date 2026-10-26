@@ -1,9 +1,11 @@
-import { expect, type MountResult, test } from '@playwright/experimental-ct-react';
 import type { Page } from '@playwright/test';
-import { checkAccessibility } from '../../../test-helpers';
-import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+
+import { expect, type MountResult, test } from '@/playwright/ct-fixture';
+
 import fixtures from '../../../ROSAHCPWizard.fixtures';
-import { RolesAndPoliciesMount } from './RolesAndPolicies.spec-helpers';
+import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { checkAccessibility } from '../../../test-helpers';
+import type { RolesAndPoliciesMount } from './RolesAndPolicies.story';
 
 const rp = defaultRosaHcpWizardStrings.rolesAndPolicies;
 const oidcHint = defaultRosaHcpWizardStrings.oidcHint;
@@ -20,24 +22,30 @@ function oidcConfigCombo(root: MountResult | Page) {
 
 test.describe('RolesAndPolicies (ROSA HCP)', () => {
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(<RolesAndPoliciesMount />);
+    const component = await mount<typeof RolesAndPoliciesMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount'
+    );
     await checkAccessibility({ component });
   });
 
   test('should display role sections and installer and OIDC selectors', async ({ mount }) => {
-    const component = await mount(<RolesAndPoliciesMount />);
+    const component = await mount<typeof RolesAndPoliciesMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount'
+    );
     await expect(component.getByText(rp.accountRolesSection, { exact: true })).toBeVisible();
     await expect(component.getByText(rp.operatorRolesSection, { exact: true })).toBeVisible();
     await expect(component.getByText(rp.installerRoleLabel, { exact: true })).toBeVisible();
     await expect(component.getByText(rp.oidcLabel, { exact: true })).toBeVisible();
+    await expect(component.locator('form')).toHaveCount(1);
   });
 
   test('should render with empty roles and OIDC configs', async ({ mount }) => {
-    const component = await mount(
-      <RolesAndPoliciesMount
-        roles={{ data: [], isFetching: false, error: null, fetch: async () => {} }}
-        oidcConfig={{ data: [], isFetching: false, error: null, fetch: async () => {} }}
-      />
+    const component = await mount<typeof RolesAndPoliciesMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+      {
+        roles: { data: [], isFetching: false, error: null },
+        oidcConfig: { data: [], isFetching: false, error: null },
+      }
     );
 
     await expect(component.getByText(rp.accountRolesSection, { exact: true })).toBeVisible();
@@ -46,7 +54,9 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
 
   test.describe('RolesAndPolicies — installer role select', () => {
     test('should show installer role options in dropdown', async ({ mount, page }) => {
-      const component = await mount(<RolesAndPoliciesMount />);
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount'
+      );
 
       await installerRoleCombo(component).click();
 
@@ -56,7 +66,9 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     });
 
     test('should select an installer role', async ({ mount, page }) => {
-      const component = await mount(<RolesAndPoliciesMount />);
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount'
+      );
 
       await installerRoleCombo(component).click();
       await page.getByRole('option', { name: mockRoles[0].installerRole.label }).click();
@@ -65,20 +77,18 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     });
 
     test('should show loading state for installer role when loading', async ({ mount }) => {
-      const component = await mount(
-        <RolesAndPoliciesMount
-          roles={{ data: [], isFetching: true, error: null, fetch: async () => {} }}
-        />
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        { roles: { data: [], isFetching: true, error: null } }
       );
 
       await expect(installerRoleCombo(component)).toHaveValue('Loading...');
     });
 
     test('should show spinner in installer role dropdown when loading', async ({ mount, page }) => {
-      const component = await mount(
-        <RolesAndPoliciesMount
-          roles={{ data: [], isFetching: true, error: null, fetch: async () => {} }}
-        />
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        { roles: { data: [], isFetching: true, error: null } }
       );
 
       await installerRoleCombo(component).click();
@@ -87,10 +97,9 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     });
 
     test('should disable refresh button for installer role when loading', async ({ mount }) => {
-      const component = await mount(
-        <RolesAndPoliciesMount
-          roles={{ data: [], isFetching: true, error: null, fetch: async () => {} }}
-        />
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        { roles: { data: [], isFetching: true, error: null } }
       );
 
       const refreshButton = component
@@ -117,10 +126,10 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
         ],
         isFetching: false,
         error: null,
-        fetch: async () => {},
       };
-      const component = await mount(
-        <RolesAndPoliciesMount roles={roles} defaultValues={{ cluster_version: '4.12.0' }} />
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        { roles: roles, defaultValues: { cluster_version: '4.12.0' } }
       );
 
       await installerRoleCombo(component).click();
@@ -147,10 +156,10 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
         ],
         isFetching: false,
         error: null,
-        fetch: async () => {},
       };
-      await mount(
-        <RolesAndPoliciesMount roles={roles} defaultValues={{ cluster_version: '4.12.0' }} />
+      await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        { roles: roles, defaultValues: { cluster_version: '4.12.0' } }
       );
 
       await installerRoleCombo(page).click();
@@ -163,15 +172,18 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
 
   test.describe('RolesAndPolicies — ARNs expandable section', () => {
     test('should render the ARNs toggle button', async ({ mount }) => {
-      const component = await mount(<RolesAndPoliciesMount />);
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount'
+      );
       await expect(component.getByText(rp.arnsToggle, { exact: true })).toBeVisible();
     });
 
     test('should hide support and worker role fields until ARNs are expanded', async ({
       mount,
     }) => {
-      const component = await mount(
-        <RolesAndPoliciesMount defaultValues={{ installer_role_arn: INSTALLER_ARN }} />
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        { defaultValues: { installer_role_arn: INSTALLER_ARN } }
       );
 
       await expect(component.getByText(rp.supportRoleLabel, { exact: true })).toBeHidden();
@@ -179,8 +191,9 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     });
 
     test('should show support and worker role fields after expanding ARNs', async ({ mount }) => {
-      const component = await mount(
-        <RolesAndPoliciesMount defaultValues={{ installer_role_arn: INSTALLER_ARN }} />
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        { defaultValues: { installer_role_arn: INSTALLER_ARN } }
       );
 
       await component.getByText(rp.arnsToggle, { exact: true }).click();
@@ -193,7 +206,9 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
       mount,
       page,
     }) => {
-      const component = await mount(<RolesAndPoliciesMount />);
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount'
+      );
 
       await installerRoleCombo(component).click();
       await page.getByRole('option', { name: mockRoles[0].installerRole.label }).click();
@@ -209,7 +224,9 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
       mount,
       page,
     }) => {
-      const component = await mount(<RolesAndPoliciesMount />);
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount'
+      );
 
       await installerRoleCombo(component).click();
       await page.getByRole('option', { name: mockRoles[0].installerRole.label }).click();
@@ -222,7 +239,9 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     });
 
     test('should show installer role placeholder when support role is empty', async ({ mount }) => {
-      const component = await mount(<RolesAndPoliciesMount />);
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount'
+      );
 
       await component.getByText(rp.arnsToggle, { exact: true }).click();
 
@@ -233,8 +252,9 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     });
 
     test('should have support role field read-only', async ({ mount }) => {
-      const component = await mount(
-        <RolesAndPoliciesMount defaultValues={{ installer_role_arn: INSTALLER_ARN }} />
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        { defaultValues: { installer_role_arn: INSTALLER_ARN } }
       );
 
       await component.getByText(rp.arnsToggle, { exact: true }).click();
@@ -243,8 +263,9 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     });
 
     test('should have worker role field read-only', async ({ mount }) => {
-      const component = await mount(
-        <RolesAndPoliciesMount defaultValues={{ installer_role_arn: INSTALLER_ARN }} />
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        { defaultValues: { installer_role_arn: INSTALLER_ARN } }
       );
 
       await component.getByText(rp.arnsToggle, { exact: true }).click();
@@ -255,7 +276,9 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
 
   test.describe('RolesAndPolicies — OIDC config select', () => {
     test('should show OIDC config options in dropdown', async ({ mount, page }) => {
-      const component = await mount(<RolesAndPoliciesMount />);
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount'
+      );
 
       await oidcConfigCombo(component).click();
 
@@ -265,7 +288,9 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     });
 
     test('should select an OIDC config', async ({ mount, page }) => {
-      const component = await mount(<RolesAndPoliciesMount />);
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount'
+      );
 
       await oidcConfigCombo(component).click();
       await page.getByRole('option', { name: mockOicdConfig[0].label }).click();
@@ -274,20 +299,18 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     });
 
     test('should show loading state for OIDC config when loading', async ({ mount }) => {
-      const component = await mount(
-        <RolesAndPoliciesMount
-          oidcConfig={{ data: [], isFetching: true, error: null, fetch: async () => {} }}
-        />
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        { oidcConfig: { data: [], isFetching: true, error: null } }
       );
 
       await expect(oidcConfigCombo(component)).toHaveValue('Loading...');
     });
 
     test('should show spinner in OIDC config dropdown when loading', async ({ mount, page }) => {
-      const component = await mount(
-        <RolesAndPoliciesMount
-          oidcConfig={{ data: [], isFetching: true, error: null, fetch: async () => {} }}
-        />
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        { oidcConfig: { data: [], isFetching: true, error: null } }
       );
 
       await oidcConfigCombo(component).click();
@@ -296,10 +319,9 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     });
 
     test('should disable refresh button for OIDC config when loading', async ({ mount }) => {
-      const component = await mount(
-        <RolesAndPoliciesMount
-          oidcConfig={{ data: [], isFetching: true, error: null, fetch: async () => {} }}
-        />
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        { oidcConfig: { data: [], isFetching: true, error: null } }
       );
 
       const refreshButton = component
@@ -313,7 +335,9 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
       mount,
       page,
     }) => {
-      const component = await mount(<RolesAndPoliciesMount />);
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount'
+      );
       await component
         .locator('#byo_oidc_config_id-form-group')
         .getByRole('button', { name: 'More info' })
@@ -326,25 +350,28 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     const ALERT_HEADING = /Some roles are missing/;
 
     test('should not show alert when roles are loaded and no errors', async ({ mount }) => {
-      const component = await mount(<RolesAndPoliciesMount />);
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount'
+      );
 
-      await expect(component.getByRole('heading', { name: ALERT_HEADING })).not.toBeVisible();
+      await expect(component.getByRole('heading', { name: ALERT_HEADING })).toBeHidden();
     });
 
     test('should show "Missing account roles" when no roles data is available', async ({
       mount,
     }) => {
-      const component = await mount(
-        <RolesAndPoliciesMount
-          roles={{
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        {
+          roles: {
             data: [],
             isFetching: false,
             error: null,
-            fetch: async () => {},
+
             ocmRoleError: null,
             userRoleError: null,
-          }}
-        />
+          },
+        }
       );
 
       await expect(component.getByRole('heading', { name: ALERT_HEADING })).toBeVisible();
@@ -354,17 +381,18 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     test('should show copy instruction for rosa create account-role when no roles data', async ({
       mount,
     }) => {
-      const component = await mount(
-        <RolesAndPoliciesMount
-          roles={{
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        {
+          roles: {
             data: [],
             isFetching: false,
             error: null,
-            fetch: async () => {},
+
             ocmRoleError: null,
             userRoleError: null,
-          }}
-        />
+          },
+        }
       );
 
       await expect(
@@ -386,11 +414,14 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
         ],
         isFetching: false,
         error: null,
-        fetch: async () => {},
+
         ocmRoleError: null,
         userRoleError: null,
       };
-      const component = await mount(<RolesAndPoliciesMount roles={incompleteRoles} />);
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        { roles: incompleteRoles }
+      );
 
       await installerRoleCombo(component).click();
       await page.getByRole('option', { name: mockRoles[0].installerRole.label }).click();
@@ -402,17 +433,18 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     test('should show "Missing user role" when userRoleError is present and no ocmRoleError', async ({
       mount,
     }) => {
-      const component = await mount(
-        <RolesAndPoliciesMount
-          roles={{
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        {
+          roles: {
             data: mockRoles,
             isFetching: false,
             error: null,
-            fetch: async () => {},
+
             ocmRoleError: null,
             userRoleError: 'User role is not linked',
-          }}
-        />
+          },
+        }
       );
 
       await expect(component.getByRole('heading', { name: ALERT_HEADING })).toBeVisible();
@@ -424,17 +456,18 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
 
     test('should show ocmRoleError message when ocmRoleError is present', async ({ mount }) => {
       const ocmError = 'OCM role is not linked to your organization';
-      const component = await mount(
-        <RolesAndPoliciesMount
-          roles={{
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        {
+          roles: {
             data: mockRoles,
             isFetching: false,
             error: null,
-            fetch: async () => {},
+
             ocmRoleError: ocmError,
             userRoleError: null,
-          }}
-        />
+          },
+        }
       );
 
       await expect(component.getByRole('heading', { name: ALERT_HEADING })).toBeVisible();
@@ -445,22 +478,23 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
       mount,
     }) => {
       const ocmError = 'OCM role is not linked to your organization';
-      const component = await mount(
-        <RolesAndPoliciesMount
-          roles={{
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        {
+          roles: {
             data: mockRoles,
             isFetching: false,
             error: null,
-            fetch: async () => {},
+
             ocmRoleError: ocmError,
             userRoleError: 'User role is not linked',
-          }}
-        />
+          },
+        }
       );
 
       await expect(component.getByRole('heading', { name: ALERT_HEADING })).toBeVisible();
       await expect(component.getByText(ocmError)).toBeVisible();
-      await expect(component.getByText('Missing user role')).not.toBeVisible();
+      await expect(component.getByText('Missing user role')).toBeHidden();
     });
   });
 
@@ -469,8 +503,9 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
       mount,
     }) => {
       const selectedSecret = { client_id: 'my-client-id', client_secret: 'my-client-secret' };
-      const component = await mount(
-        <RolesAndPoliciesMount product="acm" selectedSecret={selectedSecret} />
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        { product: 'acm', selectedSecret: selectedSecret }
       );
 
       await expect(
@@ -483,7 +518,10 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     test('should render default placeholder login command when no selectedSecret is provided for acm', async ({
       mount,
     }) => {
-      const component = await mount(<RolesAndPoliciesMount product="acm" />);
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        { product: 'acm' }
+      );
 
       await expect(
         component.getByRole('textbox', {
@@ -496,8 +534,9 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
       mount,
     }) => {
       const selectedSecret = { client_id: 'my-client-id', client_secret: 'my-client-secret' };
-      const component = await mount(
-        <RolesAndPoliciesMount product="ocm" selectedSecret={selectedSecret} />
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        { product: 'ocm', selectedSecret: selectedSecret }
       );
 
       await expect(
@@ -510,25 +549,33 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
 
   test.describe('RolesAndPolicies — operator roles prefix', () => {
     test('should render the operator roles prefix toggle', async ({ mount }) => {
-      const component = await mount(<RolesAndPoliciesMount />);
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount'
+      );
       await expect(
         component.getByRole('button', { name: rp.operatorPrefixToggle, exact: true })
       ).toBeVisible();
     });
 
     test('should hide the operator roles prefix input until expanded', async ({ mount }) => {
-      const component = await mount(<RolesAndPoliciesMount />);
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount'
+      );
       await expect(component.getByLabel(rp.operatorPrefixLabel, { exact: true })).toBeHidden();
     });
 
     test('should render the operator roles prefix input when expanded', async ({ mount }) => {
-      const component = await mount(<RolesAndPoliciesMount />);
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount'
+      );
       await component.getByRole('button', { name: rp.operatorPrefixToggle, exact: true }).click();
       await expect(component.getByLabel(rp.operatorPrefixLabel, { exact: true })).toBeVisible();
     });
 
     test('should render the operator prefix helper text when expanded', async ({ mount }) => {
-      const component = await mount(<RolesAndPoliciesMount />);
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount'
+      );
       await component.getByRole('button', { name: rp.operatorPrefixToggle, exact: true }).click();
       await expect(component.getByText(rp.operatorPrefixHelper)).toBeVisible();
     });
@@ -536,7 +583,9 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
     test('should render operator roles create label, instructions, and commands', async ({
       mount,
     }) => {
-      const component = await mount(<RolesAndPoliciesMount />);
+      const component = await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount'
+      );
       await expect(component.getByText(rp.operatorRolesCreateLabel, { exact: true })).toBeVisible();
       await expect(component.getByText(rp.operatorRolesCreateInstructions)).toBeVisible();
       await expect(

@@ -1,4 +1,5 @@
-import { Button, Spinner } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Spinner } from '@patternfly/react-core/dist/dynamic/components/Spinner';
 import RedoIcon from '@patternfly/react-icons/dist/esm/icons/redo-icon';
 
 import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWizardStringsContext';

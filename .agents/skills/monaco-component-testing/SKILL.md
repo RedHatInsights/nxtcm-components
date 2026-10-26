@@ -1,13 +1,21 @@
 ---
-skill: monaco-component-testing
+name: monaco-component-testing
 description: Guide for testing Monaco editor components in Playwright CT, including known limitations and multi-layer testing strategy
-version: 1.0.0
-tags: [testing, monaco, playwright-ct, component-tests, yaml-editor]
+metadata:
+  version: 1.0.0
+  tags: [testing, monaco, playwright-ct, component-tests, yaml-editor]
 ---
 
 # Monaco Editor Component Testing Guide
 
 Comprehensive guide for testing Monaco editor components in Playwright Component Tests (CT), including known limitations, testing strategies, and best practices learned from YAML editor implementation.
+
+Component specs in this repository mount named gallery exports, never inline JSX. Examples below use:
+
+```typescript
+const YAML_EDITOR_STORY_ID =
+  'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepMount';
+```
 
 ## When to Use This Skill
 
@@ -149,18 +157,14 @@ test('accepts valid YAML', () => {
 ```typescript
 // packages/.../RosaHcpYamlEditorStep.spec.tsx
 test('renders Monaco editor', async ({ mount }) => {
-  const component = await mount(
-    <TestWrapper>
-      <YamlEditorStep />
-    </TestWrapper>
-  );
+  const component = await mount(YAML_EDITOR_STORY_ID);
 
   await component.locator('.monaco-editor').waitFor({ timeout: 10000 });
   await expect(component.locator('.monaco-editor')).toBeVisible();
 });
 
 test('sets up YAML language mode', async ({ mount }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   await component.locator('.monaco-editor').waitFor();
   
   // Verify view-lines (syntax highlighting) is present
@@ -168,7 +172,7 @@ test('sets up YAML language mode', async ({ mount }) => {
 });
 
 test('enables copy functionality', async ({ mount }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   await component.locator('.monaco-editor').waitFor();
   
   const copyButton = component.locator('button[aria-label*="Copy"]');
@@ -243,7 +247,7 @@ test('shows validation error when user types invalid YAML', async ({ page }) => 
 
 ```typescript
 test('renders Monaco editor', async ({ mount }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   await component.locator('.monaco-editor').waitFor();
   await expect(component.locator('.monaco-editor')).toBeVisible();
 });
@@ -253,7 +257,7 @@ test('renders Monaco editor', async ({ mount }) => {
 
 ```typescript
 test('does not show error banner initially', async ({ mount }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   await component.locator('.monaco-editor').waitFor();
   
   // Valid YAML from form, no errors
@@ -265,7 +269,7 @@ test('does not show error banner initially', async ({ mount }) => {
 
 ```typescript
 test('sets up YAML language mode', async ({ mount }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   await component.locator('.monaco-editor').waitFor();
   
   // Monaco renders with YAML syntax highlighting
@@ -273,7 +277,7 @@ test('sets up YAML language mode', async ({ mount }) => {
 });
 
 test('enables copy and download', async ({ mount }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   await component.locator('.monaco-editor').waitFor();
   
   await expect(component.locator('button[aria-label*="Copy"]')).toBeVisible();
@@ -284,12 +288,8 @@ test('enables copy and download', async ({ mount }) => {
 ### ✅ Component Props
 
 ```typescript
-test('renders with onClose prop', async ({ mount }) => {
-  let closeCalled = false;
-  
-  const component = await mount(
-    <YamlEditorStep onClose={() => { closeCalled = true; }} />
-  );
+test('renders the callback-enabled story', async ({ mount }) => {
+  const component = await mount(YAML_EDITOR_STORY_ID, { callbacks: true });
   
   await component.locator('.monaco-editor').waitFor();
   // Component accepts prop without errors
@@ -300,7 +300,7 @@ test('renders with onClose prop', async ({ mount }) => {
 
 ```typescript
 test('Monaco textarea is accessible', async ({ mount }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   await component.locator('.monaco-editor').waitFor();
   
   // Monaco creates textarea for screen readers
@@ -321,7 +321,7 @@ test('Monaco textarea is accessible', async ({ mount }) => {
 ```typescript
 // ❌ DOES NOT WORK
 test('validation errors appear', async ({ mount }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   
   // This doesn't trigger onChange!
   await component.evaluate(() => {
@@ -345,7 +345,7 @@ test('validation errors appear', async ({ mount }) => {
 ```typescript
 // ❌ FLAKY - Will timeout
 test('schema panel toggles', async ({ mount }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   
   const toggleButton = component.getByRole('button', { name: /schema/i });
   await toggleButton.click(); // Intercepted by Monaco overlays!
@@ -366,7 +366,7 @@ test('schema panel toggles', async ({ mount }) => {
 ```typescript
 // ❌ FLAKY
 test('editor receives focus', async ({ mount, page }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   
   await page.keyboard.press('Tab');
   await expect(component.locator('.monaco-editor.focused')).toBeVisible(); // Unreliable
@@ -385,7 +385,7 @@ test('editor receives focus', async ({ mount, page }) => {
 ```typescript
 // ❌ DOES NOT WORK
 test('shows error banner', async ({ mount }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   
   // Can't trigger validation without real typing
   await expect(component.getByRole('alert')).toContainText('error'); // FAILS
@@ -398,38 +398,39 @@ test('shows error banner', async ({ mount }) => {
 
 ## Best Practices
 
-### 1. Use Spec Helpers for Context Providers
+### 1. Use Gallery Stories for Context Providers
 
-**Problem:** Playwright CT can't mount wrapper components defined in test files
+**Problem:** Providers, callbacks, JSX children, and complex resources are not serializable mount props.
 
-**Solution:** Create separate spec-helpers file
+**Solution:** Put them in a named `*.story.tsx` export and pass only serializable variations from the spec.
 
 ```typescript
-// YamlEditorStep.spec-helpers.tsx
-export function YamlEditorTestWrapper({ children }: { children: ReactNode }) {
+// RosaHcpYamlEditorStep.story.tsx
+export function YamlEditorStepMount({ callbacks = false }: { callbacks?: boolean }) {
   const methods = useForm<FormData>({ defaultValues: {...} });
-  
+  const [lastCallback, setLastCallback] = useState('');
+
   return (
     <StringsProvider>
       <FormProvider {...methods}>
-        {children}
+        <YamlEditorStep
+          onClose={callbacks ? () => setLastCallback('close') : undefined}
+          onCancel={callbacks ? () => setLastCallback('cancel') : undefined}
+        />
+        <output data-testid="last-callback" hidden>{lastCallback}</output>
       </FormProvider>
     </StringsProvider>
   );
 }
 
 // YamlEditorStep.spec.tsx
-import { YamlEditorTestWrapper } from './YamlEditorStep.spec-helpers';
-
 test('renders', async ({ mount }) => {
-  const component = await mount(
-    <YamlEditorTestWrapper>
-      <YamlEditorStep />
-    </YamlEditorTestWrapper>
-  );
+  const component = await mount(YAML_EDITOR_STORY_ID);
   // ...
 });
 ```
+
+When testing a callback, activate the relevant control and assert the hidden `last-callback` output. Do not pass a function from the spec.
 
 ---
 
@@ -446,7 +447,7 @@ async function waitForMonaco(component) {
 }
 
 test('test name', async ({ mount }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   await waitForMonaco(component); // Always wait first
   
   // Now safe to make assertions
@@ -465,14 +466,14 @@ test('test name', async ({ mount }) => {
 ```typescript
 // ✅ GOOD - Simple, focused
 test('renders Monaco editor', async ({ mount }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   await waitForMonaco(component);
   await expect(component.locator('.monaco-editor')).toBeVisible();
 });
 
 // ❌ BAD - Too complex, will be flaky
 test('full validation workflow', async ({ mount }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   await waitForMonaco(component);
   await component.locator('.monaco-editor').click(); // Flaky
   await component.keyboard.type('invalid'); // Doesn't work
@@ -491,14 +492,14 @@ test('full validation workflow', async ({ mount }) => {
 ```typescript
 // ✅ GOOD - Tests visible UI
 test('copy button is visible', async ({ mount }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   await waitForMonaco(component);
   await expect(component.locator('button[aria-label*="Copy"]')).toBeVisible();
 });
 
 // ❌ BAD - Relies on internal API
 test('editor has correct model', async ({ mount }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   const model = await component.evaluate(() => window.monacoEditor.getModel());
   expect(model).toBeDefined(); // Brittle
 });
@@ -531,11 +532,7 @@ test.describe('Schema Panel Toggle', () => {
 
 ```typescript
 test('renders Monaco editor component', async ({ mount }) => {
-  const component = await mount(
-    <TestWrapper>
-      <YamlEditorStep />
-    </TestWrapper>
-  );
+  const component = await mount(YAML_EDITOR_STORY_ID);
 
   await component.locator('.monaco-editor').waitFor({ timeout: 10000 });
   await expect(component.locator('.monaco-editor')).toBeVisible();
@@ -547,7 +544,7 @@ test('renders Monaco editor component', async ({ mount }) => {
 
 ```typescript
 test('Monaco is configured with correct options', async ({ mount }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   await waitForMonaco(component);
 
   // PatternFly CodeEditor wrapper
@@ -566,17 +563,7 @@ test('Monaco is configured with correct options', async ({ mount }) => {
 
 ```typescript
 test('accepts callback props without errors', async ({ mount }) => {
-  let onCloseCalled = false;
-  let onCancelCalled = false;
-
-  const component = await mount(
-    <TestWrapper>
-      <YamlEditorStep
-        onClose={() => { onCloseCalled = true; }}
-        onCancel={() => { onCancelCalled = true; }}
-      />
-    </TestWrapper>
-  );
+  const component = await mount(YAML_EDITOR_STORY_ID, { callbacks: true });
 
   await waitForMonaco(component);
   // Component renders successfully with props
@@ -588,7 +575,7 @@ test('accepts callback props without errors', async ({ mount }) => {
 
 ```typescript
 test('Monaco editor is accessible', async ({ mount }) => {
-  const component = await mount(<YamlEditorStep />);
+  const component = await mount(YAML_EDITOR_STORY_ID);
   await waitForMonaco(component);
 
   // Monaco creates a textarea for screen reader access

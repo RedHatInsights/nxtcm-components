@@ -4,7 +4,7 @@
  */
 
 export type DeepPartial<T> = {
-  [K in keyof T]?: T[K] extends (...args: any[]) => unknown
+  [K in keyof T]?: T[K] extends (...args: infer _A) => infer _R
     ? T[K]
     : T[K] extends object
       ? DeepPartial<T[K]>

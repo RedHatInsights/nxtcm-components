@@ -1,6 +1,6 @@
-import { test as base, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { writeFileSync, mkdirSync } from 'fs';
+import { expect, test as base } from '@playwright/test';
+import { mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
 export { expect };
@@ -12,7 +12,9 @@ export const test = base.extend<{ _coverageCapture: void }>({
       await use();
       try {
         if (page.isClosed()) return;
-        const coverage = await page.evaluate(() => (window as any).__coverage__);
+        const coverage = await page.evaluate(
+          () => (window as unknown as { __coverage__?: unknown }).__coverage__
+        );
         if (!coverage) return;
         mkdirSync('.nyc_output', { recursive: true });
         const filename = join(

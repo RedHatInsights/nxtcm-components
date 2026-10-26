@@ -1,7 +1,9 @@
 import { useCallback, useState } from 'react';
+
 import { yupResolver } from '@hookform/resolvers/yup';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Button, Form } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
@@ -130,9 +132,9 @@ function WizSelectRefreshFormDemo(schema: yup.ObjectSchema<DemoFormValues>) {
 }
 
 const meta: Meta<typeof WizSelect> = {
-  title: 'Form Elements/Connected Form Elements/WizSelect',
+  title: 'Internal/Form Elements/Connected Form Elements/WizSelect',
   component: WizSelect,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   decorators: [
     (Story) => (
       <RosaHcpWizardStringsProvider>
@@ -187,10 +189,10 @@ const meta: Meta<typeof WizSelect> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<WizSelectStoryArgs>;
 
 export const Default: Story = {
-  render: (args) => WizSelectFormDemo(defaultSchema)(args as unknown as WizSelectStoryArgs),
+  render: (args) => WizSelectFormDemo(defaultSchema)(args),
   args: {
     options: ['us-east-1', 'us-west-2', { label: 'US West (N. California)', value: 'us-west-1' }],
     isDisabled: false,
@@ -199,7 +201,7 @@ export const Default: Story = {
 };
 
 export const GroupedOptions: Story = {
-  render: (args) => WizSelectFormDemo(groupedSchema)(args as unknown as WizSelectStoryArgs),
+  render: (args) => WizSelectFormDemo(groupedSchema)(args),
   args: {
     optionGroups: [
       {
@@ -231,7 +233,7 @@ export const GroupedOptions: Story = {
 };
 
 export const Refresh: Story = {
-  render: (args) => WizSelectRefreshFormDemo(refreshSchema)(args as unknown as WizSelectStoryArgs),
+  render: (args) => WizSelectRefreshFormDemo(refreshSchema)(args),
   args: {
     options: ['us-east-1', 'us-west-2', { label: 'US West (N. California)', value: 'us-west-1' }],
     isDisabled: false,

@@ -13,11 +13,12 @@
  * - Multiple output modes (default, verbose, redirects-only)
  */
 import fs from 'fs';
-// import fetch from 'fetch';
 import ProgressBar from 'progress';
-import externalLinks from './externalLinks.mjs';
-
-// import { getAllExternalLinks } from '../src/common/urlUtils.mjs';
+import {
+  awsLinks,
+  getDocsLinks,
+  securityLinks,
+} from '../packages/nxtcm-rosa-hcp-wizard/src/constants/rawLinks.ts';
 
 // ======================================================================
 // CONFIGURATION
@@ -750,7 +751,13 @@ async function main() {
   console.log('Checking URLs...');
 
   // Get URLs to check
-  const urls = externalLinks;
+  const links = getDocsLinks('4');
+  const urls = [
+    ...Object.values(links),
+    ...Object.values(awsLinks),
+    ...Object.values(securityLinks),
+  ];
+  //const urls = externalLinks;
   console.log(`Found ${urls.length} URLs to check`);
 
   // Create a progress bar

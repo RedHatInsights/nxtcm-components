@@ -1,6 +1,6 @@
-import type { WizardFieldMeta } from './types';
-import { ctx, rosaRequiredStringField, validateClusterNameSync } from './helpers';
 import { YUP } from './constants';
+import { ctx, rosaRequiredStringField, validateClusterNameSync } from './helpers';
+import type { WizardFieldMeta } from './types';
 
 export const nameSchema = rosaRequiredStringField()
   .default(YUP.DETAILS.NAME_SCHEMA.DEFAULT)

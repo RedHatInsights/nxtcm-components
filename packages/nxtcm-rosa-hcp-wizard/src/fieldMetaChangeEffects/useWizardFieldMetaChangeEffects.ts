@@ -1,10 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
+
 import { useFormContext, useWatch } from 'react-hook-form';
 
-import { applyWizardFieldMetaChangeEffects } from './applyWizardFieldMetaChangeEffects';
-import { readWatchedFieldValue } from './readWatchedFieldValue';
-import { reapplyWizardFieldDerivedSyncs } from './wizardFieldDerivedSyncs';
-import { wizardFormFieldValuesEqual } from './wizardFormFieldValuesEqual';
 import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
 import type { ROSAHCPCluster, ROSAHCPWizardData } from '../types';
 import {
@@ -15,6 +12,10 @@ import {
   wizardFieldMetaByPath,
 } from '../yupSchemas';
 import type { WizardFormFieldName } from '../yupSchemas/types';
+import { applyWizardFieldMetaChangeEffects } from './applyWizardFieldMetaChangeEffects';
+import { readWatchedFieldValue } from './readWatchedFieldValue';
+import { reapplyWizardFieldDerivedSyncs } from './wizardFieldDerivedSyncs';
+import { wizardFormFieldValuesEqual } from './wizardFormFieldValuesEqual';
 
 /** Merges live `useWatch` values into `getValues()` so refetch args match the field being processed. */
 function buildFormValuesForMetaEffects(
@@ -55,7 +56,10 @@ export function useWizardFieldMetaChangeEffects(wizardData: ROSAHCPWizardData): 
   const programmaticallyResetFieldsRef = useRef<Set<WizardFormFieldName>>(new Set());
   const hasInitializedRef = useRef(false);
   const wizardDataRef = useRef(wizardData);
-  wizardDataRef.current = wizardData;
+
+  useEffect(() => {
+    wizardDataRef.current = wizardData;
+  });
 
   useEffect(() => {
     const formValues = buildFormValuesForMetaEffects(sourceFields, watchedValues, getValues);

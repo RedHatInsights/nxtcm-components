@@ -1,7 +1,6 @@
 import * as yup from 'yup';
 
 import { clusterValidationSchema } from '../yupSchemas';
-
 import {
   flattenWizSelectOptionsForReconcile,
   readWizSelectFieldMetaByPath,

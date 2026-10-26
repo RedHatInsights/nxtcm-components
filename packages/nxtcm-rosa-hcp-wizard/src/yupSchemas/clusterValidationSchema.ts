@@ -1,13 +1,31 @@
 import * as yup from 'yup';
 
+import { WizardFormValues } from '../types';
+import { clusterUpdatesFields } from './clusterUpdatesFields';
+import { clusterWideProxyFields } from './clusterWideProxyFields';
 import { detailsFields } from './detailsFields';
-import { rolesAndPoliciesFields } from './rolesAndPoliciesFields';
+import { encryptionFields } from './encryptionFields';
 import { machinePoolsFields } from './machinePoolsFields';
 import { networkingFields } from './networkingFields';
-import { clusterWideProxyFields } from './clusterWideProxyFields';
-import { encryptionFields } from './encryptionFields';
-import { clusterUpdatesFields } from './clusterUpdatesFields';
-import { ROSAHCPCluster } from '../types';
+import { rolesAndPoliciesFields } from './rolesAndPoliciesFields';
+import type { WizardFormFieldName } from './types';
+
+const composedFields = {
+  ...detailsFields,
+  ...rolesAndPoliciesFields,
+  ...machinePoolsFields,
+  ...networkingFields,
+  ...clusterWideProxyFields,
+  ...encryptionFields,
+  ...clusterUpdatesFields,
+};
+
+/** Shared field definitions, checked for missing and extra top-level wizard keys. */
+export const clusterValidationFields = composedFields satisfies Record<
+  WizardFormFieldName,
+  yup.ISchema<unknown>
+> &
+  Record<Exclude<keyof typeof composedFields, WizardFormFieldName>, never>;
 
 /**
  * Composed Yup schema for `ROSAHCPCluster` — built from individual
@@ -16,12 +34,8 @@ import { ROSAHCPCluster } from '../types';
  * Kept in a dedicated module so {@link wizardFieldMetaChangeRegistry} can import
  * it without circular imports through `index.ts`.
  */
-export const clusterValidationSchema = yup.object({
-  ...detailsFields,
-  ...rolesAndPoliciesFields,
-  ...machinePoolsFields,
-  ...networkingFields,
-  ...clusterWideProxyFields,
-  ...encryptionFields,
-  ...clusterUpdatesFields,
-}) as yup.ObjectSchema<Partial<ROSAHCPCluster>>;
+export const clusterValidationSchema = yup.object(clusterValidationFields) as yup.ObjectSchema<
+  WizardFormValues,
+  yup.AnyObject,
+  WizardFormValues
+>;

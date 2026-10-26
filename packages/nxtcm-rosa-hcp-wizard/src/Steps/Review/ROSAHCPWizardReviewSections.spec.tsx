@@ -1,10 +1,13 @@
-import { expect, test } from '@playwright/experimental-ct-react';
+import { expect, test } from '@/playwright/ct-fixture';
+
 import { checkAccessibility } from '../../test-helpers';
-import { ROSAHCPWizardReviewSectionsMount } from './ROSAHCPWizardReviewSections.spec-helpers';
+import type { ROSAHCPWizardReviewSectionsMount } from './ROSAHCPWizardReviewSections.story';
 
 test.describe('ROSAHCPWizardReviewSections', () => {
   test('should display the seven expected review section labels', async ({ mount }) => {
-    const component = await mount(<ROSAHCPWizardReviewSectionsMount />);
+    const component = await mount<typeof ROSAHCPWizardReviewSectionsMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/Review/ROSAHCPWizardReviewSections/ROSAHCPWizardReviewSectionsMount'
+    );
     await expect(component.getByTestId('sections-count')).toHaveText('7');
     await expect(component.getByTestId(/^section-/)).toHaveText([
       'Details',
@@ -18,8 +21,9 @@ test.describe('ROSAHCPWizardReviewSections', () => {
   });
 
   test('should filter sections when steps are hidden', async ({ mount }) => {
-    const component = await mount(
-      <ROSAHCPWizardReviewSectionsMount hiddenSteps={['cluster-updates-step' as const]} />
+    const component = await mount<typeof ROSAHCPWizardReviewSectionsMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/Review/ROSAHCPWizardReviewSections/ROSAHCPWizardReviewSectionsMount',
+      { hiddenSteps: ['cluster-updates-step' as const] }
     );
     await expect(component.getByTestId('sections-count')).toHaveText('6');
     await expect(component.getByText('Cluster updates (optional)', { exact: true })).toHaveCount(0);
@@ -27,7 +31,9 @@ test.describe('ROSAHCPWizardReviewSections', () => {
   });
 
   test('should pass accessibility tests', async ({ mount }) => {
-    const component = await mount(<ROSAHCPWizardReviewSectionsMount />);
+    const component = await mount<typeof ROSAHCPWizardReviewSectionsMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/Review/ROSAHCPWizardReviewSections/ROSAHCPWizardReviewSectionsMount'
+    );
     await checkAccessibility({ component });
   });
 });

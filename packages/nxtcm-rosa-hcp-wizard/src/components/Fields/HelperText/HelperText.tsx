@@ -1,11 +1,12 @@
 import { type ComponentProps, type ReactNode } from 'react';
+
+import { FormHelperText } from '@patternfly/react-core/dist/dynamic/components/Form';
 import {
-  FormHelperText,
-  HelperTextItem,
   HelperText as PFHelperText,
-  HelperTextItemVariant,
+  HelperTextItem,
   HelperTextItemProps,
-} from '@patternfly/react-core';
+  HelperTextItemVariant,
+} from '@patternfly/react-core/dist/dynamic/components/HelperText';
 
 import { helperTextId } from './helperTextUtils';
 

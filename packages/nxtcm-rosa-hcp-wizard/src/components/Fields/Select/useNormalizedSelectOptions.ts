@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import type { NormalizedOptionGroup, Option, OptionGroup, OptionType } from './SelectTypes';
+
 import { normalizeOption } from './SelectOptions';
+import type { NormalizedOptionGroup, Option, OptionGroup, OptionType } from './SelectTypes';
 
 export interface UseNormalizedSelectOptionsParams<T> {
   options?: (Option<T> | string | number)[];

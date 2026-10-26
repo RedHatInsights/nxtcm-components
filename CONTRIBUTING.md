@@ -59,7 +59,7 @@ ComponentName/
   ComponentName.tsx              # the component
   ComponentName.stories.tsx      # storybook story (CSF3)
   ComponentName.spec.tsx         # playwright CT test
-  ComponentName.spec-helpers.tsx # test setup, mock data
+  ComponentName.story.tsx       # gallery story, providers, mock data
   ComponentName.test.ts          # jest unit test (if logic warrants it)
   index.ts                       # barrel export
 ```
@@ -116,16 +116,16 @@ skip formal bodies unless something really needs a sentence of context.
 npx jest path/to/file.test.ts
 
 # single CT spec
-npx playwright test -c playwright-ct.config.ts path/to/Component.spec.tsx
+npx playwright test --project=components path/to/Component.spec.tsx
 
 # CT with UI mode (interactive debugging)
-npx playwright test -c playwright-ct.config.ts --ui
+npx playwright test --project=components --ui
 ```
 
 ### Test guidelines
 
 - use **role-based selectors** (`getByRole`, `getByLabel`, `getByText`) — never CSS class selectors
-- put mock data and provider wrappers in `*.spec-helpers.tsx`, not inline
+- put mock data and provider wrappers in named `*.story.tsx` gallery exports, not inline
 - test behavior, not implementation details
 - cover: happy path, loading state, error state, empty state, user interactions
 
@@ -146,8 +146,8 @@ pass the **component** `.tsx` file, not the `.spec.tsx`.
 ### Running
 
 ```bash
-npm run storybook     # dev server on port 6006
-npm run build-storybook  # static build
+npm run storybook          # dev server on port 6006
+npm run build-storybook    # static build
 ```
 
 storybook is also published on github pages for external viewing: [redhatinsights.github.io/nxtcm-components](https://redhatinsights.github.io/nxtcm-components/?path=/docs/components-dashboard-advisorcategories--docs).
@@ -157,11 +157,11 @@ storybook is also published on github pages for external viewing: [redhatinsight
 use CSF3 format (the only format used here):
 
 ```tsx
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MyComponent } from './MyComponent';
 
 const meta: Meta<typeof MyComponent> = {
-  title: 'Components/Category/MyComponent',
+  title: 'Components/Dashboard/MyComponent',
   component: MyComponent,
   tags: ['autodocs'],
 };
@@ -173,21 +173,26 @@ export const Default: Story = {
 };
 ```
 
-### Title conventions
+### Public vs internal visibility & title conventions
 
-| package                 | title pattern                                  |
-| ----------------------- | ---------------------------------------------- |
-| dashboard               | `Components/Dashboard/<Name>`                  |
-| wizard fields           | `Form Elements/<Name>`                         |
-| wizard connected fields | `Form Elements/Connected Form Elements/<Name>` |
-| full wizard             | `Wizards/RosaHCPWizard`                        |
+| Kind | Package / Type | Title pattern | Tags | Visibility |
+| --- | --- | --- | --- | --- |
+| **Public** (exported from package `index.ts`) | dashboard widgets | `Components/Dashboard/<Name>` | `['autodocs']` | Local dev, static build, GitHub Pages |
+| **Public** | full wizard | `Wizards/RosaHCPWizard` | `['autodocs']` | Local dev, static build, GitHub Pages |
+| **Internal** | wizard base fields | `Internal/Form Elements/<Name>` | `['autodocs', 'internal']` | Local sidebar; hidden on build/Pages (direct URL opens) |
+| **Internal** | wizard connected fields | `Internal/Form Elements/Connected Form Elements/<Name>` | `['autodocs', 'internal']` | Local sidebar; hidden on build/Pages (direct URL opens) |
+| **Internal** | dashboard subcomponents | `Internal/Dashboard/<Name>` | `['autodocs', 'internal']` | Local sidebar; hidden on build/Pages (direct URL opens) |
 
-include at least a `Default` story. add `Loading`, `Error`, and `Empty` stories for components that handle those states.
-note: current Storybook globs actively target package stories. keep new stories in package paths.
+Every story file must export a `Default` story. Add `Loading`, `Error`, and `Empty` stories for components that handle those states. Non-UI elements (hooks, schemas, utilities, contexts) never get stories.
 
 ### Verification
 
 after writing a story, open it in the browser and verify it renders in both light and dark mode. check that controls work and the autodocs page generates correctly.
+
+```bash
+npm run build-storybook:internal  # static build with internal stories in sidebar (debug only)
+npm run storybook:assert-public   # assert static build index contains all required public stories
+```
 
 ---
 
@@ -250,7 +255,7 @@ npm run build -w @redhat-cloud-services/nxtcm-dashboard
 npm run build -w @redhat-cloud-services/nxtcm-rosa-hcp-wizard
 ```
 
-both packages use the shared `vite.config.ts` with `NXTCM_LIB_NAME` to differentiate output. see [docs/architecture.md](docs/architecture.md) for details on the build system.
+Both packages use the shared `vite.config.ts`, which selects the entry point and output directory from the workspace's working directory. Each package emits ES modules, CommonJS, CSS, and declarations for both module formats. See [docs/architecture.md](docs/architecture.md) for details on the build system.
 
 ---
 

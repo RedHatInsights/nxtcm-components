@@ -1,6 +1,9 @@
-import { TooltipProps, useWizardContext } from '@patternfly/react-core';
-import type { YamlResourceGenerator } from './Steps/YamlEditor/types';
+import { TooltipProps } from '@patternfly/react-core/dist/dynamic/components/Tooltip';
+import { useWizardContext } from '@patternfly/react-core/dist/dynamic/components/Wizard';
+import type { Path } from 'react-hook-form';
+
 import { FIELD_NAME, STEP_IDS } from './constants';
+import type { YamlResourceGenerator } from './Steps/YamlEditor/types';
 
 // -- dropdown / select option types --
 
@@ -69,14 +72,7 @@ export type Subnet = {
   name: string;
   availability_zone: string;
   public: boolean;
-};
-
-export type CIDRSubnet = {
   cidr_block: string;
-  name: string;
-  public: boolean;
-  subnet_id: string;
-  availability_zone: string;
 };
 
 export type VPC = {
@@ -213,8 +209,7 @@ export type { YamlResourceGenerator };
  * Use the exported `STEP_IDS` constants for type-safe values.
  */
 export type HideableWizardStepId =
-  | typeof STEP_IDS.CLUSTER_WIDE_PROXY
-  | typeof STEP_IDS.CLUSTER_UPDATES;
+  typeof STEP_IDS.CLUSTER_WIDE_PROXY | typeof STEP_IDS.CLUSTER_UPDATES;
 
 /**
  * Form field paths that can be hidden via {@link WizardConfig.hiddenFields}.
@@ -290,6 +285,9 @@ export type RosaHCPWizardProps = {
   /** Optional wizard configuration for host-application-specific customisation. */
   config?: WizardConfig;
   selectedSecret?: SelectedSecret;
+
+  // versions of available documentation for links in the wizard
+  docsVersions?: string[];
 };
 
 export type WizardNavigationContext = ReturnType<typeof useWizardContext>;
@@ -349,6 +347,9 @@ export type ROSAHCPCluster = {
   upgrade_policy?: ClusterUpgrade.automatic | ClusterUpgrade.manual;
   upgrade_schedule?: string;
 };
+
+export type WizardFormValues = Partial<ROSAHCPCluster>;
+export type WizardFieldPath = Path<WizardFormValues>;
 
 export type SelectedSecret = {
   client_id: string;

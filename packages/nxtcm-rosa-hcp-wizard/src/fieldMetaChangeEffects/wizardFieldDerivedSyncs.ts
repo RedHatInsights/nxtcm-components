@@ -1,15 +1,15 @@
 import type { UseFormSetValue } from 'react-hook-form';
 
+import { FIELD_NAME } from '../constants';
+import type { Role, ROSAHCPCluster, ROSAHCPWizardData, VPC } from '../types';
 import {
   DEFAULT_FORM_SET_VALUE_OPTS,
   DEFAULT_FORM_SET_VALUE_OPTS_WITH_VALIDATE,
 } from '../utilities/formSetValueOptions';
-import { resolveSelectedVpc } from '../utilities/helpers';
-import type { ROSAHCPCluster, ROSAHCPWizardData, Role, VPC } from '../types';
+import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
+import { getSelectedVpcId, resolveSelectedVpc } from '../utilities/helpers';
 import type { WizardFieldDerivedSyncKey } from '../yupSchemas/types';
 import type { WizardFieldDerivedSyncEntry } from '../yupSchemas/wizardFieldMetaChangeRegistry';
-
-import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
 
 export { hasRefetchableStringValue };
 
@@ -21,15 +21,8 @@ export type ApplyWizardFieldDerivedSyncArgs = {
   setValue: UseFormSetValue<Partial<ROSAHCPCluster>>;
 };
 
-function hasSelectedVpcValue(value: unknown): value is string | VPC {
-  if (hasRefetchableStringValue(value)) {
-    return true;
-  }
-  if (value != null && typeof value === 'object' && 'id' in value) {
-    const id = (value as VPC).id;
-    return typeof id === 'string' && id !== '';
-  }
-  return false;
+function hasSelectedVpcValue(value: unknown): boolean {
+  return hasRefetchableStringValue(getSelectedVpcId(value));
 }
 
 /** Whether a derived sync should run/re-run for the current source-field value. */
@@ -61,9 +54,7 @@ export function syncSecurityGroupsWorkerWithVpc(
   vpcListData: readonly VPC[],
   setValue: UseFormSetValue<Partial<ROSAHCPCluster>>
 ): void {
-  const vpc = resolveSelectedVpc(selectedVpcRaw as ROSAHCPCluster['selected_vpc'], [
-    ...vpcListData,
-  ]);
+  const vpc = resolveSelectedVpc(selectedVpcRaw, vpcListData);
   if (!vpc?.id) {
     return;
   }
@@ -77,7 +68,7 @@ export function syncSecurityGroupsWorkerWithVpc(
   const pruned = current.filter((id) => availableIds.has(id));
 
   if (!securityGroupSelectionsEqual(current, pruned)) {
-    setValue('security_groups_worker', pruned, DEFAULT_FORM_SET_VALUE_OPTS_WITH_VALIDATE);
+    setValue(FIELD_NAME.SECURITY_GROUPS_WORKER, pruned, DEFAULT_FORM_SET_VALUE_OPTS_WITH_VALIDATE);
   }
 }
 
@@ -89,12 +80,12 @@ export function syncInstallerRoleDependentRoles(
 ): void {
   const selectedRole = roles.find((role) => role.installerRole.value === installerRoleArn);
   setValue(
-    'support_role_arn',
+    FIELD_NAME.SUPPORT_ROLE_ARN,
     selectedRole?.supportRole[0]?.value ?? '',
     DEFAULT_FORM_SET_VALUE_OPTS
   );
   setValue(
-    'worker_role_arn',
+    FIELD_NAME.WORKER_ROLE_ARN,
     selectedRole?.workerRole[0]?.value ?? '',
     DEFAULT_FORM_SET_VALUE_OPTS
   );

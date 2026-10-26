@@ -1,4 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+
 import { ClusterProviders } from './ClusterProviders';
 
 const meta: Meta<typeof ClusterProviders> = {

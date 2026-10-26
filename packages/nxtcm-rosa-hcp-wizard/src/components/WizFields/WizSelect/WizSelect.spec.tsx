@@ -1,7 +1,6 @@
-import React from 'react';
-import { test, expect } from '@playwright/experimental-ct-react';
+import { expect, test } from '@/playwright/ct-fixture';
 
-import {
+import type {
   WizSelectDeferValidationHarness,
   WizSelectExplicitControlOnlyHarness,
   WizSelectExplicitHarness,
@@ -12,9 +11,10 @@ import {
   WizSelectSubmitValidationHarness,
   WizSelectTypeaheadClearHarness,
   WizSelectYupMetaHarness,
-} from './WizSelect.spec-helpers';
+} from './WizSelect.story';
 import {
   WIZ_SELECT_CONTROL_ONLY_STATUS,
+  WIZ_SELECT_DEFER_REVEAL_BUTTON,
   WIZ_SELECT_EXPLICIT_HELPER,
   WIZ_SELECT_EXPLICIT_LABEL,
   WIZ_SELECT_EXPLICIT_TOGGLE_NAME,
@@ -28,20 +28,21 @@ import {
   WIZ_SELECT_RECONCILE_REPLACE_OPTIONS,
   WIZ_SELECT_RECONCILE_STATUS,
   WIZ_SELECT_RECONCILE_TOGGLE,
-  WIZ_SELECT_SUBMIT_TOGGLE_NAME,
   WIZ_SELECT_SUBMIT_ERROR,
-  WIZ_SELECT_VPC_SUBNET_FORM_VALUE_LABEL,
-  WIZ_SELECT_VALUE_STATUS_LABEL,
-  WIZ_SELECT_YUP_META_HELPER,
-  WIZ_SELECT_YUP_META_LABEL,
-  WIZ_SELECT_DEFER_REVEAL_BUTTON,
+  WIZ_SELECT_SUBMIT_TOGGLE_NAME,
   WIZ_SELECT_TYPEAHEAD_CLEAR_STATUS,
   WIZ_SELECT_TYPEAHEAD_CLEAR_TOGGLE,
-} from './WizSelect.spec-helpers';
+  WIZ_SELECT_VALUE_STATUS_LABEL,
+  WIZ_SELECT_VPC_SUBNET_FORM_VALUE_LABEL,
+  WIZ_SELECT_YUP_META_HELPER,
+  WIZ_SELECT_YUP_META_LABEL,
+} from './WizSelect.story-data';
 
 test.describe('WizSelect', () => {
   test('renders explicit label and helper text', async ({ mount }) => {
-    const mounted = await mount(<WizSelectExplicitHarness />);
+    const mounted = await mount<typeof WizSelectExplicitHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectExplicitHarness'
+    );
     await expect(mounted.getByText(WIZ_SELECT_EXPLICIT_LABEL, { exact: true })).toBeVisible();
     await expect(mounted.getByText(WIZ_SELECT_EXPLICIT_HELPER, { exact: true })).toBeVisible();
   });
@@ -50,7 +51,9 @@ test.describe('WizSelect', () => {
     mount,
     page,
   }) => {
-    await mount(<WizSelectExplicitHarness />);
+    await mount<typeof WizSelectExplicitHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectExplicitHarness'
+    );
     const status = page.getByRole('status', { name: WIZ_SELECT_VALUE_STATUS_LABEL });
     await expect(status).toHaveText('(empty)');
 
@@ -63,13 +66,17 @@ test.describe('WizSelect', () => {
   test('derives label and helper text from Yup schema meta when those props are omitted', async ({
     mount,
   }) => {
-    const mounted = await mount(<WizSelectYupMetaHarness />);
+    const mounted = await mount<typeof WizSelectYupMetaHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectYupMetaHarness'
+    );
     await expect(mounted.getByText(WIZ_SELECT_YUP_META_LABEL, { exact: true })).toBeVisible();
     await expect(mounted.getByText(WIZ_SELECT_YUP_META_HELPER, { exact: true })).toBeVisible();
   });
 
   test('shows Yup validation after submit when no option is selected', async ({ mount }) => {
-    const mounted = await mount(<WizSelectSubmitValidationHarness />);
+    const mounted = await mount<typeof WizSelectSubmitValidationHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectSubmitValidationHarness'
+    );
     await mounted.getByRole('button', { name: 'Submit', exact: true }).click();
     await expect(mounted.getByText(WIZ_SELECT_SUBMIT_ERROR, { exact: true })).toBeVisible();
   });
@@ -78,14 +85,16 @@ test.describe('WizSelect', () => {
     mount,
     page,
   }) => {
-    await mount(<WizSelectDeferValidationHarness />);
+    await mount<typeof WizSelectDeferValidationHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectDeferValidationHarness'
+    );
     const combo = page.getByRole('combobox', { name: /select the region/i });
 
     await combo.click();
     await page.getByRole('option', { name: 'eu-west-1' }).click();
     await page.getByRole('button', { name: 'Clear selection' }).click();
 
-    await expect(page.getByText(WIZ_SELECT_SUBMIT_ERROR, { exact: true })).not.toBeVisible();
+    await expect(page.getByText(WIZ_SELECT_SUBMIT_ERROR, { exact: true })).toBeHidden();
 
     await page.getByRole('button', { name: WIZ_SELECT_DEFER_REVEAL_BUTTON, exact: true }).click();
     await expect(page.getByText(WIZ_SELECT_SUBMIT_ERROR, { exact: true })).toBeVisible();
@@ -95,7 +104,9 @@ test.describe('WizSelect', () => {
     mount,
     page,
   }) => {
-    await mount(<WizSelectSubmitValidationHarness />);
+    await mount<typeof WizSelectSubmitValidationHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectSubmitValidationHarness'
+    );
     await page.getByRole('button', { name: 'Submit', exact: true }).click();
     await expect(page.getByText(WIZ_SELECT_SUBMIT_ERROR, { exact: true })).toBeVisible();
 
@@ -103,14 +114,16 @@ test.describe('WizSelect', () => {
     await page.getByRole('option', { name: 'us-east-1' }).click();
 
     await page.getByRole('button', { name: 'Submit', exact: true }).click();
-    await expect(page.getByText(WIZ_SELECT_SUBMIT_ERROR, { exact: true })).not.toBeVisible();
+    await expect(page.getByText(WIZ_SELECT_SUBMIT_ERROR, { exact: true })).toBeHidden();
   });
 
   test('uses nested path fallback labels and records the chosen option in the form', async ({
     mount,
     page,
   }) => {
-    await mount(<WizSelectNestedFallbackHarness />);
+    await mount<typeof WizSelectNestedFallbackHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectNestedFallbackHarness'
+    );
     await expect(page.getByRole('button', { name: WIZ_SELECT_NESTED_LABEL_TOGGLE })).toBeVisible();
     await page.getByRole('button', { name: WIZ_SELECT_NESTED_LABEL_TOGGLE }).click();
     await page.getByRole('option', { name: 'subnet-a' }).click();
@@ -120,7 +133,9 @@ test.describe('WizSelect', () => {
   });
 
   test('prefers explicit label and helper props over Yup .meta()', async ({ mount }) => {
-    const mounted = await mount(<WizSelectExplicitPropsOverrideMetaHarness />);
+    const mounted = await mount<typeof WizSelectExplicitPropsOverrideMetaHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectExplicitPropsOverrideMetaHarness'
+    );
     await expect(mounted.getByText(WIZ_SELECT_OVERRIDE_LABEL, { exact: true })).toBeVisible();
     await expect(mounted.getByText(WIZ_SELECT_OVERRIDE_HELPER, { exact: true })).toBeVisible();
     await expect(mounted.getByText(WIZ_SELECT_META_LOSER_LABEL, { exact: true })).toHaveCount(0);
@@ -131,7 +146,9 @@ test.describe('WizSelect', () => {
     mount,
     page,
   }) => {
-    await mount(<WizSelectNumericMetaLabelHarness />);
+    await mount<typeof WizSelectNumericMetaLabelHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectNumericMetaLabelHarness'
+    );
     await expect(page.getByRole('button', { name: WIZ_SELECT_NUMERIC_TOGGLE })).toBeVisible();
   });
 
@@ -139,7 +156,9 @@ test.describe('WizSelect', () => {
     mount,
     page,
   }) => {
-    await mount(<WizSelectTypeaheadClearHarness />);
+    await mount<typeof WizSelectTypeaheadClearHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectTypeaheadClearHarness'
+    );
     const status = page.getByRole('status', { name: WIZ_SELECT_TYPEAHEAD_CLEAR_STATUS });
     const combo = page.getByRole('combobox', { name: WIZ_SELECT_TYPEAHEAD_CLEAR_TOGGLE });
 
@@ -153,7 +172,9 @@ test.describe('WizSelect', () => {
   });
 
   test('binds through the control prop without a FormProvider wrapper', async ({ mount, page }) => {
-    await mount(<WizSelectExplicitControlOnlyHarness />);
+    await mount<typeof WizSelectExplicitControlOnlyHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectExplicitControlOnlyHarness'
+    );
     const status = page.getByRole('status', { name: WIZ_SELECT_CONTROL_ONLY_STATUS });
     await expect(status).toHaveText('(empty)');
     await page.getByRole('button', { name: WIZ_SELECT_ONLY_CONTROL_TOGGLE }).click();
@@ -165,7 +186,9 @@ test.describe('WizSelect', () => {
     mount,
     page,
   }) => {
-    await mount(<WizSelectOptionsReconcileHarness />);
+    await mount<typeof WizSelectOptionsReconcileHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectOptionsReconcileHarness'
+    );
     const status = page.getByRole('status', { name: WIZ_SELECT_RECONCILE_STATUS });
     await expect(status).toHaveText('(empty)');
 
