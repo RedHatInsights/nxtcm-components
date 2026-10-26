@@ -82,7 +82,7 @@ Notes:
 
 - **Omit when cluster-wide proxy is hidden** — see the section above.
 - **Omit when cluster updates is hidden** — see the section above.
-- **Not read** — the key is part of the type, and the current wizard never reads it. Leaving it out does not leave English copy on screen.
+- **Not read** — unused copy. The wizard never shows it, so it does not need a translation. These keys should be removed from the string types; that removal is separate from this catalog. Until then, leaving the key out does not leave English on screen.
 
 ### `wizard`
 
