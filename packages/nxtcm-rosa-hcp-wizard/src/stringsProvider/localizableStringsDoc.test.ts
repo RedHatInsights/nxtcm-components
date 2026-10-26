@@ -33,8 +33,7 @@ function collectLeafPaths(value: unknown, prefix: string): string[] {
 
 /**
  * Returns the markdown from `startHeading` up to, but not including, `endHeading`.
- * Used to check the "safe to omit" section on its own, so a key mentioned later in a
- * table does not satisfy this check. Throws when either heading is missing.
+ * Throws when either heading is missing.
  */
 function sectionBetween(doc: string, startHeading: string, endHeading: string): string {
   const start = doc.indexOf(startHeading);
@@ -68,29 +67,16 @@ describe('localizable strings reference', () => {
     expect(missingHeadings).toEqual([]);
   });
 
-  /**
-   * Checks only the omit section. Hidden proxy and cluster-updates keys must be named there,
-   * and so must `validators.commonRequired`, which stays required when those steps are hidden.
-   */
-  it('names the string sections that hidden steps make safe to omit', () => {
+  /** The omit section explains the two hidden steps and does not repeat the per-key lists. */
+  it('explains which hidden steps make strings safe to omit', () => {
     const omitSection = sectionBetween(doc, '## Sections safe to omit', '## UI strings');
 
     expect(omitSection).toContain('STEP_IDS.CLUSTER_WIDE_PROXY');
     expect(omitSection).toContain('STEP_IDS.CLUSTER_UPDATES');
-    expect(omitSection).toContain('`clusterWideProxy`');
-    expect(omitSection).toContain('`validators.url`');
-    expect(omitSection).toContain('`validators.noProxyDomains`');
-    expect(omitSection).toContain('`validators.ca`');
-    expect(omitSection).toContain('`validators.proxyConfigureAtLeastOne`');
-    expect(omitSection).toContain('`wizard.stepLabels.clusterWideProxy`');
-    expect(omitSection).toContain('`networking.proxyCheckboxLabel`');
-    expect(omitSection).toContain('`networking.proxyCheckboxHelp`');
-    expect(omitSection).toContain('`networking.proxyNextStepInfo`');
-    expect(omitSection).toContain('`clusterUpdates`');
-    expect(omitSection).toContain('`wizard.stepLabels.clusterUpdatesOptional`');
-    expect(omitSection).toContain('`review.updateStrategy`');
-    expect(omitSection).toContain('`review.strategyIndividual`');
-    expect(omitSection).toContain('`review.strategyAutomatic`');
     expect(omitSection).toContain('`validators.commonRequired`');
+    expect(omitSection).toContain('FIELD_NAME.NODES_COMPUTE');
+    expect(omitSection).toContain('`wizard.stepLabels.additionalSetup`');
+    expect(omitSection).not.toContain('`networking.proxyCheckboxLabel`');
+    expect(omitSection).not.toContain('`review.updateStrategy`');
   });
 });

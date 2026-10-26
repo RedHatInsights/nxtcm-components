@@ -34,47 +34,16 @@ Function-valued validator messages must keep the same parameters. The wizard fil
 
 ## Sections safe to omit
 
-Only two steps can be removed, with `config.hiddenSteps`. Hiding a step removes it from navigation and from the Review summary. The keys below are then never shown, so a partial `strings` object can leave them out and users will not see the English fallback.
+`config.hiddenSteps` can hide only two steps. Hiding a step removes it from navigation and from Review. Hiding one does not hide the other.
 
-Hiding one step does not affect the other. Encryption cannot be hidden, so `wizard.stepLabels.additionalSetup` stays on screen even when cluster updates is hidden.
+- `STEP_IDS.CLUSTER_WIDE_PROXY` hides Cluster-wide proxy, its Review section, and the proxy checkbox on Networking. Proxy fields stay empty, so those validation messages are not shown.
+- `STEP_IDS.CLUSTER_UPDATES` hides Cluster updates and its Review section.
 
-`config.hiddenFields` is separate. `FIELD_NAME.NODES_COMPUTE` hides the fixed compute-node count only (`autoscaling.computeCountLabel`, `autoscaling.computeCountHelp`). The `autoscaling` section itself stays, because min and max node counts are still shown when autoscaling is on.
+Encryption cannot be hidden, so `wizard.stepLabels.additionalSetup` stays on screen when cluster updates is hidden.
 
-### Cluster-wide proxy
+The tables mark individual keys that disappear with a hidden step. A section introduction says when that whole section can be omitted. `validators.commonRequired` stays required: the update schedule uses it, and so do required fields on steps that remain visible.
 
-`STEP_IDS.CLUSTER_WIDE_PROXY` (`cluster-wide-proxy-step`) hides the Cluster-wide proxy step, its Review section, and the "Configure a cluster-wide proxy" checkbox on Networking. Proxy fields stay empty, so proxy validation messages are not shown.
-
-Omit these sections:
-
-- `clusterWideProxy`
-- `validators.url`
-- `validators.noProxyDomains`
-- `validators.ca`
-- `validators.proxyConfigureAtLeastOne`
-
-Omit these keys inside sections you still translate:
-
-- `wizard.stepLabels.clusterWideProxy`
-- `networking.proxyCheckboxLabel`
-- `networking.proxyCheckboxHelp`
-- `networking.proxyNextStepInfo`
-
-### Cluster updates
-
-`STEP_IDS.CLUSTER_UPDATES` (`cluster-updates-step`) hides the Cluster updates step and its Review section.
-
-Omit this section:
-
-- `clusterUpdates` (including `clusterUpdates.daysOfWeek`)
-
-Omit these keys inside sections you still translate:
-
-- `wizard.stepLabels.clusterUpdatesOptional`
-- `review.updateStrategy`
-- `review.strategyIndividual`
-- `review.strategyAutomatic`
-
-No validator section belongs only to this step. The schedule uses `validators.commonRequired` when the strategy is automatic, and that same message is used by required fields on steps that stay visible. Keep `validators.commonRequired`.
+`config.hiddenFields` is separate. `FIELD_NAME.NODES_COMPUTE` hides only the fixed compute-node count (`autoscaling.computeCountLabel` and `autoscaling.computeCountHelp`). Min and max counts stay when autoscaling is on.
 
 ## UI strings (`RosaHcpWizardStrings`)
 
