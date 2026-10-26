@@ -1,6 +1,6 @@
 /**
  * Guards docs/localizable-strings.md against the English string defaults.
- * Adding a key to either defaults object fails this file until the catalog names it.
+ * A new key, a move into the wrong section, or a drifted English default fails this file.
  */
 import fs from 'fs';
 import path from 'path';
@@ -44,16 +44,174 @@ function sectionBetween(doc: string, startHeading: string, endHeading: string): 
   return doc.slice(start, end);
 }
 
+type CatalogRow = {
+  key: string;
+  english: string;
+  section: string;
+  signature: string;
+};
+
+function splitCells(line: string): string[] {
+  return line
+    .split('|')
+    .slice(1, -1)
+    .map((cell) => cell.trim());
+}
+
+/** Turns catalog escaping back into the characters stored on the defaults. */
+function decodeCell(cell: string): string {
+  let text = cell.trim();
+  if (text.startsWith('`') && text.endsWith('`') && !text.slice(1, -1).includes('`')) {
+    text = text.slice(1, -1);
+  }
+  return text
+    .replace(/\\`/g, '`')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&');
+}
+
+function parseCatalog(doc: string): CatalogRow[] {
+  const rows: CatalogRow[] = [];
+  let section = '';
+  let headers: string[] = [];
+
+  for (const line of doc.split('\n')) {
+    const heading = /^### `([^`]+)`/.exec(line);
+    if (heading?.[1]) {
+      section = heading[1];
+      headers = [];
+      continue;
+    }
+    if (line.startsWith('| Key |')) {
+      headers = splitCells(line);
+      continue;
+    }
+    if (!line.startsWith('| `') || headers.length === 0) {
+      continue;
+    }
+    const cells = splitCells(line);
+    const englishIndex = headers.indexOf('Default English');
+    const signatureIndex = headers.indexOf('Signature');
+    rows.push({
+      key: cells[0]?.replace(/^`|`$/g, '') ?? '',
+      english: decodeCell(cells[englishIndex] ?? ''),
+      section,
+      signature: signatureIndex === -1 ? '' : (cells[signatureIndex] ?? ''),
+    });
+  }
+
+  return rows;
+}
+
+function lookupDefault(key: string): unknown {
+  const root = key.startsWith('validators.')
+    ? defaultRosaHcpWizardValidatorStrings
+    : defaultRosaHcpWizardStrings;
+  const parts = key.startsWith('validators.') ? key.split('.').slice(1) : key.split('.');
+  return parts.reduce<unknown>((current, part) => {
+    if (current !== null && typeof current === 'object') {
+      return (current as Record<string, unknown>)[part];
+    }
+    return undefined;
+  }, root);
+}
+
+/** Heading a key belongs under: the top-level section, or `validators.<group>`. */
+function expectedSectionFor(key: string): string {
+  const parts = key.split('.');
+  if (parts[0] === 'validators') {
+    return parts.length === 2 ? key : `validators.${parts[1]}`;
+  }
+  return parts[0] ?? key;
+}
+
+function expectedEnglish(value: unknown): string | undefined {
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (Array.isArray(value) && value.every((item) => typeof item === 'string')) {
+    return value.join(', ');
+  }
+  return undefined;
+}
+
+function parameterNames(fn: (...args: never[]) => unknown): string[] {
+  const source = fn.toString();
+  const arrow = source.indexOf('=>');
+  const head = arrow === -1 ? source.slice(0, source.indexOf('{')) : source.slice(0, arrow);
+  const open = head.indexOf('(');
+  const close = head.lastIndexOf(')');
+  if (open === -1 || close <= open) {
+    return [];
+  }
+  const inside = head.slice(open + 1, close).trim();
+  if (!inside) {
+    return [];
+  }
+  return inside
+    .split(',')
+    .map((part) => part.trim().split(/[\s:]/)[0] ?? '')
+    .filter((name) => name.length > 0);
+}
+
 describe('localizable strings reference', () => {
   const doc = fs.readFileSync(path.join(__dirname, '../../docs/localizable-strings.md'), 'utf8');
 
   const uiLeaves = collectLeafPaths(defaultRosaHcpWizardStrings, '');
   const validatorLeaves = collectLeafPaths(defaultRosaHcpWizardValidatorStrings, 'validators');
 
-  /** Fails with the dotted paths that the catalog no longer mentions in backticks. */
-  it('lists every UI and validator key', () => {
-    const missing = [...uiLeaves, ...validatorLeaves].filter((key) => !doc.includes(`\`${key}\``));
-    expect(missing).toEqual([]);
+  /**
+   * Each key must be a table row under its own section. String defaults must match the
+   * English in that row. A mention elsewhere in the document does not count.
+   */
+  it('matches every default in its catalog table row', () => {
+    const rows = parseCatalog(doc);
+    const rowsByKey = new Map(rows.map((row) => [row.key, row]));
+    const problems: string[] = [];
+    const seen = new Set<string>();
+
+    for (const row of rows) {
+      if (seen.has(row.key)) {
+        problems.push(`${row.key} is listed more than once`);
+      }
+      seen.add(row.key);
+    }
+
+    for (const key of [...uiLeaves, ...validatorLeaves]) {
+      const row = rowsByKey.get(key);
+      if (!row || !doc.includes(`| \`${key}\` |`)) {
+        problems.push(`${key} is missing a table row`);
+        continue;
+      }
+      const section = expectedSectionFor(key);
+      if (row.section !== section) {
+        problems.push(`${key} is under ### \`${row.section}\`, expected ### \`${section}\``);
+      }
+      const english = expectedEnglish(lookupDefault(key));
+      if (english !== undefined && row.english !== english) {
+        problems.push(
+          `${key} English differs\n  catalog: ${JSON.stringify(row.english)}\n  default: ${JSON.stringify(english)}`
+        );
+      }
+      const value = lookupDefault(key);
+      if (typeof value === 'function') {
+        for (const name of parameterNames(value as (...args: never[]) => unknown)) {
+          if (!row.signature.includes(name)) {
+            problems.push(`${key} signature is missing parameter ${name}`);
+          }
+        }
+      }
+    }
+
+    const known = new Set([...uiLeaves, ...validatorLeaves]);
+    for (const row of rows) {
+      if (!known.has(row.key)) {
+        problems.push(`${row.key} is in the catalog but not in the defaults`);
+      }
+    }
+
+    expect(problems).toEqual([]);
   });
 
   /** Fails when a top-level UI or validator section has no `###` heading of its own. */
