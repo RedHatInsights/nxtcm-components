@@ -299,7 +299,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     title: 'Autoscaling',
     helperLead:
       'Autoscaling automatically adds and removes nodes from the machine pool based on resource requirements.',
-    learnMoreAutoscaling: 'Learn more about autscaling with ROSA.',
+    learnMoreAutoscaling: 'Learn more about autoscaling with ROSA.',
     enableLabel: 'Enable autoscaling',
     minLabel: 'Min compute node count',
     minHelp: 'The number of compute nodes to provision for your initial machine pool.',
