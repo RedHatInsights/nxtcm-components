@@ -21,7 +21,9 @@ test.describe('AccountRoles', () => {
     const component = await mount<typeof AccountRolesMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/AccountRoles/AccountRolesMount'
     );
-    const alert = component.locator('.pf-v6-c-alert.pf-m-info');
+    const alert = component.getByRole('heading', {
+      name: /manually create the required roles and policies/i,
+    });
     await expect(alert).toBeVisible();
   });
 

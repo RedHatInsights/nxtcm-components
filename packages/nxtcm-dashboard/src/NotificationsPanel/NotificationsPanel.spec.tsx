@@ -61,9 +61,7 @@ test.describe('NotificationsPanel', () => {
     await expect(component.getByText('New notifications', { exact: true })).toBeVisible();
 
     // Find the notification count within a div that contains "New notifications"
-    await expect(
-      component.locator('div').filter({ hasText: 'New notifications' }).getByText('6')
-    ).toBeVisible();
+    await expect(component.getByTestId('notification-count')).toHaveText('6');
   });
 
   test('should render empty panel when there are no notifications', async ({ mount }) => {
@@ -72,9 +70,7 @@ test.describe('NotificationsPanel', () => {
       { notifications: [] }
     );
     await expect(component.getByText('New notifications', { exact: true })).toBeVisible();
-    await expect(
-      component.locator('div').filter({ hasText: 'New notifications' }).getByText('0')
-    ).toBeVisible();
+    await expect(component.getByTestId('notification-count')).toHaveText('0');
   });
 
   test.describe('should display all notification items', () => {
@@ -86,7 +82,7 @@ test.describe('NotificationsPanel', () => {
         );
 
         // Find the table row containing this notification
-        const row = component.locator('tr').filter({ hasText: notification.title });
+        const row = component.getByRole('row').filter({ hasText: notification.title });
         await expect(row).toContainText(notification.title);
         await expect(row).toContainText(notification.type);
         await expect(row).toContainText(notification.time);
@@ -105,7 +101,7 @@ test.describe('NotificationsPanel', () => {
 
     // Click the first notification row
     const firstNotificationRow = component
-      .locator('tr')
+      .getByRole('row')
       .filter({ hasText: mockNotifications[0].title });
     await firstNotificationRow.click();
 
@@ -501,7 +497,7 @@ test.describe('NotificationsPanel', () => {
       'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
       { notifications: mockNotifications }
     );
-    const table = component.locator('table');
+    const table = component.getByRole('grid', { name: 'Notifications', exact: true });
     await expect(table).toBeVisible();
   });
 

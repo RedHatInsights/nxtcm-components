@@ -109,9 +109,9 @@ test.describe('Encryption (ROSA HCP)', () => {
         { defaultValues: { encryption_keys: ClusterEncryptionKeys.custom } }
       );
 
-      await expect(component.locator('#kms_key_arn-form-group')).toBeVisible();
+      await expect(component.getByRole('textbox', { name: e.keyArnLabel })).toBeVisible();
       await component.getByRole('radio', { name: e.defaultKms }).click();
-      await expect(component.locator('#kms_key_arn-form-group')).toBeHidden();
+      await expect(component.getByRole('textbox', { name: e.keyArnLabel })).toBeHidden();
     });
 
     test('should clear custom KMS Key ARN validation when default KMS is selected', async ({
@@ -127,7 +127,7 @@ test.describe('Encryption (ROSA HCP)', () => {
         }
       );
 
-      const arnInput = component.locator('#kms_key_arn-form-group').getByRole('textbox');
+      const arnInput = component.getByRole('textbox', { name: e.keyArnLabel });
       await arnInput.fill('not-a-valid-arn');
       await arnInput.blur();
       await expect(component.getByText(v.invalidArn)).toBeVisible();
@@ -149,7 +149,7 @@ test.describe('Encryption (ROSA HCP)', () => {
         }
       );
 
-      const arnInput = component.locator('#kms_key_arn-form-group').getByRole('textbox');
+      const arnInput = component.getByRole('textbox', { name: e.keyArnLabel });
       await arnInput.focus();
       await arnInput.blur();
 
@@ -167,7 +167,7 @@ test.describe('Encryption (ROSA HCP)', () => {
         }
       );
 
-      const arnInput = component.locator('#kms_key_arn-form-group').getByRole('textbox');
+      const arnInput = component.getByRole('textbox', { name: e.keyArnLabel });
       await arnInput.fill('arn:aws:kms:us-east-1:123456789012:key/abc def');
       await arnInput.blur();
 
@@ -185,7 +185,7 @@ test.describe('Encryption (ROSA HCP)', () => {
         }
       );
 
-      const arnInput = component.locator('#kms_key_arn-form-group').getByRole('textbox');
+      const arnInput = component.getByRole('textbox', { name: e.keyArnLabel });
       await arnInput.fill('not-a-valid-arn');
       await arnInput.blur();
 
@@ -205,7 +205,7 @@ test.describe('Encryption (ROSA HCP)', () => {
         }
       );
 
-      const arnInput = component.locator('#kms_key_arn-form-group').getByRole('textbox');
+      const arnInput = component.getByRole('textbox', { name: e.keyArnLabel });
       await arnInput.fill(
         'arn:aws:kms:eu-west-1:123456789012:key/12345678-1234-1234-9abc-123456789012'
       );
@@ -225,7 +225,7 @@ test.describe('Encryption (ROSA HCP)', () => {
         }
       );
 
-      const arnInput = component.locator('#kms_key_arn-form-group').getByRole('textbox');
+      const arnInput = component.getByRole('textbox', { name: e.keyArnLabel });
       await arnInput.fill(
         'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-9abc-123456789012'
       );
@@ -245,7 +245,7 @@ test.describe('Encryption (ROSA HCP)', () => {
         'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/Encryption/Encryption/EncryptionMount'
       );
       await expect(component.getByRole('checkbox', { name: e.etcdLabel })).not.toBeChecked();
-      await expect(component.locator('#etcd_key_arn-form-group')).toBeHidden();
+      await expect(component.getByRole('textbox', { name: e.keyArnLabel })).toBeHidden();
     });
 
     test('should show etcd Key ARN input when etcd encryption is checked', async ({ mount }) => {
@@ -274,7 +274,7 @@ test.describe('Encryption (ROSA HCP)', () => {
 
       await expect(component.getByRole('textbox', { name: e.keyArnLabel })).toBeVisible();
       await component.getByRole('checkbox', { name: e.etcdLabel }).uncheck();
-      await expect(component.locator('#etcd_key_arn-form-group')).toBeHidden();
+      await expect(component.getByRole('textbox', { name: e.keyArnLabel })).toBeHidden();
     });
 
     test('should clear etcd Key ARN validation when etcd encryption is unchecked', async ({
@@ -290,7 +290,7 @@ test.describe('Encryption (ROSA HCP)', () => {
         }
       );
 
-      const arnInput = component.locator('#etcd_key_arn-form-group').getByRole('textbox');
+      const arnInput = component.getByRole('textbox', { name: e.keyArnLabel });
       await arnInput.fill('not-a-valid-arn');
       await arnInput.blur();
       await expect(component.getByText(v.invalidArn)).toBeVisible();
@@ -312,7 +312,7 @@ test.describe('Encryption (ROSA HCP)', () => {
         }
       );
 
-      const arnInput = component.locator('#etcd_key_arn-form-group').getByRole('textbox');
+      const arnInput = component.getByRole('textbox', { name: e.keyArnLabel });
       await arnInput.focus();
       await arnInput.blur();
 
@@ -330,7 +330,7 @@ test.describe('Encryption (ROSA HCP)', () => {
         }
       );
 
-      const arnInput = component.locator('#etcd_key_arn-form-group').getByRole('textbox');
+      const arnInput = component.getByRole('textbox', { name: e.keyArnLabel });
       await arnInput.fill('arn:aws:kms:us-east-1:123456789012:key/abc def');
       await arnInput.blur();
 
@@ -348,7 +348,7 @@ test.describe('Encryption (ROSA HCP)', () => {
         }
       );
 
-      const arnInput = component.locator('#etcd_key_arn-form-group').getByRole('textbox');
+      const arnInput = component.getByRole('textbox', { name: e.keyArnLabel });
       await arnInput.fill('not-a-valid-arn');
       await arnInput.blur();
 
@@ -368,7 +368,7 @@ test.describe('Encryption (ROSA HCP)', () => {
         }
       );
 
-      const arnInput = component.locator('#etcd_key_arn-form-group').getByRole('textbox');
+      const arnInput = component.getByRole('textbox', { name: e.keyArnLabel });
       await arnInput.fill(
         'arn:aws:kms:eu-west-1:123456789012:key/12345678-1234-1234-9abc-123456789012'
       );

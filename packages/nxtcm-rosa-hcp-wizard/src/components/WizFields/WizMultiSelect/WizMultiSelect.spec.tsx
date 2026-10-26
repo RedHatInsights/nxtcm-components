@@ -39,7 +39,7 @@ test.describe('WizMultiSelect', () => {
     await expect(status).toHaveText('(empty)');
 
     await page.getByRole('button', { name: WIZ_MULTI_EXPLICIT_TOGGLE_NAME }).click();
-    const listbox = page.locator('#wiz-multi-ct-explicit-listbox');
+    const listbox = page.getByRole('listbox');
     await expect(listbox).toBeVisible();
     await listbox.getByText('eu-west-1', { exact: true }).click();
     await listbox.getByText('us-east-1', { exact: true }).click();
@@ -76,7 +76,7 @@ test.describe('WizMultiSelect', () => {
     await expect(page.getByText(WIZ_MULTI_SUBMIT_ERROR, { exact: true })).toBeVisible();
 
     await page.getByRole('button', { name: WIZ_MULTI_SUBMIT_TOGGLE_NAME }).click();
-    const submitList = page.locator('#wiz-multi-ct-submit-listbox');
+    const submitList = page.getByRole('listbox');
     await expect(submitList).toBeVisible();
     await submitList.getByText('us-east-1', { exact: true }).click();
     await page.keyboard.press('Escape');
@@ -92,10 +92,7 @@ test.describe('WizMultiSelect', () => {
     const status = page.getByRole('status', { name: WIZ_MULTI_CONTROL_ONLY_STATUS });
     await expect(status).toHaveText('(empty)');
     await page.getByRole('button', { name: WIZ_MULTI_ONLY_CONTROL_TOGGLE }).click();
-    await page
-      .locator('#wiz-multi-ct-control-only-listbox')
-      .getByText('alpha', { exact: true })
-      .click();
+    await page.getByRole('listbox').getByText('alpha', { exact: true }).click();
     await expect(status).toHaveText('alpha');
   });
 

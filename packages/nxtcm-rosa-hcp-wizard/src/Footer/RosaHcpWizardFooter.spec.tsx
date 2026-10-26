@@ -1,3 +1,4 @@
+import type { Locator } from '@playwright/test';
 import * as yaml from 'js-yaml';
 
 import { expect, type MountResult, test } from '@/playwright/ct-fixture';
@@ -41,15 +42,31 @@ function parseSubmittedYaml(payload: unknown): unknown {
 }
 
 async function expectWizardNavError(component: MountResult, stepId: string): Promise<void> {
-  await expect(component.locator(`#${stepId}`)).toContainText(', error');
+  await expect(wizardNavStep(component, stepId)).toContainText(', error');
 }
 
 async function expectWizardNavNoError(component: MountResult, stepId: string): Promise<void> {
-  await expect(component.locator(`#${stepId}`)).not.toContainText(', error');
+  await expect(wizardNavStep(component, stepId)).not.toContainText(', error');
 }
 
-function wizardNavStep(component: MountResult, stepId: string) {
-  return component.locator(`#${stepId}`);
+function wizardNavStep(component: MountResult, stepId: string): Locator {
+  const labels: Record<string, string> = {
+    [STEP_IDS.BASIC_SETUP]: w.stepLabels.basicSetup,
+    [STEP_IDS.DETAILS]: w.stepLabels.details,
+    [STEP_IDS.ROLES_AND_POLICIES]: w.stepLabels.rolesAndPolicies,
+    [STEP_IDS.MACHINE_POOLS]: w.stepLabels.machinePools,
+    [STEP_IDS.NETWORKING]: w.stepLabels.networking,
+    [STEP_IDS.CLUSTER_WIDE_PROXY]: w.stepLabels.clusterWideProxy,
+    [STEP_IDS.OPTIONAL_SETUP]: w.stepLabels.additionalSetup,
+    [STEP_IDS.ENCRYPTION]: w.stepLabels.encryptionOptional,
+    [STEP_IDS.CLUSTER_UPDATES]: w.stepLabels.clusterUpdatesOptional,
+    [STEP_IDS.REVIEW]: w.stepLabels.review,
+  };
+  const label = labels[stepId];
+  if (!label) throw new Error(`Unknown wizard step: ${stepId}`);
+  return component
+    .getByRole('navigation', { name: 'Steps' })
+    .getByRole('button', { name: new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) });
 }
 
 async function clickNextTimes(component: MountResult, count: number): Promise<void> {
@@ -83,7 +100,7 @@ async function selectAwsInfrastructureAccount(
   page: import('@playwright/test').Page,
   accountLabel: string
 ): Promise<void> {
-  const combo = component.locator('#associated_aws_id-form-group').getByRole('combobox', {
+  const combo = component.getByRole('combobox', {
     name: defaultRosaHcpWizardStrings.details.awsInfraPlaceholder,
     exact: true,
   });
@@ -311,9 +328,10 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
       component.getByText(defaultRosaHcpWizardStrings.details.awsInfraLabel)
     ).toBeVisible();
 
-    const billingCombo = component
-      .locator('#billing_account_id-form-group')
-      .getByRole('combobox', { name: d.billingPlaceholder, exact: true });
+    const billingCombo = component.getByRole('combobox', {
+      name: d.billingPlaceholder,
+      exact: true,
+    });
     await billingCombo.click();
     await component
       .locator('#billing_account_id-form-group')

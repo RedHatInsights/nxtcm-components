@@ -15,7 +15,7 @@ test.describe('MultiSelect', () => {
       'nxtcm-rosa-hcp-wizard/components/Fields/MultiSelect/MultiSelect/MultiPlainHarness'
     );
     await page.getByRole('button', { name: /select the zones/i }).click();
-    const listbox = page.locator('#ct-multi-plain-listbox');
+    const listbox = page.getByRole('listbox');
     await expect(listbox).toBeVisible();
     await listbox.getByText('a', { exact: true }).click();
     await listbox.getByText('b', { exact: true }).click();
@@ -37,7 +37,7 @@ test.describe('MultiSelect', () => {
       'nxtcm-rosa-hcp-wizard/components/Fields/MultiSelect/MultiSelect/MultiGroupedHarness'
     );
     await page.getByRole('button', { name: /select the grouped zones/i }).click();
-    const listbox = page.locator('#ct-multi-grouped-listbox');
+    const listbox = page.getByRole('listbox');
     await expect(listbox).toBeVisible();
     await listbox.getByText('a1', { exact: true }).click();
     await listbox.getByText('b1', { exact: true }).click();
@@ -49,7 +49,7 @@ test.describe('MultiSelect', () => {
       'nxtcm-rosa-hcp-wizard/components/Fields/MultiSelect/MultiSelect/MultiLoadingHarness'
     );
     await page.getByRole('button', { name: /^loading/i }).click();
-    const listbox = page.locator('#ct-multi-loading-listbox');
+    const listbox = page.getByRole('listbox');
     await expect(listbox).toBeVisible();
     await expect(listbox.getByText('Loading...')).toBeVisible();
   });
@@ -63,7 +63,7 @@ test.describe('MultiSelect', () => {
     );
     const toggle = page.getByRole('button', { name: /select the regions/i });
     await toggle.click();
-    const listbox = page.locator('#ct-multi-badge-listbox');
+    const listbox = page.getByRole('listbox');
     await expect(listbox).toBeVisible();
     await listbox.getByText('us-east-1', { exact: true }).click();
     await listbox.getByText('eu-west-1', { exact: true }).click();
@@ -75,7 +75,7 @@ test.describe('MultiSelect', () => {
       'nxtcm-rosa-hcp-wizard/components/Fields/MultiSelect/MultiSelect/MultiLegacyToggleHarness'
     );
     await page.getByRole('button', { name: /select the legacy toggle/i }).click();
-    const listbox = page.locator('#ct-multi-legacy-listbox');
+    const listbox = page.getByRole('listbox');
     await expect(listbox).toBeVisible();
     await listbox.getByText('solo', { exact: true }).click();
     await expect(page.getByRole('button', { name: 'solo', exact: true })).toBeVisible();

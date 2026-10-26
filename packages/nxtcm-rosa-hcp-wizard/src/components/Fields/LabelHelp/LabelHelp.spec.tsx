@@ -35,7 +35,7 @@ test.describe('LabelHelp', () => {
         useButton: true,
       }
     );
-    await page.locator('#lh-btn-label-help-button').click();
+    await page.getByRole('button', { name: 'More info', exact: true }).click();
     await expect(page.getByText('Details go here.')).toBeVisible();
   });
 });

@@ -143,7 +143,7 @@ test.describe('ROSAHCPWizardBody', () => {
       versionLabel: string
     ): Promise<void> {
       await component
-        .locator('#cluster_version-form-group')
+
         .getByRole('combobox', { name: details.openShiftVersionPlaceholder, exact: true })
         .click();
       await page.getByText(versionLabel, { exact: true }).click();

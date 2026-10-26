@@ -27,7 +27,7 @@ test.describe('FieldWithAPIErrorAlert', () => {
     await expect(component.getByText('Field content')).toBeVisible();
     await expect(component.getByText('Error loading region list')).toBeVisible();
     await expect(component.getByRole('button', { name: 'Show error details' })).toHaveCount(0);
-    await expect(page.locator('[role="dialog"]')).toHaveCount(0);
+    await expect(page.getByRole('dialog')).toHaveCount(0);
     await expect(page.getByText('There has been an error')).toHaveCount(0);
   });
 

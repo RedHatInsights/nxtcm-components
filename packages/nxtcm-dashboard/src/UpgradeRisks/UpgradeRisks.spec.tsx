@@ -29,16 +29,13 @@ test.describe('UpgradeRisks', () => {
       }
     );
 
-    // Find total risks relative to its label using filter
-    const totalRisksSection = component
-      .locator('div')
-      .filter({ hasText: 'total number of upgrade risks' });
-    await expect(totalRisksSection.getByText('45')).toBeVisible();
+    // Verify the displayed total risk count.
+    const totalRisksSection = component.getByTestId('total-risks');
+    await expect(totalRisksSection).toHaveText('45');
 
-    // Find critical count by locating the Critical label and navigating to parent container
-    const criticalLabel = component.getByText('Critical', { exact: true });
-    const criticalSection = criticalLabel.locator('..');
-    await expect(criticalSection.getByText('15')).toBeVisible();
+    // Verify the displayed critical count.
+    const criticalSection = component.getByTestId('criticalCount');
+    await expect(criticalSection).toHaveText('15');
   });
 
   test('should display correct risk counts', async ({ mount }) => {
@@ -50,16 +47,16 @@ test.describe('UpgradeRisks', () => {
     );
 
     // Verify Critical count
-    const criticalSection = component.getByText('Critical', { exact: true }).locator('..');
-    await expect(criticalSection.getByText('15')).toBeVisible();
+    const criticalSection = component.getByTestId('criticalCount');
+    await expect(criticalSection).toHaveText('15');
 
     // Verify Warning count
-    const warningSection = component.getByText('Warning', { exact: true }).locator('..');
-    await expect(warningSection.getByText('15')).toBeVisible();
+    const warningSection = component.getByTestId('warningCount');
+    await expect(warningSection).toHaveText('15');
 
     // Verify Info count
-    const infoSection = component.getByText('Info', { exact: true }).locator('..');
-    await expect(infoSection.getByText('15')).toBeVisible();
+    const infoSection = component.getByTestId('infoCount');
+    await expect(infoSection).toHaveText('15');
   });
 
   test('should render View upgrade risks link when onViewRisks is provided', async ({ mount }) => {
@@ -131,16 +128,16 @@ test.describe('UpgradeRisks', () => {
     await expect(component.getByTestId('total-risks')).toHaveText('0');
 
     // Verify Critical count is 0
-    const criticalSection = component.getByText('Critical', { exact: true }).locator('..');
-    await expect(criticalSection.getByText('0')).toBeVisible();
+    const criticalSection = component.getByTestId('criticalCount');
+    await expect(criticalSection).toHaveText('0');
 
     // Verify Warning count is 0
-    const warningSection = component.getByText('Warning', { exact: true }).locator('..');
-    await expect(warningSection.getByText('0')).toBeVisible();
+    const warningSection = component.getByTestId('warningCount');
+    await expect(warningSection).toHaveText('0');
 
     // Verify Info count is 0
-    const infoSection = component.getByText('Info', { exact: true }).locator('..');
-    await expect(infoSection.getByText('0')).toBeVisible();
+    const infoSection = component.getByTestId('infoCount');
+    await expect(infoSection).toHaveText('0');
   });
 
   test('should display different counts for each risk type', async ({ mount }) => {
@@ -155,22 +152,20 @@ test.describe('UpgradeRisks', () => {
     );
 
     // Verify total risks relative to its label
-    const totalRisksSection = component
-      .locator('div')
-      .filter({ hasText: 'total number of upgrade risks' });
-    await expect(totalRisksSection.getByText('50')).toBeVisible();
+    const totalRisksSection = component.getByTestId('total-risks');
+    await expect(totalRisksSection).toHaveText('50');
 
     // Verify Critical count relative to its label
-    const criticalSection = component.getByText('Critical', { exact: true }).locator('..');
-    await expect(criticalSection.getByText('35')).toBeVisible();
+    const criticalSection = component.getByTestId('criticalCount');
+    await expect(criticalSection).toHaveText('35');
 
     // Verify Warning count relative to its label
-    const warningSection = component.getByText('Warning', { exact: true }).locator('..');
-    await expect(warningSection.getByText('10')).toBeVisible();
+    const warningSection = component.getByTestId('warningCount');
+    await expect(warningSection).toHaveText('10');
 
     // Verify Info count relative to its label
-    const infoSection = component.getByText('Info', { exact: true }).locator('..');
-    await expect(infoSection.getByText('5')).toBeVisible();
+    const infoSection = component.getByTestId('infoCount');
+    await expect(infoSection).toHaveText('5');
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {

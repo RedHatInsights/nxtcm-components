@@ -166,7 +166,7 @@ test.describe('WizTextInput', () => {
       mounted.getByLabel(WIZ_TEXT_INPUT_OPTIONAL_SCHEMA_REQUIRED_UI_LABEL)
     ).toBeVisible();
     await expect(
-      mounted.locator('label').filter({ hasText: WIZ_TEXT_INPUT_OPTIONAL_SCHEMA_REQUIRED_UI_LABEL })
+      mounted.getByText(`${WIZ_TEXT_INPUT_OPTIONAL_SCHEMA_REQUIRED_UI_LABEL} *`, { exact: true })
     ).toContainText('*');
   });
 
