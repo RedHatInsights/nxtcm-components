@@ -28,7 +28,7 @@ import { RosaHCPWizard, STEP_IDS } from '@redhat-cloud-services/nxtcm-rosa-hcp-w
 />
 ```
 
-Field labels, placeholders, and helper text are often Yup `.meta()` paths into these same keys (`labelKey`, `placeholderKey`, `helperTextKey`, `reviewLabel`). Translating the key covers the control and any review row that uses that path.
+A field's label, placeholder, or helper text and its Review row often share one key. Translating the key covers each place it appears.
 
 Function-valued validator messages must keep the same parameters. The wizard fills in the live values (lengths, CIDRs, field labels) at validation time.
 
