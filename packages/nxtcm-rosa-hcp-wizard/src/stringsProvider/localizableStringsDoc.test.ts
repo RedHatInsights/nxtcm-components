@@ -47,6 +47,7 @@ function sectionBetween(doc: string, startHeading: string, endHeading: string): 
 type CatalogRow = {
   key: string;
   english: string;
+  notes: string;
   section: string;
   signature: string;
 };
@@ -92,10 +93,12 @@ function parseCatalog(doc: string): CatalogRow[] {
     }
     const cells = splitCells(line);
     const englishIndex = headers.indexOf('Default English');
+    const notesIndex = headers.indexOf('Notes');
     const signatureIndex = headers.indexOf('Signature');
     rows.push({
       key: cells[0]?.replace(/^`|`$/g, '') ?? '',
       english: decodeCell(cells[englishIndex] ?? ''),
+      notes: notesIndex === -1 ? '' : (cells[notesIndex] ?? ''),
       section,
       signature: signatureIndex === -1 ? '' : (cells[signatureIndex] ?? ''),
     });
@@ -236,5 +239,29 @@ describe('localizable strings reference', () => {
     expect(omitSection).toContain('`wizard.stepLabels.additionalSetup`');
     expect(omitSection).not.toContain('`networking.proxyCheckboxLabel`');
     expect(omitSection).not.toContain('`review.updateStrategy`');
+  });
+
+  it('marks every unused key that is still on the string types', () => {
+    const rowsByKey = new Map(parseCatalog(doc).map((row) => [row.key, row]));
+    const unread = [
+      'yamlEditor.description',
+      'yamlEditor.convertError',
+      'yamlEditor.invalidYaml',
+      'rolesAndPolicies.copyHover',
+      'rolesAndPolicies.copyClicked',
+      'rolesAndPolicies.supportPlaceholder',
+      'rolesAndPolicies.workerPlaceholder',
+      'machinePools.machinePoolLabel',
+      'machinePools.addPoolButton',
+      'machinePools.settingsSectionLabel',
+      'machinePools.rootDiskHelp',
+      'machinePools.securityGroupsToggle',
+      'autoscaling.title',
+      'securityGroups.refreshLink',
+      'securityGroups.selectAriaLabelledBy',
+      'encryption.etcdTitle',
+    ];
+    const missing = unread.filter((key) => !rowsByKey.get(key)?.notes.includes('Not read'));
+    expect(missing).toEqual([]);
   });
 });
