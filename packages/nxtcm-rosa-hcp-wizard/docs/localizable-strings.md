@@ -452,7 +452,7 @@ Several sentences are split around links. `clusterUpdates.recurringDescriptionBe
 | `clusterUpdates.individualDescriptionLead` | Schedule each update individually. When planning updates, make sure to consider the end of life dates from the |
 | `clusterUpdates.lifecycleLink` | lifecycle policy |
 | `clusterUpdates.recurringLabel` | Automatic updates |
-| `clusterUpdates.recurringDescriptionBeforeZStream` | `The cluster control plan will be automatically updated based on your preferred day and start time when new patch updates ` |
+| `clusterUpdates.recurringDescriptionBeforeZStream` | `The cluster control plane will be automatically updated based on your preferred day and start time when new patch updates ` |
 | `clusterUpdates.zStreamLinkText` | z-stream |
 | `clusterUpdates.recurringDescriptionAfterZStream` | ` are available. When a new minor version is available, you'll be notified and must manually allow the cluster to update the next minor version. The compute nodes will need to be manually updated.` |
 | `clusterUpdates.dayTimeLabel` | Select a day and start time |
