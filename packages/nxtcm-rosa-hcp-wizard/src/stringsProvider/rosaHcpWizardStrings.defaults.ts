@@ -384,7 +384,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     lifecycleLink: 'lifecycle policy',
     recurringLabel: 'Automatic updates',
     recurringDescriptionBeforeZStream:
-      'The cluster control plan will be automatically updated based on your preferred day and start time when new patch updates ',
+      'The cluster control plane will be automatically updated based on your preferred day and start time when new patch updates ',
     zStreamLinkText: 'z-stream',
     recurringDescriptionAfterZStream:
       " are available. When a new minor version is available, you'll be notified and must manually allow the cluster to update the next minor version. The compute nodes will need to be manually updated.",
