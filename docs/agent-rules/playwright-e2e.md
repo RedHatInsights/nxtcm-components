@@ -45,12 +45,6 @@ Flag:
 - `.first()` without a clear unique target
 - Missing accessible names on custom controls (fix component or use documented `data-testid`)
 
-### audit workflow
-
-1. scan `playwright/e2e/**/*.ts` for `locator(` with CSS (especially `.pf-`), weak `getByTestId`, and `.first()` without scope.
-2. report counts (role/label vs testId vs CSS) and file:line fixes.
-3. apply minimal selector changes; run `npx playwright test` on touched files only.
-
 ## implementation patterns
 
 ### cross-field validation (CIDR)
@@ -83,7 +77,7 @@ Use step **Next** and sidebar links consistently; read [`packages/nxtcm-rosa-hcp
 
 ## monaco / yaml editor
 
-See [`monaco-testing.md`](monaco-testing.md). E2E covers workflows; not debounced YAML validation via programmatic editor edits.
+See [`YamlEditor/AGENTS.md`](../../packages/nxtcm-rosa-hcp-wizard/src/Steps/YamlEditor/AGENTS.md). E2E covers workflows; not debounced YAML validation via programmatic editor edits.
 
 ## adding tests
 
@@ -95,5 +89,5 @@ See [`monaco-testing.md`](monaco-testing.md). E2E covers workflows; not debounce
 ## what not to test in E2E
 
 - Every Yup edge case (cover in Jest / CT)
-- Monaco validation via `setValue` (see monaco-testing doc)
+- Monaco validation via `setValue` (see [`YamlEditor/AGENTS.md`](../../packages/nxtcm-rosa-hcp-wizard/src/Steps/YamlEditor/AGENTS.md))
 - Implementation details of `fieldMetaChangeEffects` (unit/registry tests)

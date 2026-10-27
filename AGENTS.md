@@ -18,8 +18,9 @@ npm workspaces monorepo of shared react component libraries for Red Hat ACM (Adv
 - `docs/agent-rules/*.md` = task-type guidance, indexed by [task routing](#task-routing).
 - `packages/nxtcm-dashboard/AGENTS.md` = dashboard-only domain behavior.
 - `packages/nxtcm-rosa-hcp-wizard/AGENTS.md` = wizard-only domain behavior.
+- folder-level `AGENTS.md` files (e.g. `packages/nxtcm-rosa-hcp-wizard/src/Steps/YamlEditor/AGENTS.md`) = component/feature-specific overrides; load when working in that directory.
 
-load the matching package overlay when the task is package-specific.
+load the matching package overlay when the task is package-specific. load the folder overlay when one exists in the directory you are editing.
 
 ## where to add code
 
@@ -37,8 +38,8 @@ load the matching package overlay when the task is package-specific.
 - ui component work: `docs/agent-rules/ui-component.md`
 - playwright CT: `docs/agent-rules/playwright-ct.md`
 - playwright E2E: `docs/agent-rules/playwright-e2e.md`
+- monaco / yaml editor tests: `packages/nxtcm-rosa-hcp-wizard/src/Steps/YamlEditor/AGENTS.md`
 - test / coverage infrastructure: `docs/agent-rules/test-verification.md`
-- monaco / yaml editor tests: `docs/agent-rules/monaco-testing.md`
 - storybook: `docs/agent-rules/storybook.md`
 - ci/workflow: `docs/agent-rules/ci-workflows.md`
 - typescript: `docs/agent-rules/typescript.md`
