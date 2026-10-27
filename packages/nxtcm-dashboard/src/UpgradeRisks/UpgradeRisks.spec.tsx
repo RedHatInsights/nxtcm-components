@@ -34,7 +34,9 @@ test.describe('UpgradeRisks', () => {
     await expect(totalRisksSection).toHaveText('45');
 
     // Verify the displayed critical count.
-    const criticalSection = component.getByTestId('criticalCount');
+    const criticalLabel = component.getByText('Critical', { exact: true });
+    await expect(criticalLabel).toBeVisible();
+    const criticalSection = criticalLabel.locator('..').getByTestId('criticalCount');
     await expect(criticalSection).toHaveText('15');
   });
 
@@ -46,16 +48,22 @@ test.describe('UpgradeRisks', () => {
       }
     );
 
-    // Verify Critical count
-    const criticalSection = component.getByTestId('criticalCount');
+    // Severity containers have no semantic group; scope counts through their visible labels.
+    const criticalLabel = component.getByText('Critical', { exact: true });
+    await expect(criticalLabel).toBeVisible();
+    const criticalSection = criticalLabel.locator('..').getByTestId('criticalCount');
     await expect(criticalSection).toHaveText('15');
 
     // Verify Warning count
-    const warningSection = component.getByTestId('warningCount');
+    const warningLabel = component.getByText('Warning', { exact: true });
+    await expect(warningLabel).toBeVisible();
+    const warningSection = warningLabel.locator('..').getByTestId('warningCount');
     await expect(warningSection).toHaveText('15');
 
     // Verify Info count
-    const infoSection = component.getByTestId('infoCount');
+    const infoLabel = component.getByText('Info', { exact: true });
+    await expect(infoLabel).toBeVisible();
+    const infoSection = infoLabel.locator('..').getByTestId('infoCount');
     await expect(infoSection).toHaveText('15');
   });
 
@@ -128,15 +136,21 @@ test.describe('UpgradeRisks', () => {
     await expect(component.getByTestId('total-risks')).toHaveText('0');
 
     // Verify Critical count is 0
-    const criticalSection = component.getByTestId('criticalCount');
+    const criticalLabel = component.getByText('Critical', { exact: true });
+    await expect(criticalLabel).toBeVisible();
+    const criticalSection = criticalLabel.locator('..').getByTestId('criticalCount');
     await expect(criticalSection).toHaveText('0');
 
     // Verify Warning count is 0
-    const warningSection = component.getByTestId('warningCount');
+    const warningLabel = component.getByText('Warning', { exact: true });
+    await expect(warningLabel).toBeVisible();
+    const warningSection = warningLabel.locator('..').getByTestId('warningCount');
     await expect(warningSection).toHaveText('0');
 
     // Verify Info count is 0
-    const infoSection = component.getByTestId('infoCount');
+    const infoLabel = component.getByText('Info', { exact: true });
+    await expect(infoLabel).toBeVisible();
+    const infoSection = infoLabel.locator('..').getByTestId('infoCount');
     await expect(infoSection).toHaveText('0');
   });
 
@@ -156,15 +170,21 @@ test.describe('UpgradeRisks', () => {
     await expect(totalRisksSection).toHaveText('50');
 
     // Verify Critical count relative to its label
-    const criticalSection = component.getByTestId('criticalCount');
+    const criticalLabel = component.getByText('Critical', { exact: true });
+    await expect(criticalLabel).toBeVisible();
+    const criticalSection = criticalLabel.locator('..').getByTestId('criticalCount');
     await expect(criticalSection).toHaveText('35');
 
     // Verify Warning count relative to its label
-    const warningSection = component.getByTestId('warningCount');
+    const warningLabel = component.getByText('Warning', { exact: true });
+    await expect(warningLabel).toBeVisible();
+    const warningSection = warningLabel.locator('..').getByTestId('warningCount');
     await expect(warningSection).toHaveText('10');
 
     // Verify Info count relative to its label
-    const infoSection = component.getByTestId('infoCount');
+    const infoLabel = component.getByText('Info', { exact: true });
+    await expect(infoLabel).toBeVisible();
+    const infoSection = infoLabel.locator('..').getByTestId('infoCount');
     await expect(infoSection).toHaveText('5');
   });
 

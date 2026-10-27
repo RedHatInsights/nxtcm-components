@@ -22,7 +22,9 @@ test.describe('OCMRole', () => {
     const component = await mount<typeof OCMRoleMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/OCMRole/OCMRoleMount'
     );
-    const alerts = component.getByRole('heading', { name: /existing role.*already linked/i });
+    const alerts = component.getByRole('heading', {
+      name: /^Info alert:.*existing role.*already linked/i,
+    });
     await expect(alerts).toBeVisible();
   });
 

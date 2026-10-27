@@ -22,7 +22,7 @@ test.describe('AccountRoles', () => {
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/AccountRoles/AccountRolesMount'
     );
     const alert = component.getByRole('heading', {
-      name: /manually create the required roles and policies/i,
+      name: /^Info alert:.*manually create the required roles and policies/i,
     });
     await expect(alert).toBeVisible();
   });

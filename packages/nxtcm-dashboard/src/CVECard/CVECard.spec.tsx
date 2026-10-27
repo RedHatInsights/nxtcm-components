@@ -85,7 +85,11 @@ test.describe('CVECard', () => {
       }
     );
 
-    await expect(component.getByText('24', { exact: true })).toBeVisible();
+    // The severity has no semantic group; scope through its visible label's container.
+    const severitySection = component
+      .getByText('Critical severity CVEs on your associated', { exact: true })
+      .locator('../..');
+    await expect(severitySection.getByText('24', { exact: true })).toBeVisible();
   });
 
   test('should render the correct count for important CVEs', async ({ mount }) => {
@@ -96,7 +100,11 @@ test.describe('CVECard', () => {
       }
     );
 
-    await expect(component.getByText('147', { exact: true })).toBeVisible();
+    // The severity has no semantic group; scope through its visible label's container.
+    const severitySection = component
+      .getByText('Important severity CVEs on your associated', { exact: true })
+      .locator('../..');
+    await expect(severitySection.getByText('147', { exact: true })).toBeVisible();
   });
 
   test('should render severity labels correctly', async ({ mount }) => {

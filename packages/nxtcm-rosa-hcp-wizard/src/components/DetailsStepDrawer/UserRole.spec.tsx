@@ -24,7 +24,9 @@ test.describe('UserRole', () => {
     const component = await mount<typeof UserRoleMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/UserRole/UserRoleMount'
     );
-    const alert = component.getByRole('heading', { name: /existing role.*already linked/i });
+    const alert = component.getByRole('heading', {
+      name: /^Info alert:.*existing role.*already linked/i,
+    });
     await expect(alert).toBeVisible();
   });
 
