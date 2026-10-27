@@ -74,6 +74,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     schemaShowTooltip: 'Show schema',
     schemaHideTooltip: 'Hide sidebar',
     schemaSearchPlaceholder: 'Search schema fields...',
+    schemaTreeAriaLabel: 'Schema fields',
   },
   associateAwsDrawer: {
     panelTitle: 'How to associate a new AWS account',
