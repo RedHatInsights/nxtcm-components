@@ -3,6 +3,12 @@
   "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
   "packageRules": [
     {
+      "description": "Disable major updates for peerDependencies",
+      "matchDepTypes": ["peerDependencies"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
       "description": "Group non-security patch updates into a single PR",
       "matchUpdateTypes": ["patch"],
       "matchJsonata": ["isVulnerabilityAlert != true"],
