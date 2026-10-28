@@ -238,9 +238,9 @@ PRs need approval before merging. reviewers are assigned via [CODEOWNERS](CODEOW
 
 ### Dependency updates (Renovate)
 
-Renovate is enabled and automatically opens PRs for minor/patch dependency updates. Major version bumps are disabled. PatternFly and React packages are grouped into single PRs. If you see a Renovate PR, review the changelog and CI results before merging.
+Renovate opens PRs for dependency updates. Review the changelog and CI results before merging. Configuration lives in `renovate.json`.
 
-config is in `renovate.json`. for manual dependency changes, always use `npm ci` (not `npm install`) in CI.
+For manual dependency changes, always use `npm ci` (not `npm install`) in CI.
 
 ---
 
