@@ -254,15 +254,15 @@ If `gh pr list` itself fails, **stop and report the error** — do not proceed t
 
   Omit `--head` when the current branch on `origin` is unambiguous for the repo
   (same as default `gh pr create`). For a fork, always supply both `--repo UPSTREAM_OWNER/REPO_NAME`
-  (so the PR targets the correct upstream repository) and `--head OWNER:<branch>`
-  (where `OWNER` is the fork owner). Example:
+  (so the PR targets the correct upstream repository) and `--head <fork-owner>:<branch>`
+  (where `<fork-owner>` is the fork owner's GitHub login). Example:
 
   ```bash
-  gh pr create --repo UPSTREAM_OWNER/REPO_NAME --base "${INTEGRATION_BRANCH}" --head OWNER:<branch> \
+  gh pr create --repo <upstream-owner>/<repo-name> --base "${INTEGRATION_BRANCH}" --head <fork-owner>:<branch> \
     --title "<generated title>" --body-file pr_draft.md
   ```
 
-  The `--head OWNER:<branch>` form is only valid for `gh pr create`; do not use it with `gh pr list --head`.
+  The `--head <fork-owner>:<branch>` form is only valid for `gh pr create`; do not use it with `gh pr list --head`.
 
   **Alternative:** `gh pr view --json number,url,state` — **edit only if `state` is
   `OPEN`**; if `MERGED` or `CLOSED`, **create** a new PR. If `gh pr view` fails for any

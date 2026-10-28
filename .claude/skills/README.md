@@ -11,5 +11,3 @@ Any edit to a skill has to be applied in both places:
 
 - `.agents/skills/<name>/SKILL.md`
 - `.claude/skills/<name>/SKILL.md`
-
-When Claude Code loads `.agents/skills/` itself, delete `.claude/skills/` so the same skill is not registered twice.

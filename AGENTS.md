@@ -39,8 +39,7 @@ load the matching package overlay when the task is package-specific. load the fo
 - playwright CT: `docs/agent-rules/playwright-ct.md`
 - playwright E2E: `docs/agent-rules/playwright-e2e.md`
 - monaco / yaml editor tests: `packages/nxtcm-rosa-hcp-wizard/src/Steps/YamlEditor/AGENTS.md`
-- test / coverage infrastructure: `docs/agent-rules/test-verification.md`
+- tests failing / coverage not working: `docs/agent-rules/test-verification.md`
 - storybook: `docs/agent-rules/storybook.md`
 - ci/workflow: `docs/agent-rules/ci-workflows.md`
 - typescript: `docs/agent-rules/typescript.md`
-- development workflow: `docs/agent-rules/development-workflow.md`
