@@ -150,8 +150,6 @@ disable until dependencies are selected; show `resource.isFetching` loading on s
 
 exercise the three concerns where relevant: schema validation, footer step-gating, and meta-driven cascades. CT specs live next to components; registry/effect unit tests live under `yupSchemas/` and `fieldMetaChangeEffects/`.
 
-For Monaco/YAML editor testing specifically, load [`src/Steps/YamlEditor/AGENTS.md`](src/Steps/YamlEditor/AGENTS.md) — it covers the critical `setValue()` / `showBanner` constraint, what to test at each layer, CT limitations, and E2E patterns.
-
 stories use these title groups and tags:
 
 - **Public full wizard**: `Wizards/RosaHCPWizard` with `tags: ['autodocs']`
