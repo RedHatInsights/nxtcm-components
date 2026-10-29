@@ -4,6 +4,10 @@ import { RosaHcpWizardStringsProvider } from './stringsProvider/RosaHcpWizardStr
 import { RosaHCPWizardProps } from './types';
 
 export type ROSAHCPWrapperProps = RosaHCPWizardProps & {
+  /**
+   * Partial UI copy and validator messages. Omitted keys use the built-in English defaults.
+   * Key catalog: `docs/localizable-strings.md` in this package.
+   */
   strings?: RosaHcpWizardStringsInput;
 };
 
