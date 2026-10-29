@@ -3,17 +3,43 @@ import React, { useState } from 'react';
 import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 
 import { Select } from './Select';
+import type { OptionGroup } from './SelectTypes';
 
-export function PlainMenuHarness() {
+export interface PlainMenuHarnessProps {
+  /** marks the field as required */
+  isRequired?: boolean;
+  /** disables the field */
+  isDisabled?: boolean;
+  /** shows validation feedback */
+  isError?: boolean;
+  /** validation feedback */
+  errorMessage?: string;
+  /** shows the loading state */
+  isLoading?: boolean;
+  /** flat options to display */
+  options?: string[];
+  /** grouped options to display */
+  optionGroups?: OptionGroup<string>[];
+  /** enables filtering through a combobox */
+  isTypeAhead?: boolean;
+}
+
+export function PlainMenuHarness({
+  options,
+  optionGroups,
+  ...fieldProps
+}: PlainMenuHarnessProps = {}): React.ReactElement {
   const [value, setValue] = useState<string | number | undefined>();
   return (
     <Form>
-      <Select
+      <Select<string>
         id="ct-menu-plain"
         label="Region"
         value={value}
         onChange={setValue}
-        options={['us-east-1', 'eu-west-1']}
+        options={optionGroups ? undefined : (options ?? ['us-east-1', 'eu-west-1'])}
+        optionGroups={optionGroups}
+        {...fieldProps}
       />
       <span data-testid="menu-val">{value === undefined ? 'none' : String(value)}</span>
     </Form>
