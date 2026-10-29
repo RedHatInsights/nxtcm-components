@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   lint:
     name: Lint
@@ -37,6 +41,9 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint
+
+      - name: Run ESLint rule tests
+        run: npm run test:eslint-rules
 
       - name: Check Prettier formatting
         run: npm run prettier:check
@@ -85,9 +92,6 @@ jobs:
         run: |
           mkdir -p test-results
           npm test -- --coverage --json --outputFile=test-results/jest-results.json
-
-      - name: Run ESLint rule tests
-        run: npm run test:eslint-rules
 
       - name: Upload coverage artifact
         if: always()
