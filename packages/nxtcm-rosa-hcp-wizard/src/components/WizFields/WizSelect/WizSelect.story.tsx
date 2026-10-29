@@ -54,7 +54,6 @@ import {
   RosaHcpWizardValidationProvider,
   useRosaHcpWizardValidation,
 } from '../../../rosaHcpWizardValidationContext';
-import type { OptionGroup } from '../../Fields/Select/SelectTypes';
 import {
   formatWatchValue,
   withRosaCt,
@@ -112,22 +111,7 @@ export function WizSelectDeferValidationHarness() {
 
 type ExplicitFormValues = { region?: string };
 
-/** States used by Details, MachinePools, Networking, and RolesAndPolicies. */
-export function WizSelectExplicitHarness({
-  isDisabled = false,
-  isLoading = false,
-  isTypeAhead = false,
-  options,
-  optionGroups,
-  apiError,
-}: {
-  isDisabled?: boolean;
-  isLoading?: boolean;
-  isTypeAhead?: boolean;
-  options?: string[];
-  optionGroups?: OptionGroup<string>[];
-  apiError?: string;
-}) {
+export function WizSelectExplicitHarness() {
   const methods = useForm<ExplicitFormValues>({
     defaultValues: { region: undefined },
   });
@@ -139,13 +123,9 @@ export function WizSelectExplicitHarness({
           name="region"
           id="wiz-select-ct-explicit"
           label={WIZ_SELECT_EXPLICIT_LABEL}
-          helperText={isDisabled ? 'Choose an AWS account first.' : WIZ_SELECT_EXPLICIT_HELPER}
-          options={optionGroups ? undefined : (options ?? ['us-east-1', 'eu-west-1'])}
-          optionGroups={optionGroups}
-          isTypeAhead={isTypeAhead}
-          isDisabled={isDisabled}
-          isLoading={isLoading}
-          apiError={apiError}
+          helperText={WIZ_SELECT_EXPLICIT_HELPER}
+          options={['us-east-1', 'eu-west-1']}
+          isTypeAhead={false}
         />
         <WizCtWatchStatus
           control={methods.control}

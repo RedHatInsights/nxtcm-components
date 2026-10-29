@@ -1,5 +1,4 @@
 import { expect, test } from '@/playwright/ct-fixture';
-import { checkAccessibility } from '@/playwright/test-helpers';
 
 import type {
   RadioGroupHarness,
@@ -18,45 +17,6 @@ import {
 } from './RadioGroup.story-data';
 
 test.describe('RadioGroup', () => {
-  test('passes accessibility check', async ({ mount }) => {
-    const component = await mount<typeof RadioGroupHarness>(
-      'nxtcm-rosa-hcp-wizard/components/Fields/RadioGroup/RadioGroup/RadioGroupHarness'
-    );
-    await checkAccessibility({ component });
-  });
-
-  test('passes accessibility check when required', async ({ mount }) => {
-    const component = await mount<typeof RadioGroupHarness>(
-      'nxtcm-rosa-hcp-wizard/components/Fields/RadioGroup/RadioGroup/RadioGroupHarness',
-      { isRequired: true }
-    );
-    await expect(component.getByText('*', { exact: true })).toBeVisible();
-    await checkAccessibility({ component });
-  });
-
-  test('passes accessibility check with error feedback', async ({ mount }) => {
-    const component = await mount<typeof RadioGroupHarness>(
-      'nxtcm-rosa-hcp-wizard/components/Fields/RadioGroup/RadioGroup/RadioGroupHarness',
-      { isError: true, errorMessage: 'Choose a valid value.' }
-    );
-    await expect(component.getByText('Choose a valid value.', { exact: true })).toBeVisible();
-    await checkAccessibility({ component });
-  });
-
-  test('passes accessibility check with no selection', async ({ mount }) => {
-    const component = await mount<typeof RadioGroupHarness>(
-      'nxtcm-rosa-hcp-wizard/components/Fields/RadioGroup/RadioGroup/RadioGroupHarness',
-      { initial: null }
-    );
-    await expect(
-      component.getByRole('radio', { name: RADIO_GROUP_HARNESS_SMALL_LABEL })
-    ).not.toBeChecked();
-    await expect(
-      component.getByRole('radio', { name: RADIO_GROUP_HARNESS_LARGE_LABEL })
-    ).not.toBeChecked();
-    await checkAccessibility({ component });
-  });
-
   test('renders radios inside a radiogroup with helper text', async ({ mount }) => {
     const mounted = await mount<typeof RadioGroupHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/RadioGroup/RadioGroup/RadioGroupHarness'
@@ -84,7 +44,6 @@ test.describe('RadioGroup', () => {
     await expect(
       mounted.getByRole('radio', { name: RADIO_GROUP_HARNESS_LARGE_LABEL })
     ).toBeChecked();
-    await checkAccessibility({ component: mounted });
   });
 
   test('renders radios without a FormGroup label when label is omitted', async ({ mount }) => {

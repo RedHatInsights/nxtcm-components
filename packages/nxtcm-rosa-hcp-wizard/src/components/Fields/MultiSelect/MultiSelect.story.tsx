@@ -5,18 +5,7 @@ import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 import type { OptionGroup } from '../Select/SelectTypes';
 import { MultiSelect } from './MultiSelect';
 
-export interface MultiPlainHarnessProps {
-  /** shows validation feedback */
-  isError?: boolean;
-  /** validation feedback */
-  errorMessage?: string;
-  /** shows the loading state */
-  isLoading?: boolean;
-  /** flat options to display */
-  options?: string[];
-}
-
-export function MultiPlainHarness(fieldProps: MultiPlainHarnessProps = {}): React.ReactElement {
+export function MultiPlainHarness() {
   const [value, setValue] = useState<string[]>([]);
   return (
     <Form>
@@ -26,7 +15,6 @@ export function MultiPlainHarness(fieldProps: MultiPlainHarnessProps = {}): Reac
         value={value}
         onChange={setValue}
         options={['a', 'b', 'c']}
-        {...fieldProps}
       />
       <span data-testid="multi-val">{value.length === 0 ? 'none' : value.join(',')}</span>
     </Form>

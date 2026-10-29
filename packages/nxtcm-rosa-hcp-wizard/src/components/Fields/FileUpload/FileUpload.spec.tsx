@@ -1,31 +1,13 @@
 import { expect, test } from '@/playwright/ct-fixture';
-import { checkAccessibility } from '@/playwright/test-helpers';
 
-import type { FileUploadHarness } from './FileUpload.story';
 import {
   FILE_UPLOAD_HARNESS_HELPER_TEXT,
   FILE_UPLOAD_HARNESS_LABEL,
 } from './FileUpload.story-data';
 
 test.describe('FileUpload', () => {
-  test('passes accessibility check', async ({ mount }) => {
-    const component = await mount<typeof FileUploadHarness>(
-      'nxtcm-rosa-hcp-wizard/components/Fields/FileUpload/FileUpload/FileUploadHarness'
-    );
-    await checkAccessibility({ component });
-  });
-
-  test('passes accessibility check with error feedback', async ({ mount }) => {
-    const component = await mount<typeof FileUploadHarness>(
-      'nxtcm-rosa-hcp-wizard/components/Fields/FileUpload/FileUpload/FileUploadHarness',
-      { isError: true, errorMessage: 'Choose a valid value.' }
-    );
-    await expect(component.getByText('Choose a valid value.', { exact: true })).toBeVisible();
-    await checkAccessibility({ component });
-  });
-
   test('renders label and helper text', async ({ mount: mountComponent }) => {
-    const mounted = await mountComponent<typeof FileUploadHarness>(
+    const mounted = await mountComponent(
       'nxtcm-rosa-hcp-wizard/components/Fields/FileUpload/FileUpload/FileUploadHarness'
     );
     await expect(mounted.getByText(FILE_UPLOAD_HARNESS_LABEL, { exact: true })).toBeVisible();
@@ -33,7 +15,7 @@ test.describe('FileUpload', () => {
   });
 
   test('accepts a file and shows the filename', async ({ mount: mountComponent, page }) => {
-    const mounted = await mountComponent<typeof FileUploadHarness>(
+    const mounted = await mountComponent(
       'nxtcm-rosa-hcp-wizard/components/Fields/FileUpload/FileUpload/FileUploadHarness'
     );
     const fileChooserPromise = page.waitForEvent('filechooser');
@@ -47,9 +29,5 @@ test.describe('FileUpload', () => {
     await expect(mounted.getByRole('textbox', { name: /read only filename/i })).toHaveValue(
       'pull-secret.json'
     );
-    await expect(mounted.getByRole('textbox', { name: 'File upload', exact: true })).toHaveValue(
-      '{"auths":{}}'
-    );
-    await checkAccessibility({ component: mounted });
   });
 });

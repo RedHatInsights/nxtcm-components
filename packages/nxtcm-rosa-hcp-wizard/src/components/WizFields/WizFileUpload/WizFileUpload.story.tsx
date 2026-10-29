@@ -30,9 +30,6 @@ import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
-import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import { buildClusterValidationSchemaContext } from '../../../utilities/buildClusterValidationSchemaContext';
-import { additionalTrustBundleSchema } from '../../../yupSchemas/clusterWideProxyFields';
 import {
   withRosaCt,
   wizCtSubmitValidationPreview,
@@ -41,33 +38,6 @@ import {
 import { WizFileUpload } from './WizFileUpload';
 
 type ExplicitFormValues = { pullSecret: string };
-
-type TrustBundleFormValues = { additional_trust_bundle?: string };
-const trustBundleSchema: yup.ObjectSchema<TrustBundleFormValues> = yup.object({
-  additional_trust_bundle: additionalTrustBundleSchema,
-});
-
-/** ClusterWideProxy uses an optional trust bundle with PEM-content validation. */
-export function WizFileUploadTrustBundleHarness() {
-  const methods = useForm<TrustBundleFormValues>({
-    resolver: yupResolver(trustBundleSchema),
-    context: buildClusterValidationSchemaContext({}, defaultRosaHcpWizardValidatorStrings),
-    defaultValues: { additional_trust_bundle: '' },
-    mode: 'onTouched',
-  });
-
-  return withRosaCt(
-    <FormProvider {...methods}>
-      <Form onSubmit={wizCtSubmitValidationPreview(methods)}>
-        <WizFileUpload<TrustBundleFormValues>
-          name="additional_trust_bundle"
-          schema={trustBundleSchema}
-        />
-        <Button type="submit">Submit</Button>
-      </Form>
-    </FormProvider>
-  );
-}
 
 export function WizFileUploadExplicitHarness() {
   const methods = useForm<ExplicitFormValues>({

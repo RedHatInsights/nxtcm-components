@@ -21,18 +21,7 @@ import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 
 import { TextInput } from './TextInput';
 
-export interface TextInputHarnessProps {
-  /** marks the field as required */
-  isRequired?: boolean;
-  /** disables the field */
-  isDisabled?: boolean;
-  /** shows validation feedback */
-  isError?: boolean;
-  /** validation feedback */
-  errorMessage?: string;
-}
-
-export function TextInputHarness(fieldProps: TextInputHarnessProps = {}): React.ReactElement {
+export function TextInputHarness() {
   const [value, setValue] = useState('');
   return (
     <Form>
@@ -44,7 +33,6 @@ export function TextInputHarness(fieldProps: TextInputHarnessProps = {}): React.
         onChange={(_e, v) => setValue(v)}
         helperText={CLUSTER_NAME_HELPER_TEXT}
         placeholder={CLUSTER_NAME_PLACEHOLDER_TEXT}
-        {...fieldProps}
       />
     </Form>
   );

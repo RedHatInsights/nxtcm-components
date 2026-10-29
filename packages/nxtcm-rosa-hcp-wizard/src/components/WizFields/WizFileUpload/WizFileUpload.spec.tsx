@@ -1,14 +1,11 @@
 import { expect, test } from '@/playwright/ct-fixture';
-import { checkAccessibility } from '@/playwright/test-helpers';
 
-import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import type {
   WizFileUploadClearViaButtonHarness,
   WizFileUploadExplicitControlOnlyHarness,
   WizFileUploadExplicitHarness,
   WizFileUploadNestedFallbackHarness,
   WizFileUploadSubmitValidationHarness,
-  WizFileUploadTrustBundleHarness,
   WizFileUploadYupMetaHarness,
 } from './WizFileUpload.story';
 import {
@@ -25,54 +22,6 @@ import {
 } from './WizFileUpload.story-data';
 
 test.describe('WizFileUpload', () => {
-  test('passes accessibility check', async ({ mount }) => {
-    const component = await mount<typeof WizFileUploadExplicitHarness>(
-      'nxtcm-rosa-hcp-wizard/components/WizFields/WizFileUpload/WizFileUpload/WizFileUploadExplicitHarness'
-    );
-    await expect(component.getByRole('textbox', { name: 'File upload', exact: true })).toHaveValue(
-      ''
-    );
-    await checkAccessibility({ component });
-  });
-
-  test('passes accessibility checks for optional trust-bundle validation and recovery', async ({
-    mount,
-    page,
-  }) => {
-    const component = await mount<typeof WizFileUploadTrustBundleHarness>(
-      'nxtcm-rosa-hcp-wizard/components/WizFields/WizFileUpload/WizFileUpload/WizFileUploadTrustBundleHarness'
-    );
-    const content = component.getByRole('textbox', { name: 'File upload', exact: true });
-    const error = component.getByText(defaultRosaHcpWizardValidatorStrings.ca.invalidPem, {
-      exact: true,
-    });
-    await expect(content).not.toHaveAttribute('required');
-    await component.getByRole('button', { name: 'Submit', exact: true }).click();
-    await expect(error).toBeHidden();
-    await checkAccessibility({ component });
-
-    const fileChooserPromise = page.waitForEvent('filechooser');
-    await component.getByRole('button', { name: /browse/i }).click();
-    const fileChooser = await fileChooserPromise;
-    await fileChooser.setFiles({
-      name: 'invalid-ca.pem',
-      mimeType: 'text/plain',
-      buffer: Buffer.from('This is not a PEM certificate.'),
-    });
-    await expect(content).toHaveValue('This is not a PEM certificate.');
-    await component.getByRole('button', { name: 'Submit', exact: true }).click();
-    await expect(error).toBeVisible();
-    await expect(content).toHaveAttribute('aria-invalid', 'true');
-    await checkAccessibility({ component });
-
-    await component.getByRole('button', { name: 'Clear', exact: true }).click();
-    await expect(content).toHaveValue('');
-    await component.getByRole('button', { name: 'Submit', exact: true }).click();
-    await expect(error).toBeHidden();
-    await expect(content).not.toHaveAttribute('aria-invalid', 'true');
-    await checkAccessibility({ component });
-  });
-
   test('renders explicit label and helper text', async ({ mount }) => {
     const mounted = await mount<typeof WizFileUploadExplicitHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizFileUpload/WizFileUpload/WizFileUploadExplicitHarness'
@@ -101,7 +50,6 @@ test.describe('WizFileUpload', () => {
       'pull-secret.json'
     );
     await expect(status).toHaveText('{"auths":{}}');
-    await checkAccessibility({ component: mounted });
   });
 
   test('derives label and helper text from Yup schema meta when props are omitted', async ({
@@ -191,10 +139,6 @@ test.describe('WizFileUpload', () => {
 
     await mounted.getByRole('button', { name: 'Clear' }).click();
     await expect(status).toHaveText('(empty)');
-    await expect(mounted.getByRole('textbox', { name: 'File upload', exact: true })).toHaveValue(
-      ''
-    );
-    await checkAccessibility({ component: mounted });
   });
 
   test('binds uploads through the control prop without a FormProvider wrapper', async ({

@@ -29,10 +29,6 @@ import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
-import { MAX_SECURITY_GROUPS } from '../../../constants';
-import { defaultRosaHcpWizardValidatorStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
-import { buildClusterValidationSchemaContext } from '../../../utilities/buildClusterValidationSchemaContext';
-import { securityGroupsWorkerSchema } from '../../../yupSchemas/machinePoolsFields';
 import {
   withRosaCt,
   wizCtSubmitValidationPreview,
@@ -43,8 +39,7 @@ const WIZ_MULTI_SUBMIT_DEMO_LABEL = 'Tags (submit demo)';
 
 type ExplicitMultiFormValues = { tags?: string[] };
 
-/** Security-group selects use flat options and resource loading. */
-export function WizMultiSelectExplicitHarness({ isLoading = false }: { isLoading?: boolean }) {
+export function WizMultiSelectExplicitHarness() {
   const methods = useForm<ExplicitMultiFormValues>({
     defaultValues: { tags: [] },
   });
@@ -58,7 +53,6 @@ export function WizMultiSelectExplicitHarness({ isLoading = false }: { isLoading
           label={WIZ_MULTI_EXPLICIT_LABEL}
           helperText={WIZ_MULTI_EXPLICIT_HELPER}
           options={['us-east-1', 'eu-west-1']}
-          isLoading={isLoading}
         />
         <WizCtWatchStatus
           control={methods.control}
@@ -68,44 +62,6 @@ export function WizMultiSelectExplicitHarness({ isLoading = false }: { isLoading
             !Array.isArray(v) || v.length === 0 ? '(empty)' : (v as string[]).join(',')
           }
         />
-      </Form>
-    </FormProvider>
-  );
-}
-
-const securityGroupsSchema = yup.object({ security_groups_worker: securityGroupsWorkerSchema });
-type SecurityGroupsFormValues = yup.InferType<typeof securityGroupsSchema>;
-const securityGroupOptions = Array.from(
-  { length: MAX_SECURITY_GROUPS + 1 },
-  (_, i) => `sg-${i + 1}`
-);
-
-/** Mirrors EditSecurityGroups: optional selection, validated against the production limit. */
-export function WizMultiSelectSecurityGroupsHarness() {
-  const methods = useForm<SecurityGroupsFormValues>({
-    resolver: yupResolver(securityGroupsSchema),
-    context: buildClusterValidationSchemaContext({}, defaultRosaHcpWizardValidatorStrings),
-    defaultValues: { security_groups_worker: [] },
-    mode: 'onTouched',
-  });
-
-  return withRosaCt(
-    <FormProvider {...methods}>
-      <Form onSubmit={wizCtSubmitValidationPreview(methods)}>
-        <WizMultiSelect<SecurityGroupsFormValues>
-          name="security_groups_worker"
-          schema={securityGroupsSchema}
-          label="Security groups"
-          options={securityGroupOptions}
-          maxMenuHeight="300px"
-        />
-        <WizCtWatchStatus
-          control={methods.control}
-          name="security_groups_worker"
-          ariaLabel="Selected security groups"
-          format={(value) => String(Array.isArray(value) ? value.length : 0)}
-        />
-        <Button type="submit">Submit</Button>
       </Form>
     </FormProvider>
   );
@@ -197,7 +153,7 @@ export function WizMultiSelectExplicitControlOnlyHarness() {
   );
 }
 
-export function WizMultiSelectApiErrorHarness({ options = ['sg-a'] }: { options?: string[] }) {
+export function WizMultiSelectApiErrorHarness() {
   const methods = useForm<ExplicitMultiFormValues>({
     defaultValues: { tags: [] },
   });
@@ -208,7 +164,7 @@ export function WizMultiSelectApiErrorHarness({ options = ['sg-a'] }: { options?
         <WizMultiSelect
           name="tags"
           label={WIZ_MULTI_API_ERROR_FIELD_LABEL}
-          options={options}
+          options={['sg-a']}
           apiError={WIZ_MULTI_API_ERROR_DETAIL}
           onRefresh={() => undefined}
         />

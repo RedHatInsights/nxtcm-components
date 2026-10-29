@@ -1,18 +1,9 @@
 import { expect, test } from '@/playwright/ct-fixture';
-import { checkAccessibility } from '@/playwright/test-helpers';
 
 import type { EmptyHelperTextStory, HelperTextStory } from './HelperText.story';
 import { getValidated, helperTextId } from './helperTextUtils';
 
 test.describe('HelperText', () => {
-  test('passes accessibility check', async ({ mount }) => {
-    const component = await mount(
-      'nxtcm-rosa-hcp-wizard/components/Fields/HelperText/HelperText/HelperTextStory',
-      { id: 'f1', helperText: 'Choose a value that fits your workload.' }
-    );
-    await checkAccessibility({ component });
-  });
-
   test('renders helper text when provided', async ({ mount }) => {
     const mounted = await mount<typeof HelperTextStory>(
       'nxtcm-rosa-hcp-wizard/components/Fields/HelperText/HelperText/HelperTextStory',

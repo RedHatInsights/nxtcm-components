@@ -19,7 +19,7 @@ import { Radio } from './Radio';
 /** Strings shared by `Radio.spec.tsx` and this harness */
 const RADIO_HARNESS_US_EAST_LABEL = 'US East';
 
-export function TwoRadioHarness(): React.ReactElement {
+export function TwoRadioHarness() {
   const [value, setValue] = useState<string | undefined>('east');
   return (
     <Form>

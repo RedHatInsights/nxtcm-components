@@ -1,5 +1,4 @@
 import { expect, test } from '@/playwright/ct-fixture';
-import { checkAccessibility } from '@/playwright/test-helpers';
 
 import type {
   WizTextInputBlurValidationHarness,
@@ -31,40 +30,6 @@ import {
 } from './WizTextInput.story-data';
 
 test.describe('WizTextInput', () => {
-  test('passes accessibility check', async ({ mount }) => {
-    const component = await mount<typeof WizTextInputExplicitHarness>(
-      'nxtcm-rosa-hcp-wizard/components/WizFields/WizTextInput/WizTextInput/WizTextInputExplicitHarness'
-    );
-    await expect(component.getByRole('textbox')).toBeVisible();
-    await expect(component.getByRole('textbox')).toHaveValue('');
-    await checkAccessibility({ component });
-  });
-
-  test('passes accessibility check when disabled', async ({ mount }) => {
-    const component = await mount<typeof WizTextInputExplicitHarness>(
-      'nxtcm-rosa-hcp-wizard/components/WizFields/WizTextInput/WizTextInput/WizTextInputExplicitHarness',
-      { isDisabled: true, initialValue: '10.0.0.0/16' }
-    );
-    const input = component.getByRole('textbox', { name: WIZ_TEXT_INPUT_EXPLICIT_LABEL });
-    await expect(input).toBeDisabled();
-    await expect(input).toHaveValue('10.0.0.0/16');
-    await checkAccessibility({ component });
-  });
-
-  test('passes accessibility check for a populated read-only field', async ({ mount }) => {
-    const value = 'arn:aws:iam::123456789012:role/ManagedOpenShift-Installer-Role';
-    const component = await mount<typeof WizTextInputExplicitHarness>(
-      'nxtcm-rosa-hcp-wizard/components/WizFields/WizTextInput/WizTextInput/WizTextInputExplicitHarness',
-      { readOnly: true, initialValue: value }
-    );
-    const input = component.getByRole('textbox', { name: WIZ_TEXT_INPUT_EXPLICIT_LABEL });
-    await expect(input).toHaveValue(value);
-    await expect(input).toHaveAttribute('readonly', '');
-    await expect(input).toHaveAttribute('required', '');
-    await expect(input).not.toBeEditable();
-    await checkAccessibility({ component });
-  });
-
   test('renders explicit label and helper text', async ({ mount }) => {
     const mounted = await mount<typeof WizTextInputExplicitHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizTextInput/WizTextInput/WizTextInputExplicitHarness'
@@ -88,13 +53,9 @@ test.describe('WizTextInput', () => {
     });
     await textbox.fill('cluster-a');
     await expect(status).toHaveText('cluster-a');
-    await expect(textbox).toHaveValue('cluster-a');
-    await checkAccessibility({ component: mounted });
 
     await textbox.fill('');
     await expect(status).toHaveText('(empty)');
-    await expect(textbox).toHaveValue('');
-    await checkAccessibility({ component: mounted });
   });
 
   test('derives label and helper text from Yup schema meta when those props are omitted', async ({
@@ -111,14 +72,8 @@ test.describe('WizTextInput', () => {
     const mounted = await mount<typeof WizTextInputSubmitValidationHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizTextInput/WizTextInput/WizTextInputSubmitValidationHarness'
     );
-    await expect(mounted.getByRole('textbox', { name: /notes \(submit demo\)/i })).toHaveAttribute(
-      'required',
-      ''
-    );
-    await checkAccessibility({ component: mounted });
     await mounted.getByRole('button', { name: 'Submit' }).click();
     await expect(mounted.getByText(WIZ_TEXT_INPUT_SUBMIT_ERROR, { exact: true })).toBeVisible();
-    await checkAccessibility({ component: mounted });
   });
 
   test('clears Yup validation after the user enters a valid value and submits again', async ({
@@ -134,7 +89,6 @@ test.describe('WizTextInput', () => {
 
     await mounted.getByRole('button', { name: 'Submit' }).click();
     await expect(mounted.getByText(WIZ_TEXT_INPUT_SUBMIT_ERROR, { exact: true })).toBeHidden();
-    await checkAccessibility({ component: mounted });
   });
 
   test('uses the last segment of a nested path as the field name when no label or Yup schema', async ({

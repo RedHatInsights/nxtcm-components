@@ -28,22 +28,8 @@ const RADIO_GROUP_HARNESS_VALUE_SMALL = 'small';
 const RADIO_GROUP_HARNESS_PLAN_LABEL = 'Plan';
 const RADIO_GROUP_HARNESS_PLAN_A_LABEL = 'Plan A';
 
-export interface RadioGroupHarnessProps {
-  /** marks the field as required */
-  isRequired?: boolean;
-  /** shows validation feedback */
-  isError?: boolean;
-  /** validation feedback */
-  errorMessage?: string;
-  /** initial selection; null leaves all radios unchecked */
-  initial?: string | null;
-}
-
-export function RadioGroupHarness({
-  initial = RADIO_GROUP_HARNESS_VALUE_SMALL,
-  ...fieldProps
-}: RadioGroupHarnessProps = {}): React.ReactElement {
-  const [value, setValue] = useState<string | undefined>(initial ?? undefined);
+export function RadioGroupHarness() {
+  const [value, setValue] = useState<string | undefined>(RADIO_GROUP_HARNESS_VALUE_SMALL);
   return (
     <Form>
       <RadioGroup
@@ -52,7 +38,6 @@ export function RadioGroupHarness({
         value={value}
         onChange={(v) => setValue(v as string | undefined)}
         helperText={RADIO_GROUP_HARNESS_HELPER_TEXT}
-        {...fieldProps}
       >
         <Radio
           id="opt-s"

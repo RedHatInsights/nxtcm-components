@@ -13,14 +13,7 @@ import { type DropEvent } from '@patternfly/react-core/dist/dynamic/helpers/type
 
 import { FileUpload } from './FileUpload';
 
-export interface FileUploadHarnessProps {
-  /** shows validation feedback */
-  isError?: boolean;
-  /** validation feedback */
-  errorMessage?: string;
-}
-
-export function FileUploadHarness(fieldProps: FileUploadHarnessProps = {}): React.ReactElement {
+export function FileUploadHarness() {
   const [value, setValue] = useState('');
   const [filename, setFilename] = useState('');
   return (
@@ -31,7 +24,6 @@ export function FileUploadHarness(fieldProps: FileUploadHarnessProps = {}): Reac
         helperText={FILE_UPLOAD_HARNESS_HELPER_TEXT}
         filename={filename}
         value={value}
-        {...fieldProps}
         onFileInputChange={(_e: DropEvent, file: File) => {
           setFilename(file.name);
         }}

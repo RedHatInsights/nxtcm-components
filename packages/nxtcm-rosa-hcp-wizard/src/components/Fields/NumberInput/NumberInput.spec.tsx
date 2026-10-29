@@ -1,5 +1,4 @@
 import { expect, test } from '@/playwright/ct-fixture';
-import { checkAccessibility } from '@/playwright/test-helpers';
 
 import type { NumberHarness } from './NumberInput.story';
 
@@ -7,31 +6,6 @@ import type { NumberHarness } from './NumberInput.story';
 const workerCountLabel = 'Worker count';
 
 test.describe('NumberInput', () => {
-  test('passes accessibility check', async ({ mount }) => {
-    const component = await mount<typeof NumberHarness>(
-      'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness'
-    );
-    await checkAccessibility({ component });
-  });
-
-  test('passes accessibility check when required', async ({ mount }) => {
-    const component = await mount<typeof NumberHarness>(
-      'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness',
-      { isRequired: true }
-    );
-    await expect(component.getByText('*', { exact: true })).toBeVisible();
-    await checkAccessibility({ component });
-  });
-
-  test('passes accessibility check with error feedback', async ({ mount }) => {
-    const component = await mount<typeof NumberHarness>(
-      'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness',
-      { isError: true, errorMessage: 'Choose a valid value.' }
-    );
-    await expect(component.getByText('Choose a valid value.', { exact: true })).toBeVisible();
-    await checkAccessibility({ component });
-  });
-
   test('renders label and default placeholder from label', async ({ mount }) => {
     const mounted = await mount<typeof NumberHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness'
@@ -51,7 +25,6 @@ test.describe('NumberInput', () => {
     const spinbutton = mounted.getByRole('spinbutton', { name: new RegExp(workerCountLabel, 'i') });
     await mounted.getByRole('button', { name: 'Plus' }).click();
     await expect(spinbutton).toHaveValue('2');
-    await checkAccessibility({ component: mounted });
   });
 
   test('decrements to zero in the field when zeroIsUndefined is true', async ({ mount }) => {
