@@ -253,7 +253,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
   const renderMenuBody = () => {
     if (isLoading) {
       return (
-        <SelectList id={`${id}-listbox`}>
+        <SelectList id={`${id}-listbox`} aria-label={label || placeholderText}>
           <SelectOption id={`${id}-loading`} isDisabled value="loading">
             <Flex
               alignItems={{ default: 'alignItemsCenter' }}
@@ -272,7 +272,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
       const toRender = groups.filter((g) => g.options.length > 0);
       if (toRender.length === 0) {
         return (
-          <SelectList id={`${id}-listbox`}>
+          <SelectList id={`${id}-listbox`} aria-label={label || placeholderText}>
             <SelectOption id={`${id}-no-results`} isAriaDisabled value="no-results">
               {noResultsText}
             </SelectOption>
@@ -280,25 +280,27 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
         );
       }
       return (
-        <SelectList id={`${id}-listbox`}>
+        <>
           {toRender.map((group, index) => (
             <Fragment key={group.label}>
               {index > 0 ? <Divider /> : null}
               <SelectGroup label={group.label}>
-                {group.options.map((opt: OptionType<T>, optIdx: number) =>
-                  renderSelectOptionRow(opt, opt.id || `option-${group.label}-${optIdx}`)
-                )}
+                <SelectList aria-label={`${label || placeholderText}: ${group.label}`}>
+                  {group.options.map((opt: OptionType<T>, optIdx: number) =>
+                    renderSelectOptionRow(opt, opt.id || `option-${group.label}-${optIdx}`)
+                  )}
+                </SelectList>
               </SelectGroup>
             </Fragment>
           ))}
-        </SelectList>
+        </>
       );
     }
 
     const flatOpts = normalizedFlat ?? [];
     if (flatOpts.length === 0) {
       return (
-        <SelectList id={`${id}-listbox`}>
+        <SelectList id={`${id}-listbox`} aria-label={label || placeholderText}>
           <SelectOption id={`${id}-empty`} isAriaDisabled value="empty">
             {noResultsText}
           </SelectOption>
@@ -307,7 +309,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
     }
 
     return (
-      <SelectList id={`${id}-listbox`}>
+      <SelectList id={`${id}-listbox`} aria-label={label || placeholderText}>
         {flatOpts.map((opt, idx) => renderSelectOptionRow(opt, opt.id || `opt-${idx}`))}
       </SelectList>
     );
@@ -372,6 +374,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
       <InputGroupItem isFill={isFill}>
         <PfSelect
           id={id}
+          role="menu"
           isOpen={open}
           selected={selectedMenuIds}
           onSelect={onPfSelect}
