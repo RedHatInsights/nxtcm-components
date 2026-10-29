@@ -1,4 +1,5 @@
 import { expect, test } from '@/playwright/ct-fixture';
+import { checkAccessibility } from '@/playwright/test-helpers';
 
 import type {
   WizRadioGroupExplicitControlOnlyHarness,
@@ -29,6 +30,15 @@ import {
 } from './WizRadioGroup.story-data';
 
 test.describe('WizRadioGroup', () => {
+  test('passes accessibility check', async ({ mount }) => {
+    const component = await mount<typeof WizRadioGroupExplicitHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupExplicitHarness'
+    );
+    await expect(component.getByRole('radiogroup')).toBeVisible();
+    await expect(component.getByRole('radio').first()).not.toBeChecked();
+    await checkAccessibility({ component });
+  });
+
   test('renders explicit label and helper text', async ({ mount }) => {
     const mounted = await mount<typeof WizRadioGroupExplicitHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupExplicitHarness'
@@ -59,6 +69,10 @@ test.describe('WizRadioGroup', () => {
       .getByRole('radio', { name: new RegExp(WIZ_RADIO_GROUP_OPTION_BETA_LABEL, 'i') })
       .click();
     await expect(status).toHaveText('beta');
+    await expect(
+      mounted.getByRole('radio', { name: WIZ_RADIO_GROUP_OPTION_BETA_LABEL })
+    ).toBeChecked();
+    await checkAccessibility({ component: mounted });
   });
 
   test('derives label and helper text from Yup schema meta when those props are omitted', async ({
@@ -75,8 +89,11 @@ test.describe('WizRadioGroup', () => {
     const mounted = await mount<typeof WizRadioGroupSubmitValidationHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupSubmitValidationHarness'
     );
+    await expect(mounted.getByText('*', { exact: true })).toBeVisible();
+    await checkAccessibility({ component: mounted });
     await mounted.getByRole('button', { name: 'Submit' }).click();
     await expect(mounted.getByText(WIZ_RADIO_GROUP_SUBMIT_ERROR, { exact: true })).toBeVisible();
+    await checkAccessibility({ component: mounted });
   });
 
   test('clears Yup validation after the user selects a valid option and submits again', async ({
@@ -94,6 +111,7 @@ test.describe('WizRadioGroup', () => {
 
     await mounted.getByRole('button', { name: 'Submit' }).click();
     await expect(mounted.getByText(WIZ_RADIO_GROUP_SUBMIT_ERROR, { exact: true })).toBeHidden();
+    await checkAccessibility({ component: mounted });
   });
 
   test('binds dotted field paths via fallback labeling when Yup is omitted', async ({ mount }) => {
@@ -145,6 +163,7 @@ test.describe('WizRadioGroup', () => {
     await expect(radiogroup).toBeVisible();
     await expect(radiogroup).toHaveAccessibleName('');
     await expect(mounted.getByRole('radio', { name: /hidden label option a/i })).toBeVisible();
+    await checkAccessibility({ component: mounted });
   });
 
   test('binds through the control prop without a FormProvider wrapper', async ({ mount }) => {

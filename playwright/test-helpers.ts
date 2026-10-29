@@ -44,10 +44,22 @@ export async function checkAccessibility({
 }): Promise<void> {
   await expect(component).toBeVisible();
 
-  const axeRootSelector = await component.evaluate((node: HTMLElement) => {
-    const id = `a11y-root-${crypto.randomUUID()}`;
-    node.id = id;
-    return `#${CSS.escape(id)}`;
+  // Scan the settled state, not partially faded text during PatternFly transitions.
+  await component.evaluate(async (element) => {
+    await new Promise(requestAnimationFrame);
+    await Promise.allSettled(
+      element
+        .getAnimations({ subtree: true })
+        .filter((animation) => animation.effect?.getComputedTiming().iterations !== Infinity)
+        .map((animation) => animation.finished)
+    );
+  });
+
+  const { axeRootSelector, previousRoot } = await component.evaluate((node: HTMLElement) => {
+    const previousRoot = node.getAttribute('data-axe-root');
+    const root = crypto.randomUUID();
+    node.setAttribute('data-axe-root', root);
+    return { axeRootSelector: `[data-axe-root="${root}"]`, previousRoot };
   });
 
   const disabledRules = [...ignoreRules];
@@ -56,11 +68,21 @@ export async function checkAccessibility({
     disabledRules.push('landmark-one-main', 'page-has-heading-one', 'region');
   }
 
-  const results = await new AxeBuilder({ page: component.page() })
-    .include(axeRootSelector)
-    .disableRules(disabledRules)
-    .options({ iframes: false })
-    .analyze();
+  try {
+    const results = await new AxeBuilder({ page: component.page() })
+      .include(axeRootSelector)
+      .options({ iframes: false })
+      .disableRules(disabledRules)
+      .analyze();
 
-  expect(results.violations).toHaveLength(0);
+    expect(results.violations).toHaveLength(0);
+  } finally {
+    await component.evaluate((node, previous) => {
+      if (previous === null) {
+        node.removeAttribute('data-axe-root');
+      } else {
+        node.setAttribute('data-axe-root', previous);
+      }
+    }, previousRoot);
+  }
 }

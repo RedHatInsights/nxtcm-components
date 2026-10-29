@@ -1,4 +1,5 @@
 import { expect, test } from '@/playwright/ct-fixture';
+import { checkAccessibility } from '@/playwright/test-helpers';
 
 import type { SecretHarness, TextInputHarness } from './TextInput.story';
 import {
@@ -14,6 +15,45 @@ import {
 } from './TextInput.story-data';
 
 test.describe('TextInput', () => {
+  test('passes accessibility check', async ({ mount }) => {
+    const component = await mount<typeof TextInputHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/TextInput/TextInput/TextInputHarness'
+    );
+    await checkAccessibility({ component });
+  });
+
+  test('passes accessibility check when required', async ({ mount }) => {
+    const component = await mount<typeof TextInputHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/TextInput/TextInput/TextInputHarness',
+      { isRequired: true }
+    );
+    await expect(
+      component.getByRole('textbox', { name: CLUSTER_NAME_FIELD_LABEL })
+    ).toHaveAttribute('required', '');
+    await checkAccessibility({ component });
+  });
+
+  test('passes accessibility check when disabled', async ({ mount }) => {
+    const component = await mount<typeof TextInputHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/TextInput/TextInput/TextInputHarness',
+      { isDisabled: true }
+    );
+    await expect(component.getByRole('textbox', { name: CLUSTER_NAME_FIELD_LABEL })).toBeDisabled();
+    await checkAccessibility({ component });
+  });
+
+  test('passes accessibility check with error feedback', async ({ mount }) => {
+    const component = await mount<typeof TextInputHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/TextInput/TextInput/TextInputHarness',
+      { isError: true, errorMessage: 'Choose a valid value.' }
+    );
+    await expect(component.getByText('Choose a valid value.', { exact: true })).toBeVisible();
+    await expect(
+      component.getByRole('textbox', { name: CLUSTER_NAME_FIELD_LABEL })
+    ).toHaveAccessibleDescription(/Choose a valid value\.\s*:\s*error status;/);
+    await checkAccessibility({ component });
+  });
+
   test('renders label, placeholder, and helper text', async ({ mount }) => {
     const mounted = await mount<typeof TextInputHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/TextInput/TextInput/TextInputHarness'
@@ -31,6 +71,7 @@ test.describe('TextInput', () => {
     const input = mounted.getByRole('textbox', { name: CLUSTER_NAME_FIELD_LABEL });
     await input.fill(SAMPLE_CLUSTER_NAME_VALUE);
     await expect(input).toHaveValue(SAMPLE_CLUSTER_NAME_VALUE);
+    await checkAccessibility({ component: mounted });
   });
 
   test('reveals and hides secret value when the control button is used', async ({ mount }) => {
@@ -39,8 +80,10 @@ test.describe('TextInput', () => {
     );
     const input = mounted.getByRole('textbox', { name: API_TOKEN_FIELD_LABEL });
     await expect(input).toHaveAttribute('type', 'password');
+    await checkAccessibility({ component: mounted });
     await mounted.getByRole('button', { name: SHOW_PASSWORD_BUTTON_NAME }).click();
     await expect(input).toHaveAttribute('type', 'text');
+    await checkAccessibility({ component: mounted });
     await mounted.getByRole('button', { name: HIDE_PASSWORD_BUTTON_NAME }).click();
     await expect(input).toHaveAttribute('type', 'password');
   });

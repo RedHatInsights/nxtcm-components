@@ -47,7 +47,7 @@ import { WizCheckbox } from './WizCheckbox';
 
 type ExplicitFormValues = { acceptTerms: boolean };
 
-export function WizCheckboxExplicitHarness() {
+export function WizCheckboxExplicitHarness(): React.ReactElement {
   const methods = useForm<ExplicitFormValues>({
     defaultValues: { acceptTerms: false },
   });

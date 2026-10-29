@@ -113,7 +113,7 @@ export const TextInput: ForwardRefExoticComponent<
             {...textInputRest}
             type={inputType}
             isDisabled={isDisabled}
-            required={isRequired || required}
+            isRequired={isRequired || required}
             customIcon={isLoading ? <Spinner size="sm" /> : undefined}
           />
         </Tooltip>
