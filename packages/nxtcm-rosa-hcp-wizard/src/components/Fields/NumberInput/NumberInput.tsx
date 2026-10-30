@@ -1,6 +1,7 @@
 import {
   type ComponentProps,
   type FormEvent,
+  type InputHTMLAttributes,
   type MouseEvent,
   type ReactNode,
   type SyntheticEvent,
@@ -24,7 +25,7 @@ function lowercaseFirst(label: string) {
 
 export interface NumberInputProps extends Omit<
   NumberInputComponentProps,
-  'onChange' | 'onMinus' | 'onPlus' | 'validated'
+  'onChange' | 'onMinus' | 'onPlus' | 'validated' | 'inputProps'
 > {
   id: string;
   label: string;
@@ -39,6 +40,7 @@ export interface NumberInputProps extends Omit<
   isSuccess?: boolean;
   successMessage?: ReactNode | string;
   isDisabled?: boolean;
+  inputProps?: InputHTMLAttributes<HTMLInputElement>;
 }
 
 export function NumberInput(props: NumberInputProps) {
@@ -60,6 +62,8 @@ export function NumberInput(props: NumberInputProps) {
     successMessage,
     isDisabled,
     inputAriaLabel: inputAriaLabelFromProps,
+    inputProps: inputPropsFromProps,
+    'aria-describedby': ariaDescribedByFromProps,
     ...numberInputRest
   } = props;
 
@@ -69,6 +73,17 @@ export function NumberInput(props: NumberInputProps) {
   const numValue = typeof value === 'number' ? value : undefined;
   // PfNumberInput defaults undefined value to 0; '' keeps the field visually empty when value is unset.
   const pfValue = zeroIsUndefined && numValue === undefined ? '' : numValue;
+  const helperTextDescriptionId = helperTextId({
+    id,
+    errorMessage,
+    helperText,
+    isError,
+    isSuccess,
+    successMessage,
+  });
+  const inputAriaDescribedBy = [ariaDescribedByFromProps, helperTextDescriptionId]
+    .filter(Boolean)
+    .join(' ');
 
   const onMinus = useCallback(
     (event: MouseEvent) => {
@@ -124,14 +139,10 @@ export function NumberInput(props: NumberInputProps) {
         onChange={onChangeCallback}
         onPlus={onPlus}
         min={min === undefined ? 0 : min}
-        aria-describedby={helperTextId({
-          id,
-          errorMessage,
-          helperText,
-          isError,
-          isSuccess,
-          successMessage,
-        })}
+        inputProps={{
+          ...inputPropsFromProps,
+          ...(inputAriaDescribedBy ? { 'aria-describedby': inputAriaDescribedBy } : {}),
+        }}
         isDisabled={isDisabled}
       />
       <HelperText

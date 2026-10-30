@@ -11,6 +11,7 @@ export interface NumberHarnessProps {
   initial?: number;
   /** marks the field as required */
   isRequired?: boolean;
+  helperText?: string;
   /** shows validation feedback */
   isError?: boolean;
   /** validation feedback */
