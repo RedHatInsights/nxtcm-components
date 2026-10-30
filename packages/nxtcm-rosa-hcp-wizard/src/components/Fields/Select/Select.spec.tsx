@@ -2,6 +2,8 @@ import { expect, test } from '@/playwright/ct-fixture';
 
 import type {
   DisabledTypeaheadHarness,
+  GroupedTypeaheadHarness,
+  LoadingTypeaheadHarness,
   PlainMenuHarness,
   PreselectedTypeaheadHarness,
   RefreshHarness,
@@ -27,6 +29,11 @@ test.describe('Select', () => {
     await combo.fill('subnet');
     await expect(page.getByRole('option', { name: 'subnet-a' })).toBeVisible();
     await expect(page.getByRole('option', { name: 'other-net' })).toHaveCount(0);
+    await expect(page.getByRole('combobox', { name: /select the subnet/i })).toHaveAttribute(
+      'aria-controls',
+      'ct-menu-ta-listbox'
+    );
+    await expect(page.locator('#ct-menu-ta-listbox')).toBeVisible();
   });
 
   test('shows all options when reopening a typeahead after selection', async ({ mount, page }) => {
@@ -44,6 +51,29 @@ test.describe('Select', () => {
     await expect(page.getByRole('option', { name: 'subnet-a' })).toBeVisible();
     await expect(page.getByRole('option', { name: 'subnet-b' })).toBeVisible();
     await expect(page.getByRole('option', { name: 'other-net' })).toBeVisible();
+  });
+
+  test('keeps aria-controls connected for grouped typeahead menus', async ({ mount, page }) => {
+    await mount<typeof GroupedTypeaheadHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/GroupedTypeaheadHarness'
+    );
+    const combo = page.getByRole('combobox', { name: /select the subnet/i });
+    await combo.click();
+    await expect(combo).toHaveAttribute('aria-controls', 'ct-menu-ta-grouped-listbox');
+    await expect(page.locator('#ct-menu-ta-grouped-listbox')).toBeVisible();
+  });
+
+  test('keeps aria-controls connected while a typeahead menu is loading', async ({
+    mount,
+    page,
+  }) => {
+    await mount<typeof LoadingTypeaheadHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/LoadingTypeaheadHarness'
+    );
+    const combo = page.getByRole('combobox', { name: /select the subnet/i });
+    await combo.click();
+    await expect(combo).toHaveAttribute('aria-controls', 'ct-menu-ta-loading-listbox');
+    await expect(page.locator('#ct-menu-ta-loading-listbox')).toBeVisible();
   });
 
   test('re-selecting the same typeahead option keeps the selection', async ({ mount, page }) => {

@@ -258,7 +258,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   const renderMenuBody = () => {
     if (isLoading) {
       return (
-        <SelectList>
+        <SelectList id={isTypeAhead ? `${id}-listbox` : undefined}>
           <SelectOption id={`${id}-loading`} isDisabled value="loading">
             <Flex
               alignItems={{ default: 'alignItemsCenter' }}
@@ -276,7 +276,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
       const toRender = displayedGroups.filter((g) => g.options.length > 0);
       if (toRender.length === 0) {
         return (
-          <SelectList>
+          <SelectList id={isTypeAhead ? `${id}-listbox` : undefined}>
             <SelectOption id={`${id}-no-results`} isAriaDisabled value="no-results">
               {noResultsText}
             </SelectOption>
@@ -284,7 +284,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
         );
       }
       return (
-        <SelectList>
+        <SelectList id={isTypeAhead ? `${id}-listbox` : undefined}>
           {toRender.map((group, index) => (
             <Fragment key={group.label}>
               {index > 0 ? <Divider /> : null}

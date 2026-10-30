@@ -33,7 +33,7 @@ test.describe('ClusterUpdates (ROSA HCP)', () => {
     await expect(component.getByText(cu.upgradePolicyLabel, { exact: true })).toHaveCount(1);
     const radiogroup = component.getByRole('radiogroup');
     await expect(radiogroup).toBeVisible();
-    await expect(radiogroup).toHaveAccessibleName('');
+    await expect(radiogroup).toHaveAccessibleName('Cluster update strategy');
   });
 
   test('should show day and time selectors when recurring updates is selected by default', async ({

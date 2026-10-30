@@ -37,6 +37,40 @@ export function TypeaheadHarness() {
   );
 }
 
+export function GroupedTypeaheadHarness() {
+  return (
+    <Form>
+      <Select
+        id="ct-menu-ta-grouped"
+        label="Subnet"
+        value={undefined}
+        onChange={() => undefined}
+        optionGroups={[
+          { label: 'Production', options: ['subnet-a'] },
+          { label: 'Development', options: ['subnet-b'] },
+        ]}
+        isTypeAhead
+      />
+    </Form>
+  );
+}
+
+export function LoadingTypeaheadHarness() {
+  return (
+    <Form>
+      <Select
+        id="ct-menu-ta-loading"
+        label="Subnet"
+        value={undefined}
+        onChange={() => undefined}
+        options={[]}
+        isTypeAhead
+        isLoading
+      />
+    </Form>
+  );
+}
+
 export function PreselectedTypeaheadHarness() {
   const [value, setValue] = useState<string | number | undefined>('subnet-a');
   return (
