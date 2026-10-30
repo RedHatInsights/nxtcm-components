@@ -113,8 +113,10 @@ test.describe('DetailsStepDrawer', () => {
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
       { initiallyExpanded: true, product: 'ocm' }
     );
-    // LoginStep should be rendered (has clipboard copy)
-    await expect(component.locator('.pf-v6-c-clipboard-copy').first()).toBeVisible();
+    // The login command is available to copy.
+    await expect(
+      component.getByRole('textbox', { name: 'Copyable ROSA login command' })
+    ).toBeVisible();
   });
 
   test('should render resizable panel', async ({ mount }) => {
@@ -122,8 +124,8 @@ test.describe('DetailsStepDrawer', () => {
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount',
       { initiallyExpanded: true }
     );
-    // Panel should have resizable class/attribute
-    const panel = component.locator('.pf-v6-c-drawer__panel');
+    // The panel exposes an accessible resize control.
+    const panel = component.getByRole('separator', { name: 'Resize' });
     await expect(panel).toBeVisible();
   });
 

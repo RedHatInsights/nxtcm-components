@@ -88,7 +88,7 @@ test.describe('ClustersWithIssues', () => {
       'nxtcm-dashboard/ClustersWithIssues/ClustersWithIssues/ClustersWithIssuesStory',
       { data: defaultData }
     );
-    const countSection = component.getByTestId('unhealthy-count').locator('..');
+    const countSection = component.getByTestId('unhealthy-count');
     await expect(countSection).toBeVisible();
   });
 
@@ -148,7 +148,7 @@ test.describe('ClustersWithIssues', () => {
     );
 
     await expect(component.getByText('cluster1')).toBeVisible();
-    await expect(component.locator('a')).toHaveCount(0);
+    await expect(component.getByRole('link')).toHaveCount(0);
   });
 
   test('should show empty state when no clusters', async ({ mount }) => {
@@ -167,7 +167,7 @@ test.describe('ClustersWithIssues', () => {
       { data: { totalUnhealthy: 0, clusters: [] } }
     );
 
-    await expect(component.locator('.pf-v6-c-pagination')).toHaveCount(0);
+    await expect(component.getByRole('navigation', { name: 'Pagination' })).toHaveCount(0);
   });
 
   test('should handle single cluster', async ({ mount }) => {
@@ -265,7 +265,7 @@ test.describe('ClustersWithIssues — title tooltip', () => {
       { data: defaultData }
     );
     await expect(
-      component.locator('[aria-label="More info about clusters with issues"]')
+      component.getByRole('button', { name: 'More info about clusters with issues' })
     ).toBeVisible();
   });
 });
@@ -277,7 +277,7 @@ test.describe('ClustersWithIssues — pagination', () => {
       { data: paginatedData, perPage: 5 }
     );
 
-    const rows = component.locator('tbody tr');
+    const rows = component.getByRole('row').filter({ has: component.page().getByRole('gridcell') });
     await expect(rows).toHaveCount(5);
     await expect(component.getByText('cluster-1')).toBeVisible();
     await expect(component.getByText('cluster-5')).toBeVisible();
@@ -290,7 +290,7 @@ test.describe('ClustersWithIssues — pagination', () => {
       { data: paginatedData, perPage: 5 }
     );
 
-    await expect(component.locator('.pf-v6-c-pagination')).toBeVisible();
+    await expect(component.getByRole('navigation', { name: 'Pagination' })).toBeVisible();
   });
 
   test('should navigate to next page', async ({ mount }) => {
@@ -316,7 +316,7 @@ test.describe('ClustersWithIssues — pagination', () => {
 
     await expect(component.getByText('cluster-11')).toBeVisible();
     await expect(component.getByText('cluster-12')).toBeVisible();
-    const rows = component.locator('tbody tr');
+    const rows = component.getByRole('row').filter({ has: component.page().getByRole('gridcell') });
     await expect(rows).toHaveCount(2);
   });
 
@@ -334,9 +334,9 @@ test.describe('ClustersWithIssues — pagination', () => {
       { data: smallData, perPage: 5 }
     );
 
-    const rows = component.locator('tbody tr');
+    const rows = component.getByRole('row').filter({ has: component.page().getByRole('gridcell') });
     await expect(rows).toHaveCount(3);
-    await expect(component.locator('.pf-v6-c-pagination')).toBeVisible();
+    await expect(component.getByRole('navigation', { name: 'Pagination' })).toBeVisible();
   });
 
   test('should render skeleton when isLoading is true', async ({ mount }) => {

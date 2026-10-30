@@ -77,36 +77,34 @@ test.describe('CVECard', () => {
     await expect(component.getByText(customDescription)).toBeVisible();
   });
 
-  test('should render the correct count for critical CVEs', async ({ mount, page }) => {
-    await mount<typeof CVECardStory>('nxtcm-dashboard/CVECard/CVECard/CVECardStory', {
-      cveData: mockCVEData,
-    });
+  test('should render the correct count for critical CVEs', async ({ mount }) => {
+    const component = await mount<typeof CVECardStory>(
+      'nxtcm-dashboard/CVECard/CVECard/CVECardStory',
+      {
+        cveData: mockCVEData,
+      }
+    );
 
-    // Find a div containing the View critical CVEs button
-    const criticalSection = page
-      .locator('div')
-      .filter({
-        has: page.getByRole('button', { name: 'View critical CVEs' }),
-      })
-      .first();
-
-    await expect(criticalSection.getByText('24')).toBeVisible();
+    // The severity has no semantic group; scope through its visible label's container.
+    const severitySection = component
+      .getByText('Critical severity CVEs on your associated', { exact: true })
+      .locator('../..');
+    await expect(severitySection.getByText('24', { exact: true })).toBeVisible();
   });
 
-  test('should render the correct count for important CVEs', async ({ mount, page }) => {
-    await mount<typeof CVECardStory>('nxtcm-dashboard/CVECard/CVECard/CVECardStory', {
-      cveData: mockCVEData,
-    });
+  test('should render the correct count for important CVEs', async ({ mount }) => {
+    const component = await mount<typeof CVECardStory>(
+      'nxtcm-dashboard/CVECard/CVECard/CVECardStory',
+      {
+        cveData: mockCVEData,
+      }
+    );
 
-    // Find a div containing the View important CVEs button
-    const importantSection = page
-      .locator('div')
-      .filter({
-        has: page.getByRole('button', { name: 'View important CVEs' }),
-      })
-      .first();
-
-    await expect(importantSection.getByText('147')).toBeVisible();
+    // The severity has no semantic group; scope through its visible label's container.
+    const severitySection = component
+      .getByText('Important severity CVEs on your associated', { exact: true })
+      .locator('../..');
+    await expect(severitySection.getByText('147', { exact: true })).toBeVisible();
   });
 
   test('should render severity labels correctly', async ({ mount }) => {
@@ -219,13 +217,18 @@ test.describe('CVECard', () => {
     await expect(component.getByText('147')).toBeVisible();
   });
 
-  test('should apply custom className when provided', async ({ mount, page }) => {
-    await mount<typeof CVECardStory>('nxtcm-dashboard/CVECard/CVECard/CVECardStory', {
-      cveData: mockCVEData,
-      className: 'custom-class',
-    });
-    const customElement = page.locator('.custom-class');
-    await expect(customElement).toBeVisible();
+  test('should apply custom className when provided', async ({ mount }) => {
+    const component = await mount<typeof CVECardStory>(
+      'nxtcm-dashboard/CVECard/CVECard/CVECardStory',
+      {
+        cveData: mockCVEData,
+        className: 'custom-class',
+      }
+    );
+    // className is forwarded to the component root inside the gallery mount.
+    await expect(component.locator(':scope > *').first()).toHaveClass(
+      /(?:^|\s)custom-class(?:\s|$)/
+    );
   });
 
   test('should use default view link text when not provided', async ({ mount }) => {

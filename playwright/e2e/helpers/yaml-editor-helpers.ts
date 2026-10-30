@@ -16,7 +16,7 @@ export async function navigateToYamlEditor(page: Page): Promise<void> {
   await page.getByRole('button', { name: /Edit in YAML/i }).click();
 
   // Wait for Monaco editor to be fully initialized
-  await page.locator('.monaco-editor').waitFor({ state: 'visible' });
+  await page.getByRole('textbox', { name: /editor content/i }).waitFor({ state: 'visible' });
 
   // Wait for Monaco editor to be available on window
   await page.waitForFunction(

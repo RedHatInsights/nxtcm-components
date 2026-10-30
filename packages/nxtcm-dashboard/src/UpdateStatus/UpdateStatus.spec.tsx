@@ -74,7 +74,7 @@ test.describe('UpdateStatus', () => {
         data: defaultData,
       }
     );
-    await expect(component.locator('hr')).toHaveCount(1);
+    await expect(component.getByRole('separator')).toHaveCount(1);
   });
 
   test('should render two icons when no updating data', async ({ mount }) => {
@@ -125,7 +125,7 @@ test.describe('UpdateStatus', () => {
         data: dataWithUpdating,
       }
     );
-    await expect(component.locator('hr')).toHaveCount(2);
+    await expect(component.getByRole('separator')).toHaveCount(2);
   });
 
   test('should display zero for up-to-date when all need updates', async ({ mount }) => {
