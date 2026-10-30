@@ -158,7 +158,7 @@ export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
                 key={notification.id}
                 data-testid={`notification-${notification.id}`}
                 isClickable
-                onClick={() => handleNotificationClick(notification)}
+                onRowClick={() => handleNotificationClick(notification)}
                 className={styles.clickableRow}
               >
                 <Td dataLabel="Notification">
