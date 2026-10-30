@@ -164,7 +164,9 @@ Storybook is the shared visual dev/review surface. It is the quickest way to val
 
 ### What runs in CI
 
-Main CI runs lint, type-check, unit tests, CT, E2E, build, and storybook in parallel. `coverage-contract` waits for unit/CT/E2E, then combines their outputs into `test-coverage-data.json`.
+Main CI runs lint, type-check, unit tests, CT, E2E, build, and storybook in parallel. Unit tests, CT, and E2E each run the full suite across both workspaces on a React 18/19 matrix with fail-fast disabled. After `npm ci`, `scripts/setup-react-version.mjs` installs matching React runtime and type majors without modifying the manifests or lockfile, then verifies runtime versions and shared resolution from the root and both workspaces. The separate `test:react-compat` job still validates the published packages.
+
+Test artifacts have a `-react-18` or `-react-19` suffix. `coverage-contract` waits for all unit/CT/E2E jobs, then assembles `test-coverage-data.json` separately for each React version. It uploads `test-coverage-data-react-18` and `test-coverage-data-react-19`; React 19 also supplies the unchanged `test-coverage-data` artifact consumed by EPD, avoiding double-counting. CT triage downloads each version's report and labels its comments and artifact references with that React version. As a `workflow_run` workflow, triage uses trusted default-branch helpers, so its matrix changes take effect after merge.
 
 Additional workflows:
 

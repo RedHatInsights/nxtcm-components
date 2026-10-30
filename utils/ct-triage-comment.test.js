@@ -5,7 +5,7 @@ const { execFileSync } = require('child_process');
 
 const SCRIPT_PATH = path.join(process.cwd(), 'utils', 'ct-triage-comment.mjs');
 
-function runCommentScript(summaryContent) {
+function runCommentScript(summaryContent, args = []) {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ct-triage-comment-'));
   const summaryPath = path.join(tempDir, 'playwright-ct-summary.json');
 
@@ -17,7 +17,7 @@ function runCommentScript(summaryContent) {
 
   let output = '';
   try {
-    output = execFileSync('node', [SCRIPT_PATH, '--summary-json', summaryPath], {
+    output = execFileSync('node', [SCRIPT_PATH, '--summary-json', summaryPath, ...args], {
       encoding: 'utf8',
     });
   } finally {
@@ -28,6 +28,25 @@ function runCommentScript(summaryContent) {
 }
 
 describe('ct-triage-comment script', () => {
+  test.each(['18', '19'])('labels React %s failures and their report artifact', (reactVersion) => {
+    const output = runCommentScript({ totals: { total: 1, failed: 1 }, tests: [] }, [
+      '--react-version',
+      reactVersion,
+    ]);
+
+    expect(output).toContain(`## CT Triage — React ${reactVersion}`);
+    expect(output).toContain(`\`playwright-ct-report-react-${reactVersion}\``);
+  });
+
+  test.each(['18', '19'])('does not post a comment for passing React %s tests', (reactVersion) => {
+    expect(
+      runCommentScript({ totals: { total: 1, passed: 1 }, tests: [] }, [
+        '--react-version',
+        reactVersion,
+      ])
+    ).toBe('');
+  });
+
   test('escapes markdown and html from untrusted artifact content', () => {
     const output = runCommentScript({
       totals: { total: 1, failed: 1, flaky: 0, passed: 0, skipped: 0, timedOut: 0 },
