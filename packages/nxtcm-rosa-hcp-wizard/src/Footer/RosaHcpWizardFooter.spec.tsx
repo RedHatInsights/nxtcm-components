@@ -9,6 +9,7 @@ import {
   defaultRosaHcpWizardStrings,
   defaultRosaHcpWizardValidatorStrings,
 } from '../stringsProvider/rosaHcpWizardStrings.defaults';
+import { checkAccessibility } from '../test-helpers';
 import type { RosaHcpWizardValidationMount } from './RosaHcpWizardFooter.story';
 import {
   VALID_DETAILS_FORM_VALUES,
@@ -91,6 +92,66 @@ async function selectAwsInfrastructureAccount(
   await combo.fill(accountLabel.includes('Staging') ? 'Staging' : accountLabel);
   await page.getByRole('option', { name: accountLabel, exact: true }).click();
 }
+
+test('RosaHcpWizardFooter passes accessibility check during normal navigation', async ({
+  mount,
+}) => {
+  const component = await mount<typeof RosaHcpWizardValidationMount>(
+    'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+    { defaultValues: VALID_DETAILS_FORM_VALUES }
+  );
+
+  await expect(component.getByRole('button', { name: FOOTER_BACK })).toBeDisabled();
+  await expect(component.getByRole('button', { name: FOOTER_NEXT })).toBeEnabled();
+  await checkAccessibility({ component });
+
+  await component.getByRole('button', { name: FOOTER_NEXT }).click();
+  await expect(component.getByText(rp.accountRolesSection, { exact: true })).toBeVisible();
+  await expect(component.getByRole('button', { name: FOOTER_BACK })).toBeEnabled();
+  await checkAccessibility({ component });
+});
+
+test('RosaHcpWizardFooter passes accessibility check with validation errors', async ({ mount }) => {
+  const component = await mount<typeof RosaHcpWizardValidationMount>(
+    'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+    { defaultValues: { ...VALID_DETAILS_FORM_VALUES, name: '' } }
+  );
+
+  await component.getByRole('button', { name: FOOTER_NEXT }).click();
+  await expect(component.getByRole('heading', validationAlertHeading)).toBeVisible();
+  await expect(component.getByRole('textbox', { name: /Cluster name/i })).toHaveAttribute(
+    'aria-invalid',
+    'true'
+  );
+  await expect(component.getByText(REQUIRED_FIELD_MESSAGE, { exact: true })).toBeVisible();
+  await checkAccessibility({ component });
+});
+
+test('RosaHcpWizardFooter passes accessibility check while submission is pending', async ({
+  mount,
+}) => {
+  test.setTimeout(30_000);
+  const component = await mount<typeof RosaHcpWizardValidationMount>(
+    'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+    { defaultValues: VALID_REVIEW_SUBMIT_FORM_VALUES, onSubmit: true, holdSubmit: true }
+  );
+
+  await advanceToReviewStep(component);
+  await expect(component.getByText(review.sectionLabel, { exact: true })).toBeVisible();
+  const submit = component.getByRole('button', { name: FOOTER_SUBMIT });
+  await submit.click();
+
+  await expect(component.getByTestId('onSubmit-count')).toHaveValue('1');
+  await expect(submit).toBeDisabled();
+  await expect(submit.getByRole('progressbar')).toBeVisible();
+  await expect(component.getByRole('button', { name: FOOTER_BACK })).toBeDisabled();
+  await expect(component.getByRole('button', { name: w.cancel })).toBeDisabled();
+  await checkAccessibility({ component });
+
+  await component.getByRole('button', { name: 'Finish submission', exact: true }).click();
+  await expect(submit).toBeEnabled();
+  await expect(submit.getByRole('progressbar')).toBeHidden();
+});
 
 test.describe('RosaHcpWizardFooter — left nav validation icons', () => {
   test('shows error icons on Details and Basic setup after Next fails validation', async ({

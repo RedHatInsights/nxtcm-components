@@ -1,6 +1,6 @@
 /**
  * Playwright CT mount harness for the useGetDocsVersion hook.
- * Renders each link key into a data-testid span so tests can assert resolved URLs.
+ * Renders named documentation links so tests can check destinations and accessibility.
  */
 import React from 'react';
 
@@ -19,13 +19,13 @@ const LinksRenderer: React.FC<{ clusterVersion?: string }> = ({ clusterVersion }
   const links = useGetDocsVersion(clusterVersion);
 
   return (
-    <div>
+    <ul>
       {Object.entries(links).map(([key, url]) => (
-        <span key={key} data-testid={key}>
-          {url}
-        </span>
+        <li key={key}>
+          <a href={url}>{key.replaceAll('_', ' ')}</a>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 };
 
