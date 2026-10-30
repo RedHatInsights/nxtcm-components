@@ -143,7 +143,7 @@ test.describe('WizRadioGroup', () => {
     ).toHaveCount(0);
     const radiogroup = mounted.getByRole('radiogroup');
     await expect(radiogroup).toBeVisible();
-    await expect(radiogroup).toHaveAccessibleName('');
+    await expect(radiogroup).toHaveAccessibleName(WIZ_RADIO_GROUP_HIDE_LABEL_YUP_LABEL);
     await expect(mounted.getByRole('radio', { name: /hidden label option a/i })).toBeVisible();
   });
 
