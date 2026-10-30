@@ -1,7 +1,7 @@
 import { FieldWrapper, type FieldWrapperSize, NestedFields } from './FieldWrapper';
 
 export interface FieldWrapperStoryProps {
-  variant: 'field' | 'additional' | 'sized' | 'full';
+  variant: 'field' | 'additional' | 'sized' | 'full' | 'footer';
   size?: FieldWrapperSize;
 }
 
@@ -34,8 +34,21 @@ export function FieldWrapperStory({ variant, size }: FieldWrapperStoryProps): Re
   }
   return (
     <NestedFields>
-      <FieldWrapper size="md">
-        <span>Cluster name</span>
+      <FieldWrapper
+        size="md"
+        footer={
+          variant === 'footer' ? (
+            <p id="cluster-name-help">Use a unique cluster name.</p>
+          ) : undefined
+        }
+        additionalContent={variant === 'footer' ? <a href="/help">Learn more</a> : undefined}
+      >
+        <label htmlFor="cluster-name">Cluster name</label>
+        <input
+          id="cluster-name"
+          defaultValue="mycluster"
+          aria-describedby={variant === 'footer' ? 'cluster-name-help' : undefined}
+        />
       </FieldWrapper>
     </NestedFields>
   );

@@ -1,8 +1,11 @@
 import { expect, test } from '@/playwright/ct-fixture';
 
 import { FIELD_NAME, IMDS } from '../../constants';
+import type { RosaHcpWizardValidationMount } from '../../Footer/RosaHcpWizardFooter.story';
+import { VALID_REVIEW_SUBMIT_FORM_VALUES } from '../../Footer/rosaHcpWizardFooter.test-data';
 import rosaHcpWizardFixtures from '../../ROSAHCPWizard.fixtures';
 import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { checkAccessibility } from '../../test-helpers';
 import { ClusterUpgrade } from '../../types';
 import type { ReviewHarness } from './Review.story';
 
@@ -28,6 +31,95 @@ BnRlc3RjYTBcMA0GCSqGSIb3DQEBAQUAAwIAATANBgkqhkiG9w0BAQsFAAMCAQA=
 -----END CERTIFICATE-----`;
 
 test.describe('Review', () => {
+  test('passes accessibility check with default review sections', async ({ mount }) => {
+    const component = await mount<typeof ReviewHarness>(
+      'nxtcm-rosa-hcp-wizard/Steps/Review/Review/ReviewHarness'
+    );
+
+    await expect(component.getByRole('button', { name: 'Details', exact: true })).toBeVisible();
+    await checkAccessibility({ component });
+  });
+
+  test('passes accessibility check with populated content and expanded and collapsed sections', async ({
+    mount,
+  }) => {
+    test.setTimeout(30_000);
+    const component = await mount<typeof ReviewHarness>(
+      'nxtcm-rosa-hcp-wizard/Steps/Review/Review/ReviewHarness',
+      {
+        formOverrides: {
+          ...VALID_REVIEW_SUBMIT_FORM_VALUES,
+          autoscaling: true,
+          min_replicas: 2,
+          max_replicas: 6,
+          upgrade_policy: ClusterUpgrade.automatic,
+          upgrade_schedule: '00 4 * * 0',
+          configure_proxy: true,
+          http_proxy_url: 'http://proxy.example.com:8080',
+          additional_trust_bundle: validTrustBundlePem,
+        },
+      }
+    );
+
+    await expect(component.getByText('mycluster', { exact: true })).toBeVisible();
+    await expect(component.getByText(fixtureVpc.name, { exact: true })).toBeVisible();
+    await expect(component.getByText('Sunday, 04:00 UTC')).toBeVisible();
+    const proxyToggle = component.getByRole('button', { name: /cluster-wide proxy/i });
+    const proxyUrl = component.getByText('http://proxy.example.com:8080', { exact: true });
+    await expect(proxyToggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(proxyUrl).toBeVisible();
+    await expect(component.getByRole('button', { name: reviewStrings.showMore })).toBeVisible();
+    await checkAccessibility({ component });
+
+    await component.getByRole('button', { name: reviewStrings.showMore }).click();
+    await expect(component.getByText(validTrustBundlePem, { exact: true })).toBeVisible();
+    await checkAccessibility({ component });
+
+    await proxyToggle.click();
+    await expect(proxyToggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(proxyUrl).toBeHidden();
+    await checkAccessibility({ component });
+
+    await proxyToggle.click();
+    await expect(proxyToggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(proxyUrl).toBeVisible();
+    await checkAccessibility({ component });
+  });
+
+  test('passes accessibility check on Review after submission validation fails', async ({
+    mount,
+  }) => {
+    test.setTimeout(30_000);
+    // Review errors are displayed by the real wizard footer, not by Review rows.
+    const component = await mount<typeof RosaHcpWizardValidationMount>(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      {
+        defaultValues: {
+          ...VALID_REVIEW_SUBMIT_FORM_VALUES,
+          configure_proxy: true,
+          http_proxy_url: 'invalid-proxy-url',
+        },
+        onSubmit: true,
+      }
+    );
+    const wizard = defaultRosaHcpWizardStrings.wizard;
+
+    // This footer story omits the proxy step, so full-form submit validation catches its error.
+    for (let step = 0; step < 6; step += 1) {
+      await component.getByRole('button', { name: wizard.next, exact: true }).click();
+    }
+    await expect(component.getByText(reviewStrings.sectionLabel, { exact: true })).toBeVisible();
+    await expect(component.getByText('invalid-proxy-url', { exact: true })).toBeVisible();
+    await component.getByRole('button', { name: wizard.createCluster, exact: true }).click();
+
+    await expect(
+      component.getByRole('heading', { name: new RegExp(wizard.fixValidationErrors) })
+    ).toBeVisible();
+    await expect(component.getByText(reviewStrings.sectionLabel, { exact: true })).toBeVisible();
+    await expect(component.getByTestId('onSubmit-count')).toHaveValue('0');
+    await checkAccessibility({ component });
+  });
+
   test('renders review guidance and section summaries', async ({ mount }) => {
     const c = await mount<typeof ReviewHarness>(
       'nxtcm-rosa-hcp-wizard/Steps/Review/Review/ReviewHarness'
