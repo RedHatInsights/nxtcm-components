@@ -103,10 +103,9 @@ test.describe('NotificationsPanel', () => {
       }
     );
 
-    // Click the first notification row
-    const firstNotificationRow = component
-      .locator('tr')
-      .filter({ hasText: mockNotifications[0].title });
+    const firstNotificationRow = component.getByRole('row', {
+      name: /New CVE: CVE-2023-0091 Security Nov\. 28 12:09 UTC/,
+    });
     await firstNotificationRow.click();
 
     await expect
@@ -119,6 +118,44 @@ test.describe('NotificationsPanel', () => {
           )[0]?.[0]
       )
       .toEqual(mockNotifications[0]);
+  });
+
+  test('should activate a notification row with Enter and Space without duplicate callbacks', async ({
+    mount,
+  }) => {
+    const component = await mount<typeof NotificationsPanelStory>(
+      'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+      {
+        notifications: mockNotifications,
+        onNotificationClick: true,
+      }
+    );
+    const firstNotificationRow = component.getByRole('row', {
+      name: /New CVE: CVE-2023-0091 Security Nov\. 28 12:09 UTC/,
+    });
+    const secondNotificationRow = component.getByRole('row', {
+      name: /New recommendation: Reorganize namespaces Advisor Nov\. 28 12:09 UTC/,
+    });
+
+    await expect(firstNotificationRow).toHaveAttribute('tabindex', '0');
+    await firstNotificationRow.focus();
+    await expect(firstNotificationRow).toBeFocused();
+
+    await firstNotificationRow.press('Tab');
+    await expect(secondNotificationRow).toBeFocused();
+    await secondNotificationRow.press('Shift+Tab');
+    await expect(firstNotificationRow).toBeFocused();
+
+    await firstNotificationRow.press('Enter');
+    await expect
+      .poll(() => component.getByTestId('onNotificationClick-count').inputValue().then(Number))
+      .toBe(1);
+
+    await firstNotificationRow.press(' ');
+    await expect
+      .poll(() => component.getByTestId('onNotificationClick-count').inputValue().then(Number))
+      .toBe(2);
+    await expect(firstNotificationRow).toBeFocused();
   });
 
   test("should call notification's specific onClick handler", async ({ mount }) => {
@@ -139,7 +176,7 @@ test.describe('NotificationsPanel', () => {
       { notifications: notificationsWithHandler }
     );
 
-    await component.getByText('Test Notification').click();
+    await component.getByRole('row', { name: /Test Notification Security Now/ }).click();
 
     await expect
       .poll(() =>
