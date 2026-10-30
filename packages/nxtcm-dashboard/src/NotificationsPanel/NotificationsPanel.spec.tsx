@@ -147,8 +147,11 @@ test.describe('NotificationsPanel', () => {
     await expect(firstNotificationRow).toBeFocused();
 
     await firstNotificationRow.press('Enter');
-    await firstNotificationRow.press(' ');
+    await expect
+      .poll(() => component.getByTestId('onNotificationClick-count').inputValue().then(Number))
+      .toBe(1);
 
+    await firstNotificationRow.press(' ');
     await expect
       .poll(() => component.getByTestId('onNotificationClick-count').inputValue().then(Number))
       .toBe(2);
