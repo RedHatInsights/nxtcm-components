@@ -1,5 +1,6 @@
 import { expect, test } from '@/playwright/ct-fixture';
 
+import { checkAccessibility } from '../test-helpers';
 import type { UseGetDocsVersionMount } from './links.story';
 
 const story = 'nxtcm-rosa-hcp-wizard/constants/links/UseGetDocsVersionMount';
@@ -9,29 +10,45 @@ const rosaDocsBase = (version: string): string =>
   `https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/${version}/html`;
 
 test.describe('useGetDocsVersion', () => {
+  test('rendered documentation links pass accessibility check', async ({ mount }) => {
+    const component = await mount<typeof UseGetDocsVersionMount>(story);
+
+    await expect(component.getByRole('link')).toHaveCount(19);
+    await expect(component.getByRole('link', { name: 'IAM RESOURCES', exact: true })).toBeVisible();
+    await checkAccessibility({ component });
+  });
+
   test.describe('version resolution — fallback behavior (no published overrides)', () => {
     test('should default to v4 docs when no clusterVersion is provided', async ({ mount }) => {
       const component = await mount<typeof UseGetDocsVersionMount>(story);
-      await expect(component.getByTestId('IAM_RESOURCES')).toContainText(rosaDocsBase('4'));
+      await expect(
+        component.getByRole('link', { name: 'IAM RESOURCES', exact: true })
+      ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('4')));
     });
 
     test('should resolve to v4 docs for a v4 cluster version', async ({ mount }) => {
       const component = await mount<typeof UseGetDocsVersionMount>(story, {
         clusterVersion: '4.16.2',
       });
-      await expect(component.getByTestId('IAM_RESOURCES')).toContainText(rosaDocsBase('4'));
+      await expect(
+        component.getByRole('link', { name: 'IAM RESOURCES', exact: true })
+      ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('4')));
     });
 
     test('should fall back to v4 docs when cluster major is not published', async ({ mount }) => {
       const component = await mount<typeof UseGetDocsVersionMount>(story, {
         clusterVersion: '5.1.0',
       });
-      await expect(component.getByTestId('IAM_RESOURCES')).toContainText(rosaDocsBase('4'));
+      await expect(
+        component.getByRole('link', { name: 'IAM RESOURCES', exact: true })
+      ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('4')));
     });
 
     test('should fall back to v4 docs for an empty string cluster version', async ({ mount }) => {
       const component = await mount<typeof UseGetDocsVersionMount>(story, { clusterVersion: '' });
-      await expect(component.getByTestId('IAM_RESOURCES')).toContainText(rosaDocsBase('4'));
+      await expect(
+        component.getByRole('link', { name: 'IAM RESOURCES', exact: true })
+      ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('4')));
     });
   });
 
@@ -43,7 +60,9 @@ test.describe('useGetDocsVersion', () => {
         clusterVersion: '4.16.2',
         docsVersions: ['4', '5'],
       });
-      await expect(component.getByTestId('IAM_RESOURCES')).toContainText(rosaDocsBase('4'));
+      await expect(
+        component.getByRole('link', { name: 'IAM RESOURCES', exact: true })
+      ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('4')));
     });
 
     test('should resolve to v5 docs when v5 cluster is selected and v5 is published', async ({
@@ -53,7 +72,9 @@ test.describe('useGetDocsVersion', () => {
         clusterVersion: '5.1.0',
         docsVersions: ['5'],
       });
-      await expect(component.getByTestId('IAM_RESOURCES')).toContainText(rosaDocsBase('5'));
+      await expect(
+        component.getByRole('link', { name: 'IAM RESOURCES', exact: true })
+      ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('5')));
     });
 
     test('should resolve to v5 docs when v5 cluster is selected and both v4 and v5 are published', async ({
@@ -63,7 +84,9 @@ test.describe('useGetDocsVersion', () => {
         clusterVersion: '5.1.0',
         docsVersions: ['4', '5'],
       });
-      await expect(component.getByTestId('IAM_RESOURCES')).toContainText(rosaDocsBase('5'));
+      await expect(
+        component.getByRole('link', { name: 'IAM RESOURCES', exact: true })
+      ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('5')));
     });
 
     test('should fall back to v4 docs when cluster major is 6 and only v4 and v5 are published', async ({
@@ -73,7 +96,9 @@ test.describe('useGetDocsVersion', () => {
         clusterVersion: '6.0.0',
         docsVersions: ['4', '5'],
       });
-      await expect(component.getByTestId('IAM_RESOURCES')).toContainText(rosaDocsBase('4'));
+      await expect(
+        component.getByRole('link', { name: 'IAM RESOURCES', exact: true })
+      ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('4')));
     });
   });
 
@@ -106,7 +131,9 @@ test.describe('useGetDocsVersion', () => {
           clusterVersion: '5.1.0',
           docsVersions: ['5'],
         });
-        await expect(component.getByTestId(key)).toContainText(rosaDocsBase('5'));
+        await expect(
+          component.getByRole('link', { name: key.replaceAll('_', ' '), exact: true })
+        ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('5')));
       });
     }
   });

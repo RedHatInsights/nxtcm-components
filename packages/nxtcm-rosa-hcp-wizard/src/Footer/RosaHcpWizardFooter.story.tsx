@@ -240,6 +240,8 @@ type BrowserProps = NonNullable<React.ComponentProps<typeof RosaHcpWizardValidat
 
 export type RosaHcpWizardValidationMountGalleryProps = Omit<BrowserProps, 'onSubmit'> & {
   onSubmit?: boolean;
+  /** Keep onSubmit pending until the story's completion button is clicked. */
+  holdSubmit?: boolean;
 };
 
 export function RosaHcpWizardValidationMount(
@@ -248,12 +250,16 @@ export function RosaHcpWizardValidationMount(
   const [onSubmitCalls, setOnSubmitCalls] = React.useState<
     Parameters<NonNullable<BrowserProps['onSubmit']>>[]
   >([]);
+  const [finishSubmission, setFinishSubmission] = React.useState<(() => void) | null>(null);
   const browserProps = React.useMemo<BrowserProps>(
     () => ({
-      ...props,
+      defaultValues: props.defaultValues,
       onSubmit: props.onSubmit
         ? (...args) => {
             setOnSubmitCalls((calls) => [...calls, args]);
+            if (props.holdSubmit) {
+              return new Promise<void>((resolve) => setFinishSubmission(() => resolve));
+            }
             return Promise.resolve();
           }
         : undefined,
@@ -263,6 +269,17 @@ export function RosaHcpWizardValidationMount(
   return (
     <>
       <RosaHcpWizardValidationMountComponent {...browserProps} />
+      {finishSubmission && (
+        <button
+          type="button"
+          onClick={() => {
+            finishSubmission();
+            setFinishSubmission(null);
+          }}
+        >
+          Finish submission
+        </button>
+      )}
       <div hidden>
         <input data-testid="onSubmit-calls" readOnly value={JSON.stringify(onSubmitCalls)} />
         <input data-testid="onSubmit-count" readOnly value={String(onSubmitCalls.length)} />

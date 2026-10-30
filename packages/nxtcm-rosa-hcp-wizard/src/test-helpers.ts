@@ -17,10 +17,21 @@ export async function checkAccessibility({
 }): Promise<void> {
   await expect(component).toBeVisible();
 
+  await component.evaluate(async (node) => {
+    await new Promise(requestAnimationFrame);
+    // Wait for transitions, but allow continuous loading spinners to keep running.
+    await Promise.allSettled(
+      node
+        .getAnimations({ subtree: true })
+        .filter((animation) => Number.isFinite(animation.effect?.getComputedTiming().endTime))
+        .map((animation) => animation.finished)
+    );
+  });
+
   const axeRootSelector = await component.evaluate((node: HTMLElement) => {
-    const id = `a11y-root-${crypto.randomUUID()}`;
-    node.id = id;
-    return `#${CSS.escape(id)}`;
+    // Preserve IDs used by dialog triggers and other ARIA relationships.
+    node.id ||= `a11y-root-${crypto.randomUUID()}`;
+    return `#${CSS.escape(node.id)}`;
   });
 
   const disabledRules = [...ignoreRules];
