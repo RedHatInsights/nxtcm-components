@@ -27,6 +27,31 @@ Dashboard widgets and the ROSA wizard serve different consumer apps with differe
 
 ---
 
+## Design principles
+
+Components in this repo follow these principles:
+
+1. **Shared foundation**: built on PatternFly components, tokens, and layouts to stay consistent with ACM and OCM.
+2. **Flexible but opinionated**: generic enough for both ACM and OCM, but specific enough to provide value beyond raw PatternFly components.
+3. **Host-owned data**: components never make HTTP calls; consuming apps fetch data and pass it in through props.
+4. **Tested and documented**: components are covered by Playwright component tests (plus Jest where logic warrants it) and public components have Storybook stories.
+5. **Accessible**: follow WCAG accessibility standards.
+6. **TypeScript first**: typed public APIs with exported prop interfaces.
+
+## Technology stack
+
+- **React 18** and **TypeScript**
+- **PatternFly 6**: Red Hat's open source design system
+- **Vite**: library builds and dev server; `unplugin-dts` for bundled type declarations
+- **Storybook 9**: component documentation and visual review
+- **Jest** + **React Testing Library**: unit tests
+- **Playwright**: component tests (CT) and E2E tests; **Stryker** for local mutation testing
+- **ESLint** + **Prettier**: linting (React, TypeScript, a11y rules) and formatting
+- **Husky** + **lint-staged**: pre-commit checks on staged files
+- **SASS**: component styles
+
+---
+
 ## Build system
 
 The two workspace packages (dashboard, wizard) are built with **one shared `vite.config.ts`**. npm runs each workspace's build script from its package directory, which determines the entry point and output directory.
