@@ -36,11 +36,96 @@ test.describe('NumberInput', () => {
     const mounted = await mount<typeof NumberHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness'
     );
-    await expect(mounted.getByText(workerCountLabel)).toBeVisible();
-    await expect(
-      mounted.getByRole('spinbutton', { name: new RegExp(workerCountLabel, 'i') })
-    ).toBeVisible();
-    await expect(mounted.getByPlaceholder('Enter the worker count')).toBeVisible();
+    const input = mounted.getByRole('spinbutton', { name: workerCountLabel, exact: true });
+    await expect(input).toHaveAttribute('id', 'ct-num');
+    await expect(input).toHaveAttribute('placeholder', 'Enter the worker count');
+    await expect(input).toHaveValue('2');
+    await mounted.getByText(workerCountLabel, { exact: true }).click();
+    await expect(input).toBeFocused();
+    await checkAccessibility({ component: mounted });
+  });
+
+  test('describes the numeric input with its helper text', async ({ mount }) => {
+    const mounted = await mount<typeof NumberHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness',
+      { helperText: 'Choose the number of workers.' }
+    );
+    await expect(mounted.getByRole('spinbutton')).toHaveAccessibleDescription(
+      'Choose the number of workers.'
+    );
+    await checkAccessibility({ component: mounted });
+  });
+
+  test('describes an invalid numeric input with its validation error', async ({ mount }) => {
+    const mounted = await mount<typeof NumberHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness',
+      {
+        helperText: 'Choose the number of workers.',
+        errorMessage: 'Choose at least one worker.',
+        isError: true,
+        initial: 0,
+      }
+    );
+    const input = mounted.getByRole('spinbutton');
+    await expect(input).toHaveAttribute('aria-invalid', 'true');
+    await expect(input).toHaveAccessibleDescription(/Choose at least one worker\./);
+    await checkAccessibility({ component: mounted });
+  });
+
+  test('restores helper text and removes stale error references when validation clears', async ({
+    mount,
+  }) => {
+    const mounted = await mount<typeof NumberHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness',
+      { errorMessage: 'Choose at least one worker.', isError: true }
+    );
+    const input = mounted.getByRole('spinbutton');
+    await expect(input).toHaveAccessibleDescription(/Choose at least one worker\./);
+
+    await mounted.update({
+      helperText: 'Choose the number of workers.',
+      errorMessage: 'Choose at least one worker.',
+      isError: false,
+    });
+    await expect(input).toHaveAttribute('aria-invalid', 'false');
+    await expect(input).toHaveAccessibleDescription('Choose the number of workers.');
+
+    await mounted.update({ errorMessage: 'Choose at least one worker.', isError: false });
+    await expect(input).not.toHaveAttribute('aria-describedby');
+    await expect(input).toHaveAccessibleDescription('');
+    await checkAccessibility({ component: mounted });
+  });
+
+  test('preserves custom input props and descriptions alongside field guidance', async ({
+    mount,
+  }) => {
+    const customProps = {
+      inputAriaLabel: 'Worker count for this pool',
+      additionalDescription: 'Applies to this pool.',
+      inputProps: {
+        autoComplete: 'off',
+        'aria-describedby': 'ct-num-additional-description',
+      },
+    };
+    const mounted = await mount<typeof NumberHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness',
+      { ...customProps, helperText: 'Choose the number of workers.' }
+    );
+    const input = mounted.getByRole('spinbutton', {
+      name: customProps.inputAriaLabel,
+      exact: true,
+    });
+    await expect(input).toHaveAttribute('autocomplete', 'off');
+    await expect(input).toHaveAccessibleDescription(
+      'Applies to this pool. Choose the number of workers.'
+    );
+    await mounted.getByText(workerCountLabel, { exact: true }).click();
+    await expect(input).toBeFocused();
+
+    await mounted.update(customProps);
+    await expect(input).toHaveAttribute('aria-describedby', 'ct-num-additional-description');
+    await expect(input).toHaveAccessibleDescription('Applies to this pool.');
+    await checkAccessibility({ component: mounted });
   });
 
   test('increments value when the plus control is activated', async ({ mount }) => {
@@ -62,6 +147,9 @@ test.describe('NumberInput', () => {
     const spinbutton = mounted.getByRole('spinbutton', { name: new RegExp(workerCountLabel, 'i') });
     await mounted.getByRole('button', { name: 'Minus' }).click();
     await expect(spinbutton).toHaveValue('');
+    await expect(spinbutton).toHaveAccessibleName(workerCountLabel);
+    await expect(spinbutton).not.toHaveAttribute('aria-describedby');
+    await checkAccessibility({ component: mounted });
   });
 
   test('describes the spinbutton with helper text', async ({ mount }) => {
