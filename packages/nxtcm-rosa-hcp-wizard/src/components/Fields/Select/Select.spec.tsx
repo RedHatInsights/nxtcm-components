@@ -4,6 +4,15 @@ import { expect, test } from '@/playwright/ct-fixture';
 import { checkAccessibility } from '@/playwright/test-helpers';
 
 import type {
+  WizSelectDeferValidationHarness,
+  WizSelectExplicitHarness,
+  WizSelectSubmitValidationHarness,
+} from '../../WizFields/WizSelect/WizSelect.story';
+import {
+  WIZ_SELECT_DEFER_REVEAL_BUTTON,
+  WIZ_SELECT_EXPLICIT_HELPER,
+} from '../../WizFields/WizSelect/WizSelect.story-data';
+import type {
   DisabledTypeaheadHarness,
   GroupedLoadingTypeaheadHarness,
   GroupedTypeaheadHarness,
@@ -30,10 +39,11 @@ async function checkMenuAccessibility(page: Page): Promise<void> {
 }
 
 test.describe('Select', () => {
-  test('passes accessibility check', async ({ mount }) => {
+  test('is accessible with no option selected', async ({ mount }) => {
     const component = await mount<typeof PlainMenuHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/PlainMenuHarness'
     );
+    await expect(component.getByRole('button')).toHaveAccessibleName('Region Select the region');
     await checkAccessibility({ component });
   });
 
@@ -79,7 +89,7 @@ test.describe('Select', () => {
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/PlainMenuHarness',
       { isLoading: true }
     );
-    await component.getByRole('button', { name: /^loading/i }).click();
+    await component.getByRole('button', { name: /^Region Loading/i }).click();
     await expect(page.getByRole('progressbar')).toBeVisible();
     await checkMenuAccessibility(page);
   });
@@ -170,16 +180,97 @@ test.describe('Select', () => {
   });
 
   test('selects an option from a plain menu and updates value', async ({ mount, page }) => {
-    await mount<typeof PlainMenuHarness>(
+    const component = await mount<typeof PlainMenuHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/PlainMenuHarness'
     );
-    await page.getByRole('button', { name: /select the region/i }).click();
+    const toggle = page.getByRole('button', { name: /^Region / });
+    await expect(toggle).toHaveAttribute('id', 'ct-menu-plain');
+    await page.getByText('Region', { exact: true }).click();
+    await expect(toggle).toBeFocused();
     await expect(page.getByRole('option', { name: 'eu-west-1' })).toBeVisible();
     await checkMenuAccessibility(page);
     await page.getByRole('option', { name: 'eu-west-1' }).click();
     await expect(page.getByTestId('menu-val')).toHaveText('eu-west-1');
+    await expect(toggle).toHaveAccessibleName('Region eu-west-1');
     await expect(page.getByRole('option', { name: 'eu-west-1' })).toBeHidden();
     await checkMenuAccessibility(page);
+    await page.keyboard.press('Tab');
+    await checkAccessibility({ component });
+  });
+
+  test('associates the typeahead label with the input and retains its name after clearing', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof TypeaheadHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/TypeaheadHarness'
+    );
+    const combo = page.getByRole('combobox');
+    await expect(combo).toHaveAttribute('id', 'ct-menu-ta');
+    await expect(combo).toHaveAccessibleName('Select the subnet');
+    await page.getByText('Subnet', { exact: true }).click();
+    await expect(combo).toBeFocused();
+    await page.getByRole('option', { name: 'subnet-a' }).click();
+    await expect(combo).toHaveValue('subnet-a');
+    await expect(combo).toHaveAccessibleName('Select the subnet');
+
+    await page.getByRole('button', { name: 'Clear selection' }).click();
+    await expect(combo).toHaveValue('');
+    await expect(combo).toHaveAccessibleName('Select the subnet');
+    await page.keyboard.press('Tab');
+    await checkAccessibility({ component });
+  });
+
+  test('exposes helper text as the toggle description', async ({ mount }) => {
+    const component = await mount<typeof WizSelectExplicitHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectExplicitHarness'
+    );
+    await expect(
+      component.getByRole('button', { name: /explicit region label/i })
+    ).toHaveAccessibleDescription(WIZ_SELECT_EXPLICIT_HELPER);
+    await checkAccessibility({ component });
+  });
+
+  test('describes an invalid toggle and removes stale error references after correction', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof WizSelectSubmitValidationHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectSubmitValidationHarness'
+    );
+    const toggle = page.getByRole('button', { name: /^Region \(submit demo\)/ });
+    await page.getByRole('button', { name: 'Submit', exact: true }).click();
+    await expect(toggle).toHaveAttribute('aria-invalid', 'true');
+    await expect(toggle).toHaveAccessibleDescription(/Please choose a region to continue\./);
+    await checkAccessibility({ component });
+
+    await toggle.click();
+    await page.getByRole('option', { name: 'us-east-1' }).click();
+    await page.getByRole('button', { name: 'Submit', exact: true }).click();
+    await expect(toggle).not.toHaveAttribute('aria-invalid');
+    await expect(toggle).not.toHaveAttribute('aria-describedby');
+    await expect(toggle).toHaveAccessibleDescription('');
+  });
+
+  test('applies validation descriptions to the typeahead input', async ({ mount, page }) => {
+    const component = await mount<typeof WizSelectDeferValidationHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectDeferValidationHarness'
+    );
+    const combo = page.getByRole('combobox', { name: /select the region/i });
+    await combo.click();
+    await page.getByRole('option', { name: 'eu-west-1' }).click();
+    await page.getByRole('button', { name: 'Clear selection' }).click();
+    await page.getByRole('button', { name: WIZ_SELECT_DEFER_REVEAL_BUTTON }).click();
+    await expect(combo).toHaveAttribute('id', 'region');
+    await expect(combo).toHaveAttribute('aria-invalid', 'true');
+    await expect(combo).toHaveAccessibleDescription(/Please choose a region to continue\./);
+    await checkAccessibility({ component });
+
+    await combo.click();
+    await page.getByRole('option', { name: 'us-east-1' }).click();
+    await expect(combo).not.toHaveAttribute('aria-invalid');
+    await expect(combo).not.toHaveAttribute('aria-describedby');
+    await expect(combo).toHaveAccessibleDescription('');
   });
 
   test('filters options in typeahead mode', async ({ mount, page }) => {
@@ -281,14 +372,17 @@ test.describe('Select', () => {
     mount,
     page,
   }) => {
-    await mount<typeof PreselectedTypeaheadHarness>(
+    const component = await mount<typeof PreselectedTypeaheadHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/PreselectedTypeaheadHarness'
     );
     const combo = page.getByRole('combobox', { name: /select the subnet/i });
 
     // Typeahead input must display the preselected option label, not blank
     await expect(combo).toHaveValue('subnet-a');
+    await expect(combo).toHaveAccessibleName('Select the subnet');
+    await expect(combo).toHaveAttribute('id', 'ct-menu-ta-preselected');
     await expect(page.getByTestId('ta-preselected-val')).toHaveText('subnet-a');
+    await checkAccessibility({ component });
 
     // Opening should show all options (no leftover filter)
     await combo.click();
