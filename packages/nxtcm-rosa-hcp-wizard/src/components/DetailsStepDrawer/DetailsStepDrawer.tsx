@@ -1,3 +1,5 @@
+import { useRef } from 'react';
+
 import { Button, ButtonVariant } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
 import {
@@ -23,24 +25,39 @@ import { UserRole } from './UserRole';
 type StepDrawerProps = {
   isDrawerExpanded: boolean;
   setIsDrawerExpanded: (expanded: boolean) => void;
-  onWizardExpand: () => void;
+  /** the opening trigger, which regains focus when either close control is activated */
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
   /** The consuming product. Determines which ROSA login command is shown. Defaults to 'acm'. */
   product?: RosaLoginProduct;
   children: React.ReactNode;
 };
 
-export const DetailsStepDrawer = (props: StepDrawerProps) => {
-  const { isDrawerExpanded, onWizardExpand, setIsDrawerExpanded, product } = props;
+export const DetailsStepDrawer = (props: StepDrawerProps): React.ReactElement => {
+  const { isDrawerExpanded, triggerRef, setIsDrawerExpanded, product } = props;
   const d = useRosaHcpWizardStrings().associateAwsDrawer;
+  const panelTitleRef = useRef<HTMLSpanElement>(null);
+  const onExpand = (): void => {
+    // Focus the visible title after the opening animation so users start at the instructions.
+    if (isDrawerExpanded) panelTitleRef.current?.focus();
+  };
+  const onClose = (): void => {
+    triggerRef.current?.focus();
+    setIsDrawerExpanded(false);
+  };
+
   return (
-    <Drawer isExpanded={isDrawerExpanded} onExpand={onWizardExpand}>
+    <Drawer isExpanded={isDrawerExpanded} onExpand={onExpand}>
       <DrawerContent
         panelContent={
           <DrawerPanelContent isResizable={true} defaultSize="40%">
             <DrawerHead>
-              <Content component={ContentVariants.h2}>{d.panelTitle}</Content>
+              <Content component={ContentVariants.h2}>
+                <span ref={panelTitleRef} tabIndex={-1}>
+                  {d.panelTitle}
+                </span>
+              </Content>
               <DrawerActions>
-                <DrawerCloseButton onClick={() => setIsDrawerExpanded(false)} />
+                <DrawerCloseButton onClick={onClose} />
               </DrawerActions>
             </DrawerHead>
             <DrawerPanelBody>
@@ -77,10 +94,7 @@ export const DetailsStepDrawer = (props: StepDrawerProps) => {
                     </Content>
                   </StackItem>
                   <StackItem>
-                    <Button
-                      variant={ButtonVariant.secondary}
-                      onClick={() => setIsDrawerExpanded(false)}
-                    >
+                    <Button variant={ButtonVariant.secondary} onClick={onClose}>
                       {d.closeButton}
                     </Button>
                   </StackItem>

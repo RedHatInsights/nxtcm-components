@@ -4,6 +4,29 @@ import { checkAccessibility } from '../../test-helpers';
 import type { DetailsStepDrawerMount } from './DetailsStepDrawer.story';
 
 test.describe('DetailsStepDrawer', () => {
+  test('focuses the visible title on keyboard opening and tabs to the header close control', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof DetailsStepDrawerMount>(
+      'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount'
+    );
+    const trigger = component.getByRole('button', { name: 'Associate a new AWS account' });
+    const title = component.getByText('How to associate a new AWS account', { exact: true });
+    const closeButton = component.getByRole('button', { name: 'Close drawer panel', exact: true });
+
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+    await expect(title).toBeVisible();
+    await expect(title).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(closeButton).toBeFocused();
+    await page.keyboard.press('Space');
+    await expect(title).toBeHidden();
+    await expect(closeButton).toBeHidden();
+    await expect(trigger).toBeFocused();
+  });
+
   test('should render main content', async ({ mount }) => {
     const component = await mount<typeof DetailsStepDrawerMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount'
