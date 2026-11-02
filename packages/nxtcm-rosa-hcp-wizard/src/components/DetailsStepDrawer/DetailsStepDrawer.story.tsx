@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import type { ROSAHCPCluster } from '../../types';
@@ -19,6 +20,7 @@ export const DetailsStepDrawerMount: React.FC<DetailsStepDrawerMountProps> = ({
   defaultValues = {},
 }) => {
   const [isDrawerExpanded, setIsDrawerExpanded] = useState(initiallyExpanded);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const methods = useForm<ROSAHCPCluster>({
     defaultValues: { cluster_version: '4.16.2', ...defaultValues },
   });
@@ -28,10 +30,13 @@ export const DetailsStepDrawerMount: React.FC<DetailsStepDrawerMountProps> = ({
       <DetailsStepDrawer
         isDrawerExpanded={isDrawerExpanded}
         setIsDrawerExpanded={setIsDrawerExpanded}
-        onWizardExpand={() => setIsDrawerExpanded(true)}
+        triggerRef={triggerRef}
         product={product}
       >
         <div data-testid="drawer-main-content">Main wizard content</div>
+        <Button ref={triggerRef} onClick={() => setIsDrawerExpanded(true)}>
+          Associate a new AWS account
+        </Button>
       </DetailsStepDrawer>
     </FormProvider>
   );
