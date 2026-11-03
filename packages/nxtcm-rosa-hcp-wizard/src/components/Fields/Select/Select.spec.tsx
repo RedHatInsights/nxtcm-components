@@ -123,7 +123,7 @@ test.describe('Select', () => {
         isTypeAhead: true,
       }
     );
-    await component.getByRole('combobox', { name: /select the region/i }).click();
+    await component.getByRole('combobox', { name: 'Region' }).click();
     await expect(page.getByText('Americas', { exact: true })).toBeVisible();
     await expect(page.getByText('Europe', { exact: true })).toBeVisible();
     await expect(page.getByRole('option', { name: 'eu-west-1' })).toBeVisible();
@@ -135,7 +135,7 @@ test.describe('Select', () => {
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/PlainMenuHarness',
       { isTypeAhead: true, isLoading: true }
     );
-    const combo = component.getByRole('combobox', { name: /select the region/i });
+    const combo = component.getByRole('combobox', { name: 'Region' });
     await combo.click();
     await expect(page.getByRole('progressbar')).toBeVisible();
     await checkMenuAccessibility(page);
@@ -146,7 +146,7 @@ test.describe('Select', () => {
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/PlainMenuHarness',
       { isTypeAhead: true, options: [] }
     );
-    const combo = component.getByRole('combobox', { name: /select the region/i });
+    const combo = component.getByRole('combobox', { name: 'Region' });
     await combo.click();
     await expect(page.getByText('No results found', { exact: true })).toBeVisible();
     await checkMenuAccessibility(page);
@@ -157,7 +157,7 @@ test.describe('Select', () => {
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/PlainMenuHarness',
       { isTypeAhead: true }
     );
-    const combo = component.getByRole('combobox', { name: /select the region/i });
+    const combo = component.getByRole('combobox', { name: 'Region' });
     await combo.click();
     await combo.fill('no-such-region');
     await expect(page.getByText('No results found', { exact: true })).toBeVisible();
@@ -172,7 +172,7 @@ test.describe('Select', () => {
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/PlainMenuHarness',
       { isTypeAhead: true, optionGroups: [{ label: 'Americas', options: ['us-east-1'] }] }
     );
-    const combo = component.getByRole('combobox', { name: /select the region/i });
+    const combo = component.getByRole('combobox', { name: 'Region' });
     await combo.click();
     await combo.fill('no-such-region');
     await expect(page.getByText('No results found', { exact: true })).toBeVisible();
@@ -207,17 +207,28 @@ test.describe('Select', () => {
     );
     const combo = page.getByRole('combobox');
     await expect(combo).toHaveAttribute('id', 'ct-menu-ta');
-    await expect(combo).toHaveAccessibleName('Select the subnet');
+    await expect(combo).toHaveAccessibleName('Subnet');
     await page.getByText('Subnet', { exact: true }).click();
     await expect(combo).toBeFocused();
     await page.getByRole('option', { name: 'subnet-a' }).click();
     await expect(combo).toHaveValue('subnet-a');
-    await expect(combo).toHaveAccessibleName('Select the subnet');
+    await expect(combo).toHaveAccessibleName('Subnet');
 
     await page.getByRole('button', { name: 'Clear selection' }).click();
     await expect(combo).toHaveValue('');
-    await expect(combo).toHaveAccessibleName('Select the subnet');
+    await expect(combo).toHaveAccessibleName('Subnet');
     await page.keyboard.press('Tab');
+    await checkAccessibility({ component });
+  });
+
+  test('uses the placeholder as the typeahead name when no label is present', async ({ mount }) => {
+    const component = await mount<typeof PlainMenuHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/PlainMenuHarness',
+      { isTypeAhead: true, label: '', placeholder: 'Choose a region' }
+    );
+    const combo = component.getByRole('combobox', { name: 'Choose a region' });
+    await expect(combo).toHaveAttribute('placeholder', 'Choose a region');
+    await expect(combo).toHaveAccessibleName('Choose a region');
     await checkAccessibility({ component });
   });
 
@@ -256,7 +267,7 @@ test.describe('Select', () => {
     const component = await mount<typeof WizSelectDeferValidationHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectDeferValidationHarness'
     );
-    const combo = page.getByRole('combobox', { name: /select the region/i });
+    const combo = page.getByRole('combobox', { name: 'Region' });
     await combo.click();
     await page.getByRole('option', { name: 'eu-west-1' }).click();
     await page.getByRole('button', { name: 'Clear selection' }).click();
@@ -277,7 +288,7 @@ test.describe('Select', () => {
     await mount<typeof TypeaheadHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/TypeaheadHarness'
     );
-    const combo = page.getByRole('combobox', { name: /select the subnet/i });
+    const combo = page.getByRole('combobox', { name: 'Subnet' });
     await combo.click();
     await combo.fill('subnet');
     await expect(page.getByRole('option', { name: 'subnet-a' })).toBeVisible();
@@ -294,7 +305,7 @@ test.describe('Select', () => {
     await mount<typeof TypeaheadHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/TypeaheadHarness'
     );
-    const combo = page.getByRole('combobox', { name: /select the subnet/i });
+    const combo = page.getByRole('combobox', { name: 'Subnet' });
 
     // Select an option
     await combo.click();
@@ -351,7 +362,7 @@ test.describe('Select', () => {
     await mount<typeof TypeaheadHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/TypeaheadHarness'
     );
-    const combo = page.getByRole('combobox', { name: /select the subnet/i });
+    const combo = page.getByRole('combobox', { name: 'Subnet' });
 
     // Select an option
     await combo.click();
@@ -375,11 +386,11 @@ test.describe('Select', () => {
     const component = await mount<typeof PreselectedTypeaheadHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/PreselectedTypeaheadHarness'
     );
-    const combo = page.getByRole('combobox', { name: /select the subnet/i });
+    const combo = page.getByRole('combobox', { name: 'Subnet' });
 
     // Typeahead input must display the preselected option label, not blank
     await expect(combo).toHaveValue('subnet-a');
-    await expect(combo).toHaveAccessibleName('Select the subnet');
+    await expect(combo).toHaveAccessibleName('Subnet');
     await expect(combo).toHaveAttribute('id', 'ct-menu-ta-preselected');
     await expect(page.getByTestId('ta-preselected-val')).toHaveText('subnet-a');
     await checkAccessibility({ component });
@@ -395,7 +406,7 @@ test.describe('Select', () => {
     await mount<typeof DisabledTypeaheadHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/DisabledTypeaheadHarness'
     );
-    await expect(page.getByRole('combobox', { name: /select the subnet/i })).toBeDisabled();
+    await expect(page.getByRole('combobox', { name: 'Subnet' })).toBeDisabled();
     await checkMenuAccessibility(page);
   });
 

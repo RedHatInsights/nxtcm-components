@@ -447,9 +447,10 @@ export function Select<T = unknown>(props: SelectProps<T>) {
             innerRef={textInputRef}
             placeholder={isLoading ? undefined : placeholderText}
             isExpanded={open}
-            aria-label={placeholderText}
             inputId={id}
             inputProps={{
+              'aria-label': label ? undefined : placeholderText,
+              'aria-labelledby': label ? `${id}-label` : undefined,
               'aria-describedby': describedBy || undefined,
               'aria-invalid': isError || undefined,
               autoComplete: 'off',

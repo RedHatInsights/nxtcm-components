@@ -85,7 +85,7 @@ async function selectAwsInfrastructureAccount(
   accountLabel: string
 ): Promise<void> {
   const combo = component.locator('#associated_aws_id-form-group').getByRole('combobox', {
-    name: defaultRosaHcpWizardStrings.details.awsInfraPlaceholder,
+    name: defaultRosaHcpWizardStrings.details.awsInfraLabel,
     exact: true,
   });
   await combo.click();
@@ -329,7 +329,7 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
   }) => {
     const mockVpc = fixtures.mockVPCs[0];
     const region = VALID_DETAILS_FORM_VALUES.region ?? 'us-east-1';
-    const vpcSelectToggle = `${mp.vpcPlaceholder} ${region}`;
+    const vpcSelectToggle = `${mp.vpcLabelPrefix} ${region}`;
 
     const component = await mount<typeof RosaHcpWizardValidationMount>(
       'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
@@ -374,7 +374,7 @@ test.describe('RosaHcpWizardFooter — step validation on Next', () => {
 
     const billingCombo = component
       .locator('#billing_account_id-form-group')
-      .getByRole('combobox', { name: d.billingPlaceholder, exact: true });
+      .getByRole('combobox', { name: d.billingLabel, exact: true });
     await billingCombo.click();
     await component
       .locator('#billing_account_id-form-group')
