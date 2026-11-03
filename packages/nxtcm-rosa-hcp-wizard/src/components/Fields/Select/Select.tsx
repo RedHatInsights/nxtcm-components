@@ -171,6 +171,12 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     value,
     typeaheadQuery,
   });
+  const groupedTypeaheadListboxIds = displayedGroups
+    .filter((group) => group.options.length > 0)
+    .map((_, index) => `${id}-listbox-${index}`)
+    .join(' ');
+  const typeaheadListboxIds =
+    hasGroups && groupedTypeaheadListboxIds ? groupedTypeaheadListboxIds : `${id}-listbox`;
 
   const toggleLabel =
     selectedOption != null
@@ -291,7 +297,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
               {index > 0 ? <Divider /> : null}
               <SelectGroup label={group.label}>
                 <SelectList
-                  id={isTypeAhead && index === 0 ? `${id}-listbox` : undefined}
+                  id={isTypeAhead ? `${id}-listbox-${index}` : undefined}
                   aria-label={`${menuLabel}: ${group.label}`}
                 >
                   {group.options.map((opt: OptionType<T>, optIdx: number) =>
@@ -443,7 +449,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
             aria-label={placeholderText}
             aria-describedby={describedBy || undefined}
             role="combobox"
-            aria-controls={open ? (isTypeAhead ? `${id}-listbox` : id) : undefined}
+            aria-controls={open ? (isTypeAhead ? typeaheadListboxIds : id) : undefined}
             id={`${id}-typeahead-input`}
           />
           <TextInputGroupUtilities

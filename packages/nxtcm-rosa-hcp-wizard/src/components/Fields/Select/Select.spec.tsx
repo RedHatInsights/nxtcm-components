@@ -221,8 +221,12 @@ test.describe('Select', () => {
     );
     const combo = page.getByRole('combobox', { name: /select the subnet/i });
     await combo.click();
-    await expect(combo).toHaveAttribute('aria-controls', 'ct-menu-ta-grouped-listbox');
-    await expect(page.locator('#ct-menu-ta-grouped-listbox')).toBeVisible();
+    await expect(combo).toHaveAttribute(
+      'aria-controls',
+      'ct-menu-ta-grouped-listbox-0 ct-menu-ta-grouped-listbox-1'
+    );
+    await expect(page.getByRole('option', { name: 'subnet-a' })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'subnet-b' })).toBeVisible();
   });
 
   test('keeps aria-controls connected while a typeahead menu is loading', async ({
