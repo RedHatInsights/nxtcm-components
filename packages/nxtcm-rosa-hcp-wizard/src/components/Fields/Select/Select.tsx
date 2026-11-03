@@ -176,7 +176,9 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     .map((_, index) => `${id}-listbox-${index}`)
     .join(' ');
   const typeaheadListboxIds =
-    hasGroups && groupedTypeaheadListboxIds ? groupedTypeaheadListboxIds : `${id}-listbox`;
+    !isLoading && hasGroups && groupedTypeaheadListboxIds
+      ? groupedTypeaheadListboxIds
+      : `${id}-listbox`;
 
   const toggleLabel =
     selectedOption != null

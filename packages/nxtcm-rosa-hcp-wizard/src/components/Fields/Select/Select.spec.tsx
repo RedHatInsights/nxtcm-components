@@ -5,6 +5,7 @@ import { checkAccessibility } from '@/playwright/test-helpers';
 
 import type {
   DisabledTypeaheadHarness,
+  GroupedLoadingTypeaheadHarness,
   GroupedTypeaheadHarness,
   LoadingTypeaheadHarness,
   PlainMenuHarness,
@@ -240,6 +241,19 @@ test.describe('Select', () => {
     await combo.click();
     await expect(combo).toHaveAttribute('aria-controls', 'ct-menu-ta-loading-listbox');
     await expect(page.locator('#ct-menu-ta-loading-listbox')).toBeVisible();
+  });
+
+  test('keeps aria-controls connected while a grouped typeahead menu is loading', async ({
+    mount,
+    page,
+  }) => {
+    await mount<typeof GroupedLoadingTypeaheadHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/GroupedLoadingTypeaheadHarness'
+    );
+    const combo = page.getByRole('combobox', { name: /select the subnet/i });
+    await combo.click();
+    await expect(combo).toHaveAttribute('aria-controls', 'ct-menu-ta-grouped-loading-listbox');
+    await expect(page.locator('#ct-menu-ta-grouped-loading-listbox')).toBeVisible();
   });
 
   test('re-selecting the same typeahead option keeps the selection', async ({ mount, page }) => {
