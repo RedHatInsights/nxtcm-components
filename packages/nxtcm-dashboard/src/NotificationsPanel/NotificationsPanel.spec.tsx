@@ -136,6 +136,10 @@ test.describe('NotificationsPanel', () => {
     const secondNotificationRow = component.getByRole('row', {
       name: /New recommendation: Reorganize namespaces Advisor Nov\. 28 12:09 UTC/,
     });
+    const expectNotificationClickCount = async (count: number) =>
+      expect
+        .poll(() => component.getByTestId('onNotificationClick-count').inputValue().then(Number))
+        .toBe(count);
 
     await expect(firstNotificationRow).toHaveAttribute('tabindex', '0');
     await firstNotificationRow.focus();
@@ -147,14 +151,10 @@ test.describe('NotificationsPanel', () => {
     await expect(firstNotificationRow).toBeFocused();
 
     await firstNotificationRow.press('Enter');
-    await expect
-      .poll(() => component.getByTestId('onNotificationClick-count').inputValue().then(Number))
-      .toBe(1);
+    await expectNotificationClickCount(1);
 
     await firstNotificationRow.press(' ');
-    await expect
-      .poll(() => component.getByTestId('onNotificationClick-count').inputValue().then(Number))
-      .toBe(2);
+    await expectNotificationClickCount(2);
     await expect(firstNotificationRow).toBeFocused();
   });
 
