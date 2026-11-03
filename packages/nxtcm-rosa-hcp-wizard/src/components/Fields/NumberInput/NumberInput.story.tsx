@@ -13,12 +13,10 @@ export interface NumberHarnessProps extends Pick<
   initial?: number;
   /** marks the field as required */
   isRequired?: boolean;
-  additionalDescription?: string;
 }
 
 export function NumberHarness({
   initial = 2,
-  additionalDescription,
   ...props
 }: NumberHarnessProps = {}): React.ReactElement {
   const [value, setValue] = useState<number | undefined>(initial);
@@ -32,7 +30,6 @@ export function NumberHarness({
         min={0}
         onChange={(_e: SyntheticEvent, v: number | undefined) => setValue(v)}
       />
-      {additionalDescription && <p id="ct-num-additional-description">{additionalDescription}</p>}
     </Form>
   );
 }
