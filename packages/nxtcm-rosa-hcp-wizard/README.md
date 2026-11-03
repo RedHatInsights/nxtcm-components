@@ -101,6 +101,10 @@ export const CreateClusterWizard = ({ wizardData }: { wizardData: ROSAHCPWizardD
 );
 ```
 
+## Localization
+
+`RosaHCPWizard` accepts a `strings` prop for UI copy and validator messages. Omitted keys keep the built-in English defaults. The key catalog, including which sections you can skip when `config.hiddenSteps` hides a step, is in [Localizable strings](./docs/localizable-strings.md).
+
 ## Component catalog
 
 - `RosaHCPWizard` - full ROSA HCP cluster creation wizard

@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   lint:
     name: Lint
@@ -38,6 +42,9 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
+      - name: Run ESLint rule tests
+        run: npm run test:eslint-rules
+
       - name: Check Prettier formatting
         run: npm run prettier:check
 
@@ -60,8 +67,12 @@ jobs:
         run: npm run type-check
 
   unit-test:
-    name: Unit Tests
+    name: Unit Tests (React ${{ matrix.react }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        react: [18, 19]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -73,28 +84,48 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Install and verify React ${{ matrix.react }}
+        run: node scripts/setup-react-version.mjs ${{ matrix.react }}
 
       - name: Run Jest unit tests
         run: |
           mkdir -p test-results
           npm test -- --coverage --json --outputFile=test-results/jest-results.json
 
-      - name: Run ESLint rule tests
-        run: npm run test:eslint-rules
-
       - name: Upload coverage artifact
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: jest-coverage
+          name: jest-coverage-react-${{ matrix.react }}
           path: |
             coverage/
             test-results/jest-results.json
           retention-days: 14
 
-  test:
-    name: Component Tests
+  # Keep these summary names stable: the main branch ruleset requires them.
+  unit-test-summary:
+    name: Unit Tests
     runs-on: ubuntu-latest
+    needs: unit-test
+    if: always()
+    steps:
+      - name: Verify both React versions passed
+        env:
+          RESULT: ${{ needs.unit-test.result }}
+        run: |
+          if [ "$RESULT" != "success" ]; then
+            echo "::error::Unit tests did not pass for both React versions (result: $RESULT)"
+            exit 1
+          fi
+
+  test:
+    name: Component Tests (React ${{ matrix.react }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        react: [18, 19]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -106,6 +137,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Install and verify React ${{ matrix.react }}
+        run: node scripts/setup-react-version.mjs ${{ matrix.react }}
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
@@ -135,7 +169,7 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
-          name: playwright-ct-report
+          name: playwright-ct-report-react-${{ matrix.react }}
           path: |
             playwright-report/
             test-results/playwright-ct-results.json
@@ -147,6 +181,21 @@ jobs:
       - name: Fail job if CT failed
         if: steps.ct_run.outcome == 'failure'
         run: exit 1
+
+  component-test-summary:
+    name: Component Tests
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+    steps:
+      - name: Verify both React versions passed
+        env:
+          RESULT: ${{ needs.test.result }}
+        run: |
+          if [ "$RESULT" != "success" ]; then
+            echo "::error::Component tests did not pass for both React versions (result: $RESULT)"
+            exit 1
+          fi
 
   build:
     name: Build
@@ -204,8 +253,12 @@ jobs:
         run: npm run test:react-compat
 
   e2e:
-    name: E2E Tests
+    name: E2E Tests (React ${{ matrix.react }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        react: [18, 19]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -217,6 +270,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Install and verify React ${{ matrix.react }}
+        run: node scripts/setup-react-version.mjs ${{ matrix.react }}
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
@@ -232,17 +288,36 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-react-${{ matrix.react }}
           path: |
             playwright-report/
             test-results/playwright-e2e-results.json
           retention-days: 7
 
+  e2e-summary:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: e2e
+    if: always()
+    steps:
+      - name: Verify both React versions passed
+        env:
+          RESULT: ${{ needs.e2e.result }}
+        run: |
+          if [ "$RESULT" != "success" ]; then
+            echo "::error::E2E tests did not pass for both React versions (result: $RESULT)"
+            exit 1
+          fi
+
   coverage-contract:
-    name: Assemble Coverage Contract
+    name: Assemble Coverage Contract (React ${{ matrix.react }})
     runs-on: ubuntu-latest
     needs: [unit-test, test, e2e]
     if: always()
+    strategy:
+      fail-fast: false
+      matrix:
+        react: [18, 19]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -255,21 +330,21 @@ jobs:
       - name: Download jest coverage artifact
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: jest-coverage
+          name: jest-coverage-react-${{ matrix.react }}
           path: artifacts/jest-coverage
         continue-on-error: true
 
       - name: Download CT report artifact
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: playwright-ct-report
+          name: playwright-ct-report-react-${{ matrix.react }}
           path: artifacts/playwright-ct-report
         continue-on-error: true
 
       - name: Download E2E report artifact
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: playwright-report
+          name: playwright-report-react-${{ matrix.react }}
           path: artifacts/playwright-report
         continue-on-error: true
 
@@ -281,7 +356,17 @@ jobs:
             --e2e-results artifacts/playwright-report/test-results/playwright-e2e-results.json \
             --output test-coverage-data.json
 
-      - name: Upload canonical coverage contract
+      - name: Upload React ${{ matrix.react }} coverage contract
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-coverage-data-react-${{ matrix.react }}
+          path: test-coverage-data.json
+          retention-days: 30
+
+      # EPD consumes this exact artifact name and schema. Keep React 19 as the
+      # canonical source so matrix runs do not double-count tests.
+      - name: Upload canonical coverage contract for EPD
+        if: matrix.react == 19
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: test-coverage-data
