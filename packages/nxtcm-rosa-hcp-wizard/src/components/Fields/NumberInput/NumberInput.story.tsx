@@ -16,7 +16,7 @@ export interface NumberHarnessProps {
   isError?: boolean;
   /** validation feedback */
   errorMessage?: string;
-  inputProps?: InputHTMLAttributes<HTMLInputElement> & { isRequired?: boolean };
+  inputProps?: InputHTMLAttributes<HTMLInputElement>;
 }
 
 export function NumberHarness({

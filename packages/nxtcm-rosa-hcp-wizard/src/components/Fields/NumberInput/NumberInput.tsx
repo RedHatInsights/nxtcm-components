@@ -40,7 +40,7 @@ export interface NumberInputProps extends Omit<
   isSuccess?: boolean;
   successMessage?: ReactNode | string;
   isDisabled?: boolean;
-  inputProps?: InputHTMLAttributes<HTMLInputElement> & { isRequired?: boolean };
+  inputProps?: InputHTMLAttributes<HTMLInputElement>;
 }
 
 export function NumberInput(props: NumberInputProps) {

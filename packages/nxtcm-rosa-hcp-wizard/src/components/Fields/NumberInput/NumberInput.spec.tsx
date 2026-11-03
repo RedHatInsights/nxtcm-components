@@ -80,7 +80,7 @@ test.describe('NumberInput', () => {
       'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness',
       {
         helperText: 'Use a whole number.',
-        inputProps: { 'aria-describedby': 'caller-description', isRequired: true },
+        inputProps: { 'aria-describedby': 'caller-description' },
       }
     );
     const spinbutton = mounted.getByRole('spinbutton', { name: new RegExp(workerCountLabel, 'i') });
