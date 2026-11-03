@@ -21,9 +21,7 @@ test.describe('LoginStep', () => {
     );
     const copyInstruction = component.getByRole('textbox', { name: 'Copyable ROSA login command' });
     await expect(copyInstruction).toBeVisible();
-    const textbox = copyInstruction;
-    await expect(textbox).toBeVisible();
-    await expect(textbox).toHaveValue(/rosa login --client-id.*--client-secret/);
+    await expect(copyInstruction).toHaveValue(/rosa login --client-id.*--client-secret/);
   });
 
   test('should render for OCM product', async ({ mount }) => {
@@ -33,9 +31,7 @@ test.describe('LoginStep', () => {
     );
     const copyInstruction = component.getByRole('textbox', { name: 'Copyable ROSA login command' });
     await expect(copyInstruction).toBeVisible();
-    const textbox = copyInstruction;
-    await expect(textbox).toBeVisible();
-    await expect(textbox).toHaveValue(
+    await expect(copyInstruction).toHaveValue(
       /rosa login --use-auth-code --url https:\/\/api\.openshift\.com/
     );
   });
