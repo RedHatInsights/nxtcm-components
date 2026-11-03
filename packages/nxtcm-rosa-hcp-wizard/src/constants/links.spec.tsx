@@ -5,9 +5,14 @@ import type { UseGetDocsVersionMount } from './links.story';
 
 const story = 'nxtcm-rosa-hcp-wizard/constants/links/UseGetDocsVersionMount';
 
-/** Builds the expected base URL for a given docs major version. */
-const rosaDocsBase = (version: string): string =>
-  `https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/${version}/html`;
+/** Builds a regex matching the literal base URL for a given docs major version. */
+const rosaDocsBase = (version: string): RegExp =>
+  new RegExp(
+    `https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/${version}/html`.replace(
+      /[.*+?^${}()|[\]\\]/g,
+      '\\$&'
+    )
+  );
 
 test.describe('useGetDocsVersion', () => {
   test('rendered documentation links pass accessibility check', async ({ mount }) => {
@@ -23,7 +28,7 @@ test.describe('useGetDocsVersion', () => {
       const component = await mount<typeof UseGetDocsVersionMount>(story);
       await expect(
         component.getByRole('link', { name: 'IAM RESOURCES', exact: true })
-      ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('4')));
+      ).toHaveAttribute('href', rosaDocsBase('4'));
     });
 
     test('should resolve to v4 docs for a v4 cluster version', async ({ mount }) => {
@@ -32,7 +37,7 @@ test.describe('useGetDocsVersion', () => {
       });
       await expect(
         component.getByRole('link', { name: 'IAM RESOURCES', exact: true })
-      ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('4')));
+      ).toHaveAttribute('href', rosaDocsBase('4'));
     });
 
     test('should fall back to v4 docs when cluster major is not published', async ({ mount }) => {
@@ -41,14 +46,14 @@ test.describe('useGetDocsVersion', () => {
       });
       await expect(
         component.getByRole('link', { name: 'IAM RESOURCES', exact: true })
-      ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('4')));
+      ).toHaveAttribute('href', rosaDocsBase('4'));
     });
 
     test('should fall back to v4 docs for an empty string cluster version', async ({ mount }) => {
       const component = await mount<typeof UseGetDocsVersionMount>(story, { clusterVersion: '' });
       await expect(
         component.getByRole('link', { name: 'IAM RESOURCES', exact: true })
-      ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('4')));
+      ).toHaveAttribute('href', rosaDocsBase('4'));
     });
   });
 
@@ -62,7 +67,7 @@ test.describe('useGetDocsVersion', () => {
       });
       await expect(
         component.getByRole('link', { name: 'IAM RESOURCES', exact: true })
-      ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('4')));
+      ).toHaveAttribute('href', rosaDocsBase('4'));
     });
 
     test('should resolve to v5 docs when v5 cluster is selected and v5 is published', async ({
@@ -74,7 +79,7 @@ test.describe('useGetDocsVersion', () => {
       });
       await expect(
         component.getByRole('link', { name: 'IAM RESOURCES', exact: true })
-      ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('5')));
+      ).toHaveAttribute('href', rosaDocsBase('5'));
     });
 
     test('should resolve to v5 docs when v5 cluster is selected and both v4 and v5 are published', async ({
@@ -86,7 +91,7 @@ test.describe('useGetDocsVersion', () => {
       });
       await expect(
         component.getByRole('link', { name: 'IAM RESOURCES', exact: true })
-      ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('5')));
+      ).toHaveAttribute('href', rosaDocsBase('5'));
     });
 
     test('should fall back to v4 docs when cluster major is 6 and only v4 and v5 are published', async ({
@@ -98,7 +103,7 @@ test.describe('useGetDocsVersion', () => {
       });
       await expect(
         component.getByRole('link', { name: 'IAM RESOURCES', exact: true })
-      ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('4')));
+      ).toHaveAttribute('href', rosaDocsBase('4'));
     });
   });
 
@@ -133,7 +138,7 @@ test.describe('useGetDocsVersion', () => {
         });
         await expect(
           component.getByRole('link', { name: key.replaceAll('_', ' '), exact: true })
-        ).toHaveAttribute('href', expect.stringContaining(rosaDocsBase('5')));
+        ).toHaveAttribute('href', rosaDocsBase('5'));
       });
     }
   });
