@@ -56,12 +56,19 @@ npm run test:ct -- Footer
 # Component test — grep by test title
 npm run test:ct -- --grep "should render"
 
+# Component test — another engine, or all three (local default is Chromium)
+npm run test:ct:firefox
+npm run test:ct:webkit
+npm run test:ct:all-browsers
+
 # Lint — single file
 npm run lint -- packages/nxtcm-rosa-hcp-wizard/src/Footer/RosaHcpWizardFooter.tsx
 
 ```
 
 For final validation before pushing, use `npm run test:all:quiet` and `npm run test:e2e`.
+
+Local CT and E2E scripts run Chromium only; CI also runs Firefox and WebKit on React 19. If CI fails on one of them, reproduce it with `npm run test:ct:firefox` / `test:ct:webkit` (and `test:e2e:firefox` / `test:e2e:webkit`); install missing engines with `npx playwright install`. `npm run test:ct -- --project=…` does not narrow the run (the script's own `--project` is combined with yours), so use those scripts.
 
 ---
 

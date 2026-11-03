@@ -40,6 +40,17 @@ coverage-contract → needs: [unit-test, test, e2e]
 
 jobs run in parallel except `coverage-contract` which assembles data from all test jobs.
 
+## browser matrix
+
+`test` (CT) and `e2e` use a matrix with `react: [18, 19]` and `browser: [chromium]`, plus `include` entries that add Firefox and WebKit for React 19 only. That gives four legs each: React 18 + Chromium, and React 19 + Chromium, Firefox and WebKit.
+
+- each leg runs `npx playwright install --with-deps ${{ matrix.browser }}` (never install all engines) and `--project=components-${{ matrix.browser }}` / `--project=e2e-${{ matrix.browser }}`
+- artifacts are per leg: `playwright-ct-report-react-<n>-<browser>` and `playwright-report-react-<n>-<browser>`
+- `coverage-contract` and `ct-triage-comment.yml` only download the `-chromium` artifacts, so the contract totals (including the canonical `test-coverage-data` EPD reads) and the triage comment do not change with the extra engines. Firefox and WebKit results are in their own job results and artifacts.
+- the stable summary jobs (`Unit Tests`, `Component Tests`, `E2E Tests`) wait for every leg, so a Firefox or WebKit failure fails the required check
+- multi-browser coverage is CI-only: the jobs call `playwright test --project=…` directly, while the local `npm run test:ct` / `test:e2e` scripts run Chromium only
+- `react-compatibility` and Stryker stay Chromium-only
+
 ## CT triage pipeline
 
 the component test job produces structured output consumed by downstream automation:
