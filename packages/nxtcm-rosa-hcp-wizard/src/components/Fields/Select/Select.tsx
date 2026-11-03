@@ -285,12 +285,15 @@ export function Select<T = unknown>(props: SelectProps<T>) {
         );
       }
       return (
-        <SelectList id={isTypeAhead ? `${id}-listbox` : undefined} aria-label={menuLabel}>
+        <>
           {toRender.map((group, index) => (
             <Fragment key={group.label}>
               {index > 0 ? <Divider /> : null}
               <SelectGroup label={group.label}>
-                <SelectList aria-label={`${menuLabel}: ${group.label}`}>
+                <SelectList
+                  id={isTypeAhead && index === 0 ? `${id}-listbox` : undefined}
+                  aria-label={`${menuLabel}: ${group.label}`}
+                >
                   {group.options.map((opt: OptionType<T>, optIdx: number) =>
                     renderSelectOptionRow(opt, opt.id || `option-${group.label}-${optIdx}`)
                   )}
@@ -298,7 +301,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
               </SelectGroup>
             </Fragment>
           ))}
-        </SelectList>
+        </>
       );
     }
 
@@ -440,7 +443,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
             aria-label={placeholderText}
             aria-describedby={describedBy || undefined}
             role="combobox"
-            aria-controls={open ? id : undefined}
+            aria-controls={open ? (isTypeAhead ? `${id}-listbox` : id) : undefined}
             id={`${id}-typeahead-input`}
           />
           <TextInputGroupUtilities
