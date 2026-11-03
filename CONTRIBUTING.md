@@ -131,6 +131,8 @@ if either step fails, the commit is blocked. see [docs/HUSKY_SETUP.md](docs/HUSK
 | playwright E2E | `npm run test:e2e` | full app integration flows                         |
 | unit + CT      | `npm run test:all` | runs jest + playwright CT (does not include E2E)   |
 
+the `npm run test:*` commands above run Chromium only. to run the same CT/E2E specs on Firefox or WebKit, see [Browser coverage](#browser-coverage).
+
 ### Running specific tests
 
 ```bash
@@ -138,11 +140,54 @@ if either step fails, the commit is blocked. see [docs/HUSKY_SETUP.md](docs/HUSK
 npx jest path/to/file.test.ts
 
 # single CT spec
-npx playwright test --project=components path/to/Component.spec.tsx
+npm run test:ct -- path/to/Component.spec.tsx
 
 # CT with UI mode (interactive debugging)
-npx playwright test --project=components --ui
+npm run test:ct:watch
+
+# single CT spec on Firefox or WebKit (install the engines first: npx playwright install)
+npm run test:ct:firefox -- path/to/Component.spec.tsx
+npm run test:ct:webkit -- path/to/Component.spec.tsx
+
+# all CT or E2E specs on all three engines
+npm run test:ct:all-browsers
+npm run test:e2e:all-browsers
 ```
+
+### Browser coverage
+
+CT and E2E specs must pass on Chromium, Firefox and WebKit (Safari's engine). **CI runs the other two engines
+on React 19; local commands run Chromium only**, so everyday runs stay fast. Each suite has one Playwright
+project per engine, named `<suite>-<engine>` (`components-chromium`, `components-firefox`,
+`components-webkit`, `e2e-chromium`, `e2e-firefox`, `e2e-webkit`).
+
+| command                                                         | runs                   |
+| --------------------------------------------------------------- | ---------------------- |
+| `npm run test:ct`, `npm run test:e2e`                           | Chromium (the default) |
+| `npm run test:ct:firefox`, `npm run test:e2e:firefox`           | Firefox                |
+| `npm run test:ct:webkit`, `npm run test:e2e:webkit`             | WebKit                 |
+| `npm run test:ct:all-browsers`, `npm run test:e2e:all-browsers` | all three engines      |
+
+`npm run test:all`, `npm run test:all:quiet` and `npm run allthethings` are Chromium only. If CI fails on
+Firefox or WebKit, reproduce it locally with the matching `:firefox` / `:webkit` script.
+
+```bash
+# install the engines locally (needed for the Firefox / WebKit scripts)
+npx playwright install                      # all engines
+npx playwright install firefox webkit      # only the ones you are missing
+
+# one engine and one spec
+npm run test:ct:webkit -- path/to/Component.spec.tsx
+
+# both suites on one engine
+npx playwright test --project='*-webkit'
+```
+
+The scripts already pass a `--project`, and Playwright combines repeated `--project` flags, so
+`npm run test:ct -- --project=components-firefox` will **not** narrow the run to Firefox (it runs Chromium
+too). Use the engine scripts above, or `npx playwright test --project=<suite>-<engine>`. A bare
+`npx playwright test` runs every project, including all three engines. Mutation testing (Stryker) only runs
+on Chromium.
 
 ### Test guidelines
 
@@ -265,7 +310,7 @@ gh pr create --base main
 
 ### What happens after you push
 
-CI runs automatically (lint, type-check, unit tests, CT, E2E, build, storybook). results show up in the PR Checks tab.
+CI runs automatically (lint, type-check, unit tests, CT, E2E, build, storybook). results show up in the PR Checks tab. CT and E2E run on Chromium for React 18 and 19, and also on Firefox and WebKit for React 19 (see [Browser coverage](#browser-coverage)).
 
 the CT triage pipeline classifies any Playwright CT failures and posts a structured comment on the PR with categories and fix suggestions.
 
@@ -309,6 +354,7 @@ Both packages use the shared `vite.config.ts`, which selects the entry point and
 | `jest.config.js` / `jest.setup.js` / `babel.config.js` | Jest unit test setup |
 | `playwright-ct.config.ts` | Playwright component tests |
 | `playwright.config.ts` | Playwright E2E tests |
+| `playwright/browsers.ts` | browser engines (Chromium, Firefox, WebKit) used to generate the per-engine Playwright projects |
 | `stryker.config.mjs` | Stryker mutation testing |
 | `.storybook/` | Storybook configuration |
 | `renovate.json` | Renovate dependency update rules |
@@ -336,23 +382,26 @@ if you're using an AI tool, it will pick up `AGENTS.md` automatically. keep rout
 
 ## Quick reference
 
-| task               | command                                                         |
-| ------------------ | --------------------------------------------------------------- |
-| install deps       | `npm ci`                                                        |
-| lint               | `npm run lint`                                                  |
-| lint fix           | `npm run lint:fix`                                              |
-| type-check         | `npm run type-check`                                            |
-| jest tests         | `npm test`                                                      |
-| jest coverage      | `npm run test:coverage`                                         |
-| playwright CT      | `npm run test:ct`                                               |
-| playwright E2E     | `npm run test:e2e`                                              |
-| unit + CT tests    | `npm run test:all`                                              |
-| storybook          | `npm run storybook`                                             |
-| build all packages | `npm run build`                                                 |
-| build dashboard    | `npm run build -w @redhat-cloud-services/nxtcm-dashboard`       |
-| build wizard       | `npm run build -w @redhat-cloud-services/nxtcm-rosa-hcp-wizard` |
-| prettier check     | `npm run prettier:check`                                        |
-| prettier fix       | `npm run prettier:fix`                                          |
-| mutation testing   | `npm run test:stryker -- path/to/Component.tsx`                 |
-| mutation report    | `npm run test:stryker:report -- path/to/Component.tsx`          |
-| fix everything     | `npm run allthethings`                                          |
+| task                              | command                                                         |
+| --------------------------------- | --------------------------------------------------------------- |
+| install deps                      | `npm ci`                                                        |
+| lint                              | `npm run lint`                                                  |
+| lint fix                          | `npm run lint:fix`                                              |
+| type-check                        | `npm run type-check`                                            |
+| jest tests                        | `npm test`                                                      |
+| jest coverage                     | `npm run test:coverage`                                         |
+| playwright CT                     | `npm run test:ct`                                               |
+| playwright E2E                    | `npm run test:e2e`                                              |
+| playwright CT (Firefox / WebKit)  | `npm run test:ct:firefox`, `npm run test:ct:webkit`             |
+| playwright E2E (Firefox / WebKit) | `npm run test:e2e:firefox`, `npm run test:e2e:webkit`           |
+| CT / E2E on all engines           | `npm run test:ct:all-browsers`, `npm run test:e2e:all-browsers` |
+| unit + CT tests                   | `npm run test:all`                                              |
+| storybook                         | `npm run storybook`                                             |
+| build all packages                | `npm run build`                                                 |
+| build dashboard                   | `npm run build -w @redhat-cloud-services/nxtcm-dashboard`       |
+| build wizard                      | `npm run build -w @redhat-cloud-services/nxtcm-rosa-hcp-wizard` |
+| prettier check                    | `npm run prettier:check`                                        |
+| prettier fix                      | `npm run prettier:fix`                                          |
+| mutation testing                  | `npm run test:stryker -- path/to/Component.tsx`                 |
+| mutation report                   | `npm run test:stryker:report -- path/to/Component.tsx`          |
+| fix everything                    | `npm run allthethings`                                          |

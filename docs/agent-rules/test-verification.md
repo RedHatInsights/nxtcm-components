@@ -24,7 +24,7 @@ reference for Playwright CT/E2E runs, Istanbul coverage, and common failure mode
 ## ports and prerequisites
 
 - CT dev server port: **3100**; E2E: **3200** — kill conflicting processes if tests hang on startup
-- Browsers: `npx playwright install chromium` if executable missing
+- Browsers: `npx playwright install chromium` if executable missing; Firefox and WebKit are only needed for the opt-in `test:ct:firefox|webkit|all-browsers` and `test:e2e:firefox|webkit|all-browsers` scripts (`npx playwright install firefox webkit`). Projects are named `components-<engine>` / `e2e-<engine>` (see `playwright/browsers.ts`); local `npm run test:*` scripts use Chromium
 - Dependencies: `npm ci` at repo root (workspaces)
 
 ## common issues

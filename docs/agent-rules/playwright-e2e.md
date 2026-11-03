@@ -23,9 +23,10 @@ CT selector rules also apply to E2E: see [`playwright-ct.md`](playwright-ct.md) 
 ## running
 
 ```bash
-npm run test:e2e
+npm run test:e2e            # Chromium only; CI also runs firefox + webkit
 npm run test:e2e:coverage   # COVERAGE=true + nyc report
-npx playwright test playwright/e2e/rosa-wizard.spec.ts
+npm run test:e2e -- playwright/e2e/rosa-wizard.spec.ts
+npm run test:e2e:firefox    # also test:e2e:webkit, test:e2e:all-browsers
 ```
 
 ## selector audit (static review)
@@ -84,7 +85,7 @@ See [`YamlEditor/AGENTS.md`](../../packages/nxtcm-rosa-hcp-wizard/src/Steps/Yaml
 1. Prefer extending `rosa-wizard.spec.ts` or a focused `*.spec.ts` beside helpers
 2. Extract repeated step flows to `helpers/`
 3. Mock data comes from the E2E harness (`playwright/index.tsx`), not live APIs
-4. Run targeted file before full suite: `npx playwright test playwright/e2e/rosa-wizard.spec.ts`
+4. Run targeted file before full suite: `npm run test:e2e -- playwright/e2e/rosa-wizard.spec.ts`
 
 ## what not to test in E2E
 
