@@ -1,4 +1,6 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
+
+import { projectsFor } from './playwright/browsers';
 
 const parsedPort = Number(process.env.STRYKER_CT_PORT ?? 3100);
 const galleryPort = Number.isFinite(parsedPort) ? parsedPort : 3100;
@@ -32,10 +34,8 @@ export default defineConfig({
     stdout: process.env.QUIET === 'true' ? 'ignore' : 'pipe',
     stderr: 'pipe',
   },
-  projects: [
-    {
-      name: 'components',
-      use: { ...devices['Desktop Chrome'] },
-    },
-  ],
+  // WebKit's first page load on shared CI runners can exceed the default 10s test timeout.
+  projects: projectsFor('components').map((project) =>
+    project.name === 'components-webkit' ? { ...project, timeout: 20 * 1000 } : project
+  ),
 });

@@ -35,7 +35,7 @@ describe('ct-triage-comment script', () => {
     ]);
 
     expect(output).toContain(`## CT Triage — React ${reactVersion}`);
-    expect(output).toContain(`\`playwright-ct-report-react-${reactVersion}\``);
+    expect(output).toContain(`\`playwright-ct-report-react-${reactVersion}-chromium\``);
   });
 
   test.each(['18', '19'])('does not post a comment for passing React %s tests', (reactVersion) => {

@@ -61,7 +61,7 @@ const playwrightArgs = [
   'test',
   '-c',
   'playwright-ct.config.ts',
-  '--project=components',
+  '--project=components-chromium',
   '--reporter=list',
   '--workers=1',
   ...specs,
