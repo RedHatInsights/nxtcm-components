@@ -1,6 +1,7 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 import path from 'node:path';
 
+import { browsers, projectsFor } from './playwright/browsers';
 import components from './playwright-ct.config';
 
 // Playwright's webServer is global, so select servers using the CLI's project filter.
@@ -21,7 +22,6 @@ for (const arg of process.argv.slice(2)) {
 }
 
 const projectIsSelected = (name: string): boolean =>
-  selectedProjects.length === 0 ||
   selectedProjects.some((pattern) =>
     new RegExp(
       `^${pattern
@@ -32,17 +32,20 @@ const projectIsSelected = (name: string): boolean =>
     ).test(name)
   );
 
+const suiteIsSelected = (prefix: string): boolean =>
+  selectedProjects.length === 0 ||
+  browsers.some(({ engine }) => projectIsSelected(`${prefix}-${engine}`));
+
 export default defineConfig({
   ...components,
   updateSnapshots: process.env.CI ? 'none' : 'missing',
   projects: [
-    {
-      ...components.projects?.[0],
+    ...(components.projects ?? []).map((project) => ({
+      ...project,
       testMatch: components.testMatch,
-      use: { ...components.projects?.[0].use, ...components.use },
-    },
-    {
-      name: 'e2e',
+      use: { ...project.use, ...components.use },
+    })),
+    ...projectsFor('e2e', {
       testDir: path.join(__dirname, 'playwright/e2e'),
       testMatch: '**/*.spec.ts',
       // Shared screenshot baselines are only comparable in the pinned container.
@@ -61,7 +64,6 @@ export default defineConfig({
         },
       },
       use: {
-        ...devices['Desktop Chrome'],
         viewport: { width: 1280, height: 720 },
         deviceScaleFactor: 1,
         colorScheme: 'light',
@@ -70,15 +72,15 @@ export default defineConfig({
         baseURL: 'http://localhost:3200',
         trace: 'on-first-retry',
       },
-    },
+    }),
   ],
   webServer: [
-    ...(projectIsSelected('components') && components.webServer
+    ...(suiteIsSelected('components') && components.webServer
       ? Array.isArray(components.webServer)
         ? components.webServer
         : [components.webServer]
       : []),
-    ...(projectIsSelected('e2e')
+    ...(suiteIsSelected('e2e')
       ? [
           {
             cwd: __dirname,
