@@ -1,5 +1,6 @@
 export const WIZ_RADIO_GROUP_EXPLICIT_LABEL = 'Explicit radio group label';
 export const WIZ_RADIO_GROUP_EXPLICIT_HELPER = 'Explicit helper text.';
+export const WIZ_RADIO_GROUP_CALLER_ARIA_LABEL = 'Caller supplied group label';
 export const WIZ_RADIO_GROUP_OPTION_ALPHA_LABEL = 'Option Alpha';
 export const WIZ_RADIO_GROUP_OPTION_BETA_LABEL = 'Option Beta';
 export const WIZ_RADIO_GROUP_VALUE_STATUS_LABEL = 'tier form value';

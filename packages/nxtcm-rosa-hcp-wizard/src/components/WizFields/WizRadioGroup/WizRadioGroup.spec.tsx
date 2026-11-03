@@ -12,6 +12,7 @@ import type {
   WizRadioGroupYupMetaHarness,
 } from './WizRadioGroup.story';
 import {
+  WIZ_RADIO_GROUP_CALLER_ARIA_LABEL,
   WIZ_RADIO_GROUP_CONTROL_ONLY_STATUS,
   WIZ_RADIO_GROUP_EXPLICIT_HELPER,
   WIZ_RADIO_GROUP_EXPLICIT_LABEL,
@@ -47,7 +48,7 @@ test.describe('WizRadioGroup', () => {
     await expect(mounted.getByText(WIZ_RADIO_GROUP_EXPLICIT_HELPER, { exact: true })).toBeVisible();
     await expect(mounted.getByRole('radiogroup')).toHaveAttribute(
       'aria-label',
-      'Caller supplied group label'
+      WIZ_RADIO_GROUP_CALLER_ARIA_LABEL
     );
     await expect(
       mounted.getByRole('radio', { name: new RegExp(WIZ_RADIO_GROUP_OPTION_ALPHA_LABEL, 'i') })
