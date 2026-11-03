@@ -16,7 +16,7 @@ import { Checkbox } from './Checkbox';
 
 const CHECKBOX_HARNESS_ID = 'ct-checkbox';
 
-export function CheckboxHarness() {
+export function CheckboxHarness(): React.ReactElement {
   const [isChecked, setIsChecked] = useState(false);
   return (
     <Form>

@@ -1,4 +1,5 @@
 import { expect, test } from '@/playwright/ct-fixture';
+import { checkAccessibility } from '@/playwright/test-helpers';
 
 import type {
   WizCheckboxExplicitControlOnlyHarness,
@@ -27,6 +28,17 @@ import {
 } from './WizCheckbox.story-data';
 
 test.describe('WizCheckbox', () => {
+  test('passes accessibility check in the default unchecked state', async ({ mount }) => {
+    const component = await mount<typeof WizCheckboxExplicitHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizCheckbox/WizCheckbox/WizCheckboxExplicitHarness'
+    );
+    const checkbox = component.getByRole('checkbox', { name: WIZ_CHECKBOX_EXPLICIT_LABEL });
+    await expect(checkbox).toBeVisible();
+    await expect(checkbox).not.toBeChecked();
+    await expect(checkbox).toHaveAccessibleDescription(WIZ_CHECKBOX_EXPLICIT_HELPER);
+    await checkAccessibility({ component });
+  });
+
   test('renders explicit title, label, and helper text', async ({ mount }) => {
     const mounted = await mount<typeof WizCheckboxExplicitHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizCheckbox/WizCheckbox/WizCheckboxExplicitHarness'
@@ -48,8 +60,12 @@ test.describe('WizCheckbox', () => {
     });
     await checkboxInput.click();
     await expect(status).toHaveText('true');
+    await expect(checkboxInput).toBeChecked();
+    await checkAccessibility({ component: mounted });
     await checkboxInput.click();
     await expect(status).toHaveText('false');
+    await expect(checkboxInput).not.toBeChecked();
+    await checkAccessibility({ component: mounted });
   });
 
   test('derives title, label, and helper text from Yup schema meta when props are omitted', async ({
@@ -67,8 +83,13 @@ test.describe('WizCheckbox', () => {
     const mounted = await mount<typeof WizCheckboxSubmitValidationHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizCheckbox/WizCheckbox/WizCheckboxSubmitValidationHarness'
     );
+    const checkbox = mounted.getByRole('checkbox', { name: /accept the terms/i });
     await mounted.getByRole('button', { name: 'Submit' }).click();
     await expect(mounted.getByText(WIZ_CHECKBOX_SUBMIT_ERROR, { exact: true })).toBeVisible();
+    await expect(checkbox).toHaveAccessibleDescription(
+      /You must accept the terms to continue\.\s*:\s*error status;/
+    );
+    await checkAccessibility({ component: mounted });
   });
 
   test('clears Yup validation after the user checks the box and submits again', async ({
@@ -83,6 +104,10 @@ test.describe('WizCheckbox', () => {
     await mounted.getByRole('checkbox', { name: /accept the terms/i }).click();
     await mounted.getByRole('button', { name: 'Submit' }).click();
     await expect(mounted.getByText(WIZ_CHECKBOX_SUBMIT_ERROR, { exact: true })).toBeHidden();
+    const checkbox = mounted.getByRole('checkbox', { name: /accept the terms/i });
+    await expect(checkbox).toBeChecked();
+    await expect(checkbox).toHaveAccessibleDescription('');
+    await checkAccessibility({ component: mounted });
   });
 
   test('uses nested path segment fallback for the checkbox accessible name without Yup', async ({

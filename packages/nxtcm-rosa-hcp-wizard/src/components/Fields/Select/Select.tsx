@@ -179,6 +179,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
 
   const placeholderText =
     placeholder ?? (label?.length ? `Select the ${lowercaseFirst(label)}` : 'Select an option');
+  const menuLabel = label || placeholderText;
 
   /**
    * Clears the typeahead filter when opening so all options are visible.
@@ -258,7 +259,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   const renderMenuBody = () => {
     if (isLoading) {
       return (
-        <SelectList>
+        <SelectList id={`${id}-listbox`} aria-label={menuLabel}>
           <SelectOption id={`${id}-loading`} isDisabled value="loading">
             <Flex
               alignItems={{ default: 'alignItemsCenter' }}
@@ -276,7 +277,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
       const toRender = displayedGroups.filter((g) => g.options.length > 0);
       if (toRender.length === 0) {
         return (
-          <SelectList>
+          <SelectList id={`${id}-listbox`} aria-label={menuLabel}>
             <SelectOption id={`${id}-no-results`} isAriaDisabled value="no-results">
               {noResultsText}
             </SelectOption>
@@ -284,25 +285,27 @@ export function Select<T = unknown>(props: SelectProps<T>) {
         );
       }
       return (
-        <SelectList>
+        <>
           {toRender.map((group, index) => (
             <Fragment key={group.label}>
               {index > 0 ? <Divider /> : null}
               <SelectGroup label={group.label}>
-                {group.options.map((opt: OptionType<T>, optIdx: number) =>
-                  renderSelectOptionRow(opt, opt.id || `option-${group.label}-${optIdx}`)
-                )}
+                <SelectList aria-label={`${menuLabel}: ${group.label}`}>
+                  {group.options.map((opt: OptionType<T>, optIdx: number) =>
+                    renderSelectOptionRow(opt, opt.id || `option-${group.label}-${optIdx}`)
+                  )}
+                </SelectList>
               </SelectGroup>
             </Fragment>
           ))}
-        </SelectList>
+        </>
       );
     }
 
     const flatOpts = normalizedFlat ?? [];
     if (flatOpts.length === 0) {
       return (
-        <SelectList id={isTypeAhead ? `${id}-listbox` : undefined}>
+        <SelectList id={`${id}-listbox`} aria-label={menuLabel}>
           <SelectOption id={`${id}-empty`} isAriaDisabled value="empty">
             {noResultsText}
           </SelectOption>
@@ -311,7 +314,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     }
     if (isTypeAhead && displayedFlat.length === 0) {
       return (
-        <SelectList id={`${id}-listbox`}>
+        <SelectList id={`${id}-listbox`} aria-label={menuLabel}>
           <SelectOption id={`${id}-no-results`} isAriaDisabled value="no-results">
             {noResultsText}
           </SelectOption>
@@ -322,7 +325,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     const listRows = isTypeAhead ? displayedFlat : flatOpts;
 
     return (
-      <SelectList id={isTypeAhead ? `${id}-listbox` : undefined}>
+      <SelectList id={`${id}-listbox`} aria-label={menuLabel}>
         {listRows.map((opt, idx) => renderSelectOptionRow(opt, opt.id || `opt-${idx}`))}
       </SelectList>
     );
@@ -391,6 +394,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
         isFullWidth
         status={getStatus(!!isError, !!isSuccess)}
         aria-label={plainToggleAriaLabel}
+        aria-haspopup="listbox"
         aria-describedby={describedBy || undefined}
         data-testid={dataTestId}
       >
@@ -408,6 +412,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     >
       <MenuToggle
         variant="typeahead"
+        aria-haspopup="listbox"
         ref={toggleRef}
         onClick={toggleOpen}
         onBlur={(e: React.FocusEvent<HTMLElement>) => {
@@ -435,7 +440,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
             aria-label={placeholderText}
             aria-describedby={describedBy || undefined}
             role="combobox"
-            aria-controls={`${id}-listbox`}
+            aria-controls={open ? id : undefined}
             id={`${id}-typeahead-input`}
           />
           <TextInputGroupUtilities

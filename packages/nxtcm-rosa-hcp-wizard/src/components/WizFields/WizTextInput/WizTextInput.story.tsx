@@ -50,9 +50,18 @@ const WIZ_TEXT_INPUT_SUBMIT_DEMO_LABEL = 'Notes (submit demo)';
 
 type ExplicitFormValues = { notes: string };
 
-export function WizTextInputExplicitHarness() {
+/** Disabled CIDR fields and read-only role ARNs are used in the wizard. */
+export function WizTextInputExplicitHarness({
+  isDisabled = false,
+  readOnly = false,
+  initialValue = '',
+}: {
+  isDisabled?: boolean;
+  readOnly?: boolean;
+  initialValue?: string;
+}) {
   const methods = useForm<ExplicitFormValues>({
-    defaultValues: { notes: '' },
+    defaultValues: { notes: initialValue },
   });
 
   return withRosaCt(
@@ -63,6 +72,10 @@ export function WizTextInputExplicitHarness() {
           id="wiz-text-input-ct-explicit"
           label={WIZ_TEXT_INPUT_EXPLICIT_LABEL}
           helperText={WIZ_TEXT_INPUT_EXPLICIT_HELPER}
+          isDisabled={isDisabled}
+          readOnly={readOnly}
+          readOnlyVariant={readOnly ? 'plain' : undefined}
+          isRequired={readOnly}
         />
         <WizCtWatchStatus
           control={methods.control}
