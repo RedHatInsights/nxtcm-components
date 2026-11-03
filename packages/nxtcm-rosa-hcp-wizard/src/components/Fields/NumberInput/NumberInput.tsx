@@ -40,7 +40,7 @@ export interface NumberInputProps extends Omit<
   isSuccess?: boolean;
   successMessage?: ReactNode | string;
   isDisabled?: boolean;
-  inputProps?: InputHTMLAttributes<HTMLInputElement>;
+  inputProps?: InputHTMLAttributes<HTMLInputElement> & { isRequired?: boolean };
 }
 
 export function NumberInput(props: NumberInputProps) {
@@ -81,7 +81,11 @@ export function NumberInput(props: NumberInputProps) {
     isSuccess,
     successMessage,
   });
-  const inputAriaDescribedBy = [ariaDescribedByFromProps, helperTextDescriptionId]
+  const inputAriaDescribedBy = [
+    inputPropsFromProps?.['aria-describedby'],
+    ariaDescribedByFromProps,
+    helperTextDescriptionId,
+  ]
     .filter(Boolean)
     .join(' ');
 

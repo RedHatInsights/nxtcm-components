@@ -75,6 +75,22 @@ test.describe('NumberInput', () => {
     await expect(mounted.locator('#ct-num-helper-text')).toBeVisible();
   });
 
+  test('preserves caller and helper descriptions on the spinbutton', async ({ mount }) => {
+    const mounted = await mount<typeof NumberHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness',
+      {
+        helperText: 'Use a whole number.',
+        inputProps: { 'aria-describedby': 'caller-description', isRequired: true },
+      }
+    );
+    const spinbutton = mounted.getByRole('spinbutton', { name: new RegExp(workerCountLabel, 'i') });
+
+    await expect(spinbutton).toHaveAttribute(
+      'aria-describedby',
+      'caller-description ct-num-helper-text'
+    );
+  });
+
   test('describes the spinbutton with an error message', async ({ mount }) => {
     const mounted = await mount<typeof NumberHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness',

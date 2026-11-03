@@ -1,4 +1,4 @@
-import React, { type SyntheticEvent, useState } from 'react';
+import React, { type InputHTMLAttributes, type SyntheticEvent, useState } from 'react';
 
 import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 
@@ -16,6 +16,7 @@ export interface NumberHarnessProps {
   isError?: boolean;
   /** validation feedback */
   errorMessage?: string;
+  inputProps?: InputHTMLAttributes<HTMLInputElement> & { isRequired?: boolean };
 }
 
 export function NumberHarness({

@@ -45,6 +45,10 @@ test.describe('WizRadioGroup', () => {
     );
     await expect(mounted.getByText(WIZ_RADIO_GROUP_EXPLICIT_LABEL, { exact: true })).toBeVisible();
     await expect(mounted.getByText(WIZ_RADIO_GROUP_EXPLICIT_HELPER, { exact: true })).toBeVisible();
+    await expect(mounted.getByRole('radiogroup')).toHaveAttribute(
+      'aria-label',
+      'Caller supplied group label'
+    );
     await expect(
       mounted.getByRole('radio', { name: new RegExp(WIZ_RADIO_GROUP_OPTION_ALPHA_LABEL, 'i') })
     ).toBeVisible();

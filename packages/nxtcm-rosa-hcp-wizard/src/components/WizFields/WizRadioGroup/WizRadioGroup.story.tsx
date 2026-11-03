@@ -63,6 +63,7 @@ export function WizRadioGroupExplicitHarness() {
           name="tier"
           id="wiz-radio-group-ct-explicit"
           label={WIZ_RADIO_GROUP_EXPLICIT_LABEL}
+          aria-label="Caller supplied group label"
           helperText={WIZ_RADIO_GROUP_EXPLICIT_HELPER}
         >
           <Radio id="wiz-radio-alpha" label={WIZ_RADIO_GROUP_OPTION_ALPHA_LABEL} value="alpha" />
