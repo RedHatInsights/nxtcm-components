@@ -59,15 +59,23 @@ test.describe('Page-level accessibility', () => {
   test('scans an open select portal', async ({ page }) => {
     await page.getByRole('combobox', { name: /Select an OpenShift version/i }).click();
     await expect(page.getByRole('option', { name: /OpenShift 4\.12\.0/i })).toBeVisible();
-    // PatternFly's current typeahead popup contributes these findings while
-    // FCN-815/FCN-829 track its listbox semantics and FCN-821 tracks contrast.
-    await checkPageAccessibility(page, 'open version select', [
-      ...harnessRules,
-      'aria-input-field-name',
-      'aria-required-children',
-      'aria-valid-attr-value',
-      'color-contrast',
-    ]);
+    // Keep the rest of the wizard covered with the normal rules. PatternFly's
+    // current typeahead popup has known findings tracked by FCN-815/FCN-829
+    // and FCN-821, so apply those exceptions only to the popup scan.
+    await checkPageAccessibility(page, 'open version select page', harnessRules, {
+      exclude: '[role="listbox"], [aria-controls="cluster_version-listbox"]',
+    });
+    await checkPageAccessibility(
+      page,
+      'open version select popup',
+      [
+        'aria-input-field-name',
+        'aria-required-children',
+        'aria-valid-attr-value',
+        'color-contrast',
+      ],
+      { include: '[role="listbox"]' }
+    );
   });
 
   test('scans the review page', async ({ page }) => {
@@ -85,5 +93,8 @@ test.describe('Page-level accessibility', () => {
     await page.getByRole('button', { name: /Discard changes and go back to Review step/i }).click();
     await expect(page.getByRole('dialog')).toBeVisible();
     await checkPageAccessibility(page, 'YAML discard dialog', [...harnessRules, 'color-contrast']);
+    await checkPageAccessibility(page, 'YAML discard dialog contrast', harnessRules, {
+      include: '[role="dialog"]',
+    });
   });
 });

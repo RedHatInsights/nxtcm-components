@@ -11,12 +11,13 @@ import { expect, type Page } from '@playwright/test';
 export async function checkPageAccessibility(
   page: Page,
   state: string,
-  ignoreRules: string[] = []
+  ignoreRules: string[] = [],
+  scope?: { include?: string; exclude?: string }
 ): Promise<void> {
-  const results = await new AxeBuilder({ page })
-    .options({ iframes: false })
-    .disableRules(ignoreRules)
-    .analyze();
+  let axe = new AxeBuilder({ page }).options({ iframes: false }).disableRules(ignoreRules);
+  if (scope?.include) axe = axe.include(scope.include);
+  if (scope?.exclude) axe = axe.exclude(scope.exclude);
+  const results = await axe.analyze();
   const details = results.violations
     .map(
       ({ id, help, nodes }) =>
