@@ -294,10 +294,7 @@ test.describe('Select', () => {
     await expect(page.getByRole('option', { name: 'subnet-a' })).toBeVisible();
     await expect(page.getByRole('option', { name: 'other-net' })).toHaveCount(0);
     await checkMenuAccessibility(page);
-    await expect(page.getByRole('combobox', { name: /select the subnet/i })).toHaveAttribute(
-      'aria-controls',
-      'ct-menu-ta-listbox'
-    );
+    await expect(combo).toHaveAttribute('aria-controls', 'ct-menu-ta-listbox');
     await expect(page.locator('#ct-menu-ta-listbox')).toBeVisible();
   });
 
@@ -322,7 +319,7 @@ test.describe('Select', () => {
     await mount<typeof GroupedTypeaheadHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/GroupedTypeaheadHarness'
     );
-    const combo = page.getByRole('combobox', { name: /select the subnet/i });
+    const combo = page.getByRole('combobox', { name: 'Subnet' });
     await combo.click();
     await expect(combo).toHaveAttribute(
       'aria-controls',
@@ -339,7 +336,7 @@ test.describe('Select', () => {
     await mount<typeof LoadingTypeaheadHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/LoadingTypeaheadHarness'
     );
-    const combo = page.getByRole('combobox', { name: /select the subnet/i });
+    const combo = page.getByRole('combobox', { name: 'Subnet' });
     await combo.click();
     await expect(combo).toHaveAttribute('aria-controls', 'ct-menu-ta-loading-listbox');
     await expect(page.locator('#ct-menu-ta-loading-listbox')).toBeVisible();
@@ -352,7 +349,7 @@ test.describe('Select', () => {
     await mount<typeof GroupedLoadingTypeaheadHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/GroupedLoadingTypeaheadHarness'
     );
-    const combo = page.getByRole('combobox', { name: /select the subnet/i });
+    const combo = page.getByRole('combobox', { name: 'Subnet' });
     await combo.click();
     await expect(combo).toHaveAttribute('aria-controls', 'ct-menu-ta-grouped-loading-listbox');
     await expect(page.locator('#ct-menu-ta-grouped-loading-listbox')).toBeVisible();
