@@ -9,6 +9,7 @@ import {
 
 import { FormGroup } from '@patternfly/react-core/dist/dynamic/components/Form';
 import { NumberInput as PfNumberInput } from '@patternfly/react-core/dist/dynamic/components/NumberInput';
+import type { TextInputProps } from '@patternfly/react-core/dist/dynamic/components/TextInput';
 
 import { getValidated, HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
@@ -29,7 +30,7 @@ export interface NumberInputProps extends Omit<
   id: string;
   label: string;
   /** additional props for the spinbutton input */
-  inputProps?: NumberInputComponentProps['inputProps'];
+  inputProps?: TextInputProps;
   labelHelp?: ReactNode;
   labelHelpTitle?: string;
   isRequired?: boolean;
