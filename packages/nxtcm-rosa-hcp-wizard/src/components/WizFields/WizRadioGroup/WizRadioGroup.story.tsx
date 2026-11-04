@@ -82,6 +82,37 @@ export function WizRadioGroupExplicitHarness() {
   );
 }
 
+export function WizRadioGroupHiddenExplicitAriaHarness() {
+  const methods = useForm<ExplicitFormValues>({
+    defaultValues: { tier: undefined },
+  });
+
+  return withRosaCt(
+    <FormProvider {...methods}>
+      <Form>
+        <WizRadioGroup<ExplicitFormValues>
+          name="tier"
+          id="wiz-radio-group-ct-hidden-explicit"
+          label={WIZ_RADIO_GROUP_EXPLICIT_LABEL}
+          aria-label={WIZ_RADIO_GROUP_CALLER_ARIA_LABEL}
+          hideLabel
+        >
+          <Radio
+            id="wiz-radio-hidden-alpha"
+            label={WIZ_RADIO_GROUP_OPTION_ALPHA_LABEL}
+            value="alpha"
+          />
+          <Radio
+            id="wiz-radio-hidden-beta"
+            label={WIZ_RADIO_GROUP_OPTION_BETA_LABEL}
+            value="beta"
+          />
+        </WizRadioGroup>
+      </Form>
+    </FormProvider>
+  );
+}
+
 const yupMetaSchema = yup.object({
   channel: yup.string().meta({
     id: 'wiz-radio-group-ct-yup-meta',

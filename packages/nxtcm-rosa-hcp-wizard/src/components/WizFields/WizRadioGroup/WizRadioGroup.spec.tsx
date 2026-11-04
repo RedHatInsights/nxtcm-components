@@ -5,6 +5,7 @@ import type {
   WizRadioGroupExplicitControlOnlyHarness,
   WizRadioGroupExplicitHarness,
   WizRadioGroupExplicitPropsOverrideMetaHarness,
+  WizRadioGroupHiddenExplicitAriaHarness,
   WizRadioGroupHideLabelHarness,
   WizRadioGroupNestedFallbackHarness,
   WizRadioGroupNumericMetaLabelHarness,
@@ -56,6 +57,17 @@ test.describe('WizRadioGroup', () => {
     await expect(
       mounted.getByRole('radio', { name: new RegExp(WIZ_RADIO_GROUP_OPTION_BETA_LABEL, 'i') })
     ).toBeVisible();
+  });
+
+  test('preserves a caller-supplied aria-label when the visible label is hidden', async ({
+    mount,
+  }) => {
+    const mounted = await mount<typeof WizRadioGroupHiddenExplicitAriaHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupHiddenExplicitAriaHarness'
+    );
+    await expect(mounted.getByRole('radiogroup')).toHaveAccessibleName(
+      WIZ_RADIO_GROUP_CALLER_ARIA_LABEL
+    );
   });
 
   test('writes the selected value to react-hook-form when a radio is chosen', async ({ mount }) => {

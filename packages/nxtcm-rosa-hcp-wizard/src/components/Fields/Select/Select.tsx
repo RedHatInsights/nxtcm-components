@@ -171,8 +171,8 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     value,
     typeaheadQuery,
   });
-  const groupedTypeaheadListboxIds = displayedGroups
-    .filter((group) => group.options.length > 0)
+  const displayedGroupsWithOptions = displayedGroups.filter((group) => group.options.length > 0);
+  const groupedTypeaheadListboxIds = displayedGroupsWithOptions
     .map((_, index) => `${id}-listbox-${index}`)
     .join(' ');
   const typeaheadListboxIds =
@@ -282,7 +282,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     }
 
     if (hasGroups) {
-      const toRender = displayedGroups.filter((g) => g.options.length > 0);
+      const toRender = displayedGroupsWithOptions;
       if (toRender.length === 0) {
         return (
           <SelectList id={isTypeAhead ? `${id}-listbox` : undefined} aria-label={menuLabel}>
@@ -451,7 +451,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
             aria-label={placeholderText}
             aria-describedby={describedBy || undefined}
             role="combobox"
-            aria-controls={open ? (isTypeAhead ? typeaheadListboxIds : id) : undefined}
+            aria-controls={open ? typeaheadListboxIds : undefined}
             id={`${id}-typeahead-input`}
           />
           <TextInputGroupUtilities
