@@ -25,11 +25,13 @@
     },
     "./index.css": "./dist/index.css",
     "./dist/nxtcm-rosa-hcp-wizard.css": "./dist/index.css",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./locales/en/rosaHcpWizard.json": "./locales/en/rosaHcpWizard.json"
   },
   "files": [
     "dist",
     "docs/localizable-strings.md",
+    "locales/en/rosaHcpWizard.json",
     "README.md",
     "LICENSE"
   ],

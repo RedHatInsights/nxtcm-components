@@ -11,6 +11,13 @@ export type {
 export { ClusterNetwork } from './types';
 export { STEP_IDS, FIELD_NAME } from './constants';
 export type { RosaHcpWizardStringsInput } from './stringsProvider/rosaHcpWizardStrings';
+export {
+  buildRosaHcpWizardEnglishMessages,
+  buildRosaHcpWizardStrings,
+  ROSA_HCP_WIZARD_TRANSLATION_PREFIX,
+  useRosaHcpWizardStrings,
+} from './stringsProvider/buildRosaHcpWizardStrings';
+export type { RosaHcpWizardTranslate } from './stringsProvider/buildRosaHcpWizardStrings';
 export type { ResourceSchema, ValidationError, YamlDocumentChunk } from './Steps/YamlEditor/types';
 export {
   splitYamlDocuments,
