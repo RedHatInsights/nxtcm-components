@@ -4,6 +4,7 @@ import {
   defaultRosaHcpWizardStrings,
   defaultRosaHcpWizardValidatorStrings,
 } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { checkAccessibility } from '../../../test-helpers';
 import { ClusterUpgrade } from '../../../types';
 import type { ClusterUpdatesMount } from './ClusterUpdates.story';
 
@@ -11,6 +12,31 @@ const cu = defaultRosaHcpWizardStrings.clusterUpdates;
 const REQUIRED_FIELD_MESSAGE = defaultRosaHcpWizardValidatorStrings.commonRequired;
 
 test.describe('ClusterUpdates (ROSA HCP)', () => {
+  test('passes accessibility check with recurring scheduling controls', async ({ mount }) => {
+    const component = await mount<typeof ClusterUpdatesMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount',
+      { defaultValues: { upgrade_policy: ClusterUpgrade.automatic, upgrade_schedule: '' } }
+    );
+
+    await expect(component.getByRole('radio', { name: cu.recurringLabel })).toBeChecked();
+    await expect(component.getByRole('button', { name: cu.selectDayPlaceholder })).toBeVisible();
+    await expect(component.getByRole('button', { name: cu.selectTimePlaceholder })).toBeVisible();
+    await checkAccessibility({ component });
+  });
+
+  test('passes accessibility check with individual updates', async ({ mount }) => {
+    const component = await mount<typeof ClusterUpdatesMount>(
+      'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount',
+      { defaultValues: { upgrade_policy: ClusterUpgrade.manual } }
+    );
+
+    await expect(component.getByRole('radio', { name: cu.individualLabel })).toBeChecked();
+    await expect(component.getByText(cu.dayTimeLabel, { exact: true })).toBeHidden();
+    await expect(component.getByRole('button', { name: cu.selectDayPlaceholder })).toBeHidden();
+    await expect(component.getByRole('button', { name: cu.selectTimePlaceholder })).toBeHidden();
+    await checkAccessibility({ component });
+  });
+
   test('should render the cluster update strategy section', async ({ mount }) => {
     const component = await mount<typeof ClusterUpdatesMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount'
