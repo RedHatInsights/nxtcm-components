@@ -8,19 +8,24 @@ import {
 } from './rosaHcpWizardStrings.defaults';
 import type { RosaHcpWizardStringsInput } from './rosaHcpWizardStrings.types';
 
-/** i18next-style translator. ACM's `useTranslation` tuple starts with this function. */
+/**
+ * i18next-style translator. ACM's `useTranslation` tuple starts with this function.
+ * `options.defaultValue` is the current English from the wizard defaults. Return it when
+ * `key` has no translation, so an English wording change does not need a catalog edit.
+ */
+export type RosaHcpWizardTranslateOptions = {
+  defaultValue?: string;
+  [name: string]: string | number | boolean | undefined;
+};
+
 export type RosaHcpWizardTranslate = (
   key: string,
-  options?: Readonly<Record<string, string | number | boolean>>
+  options?: RosaHcpWizardTranslateOptions
 ) => string;
 
-/** Prefix for every key in `locales/en/rosaHcpWizard.json`. */
+/** Stable prefix for every key passed to `t`. The key does not contain the English sentence. */
 export const ROSA_HCP_WIZARD_TRANSLATION_PREFIX = 'rosaHcpWizard';
 
-/**
- * Keys that are on the string types but the wizard never reads.
- * They are left out so a host does not add translations for copy that never appears.
- */
 /** Message paths the wizard never reads. Hosts should not translate these. */
 export const ROSA_HCP_WIZARD_UNREAD_MESSAGE_PATHS: readonly string[] = [
   'yamlEditor.description',
@@ -156,33 +161,25 @@ function translateFunction(
   t: RosaHcpWizardTranslate
 ): StringFunction {
   const params = parameterNames(fn);
-  if (params.includes('plural')) {
-    return (...args: readonly (string | number | boolean)[]) => {
-      const options: Record<string, string | number | boolean> = {};
-      let plural = false;
-      params.forEach((name, index) => {
-        const arg = args[index];
-        if (name === 'plural') {
-          plural = Boolean(arg);
-          return;
-        }
-        if (typeof arg === 'string' || typeof arg === 'number' || typeof arg === 'boolean') {
-          options[name] = arg;
-        }
-      });
-      return t(`${messageKey(path)}_${plural ? 'plural' : 'singular'}`, options);
-    };
-  }
-
+  const pluralMessage = params.includes('plural');
   return (...args: readonly (string | number | boolean)[]) => {
     const options: Record<string, string | number | boolean> = {};
+    let plural = false;
     params.forEach((name, index) => {
       const arg = args[index];
+      if (name === 'plural') {
+        plural = Boolean(arg);
+        return;
+      }
       if (typeof arg === 'string' || typeof arg === 'number' || typeof arg === 'boolean') {
         options[name] = arg;
       }
     });
-    return t(messageKey(path), options);
+    const suffix = pluralMessage ? `_${plural ? 'plural' : 'singular'}` : '';
+    return t(`${messageKey(path)}${suffix}`, {
+      ...options,
+      defaultValue: templateFromFunction(fn, params, plural),
+    });
   };
 }
 
@@ -196,7 +193,7 @@ function translateNode(
     return undefined;
   }
   if (typeof value === 'string') {
-    return t(messageKey(path));
+    return t(messageKey(path), { defaultValue: value });
   }
   if (typeof value === 'function') {
     return translateFunction(path, value as StringFunction, t);
@@ -218,72 +215,10 @@ function translateNode(
   return Object.keys(result).length === 0 ? undefined : result;
 }
 
-function englishNode(value: unknown, path: string): unknown {
-  if (path !== '' && UNREAD_KEYS.has(path)) {
-    return undefined;
-  }
-  if (typeof value === 'string') {
-    return value;
-  }
-  if (typeof value === 'function') {
-    return value;
-  }
-  if (Array.isArray(value)) {
-    const result: Record<string, string> = {};
-    value.forEach((item: unknown, index) => {
-      if (typeof item === 'string') {
-        result[String(index)] = item;
-      }
-    });
-    return result;
-  }
-  if (!isObjectRecord(value)) {
-    return undefined;
-  }
-  const result: Record<string, unknown> = {};
-  for (const key of Object.keys(value)) {
-    const childPath = path === '' ? key : `${path}.${key}`;
-    const child = value[key];
-    if (typeof child === 'function') {
-      if (UNREAD_KEYS.has(childPath)) {
-        continue;
-      }
-      const fn = child as StringFunction;
-      const params = parameterNames(fn);
-      if (params.includes('plural')) {
-        result[`${key}_singular`] = templateFromFunction(fn, params, false);
-        result[`${key}_plural`] = templateFromFunction(fn, params, true);
-      } else {
-        result[key] = templateFromFunction(fn, params, false);
-      }
-      continue;
-    }
-    const translated = englishNode(child, childPath);
-    if (translated !== undefined) {
-      result[key] = translated;
-    }
-  }
-  return Object.keys(result).length === 0 ? undefined : result;
-}
-
-/**
- * English catalog for the keys {@link buildRosaHcpWizardStrings} passes to `t`.
- * Merge this object into the host's English i18n resources.
- * Function messages use `{{param}}` placeholders. Plural messages use a `_singular` or `_plural` suffix.
- */
-export function buildRosaHcpWizardEnglishMessages(): Record<string, unknown> {
-  const ui = englishNode(defaultRosaHcpWizardStrings, '');
-  const validators = englishNode(defaultRosaHcpWizardValidatorStrings, 'validators');
-  return {
-    [ROSA_HCP_WIZARD_TRANSLATION_PREFIX]: {
-      ...(isObjectRecord(ui) ? ui : {}),
-      validators: isObjectRecord(validators) ? validators : {},
-    },
-  };
-}
-
 /**
  * Builds the `strings` prop from a host translator.
+ * Each call passes the current English as `options.defaultValue`.
+ * A host that has no translation for the key returns that value, so English copy stays in the defaults file.
  * Pass the same `hiddenSteps` as `RosaHCPWizard`'s `config.hiddenSteps`.
  * Only cluster-wide proxy and cluster updates can be hidden; their copy is left out of the result.
  * Unread keys are always left out.

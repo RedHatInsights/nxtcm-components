@@ -1,46 +1,28 @@
-import fs from 'fs';
-import path from 'path';
-
 import { STEP_IDS } from '../constants';
 import { isObjectRecord } from '../utilities/typeGuards';
 import {
-  buildRosaHcpWizardEnglishMessages,
   buildRosaHcpWizardStrings,
   ROSA_HCP_WIZARD_TRANSLATION_PREFIX,
   ROSA_HCP_WIZARD_UNREAD_MESSAGE_PATHS,
   type RosaHcpWizardTranslate,
+  type RosaHcpWizardTranslateOptions,
 } from './buildRosaHcpWizardStrings';
 import {
   defaultRosaHcpWizardStrings,
   defaultRosaHcpWizardValidatorStrings,
 } from './rosaHcpWizardStrings.defaults';
 
-const englishCatalog = buildRosaHcpWizardEnglishMessages();
 const unreadPaths = new Set<string>(ROSA_HCP_WIZARD_UNREAD_MESSAGE_PATHS);
 
-function lookupMessage(key: string): string {
-  const value = key.split('.').reduce<unknown>((current, part) => {
-    if (isObjectRecord(current)) {
-      return current[part];
-    }
-    return undefined;
-  }, englishCatalog);
-  if (typeof value !== 'string') {
-    throw new Error(`missing English message for ${key}`);
-  }
-  return value;
-}
-
-function interpolate(
-  template: string,
-  options?: Readonly<Record<string, string | number | boolean>>
-): string {
+function interpolate(template: string, options?: RosaHcpWizardTranslateOptions): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_match, name: string) =>
     String(options?.[name] ?? '')
   );
 }
 
-const englishT: RosaHcpWizardTranslate = (key, options) => interpolate(lookupMessage(key), options);
+/** Uses the English passed as defaultValue, which is what a host does when a key is not translated. */
+const englishT: RosaHcpWizardTranslate = (_key, options) =>
+  interpolate(options?.defaultValue ?? '', options);
 
 function parameterNames(fn: (...args: never[]) => unknown): string[] {
   const source = fn.toString();
@@ -150,9 +132,22 @@ describe('buildRosaHcpWizardStrings', () => {
     expect(strings.validators?.serviceCidr?.subnetMaskBetweenOneAnd).toEqual(expect.any(Function));
   });
 
+  it('uses a translated value when the host has one, and the English default otherwise', () => {
+    const t: RosaHcpWizardTranslate = (key, options) => {
+      if (key === `${ROSA_HCP_WIZARD_TRANSLATION_PREFIX}.wizard.next`) {
+        return 'Siguiente';
+      }
+      return interpolate(options?.defaultValue ?? '', options);
+    };
+    const strings = buildRosaHcpWizardStrings(t);
+
+    expect(strings.wizard?.next).toBe('Siguiente');
+    expect(strings.wizard?.back).toBe('Back');
+  });
+
   it('uses the translator so a non-English locale replaces visible copy', () => {
-    const t: RosaHcpWizardTranslate = (key, options) =>
-      `es:${interpolate(lookupMessage(key), options)}`;
+    const t: RosaHcpWizardTranslate = (_key, options) =>
+      `es:${interpolate(options?.defaultValue ?? '', options)}`;
     const strings = buildRosaHcpWizardStrings(t, [
       STEP_IDS.CLUSTER_WIDE_PROXY,
       STEP_IDS.CLUSTER_UPDATES,
@@ -191,28 +186,19 @@ describe('buildRosaHcpWizardStrings', () => {
     expect(strings.encryption?.sectionLabel).toBe('Advanced encryption');
   });
 
-  it('lists every translated key in the English catalog file', () => {
-    const catalogPath = path.join(__dirname, '../../locales/en/rosaHcpWizard.json');
-    const file: unknown = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
-    expect(file).toEqual(englishCatalog);
-
-    const requested: string[] = [];
+  it('passes the current English as defaultValue for every key', () => {
+    const calls: { key: string; defaultValue: string }[] = [];
     const recordingT: RosaHcpWizardTranslate = (key, options) => {
-      requested.push(key);
+      calls.push({ key, defaultValue: options?.defaultValue ?? '' });
       return englishT(key, options);
     };
     buildRosaHcpWizardStrings(recordingT);
-    const missing = requested.filter((key) => {
-      try {
-        lookupMessage(key);
-        return false;
-      } catch {
-        return true;
-      }
-    });
-    expect(missing).toEqual([]);
-    expect(requested.every((key) => key.startsWith(`${ROSA_HCP_WIZARD_TRANSLATION_PREFIX}.`))).toBe(
-      true
-    );
+
+    expect(calls.length).toBeGreaterThan(0);
+    expect(calls.every((call) => call.defaultValue.length > 0)).toBe(true);
+    expect(
+      calls.every((call) => call.key.startsWith(`${ROSA_HCP_WIZARD_TRANSLATION_PREFIX}.`))
+    ).toBe(true);
+    expect(calls.find((call) => call.key.endsWith('.wizard.next'))?.defaultValue).toBe('Next');
   });
 });
