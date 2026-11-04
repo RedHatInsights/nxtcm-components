@@ -27,7 +27,7 @@
 
 .countImportant {
   composes: count;
-  color: var(--pf-t--global--color--status--warning--600);
+  color: var(--pf-t--global--text--color--status--warning--clicked);
 }
 
 .label {
