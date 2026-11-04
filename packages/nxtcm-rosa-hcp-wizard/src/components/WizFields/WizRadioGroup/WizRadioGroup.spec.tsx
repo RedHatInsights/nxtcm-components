@@ -5,6 +5,7 @@ import type {
   WizRadioGroupExplicitControlOnlyHarness,
   WizRadioGroupExplicitHarness,
   WizRadioGroupExplicitPropsOverrideMetaHarness,
+  WizRadioGroupHiddenExplicitAriaHarness,
   WizRadioGroupHideLabelHarness,
   WizRadioGroupNestedFallbackHarness,
   WizRadioGroupNumericMetaLabelHarness,
@@ -12,6 +13,7 @@ import type {
   WizRadioGroupYupMetaHarness,
 } from './WizRadioGroup.story';
 import {
+  WIZ_RADIO_GROUP_CALLER_ARIA_LABEL,
   WIZ_RADIO_GROUP_CONTROL_ONLY_STATUS,
   WIZ_RADIO_GROUP_EXPLICIT_HELPER,
   WIZ_RADIO_GROUP_EXPLICIT_LABEL,
@@ -45,12 +47,27 @@ test.describe('WizRadioGroup', () => {
     );
     await expect(mounted.getByText(WIZ_RADIO_GROUP_EXPLICIT_LABEL, { exact: true })).toBeVisible();
     await expect(mounted.getByText(WIZ_RADIO_GROUP_EXPLICIT_HELPER, { exact: true })).toBeVisible();
+    await expect(mounted.getByRole('radiogroup')).toHaveAttribute(
+      'aria-label',
+      WIZ_RADIO_GROUP_CALLER_ARIA_LABEL
+    );
     await expect(
       mounted.getByRole('radio', { name: new RegExp(WIZ_RADIO_GROUP_OPTION_ALPHA_LABEL, 'i') })
     ).toBeVisible();
     await expect(
       mounted.getByRole('radio', { name: new RegExp(WIZ_RADIO_GROUP_OPTION_BETA_LABEL, 'i') })
     ).toBeVisible();
+  });
+
+  test('preserves a caller-supplied aria-label when the visible label is hidden', async ({
+    mount,
+  }) => {
+    const mounted = await mount<typeof WizRadioGroupHiddenExplicitAriaHarness>(
+      'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupHiddenExplicitAriaHarness'
+    );
+    await expect(mounted.getByRole('radiogroup')).toHaveAccessibleName(
+      WIZ_RADIO_GROUP_CALLER_ARIA_LABEL
+    );
   });
 
   test('writes the selected value to react-hook-form when a radio is chosen', async ({ mount }) => {
@@ -161,7 +178,7 @@ test.describe('WizRadioGroup', () => {
     ).toHaveCount(0);
     const radiogroup = mounted.getByRole('radiogroup');
     await expect(radiogroup).toBeVisible();
-    await expect(radiogroup).toHaveAccessibleName('');
+    await expect(radiogroup).toHaveAccessibleName(WIZ_RADIO_GROUP_HIDE_LABEL_YUP_LABEL);
     await expect(mounted.getByRole('radio', { name: /hidden label option a/i })).toBeVisible();
     await checkAccessibility({ component: mounted });
   });

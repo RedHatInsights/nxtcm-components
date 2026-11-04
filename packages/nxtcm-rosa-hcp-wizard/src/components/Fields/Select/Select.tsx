@@ -171,6 +171,14 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     value,
     typeaheadQuery,
   });
+  const displayedGroupsWithOptions = displayedGroups.filter((group) => group.options.length > 0);
+  const groupedTypeaheadListboxIds = displayedGroupsWithOptions
+    .map((_, index) => `${id}-listbox-${index}`)
+    .join(' ');
+  const typeaheadListboxIds =
+    !isLoading && hasGroups && groupedTypeaheadListboxIds
+      ? groupedTypeaheadListboxIds
+      : `${id}-listbox`;
 
   const toggleLabel =
     selectedOption != null
@@ -259,7 +267,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   const renderMenuBody = () => {
     if (isLoading) {
       return (
-        <SelectList id={`${id}-listbox`} aria-label={menuLabel}>
+        <SelectList id={isTypeAhead ? `${id}-listbox` : undefined} aria-label={menuLabel}>
           <SelectOption id={`${id}-loading`} isDisabled value="loading">
             <Flex
               alignItems={{ default: 'alignItemsCenter' }}
@@ -274,10 +282,10 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     }
 
     if (hasGroups) {
-      const toRender = displayedGroups.filter((g) => g.options.length > 0);
+      const toRender = displayedGroupsWithOptions;
       if (toRender.length === 0) {
         return (
-          <SelectList id={`${id}-listbox`} aria-label={menuLabel}>
+          <SelectList id={isTypeAhead ? `${id}-listbox` : undefined} aria-label={menuLabel}>
             <SelectOption id={`${id}-no-results`} isAriaDisabled value="no-results">
               {noResultsText}
             </SelectOption>
@@ -290,7 +298,10 @@ export function Select<T = unknown>(props: SelectProps<T>) {
             <Fragment key={group.label}>
               {index > 0 ? <Divider /> : null}
               <SelectGroup label={group.label}>
-                <SelectList aria-label={`${menuLabel}: ${group.label}`}>
+                <SelectList
+                  id={isTypeAhead ? `${id}-listbox-${index}` : undefined}
+                  aria-label={`${menuLabel}: ${group.label}`}
+                >
                   {group.options.map((opt: OptionType<T>, optIdx: number) =>
                     renderSelectOptionRow(opt, opt.id || `option-${group.label}-${optIdx}`)
                   )}
@@ -440,7 +451,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
             aria-label={placeholderText}
             aria-describedby={describedBy || undefined}
             role="combobox"
-            aria-controls={open ? id : undefined}
+            aria-controls={open ? typeaheadListboxIds : undefined}
             id={`${id}-typeahead-input`}
           />
           <TextInputGroupUtilities

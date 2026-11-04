@@ -63,4 +63,44 @@ test.describe('NumberInput', () => {
     await mounted.getByRole('button', { name: 'Minus' }).click();
     await expect(spinbutton).toHaveValue('');
   });
+
+  test('describes the spinbutton with helper text', async ({ mount }) => {
+    const mounted = await mount<typeof NumberHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness',
+      { helperText: 'Use a whole number.' }
+    );
+    const spinbutton = mounted.getByRole('spinbutton', { name: new RegExp(workerCountLabel, 'i') });
+    await expect(mounted.getByText('Use a whole number.')).toBeVisible();
+    await expect(spinbutton).toHaveAttribute('aria-describedby', 'ct-num-helper-text');
+    await expect(mounted.locator('#ct-num-helper-text')).toBeVisible();
+  });
+
+  test('preserves caller and helper descriptions on the spinbutton', async ({ mount }) => {
+    const mounted = await mount<typeof NumberHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness',
+      {
+        helperText: 'Use a whole number.',
+        inputProps: { 'aria-describedby': 'caller-description' },
+      }
+    );
+    const spinbutton = mounted.getByRole('spinbutton', { name: new RegExp(workerCountLabel, 'i') });
+
+    await expect(spinbutton).toHaveAttribute(
+      'aria-describedby',
+      'caller-description ct-num-helper-text'
+    );
+  });
+
+  test('describes the spinbutton with an error message', async ({ mount }) => {
+    const mounted = await mount<typeof NumberHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/NumberInput/NumberInput/NumberHarness',
+      { errorMessage: 'Enter a valid worker count.', isError: true }
+    );
+    const spinbutton = mounted.getByRole('spinbutton', { name: new RegExp(workerCountLabel, 'i') });
+
+    await expect(spinbutton).toHaveAttribute('aria-describedby', 'ct-num-helper-text');
+    await expect(mounted.locator('#ct-num-helper-text')).toContainText(
+      'Enter a valid worker count.'
+    );
+  });
 });

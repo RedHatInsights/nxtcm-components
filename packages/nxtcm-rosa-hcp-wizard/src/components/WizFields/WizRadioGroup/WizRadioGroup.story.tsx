@@ -1,4 +1,5 @@
 import {
+  WIZ_RADIO_GROUP_CALLER_ARIA_LABEL,
   WIZ_RADIO_GROUP_CONTROL_ONLY_STATUS,
   WIZ_RADIO_GROUP_EXPLICIT_HELPER,
   WIZ_RADIO_GROUP_EXPLICIT_LABEL,
@@ -16,6 +17,7 @@ import {
   WIZ_RADIO_GROUP_YUP_META_LABEL,
 } from './WizRadioGroup.story-data';
 export {
+  WIZ_RADIO_GROUP_CALLER_ARIA_LABEL,
   WIZ_RADIO_GROUP_HIDE_LABEL_YUP_LABEL,
   WIZ_RADIO_GROUP_CONTROL_ONLY_STATUS,
   WIZ_RADIO_GROUP_OVERRIDE_RADIO_HELPER_WIN,
@@ -63,6 +65,7 @@ export function WizRadioGroupExplicitHarness() {
           name="tier"
           id="wiz-radio-group-ct-explicit"
           label={WIZ_RADIO_GROUP_EXPLICIT_LABEL}
+          aria-label={WIZ_RADIO_GROUP_CALLER_ARIA_LABEL}
           helperText={WIZ_RADIO_GROUP_EXPLICIT_HELPER}
         >
           <Radio id="wiz-radio-alpha" label={WIZ_RADIO_GROUP_OPTION_ALPHA_LABEL} value="alpha" />
@@ -74,6 +77,37 @@ export function WizRadioGroupExplicitHarness() {
           ariaLabel={WIZ_RADIO_GROUP_VALUE_STATUS_LABEL}
           format={formatWatchValue}
         />
+      </Form>
+    </FormProvider>
+  );
+}
+
+export function WizRadioGroupHiddenExplicitAriaHarness() {
+  const methods = useForm<ExplicitFormValues>({
+    defaultValues: { tier: undefined },
+  });
+
+  return withRosaCt(
+    <FormProvider {...methods}>
+      <Form>
+        <WizRadioGroup<ExplicitFormValues>
+          name="tier"
+          id="wiz-radio-group-ct-hidden-explicit"
+          label={WIZ_RADIO_GROUP_EXPLICIT_LABEL}
+          aria-label={WIZ_RADIO_GROUP_CALLER_ARIA_LABEL}
+          hideLabel
+        >
+          <Radio
+            id="wiz-radio-hidden-alpha"
+            label={WIZ_RADIO_GROUP_OPTION_ALPHA_LABEL}
+            value="alpha"
+          />
+          <Radio
+            id="wiz-radio-hidden-beta"
+            label={WIZ_RADIO_GROUP_OPTION_BETA_LABEL}
+            value="beta"
+          />
+        </WizRadioGroup>
       </Form>
     </FormProvider>
   );

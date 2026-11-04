@@ -54,6 +54,7 @@ export function WizRadioGroup<TFieldValues extends FieldValues = FieldValues>(
     labelHelp: labelHelpProp,
     labelHelpTitle: labelHelpTitleProp,
     hideLabel,
+    'aria-label': ariaLabelFromProps,
     ...rest
   } = props;
 
@@ -87,6 +88,9 @@ export function WizRadioGroup<TFieldValues extends FieldValues = FieldValues>(
       {...rest}
       id={id}
       label={fieldSetLegend === false || hideLabel ? undefined : label}
+      aria-label={
+        hideLabel || fieldSetLegend === false ? (ariaLabelFromProps ?? label) : ariaLabelFromProps
+      }
       helperText={helperText}
       labelHelp={labelHelp}
       labelHelpTitle={labelHelpTitle}
