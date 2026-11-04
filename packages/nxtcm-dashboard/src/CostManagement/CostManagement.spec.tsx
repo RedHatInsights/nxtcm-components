@@ -1,4 +1,5 @@
 import { expect, test } from '@/playwright/ct-fixture';
+import { checkAccessibility } from '@/playwright/test-helpers';
 
 import { CostManagementProps } from './CostManagement';
 import type { CostManagementStory } from './CostManagement.story';
@@ -9,6 +10,38 @@ const sampleClusters: CostManagementProps['clusters'] = [
 ];
 
 test.describe('CostManagement', () => {
+  test('should pass accessibility checks for populated data and actions', async ({ mount }) => {
+    const component = await mount<typeof CostManagementStory>(
+      'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
+      {
+        totalCost: 3000,
+        clusters: sampleClusters,
+        onClusterClick: true,
+        onViewMore: true,
+      }
+    );
+
+    await checkAccessibility({ component });
+  });
+
+  test('should pass accessibility checks for an empty cluster list', async ({ mount }) => {
+    const component = await mount<typeof CostManagementStory>(
+      'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
+      { totalCost: 0, clusters: [], onViewMore: true }
+    );
+
+    await checkAccessibility({ component });
+  });
+
+  test('should pass accessibility checks while loading', async ({ mount }) => {
+    const component = await mount<typeof CostManagementStory>(
+      'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
+      { isLoading: true }
+    );
+
+    await checkAccessibility({ component });
+  });
+
   test('renders the title', async ({ mount }) => {
     const component = await mount<typeof CostManagementStory>(
       'nxtcm-dashboard/CostManagement/CostManagement/CostManagementStory',
