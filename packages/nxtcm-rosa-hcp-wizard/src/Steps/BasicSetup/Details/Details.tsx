@@ -1,20 +1,22 @@
 import React from 'react';
-import { Button } from '@patternfly/react-core';
-import semver from 'semver';
+
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { clusterValidationSchema } from '../../../yupSchemas';
-import { buildOpenShiftVersionGroups } from '../../../utilities/buildOpenShiftVersionGroups';
+import semver from 'semver';
+
 import { DetailsStepDrawer } from '../../../components/DetailsStepDrawer/DetailsStepDrawer';
-import { Section } from '../../../components/Section';
-import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../constants/links';
-import { ROSAHCPWizardData, type RosaHCPWizardProps, type ROSAHCPCluster } from '../../../types';
+import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
+import { Section } from '../../../components/Section';
 import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
-import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
-import { useClusterNameUniquenessValidation } from '../../../hooks/useClusterNameUniquenessValidation';
 import { FIELD_NAME } from '../../../constants';
+import { awsLinks } from '../../../constants/rawLinks';
+import { useClusterNameUniquenessValidation } from '../../../hooks/useClusterNameUniquenessValidation';
+import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+import { type ROSAHCPCluster, ROSAHCPWizardData, type RosaHCPWizardProps } from '../../../types';
+import { buildOpenShiftVersionGroups } from '../../../utilities/buildOpenShiftVersionGroups';
+import { clusterValidationSchema } from '../../../yupSchemas';
 
 type DetailsStepProps = Pick<
   ROSAHCPWizardData,
@@ -145,7 +147,7 @@ export const Details = ({
               <ExternalLink
                 variant="secondary"
                 className="pf-v6-u-mt-md"
-                href={links.AWS_CONSOLE_ROSA_HOME}
+                href={awsLinks.AWS_CONSOLE_ROSA_HOME}
               >
                 {d.connectBillingLink}
               </ExternalLink>
@@ -177,7 +179,7 @@ export const Details = ({
               labelHelp={
                 <>
                   {d.regionHelpLead}{' '}
-                  <ExternalLink href={links.AWS_REGIONS}>{d.regionLearnMoreLink}</ExternalLink>
+                  <ExternalLink href={awsLinks.AWS_REGIONS}>{d.regionLearnMoreLink}</ExternalLink>
                 </>
               }
               onRefresh={
@@ -188,7 +190,7 @@ export const Details = ({
             />
           </FieldWrapper>
           <FieldWrapper>
-            <WizTextInput<ROSAHCPCluster>
+            <WizTextInput
               name={FIELD_NAME.CLUSTER_NAME}
               schema={clusterValidationSchema}
               onBlur={() => {

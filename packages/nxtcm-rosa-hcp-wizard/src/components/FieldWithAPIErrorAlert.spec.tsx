@@ -1,25 +1,43 @@
-import { test, expect } from '../../../../ct-fixture';
-import React from 'react';
-import { FieldWithAPIErrorAlert } from './FieldWithAPIErrorAlert';
-import { RosaHcpWizardStringsProvider } from '../stringsProvider/RosaHcpWizardStringsContext';
+import { expect, test } from '@/playwright/ct-fixture';
 
-/** `FieldWithAPIErrorAlert` uses `useRosaWizardStrings` (ROSA HCP strings context), which requires this provider. */
-function withRosaStrings(ui: React.ReactElement) {
-  return <RosaHcpWizardStringsProvider>{ui}</RosaHcpWizardStringsProvider>;
-}
+import { defaultRosaHcpWizardStrings } from '../stringsProvider/rosaHcpWizardStrings.defaults';
+import { checkAccessibility } from '../test-helpers';
+import type { FieldWithAPIErrorAlertStory } from './FieldWithAPIErrorAlert.story';
 
 test.describe('FieldWithAPIErrorAlert', () => {
+  test('passes accessibility check with error details and retry action', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof FieldWithAPIErrorAlertStory>(
+      'nxtcm-rosa-hcp-wizard/components/FieldWithAPIErrorAlert/FieldWithAPIErrorAlertStory',
+      { error: 'There has been an error', retry: true }
+    );
+
+    await expect(component.getByText('Error loading region list')).toBeVisible();
+    await checkAccessibility({ component });
+
+    await component
+      .getByRole('button', { name: defaultRosaHcpWizardStrings.common.showErrorDetails })
+      .click();
+    // The popover is portaled to document.body, outside the mounted component.
+    const dialog = page.getByRole('dialog');
+    const retryButton = dialog.getByRole('button', {
+      name: defaultRosaHcpWizardStrings.common.retry,
+      exact: true,
+    });
+    await expect(dialog.getByText('There has been an error')).toBeVisible();
+    await expect(retryButton).toBeVisible();
+    await checkAccessibility({ component: dialog });
+
+    await retryButton.click();
+    await expect(component.getByTestId('retry-count')).toHaveValue('1');
+  });
+
   test('shows alert and message body when string error is provided', async ({ mount, page }) => {
-    const component = await mount(
-      withRosaStrings(
-        <FieldWithAPIErrorAlert
-          error="There has been an error"
-          isFetching={false}
-          fieldName="region"
-        >
-          <div>Field content</div>
-        </FieldWithAPIErrorAlert>
-      )
+    const component = await mount<typeof FieldWithAPIErrorAlertStory>(
+      'nxtcm-rosa-hcp-wizard/components/FieldWithAPIErrorAlert/FieldWithAPIErrorAlertStory',
+      { error: 'There has been an error' }
     );
 
     await expect(component.getByText('Field content')).toBeVisible();
@@ -32,12 +50,9 @@ test.describe('FieldWithAPIErrorAlert', () => {
     mount,
     page,
   }) => {
-    const component = await mount(
-      withRosaStrings(
-        <FieldWithAPIErrorAlert error={true} isFetching={false} fieldName="region">
-          <div>Field content</div>
-        </FieldWithAPIErrorAlert>
-      )
+    const component = await mount<typeof FieldWithAPIErrorAlertStory>(
+      'nxtcm-rosa-hcp-wizard/components/FieldWithAPIErrorAlert/FieldWithAPIErrorAlertStory',
+      { error: true }
     );
 
     await expect(component.getByText('Field content')).toBeVisible();
@@ -48,17 +63,9 @@ test.describe('FieldWithAPIErrorAlert', () => {
   });
 
   test('does not show alert when isFetching is true', async ({ mount, page }) => {
-    const component = await mount(
-      withRosaStrings(
-        <FieldWithAPIErrorAlert
-          error="There has been an error"
-          isFetching
-          fieldName="region"
-          isValidation
-        >
-          <div>Field content</div>
-        </FieldWithAPIErrorAlert>
-      )
+    const component = await mount<typeof FieldWithAPIErrorAlertStory>(
+      'nxtcm-rosa-hcp-wizard/components/FieldWithAPIErrorAlert/FieldWithAPIErrorAlertStory',
+      { error: 'There has been an error', isFetching: true, isValidation: true }
     );
 
     await expect(component.getByText('Field content')).toBeVisible();

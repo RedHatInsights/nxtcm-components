@@ -1,24 +1,26 @@
-import { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHandle } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+
+import type { EditorDidMount } from '@patternfly/react-code-editor';
+import { CodeEditor, Language } from '@patternfly/react-code-editor';
+import { Alert } from '@patternfly/react-core/dist/dynamic/components/Alert';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 import {
-  Alert,
-  Button,
   Drawer,
   DrawerContent,
   DrawerContentBody,
-  Tooltip,
-} from '@patternfly/react-core';
-import { CodeEditor, Language } from '@patternfly/react-code-editor';
-import type { EditorDidMount } from '@patternfly/react-code-editor';
-import type * as MonacoTypes from 'monaco-editor';
+} from '@patternfly/react-core/dist/dynamic/components/Drawer';
+import { Tooltip } from '@patternfly/react-core/dist/dynamic/components/Tooltip';
 import OpenDrawerRightIcon from '@patternfly/react-icons/dist/esm/icons/open-drawer-right-icon';
+import type * as MonacoTypes from 'monaco-editor';
 import { useWatch } from 'react-hook-form';
 
+import { YAML_MODEL_PATH, YAML_VALIDATION_OWNER } from '../../constants';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster } from '../../types';
-import { RosaHcpYamlMonacoLoader } from './RosaHcpYamlMonacoLoader';
 import { RosaHcpSchemaPanel } from './RosaHcpSchemaPanel';
+import { RosaHcpYamlMonacoLoader } from './RosaHcpYamlMonacoLoader';
 import type { YamlResourceGenerator } from './types';
-import { YAML_VALIDATION_OWNER, YAML_MODEL_PATH } from '../../constants';
+
 import './RosaHcpYamlEditorStep.css';
 
 export type YamlEditorHandle = {
@@ -52,7 +54,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
     const monacoYamlDisposeRef = useRef<(() => void) | null>(null);
     const editorListenersDisposeRef = useRef<(() => void) | null>(null);
     const hasFocusRef = useRef(false);
-    const validationTimerRef = useRef<ReturnType<typeof setTimeout>>();
+    const validationTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
     const isInitializedRef = useRef(false);
     const pendingYamlRef = useRef(yamlContent);
     const userHasEditedRef = useRef(false);
@@ -206,6 +208,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         <Button
           variant="plain"
           aria-label={yamlStrings.schemaToggleAriaLabel}
+          data-testid="schema-panel-toggle"
           onClick={() => setShowSchema((v) => !v)}
         >
           <OpenDrawerRightIcon />

@@ -1,10 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+
 import { HelperText } from './HelperText';
 
 const meta: Meta<typeof HelperText> = {
-  title: 'Form Elements/HelperText',
+  title: 'Internal/Form Elements/HelperText',
   component: HelperText,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   parameters: {
     layout: 'padded',
   },

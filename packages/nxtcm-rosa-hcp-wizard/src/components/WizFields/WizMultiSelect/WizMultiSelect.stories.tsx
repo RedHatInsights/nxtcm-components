@@ -1,7 +1,9 @@
 import { useState } from 'react';
+
 import { yupResolver } from '@hookform/resolvers/yup';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Button, Form } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
@@ -56,9 +58,9 @@ function WizMultiSelectFormDemo(schema: yup.ObjectSchema<DemoFormValues>) {
 }
 
 const meta: Meta<typeof WizMultiSelect> = {
-  title: 'Form Elements/Connected Form Elements/WizMultiSelect',
+  title: 'Internal/Form Elements/Connected Form Elements/WizMultiSelect',
   component: WizMultiSelect,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   decorators: [
     (Story) => (
       <RosaHcpWizardStringsProvider>
@@ -82,11 +84,10 @@ const meta: Meta<typeof WizMultiSelect> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<WizMultiSelectStoryArgs>;
 
 export const Default: Story = {
-  render: (args) =>
-    WizMultiSelectFormDemo(defaultSchema)(args as unknown as WizMultiSelectStoryArgs),
+  render: (args) => WizMultiSelectFormDemo(defaultSchema)(args),
   args: {
     options: ['alpha', 'bravo', 'charlie'],
     isDisabled: false,

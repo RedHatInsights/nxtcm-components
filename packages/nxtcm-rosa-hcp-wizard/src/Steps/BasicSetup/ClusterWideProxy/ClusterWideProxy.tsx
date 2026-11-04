@@ -1,15 +1,16 @@
-import { Alert } from '@patternfly/react-core';
-import { Section } from '../../../components/Section';
-import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
-import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../constants/links';
-import { WizTextInput } from '../../../components/WizFields/WizTextInput';
-import { clusterValidationSchema } from '../../../yupSchemas';
+import { Alert } from '@patternfly/react-core/dist/dynamic/components/Alert';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { ROSAHCPCluster } from '../../../types';
-import { WizFileUpload } from '../../../components/WizFields/WizFileUpload';
+
+import ExternalLink from '../../../components/ExternalLink';
 import { FieldWrapper } from '../../../components/FieldWrapper';
+import { Section } from '../../../components/Section';
+import { WizFileUpload } from '../../../components/WizFields/WizFileUpload';
+import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { FIELD_NAME } from '../../../constants';
+import { useGetDocsVersion } from '../../../constants/links';
+import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+import { ROSAHCPCluster } from '../../../types';
+import { clusterValidationSchema } from '../../../yupSchemas';
 
 export const ClusterWideProxy = () => {
   const cw = useRosaHcpWizardStrings().clusterWideProxy;
@@ -21,6 +22,11 @@ export const ClusterWideProxy = () => {
   const isHttpValid = !!httpProxyValue && !httpState.error;
   const isHttpsValid = !!httpsProxyValue && !httpsState.error;
   const disableNoProxyDomains = !isHttpValid && !isHttpsValid;
+
+  const clusterVersion = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({
+    name: FIELD_NAME.CLUSTER_VERSION,
+  });
+  const links = useGetDocsVersion(clusterVersion);
 
   return (
     <Section label={cw.sectionLabel} description={cw.intro}>

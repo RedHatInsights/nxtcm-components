@@ -1,8 +1,11 @@
-import { Alert, AlertVariant, Content, ContentVariants, Title } from '@patternfly/react-core';
+import { Alert, AlertVariant } from '@patternfly/react-core/dist/dynamic/components/Alert';
+import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
+import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
+
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { CopyInstruction } from '../CopyInstruction';
-import { TabGroup } from './TabGroup';
 import PopoverHint from '../PopoverHint';
+import { TabGroup } from './TabGroup';
 
 export const UserRole = () => {
   const u = useRosaHcpWizardStrings().userRole;

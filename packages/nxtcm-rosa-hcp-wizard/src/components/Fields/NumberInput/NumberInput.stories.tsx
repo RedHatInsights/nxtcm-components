@@ -1,6 +1,8 @@
 import React, { type SyntheticEvent } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Form } from '@patternfly/react-core';
+
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+
 import { NumberInput, type NumberInputProps } from './NumberInput';
 
 function NumberInputDemo(args: NumberInputProps) {
@@ -17,9 +19,9 @@ function NumberInputDemo(args: NumberInputProps) {
 }
 
 const meta: Meta<typeof NumberInput> = {
-  title: 'Form Elements/NumberInput',
+  title: 'Internal/Form Elements/NumberInput',
   component: NumberInput,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   parameters: {
     layout: 'padded',
   },

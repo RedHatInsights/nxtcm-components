@@ -1,5 +1,5 @@
+import { containsCidr, overlapCidr } from 'cidr-tools';
 import * as yup from 'yup';
-import { overlapCidr, containsCidr } from 'cidr-tools';
 
 import {
   AWS_MACHINE_CIDR_MAX_MULTI_AZ,
@@ -14,20 +14,19 @@ import {
   POD_NODES_MIN,
   SERVICE_CIDR_MAX,
 } from '../constants';
-import { parseCIDRSubnetLength } from '../utilities/helpers';
-import { ROSAHCPCluster } from '../types';
-import type { WizardFieldMeta } from './types';
+import { parseSubnetLength } from '../utilities/helpers';
+import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
+import { YUP } from './constants';
 import {
   ctx,
   findOverlappingCidrFields,
   getStartingIP,
-  isCidrSubnetAddress,
+  isSubnetAddress,
   isValidCidr,
   rosaCommonRequiredNonEmptyTest,
   rosaRequiredStringField,
 } from './helpers';
-import { YUP_FIELD_REQUIRED_UI_META_KEY } from '../utilities/yupFieldRequired';
-import { YUP } from './constants';
+import type { ClusterTestContext, ValidationSchemaContext, WizardFieldMeta } from './types';
 
 export const clusterPrivacySchema = rosaRequiredStringField()
   .default(YUP.NETWORKING.CLUSTER_PRIVACY_SCHEMA.DEFAULT)
@@ -57,7 +56,7 @@ export const clusterPrivacyPublicSubnetIdSchema = yup
     reconcileValueWithOptions:
       YUP.NETWORKING.CLUSTER_PRIVACY_PUBLIC_SUBNET_ID_SCHEMA.META.RECONCILE_VALUE_WITH_OPTIONS,
   } satisfies WizardFieldMeta)
-  .when('cluster_privacy', {
+  .when(FIELD_NAME.CLUSTER_PRIVACY_FIELD.NAME, {
     is: YUP.NETWORKING.CLUSTER_PRIVACY_SCHEMA.DEFAULT,
     then: (schema) =>
       schema.test(rosaCommonRequiredNonEmptyTest).meta({ [YUP_FIELD_REQUIRED_UI_META_KEY]: true }),
@@ -80,7 +79,7 @@ export const cidrDefaultSchema = yup
   } satisfies WizardFieldMeta);
 
 export const networkMachineCidrSchema = yup
-  .string()
+  .string<string, ValidationSchemaContext>()
   .default(YUP.NETWORKING.NETWORK_MACHINE_CIDR_SCHEMA.DEFAULT)
   .optional()
   .meta({
@@ -92,19 +91,19 @@ export const networkMachineCidrSchema = yup
     advanced: YUP.NETWORKING.NETWORK_MACHINE_CIDR_SCHEMA.META.ADVANCED,
     noEditAfterSubmit: YUP.NETWORKING.NETWORK_MACHINE_CIDR_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
   } satisfies WizardFieldMeta)
-  .test('machine-cidr', '', function (value) {
+  .test('machine-cidr', '', function (this: ClusterTestContext, value) {
     if (!value) return true;
     const { msgs, selectedSubnets } = ctx(this);
 
     if (!isValidCidr(value)) {
       return this.createError({ message: msgs.cidr.invalidNotation(value) });
     }
-    if (!isCidrSubnetAddress(value)) {
+    if (!isSubnetAddress(value)) {
       return this.createError({ message: msgs.validateRange.notSubnetAddress });
     }
 
-    const prefixLength = parseCIDRSubnetLength(value);
-    const formData = this.parent as Partial<ROSAHCPCluster>;
+    const prefixLength = parseSubnetLength(value);
+    const formData = this.parent;
     const isMultiAz = formData.multi_az === 'true';
 
     if (prefixLength != null) {
@@ -161,7 +160,7 @@ export const networkMachineCidrSchema = yup
   });
 
 export const networkServiceCidrSchema = yup
-  .string()
+  .string<string, ValidationSchemaContext>()
   .default(YUP.NETWORKING.NETWORK_SERVICE_CIDR_SCHEMA.DEFAULT)
   .optional()
   .meta({
@@ -173,18 +172,18 @@ export const networkServiceCidrSchema = yup
     advanced: YUP.NETWORKING.NETWORK_SERVICE_CIDR_SCHEMA.META.ADVANCED,
     noEditAfterSubmit: YUP.NETWORKING.NETWORK_SERVICE_CIDR_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
   } satisfies WizardFieldMeta)
-  .test('service-cidr', '', function (value) {
+  .test('service-cidr', '', function (this: ClusterTestContext, value) {
     if (!value) return true;
     const { msgs, selectedSubnets } = ctx(this);
 
     if (!isValidCidr(value)) {
       return this.createError({ message: msgs.cidr.invalidNotation(value) });
     }
-    if (!isCidrSubnetAddress(value)) {
+    if (!isSubnetAddress(value)) {
       return this.createError({ message: msgs.validateRange.notSubnetAddress });
     }
 
-    const prefixLength = parseCIDRSubnetLength(value);
+    const prefixLength = parseSubnetLength(value);
     if (prefixLength != null && prefixLength > SERVICE_CIDR_MAX) {
       const maxServices = 2 ** (32 - SERVICE_CIDR_MAX) - 2;
       return this.createError({
@@ -200,7 +199,7 @@ export const networkServiceCidrSchema = yup
       });
     }
 
-    const formData = this.parent as Partial<ROSAHCPCluster>;
+    const formData = this.parent;
 
     if (selectedSubnets && selectedSubnets.length > 0) {
       for (const subnet of selectedSubnets) {
@@ -239,7 +238,7 @@ export const networkServiceCidrSchema = yup
   });
 
 export const networkPodCidrSchema = yup
-  .string()
+  .string<string, ValidationSchemaContext>()
   .default(YUP.NETWORKING.NETWORK_POD_CIDR_SCHEMA.DEFAULT)
   .optional()
   .meta({
@@ -251,26 +250,26 @@ export const networkPodCidrSchema = yup
     advanced: YUP.NETWORKING.NETWORK_POD_CIDR_SCHEMA.META.ADVANCED,
     noEditAfterSubmit: YUP.NETWORKING.NETWORK_POD_CIDR_SCHEMA.META.NO_EDIT_AFTER_SUBMIT,
   } satisfies WizardFieldMeta)
-  .test('pod-cidr', '', function (value) {
+  .test('pod-cidr', '', function (this: ClusterTestContext, value) {
     if (!value) return true;
     const { msgs, selectedSubnets } = ctx(this);
 
     if (!isValidCidr(value)) {
       return this.createError({ message: msgs.cidr.invalidNotation(value) });
     }
-    if (!isCidrSubnetAddress(value)) {
+    if (!isSubnetAddress(value)) {
       return this.createError({ message: msgs.validateRange.notSubnetAddress });
     }
 
-    const formData = this.parent as Partial<ROSAHCPCluster>;
-    const prefixLength = parseCIDRSubnetLength(value);
+    const formData = this.parent;
+    const prefixLength = parseSubnetLength(value);
 
     if (prefixLength != null) {
       if (prefixLength > POD_CIDR_MAX) {
         return this.createError({ message: msgs.podCidr.maskTooSmall(POD_CIDR_MAX) });
       }
 
-      const hostPrefixLen = parseCIDRSubnetLength(formData.network_host_prefix) || 23;
+      const hostPrefixLen = parseSubnetLength(formData.network_host_prefix) || 23;
       const maxPodIPs = 2 ** (32 - hostPrefixLen);
       const maxPodNodes = Math.floor(2 ** (32 - prefixLength) / maxPodIPs);
       if (maxPodNodes < POD_NODES_MIN) {
@@ -335,7 +334,7 @@ export const networkHostPrefixSchema = yup
       return this.createError({ message: msgs.hostPrefix.invalidMaskFormat(value) });
     }
 
-    const prefixLength = parseCIDRSubnetLength(value);
+    const prefixLength = parseSubnetLength(value);
     if (prefixLength != null) {
       if (prefixLength < HOST_PREFIX_MIN) {
         const maxPodIPs = 2 ** (32 - HOST_PREFIX_MIN) - 2;

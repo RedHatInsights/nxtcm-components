@@ -108,8 +108,6 @@ export const FIELD_NAME = {
   CLUSTER_PRIVACY_FIELD: {
     NAME: 'cluster_privacy',
     PUBLIC_SUBNET_ID: 'cluster_privacy_public_subnet_id',
-    INTERNAL: 'internal',
-    EXTERNAL: 'external',
   },
   CONFIGURE_PROXY: 'configure_proxy',
   CIDR_DEFAULT: 'cidr_default',
@@ -133,11 +131,7 @@ export const FIELD_NAME = {
   NO_PROXY_DOMAINS: 'no_proxy_domains',
   ADDITIONAL_TRUST_BUNDLE: 'additional_trust_bundle',
   UPGRADE_POLICY: 'upgrade_policy',
-  UPGRADE_SCHEDULE: {
-    NAME: 'upgrade_schedule',
-    HOUR: 'upgrade-schedule-hour',
-    DAY: 'upgrade-schedule-day',
-  },
+  UPGRADE_SCHEDULE: 'upgrade_schedule',
   ENCRYPTION: {
     ENCRYPTION_KEYS: 'encryption_keys',
     KMS_KEY_ARN: 'kms_key_arn',

@@ -1,0 +1,15 @@
+export const WIZ_RADIO_GROUP_EXPLICIT_LABEL = 'Explicit radio group label';
+export const WIZ_RADIO_GROUP_EXPLICIT_HELPER = 'Explicit helper text.';
+export const WIZ_RADIO_GROUP_OPTION_ALPHA_LABEL = 'Option Alpha';
+export const WIZ_RADIO_GROUP_OPTION_BETA_LABEL = 'Option Beta';
+export const WIZ_RADIO_GROUP_VALUE_STATUS_LABEL = 'tier form value';
+export const WIZ_RADIO_GROUP_YUP_META_LABEL = 'Yup meta label';
+export const WIZ_RADIO_GROUP_YUP_META_HELPER = 'Yup meta helper text.';
+export const WIZ_RADIO_GROUP_SUBMIT_ERROR = 'Choose a tier.';
+export const WIZ_RADIO_GROUP_NESTED_STATUS_LABEL = 'plan target radios';
+export const WIZ_RADIO_GROUP_META_LABEL_LOSS = 'Meta radio label loser';
+export const WIZ_RADIO_GROUP_META_HELPER_LOSS = 'Meta radio helper loser';
+export const WIZ_RADIO_GROUP_OVERRIDE_RADIO_LABEL_WIN = 'Override radio label wins';
+export const WIZ_RADIO_GROUP_OVERRIDE_RADIO_HELPER_WIN = 'Override radio helper wins';
+export const WIZ_RADIO_GROUP_CONTROL_ONLY_STATUS = 'solo radio field';
+export const WIZ_RADIO_GROUP_HIDE_LABEL_YUP_LABEL = 'Yup label hidden on form';

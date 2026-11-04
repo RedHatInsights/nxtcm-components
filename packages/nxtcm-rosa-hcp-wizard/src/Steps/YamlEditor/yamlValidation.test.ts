@@ -1,11 +1,11 @@
-import * as yaml from 'js-yaml';
 import type { ErrorObject } from 'ajv';
+import * as yaml from 'js-yaml';
 
 import {
-  splitYamlDocuments,
-  yamlExceptionToValidationError,
   findLineForPath,
   formatAjvError,
+  splitYamlDocuments,
+  yamlExceptionToValidationError,
 } from './yamlValidation';
 
 describe('splitYamlDocuments', () => {

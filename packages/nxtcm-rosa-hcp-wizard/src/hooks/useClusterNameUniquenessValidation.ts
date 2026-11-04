@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef } from 'react';
+
 import { useFormContext, useWatch } from 'react-hook-form';
 
-import { STEP_IDS } from '../constants';
+import { FIELD_NAME, STEP_IDS } from '../constants';
 import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
-import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
-import type { CheckClusterNameUniqueness, ROSAHCPCluster } from '../types';
 import { useRosaHcpWizardValidators } from '../stringsProvider/RosaHcpWizardStringsContext';
+import type { CheckClusterNameUniqueness, ROSAHCPCluster } from '../types';
+import { hasRefetchableStringValue } from '../utilities/hasRefetchableStringValue';
 import { validateClusterNameSync } from '../yupSchemas/helpers';
 
 const CLUSTER_NAME_UNIQUE_ERROR_TYPE = 'clusterNameUnique';
@@ -29,15 +30,18 @@ export function useClusterNameUniquenessValidation({
   const { setStepAsyncValidating } = useRosaHcpWizardValidation();
   const { control, getValues, setError, clearErrors, getFieldState } =
     useFormContext<Partial<ROSAHCPCluster>>();
-  const region = useWatch({ control, name: 'region' });
-  const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const region = useWatch({ control, name: FIELD_NAME.REGION });
+  const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const previousRegionRef = useRef<string | undefined>(undefined);
   const hasInitializedRegionRef = useRef(false);
   const checkClusterNameUniquenessRef = useRef(checkClusterNameUniqueness);
   const uniquenessRequestIdRef = useRef(0);
   const asyncValidatingRequestIdRef = useRef<number | null>(null);
   const lastCheckedRef = useRef<LastCheckedPair | null>(null);
-  checkClusterNameUniquenessRef.current = checkClusterNameUniqueness;
+
+  useEffect(() => {
+    checkClusterNameUniquenessRef.current = checkClusterNameUniqueness;
+  });
 
   const clearPendingDebounce = useCallback(() => {
     if (debounceTimeoutRef.current) {
@@ -49,13 +53,13 @@ export function useClusterNameUniquenessValidation({
   const applyUniqueErrorToForm = useCallback(
     (error: string | null) => {
       if (error) {
-        setError('name', { type: CLUSTER_NAME_UNIQUE_ERROR_TYPE, message: error });
+        setError(FIELD_NAME.CLUSTER_NAME, { type: CLUSTER_NAME_UNIQUE_ERROR_TYPE, message: error });
         return;
       }
 
-      const nameFieldError = getFieldState('name').error;
+      const nameFieldError = getFieldState(FIELD_NAME.CLUSTER_NAME).error;
       if (nameFieldError?.type === CLUSTER_NAME_UNIQUE_ERROR_TYPE) {
-        clearErrors('name');
+        clearErrors(FIELD_NAME.CLUSTER_NAME);
       }
     },
     [clearErrors, getFieldState, setError]
@@ -67,8 +71,8 @@ export function useClusterNameUniquenessValidation({
       return;
     }
 
-    const name = getValues('name');
-    const currentRegion = getValues('region');
+    const name = getValues(FIELD_NAME.CLUSTER_NAME);
+    const currentRegion = getValues(FIELD_NAME.REGION);
     const clearAsyncValidatingIfInFlight = (): void => {
       if (asyncValidatingRequestIdRef.current !== null) {
         asyncValidatingRequestIdRef.current = null;
@@ -147,7 +151,7 @@ export function useClusterNameUniquenessValidation({
 
     previousRegionRef.current = currentRegion;
 
-    const name = getValues('name');
+    const name = getValues(FIELD_NAME.CLUSTER_NAME);
     if (!hasRefetchableStringValue(name) || !currentRegion) {
       lastCheckedRef.current = null;
       applyUniqueErrorToForm(null);

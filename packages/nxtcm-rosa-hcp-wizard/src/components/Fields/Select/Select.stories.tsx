@@ -1,6 +1,8 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Form } from '@patternfly/react-core';
+
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+
 import { Select, type SelectProps } from './Select';
 
 function SelectDemo(args: SelectProps<string>) {
@@ -42,9 +44,9 @@ function SelectRefreshDemo(args: SelectProps<string>) {
 }
 
 const meta: Meta<SelectProps<string>> = {
-  title: 'Form Elements/Select',
+  title: 'Internal/Form Elements/Select',
   component: Select,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   parameters: {
     layout: 'padded',
   },

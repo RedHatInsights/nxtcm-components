@@ -1,10 +1,11 @@
 /**
  * Type definitions for ROSA HCP wizard UI copy and validation messages.
  * Default English values live in {@link ./rosaHcpWizardStrings.defaults}.
+ * Consumer key catalog: `docs/localizable-strings.md`.
  */
 
 export type DeepPartial<T> = {
-  [K in keyof T]?: T[K] extends (...args: any[]) => unknown
+  [K in keyof T]?: T[K] extends (...args: infer _A) => infer _R
     ? T[K]
     : T[K] extends object
       ? DeepPartial<T[K]>

@@ -1,6 +1,8 @@
 import React, { type FormEvent } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Form } from '@patternfly/react-core';
+
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+
 import { TextInput, type TextInputProps } from './TextInput';
 
 function TextInputDemo(args: TextInputProps) {
@@ -19,9 +21,9 @@ function TextInputDemo(args: TextInputProps) {
 }
 
 const meta: Meta<typeof TextInput> = {
-  title: 'Form Elements/TextInput',
+  title: 'Internal/Form Elements/TextInput',
   component: TextInput,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   parameters: {
     layout: 'padded',
   },

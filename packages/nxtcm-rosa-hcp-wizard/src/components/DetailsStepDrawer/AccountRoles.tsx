@@ -1,8 +1,10 @@
-import { Alert, AlertVariant, Content, ContentVariants } from '@patternfly/react-core';
+import { Alert, AlertVariant } from '@patternfly/react-core/dist/dynamic/components/Alert';
+import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
+
+import { awsLinks } from '../../constants/rawLinks';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import { CopyInstruction } from '../CopyInstruction';
 import ExternalLink from '../ExternalLink';
-import links from '../../constants/links';
 
 export const AccountRoles = () => {
   const a = useRosaHcpWizardStrings().accountRoles;
@@ -28,7 +30,7 @@ export const AccountRoles = () => {
         title={
           <>
             {a.manualInstructionsLead}{' '}
-            <ExternalLink href={links.AWS_CLI_GETTING_STARTED_MANUAL}>
+            <ExternalLink href={awsLinks.AWS_CLI_GETTING_STARTED_MANUAL}>
               {a.manualInstructionsLink}
             </ExternalLink>
             .

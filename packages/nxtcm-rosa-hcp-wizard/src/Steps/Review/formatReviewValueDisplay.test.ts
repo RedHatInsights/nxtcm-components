@@ -8,9 +8,9 @@ jest.mock('../../yupSchemas', () => ({
 }));
 
 import { IMDS } from '../../constants';
-import { ClusterNetwork, ClusterUpgrade } from '../../types';
-
 import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.defaults';
+import { ClusterNetwork, ClusterUpgrade } from '../../types';
+import * as helpers from '../../utilities/helpers';
 import { formatReviewFieldValue } from './formatReviewValueDisplay';
 
 const strings = defaultRosaHcpWizardStrings;
@@ -89,6 +89,61 @@ describe('formatReviewFieldValue machine_pools_subnets', () => {
         strings
       )
     ).toBe('subnet-unknown');
+  });
+});
+
+describe('formatReviewFieldValue malformed values', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it.each([
+    { description: 'numeric VPC ID', value: { id: 123, name: 'invalid' }, expected: '' },
+    { description: 'missing VPC ID', value: { name: 'invalid' }, expected: '' },
+    {
+      description: 'non-string VPC name without a matching option',
+      value: { id: 'vpc-unknown', name: { label: 'invalid' } },
+      expected: 'vpc-unknown',
+    },
+    {
+      description: 'non-string VPC name with a matching option',
+      value: { id: 'vpc-prod', name: 123 },
+      expected: 'production-vpc',
+    },
+  ])('uses the expected fallback for a $description', ({ value, expected }) => {
+    jest.spyOn(helpers, 'getNestedValue').mockReturnValueOnce(value);
+
+    expect(formatReviewFieldValue('selected_vpc', {}, strings, reviewOptions)).toBe(expected);
+  });
+
+  it('ignores malformed subnet entries and preserves trimmed valid labels in order', () => {
+    jest
+      .spyOn(helpers, 'getNestedValue')
+      .mockReturnValueOnce([
+        null,
+        undefined,
+        {},
+        'subnet-a',
+        { machine_pool_subnet: 123 },
+        { machine_pool_subnet: false },
+        { machine_pool_subnet: {} },
+        { machine_pool_subnet: '  subnet-b  ' },
+        { machine_pool_subnet: '' },
+        { machine_pool_subnet: '   ' },
+        { machine_pool_subnet: 'subnet-a' },
+      ]);
+
+    expect(formatReviewFieldValue('machine_pools_subnets', {}, strings, reviewOptions)).toBe(
+      'private-subnet-b, private-subnet-a'
+    );
+  });
+
+  it('returns empty when every subnet entry is malformed', () => {
+    jest
+      .spyOn(helpers, 'getNestedValue')
+      .mockReturnValueOnce([null, {}, { machine_pool_subnet: 123 }]);
+
+    expect(formatReviewFieldValue('machine_pools_subnets', {}, strings, reviewOptions)).toBe('');
   });
 });
 

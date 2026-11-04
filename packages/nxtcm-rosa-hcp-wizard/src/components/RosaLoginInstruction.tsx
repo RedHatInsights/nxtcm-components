@@ -1,9 +1,11 @@
-import { ClipboardCopyVariant, Content, ContentVariants } from '@patternfly/react-core';
-import { CopyInstruction } from './CopyInstruction';
-import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
+import { ClipboardCopyVariant } from '@patternfly/react-core/dist/dynamic/components/ClipboardCopy';
+import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
+
 import { DEFAULT_HOST_PRODUCT } from '../constants';
-import { getRosaLoginCommand, type RosaLoginProduct } from './rosaLoginCommand';
+import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
 import { SelectedSecret } from '../types';
+import { CopyInstruction } from './CopyInstruction';
+import { getRosaLoginCommand, type RosaLoginProduct } from './rosaLoginCommand';
 
 export type RosaLoginInstructionProps = {
   /** The consuming product. Determines which ROSA login command is shown. Defaults to 'acm'. */

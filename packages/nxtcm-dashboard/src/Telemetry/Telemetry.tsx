@@ -1,7 +1,9 @@
-import { Divider, Flex, FlexItem, Skeleton } from '@patternfly/react-core';
+import { Divider } from '@patternfly/react-core/dist/dynamic/components/Divider';
+import { Skeleton } from '@patternfly/react-core/dist/dynamic/components/Skeleton';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 import ConnectedIcon from '@patternfly/react-icons/dist/esm/icons/connected-icon';
 import DisconnectedIcon from '@patternfly/react-icons/dist/esm/icons/disconnected-icon';
-import React from 'react';
+
 import styles from './Telemetry.module.scss';
 
 export type TelemetryData = {

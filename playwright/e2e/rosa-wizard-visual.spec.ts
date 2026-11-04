@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { expect, test } from './fixtures';
 
 test.describe('ROSA Wizard visual comparisons', () => {
   test.beforeEach(async ({ page }) => {
@@ -17,7 +17,8 @@ test.describe('ROSA Wizard visual comparisons', () => {
   });
 
   test('Details section', async ({ page }) => {
-    const details = page.getByRole('group').filter({
+    // The step's unnamed form does not expose an accessible form role.
+    const details = page.locator('form').filter({
       has: page.getByRole('textbox', { name: 'Cluster name', exact: true }),
     });
     await expect(details).toHaveCount(1);

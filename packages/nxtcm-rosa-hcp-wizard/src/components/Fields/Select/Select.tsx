@@ -9,32 +9,41 @@ import {
   useRef,
   useState,
 } from 'react';
+
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Divider } from '@patternfly/react-core/dist/dynamic/components/Divider';
+import { FormGroup } from '@patternfly/react-core/dist/dynamic/components/Form';
 import {
-  Button,
-  Divider,
-  Flex,
-  FormGroup,
   InputGroup,
   InputGroupItem,
+} from '@patternfly/react-core/dist/dynamic/components/InputGroup';
+import {
   MenuToggle,
   type MenuToggleElement,
+} from '@patternfly/react-core/dist/dynamic/components/MenuToggle';
+import {
   Select as PfSelect,
   SelectGroup,
   SelectList,
   SelectOption,
-  Spinner,
+} from '@patternfly/react-core/dist/dynamic/components/Select';
+import { Spinner } from '@patternfly/react-core/dist/dynamic/components/Spinner';
+import {
   TextInputGroup,
   TextInputGroupMain,
   TextInputGroupUtilities,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/dist/dynamic/components/TextInputGroup';
+import { Tooltip } from '@patternfly/react-core/dist/dynamic/components/Tooltip';
+import { Flex } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 import RedoIcon from '@patternfly/react-icons/dist/esm/icons/redo-icon';
 import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
-import { toDisplayString } from './SelectOptions';
-import { extractOptionValue, type Option, type OptionGroup, type OptionType } from './SelectTypes';
-import { getStatus, isSyntheticOptionId, lowercaseFirst } from './selectFieldUtils';
-import { useSelectDerived } from './useSelectDerived';
+
 import { HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
+import { getStatus, isSyntheticOptionId, lowercaseFirst } from './selectFieldUtils';
+import { toDisplayString } from './SelectOptions';
+import { extractOptionValue, type Option, type OptionGroup, type OptionType } from './SelectTypes';
+import { useSelectDerived } from './useSelectDerived';
 
 export interface SelectProps<T = unknown> {
   /** Stable field id (toggle and listbox wiring). */
@@ -126,7 +135,22 @@ export function Select<T = unknown>(props: SelectProps<T>) {
 
   const [open, setOpen] = useState(false);
   const [typeaheadQuery, setTypeaheadQuery] = useState('');
+  const [tooltipVisible, setTooltipVisible] = useState(false);
   const textInputRef = useRef<HTMLInputElement>(null);
+  const tooltipTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  const showTooltip = useCallback(() => {
+    clearTimeout(tooltipTimerRef.current);
+    tooltipTimerRef.current = setTimeout(() => setTooltipVisible(true), 300);
+  }, []);
+  const hideTooltip = useCallback(() => {
+    clearTimeout(tooltipTimerRef.current);
+    setTooltipVisible(false);
+  }, []);
+
+  useEffect(() => {
+    return () => clearTimeout(tooltipTimerRef.current);
+  }, []);
 
   useEffect(() => {
     onMenuOpenChange?.(open);
@@ -155,6 +179,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
 
   const placeholderText =
     placeholder ?? (label?.length ? `Select the ${lowercaseFirst(label)}` : 'Select an option');
+  const menuLabel = label || placeholderText;
 
   /**
    * Clears the typeahead filter when opening so all options are visible.
@@ -182,7 +207,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
          * for typeahead clears.
          */
         if (isTypeAhead) {
-          onChange(undefined as T | string | number | undefined);
+          onChange(undefined);
         }
         setOpen(false);
         syncTypeaheadQueryForOpenState(false);
@@ -234,7 +259,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   const renderMenuBody = () => {
     if (isLoading) {
       return (
-        <SelectList>
+        <SelectList id={`${id}-listbox`} aria-label={menuLabel}>
           <SelectOption id={`${id}-loading`} isDisabled value="loading">
             <Flex
               alignItems={{ default: 'alignItemsCenter' }}
@@ -252,7 +277,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
       const toRender = displayedGroups.filter((g) => g.options.length > 0);
       if (toRender.length === 0) {
         return (
-          <SelectList>
+          <SelectList id={`${id}-listbox`} aria-label={menuLabel}>
             <SelectOption id={`${id}-no-results`} isAriaDisabled value="no-results">
               {noResultsText}
             </SelectOption>
@@ -260,25 +285,27 @@ export function Select<T = unknown>(props: SelectProps<T>) {
         );
       }
       return (
-        <SelectList>
+        <>
           {toRender.map((group, index) => (
             <Fragment key={group.label}>
               {index > 0 ? <Divider /> : null}
               <SelectGroup label={group.label}>
-                {group.options.map((opt: OptionType<T>, optIdx: number) =>
-                  renderSelectOptionRow(opt, opt.id || `option-${group.label}-${optIdx}`)
-                )}
+                <SelectList aria-label={`${menuLabel}: ${group.label}`}>
+                  {group.options.map((opt: OptionType<T>, optIdx: number) =>
+                    renderSelectOptionRow(opt, opt.id || `option-${group.label}-${optIdx}`)
+                  )}
+                </SelectList>
               </SelectGroup>
             </Fragment>
           ))}
-        </SelectList>
+        </>
       );
     }
 
     const flatOpts = normalizedFlat ?? [];
     if (flatOpts.length === 0) {
       return (
-        <SelectList id={isTypeAhead ? `${id}-listbox` : undefined}>
+        <SelectList id={`${id}-listbox`} aria-label={menuLabel}>
           <SelectOption id={`${id}-empty`} isAriaDisabled value="empty">
             {noResultsText}
           </SelectOption>
@@ -287,7 +314,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     }
     if (isTypeAhead && displayedFlat.length === 0) {
       return (
-        <SelectList id={`${id}-listbox`}>
+        <SelectList id={`${id}-listbox`} aria-label={menuLabel}>
           <SelectOption id={`${id}-no-results`} isAriaDisabled value="no-results">
             {noResultsText}
           </SelectOption>
@@ -298,7 +325,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     const listRows = isTypeAhead ? displayedFlat : flatOpts;
 
     return (
-      <SelectList id={isTypeAhead ? `${id}-listbox` : undefined}>
+      <SelectList id={`${id}-listbox`} aria-label={menuLabel}>
         {listRows.map((opt, idx) => renderSelectOptionRow(opt, opt.id || `opt-${idx}`))}
       </SelectList>
     );
@@ -312,7 +339,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
       event.stopPropagation();
-      onChange(undefined as T | string | number | undefined);
+      onChange(undefined);
       setTypeaheadQuery('');
       textInputRef.current?.focus();
     },
@@ -339,64 +366,98 @@ export function Select<T = unknown>(props: SelectProps<T>) {
 
   const plainToggleAriaLabel = !toggleLabel && !isLoading ? placeholderText : undefined;
 
+  /** Text shown inside the plain (non-typeahead) toggle button. */
+  const plainToggleText = isLoading && !toggleLabel ? 'Loading...' : toggleLabel || placeholderText;
+
+  /** Full text for the PF tooltip — matches the visible toggle text. */
+  const tooltipContent = isLoading && !toggleLabel ? 'Loading...' : toggleLabel || placeholderText;
+
   const plainToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <MenuToggle
-      ref={toggleRef}
-      onClick={toggleOpen}
-      onBlur={onBlur}
-      isExpanded={open}
-      isDisabled={!!disabled}
-      isFullWidth
-      status={getStatus(!!isError, !!isSuccess)}
-      aria-label={plainToggleAriaLabel}
-      aria-describedby={describedBy || undefined}
-      data-testid={dataTestId}
+    <Tooltip
+      content={tooltipContent}
+      aria="none"
+      trigger="manual"
+      isVisible={tooltipVisible && !open}
     >
-      {isLoading && !toggleLabel ? 'Loading...' : toggleLabel || placeholderText}
-    </MenuToggle>
+      <MenuToggle
+        ref={toggleRef}
+        onClick={toggleOpen}
+        onBlur={(e: React.FocusEvent<HTMLElement>) => {
+          hideTooltip();
+          onBlur?.(e);
+        }}
+        onFocus={showTooltip}
+        onMouseEnter={showTooltip}
+        onMouseLeave={hideTooltip}
+        isExpanded={open}
+        isDisabled={!!disabled}
+        isFullWidth
+        status={getStatus(!!isError, !!isSuccess)}
+        aria-label={plainToggleAriaLabel}
+        aria-haspopup="listbox"
+        aria-describedby={describedBy || undefined}
+        data-testid={dataTestId}
+      >
+        {plainToggleText}
+      </MenuToggle>
+    </Tooltip>
   );
 
   const typeaheadToggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <MenuToggle
-      variant="typeahead"
-      ref={toggleRef}
-      onClick={toggleOpen}
-      onBlur={onBlur}
-      isExpanded={open}
-      isDisabled={!!disabled}
-      isFullWidth
-      status={getStatus(!!isError, !!isSuccess)}
-      data-testid={dataTestId}
+    <Tooltip
+      content={tooltipContent}
+      aria="none"
+      trigger="manual"
+      isVisible={tooltipVisible && !open}
     >
-      <TextInputGroup isPlain isDisabled={!!disabled}>
-        <TextInputGroupMain
-          value={typeaheadToggleDisplay}
-          onClick={toggleOpen}
-          onChange={onTypeaheadInputChange}
-          innerRef={textInputRef}
-          placeholder={isLoading ? undefined : placeholderText}
-          isExpanded={open}
-          autoComplete="off"
-          aria-label={placeholderText}
-          aria-describedby={describedBy || undefined}
-          role="combobox"
-          aria-controls={`${id}-listbox`}
-          id={`${id}-typeahead-input`}
-        />
-        <TextInputGroupUtilities
-          {...((!typeaheadQuery && !toggleLabel) || typeaheadToggleDisplay === 'Loading...'
-            ? { style: { display: 'none' } }
-            : {})}
-        >
-          <Button
-            variant="plain"
-            onClick={onClearTypeahead}
-            aria-label="Clear selection"
-            icon={<TimesIcon aria-hidden />}
+      <MenuToggle
+        variant="typeahead"
+        aria-haspopup="listbox"
+        ref={toggleRef}
+        onClick={toggleOpen}
+        onBlur={(e: React.FocusEvent<HTMLElement>) => {
+          hideTooltip();
+          onBlur?.(e);
+        }}
+        onFocus={showTooltip}
+        onMouseEnter={showTooltip}
+        onMouseLeave={hideTooltip}
+        isExpanded={open}
+        isDisabled={!!disabled}
+        isFullWidth
+        status={getStatus(!!isError, !!isSuccess)}
+        data-testid={dataTestId}
+      >
+        <TextInputGroup isPlain isDisabled={!!disabled}>
+          <TextInputGroupMain
+            value={typeaheadToggleDisplay}
+            onClick={toggleOpen}
+            onChange={onTypeaheadInputChange}
+            innerRef={textInputRef}
+            placeholder={isLoading ? undefined : placeholderText}
+            isExpanded={open}
+            autoComplete="off"
+            aria-label={placeholderText}
+            aria-describedby={describedBy || undefined}
+            role="combobox"
+            aria-controls={open ? id : undefined}
+            id={`${id}-typeahead-input`}
           />
-        </TextInputGroupUtilities>
-      </TextInputGroup>
-    </MenuToggle>
+          <TextInputGroupUtilities
+            {...((!typeaheadQuery && !toggleLabel) || typeaheadToggleDisplay === 'Loading...'
+              ? { style: { display: 'none' } }
+              : {})}
+          >
+            <Button
+              variant="plain"
+              onClick={onClearTypeahead}
+              aria-label="Clear selection"
+              icon={<TimesIcon aria-hidden />}
+            />
+          </TextInputGroupUtilities>
+        </TextInputGroup>
+      </MenuToggle>
+    </Tooltip>
   );
 
   /** Handles PF-initiated open-change (click-outside, Escape). */
@@ -408,11 +469,12 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     [syncTypeaheadQueryForOpenState]
   );
 
-  useEffect(() => {
-    if (!isTypeAhead) return;
+  const [prevToggleLabel, setPrevToggleLabel] = useState<string | null>(null);
+  if (isTypeAhead && prevToggleLabel !== toggleLabel) {
+    setPrevToggleLabel(toggleLabel);
     /** Keeps query text in sync when the controlled selection (`value`) changes. Typing filters without changing selection leaves `toggleLabel` stable, so the input is not reset. */
     setTypeaheadQuery(toggleLabel || '');
-  }, [isTypeAhead, toggleLabel]);
+  }
 
   const selectBlock = (
     <InputGroup>

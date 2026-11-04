@@ -1,5 +1,7 @@
-import type { CIDRSubnet, ROSAHCPCluster, ROSAHCPWizardData } from '../types';
+import type * as yup from 'yup';
+
 import type { RosaHcpWizardValidatorStrings } from '../stringsProvider/rosaHcpWizardStrings';
+import type { ROSAHCPCluster, ROSAHCPWizardData, Subnet } from '../types';
 
 /** Top-level {@link ROSAHCPCluster} keys used in form reset metadata. */
 export type WizardFormFieldName = keyof ROSAHCPCluster;
@@ -55,8 +57,7 @@ export type WizardResourceComposedRefetchOnChange = {
 
 /** Describes a {@link ROSAHCPWizardData} resource reload when a form field changes. */
 export type WizardResourceRefetchOnChange =
-  | WizardResourceSimpleRefetchOnChange
-  | WizardResourceComposedRefetchOnChange;
+  WizardResourceSimpleRefetchOnChange | WizardResourceComposedRefetchOnChange;
 
 /**
  * When a source field changes to `when`, apply `setDefaults` and/or `clear` on dependent fields.
@@ -76,8 +77,7 @@ export type WizardFieldSyncOnChange = {
  * Declared on the source field's Yup `.meta()` via `derivedFieldsSyncOnChange`.
  */
 export type WizardFieldDerivedSyncKey =
-  | 'installerRoleDependentRoles'
-  | 'vpcSecurityGroupsWorkerSelection';
+  'installerRoleDependentRoles' | 'vpcSecurityGroupsWorkerSelection';
 
 /**
  * Static metadata attached to each field via `.meta()`.
@@ -159,6 +159,10 @@ export type WizardFieldMeta = {
   >;
 };
 
+export type ClusterTestContext = Omit<yup.TestContext<ValidationSchemaContext>, 'parent'> & {
+  parent: Partial<ROSAHCPCluster>;
+};
+
 /**
  * Context object passed at validation time via `schema.validate(data, { context })`.
  * All runtime-dependent values live here instead of in a factory closure.
@@ -173,7 +177,7 @@ export type ValidationSchemaContext = {
   /** Number of machine pools currently configured (affects min-replica lower bound). */
   machinePoolsNumber: number;
   /** VPC subnets currently selected (for CIDR containment checks). */
-  selectedSubnets?: CIDRSubnet[];
+  selectedSubnets?: Subnet[];
   /**
    * Async callback that checks whether a cluster name is already in use.
    * Returns `null` when the name is available, or an error message string

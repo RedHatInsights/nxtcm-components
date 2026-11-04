@@ -1,21 +1,26 @@
+import { useCallback, useEffect, useMemo } from 'react';
+
 import {
   ActionList,
   ActionListGroup,
   ActionListItem,
-  Alert,
-  AlertVariant,
-  Button,
-  ButtonVariant,
+} from '@patternfly/react-core/dist/dynamic/components/ActionList';
+import { Alert, AlertVariant } from '@patternfly/react-core/dist/dynamic/components/Alert';
+import { Button, ButtonVariant } from '@patternfly/react-core/dist/dynamic/components/Button';
+import {
   type CustomWizardFooterFunction,
   useWizardContext,
   type WizardFooterProps,
   WizardFooterWrapper,
-} from '@patternfly/react-core';
-import { useCallback, useEffect, useMemo } from 'react';
+} from '@patternfly/react-core/dist/dynamic/components/Wizard';
 import { useFormContext, useWatch } from 'react-hook-form';
-import type { ROSAHCPCluster } from '../types';
-import { STEP_IDS } from '../constants';
+
+import { FIELD_NAME, STEP_IDS } from '../constants';
+import { useRosaHcpWizardNavStatusSync } from '../hooks/useRosaHcpWizardNavStatusSync';
+import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
 import { useRosaHcpWizardReviewSections } from '../Steps/Review/ROSAHCPWizardReviewSections';
+import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
+import type { ROSAHCPCluster, WizardFieldPath } from '../types';
 import {
   isRosaHcpWizardBackDisabled,
   isRosaHcpWizardSkipToReviewVisible,
@@ -25,10 +30,7 @@ import {
   touchInvalidPaths,
   validateWizardStepFields,
 } from './rosaHcpWizardFooter.validation';
-import { useRosaHcpWizardValidation } from '../rosaHcpWizardValidationContext';
-import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
 import { useRosaHcpWizardSubmit } from './useRosaHcpWizardSubmit';
-import { useRosaHcpWizardNavStatusSync } from '../hooks/useRosaHcpWizardNavStatusSync';
 
 type RosaHcpWizardFooterProps = Pick<
   WizardFooterProps,
@@ -72,7 +74,9 @@ function RosaHcpWizardFooter({
   } = useFormContext<Partial<ROSAHCPCluster>>();
   const { isSubmitting, submitWizard } = useRosaHcpWizardSubmit({ onSubmit, getYaml });
 
-  const clusterWideProxySelected = useWatch({ name: 'configure_proxy' });
+  const clusterWideProxySelected = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CONFIGURE_PROXY>({
+    name: FIELD_NAME.CONFIGURE_PROXY,
+  });
   useRosaHcpWizardNavStatusSync(!!clusterWideProxySelected, enableAllWizardNavSteps);
 
   const activeStepId = String(activeStep.id);
@@ -108,14 +112,14 @@ function RosaHcpWizardFooter({
   }, [activeStepId, setValidationAlertStepId]);
 
   const revealInvalidFields = useCallback(
-    (fieldPaths: readonly string[]) => {
+    (fieldPaths: readonly WizardFieldPath[]) => {
       touchInvalidPaths(fieldPaths, getFieldState, getValues, setValue);
     },
     [getFieldState, getValues, setValue]
   );
 
   const failStepValidation = useCallback(
-    (fieldPaths: readonly string[], stepIdsToMark: readonly string[]) => {
+    (fieldPaths: readonly WizardFieldPath[], stepIdsToMark: readonly string[]) => {
       revealInvalidFields(fieldPaths);
       for (const stepId of stepIdsToMark) {
         markValidationAttempted(stepId);

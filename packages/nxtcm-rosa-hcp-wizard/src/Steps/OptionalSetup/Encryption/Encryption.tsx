@@ -1,23 +1,31 @@
-import { Alert } from '@patternfly/react-core';
-import { Section } from '../../../components/Section';
-import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
-import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
-import { clusterValidationSchema } from '../../../yupSchemas';
-import { Radio } from '../../../components/Fields/Radio';
+import { Alert } from '@patternfly/react-core/dist/dynamic/components/Alert';
 import { useWatch } from 'react-hook-form';
-import { ClusterEncryptionKeys, ROSAHCPCluster } from '../../../types';
-import { WizTextInput } from '../../../components/WizFields/WizTextInput';
+
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../constants/links';
+import { Radio } from '../../../components/Fields/Radio';
 import { FieldWrapper } from '../../../components/FieldWrapper';
+import { Section } from '../../../components/Section';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
+import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
+import { WizTextInput } from '../../../components/WizFields/WizTextInput';
+import { FIELD_NAME } from '../../../constants';
+import { useGetDocsVersion } from '../../../constants/links';
+import { awsLinks } from '../../../constants/rawLinks';
+import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+import { ClusterEncryptionKeys, ROSAHCPCluster } from '../../../types';
+import { clusterValidationSchema } from '../../../yupSchemas';
 import { useClearFieldWhenHidden } from './useClearFieldWhenHidden';
 import { useEncryptionYupDescribeOptions } from './useEncryptionYupDescribeOptions';
-import { FIELD_NAME } from '../../../constants';
 
 export const Encryption = () => {
   const e = useRosaHcpWizardStrings().encryption;
   const yupDescribeOptions = useEncryptionYupDescribeOptions();
+
+  const clusterVersion =
+    useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({
+      name: FIELD_NAME.CLUSTER_VERSION,
+    }) ?? '';
+  const links = useGetDocsVersion(clusterVersion);
   const customKmsSelected = useWatch<ROSAHCPCluster>({
     name: FIELD_NAME.ENCRYPTION.ENCRYPTION_KEYS,
   });
@@ -39,7 +47,7 @@ export const Encryption = () => {
         helperText={
           <>
             {e.keysHelperLead}{' '}
-            <ExternalLink href={links.AWS_DATA_PROTECTION}>{e.keysLearnMore}</ExternalLink>
+            <ExternalLink href={awsLinks.AWS_DATA_PROTECTION}>{e.keysLearnMore}</ExternalLink>
           </>
         }
       >
@@ -55,7 +63,7 @@ export const Encryption = () => {
 
       {customKmsSelected === 'custom' ? (
         <FieldWrapper size="lg">
-          <WizTextInput<ROSAHCPCluster>
+          <WizTextInput
             name={FIELD_NAME.ENCRYPTION.KMS_KEY_ARN}
             schema={clusterValidationSchema}
             yupDescribeOptions={yupDescribeOptions}
@@ -78,7 +86,7 @@ export const Encryption = () => {
       </FieldWrapper>
       {etcdIsChecked ? (
         <FieldWrapper size="lg">
-          <WizTextInput<ROSAHCPCluster>
+          <WizTextInput
             name={FIELD_NAME.ENCRYPTION.ETCD_KEY_ARN}
             schema={clusterValidationSchema}
             yupDescribeOptions={yupDescribeOptions}

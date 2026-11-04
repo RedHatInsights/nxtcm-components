@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { getRosaLoginCommand } from './rosaLoginCommand';
 import { RosaLoginInstruction } from './RosaLoginInstruction';
 

@@ -1,7 +1,9 @@
 import { useState } from 'react';
+
 import { yupResolver } from '@hookform/resolvers/yup';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Button, Form } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
@@ -61,9 +63,9 @@ function WizNumberInputFormDemo(args: WizNumberInputProps) {
 }
 
 const meta: Meta<typeof WizNumberInput> = {
-  title: 'Form Elements/Connected Form Elements/WizNumberInput',
+  title: 'Internal/Form Elements/Connected Form Elements/WizNumberInput',
   component: WizNumberInput,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   decorators: [
     (Story) => (
       <RosaHcpWizardStringsProvider>

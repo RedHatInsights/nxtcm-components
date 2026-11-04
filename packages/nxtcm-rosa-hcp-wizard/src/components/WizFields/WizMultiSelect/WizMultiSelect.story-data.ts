@@ -1,0 +1,12 @@
+export const WIZ_MULTI_EXPLICIT_LABEL = 'Explicit multi label';
+export const WIZ_MULTI_EXPLICIT_HELPER = 'Explicit multi helper.';
+export const WIZ_MULTI_VALUE_STATUS_LABEL = 'multi form value';
+export const WIZ_MULTI_YUP_META_LABEL = 'Yup meta tags label';
+export const WIZ_MULTI_YUP_META_HELPER = 'Yup meta helper text for tags multiselect.';
+export const WIZ_MULTI_SUBMIT_ERROR = 'Choose at least one value.';
+export const WIZ_MULTI_EXPLICIT_TOGGLE_NAME = /select the explicit multi label/i;
+export const WIZ_MULTI_SUBMIT_TOGGLE_NAME = /select the tags \(submit demo\)/i;
+export const WIZ_MULTI_API_ERROR_DETAIL = 'VPC options failed to load.';
+export const WIZ_MULTI_API_ERROR_FIELD_LABEL = 'Security groups';
+export const WIZ_MULTI_ONLY_CONTROL_TOGGLE = /select the tag identifiers/i;
+export const WIZ_MULTI_CONTROL_ONLY_STATUS = 'tags control prop status';

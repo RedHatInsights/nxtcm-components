@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+
 import type * as yup from 'yup';
 
 import type { Option, OptionGroup } from '../components/Fields/Select/SelectTypes';
@@ -38,10 +39,12 @@ export function useReconcileWizSelectValueWithOptions<T>(
     onChange,
   } = params;
   const onChangeRef = useRef(onChange);
-  onChangeRef.current = onChange;
-
   const valueRef = useRef(value);
-  valueRef.current = value;
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+    valueRef.current = value;
+  });
 
   useEffect(() => {
     if (!enabled) {

@@ -1,6 +1,8 @@
-import { Alert, Stack, StackItem } from '@patternfly/react-core';
+import { Alert } from '@patternfly/react-core/dist/dynamic/components/Alert';
+import { Stack, StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
+
 import ExternalLink from '../../../../components/ExternalLink';
-import links from '../../../../constants/links';
+import { awsLinks } from '../../../../constants/rawLinks';
 import { useRosaHcpWizardStrings } from '../../../../stringsProvider/RosaHcpWizardStringsContext';
 import { SecurityGroupsRefreshButton } from './SecurityGroupsRefreshButton';
 
@@ -18,7 +20,7 @@ const SecurityGroupsEmptyAlert = ({
       <StackItem>
         <Alert variant="info" isInline title={sg.emptyTitle}>
           {sg.emptyBodyPrefix}{' '}
-          <ExternalLink href={links.AWS_CONSOLE_SECURITY_GROUPS}>
+          <ExternalLink href={awsLinks.AWS_CONSOLE_SECURITY_GROUPS}>
             {sg.emptyConsoleLink}
           </ExternalLink>{' '}
           {sg.emptyBodySuffix}

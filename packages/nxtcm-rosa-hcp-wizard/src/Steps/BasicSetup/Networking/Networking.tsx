@@ -1,26 +1,30 @@
-import { Alert, Content, ContentVariants, ExpandableSection } from '@patternfly/react-core';
-import { Section } from '../../../components/Section';
-import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
-import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../constants/links';
-import { ClusterNetwork, ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
-import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
-import { Radio } from '../../../components/Fields/RadioGroup';
-import { clusterValidationSchema } from '../../../yupSchemas';
-import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
+import { type ReactElement, useEffect, useMemo, useRef } from 'react';
+
+import { Alert } from '@patternfly/react-core/dist/dynamic/components/Alert';
+import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
+import { ExpandableSection } from '@patternfly/react-core/dist/dynamic/components/ExpandableSection';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { WizSelect } from '../../../components/WizFields/WizSelect';
+
+import ExternalLink from '../../../components/ExternalLink';
+import { Radio } from '../../../components/Fields/RadioGroup';
+import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
+import { Section } from '../../../components/Section';
 import { WizCheckbox } from '../../../components/WizFields/WizCheckbox';
+import { WizRadioGroup } from '../../../components/WizFields/WizRadioGroup';
+import { WizSelect } from '../../../components/WizFields/WizSelect';
 import { WizTextInput } from '../../../components/WizFields/WizTextInput';
-import { useEffect, useMemo, useRef, type ReactElement } from 'react';
-import { useClearFieldWhenHidden } from '../../OptionalSetup/Encryption/useClearFieldWhenHidden';
+import { FIELD_NAME, STEP_IDS } from '../../../constants';
+import { useGetDocsVersion } from '../../../constants/links';
+import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+import { ClusterNetwork, ROSAHCPCluster, ROSAHCPWizardData } from '../../../types';
 import {
   buildMachinePoolsReviewSelectOptions,
   getMachinePoolSubnetIds,
   resolveSelectedVpc,
 } from '../../../utilities/helpers';
-import { FIELD_NAME, STEP_IDS } from '../../../constants';
 import { useIsStepHidden } from '../../../WizardConfigContext';
+import { clusterValidationSchema } from '../../../yupSchemas';
+import { useClearFieldWhenHidden } from '../../OptionalSetup/Encryption/useClearFieldWhenHidden';
 
 type NetworkingStepProps = Pick<ROSAHCPWizardData, 'vpcList'>;
 
@@ -42,10 +46,19 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
   const { networking: n } = useRosaHcpWizardStrings();
   const isProxyStepHidden = useIsStepHidden(STEP_IDS.CLUSTER_WIDE_PROXY);
   const { setValue } = useFormContext<ROSAHCPCluster>();
+  const clusterVersion =
+    useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({
+      name: FIELD_NAME.CLUSTER_VERSION,
+    }) ?? '';
+  const links = useGetDocsVersion(clusterVersion);
 
-  const cidrDefaultChecked = useWatch({ name: FIELD_NAME.CIDR_DEFAULT });
-  const selectedVPCRaw = useWatch({ name: FIELD_NAME.SELECTED_VPC });
-  const machinePoolsSubnets = useWatch<ROSAHCPCluster, 'machine_pools_subnets'>({
+  const cidrDefaultChecked = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CIDR_DEFAULT>({
+    name: FIELD_NAME.CIDR_DEFAULT,
+  });
+  const selectedVPCRaw = useWatch<ROSAHCPCluster, typeof FIELD_NAME.SELECTED_VPC>({
+    name: FIELD_NAME.SELECTED_VPC,
+  });
+  const machinePoolsSubnets = useWatch<ROSAHCPCluster, typeof FIELD_NAME.MACHINE_POOLS_SUBNETS>({
     name: FIELD_NAME.MACHINE_POOLS_SUBNETS,
   });
 
@@ -65,7 +78,9 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
     [selectedVPC, props.vpcList.data, machinePoolSubnetIds, hasMachinePoolSubnetSelected]
   );
 
-  const clusterPrivacy = useWatch({ name: FIELD_NAME.CLUSTER_PRIVACY_FIELD.NAME });
+  const clusterPrivacy = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_PRIVACY_FIELD.NAME>({
+    name: FIELD_NAME.CLUSTER_PRIVACY_FIELD.NAME,
+  });
   useClearFieldWhenHidden<ROSAHCPCluster>(
     FIELD_NAME.CLUSTER_PRIVACY_FIELD.PUBLIC_SUBNET_ID,
     clusterPrivacy === ClusterNetwork.internal
@@ -79,7 +94,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
       return;
     }
     if (currentVpcId !== previousVpcRef.current) {
-      setValue(FIELD_NAME.CLUSTER_PRIVACY_FIELD.PUBLIC_SUBNET_ID, undefined as never, {
+      setValue(FIELD_NAME.CLUSTER_PRIVACY_FIELD.PUBLIC_SUBNET_ID, undefined, {
         shouldValidate: true,
       });
     }
@@ -95,7 +110,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
         >
           <Radio
             labelHelp={n.publicPopover}
-            id={FIELD_NAME.CLUSTER_PRIVACY_FIELD.EXTERNAL}
+            id={ClusterNetwork.external}
             value={ClusterNetwork.external}
             label={n.publicLabel}
           >
@@ -110,7 +125,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
 
           <Radio
             labelHelp={n.privatePopover}
-            id={FIELD_NAME.CLUSTER_PRIVACY_FIELD.INTERNAL}
+            id={ClusterNetwork.internal}
             value={ClusterNetwork.internal}
             label={n.privateLabel}
           />
@@ -140,7 +155,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
           </FieldWrapper>
 
           <FieldWrapper size="lg">
-            <WizTextInput<ROSAHCPCluster>
+            <WizTextInput
               name={FIELD_NAME.NETWORK_MACHINE_CIDR}
               schema={clusterValidationSchema}
               isDisabled={cidrDefaultChecked}
@@ -154,7 +169,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
             />
           </FieldWrapper>
           <FieldWrapper size="lg">
-            <WizTextInput<ROSAHCPCluster>
+            <WizTextInput
               name={FIELD_NAME.NETWORK_SERVICE_CIDR}
               schema={clusterValidationSchema}
               isDisabled={cidrDefaultChecked}
@@ -168,7 +183,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
             />
           </FieldWrapper>
           <FieldWrapper size="lg">
-            <WizTextInput<ROSAHCPCluster>
+            <WizTextInput
               name={FIELD_NAME.NETWORK_POD_CIDR}
               schema={clusterValidationSchema}
               isDisabled={cidrDefaultChecked}
@@ -182,7 +197,7 @@ export const Networking = (props: NetworkingStepProps): ReactElement => {
             />
           </FieldWrapper>
           <FieldWrapper size="lg">
-            <WizTextInput<ROSAHCPCluster>
+            <WizTextInput
               name={FIELD_NAME.NETWORK_HOST_PREFIX}
               schema={clusterValidationSchema}
               isDisabled={cidrDefaultChecked}

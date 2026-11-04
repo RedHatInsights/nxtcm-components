@@ -1,12 +1,16 @@
+import React from 'react';
+
 import { useFormContext, useWatch } from 'react-hook-form';
+
+import { FIELD_NAME } from '../../../constants';
 import { ROSAHCPCluster } from '../../../types';
 import { createOperatorRolesPrefix } from '../../../utilities/helpers';
-import React from 'react';
-import { FIELD_NAME } from '../../../constants';
 
 export const useUpdateOperatorPrefix = () => {
   const { setValue } = useFormContext<ROSAHCPCluster>();
-  const clusterName = useWatch({ name: 'name' });
+  const clusterName = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_NAME>({
+    name: FIELD_NAME.CLUSTER_NAME,
+  });
 
   const operatorRolesPrefix = React.useMemo(
     () => createOperatorRolesPrefix(clusterName),

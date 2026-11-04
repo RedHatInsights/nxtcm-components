@@ -1,14 +1,24 @@
-import { Alert, AlertVariant, Content, ContentVariants, Title } from '@patternfly/react-core';
+import { Alert, AlertVariant } from '@patternfly/react-core/dist/dynamic/components/Alert';
+import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
+import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
+import { useWatch } from 'react-hook-form';
+
+import { FIELD_NAME } from '../../constants';
+import { useGetDocsVersion } from '../../constants/links';
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
+import type { ROSAHCPCluster } from '../../types';
 import { CopyInstruction } from '../CopyInstruction';
-import { TabGroup } from './TabGroup';
-import PopoverHintWithTitle from '../PopoverHintWithTitle';
 import ExternalLink from '../ExternalLink';
-import links from '../../constants/links';
+import PopoverHintWithTitle from '../PopoverHintWithTitle';
+import { TabGroup } from './TabGroup';
 
 export const OCMRole = () => {
   const { ocmRole: o, associateAwsDrawer: a } = useRosaHcpWizardStrings();
   const u = useRosaHcpWizardStrings().userRole;
+  const clusterVersion = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({
+    name: FIELD_NAME.CLUSTER_VERSION,
+  });
+  const links = useGetDocsVersion(clusterVersion);
   return (
     <>
       <Title headingLevel="h4" className="pf-v6-u-mb-md" size="md">

@@ -4,6 +4,19 @@ how to set up the repo, make changes, and get them merged.
 
 for architecture details (monorepo structure, build system, testing strategy), see [docs/architecture.md](docs/architecture.md).
 
+## Guidelines
+
+we welcome contributions! please follow these guidelines:
+
+1. **Fork the repository** and create a feature branch
+2. **Follow coding standards**: Pre-commit hooks will automatically check your code
+3. **Write tests**: Add unit tests for new components or features
+4. **Update documentation**: Add or update Storybook stories
+5. **Fill out the PR template**: Provide clear description and testing steps
+6. **Request reviews**: Tag appropriate team members
+
+each step is covered in more detail in the sections below.
+
 ---
 
 ## Setup
@@ -59,7 +72,7 @@ ComponentName/
   ComponentName.tsx              # the component
   ComponentName.stories.tsx      # storybook story (CSF3)
   ComponentName.spec.tsx         # playwright CT test
-  ComponentName.spec-helpers.tsx # test setup, mock data
+  ComponentName.story.tsx       # gallery story, providers, mock data
   ComponentName.test.ts          # jest unit test (if logic warrants it)
   index.ts                       # barrel export
 ```
@@ -96,6 +109,15 @@ git commit -m "This commit adds a new validation hook for cluster names"
 
 skip formal bodies unless something really needs a sentence of context.
 
+### Pre-commit hooks
+
+the `.husky/pre-commit` hook runs two steps in order before every commit (installed automatically by `npm ci`):
+
+1. `npx lint-staged` runs eslint and prettier on staged files only.
+2. `npm run type-check` runs `tsc --noEmit` across the whole workspace, not just staged files.
+
+if either step fails, the commit is blocked. see [docs/HUSKY_SETUP.md](docs/HUSKY_SETUP.md) for details and troubleshooting.
+
 ---
 
 ## Testing
@@ -116,18 +138,53 @@ skip formal bodies unless something really needs a sentence of context.
 npx jest path/to/file.test.ts
 
 # single CT spec
-npx playwright test -c playwright-ct.config.ts path/to/Component.spec.tsx
+npx playwright test --project=components path/to/Component.spec.tsx
 
 # CT with UI mode (interactive debugging)
-npx playwright test -c playwright-ct.config.ts --ui
+npx playwright test --project=components --ui
 ```
 
 ### Test guidelines
 
 - use **role-based selectors** (`getByRole`, `getByLabel`, `getByText`) — never CSS class selectors
-- put mock data and provider wrappers in `*.spec-helpers.tsx`, not inline
+- put mock data and provider wrappers in named `*.story.tsx` gallery exports, not inline
 - test behavior, not implementation details
 - cover: happy path, loading state, error state, empty state, user interactions
+
+### Visual comparisons
+
+Screenshot baselines are shared across host operating systems. Generate and compare them
+inside the pinned Linux/amd64 Playwright container so browser binaries, fonts, and rendering
+match CI. Native runs can render differently, even with the same viewport.
+
+Start Docker or rootless Podman, then run:
+
+```bash
+npm run test:visual                 # compare the two visual smoke tests
+npm run test:visual:update          # regenerate intentional changes
+npm run test:e2e:container          # all E2E tests, including screenshots
+```
+
+The runner prefers Docker and falls back to Podman. Set `CONTAINER_ENGINE=podman` or
+`CONTAINER_ENGINE=docker` to select one explicitly. On ARM hosts it runs the amd64 image
+through the container runtime's emulation support.
+
+Dependencies are installed inside the image; host `node_modules` is not used or changed.
+Baselines remain in the spec's `*-snapshots/` directory, using `-e2e.png` names without
+OS suffixes. Reports and expected/actual/diff PNGs are written to `playwright-report/`
+and `test-results/`. Comparison runs mount the baselines read-only. CI never creates
+or updates them; commit regenerated images after reviewing the changes.
+
+CI runs the same image against both supported React versions. To reproduce a matrix run:
+
+```bash
+PLAYWRIGHT_REACT_VERSION=18 npm run test:e2e:container
+PLAYWRIGHT_REACT_VERSION=19 npm run test:e2e:container
+```
+
+The image pins Node and Playwright in `playwright/visual.Dockerfile`. When upgrading
+Playwright, update its image version to match `package-lock.json` and regenerate the
+baselines in the new image. No extra browser installation is needed inside the container.
 
 ### Mutation testing (Stryker)
 
@@ -137,7 +194,22 @@ stryker runs on top of playwright CT specs to measure test effectiveness. not pa
 npm run test:stryker -- path/to/Component.tsx
 ```
 
-pass the **component** `.tsx` file, not the `.spec.tsx`.
+pass the **component** `.tsx` file, not the `.spec.tsx`. see [docs/mutation-testing.md](docs/mutation-testing.md) for how it works, reports, concurrency, and runtime expectations.
+
+### Testing changes in a host app
+
+to try unreleased changes inside a consuming app (ACM console, uhc-portal), build the package and link it:
+
+```bash
+# in this repo
+npm run build -w @redhat-cloud-services/nxtcm-dashboard
+cd packages/nxtcm-dashboard && npm link
+
+# in the consuming app
+npm link @redhat-cloud-services/nxtcm-dashboard
+```
+
+swap in `nxtcm-rosa-hcp-wizard` for the wizard package. rebuild after each change.
 
 ---
 
@@ -146,8 +218,8 @@ pass the **component** `.tsx` file, not the `.spec.tsx`.
 ### Running
 
 ```bash
-npm run storybook     # dev server on port 6006
-npm run build-storybook  # static build
+npm run storybook          # dev server on port 6006
+npm run build-storybook    # static build
 ```
 
 storybook is also published on github pages for external viewing: [redhatinsights.github.io/nxtcm-components](https://redhatinsights.github.io/nxtcm-components/?path=/docs/components-dashboard-advisorcategories--docs).
@@ -157,11 +229,11 @@ storybook is also published on github pages for external viewing: [redhatinsight
 use CSF3 format (the only format used here):
 
 ```tsx
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MyComponent } from './MyComponent';
 
 const meta: Meta<typeof MyComponent> = {
-  title: 'Components/Category/MyComponent',
+  title: 'Components/Dashboard/MyComponent',
   component: MyComponent,
   tags: ['autodocs'],
 };
@@ -173,21 +245,26 @@ export const Default: Story = {
 };
 ```
 
-### Title conventions
+### Public vs internal visibility & title conventions
 
-| package                 | title pattern                                  |
-| ----------------------- | ---------------------------------------------- |
-| dashboard               | `Components/Dashboard/<Name>`                  |
-| wizard fields           | `Form Elements/<Name>`                         |
-| wizard connected fields | `Form Elements/Connected Form Elements/<Name>` |
-| full wizard             | `Wizards/RosaHCPWizard`                        |
+| Kind | Package / Type | Title pattern | Tags | Visibility |
+| --- | --- | --- | --- | --- |
+| **Public** (exported from package `index.ts`) | dashboard widgets | `Components/Dashboard/<Name>` | `['autodocs']` | Local dev, static build, GitHub Pages |
+| **Public** | full wizard | `Wizards/RosaHCPWizard` | `['autodocs']` | Local dev, static build, GitHub Pages |
+| **Internal** | wizard base fields | `Internal/Form Elements/<Name>` | `['autodocs', 'internal']` | Local sidebar; hidden on build/Pages (direct URL opens) |
+| **Internal** | wizard connected fields | `Internal/Form Elements/Connected Form Elements/<Name>` | `['autodocs', 'internal']` | Local sidebar; hidden on build/Pages (direct URL opens) |
+| **Internal** | dashboard subcomponents | `Internal/Dashboard/<Name>` | `['autodocs', 'internal']` | Local sidebar; hidden on build/Pages (direct URL opens) |
 
-include at least a `Default` story. add `Loading`, `Error`, and `Empty` stories for components that handle those states.
-note: current Storybook globs actively target package stories. keep new stories in package paths.
+Every story file must export a `Default` story. Add `Loading`, `Error`, and `Empty` stories for components that handle those states. Non-UI elements (hooks, schemas, utilities, contexts) never get stories.
 
 ### Verification
 
 after writing a story, open it in the browser and verify it renders in both light and dark mode. check that controls work and the autodocs page generates correctly.
+
+```bash
+npm run build-storybook:internal  # static build with internal stories in sidebar (debug only)
+npm run storybook:assert-public   # assert static build index contains all required public stories
+```
 
 ---
 
@@ -250,7 +327,33 @@ npm run build -w @redhat-cloud-services/nxtcm-dashboard
 npm run build -w @redhat-cloud-services/nxtcm-rosa-hcp-wizard
 ```
 
-both packages use the shared `vite.config.ts` with `NXTCM_LIB_NAME` to differentiate output. see [docs/architecture.md](docs/architecture.md) for details on the build system.
+Both packages use the shared `vite.config.ts`, which selects the entry point and output directory from the workspace's working directory. Each package emits ES modules, CommonJS, CSS, and declarations for both module formats. See [docs/architecture.md](docs/architecture.md) for details on the build system.
+
+---
+
+## Configuration files
+
+| file | purpose |
+| --- | --- |
+| `eslint.config.mjs` | ESLint flat config (React, TypeScript, accessibility rules) |
+| `.prettierrc` / `.prettierignore` | Prettier formatting rules and excluded files |
+| `.husky/pre-commit` + `package.json` → `lint-staged` | pre-commit hook: runs `npx lint-staged` (ESLint/Prettier on staged files), then `npm run type-check` (full `tsc --noEmit`). either failing blocks the commit |
+| `tsconfig.json` | root TypeScript config (each package extends it) |
+| `vite.config.ts` | shared library build config for both packages |
+| `vite.e2e.config.ts` | Vite dev server used by the E2E tests |
+| `jest.config.js` / `jest.setup.js` / `babel.config.js` | Jest unit test setup |
+| `playwright-ct.config.ts` | Playwright component tests |
+| `playwright.config.ts` | Playwright E2E tests |
+| `stryker.config.mjs` | Stryker mutation testing |
+| `.storybook/` | Storybook configuration |
+| `renovate.json` | Renovate dependency update rules |
+| `.github/workflows/` | CI, publishing, and Storybook deployment workflows |
+
+---
+
+## Releasing
+
+packages are published to npm from GitHub Releases on `main`. see [docs/publishing.md](docs/publishing.md) for the tag format and maintainer checklist.
 
 ---
 
@@ -272,8 +375,10 @@ if you're using an AI tool, it will pick up `AGENTS.md` automatically. keep rout
 | ------------------ | --------------------------------------------------------------- |
 | install deps       | `npm ci`                                                        |
 | lint               | `npm run lint`                                                  |
+| lint fix           | `npm run lint:fix`                                              |
 | type-check         | `npm run type-check`                                            |
 | jest tests         | `npm test`                                                      |
+| jest coverage      | `npm run test:coverage`                                         |
 | playwright CT      | `npm run test:ct`                                               |
 | playwright E2E     | `npm run test:e2e`                                              |
 | unit + CT tests    | `npm run test:all`                                              |
@@ -284,4 +389,5 @@ if you're using an AI tool, it will pick up `AGENTS.md` automatically. keep rout
 | prettier check     | `npm run prettier:check`                                        |
 | prettier fix       | `npm run prettier:fix`                                          |
 | mutation testing   | `npm run test:stryker -- path/to/Component.tsx`                 |
+| mutation report    | `npm run test:stryker:report -- path/to/Component.tsx`          |
 | fix everything     | `npm run allthethings`                                          |

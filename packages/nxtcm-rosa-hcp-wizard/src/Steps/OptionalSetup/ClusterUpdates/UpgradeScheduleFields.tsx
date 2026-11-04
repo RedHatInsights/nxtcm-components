@@ -1,14 +1,20 @@
 import React from 'react';
-import { FormGroup, Split, SplitItem } from '@patternfly/react-core';
+
+import { FormGroup } from '@patternfly/react-core/dist/dynamic/components/Form';
+import { Split, SplitItem } from '@patternfly/react-core/dist/dynamic/layouts/Split';
 import { useFormContext, useWatch } from 'react-hook-form';
+
 import { HelperText } from '../../../components/Fields/HelperText';
 import { Select } from '../../../components/Fields/Select';
 import { wizFieldShowsError } from '../../../components/WizFields/wizFieldRhf';
-import { parseUpdateSchedule } from '../../../utilities/helpers';
+import { FIELD_NAME, UPGRADE_SCHEDULE_FIELDS_ID } from '../../../constants';
 import { useWizStepValidationRevealed } from '../../../rosaHcpWizardValidationContext';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster } from '../../../types';
-import { FIELD_NAME, UPGRADE_SCHEDULE_FIELDS_ID } from '../../../constants';
+import { parseUpdateSchedule } from '../../../utilities/helpers';
+
+const UPGRADE_SCHEDULE_DAY_ID = 'upgrade-schedule-day';
+const UPGRADE_SCHEDULE_HOUR_ID = 'upgrade-schedule-hour';
 
 const hoursOptions = Array.from(Array(24).keys());
 
@@ -32,9 +38,9 @@ export const UpgradeScheduleFields = () => {
   const cu = useRosaHcpWizardStrings().clusterUpdates;
   const { setValue, formState, getFieldState } = useFormContext<ROSAHCPCluster>();
   const upgradeSchedule =
-    useWatch<ROSAHCPCluster, 'upgrade_schedule'>({ name: FIELD_NAME.UPGRADE_SCHEDULE.NAME }) ?? '';
-  const scheduleFieldState = getFieldState(FIELD_NAME.UPGRADE_SCHEDULE.NAME, formState);
-  const stepValidationRevealed = useWizStepValidationRevealed(FIELD_NAME.UPGRADE_SCHEDULE.NAME);
+    useWatch<ROSAHCPCluster, 'upgrade_schedule'>({ name: FIELD_NAME.UPGRADE_SCHEDULE }) ?? '';
+  const scheduleFieldState = getFieldState(FIELD_NAME.UPGRADE_SCHEDULE, formState);
+  const stepValidationRevealed = useWizStepValidationRevealed(FIELD_NAME.UPGRADE_SCHEDULE);
   const showError = wizFieldShowsError(
     scheduleFieldState.invalid,
     scheduleFieldState.isTouched,
@@ -55,7 +61,7 @@ export const UpgradeScheduleFields = () => {
 
   const syncUpgradeSchedule = (day: string, hour: string) => {
     if (day !== '' && hour !== '') {
-      setValue(FIELD_NAME.UPGRADE_SCHEDULE.NAME, buildUpgradeScheduleCron(day, hour), {
+      setValue(FIELD_NAME.UPGRADE_SCHEDULE, buildUpgradeScheduleCron(day, hour), {
         shouldDirty: true,
         shouldTouch: true,
         shouldValidate: true,
@@ -64,7 +70,7 @@ export const UpgradeScheduleFields = () => {
     }
 
     if (upgradeSchedule) {
-      setValue(FIELD_NAME.UPGRADE_SCHEDULE.NAME, undefined, {
+      setValue(FIELD_NAME.UPGRADE_SCHEDULE, undefined, {
         shouldDirty: true,
         shouldTouch: true,
         shouldValidate: true,
@@ -89,7 +95,7 @@ export const UpgradeScheduleFields = () => {
       <Split hasGutter isWrappable>
         <SplitItem>
           <Select
-            id={FIELD_NAME.UPGRADE_SCHEDULE.DAY}
+            id={UPGRADE_SCHEDULE_DAY_ID}
             placeholder={cu.selectDayPlaceholder}
             value={selectedDay}
             onChange={onDayChange}
@@ -100,7 +106,7 @@ export const UpgradeScheduleFields = () => {
         </SplitItem>
         <SplitItem>
           <Select
-            id={FIELD_NAME.UPGRADE_SCHEDULE.HOUR}
+            id={UPGRADE_SCHEDULE_HOUR_ID}
             placeholder={cu.selectTimePlaceholder}
             value={selectedHour}
             onChange={onHourChange}

@@ -1,8 +1,6 @@
+import { Button, ButtonVariant } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
 import {
-  Button,
-  ButtonVariant,
-  Content,
-  ContentVariants,
   Drawer,
   DrawerActions,
   DrawerCloseButton,
@@ -10,17 +8,17 @@ import {
   DrawerHead,
   DrawerPanelBody,
   DrawerPanelContent,
-  PageSection,
-  Stack,
-  StackItem,
-} from '@patternfly/react-core';
-import { OCMRole } from './OCMRole';
-import { AccountRoles } from './AccountRoles';
+} from '@patternfly/react-core/dist/dynamic/components/Drawer';
+import { PageSection } from '@patternfly/react-core/dist/dynamic/components/Page';
+import { Stack, StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
+
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
-import { UserRole } from './UserRole';
+import type { RosaLoginProduct } from '../rosaLoginCommand';
+import { AccountRoles } from './AccountRoles';
 import { AssociateAWSAccountInfo } from './AssociateAWSAccountInfo';
 import { LoginStep } from './LoginStep';
-import type { RosaLoginProduct } from '../rosaLoginCommand';
+import { OCMRole } from './OCMRole';
+import { UserRole } from './UserRole';
 
 type StepDrawerProps = {
   isDrawerExpanded: boolean;

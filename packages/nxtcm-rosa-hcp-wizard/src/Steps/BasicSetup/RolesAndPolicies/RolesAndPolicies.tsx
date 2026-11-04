@@ -1,31 +1,30 @@
-import {
-  ClipboardCopyVariant,
-  Content,
-  ContentVariants,
-  ExpandableSection,
-  Stack,
-  StackItem,
-} from '@patternfly/react-core';
-import { Section } from '../../../components/Section';
-import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
-import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import React from 'react';
-import { OIDCConfigHint, OIDCConfigHintProduct } from '../../../components/OIDCConfigHint';
+
+import { ClipboardCopyVariant } from '@patternfly/react-core/dist/dynamic/components/ClipboardCopy';
+import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
+import { ExpandableSection } from '@patternfly/react-core/dist/dynamic/components/ExpandableSection';
+import { FormSection } from '@patternfly/react-core/dist/dynamic/components/Form';
+import { Stack, StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
 import { useWatch } from 'react-hook-form';
-import { WizSelect } from '../../../components/WizFields/WizSelect';
+
+import { CopyInstruction } from '../../../components/CopyInstruction';
 import ExternalLink from '../../../components/ExternalLink';
-import links from '../../../constants/links';
-import { ROSAHCPCluster, ROSAHCPWizardData, SelectedSecret } from '../../../types';
-import { useDependentRoles } from './useDependentRoles';
-import { clusterValidationSchema } from '../../../yupSchemas';
-import { WizTextInput } from '../../../components/WizFields/WizTextInput';
-import { useUpdateOperatorPrefix } from './useUpdateOperatorPrefix';
-import { useInstallerRoleOptions } from './useInstallerRoleOptions';
-import { useRosaCommand } from './useRosaCommand';
+import { FieldWrapper, NestedFields } from '../../../components/FieldWrapper';
+import { OIDCConfigHint, OIDCConfigHintProduct } from '../../../components/OIDCConfigHint';
 import { RolesAlert } from '../../../components/RolesErrorAlert';
 import { RosaLoginInstruction } from '../../../components/RosaLoginInstruction';
-import { CopyInstruction } from '../../../components/CopyInstruction';
+import { Section } from '../../../components/Section';
+import { WizSelect } from '../../../components/WizFields/WizSelect';
+import { WizTextInput } from '../../../components/WizFields/WizTextInput';
 import { FIELD_NAME } from '../../../constants';
+import { useGetDocsVersion } from '../../../constants/links';
+import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+import { ROSAHCPCluster, ROSAHCPWizardData, SelectedSecret } from '../../../types';
+import { clusterValidationSchema } from '../../../yupSchemas';
+import { useDependentRoles } from './useDependentRoles';
+import { useInstallerRoleOptions } from './useInstallerRoleOptions';
+import { useRosaCommand } from './useRosaCommand';
+import { useUpdateOperatorPrefix } from './useUpdateOperatorPrefix';
 
 type RolesAndPoliciesStepProps = Pick<ROSAHCPWizardData, 'roles' | 'oidcConfig'> & {
   /** The consuming product. Determines which ROSA login command is shown. Defaults to 'acm'. */
@@ -44,7 +43,12 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
   );
   const oidcConfigHintMaxWidth = '25rem';
 
-  const awsInfrastructureAccount = useWatch({ name: FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID });
+  const awsInfrastructureAccount = useWatch<
+    ROSAHCPCluster,
+    typeof FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID
+  >({
+    name: FIELD_NAME.ASSOCIATED_AWS_ACCOUNT_ID,
+  });
 
   const installerRoleOptions = useInstallerRoleOptions(roles);
   const { isIncompleteRoleSet } = useDependentRoles(roles);
@@ -52,12 +56,18 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
 
   const rosaCommand = useRosaCommand();
 
+  const clusterVersion =
+    useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({
+      name: FIELD_NAME.CLUSTER_VERSION,
+    }) ?? '';
+  const links = useGetDocsVersion(clusterVersion);
+
   const hasNoRoles = !roles.isFetching && !roles.error && roles.data.length === 0;
   const showMissingArnsError = hasNoRoles || isIncompleteRoleSet;
 
   return (
-    <>
-      <Section label={rp.accountRolesSection}>
+    <Section>
+      <FormSection title={rp.accountRolesSection}>
         {showMissingArnsError || roles.ocmRoleError || roles.userRoleError ? (
           <RolesAlert
             showMissingArnsError={showMissingArnsError}
@@ -72,11 +82,11 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
               isExpanded={isArnsOpen}
               onToggle={() => setIsArnsOpen(!isArnsOpen)}
               toggleText={rp.arnsToggle}
-              className="pf-v6-u-mt-xs pf-v6-u-mb-lg"
+              className="pf-v6-u-mt-xs"
             >
               <NestedFields>
                 <FieldWrapper size="lg">
-                  <WizTextInput<ROSAHCPCluster>
+                  <WizTextInput
                     isRequired
                     schema={clusterValidationSchema}
                     name={FIELD_NAME.SUPPORT_ROLE_ARN}
@@ -85,7 +95,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
                   />
                 </FieldWrapper>
                 <FieldWrapper size="lg">
-                  <WizTextInput<ROSAHCPCluster>
+                  <WizTextInput
                     isRequired
                     schema={clusterValidationSchema}
                     name={FIELD_NAME.WORKER_ROLE_ARN}
@@ -119,8 +129,8 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
             data-testid="installer-role-select"
           />
         </FieldWrapper>
-      </Section>
-      <Section label={rp.operatorRolesSection}>
+      </FormSection>
+      <FormSection title={rp.operatorRolesSection}>
         <FieldWrapper
           size="lg"
           footer={
@@ -132,7 +142,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
             >
               <NestedFields>
                 <FieldWrapper size="sm">
-                  <WizTextInput<ROSAHCPCluster>
+                  <WizTextInput
                     name={FIELD_NAME.CUSTOM_OPERATOR_ROLES_PREFIX}
                     schema={clusterValidationSchema}
                     label={rp.operatorPrefixLabel}
@@ -154,7 +164,9 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
           <WizSelect<ROSAHCPCluster>
             isFill
             isTypeAhead
-            onRefresh={() => void oidcConfig.fetch(awsInfrastructureAccount)}
+            onRefresh={() =>
+              void (awsInfrastructureAccount && oidcConfig.fetch(awsInfrastructureAccount))
+            }
             apiError={oidcConfig.error}
             isLoading={oidcConfig.isFetching}
             schema={clusterValidationSchema}
@@ -190,7 +202,7 @@ export const RolesAndPolicies = (props: RolesAndPoliciesStepProps) => {
             </CopyInstruction>
           </StackItem>
         </Stack>
-      </Section>
-    </>
+      </FormSection>
+    </Section>
   );
 };

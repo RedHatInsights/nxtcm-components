@@ -1,26 +1,47 @@
-import { test, expect } from '../../../../ct-fixture';
-import { FieldWrapper, NestedFields, type FieldWrapperSize } from './FieldWrapper';
+import { expect, test } from '@/playwright/ct-fixture';
+
+import { checkAccessibility } from '../test-helpers';
+import { type FieldWrapperSize } from './FieldWrapper';
+import type { FieldWrapperStory } from './FieldWrapper.story';
 
 test.describe('FieldWrapper', () => {
+  test('passes accessibility check with a labeled field', async ({ mount }) => {
+    const component = await mount<typeof FieldWrapperStory>(
+      'nxtcm-rosa-hcp-wizard/components/FieldWrapper/FieldWrapperStory',
+      { variant: 'field' }
+    );
+
+    await expect(component.getByRole('textbox', { name: 'Cluster name' })).toHaveValue('mycluster');
+    await checkAccessibility({ component });
+  });
+
+  test('passes accessibility check with field footer and additional content', async ({ mount }) => {
+    const component = await mount<typeof FieldWrapperStory>(
+      'nxtcm-rosa-hcp-wizard/components/FieldWrapper/FieldWrapperStory',
+      { variant: 'footer' }
+    );
+
+    const field = component.getByRole('textbox', { name: 'Cluster name' });
+    await expect(field).toHaveValue('mycluster');
+    await expect(field).toHaveAccessibleDescription('Use a unique cluster name.');
+    await expect(component.getByText('Use a unique cluster name.')).toBeVisible();
+    await expect(component.getByRole('link', { name: 'Learn more' })).toBeVisible();
+    await checkAccessibility({ component });
+  });
+
   test('renders field content', async ({ mount }) => {
-    const component = await mount(
-      <NestedFields>
-        <FieldWrapper size="md">
-          <span>Cluster name</span>
-        </FieldWrapper>
-      </NestedFields>
+    const component = await mount<typeof FieldWrapperStory>(
+      'nxtcm-rosa-hcp-wizard/components/FieldWrapper/FieldWrapperStory',
+      { variant: 'field' }
     );
 
     await expect(component.getByText('Cluster name')).toBeVisible();
   });
 
   test('renders additional content below the field', async ({ mount }) => {
-    const component = await mount(
-      <NestedFields>
-        <FieldWrapper additionalContent={<a href="/help">Learn more</a>}>
-          <span>Field label</span>
-        </FieldWrapper>
-      </NestedFields>
+    const component = await mount<typeof FieldWrapperStory>(
+      'nxtcm-rosa-hcp-wizard/components/FieldWrapper/FieldWrapperStory',
+      { variant: 'additional' }
     );
 
     await expect(component.getByText('Field label')).toBeVisible();
@@ -36,10 +57,12 @@ test.describe('FieldWrapper', () => {
       mount,
       page,
     }) => {
-      await mount(
-        <FieldWrapper size={size}>
-          <span>Sized field</span>
-        </FieldWrapper>
+      await mount<typeof FieldWrapperStory>(
+        'nxtcm-rosa-hcp-wizard/components/FieldWrapper/FieldWrapperStory',
+        {
+          variant: 'sized',
+          size,
+        }
       );
 
       const wrapper = page.getByTestId('rosa-hcp-field-wrapper');
@@ -60,13 +83,9 @@ test.describe('FieldWrapper', () => {
   }
 
   test('renders full-width blocks alongside fields', async ({ mount }) => {
-    const component = await mount(
-      <NestedFields>
-        <p>Intro copy</p>
-        <FieldWrapper>
-          <span>Field label</span>
-        </FieldWrapper>
-      </NestedFields>
+    const component = await mount<typeof FieldWrapperStory>(
+      'nxtcm-rosa-hcp-wizard/components/FieldWrapper/FieldWrapperStory',
+      { variant: 'full' }
     );
 
     await expect(component.getByText('Intro copy')).toBeVisible();

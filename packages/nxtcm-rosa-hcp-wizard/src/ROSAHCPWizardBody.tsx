@@ -1,23 +1,31 @@
-import React, { useState, useCallback, useMemo, useRef, Suspense, lazy } from 'react';
-import { Spinner, Wizard, WizardStep } from '@patternfly/react-core';
+import React, { lazy, Suspense, useCallback, useMemo, useRef, useState } from 'react';
+
+import { Spinner } from '@patternfly/react-core/dist/dynamic/components/Spinner';
+import {
+  Wizard,
+  WizardStep,
+  type WizardStepProps,
+} from '@patternfly/react-core/dist/dynamic/components/Wizard';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { Details } from './Steps/BasicSetup/Details/Details';
-import { RolesAndPolicies } from './Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies';
-import { MachinePools } from './Steps/BasicSetup/MachinePools/MachinePools';
-import { Networking } from './Steps/BasicSetup/Networking/Networking';
-import { Encryption } from './Steps/OptionalSetup/Encryption/Encryption';
-import { ClusterUpdates } from './Steps/OptionalSetup/ClusterUpdates/ClusterUpdates';
-import { ClusterWideProxy } from './Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy';
-import { Review } from './Steps/Review/Review';
-import type { YamlEditorHandle } from './Steps/YamlEditor/RosaHcpYamlEditorStep';
+
+import { FIELD_NAME, STEP_IDS } from './constants';
+import { useWizardFieldMetaChangeEffects } from './fieldMetaChangeEffects/useWizardFieldMetaChangeEffects';
 import { createRosaHcpWizardFooter } from './Footer/RosaHcpWizardFooter';
 import { RosaHcpYamlEditorFooter } from './Footer/RosaHcpYamlEditorFooter';
-import { useWizardFieldMetaChangeEffects } from './fieldMetaChangeEffects/useWizardFieldMetaChangeEffects';
-import { useRosaHcpWizardStrings } from './stringsProvider/RosaHcpWizardStringsContext';
-import { STEP_IDS } from './constants';
-import type { RosaHCPWizardProps, ROSAHCPCluster } from './types';
-import { useIsStepHidden } from './WizardConfigContext';
 import { RosaWizardSubmitError } from './RosaWizardSubmitError';
+import { ClusterWideProxy } from './Steps/BasicSetup/ClusterWideProxy/ClusterWideProxy';
+import { Details } from './Steps/BasicSetup/Details/Details';
+import { MachinePools } from './Steps/BasicSetup/MachinePools/MachinePools';
+import { Networking } from './Steps/BasicSetup/Networking/Networking';
+import { RolesAndPolicies } from './Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies';
+import { ClusterUpdates } from './Steps/OptionalSetup/ClusterUpdates/ClusterUpdates';
+import { Encryption } from './Steps/OptionalSetup/Encryption/Encryption';
+import { Review } from './Steps/Review/Review';
+import type { YamlEditorHandle } from './Steps/YamlEditor/RosaHcpYamlEditorStep';
+import { useRosaHcpWizardStrings } from './stringsProvider/RosaHcpWizardStringsContext';
+import type { ROSAHCPCluster, RosaHCPWizardProps } from './types';
+import { useIsStepHidden } from './WizardConfigContext';
+
 import './ROSAHCPWizardBody.css';
 // Eager load so layout applies during Suspense fallback before the lazy step chunk loads.
 import './Steps/YamlEditor/RosaHcpYamlEditorStep.css';
@@ -82,7 +90,9 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
 
   useWizardFieldMetaChangeEffects(wizardData);
 
-  const clusterWideProxySelected = useWatch({ name: 'configure_proxy' });
+  const clusterWideProxySelected = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CONFIGURE_PROXY>({
+    name: FIELD_NAME.CONFIGURE_PROXY,
+  });
 
   const isClusterWideProxyHidden = useIsStepHidden(STEP_IDS.CLUSTER_WIDE_PROXY);
   const isClusterUpdatesHidden = useIsStepHidden(STEP_IDS.CLUSTER_UPDATES);
@@ -180,7 +190,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
                 <ClusterUpdates />
               </WizardStep>
             ),
-          ].filter((s): s is React.ReactElement => Boolean(s));
+          ].filter((s): s is React.ReactElement<WizardStepProps> => Boolean(s));
 
           if (optionalSteps.length === 0) return null;
 

@@ -1,5 +1,7 @@
 import * as yup from 'yup';
 
+import { isObjectRecord } from './typeGuards';
+
 /** Options forwarded to {@link yup.Schema.describe} (e.g. `value` when the field uses `.when()`). */
 export type YupFieldDescribeOptions = NonNullable<Parameters<yup.AnySchema['describe']>[0]>;
 
@@ -10,9 +12,9 @@ export function metaFromDescription(description: unknown): Record<string, unknow
   if (description === null || typeof description !== 'object' || !('meta' in description)) {
     return {};
   }
-  const { meta } = description as { meta?: unknown };
-  if (meta !== undefined && meta !== null && typeof meta === 'object' && !Array.isArray(meta)) {
-    return meta as Record<string, unknown>;
+  const { meta } = description;
+  if (isObjectRecord(meta)) {
+    return meta;
   }
   return {};
 }
@@ -29,16 +31,6 @@ export function testsFromDescription(description: unknown): YupSchemaDescribeTes
   return [];
 }
 
-function hasFields(description: unknown): description is { fields: Record<string, unknown> } {
-  return (
-    description !== null &&
-    typeof description === 'object' &&
-    'fields' in description &&
-    typeof (description as { fields?: unknown }).fields === 'object' &&
-    (description as { fields: Record<string, unknown> }).fields !== null
-  );
-}
-
 function fieldDescriptionFromObjectDescribe(
   schema: yup.AnyObjectSchema,
   path: string,
@@ -49,20 +41,20 @@ function fieldDescriptionFromObjectDescribe(
     return undefined;
   }
 
-  let current: unknown = schema.describe(describeOptions);
+  let current: yup.SchemaFieldDescription = schema.describe(describeOptions);
 
   for (const segment of segments) {
-    if (!hasFields(current)) {
+    if (!('fields' in current)) {
       return undefined;
     }
-    const { fields } = current;
+    const fields: yup.SchemaObjectDescription['fields'] = current.fields;
     if (!(segment in fields)) {
       return undefined;
     }
     current = fields[segment];
   }
 
-  return current as yup.SchemaFieldDescription;
+  return current;
 }
 
 /**

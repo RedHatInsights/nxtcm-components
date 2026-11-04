@@ -1,6 +1,11 @@
-import { Button, Flex, FlexItem, Skeleton, Title } from '@patternfly/react-core';
-import { ChartDonutUtilization, ChartLabel } from '@patternfly/react-charts/victory';
 import React from 'react';
+
+import { ChartDonutUtilization, ChartLabel } from '@patternfly/react-charts/victory';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Skeleton } from '@patternfly/react-core/dist/dynamic/components/Skeleton';
+import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
+
 import styles from './ResourceUtilization.module.scss';
 
 const DEFAULT_TITLE = 'Resource usage';

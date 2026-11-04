@@ -27,9 +27,34 @@ Dashboard widgets and the ROSA wizard serve different consumer apps with differe
 
 ---
 
+## Design principles
+
+Components in this repo follow these principles:
+
+1. **Shared foundation**: built on PatternFly components, tokens, and layouts to stay consistent with ACM and OCM.
+2. **Flexible but opinionated**: generic enough for both ACM and OCM, but specific enough to provide value beyond raw PatternFly components.
+3. **Host-owned data**: components never make HTTP calls; consuming apps fetch data and pass it in through props.
+4. **Tested and documented**: components are covered by Playwright component tests (plus Jest where logic warrants it) and public components have Storybook stories.
+5. **Accessible**: follow WCAG accessibility standards.
+6. **TypeScript first**: typed public APIs with exported prop interfaces.
+
+## Technology stack
+
+- **React 18** and **TypeScript**
+- **PatternFly 6**: Red Hat's open source design system
+- **Vite**: library builds and dev server; `unplugin-dts` for bundled type declarations
+- **Storybook 9**: component documentation and visual review
+- **Jest** + **React Testing Library**: unit tests
+- **Playwright**: component tests (CT) and E2E tests; **Stryker** for local mutation testing
+- **ESLint** + **Prettier**: linting (React, TypeScript, a11y rules) and formatting
+- **Husky** + **lint-staged**: pre-commit checks on staged files
+- **SASS**: component styles
+
+---
+
 ## Build system
 
-The two workspace packages (dashboard, wizard) are built with **one shared `vite.config.ts`**. The differentiation happens via the `NXTCM_LIB_NAME` environment variable.
+The two workspace packages (dashboard, wizard) are built with **one shared `vite.config.ts`**. npm runs each workspace's build script from its package directory, which determines the entry point and output directory.
 
 ### npm workspaces in this repo
 
@@ -58,18 +83,17 @@ Why this setup exists:
 vite.config.ts reads:
   - libRoot   = process.cwd()        (the package directory)
   - libEntry  = <libRoot>/src/index.ts
-  - libName   = env NXTCM_LIB_NAME   (defaults to "NXTCM-COMPONENTS")
   - libOutDir = <libRoot>/dist/
 ```
 
-Each package's build script sets the env var and points at the shared config:
+Each package's build script points at the shared config:
 
 ```bash
 # packages/nxtcm-dashboard/package.json → scripts.build
-rm -rf dist && tsc && NXTCM_LIB_NAME=NXTCM-DASHBOARD vite build --config ../../vite.config.ts
+rm -rf dist && vite build --config ../../vite.config.ts
 
 # packages/nxtcm-rosa-hcp-wizard/package.json → scripts.build
-rm -rf dist && tsc && NXTCM_LIB_NAME=NXTCM-ROSA-HCP-WIZARD vite build --config ../../vite.config.ts
+npm run type-check && rm -rf dist && vite build --config ../../vite.config.ts
 ```
 
 The root `npm run build` runs the two workspace builds in sequence:
@@ -86,29 +110,45 @@ Each build produces:
 
 | file | format | purpose |
 |------|--------|---------|
-| `dist/index.js` | ESM | tree-shakeable import for modern bundlers |
-| `dist/index.umd.js` | UMD | legacy/CDN consumption |
-| `dist/<kebab-lib-name>.css` | CSS | component styles (e.g. `nxtcm-dashboard.css`) |
-| `dist/index.d.ts` (+ co-located `*.d.ts`) | types | TypeScript declarations (via `tsc`) |
+| `dist/index.mjs` | ESM | entry selected by `exports.import` and `module` |
+| `dist/index.cjs` | CommonJS | entry selected by `exports.require` and `main` |
+| `dist/index.css` | CSS | component styles |
+| `dist/index.d.mts` | ESM types | bundled declarations selected by `exports.import.types` |
+| `dist/index.d.cts` | CommonJS types | bundled declarations selected by `exports.require.types` |
+| `dist/index.d.ts` | types fallback | bundled declarations selected by the top-level `types` field |
+
+JavaScript source maps are emitted alongside both module formats. The CSS subpath exports in each package manifest continue to resolve to `dist/index.css`.
 
 ### What gets externalized
 
-PatternFly, React, and utility libraries are externalized, not bundled. Consumers supply their own copies via `peerDependencies`. The peer contract differs by package:
+The shared config externalizes `react` and `react-dom` (including their subpaths), `@patternfly/*`, `js-yaml`, `yaml`, `monaco-editor`, and `monaco-yaml`. React's `jsx-runtime` and `jsx-dev-runtime` therefore resolve from the consuming application's React installation.
 
-- **root**: `@patternfly/react-core`, `react`, `react-dom`, `js-yaml`, `yaml`
-- **dashboard** (additional): `@patternfly/react-charts`, `@patternfly/react-table`, `@patternfly/widgetized-dashboard`, `@patternfly/react-icons`
-- **wizard** (additional): `@monaco-editor/react`, `monaco-editor`, `monaco-yaml`, `@patternfly/react-code-editor`, `@patternfly/react-icons`
+The `fullySpecifiedPatternFlyImports` build plugin rewrites external PatternFly component, layout, icon, and chart paths to explicit JavaScript filenames. ES output uses PatternFly's `dist/esm` files; CommonJS output uses its `dist/js` files. This allows strict ES-module resolution without a consumer webpack override for these imports.
 
-Monaco is only a peer dep of the wizard package, not the root or dashboard.
+Rollup's `interop: 'auto'` unwraps default exports from CommonJS dependencies such as PatternFly icons, so the CommonJS output renders the icon component rather than its module object.
+
+Each workspace's `peerDependencies` declares its own consumer requirements. Monaco is a peer dependency of the wizard package only. See the [dashboard manifest](../packages/nxtcm-dashboard/package.json) and [wizard manifest](../packages/nxtcm-rosa-hcp-wizard/package.json) for the complete contracts.
+
+### React 18 and 19 compatibility
+
+Both packages support React and React DOM `^18.2.0 || ^19.0.0`. Each package is built once; the host provides the matching React, React DOM, and JSX runtime. The `.mjs` and `.cjs` outputs are module formats, not separate React-version builds. Components must use APIs available in both supported React majors.
+
+Development uses React 19. The peer-version check requires development ranges to be a subset of supported peer ranges, and every workspace to cover the root peer contract.
+
+Run `npm run build && npm run test:react-compat` to check the published artifacts. The compatibility check packs each package once, installs those same tarballs into isolated React 18.2.0 and 19.0.0 consumers, checks both import/require declarations against matching React type majors, and renders and interacts with both packages in Chromium using ESM and CommonJS. It also rejects bundled React sources and missing export targets. The check needs npm registry access and Playwright Chromium (`npx playwright install chromium`).
+
+The consumer type checks use bundler resolution and `skipLibCheck`, matching this repo: they validate exported component usage with each React type major rather than checking third-party declaration internals. CI downloads the existing build artifacts for this check, so it exercises the same library build on both runtimes. The regular component and E2E suites use the development runtime. ACM integration must additionally verify that its shared dependency configuration supplies one matching host runtime on both OCP versions.
 
 ### TypeScript compilation
 
-Each package has its own `tsconfig.json` that extends the root. During build:
+Each package has its own `tsconfig.json` that extends the root. During build, Vite owns `dist/`:
 
-1. `tsc` runs first to emit `.d.ts` type declarations into `dist/`
-2. `vite build` runs second to bundle the JS + CSS
+1. Vite emits `dist/index.mjs`, `dist/index.cjs`, and `dist/index.css`.
+2. `unplugin-dts` (`bundleTypes: true`) bundles public declarations and emits `index.d.ts`, `index.d.mts`, and `index.d.cts` through its `outDirs` configuration.
 
-The root `tsconfig.json` includes all workspace packages for IDE type-checking and `npm run type-check`, but each package's tsconfig scopes its own build output.
+Both package builds run `npm run type-check` (`tsc --noEmit`) before Vite.
+
+The root `tsconfig.json` includes all workspace packages for IDE type-checking and `npm run type-check`, but each package's tsconfig scopes its own sources.
 
 ### Path aliases
 
@@ -126,10 +166,10 @@ The `@/` alias is **not consistent** across tools:
 | `vite.config.ts` | `./` (repo root) |
 | `tsconfig.json` | `./` (repo root) |
 | `.storybook/main.ts` | `src/` |
-| `playwright-ct.config.ts` | `src/` |
+| `playwright/vite.config.ts` | `./` (repo root) |
 | `jest.config.js` | `src/` |
 
-Because of this inconsistency, prefer the package aliases above for new code. Imports like `@/packages/...` can resolve in Vite/TypeScript but fail in Jest/Storybook/Playwright CT where `@/` resolves to `src/`.
+Because of this inconsistency, prefer the package aliases above for new code. Imports like `@/packages/...` can resolve in Vite/TypeScript/Playwright but fail in Jest/Storybook where `@/` resolves to `src/`.
 
 ---
 
@@ -149,7 +189,9 @@ Storybook is the shared visual dev/review surface. It is the quickest way to val
 
 ### What runs in CI
 
-Main CI runs lint, type-check, unit tests, CT, E2E, build, and storybook in parallel. `coverage-contract` waits for unit/CT/E2E, then combines their outputs into `test-coverage-data.json`.
+Main CI runs lint, type-check, unit tests, CT, E2E, build, and storybook in parallel. Unit tests, CT, and E2E each run the full suite across both workspaces on a React 18/19 matrix with fail-fast disabled. After `npm ci`, `scripts/setup-react-version.mjs` installs matching React runtime and type majors without modifying the manifests or lockfile, then verifies runtime versions and shared resolution from the root and both workspaces. The separate `test:react-compat` job still validates the published packages.
+
+Test artifacts have a `-react-18` or `-react-19` suffix. `coverage-contract` waits for all unit/CT/E2E jobs, then assembles `test-coverage-data.json` separately for each React version. It uploads `test-coverage-data-react-18` and `test-coverage-data-react-19`; React 19 also supplies the unchanged `test-coverage-data` artifact consumed by EPD, avoiding double-counting. CT triage downloads each version's report and labels its comments and artifact references with that React version. As a `workflow_run` workflow, triage uses trusted default-branch helpers, so its matrix changes take effect after merge.
 
 Additional workflows:
 
@@ -167,5 +209,9 @@ Additional workflows:
 Storybook 9 (`@storybook/react-vite`) is the shared component docs and visual QA surface for this repo.
 
 - audience: package contributors and reviewers validating behavior before integration
-- source: co-located stories in workspace packages plus root-level MDX docs (the `../src/**/*.mdx` glob is configured, but there are currently no `src/**/*.mdx` files)
+- source: co-located stories in workspace packages (`packages/*/src/**/*.stories.tsx`)
+- visibility gating: Storybook tags separate public vs internal components:
+  - **Public**: stories for components re-exported in `packages/*/src/index.ts` use `tags: ['autodocs']` and titles under `Components/Dashboard/` or `Wizards/`. Included in all environments (local dev, static build, GitHub Pages).
+  - **Internal**: stories for internal subcomponents use `tags: ['autodocs', 'internal']` and titles under `Internal/`. Local `npm run storybook` shows them in the sidebar. `storybook build` (CI and GitHub Pages) hides them from the sidebar and docs via `excludeFromSidebar` and `excludeFromDocsStories`. They remain in `index.json`, and a direct URL still opens them.
+  - Assert script `npm run storybook:assert-public` validates that all required public components are present in the static build index in CI.
 - aliases: see [Path aliases](#path-aliases) above for the per-tool breakdown; prefer the package aliases for cross-package imports

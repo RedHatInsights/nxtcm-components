@@ -1,13 +1,15 @@
 import { useState } from 'react';
+
 import { yupResolver } from '@hookform/resolvers/yup';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Button, Form } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
-import { WizFieldsYupStoryDebugGrid } from '../WizFieldsStorybookHelpers';
-import { Radio } from '../../Fields/RadioGroup';
 import { RosaHcpWizardStringsProvider } from '../../../stringsProvider/RosaHcpWizardStringsContext';
+import { Radio } from '../../Fields/RadioGroup';
+import { WizFieldsYupStoryDebugGrid } from '../WizFieldsStorybookHelpers';
 import { WizRadioGroup, type WizRadioGroupProps } from './WizRadioGroup';
 
 type DemoFormValues = { apiVisibility: string };
@@ -62,9 +64,9 @@ function WizRadioGroupFormDemo(args: WizRadioGroupProps) {
 }
 
 const meta: Meta<typeof WizRadioGroup> = {
-  title: 'Form Elements/Connected Form Elements/WizRadioGroup',
+  title: 'Internal/Form Elements/Connected Form Elements/WizRadioGroup',
   component: WizRadioGroup,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   decorators: [
     (Story) => (
       <RosaHcpWizardStringsProvider>

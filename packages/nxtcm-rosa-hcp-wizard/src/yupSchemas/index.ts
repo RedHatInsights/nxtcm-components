@@ -1,9 +1,9 @@
 import * as yup from 'yup';
 
-import type { WizardFieldMeta } from './types';
+import type { ROSAHCPCluster } from '../types';
 import { clusterValidationSchema } from './clusterValidationSchema';
 import { readWizardFieldMeta } from './readWizardFieldMeta';
-import type { ROSAHCPCluster } from '../types';
+import type { WizardFieldMeta } from './types';
 
 export { clusterValidationSchema } from './clusterValidationSchema';
 
@@ -18,7 +18,7 @@ export { clusterValidationSchema } from './clusterValidationSchema';
  */
 
 export function getClusterValidationSchemaDefaultValues(): Partial<ROSAHCPCluster> {
-  const defaults = clusterValidationSchema.getDefault() as Partial<ROSAHCPCluster>;
+  const defaults = clusterValidationSchema.getDefault();
   // Replica defaults exist on the Yup fields for toggling autoscaling UX; keep them unset until the user enables autoscaling.
   const { min_replicas: _min, max_replicas: _max, ...rest } = defaults;
   return rest;

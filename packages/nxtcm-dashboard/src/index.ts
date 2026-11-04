@@ -6,7 +6,6 @@ export * from './CVECard';
 export * from './UpgradeRisks';
 export * from './ClusterRecommendations';
 export * from './Subscriptions';
-export * from './LoadingPanel';
 export * from './TotalClusters';
 export * from './Telemetry';
 export * from './UpdateStatus';

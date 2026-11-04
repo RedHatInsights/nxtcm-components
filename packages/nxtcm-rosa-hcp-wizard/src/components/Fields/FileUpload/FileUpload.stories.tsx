@@ -1,6 +1,9 @@
 import React from 'react';
-import { type DropEvent, Form } from '@patternfly/react-core';
-import type { Meta, StoryObj } from '@storybook/react';
+
+import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
+import { type DropEvent } from '@patternfly/react-core/dist/dynamic/helpers/typeUtils';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+
 import { FileUpload, type FileUploadProps } from './FileUpload';
 
 function FileUploadDemo(args: FileUploadProps) {
@@ -18,9 +21,9 @@ function FileUploadDemo(args: FileUploadProps) {
 }
 
 const meta: Meta<typeof FileUpload> = {
-  title: 'Form Elements/FileUpload',
+  title: 'Internal/Form Elements/FileUpload',
   component: FileUpload,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'internal'],
   parameters: {
     layout: 'padded',
   },

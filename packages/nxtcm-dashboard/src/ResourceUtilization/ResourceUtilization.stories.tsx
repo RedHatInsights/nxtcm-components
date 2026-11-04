@@ -1,9 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+
 import { ResourceUtilization } from './ResourceUtilization';
 
 const meta: Meta<typeof ResourceUtilization> = {
   title: 'Components/Dashboard/ResourceUtilization',
   component: ResourceUtilization,
+  tags: ['autodocs'],
 };
 
 export default meta;

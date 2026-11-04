@@ -15,8 +15,8 @@
  *   3. root peerDependencies (takes precedence - this is the public contract)
  *
  * rationale: if root declares a peerDependency, that's what workspaces AND
- * consuming apps must satisfy. root devDependencies should match peerDeps
- * to ensure we develop against the same versions we ask consumers to provide.
+ * consuming apps must satisfy. root devDependencies must be a subset of peerDeps;
+ * developing against one supported major is valid when we support multiple majors.
  */
 
 import { readFileSync } from 'node:fs';
@@ -36,9 +36,9 @@ const peerDeps = rootPkg.peerDependencies || {};
 const devDeps = rootPkg.devDependencies || {};
 
 for (const [dep, peerVersion] of Object.entries(peerDeps)) {
-  if (devDeps[dep] && devDeps[dep] !== peerVersion) {
+  if (devDeps[dep] && !isCompatible(devDeps[dep], peerVersion)) {
     errors.push(
-      `  root: ${dep} is "${peerVersion}" in peerDependencies but "${devDeps[dep]}" in devDependencies`
+      `  root: ${dep} development range "${devDeps[dep]}" is not covered by peer range "${peerVersion}"`
     );
   }
 }
@@ -46,7 +46,7 @@ for (const [dep, peerVersion] of Object.entries(peerDeps)) {
 if (errors.length > 0) {
   console.error('Root peer/dev dependency version mismatch detected:\n');
   console.error(errors.join('\n'));
-  console.error('\nUpdate root package.json so peerDependencies and devDependencies match.');
+  console.error('\nUpdate root package.json so peerDependencies cover devDependencies.');
   console.error(
     'We develop against devDependencies but ask consumers to satisfy peerDependencies.'
   );

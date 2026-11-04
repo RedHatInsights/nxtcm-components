@@ -1,5 +1,13 @@
 import type { StorybookConfig } from '@storybook/react-vite';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import path from 'path';
+
+function includeInternalStories(): boolean {
+  if (process.env.STORYBOOK_INCLUDE_INTERNAL === 'true') return true;
+  if (process.env.STORYBOOK_INCLUDE_INTERNAL === 'false') return false;
+  return process.argv.includes('dev');
+}
 
 const config: StorybookConfig = {
   stories: [
@@ -7,13 +15,29 @@ const config: StorybookConfig = {
     '../packages/nxtcm-dashboard/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
     '../packages/nxtcm-rosa-hcp-wizard/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
   ],
-  addons: ['@storybook/addon-docs', '@storybook/addon-themes'],
+  addons: [getAbsolutePath('@storybook/addon-docs'), getAbsolutePath('@storybook/addon-themes')],
   framework: {
-    name: '@storybook/react-vite',
+    name: getAbsolutePath('@storybook/react-vite'),
     options: {},
   },
+  tags: {
+    internal: includeInternalStories()
+      ? {}
+      : { excludeFromSidebar: true, excludeFromDocsStories: true },
+  },
   async viteFinal(config) {
-    // merge custom configuration into the default config
+    // Strip unplugin-dts — Storybook does not need declaration file generation
+    // and it fails because the library dist output does not exist during a Storybook build
+    config.plugins = (config.plugins ?? []).filter(
+      (p) =>
+        !(
+          p &&
+          typeof p === 'object' &&
+          !Array.isArray(p) &&
+          (p as { name: string }).name === 'unplugin-dts'
+        )
+    );
+
     const { mergeConfig } = await import('vite');
 
     return mergeConfig(config, {
@@ -22,13 +46,13 @@ const config: StorybookConfig = {
       base: process.env.STORYBOOK_BASE_PATH || '/',
       resolve: {
         alias: {
-          '@': path.resolve(__dirname, '../src'),
+          '@': path.resolve(import.meta.dirname, '../src'),
           '@redhat-cloud-services/nxtcm-dashboard': path.resolve(
-            __dirname,
+            import.meta.dirname,
             '../packages/nxtcm-dashboard/src'
           ),
           '@redhat-cloud-services/nxtcm-rosa-hcp-wizard': path.resolve(
-            __dirname,
+            import.meta.dirname,
             '../packages/nxtcm-rosa-hcp-wizard/src'
           ),
         },
@@ -40,3 +64,7 @@ const config: StorybookConfig = {
   },
 };
 export default config;
+
+function getAbsolutePath(value: string): string {
+  return dirname(fileURLToPath(import.meta.resolve(`${value}/package.json`)));
+}
