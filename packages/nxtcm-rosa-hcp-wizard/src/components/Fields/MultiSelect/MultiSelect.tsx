@@ -359,6 +359,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
         onMouseLeave={hideTooltip}
         isExpanded={open}
         isDisabled={!!disabled}
+        aria-haspopup="menu"
         isFullWidth
         isPlaceholder={checkboxMenuToggle && toggleMainText === placeholderText}
         status={getStatus(!!isError, !!isSuccess)}
