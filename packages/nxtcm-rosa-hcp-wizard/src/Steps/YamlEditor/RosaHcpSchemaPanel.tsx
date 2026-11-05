@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 
-import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { Content } from '@patternfly/react-core/dist/dynamic/components/Content';
 import {
   DrawerActions,
@@ -12,15 +11,13 @@ import {
 import { Label } from '@patternfly/react-core/dist/dynamic/components/Label';
 import { SearchInput } from '@patternfly/react-core/dist/dynamic/components/SearchInput';
 import { Title } from '@patternfly/react-core/dist/dynamic/components/Title';
-import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
+import type { TreeViewDataItem } from '@patternfly/react-core/dist/dynamic/components/TreeView';
+import { TreeView } from '@patternfly/react-core/dist/dynamic/components/TreeView';
+import { Flex } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 import { Stack, StackItem } from '@patternfly/react-core/dist/dynamic/layouts/Stack';
-import ChevronDownIcon from '@patternfly/react-icons/dist/esm/icons/chevron-down-icon';
-import ChevronRightIcon from '@patternfly/react-icons/dist/esm/icons/chevron-right-icon';
 import type { JSONSchema } from 'monaco-yaml';
 
 import { useRosaHcpWizardStrings } from '../../stringsProvider/RosaHcpWizardStringsContext';
-
-import './RosaHcpSchemaPanel.css';
 
 type SchemaProperty = {
   type?: string | string[];
@@ -48,70 +45,38 @@ function getTypeLabel(prop: SchemaProperty): string {
   return '';
 }
 
-type SchemaFieldProps = {
-  name: string;
-  prop: SchemaProperty;
-  depth?: number;
-};
+const hasChildProperties = (
+  prop: SchemaProperty
+): prop is SchemaProperty & { properties: SchemaProps } =>
+  prop.type === 'object' && !!prop.properties && Object.keys(prop.properties).length > 0;
 
-const SchemaField = ({ name, prop, depth = 0 }: SchemaFieldProps) => {
-  const [expanded, setExpanded] = useState(false);
-  const typeLabel = getTypeLabel(prop);
-  const typeVariant = TYPE_VARIANT[typeLabel] ?? 'blue';
-  const hasChildren =
-    prop.type === 'object' && prop.properties && Object.keys(prop.properties).length > 0;
+const buildTreeItems = (properties: SchemaProps, parentPath = ''): TreeViewDataItem[] =>
+  Object.entries(properties).map(([name, prop]) => {
+    const id = parentPath ? `${parentPath}.${name}` : name;
+    const typeLabel = getTypeLabel(prop);
 
-  return (
-    <StackItem
-      style={
-        depth > 0
-          ? { paddingInlineStart: `calc(var(--pf-t--global--spacer--md) * ${depth})` }
-          : undefined
-      }
-    >
-      <Flex
-        alignItems={{ default: 'alignItemsFlexStart' }}
-        gap={{ default: 'gapSm' }}
-        className="rosa-hcp-schema-field__row"
-      >
-        {hasChildren ? (
-          <Button
-            variant="plain"
-            size="sm"
-            aria-label={expanded ? 'Collapse' : 'Expand'}
-            onClick={() => setExpanded((v) => !v)}
-            className="rosa-hcp-schema-field__toggle"
-          >
-            {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
-          </Button>
-        ) : (
-          <span className="rosa-hcp-schema-field__spacer" />
-        )}
-
-        <FlexItem flex={{ default: 'flex_1' }} className="rosa-hcp-schema-field__content">
-          <Flex
-            alignItems={{ default: 'alignItemsCenter' }}
-            gap={{ default: 'gapSm' }}
-            flexWrap={{ default: 'wrap' }}
-          >
-            <code className="rosa-hcp-schema-field__name">{name}</code>
-            {typeLabel && (
-              <Label isCompact color={typeVariant}>
-                {typeLabel}
-              </Label>
-            )}
-          </Flex>
-          {prop.description && (
-            <Content component="small" className="rosa-hcp-schema-field__description">
-              {prop.description}
-            </Content>
+    return {
+      id,
+      title: (
+        <Flex
+          component="span"
+          alignItems={{ default: 'alignItemsCenter' }}
+          gap={{ default: 'gapSm' }}
+          flexWrap={{ default: 'wrap' }}
+        >
+          <code>{name}</code>
+          {typeLabel && (
+            <Label isCompact color={TYPE_VARIANT[typeLabel] ?? 'blue'}>
+              {typeLabel}
+            </Label>
           )}
+        </Flex>
+      ),
+      name: (
+        <Flex component="span" direction={{ default: 'column' }} gap={{ default: 'gapXs' }}>
+          {prop.description && <Content component="small">{prop.description}</Content>}
           {prop.enum && (
-            <Flex
-              gap={{ default: 'gapXs' }}
-              flexWrap={{ default: 'wrap' }}
-              className="rosa-hcp-schema-field__enum-list"
-            >
+            <Flex component="span" gap={{ default: 'gapXs' }} flexWrap={{ default: 'wrap' }}>
               {prop.enum.map((v, i) => (
                 <Label key={i} isCompact variant="outline">
                   {String(v)}
@@ -119,19 +84,11 @@ const SchemaField = ({ name, prop, depth = 0 }: SchemaFieldProps) => {
               ))}
             </Flex>
           )}
-        </FlexItem>
-      </Flex>
-
-      {hasChildren && expanded && prop.properties && (
-        <Stack hasGutter>
-          {Object.entries(prop.properties).map(([childName, childProp]) => (
-            <SchemaField key={childName} name={childName} prop={childProp} depth={depth + 1} />
-          ))}
-        </Stack>
-      )}
-    </StackItem>
-  );
-};
+        </Flex>
+      ),
+      children: hasChildProperties(prop) ? buildTreeItems(prop.properties, id) : undefined,
+    };
+  });
 
 export type RosaHcpSchemaPanelProps = {
   onClose: () => void;
@@ -163,6 +120,8 @@ export const RosaHcpSchemaPanel = ({ onClose, schema }: RosaHcpSchemaPanelProps)
     );
   }, [specProperties, searchText]);
 
+  const treeItems = useMemo(() => buildTreeItems(filteredProperties), [filteredProperties]);
+
   return (
     <DrawerPanelContent isResizable defaultSize="33%">
       <DrawerHead>
@@ -183,13 +142,16 @@ export const RosaHcpSchemaPanel = ({ onClose, schema }: RosaHcpSchemaPanelProps)
               onClear={() => setSearchText('')}
             />
           </StackItem>
-          <StackItem>
-            <Stack>
-              {Object.entries(filteredProperties).map(([fieldName, fieldProp]) => (
-                <SchemaField key={fieldName} name={fieldName} prop={fieldProp} />
-              ))}
-            </Stack>
-          </StackItem>
+          {treeItems.length > 0 && (
+            <StackItem>
+              <TreeView
+                variant="compact"
+                hasGuides
+                data={treeItems}
+                aria-label={yamlEditor.schemaTreeAriaLabel}
+              />
+            </StackItem>
+          )}
         </Stack>
       </DrawerPanelBody>
     </DrawerPanelContent>
