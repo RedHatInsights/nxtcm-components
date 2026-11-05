@@ -84,7 +84,7 @@ export function KeyboardTypeaheadHarness(): React.ReactElement {
   return (
     <Form>
       <button type="button">Before subnet</button>
-      <Select
+      <Select<string>
         id="ct-menu-ta-keyboard"
         label="Subnet"
         value={value}

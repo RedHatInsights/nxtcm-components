@@ -452,7 +452,9 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     }
 
     if (event.key === 'Escape') {
-      event.stopPropagation();
+      if (open) {
+        event.stopPropagation();
+      }
       setOpen(false);
       setActiveOption(undefined);
       syncTypeaheadQueryForOpenState(false);
