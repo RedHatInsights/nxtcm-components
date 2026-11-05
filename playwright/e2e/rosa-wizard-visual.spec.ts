@@ -5,7 +5,7 @@ test.describe('ROSA Wizard visual comparisons', () => {
     await page.goto('/');
     await expect(page.getByRole('textbox', { name: 'Cluster name', exact: true })).toBeVisible();
     await expect(
-      page.getByRole('combobox', { name: 'Select an OpenShift version', exact: true })
+      page.getByRole('combobox', { name: 'OpenShift version', exact: true })
     ).toBeVisible();
     await page.evaluate(async () => {
       await document.fonts.ready;
