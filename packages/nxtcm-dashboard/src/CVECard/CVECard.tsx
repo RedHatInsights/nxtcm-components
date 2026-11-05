@@ -28,12 +28,10 @@ export type CVECardProps = {
 const severityConfig = {
   critical: {
     icon: ExclamationCircleIcon,
-    color: 'var(--pf-t--global--color--status--danger--default)',
     iconColor: 'var(--pf-t--global--icon--color--status--danger--default)',
   },
   important: {
     icon: ExclamationTriangleIcon,
-    color: 'var(--pf-t--global--color--status--warning--default)',
     iconColor: 'var(--pf-t--global--icon--color--status--warning--default)',
   },
 };

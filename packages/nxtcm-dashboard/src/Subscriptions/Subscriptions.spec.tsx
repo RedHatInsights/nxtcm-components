@@ -1,4 +1,5 @@
 import { expect, test } from '@/playwright/ct-fixture';
+import { checkAccessibility } from '@/playwright/test-helpers';
 
 import type { SubscriptionsStory } from './Subscriptions.story';
 
@@ -8,6 +9,38 @@ const defaultProps: NonNullable<React.ComponentProps<typeof SubscriptionsStory>>
 };
 
 test.describe('Subscriptions', () => {
+  test('should pass accessibility checks for populated data and actions', async ({ mount }) => {
+    const component = await mount<typeof SubscriptionsStory>(
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      {
+        ...defaultProps,
+        onViewSubscriptions: true,
+        onSubscriptionsClick: true,
+        onInstancesClick: true,
+      }
+    );
+
+    await checkAccessibility({ component });
+  });
+
+  test('should pass accessibility checks for zero counts', async ({ mount }) => {
+    const component = await mount<typeof SubscriptionsStory>(
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { subscriptionCount: 0, instanceCount: 0 }
+    );
+
+    await checkAccessibility({ component });
+  });
+
+  test('should pass accessibility checks while loading', async ({ mount }) => {
+    const component = await mount<typeof SubscriptionsStory>(
+      'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
+      { isLoading: true }
+    );
+
+    await checkAccessibility({ component });
+  });
+
   test('should render the component with correct counts', async ({ mount }) => {
     const component = await mount<typeof SubscriptionsStory>(
       'nxtcm-dashboard/Subscriptions/Subscriptions/SubscriptionsStory',
