@@ -31,15 +31,24 @@ type DetailsStepProps = Pick<
 
 type AssociateNewAccountLinkProps = {
   label: string;
+  isDrawerExpanded: boolean;
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
   setIsDrawerExpanded: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-function AssociateNewAccountLink({ label, setIsDrawerExpanded }: AssociateNewAccountLinkProps) {
+function AssociateNewAccountLink({
+  label,
+  isDrawerExpanded,
+  triggerRef,
+  setIsDrawerExpanded,
+}: AssociateNewAccountLinkProps): React.ReactElement {
   return (
     <Button
+      ref={triggerRef}
       isInline
       variant="link"
-      onClick={() => setIsDrawerExpanded((prevExpanded) => !prevExpanded)}
+      aria-expanded={isDrawerExpanded}
+      onClick={() => setIsDrawerExpanded(true)}
     >
       {label}
     </Button>
@@ -57,8 +66,7 @@ export const Details = ({
 }: DetailsStepProps) => {
   const d = useRosaHcpWizardStrings().details;
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState<boolean>(false);
-  const drawerRef = React.useRef<HTMLSpanElement>(null);
-  const onWizardExpand = () => drawerRef.current && drawerRef.current.focus();
+  const drawerTriggerRef = React.useRef<HTMLButtonElement>(null);
 
   const { control } = useFormContext<Partial<ROSAHCPCluster>>();
   const { checkOnNameBlur } = useClusterNameUniquenessValidation({
@@ -114,7 +122,7 @@ export const Details = ({
       <DetailsStepDrawer
         isDrawerExpanded={isDrawerExpanded}
         setIsDrawerExpanded={setIsDrawerExpanded}
-        onWizardExpand={onWizardExpand}
+        triggerRef={drawerTriggerRef}
         product={product}
       >
         <NestedFields>
@@ -122,6 +130,8 @@ export const Details = ({
             footer={
               <AssociateNewAccountLink
                 label={d.associateNewAccount}
+                isDrawerExpanded={isDrawerExpanded}
+                triggerRef={drawerTriggerRef}
                 setIsDrawerExpanded={setIsDrawerExpanded}
               />
             }

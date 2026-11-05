@@ -109,6 +109,52 @@ test.describe('Details (ROSA HCP)', () => {
     await expect(component.getByText('Associate a new AWS account')).toBeVisible();
   });
 
+  for (const { closeName, key } of [
+    { closeName: 'Close drawer panel', key: 'Enter' },
+    { closeName: defaultRosaHcpWizardStrings.associateAwsDrawer.closeButton, key: 'Space' },
+  ]) {
+    test(`returns focus to the AWS account trigger after closing with ${closeName}`, async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount<typeof DetailsMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+      );
+      const trigger = component.getByRole('button', { name: d.associateNewAccount, exact: true });
+      const title = component.getByText(defaultRosaHcpWizardStrings.associateAwsDrawer.panelTitle, {
+        exact: true,
+      });
+      const closeButton = component.getByRole('button', { name: closeName, exact: true });
+
+      await trigger.focus();
+      await expect(trigger).toBeFocused();
+      await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+      await page.keyboard.press(key);
+      await expect(title).toBeVisible();
+      await expect(title).toBeFocused();
+      await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+      await closeButton.focus();
+      await expect(closeButton).toBeFocused();
+      await page.keyboard.press(key);
+      await expect(title).toBeHidden();
+      await expect(closeButton).toBeHidden();
+      await expect(trigger).toBeFocused();
+      await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+
+      // Reopening must focus the attached title again, then return focus on close.
+      await page.keyboard.press(key);
+      await expect(title).toBeVisible();
+      await expect(title).toBeFocused();
+      await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+      await closeButton.focus();
+      await page.keyboard.press(key);
+      await expect(title).toBeHidden();
+      await expect(trigger).toBeFocused();
+      await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    });
+  }
+
   test.describe('Details — cluster name validation', () => {
     test('should display validation error for cluster name with invalid characters', async ({
       mount,
