@@ -46,7 +46,8 @@ jobs run in parallel except `coverage-contract` which assembles data from all te
 
 - each leg runs `npx playwright install --with-deps ${{ matrix.browser }}` (never install all engines) and `--project=components-${{ matrix.browser }}` / `--project=e2e-${{ matrix.browser }}`
 - artifacts are per leg: `playwright-ct-report-react-<n>-<browser>` and `playwright-report-react-<n>-<browser>`
-- `coverage-contract` and `ct-triage-comment.yml` only download the `-chromium` artifacts, so the contract totals (including the canonical `test-coverage-data` EPD reads) and the triage comment do not change with the extra engines. Firefox and WebKit results are in their own job results and artifacts.
+- `coverage-contract` only downloads the `-chromium` artifacts, so the contract totals (including the canonical `test-coverage-data` EPD reads) do not change with the extra engines
+- `ct-triage-comment.yml` uses the same matrix as the CT job (keep the two in sync): each leg downloads its own `playwright-ct-report-react-<n>-<browser>` artifact and posts its own comment, labelled with the React version and browser (`--react-version`, `--browser`)
 - the stable summary jobs (`Unit Tests`, `Component Tests`, `E2E Tests`) wait for every leg, so a Firefox or WebKit failure fails the required check
 - multi-browser coverage is CI-only: the jobs call `playwright test --project=…` directly, while the local `npm run test:ct` / `test:e2e` scripts run Chromium only
 - `react-compatibility` and Stryker stay Chromium-only
@@ -59,7 +60,7 @@ the component test job produces structured output consumed by downstream automat
 2. `utils/summarize-playwright-ct.mjs` parses JSON → `playwright-ct-summary.json` + `.md`
 3. on failure, summary markdown is appended to `GITHUB_STEP_SUMMARY`
 4. artifacts uploaded: report HTML, JSON results, summary JSON/MD
-5. `ct-triage-comment.yml` runs via `workflow_run`, downloads summary JSON, posts classified PR comment
+5. `ct-triage-comment.yml` runs via `workflow_run` with one leg per CT matrix leg, downloads that leg's summary JSON, and posts a classified PR comment (nothing when the leg has no failures or flaky tests)
 
 ## adding a new CI job
 
