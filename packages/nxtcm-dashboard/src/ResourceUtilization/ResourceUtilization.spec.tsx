@@ -1,4 +1,5 @@
 import { expect, test } from '@/playwright/ct-fixture';
+import { checkAccessibility } from '@/playwright/test-helpers';
 
 import { ResourceUtilizationData } from './ResourceUtilization';
 import type { ResourceUtilizationStory } from './ResourceUtilization.story';
@@ -9,6 +10,43 @@ const defaultData: ResourceUtilizationData = {
 };
 
 test.describe('ResourceUtilization', () => {
+  test('should pass accessibility checks for populated metrics, storage, and actions', async ({
+    mount,
+  }) => {
+    const component = await mount<typeof ResourceUtilizationStory>(
+      'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
+      {
+        data: { ...defaultData, storage: { used: 500, total: 2048, unit: 'GiB' } },
+        onViewMore: true,
+      }
+    );
+
+    await checkAccessibility({ component });
+  });
+
+  test('should pass accessibility checks for zero utilization', async ({ mount }) => {
+    const component = await mount<typeof ResourceUtilizationStory>(
+      'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
+      {
+        data: {
+          vCPU: { used: 0, total: 128, unit: 'Cores' },
+          memory: { used: 0, total: 256, unit: 'GiB' },
+        },
+      }
+    );
+
+    await checkAccessibility({ component });
+  });
+
+  test('should pass accessibility checks while loading', async ({ mount }) => {
+    const component = await mount<typeof ResourceUtilizationStory>(
+      'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',
+      { isLoading: true }
+    );
+
+    await checkAccessibility({ component });
+  });
+
   test('should render the default "Resource usage" title', async ({ mount }) => {
     const component = await mount<typeof ResourceUtilizationStory>(
       'nxtcm-dashboard/ResourceUtilization/ResourceUtilization/ResourceUtilizationStory',

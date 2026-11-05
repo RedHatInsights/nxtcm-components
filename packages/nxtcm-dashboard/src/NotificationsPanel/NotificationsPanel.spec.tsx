@@ -123,10 +123,13 @@ test.describe('NotificationsPanel', () => {
   test('should activate a notification row with Enter and Space without duplicate callbacks', async ({
     mount,
   }) => {
+    const notificationsWithHandler = mockNotifications.map((notification, index) =>
+      index === 0 ? { ...notification, onClick: true } : notification
+    );
     const component = await mount<typeof NotificationsPanelStory>(
       'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
       {
-        notifications: mockNotifications,
+        notifications: notificationsWithHandler,
         onNotificationClick: true,
       }
     );
@@ -152,9 +155,24 @@ test.describe('NotificationsPanel', () => {
 
     await firstNotificationRow.press('Enter');
     await expectNotificationClickCount(1);
+    await expect(component.getByTestId('onClick-count')).toHaveValue('1');
+
+    const scrollPosition = await firstNotificationRow.evaluate(() => {
+      document.body.style.minHeight = '2000px';
+      window.scrollTo(0, 100);
+      return window.scrollY;
+    });
+    await expect
+      .poll(() => firstNotificationRow.evaluate(() => document.documentElement.scrollHeight))
+      .toBeGreaterThan(1000);
+    expect(scrollPosition).toBeGreaterThan(0);
 
     await firstNotificationRow.press(' ');
     await expectNotificationClickCount(2);
+    await expect(component.getByTestId('onClick-count')).toHaveValue('2');
+    await expect
+      .poll(() => firstNotificationRow.evaluate(() => window.scrollY))
+      .toBe(scrollPosition);
     await expect(firstNotificationRow).toBeFocused();
   });
 
@@ -242,6 +260,22 @@ test.describe('NotificationsPanel', () => {
       await expect(component.getByText('1 - 6 of 20')).toBeVisible();
       await expect(component.getByText(manyNotifications[0].title, { exact: true })).toBeVisible();
       await expect(component.getByText(manyNotifications[6].title, { exact: true })).toBeHidden();
+    });
+
+    test('should keep pagination focus after keyboard navigation', async ({ mount }) => {
+      const component = await mount<typeof NotificationsPanelStory>(
+        'nxtcm-dashboard/NotificationsPanel/NotificationsPanel/NotificationsPanelStory',
+        { notifications: manyNotifications, enablePagination: true, itemsPerPage: 6 }
+      );
+
+      const nextButton = component.getByRole('button', { name: /Next page/i });
+      await nextButton.focus();
+      await expect(nextButton).toBeFocused();
+
+      await nextButton.press('Enter');
+
+      await expect(component.getByText('7 - 12 of 20')).toBeVisible();
+      await expect(nextButton).toBeFocused();
     });
 
     test('should disable previous button on first page', async ({ mount }) => {
