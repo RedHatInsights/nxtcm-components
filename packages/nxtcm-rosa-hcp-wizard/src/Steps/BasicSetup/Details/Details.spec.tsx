@@ -128,9 +128,11 @@ test.describe('Details (ROSA HCP)', () => {
 
       await trigger.focus();
       await expect(trigger).toBeFocused();
+      await expect(trigger).toHaveAttribute('aria-expanded', 'false');
       await page.keyboard.press(key);
       await expect(title).toBeVisible();
       await expect(title).toBeFocused();
+      await expect(trigger).toHaveAttribute('aria-expanded', 'true');
 
       await closeButton.focus();
       await expect(closeButton).toBeFocused();
@@ -138,15 +140,18 @@ test.describe('Details (ROSA HCP)', () => {
       await expect(title).toBeHidden();
       await expect(closeButton).toBeHidden();
       await expect(trigger).toBeFocused();
+      await expect(trigger).toHaveAttribute('aria-expanded', 'false');
 
       // Reopening must focus the attached title again, then return focus on close.
       await page.keyboard.press(key);
       await expect(title).toBeVisible();
       await expect(title).toBeFocused();
+      await expect(trigger).toHaveAttribute('aria-expanded', 'true');
       await closeButton.focus();
       await page.keyboard.press(key);
       await expect(title).toBeHidden();
       await expect(trigger).toBeFocused();
+      await expect(trigger).toHaveAttribute('aria-expanded', 'false');
     });
   }
 

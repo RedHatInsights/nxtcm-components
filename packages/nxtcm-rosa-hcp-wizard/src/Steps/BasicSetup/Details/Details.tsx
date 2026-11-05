@@ -31,17 +31,25 @@ type DetailsStepProps = Pick<
 
 type AssociateNewAccountLinkProps = {
   label: string;
+  isDrawerExpanded: boolean;
   triggerRef: React.RefObject<HTMLButtonElement | null>;
   setIsDrawerExpanded: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 function AssociateNewAccountLink({
   label,
+  isDrawerExpanded,
   triggerRef,
   setIsDrawerExpanded,
 }: AssociateNewAccountLinkProps): React.ReactElement {
   return (
-    <Button ref={triggerRef} isInline variant="link" onClick={() => setIsDrawerExpanded(true)}>
+    <Button
+      ref={triggerRef}
+      isInline
+      variant="link"
+      aria-expanded={isDrawerExpanded}
+      onClick={() => setIsDrawerExpanded(true)}
+    >
       {label}
     </Button>
   );
@@ -122,6 +130,7 @@ export const Details = ({
             footer={
               <AssociateNewAccountLink
                 label={d.associateNewAccount}
+                isDrawerExpanded={isDrawerExpanded}
                 triggerRef={drawerTriggerRef}
                 setIsDrawerExpanded={setIsDrawerExpanded}
               />
