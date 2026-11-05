@@ -268,21 +268,11 @@ jobs:
           node-version-file: 'package.json'
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install and verify React ${{ matrix.react }}
-        run: node scripts/setup-react-version.mjs ${{ matrix.react }}
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Run Playwright tests
+      - name: Run E2E and visual tests in the shared Linux container
         env:
+          PLAYWRIGHT_REACT_VERSION: ${{ matrix.react }}
           PLAYWRIGHT_JSON_OUTPUT_NAME: test-results/playwright-e2e-results.json
-        run: |
-          mkdir -p test-results
-          npx playwright test --project=e2e --reporter=list,html,json
+        run: npm run test:e2e:container -- --reporter=list,html,json
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

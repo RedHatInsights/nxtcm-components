@@ -34,6 +34,7 @@ const projectIsSelected = (name: string): boolean =>
 
 export default defineConfig({
   ...components,
+  updateSnapshots: process.env.CI ? 'none' : 'missing',
   projects: [
     {
       ...components.projects?.[0],
@@ -44,9 +45,28 @@ export default defineConfig({
       name: 'e2e',
       testDir: path.join(__dirname, 'playwright/e2e'),
       testMatch: '**/*.spec.ts',
+      // Shared screenshot baselines are only comparable in the pinned container.
+      testIgnore:
+        process.env.PLAYWRIGHT_INCLUDE_VISUAL_TESTS === 'true' ? [] : '**/*-visual.spec.ts',
       timeout: 30_000,
+      snapshotPathTemplate: '{testDir}/{testFilePath}-snapshots/{arg}-{projectName}{ext}',
+      outputDir: './test-results',
+      expect: {
+        toHaveScreenshot: {
+          animations: 'disabled',
+          caret: 'hide',
+          scale: 'css',
+          threshold: 0.2,
+          maxDiffPixels: 0,
+        },
+      },
       use: {
         ...devices['Desktop Chrome'],
+        viewport: { width: 1280, height: 720 },
+        deviceScaleFactor: 1,
+        colorScheme: 'light',
+        locale: 'en-US',
+        timezoneId: 'UTC',
         baseURL: 'http://localhost:3200',
         trace: 'on-first-retry',
       },
