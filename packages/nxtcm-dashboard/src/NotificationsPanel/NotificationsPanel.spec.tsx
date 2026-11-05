@@ -157,12 +157,22 @@ test.describe('NotificationsPanel', () => {
     await expectNotificationClickCount(1);
     await expect(component.getByTestId('onClick-count')).toHaveValue('1');
 
-    const scrollPosition = await firstNotificationRow.evaluate(() => window.scrollY);
+    const scrollPosition = await firstNotificationRow.evaluate(() => {
+      document.body.style.minHeight = '2000px';
+      window.scrollTo(0, 100);
+      return window.scrollY;
+    });
+    await expect
+      .poll(() => firstNotificationRow.evaluate(() => document.documentElement.scrollHeight))
+      .toBeGreaterThan(1000);
+    expect(scrollPosition).toBeGreaterThan(0);
+
     await firstNotificationRow.press(' ');
     await expectNotificationClickCount(2);
     await expect(component.getByTestId('onClick-count')).toHaveValue('2');
-    const scrollPositionAfterSpace = await firstNotificationRow.evaluate(() => window.scrollY);
-    expect(scrollPositionAfterSpace).toBe(scrollPosition);
+    await expect
+      .poll(() => firstNotificationRow.evaluate(() => window.scrollY))
+      .toBe(scrollPosition);
     await expect(firstNotificationRow).toBeFocused();
   });
 
