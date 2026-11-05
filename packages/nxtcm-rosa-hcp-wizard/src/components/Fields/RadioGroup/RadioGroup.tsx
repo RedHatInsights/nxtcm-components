@@ -68,6 +68,8 @@ export function RadioGroup(props: RadioGroupProps) {
   return (
     <RadioGroupContext.Provider value={state}>
       <FormGroup
+        // A hidden label has no legend for FormGroup's generated reference to target.
+        {...(!label && { 'aria-labelledby': undefined })}
         {...formGroupRest}
         id={id}
         label={label}

@@ -52,14 +52,16 @@ test.describe('ClusterUpdates (ROSA HCP)', () => {
     await expect(component.getByRole('radio', { name: cu.recurringLabel })).toBeVisible();
   });
 
-  test('should not render a duplicate upgrade policy field label', async ({ mount }) => {
+  test('should retain an accessible name without a duplicate visible field label', async ({
+    mount,
+  }) => {
     const component = await mount<typeof ClusterUpdatesMount>(
       'nxtcm-rosa-hcp-wizard/Steps/OptionalSetup/ClusterUpdates/ClusterUpdates/ClusterUpdatesMount'
     );
     await expect(component.getByText(cu.upgradePolicyLabel, { exact: true })).toHaveCount(1);
     const radiogroup = component.getByRole('radiogroup');
     await expect(radiogroup).toBeVisible();
-    await expect(radiogroup).toHaveAccessibleName('');
+    await expect(radiogroup).toHaveAccessibleName(cu.upgradePolicyLabel);
   });
 
   test('should show day and time selectors when recurring updates is selected by default', async ({

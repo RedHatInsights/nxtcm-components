@@ -207,7 +207,9 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
   }, [isLoading, value.length, checkboxMenuToggle, placeholderText, legacyToggleLabel]);
 
   const toggleBadge = showCountBadge ? (
-    <Badge screenReaderText={badgeScreenReaderText}>{value.length}</Badge>
+    <Badge id={`${id}-count`} screenReaderText={badgeScreenReaderText}>
+      {value.length}
+    </Badge>
   ) : undefined;
 
   const handleToggle = useCallback(() => setOpen((o) => !o), []);
@@ -324,15 +326,10 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
     successMessage,
   });
 
-  const plainToggleAriaLabel = useMemo(() => {
-    if (menuToggleAriaLabel) {
-      return menuToggleAriaLabel;
-    }
-    if (checkboxMenuToggle) {
-      return undefined;
-    }
-    return !legacyToggleLabel && !isLoading ? placeholderText : undefined;
-  }, [menuToggleAriaLabel, checkboxMenuToggle, legacyToggleLabel, isLoading, placeholderText]);
+  const toggleLabelledBy =
+    label && !menuToggleAriaLabel
+      ? [`${id}-label`, `${id}-toggle-text`, ...(showCountBadge ? [`${id}-count`] : [])].join(' ')
+      : undefined;
 
   /** Full text for the PF tooltip — matches the visible toggle text. */
   const tooltipContent =
@@ -346,6 +343,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
       isVisible={tooltipVisible && !open}
     >
       <MenuToggle
+        id={id}
         ref={toggleRef}
         onClick={handleToggle}
         onBlur={(e: React.FocusEvent<HTMLElement>) => {
@@ -360,11 +358,13 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
         isFullWidth
         isPlaceholder={checkboxMenuToggle && toggleMainText === placeholderText}
         status={getStatus(!!isError, !!isSuccess)}
-        aria-label={plainToggleAriaLabel}
+        aria-label={menuToggleAriaLabel}
+        aria-labelledby={toggleLabelledBy}
         aria-describedby={describedBy || undefined}
+        aria-invalid={isError || undefined}
         badge={toggleBadge}
       >
-        {toggleMainText}
+        <span id={`${id}-toggle-text`}>{toggleMainText}</span>
       </MenuToggle>
     </Tooltip>
   );
@@ -373,7 +373,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
     <InputGroup>
       <InputGroupItem isFill={isFill}>
         <PfSelect
-          id={id}
+          id={`${id}-menu`}
           role="menu"
           isOpen={open}
           selected={selectedMenuIds}
@@ -430,7 +430,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
     <FormGroup
       id={`${id}-form-group`}
       fieldId={id}
-      label={label}
+      label={<span id={`${id}-label`}>{label}</span>}
       isRequired={isRequired}
       labelHelp={labelHelpEl}
     >

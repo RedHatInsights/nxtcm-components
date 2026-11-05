@@ -6,6 +6,10 @@ import { Select } from './Select';
 import type { OptionGroup } from './SelectTypes';
 
 export interface PlainMenuHarnessProps {
+  /** optional visible label; empty string exercises the unlabeled select */
+  label?: string;
+  /** optional placeholder for the select */
+  placeholder?: string;
   /** marks the field as required */
   isRequired?: boolean;
   /** disables the field */
@@ -59,6 +63,59 @@ export function TypeaheadHarness() {
         isTypeAhead
       />
       <span data-testid="ta-val">{value === undefined ? 'none' : String(value)}</span>
+    </Form>
+  );
+}
+
+export function GroupedTypeaheadHarness() {
+  return (
+    <Form>
+      <Select
+        id="ct-menu-ta-grouped"
+        label="Subnet"
+        value={undefined}
+        onChange={() => undefined}
+        optionGroups={[
+          { label: 'Production', options: ['subnet-a'] },
+          { label: 'Development', options: ['subnet-b'] },
+        ]}
+        isTypeAhead
+      />
+    </Form>
+  );
+}
+
+export function LoadingTypeaheadHarness() {
+  return (
+    <Form>
+      <Select
+        id="ct-menu-ta-loading"
+        label="Subnet"
+        value={undefined}
+        onChange={() => undefined}
+        options={[]}
+        isTypeAhead
+        isLoading
+      />
+    </Form>
+  );
+}
+
+export function GroupedLoadingTypeaheadHarness() {
+  return (
+    <Form>
+      <Select
+        id="ct-menu-ta-grouped-loading"
+        label="Subnet"
+        value={undefined}
+        onChange={() => undefined}
+        optionGroups={[
+          { label: 'Production', options: ['subnet-a'] },
+          { label: 'Development', options: ['subnet-b'] },
+        ]}
+        isTypeAhead
+        isLoading
+      />
     </Form>
   );
 }

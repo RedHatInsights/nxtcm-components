@@ -34,7 +34,6 @@ import {
   WIZ_SELECT_SUBMIT_ERROR,
   WIZ_SELECT_SUBMIT_TOGGLE_NAME,
   WIZ_SELECT_TYPEAHEAD_CLEAR_STATUS,
-  WIZ_SELECT_TYPEAHEAD_CLEAR_TOGGLE,
   WIZ_SELECT_VALUE_STATUS_LABEL,
   WIZ_SELECT_VPC_SUBNET_FORM_VALUE_LABEL,
   WIZ_SELECT_YUP_META_HELPER,
@@ -81,7 +80,7 @@ test.describe('WizSelect', () => {
       );
       await expect(
         page.getByRole(isTypeAhead ? 'combobox' : 'button', {
-          name: WIZ_SELECT_EXPLICIT_TOGGLE_NAME,
+          name: isTypeAhead ? WIZ_SELECT_EXPLICIT_LABEL : WIZ_SELECT_EXPLICIT_TOGGLE_NAME,
         })
       ).toBeDisabled();
       await expect(page.getByText('Choose an AWS account first.', { exact: true })).toBeVisible();
@@ -97,7 +96,9 @@ test.describe('WizSelect', () => {
         { options: [], isTypeAhead }
       );
       await page
-        .getByRole(isTypeAhead ? 'combobox' : 'button', { name: WIZ_SELECT_EXPLICIT_TOGGLE_NAME })
+        .getByRole(isTypeAhead ? 'combobox' : 'button', {
+          name: isTypeAhead ? WIZ_SELECT_EXPLICIT_LABEL : WIZ_SELECT_EXPLICIT_TOGGLE_NAME,
+        })
         .click();
       await expect(page.getByRole('option', { name: 'No results found' })).toBeVisible();
       await checkOverlayAccessibility(page);
@@ -112,7 +113,7 @@ test.describe('WizSelect', () => {
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectExplicitHarness',
       { isTypeAhead: true, isLoading: true }
     );
-    const combo = page.getByRole('combobox', { name: WIZ_SELECT_EXPLICIT_TOGGLE_NAME });
+    const combo = page.getByRole('combobox', { name: WIZ_SELECT_EXPLICIT_LABEL });
     await expect(combo).toHaveValue('Loading...');
     await checkOverlayAccessibility(page);
     await combo.click();
@@ -134,7 +135,7 @@ test.describe('WizSelect', () => {
         ],
       }
     );
-    const combo = page.getByRole('combobox', { name: WIZ_SELECT_EXPLICIT_TOGGLE_NAME });
+    const combo = page.getByRole('combobox', { name: WIZ_SELECT_EXPLICIT_LABEL });
     await expect(combo).toHaveValue('');
     await checkOverlayAccessibility(page);
     await combo.click();
@@ -163,7 +164,7 @@ test.describe('WizSelect', () => {
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectExplicitHarness',
       { isTypeAhead: true }
     );
-    const combo = page.getByRole('combobox', { name: WIZ_SELECT_EXPLICIT_TOGGLE_NAME });
+    const combo = page.getByRole('combobox', { name: WIZ_SELECT_EXPLICIT_LABEL });
     await combo.click();
     await expect(page.getByRole('option', { name: 'eu-west-1', exact: true })).toBeVisible();
     await checkOverlayAccessibility(page);
@@ -244,7 +245,7 @@ test.describe('WizSelect', () => {
     await mount<typeof WizSelectDeferValidationHarness>(
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectDeferValidationHarness'
     );
-    const combo = page.getByRole('combobox', { name: /select the region/i });
+    const combo = page.getByRole('combobox', { name: 'Region' });
 
     await combo.click();
     await page.getByRole('option', { name: 'eu-west-1' }).click();
@@ -327,7 +328,7 @@ test.describe('WizSelect', () => {
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizSelect/WizSelect/WizSelectTypeaheadClearHarness'
     );
     const status = page.getByRole('status', { name: WIZ_SELECT_TYPEAHEAD_CLEAR_STATUS });
-    const combo = page.getByRole('combobox', { name: WIZ_SELECT_TYPEAHEAD_CLEAR_TOGGLE });
+    const combo = page.getByRole('combobox', { name: 'Region' });
 
     await expect(combo).toHaveValue('');
     await checkOverlayAccessibility(page);
