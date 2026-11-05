@@ -1,4 +1,5 @@
 import {
+  type ComponentProps,
   type FocusEventHandler,
   Fragment,
   type MouseEvent,
@@ -78,6 +79,8 @@ export interface MultiSelectProps<T = unknown> {
   keyPath?: string;
   options?: (Option<T> | string | number)[];
   optionGroups?: OptionGroup<T>[];
+  /** Heading level for option group labels; match the surrounding page headings. */
+  groupHeadingLevel?: ComponentProps<typeof SelectGroup>['labelHeadingLevel'];
   isFill?: boolean;
   /** Invoked when the refresh control is pressed. */
   onRefresh?: () => void;
@@ -120,6 +123,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
     keyPath = 'value',
     options,
     optionGroups,
+    groupHeadingLevel,
     isFill = true,
     onRefresh,
     isLoading,
@@ -245,7 +249,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
         isAriaDisabled={isAriaDisabled}
         tooltipProps={isAriaDisabled ? opt.tooltipProps : undefined}
         hasCheckbox
-        isSelected={rowSelected && !isAriaDisabled}
+        isSelected={rowSelected}
       >
         {toDisplayString(opt.label) || toDisplayString(opt.value)}
       </SelectOption>
@@ -286,7 +290,7 @@ export function MultiSelect<T = unknown>(props: MultiSelectProps<T>) {
           {toRender.map((group, index) => (
             <Fragment key={group.label}>
               {index > 0 ? <Divider /> : null}
-              <SelectGroup label={group.label}>
+              <SelectGroup label={group.label} labelHeadingLevel={groupHeadingLevel}>
                 <SelectList aria-label={`${label || placeholderText}: ${group.label}`}>
                   {group.options.map((opt: OptionType<T>, optIdx: number) =>
                     renderSelectOptionRow(opt, opt.id || `option-${group.label}-${optIdx}`)

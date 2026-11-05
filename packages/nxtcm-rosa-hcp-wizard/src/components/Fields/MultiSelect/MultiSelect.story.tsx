@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 
 import type { OptionGroup } from '../Select/SelectTypes';
-import { MultiSelect } from './MultiSelect';
+import { MultiSelect, type MultiSelectProps } from './MultiSelect';
 
 export interface MultiPlainHarnessProps {
   /** shows validation feedback */
@@ -62,18 +62,55 @@ const GROUPED_OPTIONS: OptionGroup<string>[] = [
   },
 ];
 
-export function MultiGroupedHarness() {
+export interface MultiGroupedHarnessProps {
+  /** heading level for grouped option labels */
+  groupHeadingLevel?: MultiSelectProps<string>['groupHeadingLevel'];
+  /** adds the heading hierarchy around the grouped field */
+  headingContext?: boolean;
+}
+
+export function MultiGroupedHarness({
+  groupHeadingLevel,
+  headingContext,
+}: MultiGroupedHarnessProps = {}) {
   const [value, setValue] = useState<string[]>([]);
   return (
     <Form>
+      {headingContext ? (
+        <>
+          <h1>Wizard</h1>
+          <h2>Basic setup</h2>
+          <h3>Details</h3>
+        </>
+      ) : null}
       <MultiSelect
         id="ct-multi-grouped"
         label="Grouped zones"
         value={value}
         onChange={setValue}
         optionGroups={GROUPED_OPTIONS}
+        groupHeadingLevel={groupHeadingLevel}
       />
       <span data-testid="multi-grouped-val">{value.length === 0 ? 'none' : value.join(',')}</span>
+    </Form>
+  );
+}
+
+export function MultiAriaDisabledSelectedHarness(): React.ReactElement {
+  const [value, setValue] = useState<string[]>(['a']);
+  return (
+    <Form>
+      <MultiSelect
+        id="ct-multi-aria-disabled"
+        label="Zones"
+        value={value}
+        onChange={setValue}
+        options={[
+          { label: 'a', value: 'a', ariaDisabled: true },
+          { label: 'b', value: 'b' },
+        ]}
+      />
+      <span data-testid="multi-aria-disabled-val">{value.join(',')}</span>
     </Form>
   );
 }

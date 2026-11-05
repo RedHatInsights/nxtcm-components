@@ -9,6 +9,7 @@ import type {
 } from '../../WizFields/WizMultiSelect/WizMultiSelect.story';
 import { WIZ_MULTI_EXPLICIT_HELPER } from '../../WizFields/WizMultiSelect/WizMultiSelect.story-data';
 import type {
+  MultiAriaDisabledSelectedHarness,
   MultiBadgeHarness,
   MultiGroupedHarness,
   MultiLegacyToggleHarness,
@@ -68,22 +69,62 @@ test.describe('MultiSelect', () => {
     await expect(toggle).toHaveAttribute('id', 'ct-multi-plain');
     await page.getByText('Zones', { exact: true }).click();
     await expect(toggle).toBeFocused();
-    const listbox = page.locator('#ct-multi-plain-listbox');
-    await expect(listbox).toBeVisible();
+    await expect(toggle).toHaveAttribute('aria-haspopup', 'menu');
+    const menu = page.getByRole('menu', { name: 'Zones', exact: true });
+    await expect(menu).toBeVisible();
     await checkMenuAccessibility(page);
-    await listbox.getByText('a', { exact: true }).click();
-    await listbox.getByText('b', { exact: true }).click();
+    await menu.getByText('a', { exact: true }).click();
+    await menu.getByText('b', { exact: true }).click();
     await expect(page.getByTestId('multi-val')).toHaveText('a,b');
+    await expect(menu.getByRole('checkbox', { name: 'a' })).toBeChecked();
+    await expect(menu.getByRole('checkbox', { name: 'b' })).toBeChecked();
     await checkMenuAccessibility(page);
     await expect(toggle).toHaveAccessibleName('Zones Select the zones 2');
-    await listbox.getByText('a', { exact: true }).click();
+    await menu.getByText('a', { exact: true }).click();
     await expect(page.getByTestId('multi-val')).toHaveText('b');
+    await expect(menu.getByRole('checkbox', { name: 'a' })).not.toBeChecked();
     await expect(toggle).toHaveAccessibleName('Zones Select the zones 1');
     await page.keyboard.press('Escape');
-    await expect(listbox).toBeHidden();
+    await expect(menu).toBeHidden();
     await checkMenuAccessibility(page);
     await page.keyboard.press('Tab');
     await checkAccessibility({ component });
+  });
+
+  test('selects checkboxes and dismisses the menu using only the keyboard', async ({
+    mount,
+    page,
+  }) => {
+    await mount<typeof MultiPlainHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/MultiSelect/MultiSelect/MultiPlainHarness'
+    );
+    const toggle = page.getByRole('button', { name: /^Zones Select the zones/ });
+    const menu = page.getByRole('menu', { name: 'Zones', exact: true });
+    await toggle.focus();
+    await expect(toggle).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(menu).toBeVisible();
+    await expect(toggle).toBeFocused();
+
+    await page.keyboard.press('ArrowDown');
+    const first = menu.getByRole('checkbox', { name: 'a', exact: true });
+    await expect(first).toBeFocused();
+    await page.keyboard.press('Space');
+    await expect(first).toBeChecked();
+    await expect(page.getByTestId('multi-val')).toHaveText('a');
+
+    await page.keyboard.press('ArrowDown');
+    const second = menu.getByRole('checkbox', { name: 'b', exact: true });
+    await expect(second).toBeFocused();
+    await page.keyboard.press('Space');
+    await expect(second).toBeChecked();
+    await expect(page.getByTestId('multi-val')).toHaveText('a,b');
+    await checkMenuAccessibility(page);
+
+    await page.keyboard.press('Escape');
+    await expect(menu).toBeHidden();
+    await expect(toggle).toBeFocused();
+    await expect(page.getByTestId('multi-val')).toHaveText('a,b');
   });
 
   test('exposes helper text as the toggle description', async ({ mount }) => {
@@ -135,10 +176,41 @@ test.describe('MultiSelect', () => {
     const groupB = page.getByRole('menu', { name: 'Grouped zones: Group B', exact: true });
     await expect(groupA).toBeVisible();
     await expect(groupB).toBeVisible();
+    await expect(groupA.locator(':scope > li')).toHaveCount(2);
+    await expect(groupB.locator(':scope > li')).toHaveCount(1);
     await checkMenuAccessibility(page);
     await groupA.getByRole('checkbox', { name: 'a1', exact: true }).check();
     await groupB.getByRole('checkbox', { name: 'b1', exact: true }).check();
     await expect(page.getByTestId('multi-grouped-val')).toHaveText('a1,b1');
+    await expect(groupA.getByRole('checkbox', { name: 'a1', exact: true })).toBeChecked();
+    await expect(groupB.getByRole('checkbox', { name: 'b1', exact: true })).toBeChecked();
+    await checkMenuAccessibility(page);
+  });
+
+  test('uses the configured heading level for option groups', async ({ mount, page }) => {
+    await mount<typeof MultiGroupedHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/MultiSelect/MultiSelect/MultiGroupedHarness',
+      { groupHeadingLevel: 'h4', headingContext: true }
+    );
+    await page.getByRole('button', { name: /select the grouped zones/i }).click();
+    await expect(page.getByRole('heading', { name: 'Details', level: 3 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Group A', level: 4 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Group B', level: 4 })).toBeVisible();
+    await checkMenuAccessibility(page);
+  });
+
+  test('keeps an aria-disabled selected checkbox checked', async ({ mount, page }) => {
+    await mount<typeof MultiAriaDisabledSelectedHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/MultiSelect/MultiSelect/MultiAriaDisabledSelectedHarness'
+    );
+    await page.getByRole('button', { name: /^Zones / }).click();
+    const menu = page.getByRole('menu', { name: 'Zones', exact: true });
+    const selected = menu.getByRole('checkbox', { name: 'a', exact: true });
+    await expect(selected).toBeChecked();
+    await expect(selected).toHaveAttribute('aria-disabled', 'true');
+    await menu.getByRole('checkbox', { name: 'b', exact: true }).check();
+    await expect(selected).toBeChecked();
+    await expect(page.getByTestId('multi-aria-disabled-val')).toHaveText('a,b');
     await checkMenuAccessibility(page);
   });
 

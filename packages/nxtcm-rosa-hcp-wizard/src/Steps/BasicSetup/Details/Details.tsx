@@ -206,6 +206,7 @@ export const Details = ({
               name={FIELD_NAME.CLUSTER_VERSION}
               schema={clusterValidationSchema}
               optionGroups={versionGroupsWithDisabled}
+              groupHeadingLevel="h4"
               isLoading={versions.isFetching}
               onRefresh={() => void versions.fetch()}
               apiError={versions.error}
