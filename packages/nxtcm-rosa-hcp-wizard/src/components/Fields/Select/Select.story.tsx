@@ -6,6 +6,10 @@ import { Select } from './Select';
 import type { OptionGroup } from './SelectTypes';
 
 export interface PlainMenuHarnessProps {
+  /** optional visible label; empty string exercises the unlabeled select */
+  label?: string;
+  /** optional placeholder for the select */
+  placeholder?: string;
   /** marks the field as required */
   isRequired?: boolean;
   /** disables the field */

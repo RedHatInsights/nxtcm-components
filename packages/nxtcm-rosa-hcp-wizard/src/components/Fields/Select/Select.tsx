@@ -375,8 +375,6 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     successMessage,
   });
 
-  const plainToggleAriaLabel = !toggleLabel && !isLoading ? placeholderText : undefined;
-
   /** Text shown inside the plain (non-typeahead) toggle button. */
   const plainToggleText = isLoading && !toggleLabel ? 'Loading...' : toggleLabel || placeholderText;
 
@@ -391,6 +389,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
       isVisible={tooltipVisible && !open}
     >
       <MenuToggle
+        id={id}
         ref={toggleRef}
         onClick={toggleOpen}
         onBlur={(e: React.FocusEvent<HTMLElement>) => {
@@ -404,12 +403,13 @@ export function Select<T = unknown>(props: SelectProps<T>) {
         isDisabled={!!disabled}
         isFullWidth
         status={getStatus(!!isError, !!isSuccess)}
-        aria-label={plainToggleAriaLabel}
+        aria-labelledby={label ? `${id}-label ${id}-toggle-text` : undefined}
         aria-haspopup="listbox"
         aria-describedby={describedBy || undefined}
+        aria-invalid={isError || undefined}
         data-testid={dataTestId}
       >
-        {plainToggleText}
+        <span id={`${id}-toggle-text`}>{plainToggleText}</span>
       </MenuToggle>
     </Tooltip>
   );
@@ -447,9 +447,14 @@ export function Select<T = unknown>(props: SelectProps<T>) {
             innerRef={textInputRef}
             placeholder={isLoading ? undefined : placeholderText}
             isExpanded={open}
-            autoComplete="off"
-            aria-label={placeholderText}
-            aria-describedby={describedBy || undefined}
+            inputId={id}
+            inputProps={{
+              'aria-label': label ? undefined : placeholderText,
+              'aria-labelledby': label ? `${id}-label` : undefined,
+              'aria-describedby': describedBy || undefined,
+              'aria-invalid': isError || undefined,
+              autoComplete: 'off',
+            }}
             role="combobox"
             aria-controls={open ? typeaheadListboxIds : undefined}
             id={`${id}-typeahead-input`}
@@ -491,7 +496,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     <InputGroup>
       <InputGroupItem isFill={isFill}>
         <PfSelect
-          id={id}
+          id={`${id}-menu`}
           isOpen={open}
           selected={selectedForMenu}
           onSelect={onPfSelect}
@@ -552,7 +557,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     <FormGroup
       id={`${id}-form-group`}
       fieldId={id}
-      label={label}
+      label={<span id={`${id}-label`}>{label}</span>}
       isRequired={isRequired}
       labelHelp={labelHelpEl}
     >

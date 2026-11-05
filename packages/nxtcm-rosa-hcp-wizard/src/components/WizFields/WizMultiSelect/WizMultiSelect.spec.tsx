@@ -65,7 +65,7 @@ test.describe('WizMultiSelect', () => {
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizMultiSelect/WizMultiSelect/WizMultiSelectExplicitHarness',
       { isLoading: true }
     );
-    const toggle = page.getByRole('button', { name: /^loading/i });
+    const toggle = page.getByRole('button', { name: /^Explicit multi label Loading/i });
     await expect(toggle).toBeVisible();
     await checkOverlayAccessibility(page);
     await toggle.click();

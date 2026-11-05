@@ -160,7 +160,7 @@ test.describe('Details (ROSA HCP)', () => {
 
       await component
         .locator('#associated_aws_id-form-group')
-        .getByRole('combobox', { name: d.awsInfraPlaceholder, exact: true })
+        .getByRole('combobox', { name: d.awsInfraLabel, exact: true })
         .click();
 
       await expect(
@@ -181,7 +181,7 @@ test.describe('Details (ROSA HCP)', () => {
 
       const awsCombo = component
         .locator('#associated_aws_id-form-group')
-        .getByRole('combobox', { name: d.awsInfraPlaceholder, exact: true });
+        .getByRole('combobox', { name: d.awsInfraLabel, exact: true });
       await expect(awsCombo).toHaveValue('Loading...');
     });
 
@@ -196,7 +196,7 @@ test.describe('Details (ROSA HCP)', () => {
 
       await component
         .locator('#associated_aws_id-form-group')
-        .getByRole('combobox', { name: d.awsInfraPlaceholder, exact: true })
+        .getByRole('combobox', { name: d.awsInfraLabel, exact: true })
         .click();
 
       await expect(page.getByRole('option', { name: /Loading/ })).toBeVisible();
@@ -233,7 +233,7 @@ test.describe('Details (ROSA HCP)', () => {
 
       const billingCombo = component
         .locator('#billing_account_id-form-group')
-        .getByRole('combobox', { name: d.billingPlaceholder, exact: true });
+        .getByRole('combobox', { name: d.billingLabel, exact: true });
       await expect(billingCombo).toHaveValue('Loading...');
     });
 
@@ -248,7 +248,7 @@ test.describe('Details (ROSA HCP)', () => {
 
       await component
         .locator('#billing_account_id-form-group')
-        .getByRole('combobox', { name: d.billingPlaceholder, exact: true })
+        .getByRole('combobox', { name: d.billingLabel, exact: true })
         .click();
 
       await expect(page.getByRole('option', { name: /Loading/ })).toBeVisible();
@@ -292,7 +292,7 @@ test.describe('Details (ROSA HCP)', () => {
 
       await component
         .locator('#region-form-group')
-        .getByRole('combobox', { name: d.regionPlaceholder, exact: true })
+        .getByRole('combobox', { name: d.regionLabel, exact: true })
         .click();
 
       for (const region of mockRegions) {
@@ -308,7 +308,7 @@ test.describe('Details (ROSA HCP)', () => {
 
       const regionCombo = component
         .locator('#region-form-group')
-        .getByRole('combobox', { name: d.regionPlaceholder, exact: true });
+        .getByRole('combobox', { name: d.regionLabel, exact: true });
       await expect(regionCombo).toHaveValue('Loading...');
     });
 
@@ -320,7 +320,7 @@ test.describe('Details (ROSA HCP)', () => {
 
       await component
         .locator('#region-form-group')
-        .getByRole('combobox', { name: d.regionPlaceholder, exact: true })
+        .getByRole('combobox', { name: d.regionLabel, exact: true })
         .click();
 
       await expect(page.getByRole('option', { name: /Loading/ })).toBeVisible();
@@ -364,14 +364,14 @@ test.describe('Details (ROSA HCP)', () => {
 
       await component
         .locator('#region-form-group')
-        .getByRole('combobox', { name: d.regionPlaceholder, exact: true })
+        .getByRole('combobox', { name: d.regionLabel, exact: true })
         .click();
       await page.getByText('US East (N. Virginia)', { exact: true }).click();
 
       await expect(
         component
           .locator('#region-form-group')
-          .getByRole('combobox', { name: d.regionPlaceholder, exact: true })
+          .getByRole('combobox', { name: d.regionLabel, exact: true })
       ).toHaveValue('US East (N. Virginia)');
     });
 
@@ -408,16 +408,12 @@ test.describe('Details (ROSA HCP)', () => {
         rosaHcpWizardFixtures.mockVPCs[0].id
       );
 
-      await component
-        .locator('#region-form-group')
-        .getByRole('combobox', { name: d.regionPlaceholder, exact: true })
-        .click();
-      // Typeahead: filter control lives in a child input (id is on the PF wrapper).
-      await component
-        .locator('#region-form-group')
-        .locator('#region-typeahead-input')
-        .locator('input')
-        .fill('Oregon');
+      const regionInput = component.getByRole('combobox', {
+        name: d.regionLabel,
+        exact: true,
+      });
+      await regionInput.click();
+      await regionInput.fill('Oregon');
       await page.getByRole('option', { name: 'US West (Oregon)', exact: true }).click();
 
       await expect
@@ -442,7 +438,7 @@ test.describe('Details (ROSA HCP)', () => {
 
       await component
         .locator('#cluster_version-form-group')
-        .getByRole('combobox', { name: d.openShiftVersionPlaceholder, exact: true })
+        .getByRole('combobox', { name: d.openShiftVersionLabel, exact: true })
         .click();
 
       await expect(page.getByText('OpenShift 4.16.2', { exact: true })).toBeVisible();
@@ -471,14 +467,14 @@ test.describe('Details (ROSA HCP)', () => {
 
       await component
         .locator('#cluster_version-form-group')
-        .getByRole('combobox', { name: d.openShiftVersionPlaceholder, exact: true })
+        .getByRole('combobox', { name: d.openShiftVersionLabel, exact: true })
         .click();
       await page.getByText('OpenShift 4.16.2', { exact: true }).click();
 
       await expect(
         component
           .locator('#cluster_version-form-group')
-          .getByRole('combobox', { name: d.openShiftVersionPlaceholder, exact: true })
+          .getByRole('combobox', { name: d.openShiftVersionLabel, exact: true })
       ).toHaveValue('OpenShift 4.16.2');
     });
   });
@@ -655,15 +651,12 @@ test.describe('Details (ROSA HCP)', () => {
 
       await nameInput.fill('');
 
-      await component
-        .locator('#region-form-group')
-        .getByRole('combobox', { name: d.regionPlaceholder, exact: true })
-        .click();
-      await component
-        .locator('#region-form-group')
-        .locator('#region-typeahead-input')
-        .locator('input')
-        .fill('Oregon');
+      const regionInput = component.getByRole('combobox', {
+        name: d.regionLabel,
+        exact: true,
+      });
+      await regionInput.click();
+      await regionInput.fill('Oregon');
       await page.getByRole('option', { name: 'US West (Oregon)', exact: true }).click();
 
       await expect(component.getByText('Cluster name already exists.')).toBeHidden();
@@ -681,15 +674,12 @@ test.describe('Details (ROSA HCP)', () => {
         }
       );
 
-      await component
-        .locator('#region-form-group')
-        .getByRole('combobox', { name: d.regionPlaceholder, exact: true })
-        .click();
-      await component
-        .locator('#region-form-group')
-        .locator('#region-typeahead-input')
-        .locator('input')
-        .fill('Oregon');
+      const regionInput = component.getByRole('combobox', {
+        name: d.regionLabel,
+        exact: true,
+      });
+      await regionInput.click();
+      await regionInput.fill('Oregon');
       await page.getByRole('option', { name: 'US West (Oregon)', exact: true }).click();
 
       await expect
@@ -761,7 +751,7 @@ test.describe('Details (ROSA HCP)', () => {
 
       await component
         .locator('#billing_account_id-form-group')
-        .getByRole('combobox', { name: d.billingPlaceholder, exact: true })
+        .getByRole('combobox', { name: d.billingLabel, exact: true })
         .click();
       await page.getByText('Billing Account - Secondary (234567890123)', { exact: true }).click();
 
@@ -789,14 +779,14 @@ test.describe('Details (ROSA HCP)', () => {
 
       await component
         .locator('#region-form-group')
-        .getByRole('combobox', { name: d.regionPlaceholder, exact: true })
+        .getByRole('combobox', { name: d.regionLabel, exact: true })
         .click();
       await page.getByText('US East (N. Virginia)', { exact: true }).click();
 
       await expect(
         component
           .locator('#region-form-group')
-          .getByRole('combobox', { name: d.regionPlaceholder, exact: true })
+          .getByRole('combobox', { name: d.regionLabel, exact: true })
       ).toHaveValue('US East (N. Virginia)');
       await expect
         .poll(() =>
@@ -841,7 +831,7 @@ test.describe('Details (ROSA HCP)', () => {
 
     await component
       .locator('#cluster_version-form-group')
-      .getByRole('combobox', { name: d.openShiftVersionPlaceholder, exact: true })
+      .getByRole('combobox', { name: d.openShiftVersionLabel, exact: true })
       .click();
 
     const latestGroup = page.locator('section').filter({
@@ -878,7 +868,7 @@ test.describe('Details (ROSA HCP)', () => {
 
     await component
       .locator('#cluster_version-form-group')
-      .getByRole('combobox', { name: d.openShiftVersionPlaceholder, exact: true })
+      .getByRole('combobox', { name: d.openShiftVersionLabel, exact: true })
       .click();
 
     await expect(
@@ -921,7 +911,7 @@ test.describe('Details (ROSA HCP)', () => {
 
     await component
       .locator('#cluster_version-form-group')
-      .getByRole('combobox', { name: d.openShiftVersionPlaceholder, exact: true })
+      .getByRole('combobox', { name: d.openShiftVersionLabel, exact: true })
       .click();
 
     await expect(page.getByRole('option', { name: /^OpenShift 4\.14\.0$/ })).toBeDisabled();
@@ -955,7 +945,7 @@ test.describe('Details (ROSA HCP)', () => {
 
     await component
       .locator('#cluster_version-form-group')
-      .getByRole('combobox', { name: d.openShiftVersionPlaceholder, exact: true })
+      .getByRole('combobox', { name: d.openShiftVersionLabel, exact: true })
       .click();
 
     await page.getByRole('option', { name: /^OpenShift 4\.14\.0$/ }).hover();

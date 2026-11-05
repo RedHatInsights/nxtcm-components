@@ -269,23 +269,56 @@ type SoloRadioValues = {
   tier?: string;
 };
 
+const hideLabelModeSchema = yup.string().meta({
+  label: WIZ_RADIO_GROUP_HIDE_LABEL_YUP_LABEL,
+});
+
 const hideLabelYupSchema = yup.object({
-  mode: yup.string().meta({
-    label: WIZ_RADIO_GROUP_HIDE_LABEL_YUP_LABEL,
-  }),
+  mode: hideLabelModeSchema,
 });
 
 type HideLabelFormValues = yup.InferType<typeof hideLabelYupSchema>;
 
-export function WizRadioGroupHideLabelHarness() {
+export interface WizRadioGroupHideLabelHarnessProps {
+  /** hide the visible label through the connected field prop */
+  hideLabel?: boolean;
+  /** control the visible label through schema metadata */
+  fieldSetLegend?: boolean;
+  /** override the schema label */
+  label?: string;
+  /** supply an explicit accessible name */
+  ariaLabel?: string;
+  /** supply an external heading as the accessible name */
+  heading?: string;
+}
+
+export function WizRadioGroupHideLabelHarness({
+  hideLabel = true,
+  fieldSetLegend,
+  label,
+  ariaLabel,
+  heading,
+}: WizRadioGroupHideLabelHarnessProps = {}): React.ReactElement {
   const methods = useForm<HideLabelFormValues>({
     defaultValues: { mode: undefined },
+  });
+  const schema = hideLabelYupSchema.shape({
+    mode: hideLabelModeSchema.meta({ fieldSetLegend }),
   });
 
   return withRosaCt(
     <FormProvider {...methods}>
       <Form>
-        <WizRadioGroup<HideLabelFormValues> name="mode" schema={hideLabelYupSchema} hideLabel>
+        {heading && <h2 id="wiz-radio-group-heading">{heading}</h2>}
+        <WizRadioGroup<HideLabelFormValues>
+          name="mode"
+          schema={schema}
+          hideLabel={hideLabel}
+          label={label}
+          aria-label={ariaLabel}
+          aria-labelledby={heading ? 'wiz-radio-group-heading' : undefined}
+          helperText={WIZ_RADIO_GROUP_YUP_META_HELPER}
+        >
           <Radio id="wiz-radio-hide-a" label="Hidden label option A" value="a" />
           <Radio id="wiz-radio-hide-b" label="Hidden label option B" value="b" />
         </WizRadioGroup>

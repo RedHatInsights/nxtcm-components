@@ -1,39 +1,33 @@
-import React, { type InputHTMLAttributes, type SyntheticEvent, useState } from 'react';
+import React, { type SyntheticEvent, useState } from 'react';
 
 import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 
-import { NumberInput } from './NumberInput';
+import { NumberInput, type NumberInputProps } from './NumberInput';
 
 const NUMBER_HARNESS_FIELD_LABEL = 'Worker count';
 
-export interface NumberHarnessProps {
-  zeroIsUndefined?: boolean;
+export interface NumberHarnessProps extends Pick<
+  NumberInputProps,
+  'zeroIsUndefined' | 'helperText' | 'errorMessage' | 'isError' | 'inputAriaLabel' | 'inputProps'
+> {
   initial?: number;
   /** marks the field as required */
   isRequired?: boolean;
-  helperText?: string;
-  /** shows validation feedback */
-  isError?: boolean;
-  /** validation feedback */
-  errorMessage?: string;
-  inputProps?: InputHTMLAttributes<HTMLInputElement>;
 }
 
 export function NumberHarness({
-  zeroIsUndefined,
   initial = 2,
-  ...fieldProps
+  ...props
 }: NumberHarnessProps = {}): React.ReactElement {
   const [value, setValue] = useState<number | undefined>(initial);
   return (
     <Form>
       <NumberInput
+        {...props}
         id="ct-num"
         label={NUMBER_HARNESS_FIELD_LABEL}
         value={value}
         min={0}
-        zeroIsUndefined={zeroIsUndefined}
-        {...fieldProps}
         onChange={(_e: SyntheticEvent, v: number | undefined) => setValue(v)}
       />
     </Form>

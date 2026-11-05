@@ -28,10 +28,9 @@ const vpcRefreshFormDefaults = {
   cluster_version: '4.16.2',
 } as const;
 
-/** Typeahead combobox accessible name is the explicit {@link MachinePools} `placeholder` (not derived from label). */
 const ctRegion = 'us-east-1';
-const vpcSelectMenuName = `${mp.vpcPlaceholder} ${ctRegion}`;
-const instanceTypeSelectName = 'Select the compute node instance type';
+const vpcSelectMenuName = `${mp.vpcLabelPrefix} ${ctRegion}`;
+const instanceTypeSelectName = mp.instanceTypeLabel;
 
 /**
  * Opens the VPC typeahead and chooses an option. Combobox name stays {@link vpcSelectMenuName} after selection.
@@ -70,7 +69,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
     );
 
     const subnetCombo = component.getByRole('combobox', {
-      name: mp.subnetPlaceholder,
+      name: mp.subnetLabel,
       exact: true,
     });
     await expect(subnetCombo).toBeDisabled();
@@ -87,7 +86,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
     await selectVpc(component, page, fixtureVpc1.name);
 
     const subnetCombo = component.getByRole('combobox', {
-      name: mp.subnetPlaceholder,
+      name: mp.subnetLabel,
       exact: true,
     });
     await expect(subnetCombo).toBeEnabled();
@@ -116,7 +115,7 @@ test.describe('MachinePools (ROSA HCP)', () => {
     await selectVpc(component, page, fixtureVpc2.name);
 
     const subnetCombo = component.getByRole('combobox', {
-      name: mp.subnetPlaceholder,
+      name: mp.subnetLabel,
       exact: true,
     });
     await expect(subnetCombo).toHaveValue('');

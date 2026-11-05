@@ -46,6 +46,9 @@ test.describe('WizRadioGroup', () => {
       'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupExplicitHarness'
     );
     await expect(mounted.getByText(WIZ_RADIO_GROUP_EXPLICIT_LABEL, { exact: true })).toBeVisible();
+    await expect(mounted.getByRole('radiogroup')).toHaveAccessibleName(
+      WIZ_RADIO_GROUP_EXPLICIT_LABEL
+    );
     await expect(mounted.getByText(WIZ_RADIO_GROUP_EXPLICIT_HELPER, { exact: true })).toBeVisible();
     await expect(mounted.getByRole('radiogroup')).toHaveAttribute(
       'aria-label',
@@ -167,21 +170,49 @@ test.describe('WizRadioGroup', () => {
     await expect(mounted.getByText(String(909), { exact: true })).toBeVisible();
   });
 
-  test('omits the group label when hideLabel is set even if Yup meta defines one', async ({
-    mount,
-  }) => {
-    const mounted = await mount<typeof WizRadioGroupHideLabelHarness>(
-      'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupHideLabelHarness'
-    );
-    await expect(
-      mounted.getByText(WIZ_RADIO_GROUP_HIDE_LABEL_YUP_LABEL, { exact: true })
-    ).toHaveCount(0);
-    const radiogroup = mounted.getByRole('radiogroup');
-    await expect(radiogroup).toBeVisible();
-    await expect(radiogroup).toHaveAccessibleName(WIZ_RADIO_GROUP_HIDE_LABEL_YUP_LABEL);
-    await expect(mounted.getByRole('radio', { name: /hidden label option a/i })).toBeVisible();
-    await checkAccessibility({ component: mounted });
-  });
+  for (const { title, props } of [
+    { title: 'hideLabel', props: { hideLabel: true } },
+    { title: 'schema fieldSetLegend', props: { hideLabel: false, fieldSetLegend: false } },
+  ]) {
+    test(`retains the accessible name when ${title} hides the visible label`, async ({ mount }) => {
+      const mounted = await mount<typeof WizRadioGroupHideLabelHarness>(
+        'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupHideLabelHarness',
+        props
+      );
+      await expect(
+        mounted.getByText(WIZ_RADIO_GROUP_HIDE_LABEL_YUP_LABEL, { exact: true })
+      ).toHaveCount(0);
+      const radiogroup = mounted.getByRole('radiogroup');
+      await expect(radiogroup).toBeVisible();
+      await expect(radiogroup).toHaveAccessibleName(WIZ_RADIO_GROUP_HIDE_LABEL_YUP_LABEL);
+      await expect(radiogroup).not.toHaveAttribute('aria-labelledby');
+      await expect(radiogroup).toHaveAccessibleDescription(WIZ_RADIO_GROUP_YUP_META_HELPER);
+      const option = radiogroup.getByRole('radio', { name: 'Hidden label option A' });
+      await expect(option).toBeVisible();
+      await option.check();
+      await expect(option).toBeChecked();
+      await expect(radiogroup).toHaveAccessibleName(WIZ_RADIO_GROUP_HIDE_LABEL_YUP_LABEL);
+      await checkAccessibility({ component: mounted });
+    });
+  }
+
+  for (const { title, props, name } of [
+    { title: 'an explicit label', props: { label: 'Custom mode' }, name: 'Custom mode' },
+    { title: 'aria-label', props: { ariaLabel: 'Accessible mode' }, name: 'Accessible mode' },
+    {
+      title: 'aria-labelledby over aria-label',
+      props: { heading: 'Mode settings', ariaLabel: 'Accessible mode' },
+      name: 'Mode settings',
+    },
+  ]) {
+    test(`uses ${title} when the visible label is hidden`, async ({ mount }) => {
+      const mounted = await mount<typeof WizRadioGroupHideLabelHarness>(
+        'nxtcm-rosa-hcp-wizard/components/WizFields/WizRadioGroup/WizRadioGroup/WizRadioGroupHideLabelHarness',
+        props
+      );
+      await expect(mounted.getByRole('radiogroup')).toHaveAccessibleName(name);
+    });
+  }
 
   test('binds through the control prop without a FormProvider wrapper', async ({ mount }) => {
     const mounted = await mount<typeof WizRadioGroupExplicitControlOnlyHarness>(

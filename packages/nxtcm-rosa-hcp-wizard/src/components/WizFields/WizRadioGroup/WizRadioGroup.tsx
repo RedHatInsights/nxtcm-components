@@ -29,6 +29,7 @@ type WizRadioGroupSpreadProps = Omit<
 export type WizRadioGroupProps<TFieldValues extends FieldValues = FieldValues> =
   WizRadioGroupSpreadProps &
     WizRhfBoundFieldProps<TFieldValues> & {
+      /** hide the visible label while retaining the group's accessible name */
       hideLabel?: boolean;
     };
 
@@ -54,7 +55,7 @@ export function WizRadioGroup<TFieldValues extends FieldValues = FieldValues>(
     labelHelp: labelHelpProp,
     labelHelpTitle: labelHelpTitleProp,
     hideLabel,
-    'aria-label': ariaLabelFromProps,
+    'aria-label': ariaLabel,
     ...rest
   } = props;
 
@@ -82,15 +83,14 @@ export function WizRadioGroup<TFieldValues extends FieldValues = FieldValues>(
 
   const stepValidationRevealed = useWizStepValidationRevealed(String(name));
   const showError = wizFieldShowsError(invalid, isTouched, isSubmitted || stepValidationRevealed);
+  const isLabelHidden = fieldSetLegend === false || hideLabel;
 
   return (
     <RadioGroup
       {...rest}
       id={id}
-      label={fieldSetLegend === false || hideLabel ? undefined : label}
-      aria-label={
-        hideLabel || fieldSetLegend === false ? (ariaLabelFromProps ?? label) : ariaLabelFromProps
-      }
+      label={isLabelHidden ? undefined : label}
+      aria-label={ariaLabel ?? (isLabelHidden ? label : undefined)}
       helperText={helperText}
       labelHelp={labelHelp}
       labelHelpTitle={labelHelpTitle}
