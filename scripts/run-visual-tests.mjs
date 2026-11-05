@@ -21,7 +21,11 @@ if (args.includes('--inside-container')) {
     const status = run('node', ['scripts/setup-react-version.mjs', react]);
     if (status !== 0) process.exit(status);
   }
-  process.exit(run('npm', ['run', 'test:e2e', '--', ...args]));
+  process.exit(
+    run('npm', ['run', 'test:e2e', '--', ...args], {
+      env: { ...process.env, PLAYWRIGHT_INCLUDE_VISUAL_TESTS: 'true' },
+    })
+  );
 }
 
 const engines = process.env.CONTAINER_ENGINE

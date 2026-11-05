@@ -157,6 +157,10 @@ Screenshot baselines are shared across host operating systems. Generate and comp
 inside the pinned Linux/amd64 Playwright container so browser binaries, fonts, and rendering
 match CI. Native runs can render differently, even with the same viewport.
 
+Native `npm run test:e2e` and `npm run test:e2e:coverage` runs exclude `*-visual.spec.ts`
+files. Use the container commands below for screenshot comparisons. The container runner
+enables these specs for both visual-only runs and the full E2E suite (`--all`).
+
 Start Docker or rootless Podman, then run:
 
 ```bash

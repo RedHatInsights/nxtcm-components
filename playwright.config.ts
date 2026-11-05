@@ -45,6 +45,9 @@ export default defineConfig({
       name: 'e2e',
       testDir: path.join(__dirname, 'playwright/e2e'),
       testMatch: '**/*.spec.ts',
+      // Shared screenshot baselines are only comparable in the pinned container.
+      testIgnore:
+        process.env.PLAYWRIGHT_INCLUDE_VISUAL_TESTS === 'true' ? [] : '**/*-visual.spec.ts',
       timeout: 30_000,
       snapshotPathTemplate: '{testDir}/{testFilePath}-snapshots/{arg}-{projectName}{ext}',
       outputDir: './test-results',
