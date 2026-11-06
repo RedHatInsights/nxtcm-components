@@ -1,7 +1,7 @@
 import type { Page } from './fixtures';
 import { expect, test } from './fixtures';
 import { checkPageAccessibility } from './helpers/accessibility-helpers';
-import { navigateToYamlEditor } from './helpers/yaml-editor-helpers';
+import { makeFirstLineInvalid, navigateToYamlEditor } from './helpers/yaml-editor-helpers';
 
 // The E2E harness mounts the library without a consuming application's shell.
 // These structural rules are covered by the host application and are not
@@ -98,5 +98,33 @@ test.describe('Page-level accessibility', () => {
     await checkPageAccessibility(page, 'YAML discard dialog contrast', harnessRules, {
       include: '[role="dialog"]',
     });
+  });
+
+  test('scans the YAML editor with a validation error', async ({ page }) => {
+    await navigateToYamlEditor(page);
+    await makeFirstLineInvalid(page);
+    await page.keyboard.press('Shift+Tab');
+    await expect(page.getByTestId('yaml-validation-live-region').getByRole('listitem')).toHaveCount(
+      1
+    );
+    // Same color-contrast exception as the default editor scan.
+    // False positive: Monaco's hidden input scrolls once focused; users enter via the wrapper.
+    await checkPageAccessibility(
+      page,
+      'YAML editor validation error',
+      [...harnessRules, 'color-contrast'],
+      { exclude: '.monaco-editor .native-edit-context, .monaco-editor textarea' }
+    );
+  });
+
+  test('scans the YAML editor with the schema panel closed', async ({ page }) => {
+    await navigateToYamlEditor(page);
+    await page.getByRole('button', { name: 'Toggle schema panel' }).press('Enter');
+    await expect(page.getByRole('heading', { name: /ROSAControlPlane schema/i })).toBeHidden();
+    // Same color-contrast exception as the default editor scan.
+    await checkPageAccessibility(page, 'YAML editor schema panel closed', [
+      ...harnessRules,
+      'color-contrast',
+    ]);
   });
 });

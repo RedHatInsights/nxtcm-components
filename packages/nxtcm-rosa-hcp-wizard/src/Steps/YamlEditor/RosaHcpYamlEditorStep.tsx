@@ -1,15 +1,33 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import {
+  forwardRef,
+  Fragment,
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useId,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 
 import type { EditorDidMount } from '@patternfly/react-code-editor';
 import { CodeEditor, Language } from '@patternfly/react-code-editor';
-import { Alert } from '@patternfly/react-core/dist/dynamic/components/Alert';
+import { Alert, AlertGroup } from '@patternfly/react-core/dist/dynamic/components/Alert';
 import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
+import {
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
+} from '@patternfly/react-core/dist/dynamic/components/DescriptionList';
 import {
   Drawer,
   DrawerContent,
   DrawerContentBody,
 } from '@patternfly/react-core/dist/dynamic/components/Drawer';
+import { Label } from '@patternfly/react-core/dist/dynamic/components/Label';
 import { Tooltip } from '@patternfly/react-core/dist/dynamic/components/Tooltip';
+import { Flex, FlexItem } from '@patternfly/react-core/dist/dynamic/layouts/Flex';
 import OpenDrawerRightIcon from '@patternfly/react-icons/dist/esm/icons/open-drawer-right-icon';
 import type * as MonacoTypes from 'monaco-editor';
 import { useWatch } from 'react-hook-form';
@@ -28,6 +46,36 @@ export type YamlEditorHandle = {
   hasSchemaErrors: () => boolean;
   getYaml: () => string;
 };
+
+type ShortcutKeyCombo = {
+  keys: string[];
+  platform?: string;
+};
+
+type EditorShortcut = {
+  combos: ShortcutKeyCombo[];
+  description: string;
+};
+
+const ShortcutKeys = ({ keys, platform }: ShortcutKeyCombo): ReactElement => (
+  <Flex
+    flexWrap={{ default: 'nowrap' }}
+    gap={{ default: 'gapXs' }}
+    alignItems={{ default: 'alignItemsCenter' }}
+  >
+    {keys.map((key, index) => (
+      <Fragment key={key}>
+        {index > 0 && <FlexItem>+</FlexItem>}
+        <FlexItem>
+          <Label variant="outline" isCompact>
+            <kbd>{key}</kbd>
+          </Label>
+        </FlexItem>
+      </Fragment>
+    ))}
+    {platform && <FlexItem>({platform})</FlexItem>}
+  </Flex>
+);
 
 export type RosaHcpYamlEditorStepProps = {
   onClose?: () => void;
@@ -49,6 +97,10 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
     const [parseError, setParseError] = useState('');
     const [showSchema, setShowSchema] = useState(true);
 
+    const instructionsId = useId();
+    const editorWrapperRef = useRef<HTMLElement | null>(null);
+    const schemaToggleRef = useRef<HTMLButtonElement>(null);
+    const schemaPanelId = useId();
     const editorRef = useRef<MonacoTypes.editor.IStandaloneCodeEditor | null>(null);
     const monacoRef = useRef<typeof MonacoTypes | null>(null);
     const monacoYamlDisposeRef = useRef<(() => void) | null>(null);
@@ -132,10 +184,27 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
       [setEditorMarkers]
     );
 
+    // CodeEditor has no props to name its focusable wrapper, so set them on the DOM.
+    const labelEditorWrapper = useCallback(() => {
+      const wrapper = editorWrapperRef.current;
+      if (!wrapper) return;
+      wrapper.setAttribute('role', 'group');
+      wrapper.setAttribute('aria-label', yamlStrings.editorAriaLabel);
+      wrapper.setAttribute('aria-describedby', instructionsId);
+    }, [yamlStrings.editorAriaLabel, instructionsId]);
+
+    useEffect(() => {
+      labelEditorWrapper();
+    }, [labelEditorWrapper]);
+
     const handleEditorDidMount: EditorDidMount = useCallback(
       (editor, monaco) => {
         editorRef.current = editor;
         monacoRef.current = monaco;
+        editorWrapperRef.current = editor
+          .getContainerDomNode()
+          .closest<HTMLElement>('[tabindex="0"]');
+        labelEditorWrapper();
 
         // Expose editor for E2E testing
         if (import.meta.env.DEV) {
@@ -167,7 +236,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         pendingYamlRef.current = editor.getValue();
         setEditorMarkers(editor.getValue(), false);
       },
-      [setEditorMarkers, generator]
+      [setEditorMarkers, generator, labelEditorWrapper]
     );
 
     useEffect(() => {
@@ -203,11 +272,23 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
       [onClose, setEditorMarkers]
     );
 
+    const primarySchema = generator.resourceSchemas?.find((s) => s.primary)?.schema;
+
+    // The close button unmounts with the panel, so move focus to the toggle.
+    const closeSchemaPanel = useCallback(() => {
+      setShowSchema(false);
+      schemaToggleRef.current?.focus();
+    }, []);
+
     const schemaToggleControl = (
       <Tooltip content={showSchema ? yamlStrings.schemaHideTooltip : yamlStrings.schemaShowTooltip}>
         <Button
+          ref={schemaToggleRef}
           variant="plain"
           aria-label={yamlStrings.schemaToggleAriaLabel}
+          aria-expanded={showSchema}
+          // The panel unmounts when closed.
+          aria-controls={showSchema && primarySchema ? schemaPanelId : undefined}
           data-testid="schema-panel-toggle"
           onClick={() => setShowSchema((v) => !v)}
         >
@@ -216,27 +297,70 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
       </Tooltip>
     );
 
-    const primarySchema = generator.resourceSchemas?.find((s) => s.primary)?.schema;
-    const hasResourceSchemas = (generator.resourceSchemas?.length ?? 0) > 0;
+    const shortcuts: EditorShortcut[] = [
+      { combos: [{ keys: ['Down Arrow'] }], description: yamlStrings.shortcutStartEditing },
+      { combos: [{ keys: ['Shift', 'Tab'] }], description: yamlStrings.shortcutLeaveEditor },
+      {
+        combos: [
+          { keys: ['Ctrl', 'M'] },
+          { keys: ['Ctrl', 'Shift', 'M'], platform: yamlStrings.shortcutsMacLabel },
+        ],
+        description: yamlStrings.shortcutToggleTabFocus,
+      },
+      { combos: [{ keys: ['F8'] }], description: yamlStrings.shortcutNextProblem },
+      { combos: [{ keys: ['Shift', 'F8'] }], description: yamlStrings.shortcutPreviousProblem },
+      { combos: [{ keys: ['F1'] }], description: yamlStrings.shortcutCommandPalette },
+    ];
+
+    const shortcutsPopoverProps = {
+      'aria-label': yamlStrings.shortcutsAriaLabel,
+      maxWidth: '34rem',
+      bodyContent: (
+        <DescriptionList isHorizontal isCompact termWidth="30ch">
+          {shortcuts.map(({ combos, description }) => (
+            <DescriptionListGroup key={description}>
+              <DescriptionListTerm>
+                <Flex direction={{ default: 'column' }} gap={{ default: 'gapXs' }}>
+                  {combos.map((combo) => (
+                    <ShortcutKeys key={combo.keys.join('+')} {...combo} />
+                  ))}
+                </Flex>
+              </DescriptionListTerm>
+              <DescriptionListDescription>{description}</DescriptionListDescription>
+            </DescriptionListGroup>
+          ))}
+        </DescriptionList>
+      ),
+    };
 
     return (
       <div className="rosa-hcp-yaml-editor-step">
-        {parseError && (
-          <Alert
-            variant="danger"
-            isInline
-            title={yamlStrings.parseErrorTitle}
-            className="pf-v6-u-mb-sm"
-          >
-            {parseError}
-          </Alert>
-        )}
+        <span id={instructionsId} hidden>
+          {yamlStrings.editorInstructions}
+        </span>
+        <AlertGroup isLiveRegion data-testid="yaml-validation-live-region">
+          {/* Not &&: AlertGroup would wrap '' in an empty <li>. */}
+          {parseError ? (
+            <Alert
+              variant="danger"
+              isInline
+              title={yamlStrings.parseErrorTitle}
+              className="pf-v6-u-mb-sm"
+            >
+              {parseError}
+            </Alert>
+          ) : null}
+        </AlertGroup>
 
-        <Drawer isInline isExpanded={showSchema} position="end">
+        <Drawer isInline isExpanded={showSchema && Boolean(primarySchema)} position="end">
           <DrawerContent
             panelContent={
               showSchema && primarySchema ? (
-                <RosaHcpSchemaPanel onClose={() => setShowSchema(false)} schema={primarySchema} />
+                <RosaHcpSchemaPanel
+                  id={schemaPanelId}
+                  onClose={closeSchemaPanel}
+                  schema={primarySchema}
+                />
               ) : undefined
             }
           >
@@ -249,8 +373,13 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
                 isFullHeight
                 isCopyEnabled
                 isDownloadEnabled
-                customControls={hasResourceSchemas ? schemaToggleControl : undefined}
+                customControls={primarySchema ? schemaToggleControl : undefined}
+                shortcutsPopoverButtonText={yamlStrings.shortcutsButtonText}
+                shortcutsPopoverProps={shortcutsPopoverProps}
                 options={{
+                  ariaLabel: yamlStrings.editorAriaLabel,
+                  // 'auto' never detects a screen reader in browsers.
+                  accessibilitySupport: 'on',
                   minimap: { enabled: false },
                   scrollBeyondLastLine: false,
                   fontSize: 14,

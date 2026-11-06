@@ -137,4 +137,141 @@ test.describe('RosaHcpYamlEditorFooter', () => {
       )
       .toHaveLength(0);
   });
+
+  test.describe('Keyboard', () => {
+    const STORY = 'nxtcm-rosa-hcp-wizard/Footer/RosaHcpYamlEditorFooter/YamlEditorFooterMount';
+
+    for (const key of ['Enter', 'Space'] as const) {
+      test(`${key} on Discard changes opens the dialog and focuses its first control`, async ({
+        mount,
+        page,
+      }) => {
+        const component = await mount<typeof YamlEditorFooterMount>(STORY);
+
+        await component.getByRole('button', { name: s.discardChanges }).press(key);
+
+        const dialog = page.getByRole('dialog', { name: s.discardConfirmTitle });
+        await expect(dialog).toBeVisible();
+        await expect(dialog).toHaveAccessibleDescription(s.discardConfirmBody);
+        // Modal focuses its first tabbable element: the close button.
+        await expect(
+          dialog.getByRole('button', { name: s.discardModalCloseAriaLabel })
+        ).toBeFocused();
+      });
+    }
+
+    test('Tab and Shift+Tab keep focus inside the dialog', async ({ mount, page }) => {
+      const component = await mount<typeof YamlEditorFooterMount>(STORY);
+      await component.getByRole('button', { name: s.discardChanges }).press('Enter');
+
+      const dialog = page.getByRole('dialog', { name: s.discardConfirmTitle });
+      const close = dialog.getByRole('button', { name: s.discardModalCloseAriaLabel });
+      const confirm = dialog.getByRole('button', { name: s.discardConfirmYes });
+      const cancel = dialog.getByRole('button', { name: w.cancel, exact: true });
+      await expect(close).toBeFocused();
+
+      for (const next of [confirm, cancel, close]) {
+        await page.keyboard.press('Tab');
+        await expect(next).toBeFocused();
+      }
+      for (const previous of [cancel, confirm, close]) {
+        await page.keyboard.press('Shift+Tab');
+        await expect(previous).toBeFocused();
+      }
+    });
+
+    test('Escape closes the dialog and returns focus to Discard changes', async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount<typeof YamlEditorFooterMount>(STORY, { onClose: true });
+      const discard = component.getByRole('button', { name: s.discardChanges });
+      await discard.press('Enter');
+      await expect(page.getByRole('dialog')).toBeVisible();
+
+      await page.keyboard.press('Escape');
+
+      await expect(page.getByRole('dialog')).toBeHidden();
+      await expect(discard).toBeFocused();
+      await expect(component.getByTestId('onClose-count')).toHaveValue('0');
+    });
+
+    test('Cancel closes the dialog and returns focus to Discard changes', async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount<typeof YamlEditorFooterMount>(STORY, { onClose: true });
+      const discard = component.getByRole('button', { name: s.discardChanges });
+      await discard.press('Enter');
+
+      await page
+        .getByRole('dialog')
+        .getByRole('button', { name: w.cancel, exact: true })
+        .press('Enter');
+
+      await expect(page.getByRole('dialog')).toBeHidden();
+      await expect(discard).toBeFocused();
+      await expect(component.getByTestId('onClose-count')).toHaveValue('0');
+    });
+
+    test('Enter on Yes closes the dialog and calls onClose', async ({ mount, page }) => {
+      const component = await mount<typeof YamlEditorFooterMount>(STORY, { onClose: true });
+      await component.getByRole('button', { name: s.discardChanges }).press('Enter');
+
+      await page
+        .getByRole('dialog')
+        .getByRole('button', { name: s.discardConfirmYes })
+        .press('Enter');
+
+      await expect(page.getByRole('dialog')).toBeHidden();
+      await expect(component.getByTestId('onClose-count')).toHaveValue('1');
+    });
+
+    for (const key of ['Enter', 'Space'] as const) {
+      test(`${key} on Create cluster submits the YAML`, async ({ mount }) => {
+        const component = await mount<typeof YamlEditorFooterMount>(STORY, {
+          yamlContent: 'kind: ROSAControlPlane',
+          onSubmit: true,
+        });
+
+        await component.getByRole('button', { name: w.createCluster }).press(key);
+
+        await expect(component.getByTestId('onSubmit-count')).toHaveValue('1');
+      });
+    }
+
+    test('Enter on Create cluster does not submit while the YAML has schema errors', async ({
+      mount,
+    }) => {
+      const component = await mount<typeof YamlEditorFooterMount>(STORY, {
+        hasSchemaErrors: true,
+        onSubmit: true,
+      });
+      const createCluster = component.getByRole('button', { name: w.createCluster });
+
+      await createCluster.press('Enter');
+
+      await expect(component.getByTestId('onSubmit-count')).toHaveValue('0');
+      await expect(createCluster).toBeFocused();
+    });
+
+    test('Enter on Cancel cluster creation calls onCancel', async ({ mount }) => {
+      const component = await mount<typeof YamlEditorFooterMount>(STORY, { onCancel: true });
+
+      await component.getByRole('button', { name: s.cancelCreation }).press('Enter');
+
+      await expect(component.getByTestId('onCancel-count')).toHaveValue('1');
+    });
+
+    test('has no accessibility violations with the discard dialog open', async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount<typeof YamlEditorFooterMount>(STORY);
+      await component.getByRole('button', { name: s.discardChanges }).press('Enter');
+
+      // The Modal renders outside the component root.
+      await checkAccessibility({ component: page.getByRole('dialog') });
+    });
+  });
 });

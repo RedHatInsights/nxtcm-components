@@ -101,13 +101,26 @@ YAML editor opened from Review. Required even when optional steps are hidden.
 | `yamlEditor.discardConfirmTitle` | Discard YAML changes? | |
 | `yamlEditor.discardConfirmBody` | Any changes you made to the YAML configuration will be lost. | |
 | `yamlEditor.discardConfirmYes` | Yes | |
+| `yamlEditor.discardModalCloseAriaLabel` | Close discard changes dialog | |
 | `yamlEditor.cancelCreation` | Cancel cluster creation | |
 | `yamlEditor.schemaTitle` | ROSAControlPlane schema | |
 | `yamlEditor.schemaToggleAriaLabel` | Toggle schema panel | |
+| `yamlEditor.schemaCloseAriaLabel` | Close schema panel | |
 | `yamlEditor.schemaShowTooltip` | Show schema | |
 | `yamlEditor.schemaHideTooltip` | Hide sidebar | |
 | `yamlEditor.schemaSearchPlaceholder` | Search schema fields... | |
 | `yamlEditor.schemaTreeAriaLabel` | Schema fields | |
+| `yamlEditor.editorAriaLabel` | Cluster YAML editor | |
+| `yamlEditor.editorInstructions` | Press Down Arrow to start editing. Press Shift+Tab to leave the editor. | |
+| `yamlEditor.shortcutsButtonText` | View shortcuts | |
+| `yamlEditor.shortcutsAriaLabel` | Keyboard shortcuts | |
+| `yamlEditor.shortcutsMacLabel` | macOS | |
+| `yamlEditor.shortcutStartEditing` | Start editing when the editor is focused | |
+| `yamlEditor.shortcutLeaveEditor` | Leave the editor | |
+| `yamlEditor.shortcutToggleTabFocus` | Switch Tab between indenting and moving focus | |
+| `yamlEditor.shortcutNextProblem` | Go to next problem | |
+| `yamlEditor.shortcutPreviousProblem` | Go to previous problem | |
+| `yamlEditor.shortcutCommandPalette` | Show all editor commands | |
 
 ### `associateAwsDrawer`
 

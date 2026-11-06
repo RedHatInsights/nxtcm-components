@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import {
   ActionList,
@@ -67,6 +67,15 @@ export function RosaHcpYamlEditorFooter({
     onClose();
   }, [onClose]);
 
+  // PatternFly 6 has no Modal prop for the built-in close button's name, so
+  // relabel it on the DOM (same approach as the YAML editor wrapper).
+  useEffect(() => {
+    if (!isDiscardModalOpen) return;
+    document
+      .querySelector('#rosa-hcp-yaml-discard-modal button[aria-label="Close"]')
+      ?.setAttribute('aria-label', yamlStrings.discardModalCloseAriaLabel);
+  }, [isDiscardModalOpen, yamlStrings.discardModalCloseAriaLabel]);
+
   return (
     <WizardFooterWrapper>
       <ActionList>
@@ -107,17 +116,21 @@ export function RosaHcpYamlEditorFooter({
         </ActionListGroup>
       </ActionList>
       <Modal
+        id="rosa-hcp-yaml-discard-modal"
         variant={ModalVariant.small}
         isOpen={isDiscardModalOpen}
         onClose={handleDiscardCancel}
         aria-labelledby="rosa-hcp-yaml-discard-modal-title"
+        aria-describedby="rosa-hcp-yaml-discard-modal-body"
       >
         <ModalHeader
           title={yamlStrings.discardConfirmTitle}
           titleIconVariant="warning"
           labelId="rosa-hcp-yaml-discard-modal-title"
         />
-        <ModalBody>{yamlStrings.discardConfirmBody}</ModalBody>
+        <ModalBody id="rosa-hcp-yaml-discard-modal-body">
+          {yamlStrings.discardConfirmBody}
+        </ModalBody>
         <ModalFooter>
           <Button variant={ButtonVariant.primary} onClick={handleDiscardConfirm}>
             {yamlStrings.discardConfirmYes}

@@ -93,9 +93,11 @@ const buildTreeItems = (properties: SchemaProps, parentPath = ''): TreeViewDataI
 export type RosaHcpSchemaPanelProps = {
   onClose: () => void;
   schema: JSONSchema;
+  /** panel id, for the toggle's aria-controls */
+  id?: string;
 };
 
-export const RosaHcpSchemaPanel = ({ onClose, schema }: RosaHcpSchemaPanelProps) => {
+export const RosaHcpSchemaPanel = ({ onClose, schema, id }: RosaHcpSchemaPanelProps) => {
   const { yamlEditor } = useRosaHcpWizardStrings();
   const [searchText, setSearchText] = useState('');
 
@@ -123,13 +125,13 @@ export const RosaHcpSchemaPanel = ({ onClose, schema }: RosaHcpSchemaPanelProps)
   const treeItems = useMemo(() => buildTreeItems(filteredProperties), [filteredProperties]);
 
   return (
-    <DrawerPanelContent isResizable defaultSize="33%">
+    <DrawerPanelContent id={id} isResizable defaultSize="33%">
       <DrawerHead>
         <Title headingLevel="h3" size="md">
           {yamlEditor.schemaTitle}
         </Title>
         <DrawerActions>
-          <DrawerCloseButton onClick={onClose} aria-label={yamlEditor.schemaToggleAriaLabel} />
+          <DrawerCloseButton onClick={onClose} aria-label={yamlEditor.schemaCloseAriaLabel} />
         </DrawerActions>
       </DrawerHead>
       <DrawerPanelBody>
