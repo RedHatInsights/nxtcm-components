@@ -150,9 +150,9 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
 
       await waitForMonaco(component);
 
-      // Monaco creates a textarea for accessibility
-      const textarea = component.locator('.monaco-editor textarea');
-      await expect(textarea).toBeVisible();
+      // Monaco's accessibility textarea is near zero-sized, which Firefox reports as hidden,
+      // so assert it is attached and exposed with an accessible name instead of visible.
+      await expect(component.getByRole('textbox', { name: 'Editor content' })).toBeAttached();
     });
 
     // Note: Keyboard navigation tests are flaky in CT due to Monaco's focus management
