@@ -42,8 +42,9 @@ export async function checkAccessibility({
 
   const results = await new AxeBuilder({ page: component.page() })
     .include(axeRootSelector)
-    .disableRules(disabledRules)
+    // options() resets disabled rules, so call it first.
     .options({ iframes: false })
+    .disableRules(disabledRules)
     .analyze();
 
   expect(results.violations).toHaveLength(0);

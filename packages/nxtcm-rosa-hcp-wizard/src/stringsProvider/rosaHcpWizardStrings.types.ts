@@ -199,10 +199,22 @@ export type RosaHcpWizardStrings = {
     cancelCreation: string;
     schemaTitle: string;
     schemaToggleAriaLabel: string;
+    schemaCloseAriaLabel: string;
     schemaShowTooltip: string;
     schemaHideTooltip: string;
     schemaSearchPlaceholder: string;
     schemaTreeAriaLabel: string;
+    editorAriaLabel: string;
+    editorInstructions: string;
+    shortcutsButtonText: string;
+    shortcutsAriaLabel: string;
+    shortcutsMacLabel: string;
+    shortcutStartEditing: string;
+    shortcutLeaveEditor: string;
+    shortcutToggleTabFocus: string;
+    shortcutNextProblem: string;
+    shortcutPreviousProblem: string;
+    shortcutCommandPalette: string;
   };
   associateAwsDrawer: {
     panelTitle: string;
