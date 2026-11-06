@@ -47,12 +47,14 @@ export function RosaHcpYamlEditorFooter({
 
     void (async () => {
       try {
-        await submitWizard();
+        if (await submitWizard()) {
+          onClose();
+        }
       } catch {
         // keep the editor open so the user can correct the issue
       }
     })();
-  }, [editorRef, submitWizard]);
+  }, [editorRef, onClose, submitWizard]);
 
   const handleDiscardClick = useCallback(() => {
     setIsDiscardModalOpen(true);
