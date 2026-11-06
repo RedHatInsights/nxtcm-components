@@ -70,6 +70,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     discardConfirmTitle: 'Discard YAML changes?',
     discardConfirmBody: 'Any changes you made to the YAML configuration will be lost.',
     discardConfirmYes: 'Yes',
+    discardModalCloseAriaLabel: 'Close discard changes dialog',
     cancelCreation: 'Cancel cluster creation',
     schemaTitle: 'ROSAControlPlane schema',
     schemaToggleAriaLabel: 'Toggle schema panel',

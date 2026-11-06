@@ -101,6 +101,7 @@ YAML editor opened from Review. Required even when optional steps are hidden.
 | `yamlEditor.discardConfirmTitle` | Discard YAML changes? | |
 | `yamlEditor.discardConfirmBody` | Any changes you made to the YAML configuration will be lost. | |
 | `yamlEditor.discardConfirmYes` | Yes | |
+| `yamlEditor.discardModalCloseAriaLabel` | Close discard changes dialog | |
 | `yamlEditor.cancelCreation` | Cancel cluster creation | |
 | `yamlEditor.schemaTitle` | ROSAControlPlane schema | |
 | `yamlEditor.schemaToggleAriaLabel` | Toggle schema panel | |

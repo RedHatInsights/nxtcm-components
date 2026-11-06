@@ -117,6 +117,23 @@ function createValidatingGenerator(invalidLineCount: number): YamlResourceGenera
   };
 }
 
+// Schemas without a primary entry: the schema panel can never render.
+const noPrimarySchemaGenerator: YamlResourceGenerator = {
+  ...mockResourceGenerator,
+  resourceSchemas: [
+    {
+      kind: 'ROSAControlPlane',
+      schema: {
+        type: 'object',
+        properties: {
+          kind: { type: 'string' },
+          spec: { type: 'object' },
+        },
+      },
+    },
+  ],
+};
+
 export type YamlEditorStepValidationMountProps = {
   /** number of schema errors in the initial YAML */
   invalidLineCount?: number;
@@ -160,6 +177,19 @@ function YamlEditorStepValidationInner({
     <FormProvider {...methods}>
       <RosaHcpYamlEditorStep ref={editorRef} resourceGenerator={resourceGenerator} />
     </FormProvider>
+  );
+}
+
+/** Editor whose generator supplies schemas but no primary entry, so no schema panel can render. */
+export function YamlEditorStepNoPrimarySchemaMount(): React.ReactElement {
+  const editorRef = React.useRef<YamlEditorHandle>(null);
+  return (
+    <RosaHcpWizardStringsProvider>
+      <YamlEditorStepValidationInner
+        editorRef={editorRef}
+        resourceGenerator={noPrimarySchemaGenerator}
+      />
+    </RosaHcpWizardStringsProvider>
   );
 }
 

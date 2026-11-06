@@ -196,6 +196,7 @@ export type RosaHcpWizardStrings = {
     discardConfirmTitle: string;
     discardConfirmBody: string;
     discardConfirmYes: string;
+    discardModalCloseAriaLabel: string;
     cancelCreation: string;
     schemaTitle: string;
     schemaToggleAriaLabel: string;

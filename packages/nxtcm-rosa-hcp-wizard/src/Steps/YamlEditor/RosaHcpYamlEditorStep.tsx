@@ -273,7 +273,6 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
     );
 
     const primarySchema = generator.resourceSchemas?.find((s) => s.primary)?.schema;
-    const hasResourceSchemas = (generator.resourceSchemas?.length ?? 0) > 0;
 
     // The close button unmounts with the panel, so move focus to the toggle.
     const closeSchemaPanel = useCallback(() => {
@@ -353,7 +352,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
           ) : null}
         </AlertGroup>
 
-        <Drawer isInline isExpanded={showSchema} position="end">
+        <Drawer isInline isExpanded={showSchema && Boolean(primarySchema)} position="end">
           <DrawerContent
             panelContent={
               showSchema && primarySchema ? (
@@ -374,7 +373,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
                 isFullHeight
                 isCopyEnabled
                 isDownloadEnabled
-                customControls={hasResourceSchemas ? schemaToggleControl : undefined}
+                customControls={primarySchema ? schemaToggleControl : undefined}
                 shortcutsPopoverButtonText={yamlStrings.shortcutsButtonText}
                 shortcutsPopoverProps={shortcutsPopoverProps}
                 options={{
