@@ -22,9 +22,7 @@ const mockCVEData: NonNullable<NonNullable<React.ComponentProps<typeof CVECardSt
   ];
 
 test.describe('CVECard', () => {
-  test.skip('should pass accessibility tests', async ({ mount }) => {
-    // This test is failing due to an in a color contrast violation the the default colors in PatternFly
-    // TODO: See if we can override the colors to fix this
+  test('should pass accessibility tests', async ({ mount }) => {
     const component = await mount<typeof CVECardStory>(
       'nxtcm-dashboard/CVECard/CVECard/CVECardStory',
       {

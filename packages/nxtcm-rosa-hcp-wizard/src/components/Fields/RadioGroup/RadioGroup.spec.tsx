@@ -87,17 +87,22 @@ test.describe('RadioGroup', () => {
     await checkAccessibility({ component: mounted });
   });
 
-  test('renders radios without a FormGroup label when label is omitted', async ({ mount }) => {
+  test('uses an accessible name without a visible group label', async ({ mount }) => {
     const mounted = await mount<typeof RadioGroupWithoutLabelHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/RadioGroup/RadioGroup/RadioGroupWithoutLabelHarness'
     );
     const radiogroup = mounted.getByRole('radiogroup');
     await expect(radiogroup).toBeVisible();
-    await expect(radiogroup).toHaveAccessibleName('');
+    await expect(radiogroup).toHaveAccessibleName(RADIO_GROUP_HARNESS_MACHINE_TYPE_LABEL);
+    await expect(radiogroup).not.toHaveAttribute('aria-labelledby');
+    await expect(
+      mounted.getByText(RADIO_GROUP_HARNESS_MACHINE_TYPE_LABEL, { exact: true })
+    ).toHaveCount(0);
     await expect(
       mounted.getByRole('radio', { name: RADIO_GROUP_HARNESS_SMALL_LABEL })
     ).toBeVisible();
     await expect(mounted.getByText(RADIO_GROUP_HARNESS_HELPER_TEXT)).toBeVisible();
+    await checkAccessibility({ component: mounted });
   });
 
   test('shows radio body content only for the selected option', async ({ mount }) => {

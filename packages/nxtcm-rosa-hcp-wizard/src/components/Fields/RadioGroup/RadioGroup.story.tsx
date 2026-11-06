@@ -78,6 +78,7 @@ export function RadioGroupWithoutLabelHarness() {
     <Form>
       <RadioGroup
         id="ct-rg-no-label"
+        aria-label={RADIO_GROUP_HARNESS_MACHINE_TYPE_LABEL}
         value={value}
         onChange={(v) => setValue(v as string | undefined)}
         helperText={RADIO_GROUP_HARNESS_HELPER_TEXT}

@@ -3,10 +3,14 @@
 
 
 **Jira issue #** 
+<!-- for example: [FCN-XXX](https://redhat.atlassian.net/browse/FCN-XXX) -->
 
 **Backport of** #
+<!-- for example: [FCN-XXX](https://redhat.atlassian.net/browse/FCN-XXX) -->
 
-
+### AI disclosure
+<!-- If AI tools contributed, note them. E.g.: Assisted by: Claude Code/Sonnet 5.5 -->
+      
 ## Type of Change
 <!-- Mark the relevant option(s) with an 'x' -->
 

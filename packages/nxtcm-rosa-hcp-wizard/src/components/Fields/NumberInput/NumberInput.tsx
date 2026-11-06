@@ -9,6 +9,7 @@ import {
 
 import { FormGroup } from '@patternfly/react-core/dist/dynamic/components/Form';
 import { NumberInput as PfNumberInput } from '@patternfly/react-core/dist/dynamic/components/NumberInput';
+import type { TextInputProps } from '@patternfly/react-core/dist/dynamic/components/TextInput';
 
 import { getValidated, HelperText, helperTextId } from '../HelperText';
 import { LabelHelp } from '../LabelHelp';
@@ -24,10 +25,12 @@ function lowercaseFirst(label: string) {
 
 export interface NumberInputProps extends Omit<
   NumberInputComponentProps,
-  'onChange' | 'onMinus' | 'onPlus' | 'validated'
+  'onChange' | 'onMinus' | 'onPlus' | 'validated' | 'inputProps'
 > {
   id: string;
   label: string;
+  /** additional props for the spinbutton input */
+  inputProps?: TextInputProps;
   labelHelp?: ReactNode;
   labelHelpTitle?: string;
   isRequired?: boolean;
@@ -60,6 +63,8 @@ export function NumberInput(props: NumberInputProps) {
     successMessage,
     isDisabled,
     inputAriaLabel: inputAriaLabelFromProps,
+    inputProps,
+    'aria-describedby': ariaDescribedByFromProps,
     ...numberInputRest
   } = props;
 
@@ -69,6 +74,21 @@ export function NumberInput(props: NumberInputProps) {
   const numValue = typeof value === 'number' ? value : undefined;
   // PfNumberInput defaults undefined value to 0; '' keeps the field visually empty when value is unset.
   const pfValue = zeroIsUndefined && numValue === undefined ? '' : numValue;
+  const helperTextDescriptionId = helperTextId({
+    id,
+    errorMessage,
+    helperText,
+    isError,
+    isSuccess,
+    successMessage,
+  });
+  const describedBy = [
+    inputProps?.['aria-describedby'],
+    ariaDescribedByFromProps,
+    helperTextDescriptionId,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   const onMinus = useCallback(
     (event: MouseEvent) => {
@@ -115,23 +135,19 @@ export function NumberInput(props: NumberInputProps) {
     >
       <PfNumberInput
         {...numberInputRest}
-        id={id}
+        inputProps={{
+          placeholder: placeHolderText,
+          ...inputProps,
+          id,
+          'aria-describedby': describedBy || undefined,
+        }}
         inputAriaLabel={inputAriaLabelFromProps ?? label}
-        placeholder={placeHolderText}
         validated={getValidated(isError, isSuccess)}
         value={pfValue}
         onMinus={onMinus}
         onChange={onChangeCallback}
         onPlus={onPlus}
         min={min === undefined ? 0 : min}
-        aria-describedby={helperTextId({
-          id,
-          errorMessage,
-          helperText,
-          isError,
-          isSuccess,
-          successMessage,
-        })}
         isDisabled={isDisabled}
       />
       <HelperText

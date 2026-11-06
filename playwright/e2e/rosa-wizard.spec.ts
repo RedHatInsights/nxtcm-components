@@ -10,13 +10,13 @@ async function fillDetailsStep(
 ): Promise<void> {
   await page.getByRole('textbox', { name: /Cluster name/i }).fill('test-cluster');
   await page.getByRole('textbox', { name: /Cluster name/i }).press('Tab');
-  await page.getByRole('combobox', { name: /Select an OpenShift version/i }).click();
+  await page.getByRole('combobox', { name: /OpenShift version/i }).click();
   await page.getByRole('option', { name: versionName }).click();
-  await page.getByRole('combobox', { name: /Select an AWS infrastructure account/i }).click();
+  await page.getByRole('combobox', { name: /Associated AWS infrastructure account/i }).click();
   await page.getByRole('option', { name: /AWS Account - Production \(123456789012\)/i }).click();
-  await page.getByRole('combobox', { name: /Select an AWS billing account/i }).click();
+  await page.getByRole('combobox', { name: /Associated AWS billing account/i }).click();
   await page.getByRole('option', { name: /Billing Account - Main \(123456789012\)/i }).click();
-  await page.getByRole('combobox', { name: /Select a region/i }).click();
+  await page.getByRole('combobox', { name: /^Region$/i }).click();
   await page.getByRole('option', { name: /US East \(N\. Virginia\)/i }).click();
   await page.getByRole('button', { name: /Next/i }).click();
 }
@@ -35,16 +35,18 @@ async function selectVpcAndPrivateSubnet(
   subnetName: RegExp
 ): Promise<void> {
   await page
-    .getByRole('combobox', { name: /Select a VPC to install your machine pool into us-east-1/i })
+    .getByRole('combobox', {
+      name: /Select a VPC to install your machine pool into your selected region: us-east-1/i,
+    })
     .click();
   await page.getByRole('option', { name: vpcName }).click();
-  await page.getByRole('combobox', { name: /Select private subnet/i }).click();
+  await page.getByRole('combobox', { name: /Private subnet name/i }).click();
   await page.getByRole('option', { name: subnetName }).click();
 }
 
 async function fillMachinePoolsStep(page: Page): Promise<void> {
   await selectVpcAndPrivateSubnet(page, /test-vpc-1/i, /test-1-subnet-private1-us-east-1a/i);
-  await page.getByRole('combobox', { name: /Select the compute node instance type/i }).click();
+  await page.getByRole('combobox', { name: /Compute node instance type/i }).click();
   await page.getByRole('option', { name: /m5a\.xlarge/i }).click();
   await page.getByRole('button', { name: /Next/i }).click();
 }
@@ -97,16 +99,16 @@ test.describe('ROSA Wizard', () => {
     await clusterNameInput.fill('test-cluster');
     await clusterNameInput.press('Tab');
 
-    await page.getByRole('combobox', { name: /Select an OpenShift version/i }).click();
+    await page.getByRole('combobox', { name: /OpenShift version/i }).click();
     await page.getByRole('option', { name: /OpenShift 4\.12\.0/i }).click();
 
-    await page.getByRole('combobox', { name: /Select an AWS infrastructure account/i }).click();
+    await page.getByRole('combobox', { name: /Associated AWS infrastructure account/i }).click();
     await page.getByRole('option', { name: /AWS Account - Production \(123456789012\)/i }).click();
 
-    await page.getByRole('combobox', { name: /Select an AWS billing account/i }).click();
+    await page.getByRole('combobox', { name: /Associated AWS billing account/i }).click();
     await page.getByRole('option', { name: /Billing Account - Main \(123456789012\)/i }).click();
 
-    await page.getByRole('combobox', { name: /Select a region/i }).click();
+    await page.getByRole('combobox', { name: /^Region$/i }).click();
     await page.getByRole('option', { name: /US East \(N\. Virginia\)/i }).click();
 
     await page.getByRole('button', { name: /Next/i }).click();
@@ -123,13 +125,13 @@ test.describe('ROSA Wizard', () => {
 
     await expect(
       page.getByRole('combobox', {
-        name: /Select a VPC to install your machine pool into us-east-1/i,
+        name: /Select a VPC to install your machine pool into your selected region: us-east-1/i,
       })
     ).toBeVisible();
 
     await selectVpcAndPrivateSubnet(page, /test-vpc-1/i, /test-1-subnet-private1-us-east-1a/i);
 
-    await page.getByRole('combobox', { name: /Select the compute node instance type/i }).click();
+    await page.getByRole('combobox', { name: /Compute node instance type/i }).click();
     await page.getByRole('option', { name: /m5a\.xlarge/i }).click();
 
     await page.getByRole('button', { name: /Next/i }).click();
@@ -310,9 +312,9 @@ test.describe('ROSA Wizard', () => {
       await fillRolesStep(page);
 
       const vpcCombo = page.getByRole('combobox', {
-        name: /Select a VPC to install your machine pool into us-east-1/i,
+        name: /Select a VPC to install your machine pool into your selected region: us-east-1/i,
       });
-      const subnetCombo = page.getByRole('combobox', { name: /Select private subnet/i });
+      const subnetCombo = page.getByRole('combobox', { name: /Private subnet name/i });
 
       await selectVpcAndPrivateSubnet(page, /test-vpc-1/i, /test-1-subnet-private1-us-east-1a/i);
 
@@ -488,15 +490,15 @@ test.describe('ROSA Wizard', () => {
       await input.press('Tab');
 
       // Fill other required fields
-      await page.getByRole('combobox', { name: /Select an OpenShift version/i }).click();
+      await page.getByRole('combobox', { name: /OpenShift version/i }).click();
       await page.getByRole('option', { name: /OpenShift 4\.12\.0/i }).click();
-      await page.getByRole('combobox', { name: /Select an AWS infrastructure account/i }).click();
+      await page.getByRole('combobox', { name: /Associated AWS infrastructure account/i }).click();
       await page
         .getByRole('option', { name: /AWS Account - Production \(123456789012\)/i })
         .click();
-      await page.getByRole('combobox', { name: /Select an AWS billing account/i }).click();
+      await page.getByRole('combobox', { name: /Associated AWS billing account/i }).click();
       await page.getByRole('option', { name: /Billing Account - Main \(123456789012\)/i }).click();
-      await page.getByRole('combobox', { name: /Select a region/i }).click();
+      await page.getByRole('combobox', { name: /^Region$/i }).click();
       await page.getByRole('option', { name: /US East \(N\. Virginia\)/i }).click();
 
       // Try to proceed
@@ -578,7 +580,7 @@ test.describe('ROSA Wizard', () => {
         // Select VPC with security groups
         await page
           .getByRole('combobox', {
-            name: /Select a VPC to install your machine pool into us-east-1/i,
+            name: /Select a VPC to install your machine pool into your selected region: us-east-1/i,
           })
           .click();
         await page.getByRole('option', { name: /test-vpc-1/i }).click();
@@ -600,7 +602,7 @@ test.describe('ROSA Wizard', () => {
 
         await page
           .getByRole('combobox', {
-            name: /Select a VPC to install your machine pool into us-east-1/i,
+            name: /Select a VPC to install your machine pool into your selected region: us-east-1/i,
           })
           .click();
         await page.getByRole('option', { name: /test-vpc-1/i }).click();
