@@ -157,8 +157,10 @@ jobs:
         env:
           PLAYWRIGHT_JSON_OUTPUT_NAME: test-results/playwright-ct-results.json
           PLAYWRIGHT_JUNIT_OUTPUT_NAME: test-results/playwright-ct-junit.xml
+        # Firefox is the slowest engine, so it gets two workers; the other legs keep one.
         run: >-
           npx playwright test --project=components-${{ matrix.browser }}
+          --workers=${{ matrix.browser == 'firefox' && 2 || 1 }}
           --reporter=list,github,html,json,junit
 
       - name: Build per-test CT summary
