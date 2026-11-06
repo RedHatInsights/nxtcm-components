@@ -68,19 +68,19 @@ test.describe('MultiSelect', () => {
     await expect(toggle).toHaveAttribute('id', 'ct-multi-plain');
     await page.getByText('Zones', { exact: true }).click();
     await expect(toggle).toBeFocused();
-    const listbox = page.locator('#ct-multi-plain-listbox');
-    await expect(listbox).toBeVisible();
+    const menu = page.getByRole('menu', { name: 'Zones', exact: true });
+    await expect(menu).toBeVisible();
     await checkMenuAccessibility(page);
-    await listbox.getByText('a', { exact: true }).click();
-    await listbox.getByText('b', { exact: true }).click();
+    await menu.getByText('a', { exact: true }).click();
+    await menu.getByText('b', { exact: true }).click();
     await expect(page.getByTestId('multi-val')).toHaveText('a,b');
     await checkMenuAccessibility(page);
     await expect(toggle).toHaveAccessibleName('Zones Select the zones 2');
-    await listbox.getByText('a', { exact: true }).click();
+    await menu.getByText('a', { exact: true }).click();
     await expect(page.getByTestId('multi-val')).toHaveText('b');
     await expect(toggle).toHaveAccessibleName('Zones Select the zones 1');
     await page.keyboard.press('Escape');
-    await expect(listbox).toBeHidden();
+    await expect(menu).toBeHidden();
     await checkMenuAccessibility(page);
     await page.keyboard.press('Tab');
     await checkAccessibility({ component });
@@ -147,9 +147,9 @@ test.describe('MultiSelect', () => {
       'nxtcm-rosa-hcp-wizard/components/Fields/MultiSelect/MultiSelect/MultiLoadingHarness'
     );
     await page.getByRole('button', { name: /^loading/i }).click();
-    const listbox = page.locator('#ct-multi-loading-listbox');
-    await expect(listbox).toBeVisible();
-    await expect(listbox.getByText('Loading...')).toBeVisible();
+    const menu = page.getByRole('menu', { name: 'Loading list', exact: true });
+    await expect(menu).toBeVisible();
+    await expect(menu.getByText('Loading...')).toBeVisible();
     await checkMenuAccessibility(page);
   });
 
@@ -162,14 +162,14 @@ test.describe('MultiSelect', () => {
     );
     const toggle = page.getByRole('button', { name: /select the regions/i });
     await toggle.click();
-    const listbox = page.locator('#ct-multi-badge-listbox');
-    await expect(listbox).toBeVisible();
-    await listbox.getByText('us-east-1', { exact: true }).click();
-    await listbox.getByText('eu-west-1', { exact: true }).click();
+    const menu = page.getByRole('menu', { name: 'Regions', exact: true });
+    await expect(menu).toBeVisible();
+    await menu.getByText('us-east-1', { exact: true }).click();
+    await menu.getByText('eu-west-1', { exact: true }).click();
     await expect(toggle).toContainText('2');
     await expect(toggle).toHaveAccessibleName(/^Regions Select the regions 2\s*regions selected$/);
-    await listbox.getByText('us-east-1', { exact: true }).click();
-    await listbox.getByText('eu-west-1', { exact: true }).click();
+    await menu.getByText('us-east-1', { exact: true }).click();
+    await menu.getByText('eu-west-1', { exact: true }).click();
     await expect(toggle).toHaveAccessibleName('Regions Select the regions');
   });
 
@@ -180,11 +180,11 @@ test.describe('MultiSelect', () => {
     const toggle = page.getByRole('button', { name: /^Legacy toggle / });
     await expect(toggle).toHaveAccessibleName('Legacy toggle Select the legacy toggle');
     await toggle.click();
-    const listbox = page.locator('#ct-multi-legacy-listbox');
-    await expect(listbox).toBeVisible();
-    await listbox.getByText('solo', { exact: true }).click();
+    const menu = page.getByRole('menu', { name: 'Legacy toggle', exact: true });
+    await expect(menu).toBeVisible();
+    await menu.getByText('solo', { exact: true }).click();
     await expect(toggle).toHaveAccessibleName('Legacy toggle solo');
-    await listbox.getByText('pair-a', { exact: true }).click();
+    await menu.getByText('pair-a', { exact: true }).click();
     await expect(toggle).toHaveAccessibleName('Legacy toggle 2 selected');
     await expect(page.getByTestId('multi-legacy-val')).toHaveText('solo,pair-a');
   });

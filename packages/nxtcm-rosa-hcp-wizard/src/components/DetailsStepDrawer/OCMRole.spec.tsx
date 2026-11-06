@@ -22,8 +22,10 @@ test.describe('OCMRole', () => {
     const component = await mount<typeof OCMRoleMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/OCMRole/OCMRoleMount'
     );
-    const alerts = component.locator('.pf-v6-c-alert.pf-m-info');
-    await expect(alerts.first()).toBeVisible();
+    const alerts = component.getByRole('heading', {
+      name: /^Info alert:.*existing role.*already linked/i,
+    });
+    await expect(alerts).toBeVisible();
   });
 
   test('should render TabGroup with two tabs', async ({ mount }) => {

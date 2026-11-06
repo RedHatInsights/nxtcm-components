@@ -147,18 +147,18 @@ test.describe('WizMultiSelect', () => {
     await expect(status).toHaveText('(empty)');
 
     await page.getByRole('button', { name: WIZ_MULTI_EXPLICIT_TOGGLE_NAME }).click();
-    const listbox = page.locator('#wiz-multi-ct-explicit-listbox');
-    await expect(listbox).toBeVisible();
+    const menu = page.getByRole('menu', { name: WIZ_MULTI_EXPLICIT_LABEL, exact: true });
+    await expect(menu).toBeVisible();
     await checkOverlayAccessibility(page);
-    await listbox.getByText('eu-west-1', { exact: true }).click();
-    await listbox.getByText('us-east-1', { exact: true }).click();
+    await menu.getByText('eu-west-1', { exact: true }).click();
+    await menu.getByText('us-east-1', { exact: true }).click();
 
     await expect(status).toHaveText('eu-west-1,us-east-1');
     await expect(page.getByRole('checkbox', { name: 'eu-west-1', exact: true })).toBeChecked();
     await expect(page.getByRole('checkbox', { name: 'us-east-1', exact: true })).toBeChecked();
     await checkOverlayAccessibility(page);
     await page.keyboard.press('Escape');
-    await expect(listbox).toBeHidden();
+    await expect(menu).toBeHidden();
     await checkOverlayAccessibility(page);
   });
 
@@ -191,9 +191,9 @@ test.describe('WizMultiSelect', () => {
     await expect(page.getByText(WIZ_MULTI_SUBMIT_ERROR, { exact: true })).toBeVisible();
 
     await page.getByRole('button', { name: WIZ_MULTI_SUBMIT_TOGGLE_NAME }).click();
-    const submitList = page.locator('#wiz-multi-ct-submit-listbox');
-    await expect(submitList).toBeVisible();
-    await submitList.getByText('us-east-1', { exact: true }).click();
+    const submitMenu = page.getByRole('menu', { name: 'Tags (submit demo)', exact: true });
+    await expect(submitMenu).toBeVisible();
+    await submitMenu.getByText('us-east-1', { exact: true }).click();
     await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: 'Submit', exact: true }).click();
@@ -208,7 +208,7 @@ test.describe('WizMultiSelect', () => {
     await expect(status).toHaveText('(empty)');
     await page.getByRole('button', { name: WIZ_MULTI_ONLY_CONTROL_TOGGLE }).click();
     await page
-      .locator('#wiz-multi-ct-control-only-listbox')
+      .getByRole('menu', { name: 'Tag identifiers', exact: true })
       .getByText('alpha', { exact: true })
       .click();
     await expect(status).toHaveText('alpha');

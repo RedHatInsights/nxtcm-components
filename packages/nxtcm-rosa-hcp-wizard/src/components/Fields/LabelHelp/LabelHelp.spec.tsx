@@ -51,7 +51,7 @@ test.describe('LabelHelp', () => {
         useButton: true,
       }
     );
-    await page.getByRole('button', { name: 'More info' }).click();
+    await page.getByRole('button', { name: 'More info', exact: true }).click();
     await expect(page.getByText('Help', { exact: true })).toBeVisible();
     await expect(page.getByText('Details go here.')).toBeVisible();
     await checkAccessibility({ component: page.locator('body') });
