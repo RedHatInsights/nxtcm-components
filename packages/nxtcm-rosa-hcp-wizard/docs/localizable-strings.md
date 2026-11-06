@@ -107,6 +107,7 @@ YAML editor opened from Review. Required even when optional steps are hidden.
 | `yamlEditor.schemaShowTooltip` | Show schema | |
 | `yamlEditor.schemaHideTooltip` | Hide sidebar | |
 | `yamlEditor.schemaSearchPlaceholder` | Search schema fields... | |
+| `yamlEditor.schemaTreeAriaLabel` | Schema fields | |
 
 ### `associateAwsDrawer`
 

@@ -202,6 +202,7 @@ export type RosaHcpWizardStrings = {
     schemaShowTooltip: string;
     schemaHideTooltip: string;
     schemaSearchPlaceholder: string;
+    schemaTreeAriaLabel: string;
   };
   associateAwsDrawer: {
     panelTitle: string;
