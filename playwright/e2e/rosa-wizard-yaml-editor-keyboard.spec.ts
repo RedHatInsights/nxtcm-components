@@ -179,7 +179,9 @@ test.describe('ROSA Wizard - YAML Editor keyboard access', () => {
 
     const dialog = page.getByRole('dialog', { name: /Discard YAML changes/i });
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByRole('button', { name: 'Close' })).toBeFocused();
+    await expect(
+      dialog.getByRole('button', { name: 'Close discard changes dialog' })
+    ).toBeFocused();
 
     for (let i = 0; i < 4; i++) {
       await page.keyboard.press('Tab');

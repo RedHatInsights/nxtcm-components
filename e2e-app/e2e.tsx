@@ -59,7 +59,7 @@ const mockWizardData: ROSAHCPWizardData = {
       { label: 'Billing Account - Main (123456789012)', value: '123456789012' },
       {
         label: 'Billing Account - Secondary (234567890123)',
-        value: 'billing-secondary-234567890123',
+        value: '234567890123',
       },
     ],
     error: null,

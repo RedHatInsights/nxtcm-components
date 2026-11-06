@@ -6,6 +6,7 @@ import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizard
 import { checkAccessibility } from '../../test-helpers';
 import type {
   YamlEditorStepMount,
+  YamlEditorStepNoPrimarySchemaMount,
   YamlEditorStepValidationMount,
 } from './RosaHcpYamlEditorStep.story';
 
@@ -13,6 +14,8 @@ const s = defaultRosaHcpWizardStrings.yamlEditor;
 const EDITOR_NAME = s.editorAriaLabel;
 const VALIDATION_STORY =
   'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepValidationMount';
+const NO_PRIMARY_STORY =
+  'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepNoPrimarySchemaMount';
 
 type MonacoTestHandle = { getValue: () => string; setValue: (value: string) => void };
 
@@ -86,6 +89,18 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
 
       await toggleButton.click();
       await expect(schemaHeading).toBeVisible();
+    });
+
+    test('hides the schema toggle when no schema is primary', async ({ mount }) => {
+      const component = await mount<typeof YamlEditorStepNoPrimarySchemaMount>(NO_PRIMARY_STORY);
+
+      await waitForMonaco(component);
+
+      // No panel can render, so the toggle must not report one.
+      await expect(component.getByRole('button', { name: s.schemaToggleAriaLabel })).toHaveCount(0);
+      await expect(
+        component.getByRole('heading', { name: /ROSAControlPlane schema/i })
+      ).toHaveCount(0);
     });
 
     test('does not move focus on first render', async ({ mount, page }) => {
