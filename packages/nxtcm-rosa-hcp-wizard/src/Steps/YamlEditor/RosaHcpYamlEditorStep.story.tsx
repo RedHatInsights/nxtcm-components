@@ -4,9 +4,9 @@ import { FormProvider, useForm } from 'react-hook-form';
 
 import { RosaHcpWizardStringsProvider } from '../../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster } from '../../types';
-import type { RosaHcpYamlEditorStepProps } from './RosaHcpYamlEditorStep';
+import type { RosaHcpYamlEditorStepProps, YamlEditorHandle } from './RosaHcpYamlEditorStep';
 import { RosaHcpYamlEditorStep } from './RosaHcpYamlEditorStep';
-import type { YamlResourceGenerator } from './types';
+import type { ValidationError, YamlResourceGenerator } from './types';
 
 // Mock resource generator for tests
 const mockResourceGenerator: YamlResourceGenerator = {
@@ -88,6 +88,80 @@ export type YamlEditorStepMountGalleryProps = Omit<BrowserProps, 'onClose' | 'on
   onClose?: boolean;
   onCancel?: boolean;
 };
+
+// One schema error per line containing this marker.
+const INVALID_YAML_MARKER = 'INVALID';
+
+const VALID_YAML = `kind: ROSAControlPlane
+apiVersion: controlplane.cluster.x-k8s.io/v1beta2
+spec:
+  rosaClusterName: test-cluster
+`;
+
+function createValidatingGenerator(invalidLineCount: number): YamlResourceGenerator {
+  const invalidLines = Array.from(
+    { length: invalidLineCount },
+    (_, index) => `  badField${index + 1}: ${INVALID_YAML_MARKER}\n`
+  ).join('');
+  return {
+    ...mockResourceGenerator,
+    renderYaml: () => `${VALID_YAML}${invalidLines}`,
+    validateYaml: (yamlStr) =>
+      yamlStr
+        .split('\n')
+        .flatMap((line, index): ValidationError[] =>
+          line.includes(INVALID_YAML_MARKER)
+            ? [{ message: 'Unknown field', line: index + 1, column: 3, severity: 'error' }]
+            : []
+        ),
+  };
+}
+
+export type YamlEditorStepValidationMountProps = {
+  /** number of schema errors in the initial YAML */
+  invalidLineCount?: number;
+};
+
+/** Editor with invalid YAML. "Check schema errors" calls hasSchemaErrors(), like submit. */
+export function YamlEditorStepValidationMount({
+  invalidLineCount = 1,
+}: YamlEditorStepValidationMountProps): React.ReactElement {
+  const editorRef = React.useRef<YamlEditorHandle>(null);
+  const [hasSchemaErrorsResult, setHasSchemaErrorsResult] = React.useState('');
+  const generator = React.useMemo(
+    () => createValidatingGenerator(invalidLineCount),
+    [invalidLineCount]
+  );
+  return (
+    <RosaHcpWizardStringsProvider>
+      <YamlEditorStepValidationInner editorRef={editorRef} resourceGenerator={generator} />
+      <button
+        type="button"
+        onClick={() => setHasSchemaErrorsResult(String(editorRef.current?.hasSchemaErrors()))}
+      >
+        Check schema errors
+      </button>
+      <div hidden>
+        <input data-testid="hasSchemaErrors-result" readOnly value={hasSchemaErrorsResult} />
+      </div>
+    </RosaHcpWizardStringsProvider>
+  );
+}
+
+function YamlEditorStepValidationInner({
+  editorRef,
+  resourceGenerator,
+}: {
+  editorRef: React.Ref<YamlEditorHandle>;
+  resourceGenerator: YamlResourceGenerator;
+}) {
+  const methods = useForm<Partial<ROSAHCPCluster>>();
+  return (
+    <FormProvider {...methods}>
+      <RosaHcpYamlEditorStep ref={editorRef} resourceGenerator={resourceGenerator} />
+    </FormProvider>
+  );
+}
 
 export function YamlEditorStepMount(props: YamlEditorStepMountGalleryProps): React.ReactElement {
   const [onCloseCalls, setOnCloseCalls] = React.useState<

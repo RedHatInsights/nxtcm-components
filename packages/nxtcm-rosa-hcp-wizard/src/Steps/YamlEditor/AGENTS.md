@@ -18,8 +18,9 @@ enabled.
 - **E2E:** `setValue()` does run that path. Do not expect `role="alert"` from
   `setValue()` alone. Assert markers only after the debounce, or use a path that
   enables the banner.
-- **E2E:** do not drive the editor with `page.keyboard.type()`. Monaco's textarea sits
-  under editor layers, so the click times out and keystrokes never reach the model.
+- **E2E:** never click into Monaco to type. Its input element sits under editor layers,
+  so the click times out. Enter with the keyboard instead (see
+  [keyboard model](#keyboard-model)); after that, `page.keyboard.type()` reaches the model.
 - **CT:** `setValue()` reaches `onCodeChange`. The missing alert is the
   `showBanner: false` suppression above, not a missing Monaco event.
 - **Jest:** test pure validators and parsers without Monaco.
@@ -30,14 +31,16 @@ enabled.
 |-------|------|------------------|
 | Unit | Jest | Schema/YAML validators, error messages, parsing (`yamlValidation.test.ts`, etc.) |
 | Component | Playwright CT | Mount, Monaco visible, language/options, copy/download controls, **mock-driven** validation display, a11y where stable |
-| E2E | Playwright | Wizard navigation to YAML step, initial YAML from form, discard modals, editor readiness via `window.monacoEditor` |
-| Manual | — | Real typing, debounced validation, error squiggles when automation is impractical |
+| E2E | Playwright | Wizard navigation to YAML step, initial YAML from form, discard modals, editor readiness via `window.monacoEditor`, keyboard entry/exit and typed edits |
+| Manual | — | Screen reader announcements, error squiggle rendering |
 
 Reference specs:
 
 - CT: `packages/nxtcm-rosa-hcp-wizard/src/Steps/YamlEditor/RosaHcpYamlEditorStep.spec.tsx`
 - E2E: `playwright/e2e/rosa-wizard-yaml-editor.spec.ts`
-- Helpers: `playwright/e2e/helpers/yaml-editor-helpers.ts`
+- E2E keyboard: `playwright/e2e/rosa-wizard-yaml-editor-keyboard.spec.ts`
+- Helpers: `playwright/e2e/helpers/yaml-editor-helpers.ts` (`enterYamlEditor`: keyboard entry before typing),
+  `playwright/e2e/helpers/focus-helpers.ts`
 
 ## CT limitations
 
@@ -51,6 +54,47 @@ Reference specs:
 For validation UI in CT, trigger the same code paths the app uses when the model
 changes (test doubles, direct handler invocation, or fixtures documented in the
 YamlEditor spec).
+
+## keyboard model
+
+Verified in E2E on Chromium (Monaco 0.54, PatternFly CodeEditor 6.5.1).
+
+| Action | Key | Result |
+|--------|-----|--------|
+| Reach editor | Tab | Focus lands on the CodeEditor wrapper (`div[tabindex=0]`), not inside Monaco |
+| Enter editor | ArrowDown or Space on the wrapper | Focus moves to Monaco's textbox. Enter does nothing |
+| Leave editor | Shift+Tab | Focus returns to the wrapper; the next Tab moves past the editor |
+| Tab moves focus | Ctrl+M (Windows/Linux), Ctrl+Shift+M (macOS) | Toggles Monaco tab-focus mode. Monaco announces the new mode in its own `role="alert"` region |
+| Next / previous problem | F8 / Shift+F8 | Opens the marker widget with the validation message; Escape closes it and keeps focus in the editor |
+| Escape | — | Does **not** leave the editor |
+
+Input surface differs by engine:
+
+- **Chromium:** Monaco uses the EditContext API. The focused element is
+  `div.native-edit-context[role="textbox"]`; the `<textarea>` exists but is
+  `aria-hidden="true"`.
+- **Firefox / WebKit:** no EditContext support, so Monaco falls back to the `<textarea>`.
+
+Locate it with `getByRole('textbox', { name })` on every engine, never `textarea`.
+`options.ariaLabel` sets that name (Monaco's default is `Editor content`).
+
+`accessibilitySupport: 'auto'` exposes no content (browsers cannot detect a screen
+reader, so `auto` behaves as off). `'on'` exposes the visible content to assistive tech.
+
+Playwright device profiles send a Windows user agent, so Monaco uses Windows/Linux
+bindings in E2E on every host OS (Ctrl+M, not Ctrl+Shift+M).
+
+Monaco 0.54 standalone has no accessibility help dialog (Alt+F1 does nothing). F1
+opens the command palette.
+
+Monaco's own `role="alert"` regions are always in the DOM. Scope alert assertions
+to the wizard's validation region, not `page.getByRole('alert')`. That region is an
+always-rendered `AlertGroup isLiveRegion` (`data-testid="yaml-validation-live-region"`);
+assert banner presence with its `listitem` count.
+
+The CT story `YamlEditorStepValidationMount` mounts YAML with `invalidLineCount` schema
+errors and a "Check schema errors" button that calls `hasSchemaErrors()`, the same path
+the YAML footer uses before submit.
 
 ## E2E: expose editor (dev/test only)
 
@@ -92,7 +136,9 @@ await page.waitForTimeout(500); // initial value applied
 
 - Expecting `role="alert"` from `monacoEditor.setValue()` alone (`onCodeChange` keeps
   `showBanner` false).
-- Typing YAML with `page.keyboard.type()` or clicking the Monaco textarea.
+- Clicking Monaco's input element to focus it (enter with Tab + ArrowDown instead).
+- Using `setValue()` to simulate user edits in keyboard/validation flows.
+- Unscoped `page.getByRole('alert')` (matches Monaco's internal alert regions).
 - Asserting every schema field in the side panel.
 - Bidirectional YAML ↔ form sync via automation.
 

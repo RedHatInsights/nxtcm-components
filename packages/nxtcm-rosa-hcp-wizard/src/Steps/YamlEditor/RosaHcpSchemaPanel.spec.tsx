@@ -144,7 +144,7 @@ test.describe('RosaHcpSchemaPanel', () => {
 
   test('calls onClose when the close button is clicked', async ({ mount, page }) => {
     const component = await mount<typeof SchemaPanelMount>(SCHEMA_PANEL_STORY, { onClose: true });
-    await page.getByRole('button', { name: s.schemaToggleAriaLabel }).click();
+    await page.getByRole('button', { name: s.schemaCloseAriaLabel }).click();
     await expect
       .poll(() =>
         component
