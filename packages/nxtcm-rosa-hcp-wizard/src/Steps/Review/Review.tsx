@@ -1,3 +1,5 @@
+import type { Ref } from 'react';
+
 import { Alert, AlertVariant } from '@patternfly/react-core/dist/dynamic/components/Alert';
 import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { useWizardContext } from '@patternfly/react-core/dist/dynamic/components/Wizard';
@@ -57,10 +59,13 @@ function resolveReviewFieldLabelText(
 }
 
 export type ReviewProps = Pick<ROSAHCPWizardData, 'vpcList'> & {
+  /** Opens the YAML editor from Review. */
   onOpenYamlEditor?: () => void;
+  /** Focus target when returning from the YAML editor or submission error. */
+  editInYamlButtonRef?: Ref<HTMLButtonElement>;
 };
 
-export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
+export const Review = ({ vpcList, onOpenYamlEditor, editInYamlButtonRef }: ReviewProps) => {
   const { goToStepById } = useWizardContext();
   const { hiddenFields } = useWizardConfig();
   const watchedFormValues = useWatch();
@@ -85,7 +90,12 @@ export const Review = ({ vpcList, onOpenYamlEditor }: ReviewProps) => {
       isForm={false}
       labelActions={
         onOpenYamlEditor ? (
-          <Button variant="secondary" icon={<PencilAltIcon />} onClick={onOpenYamlEditor}>
+          <Button
+            ref={editInYamlButtonRef}
+            variant="secondary"
+            icon={<PencilAltIcon />}
+            onClick={onOpenYamlEditor}
+          >
             {review.editInYaml}
           </Button>
         ) : undefined

@@ -1,4 +1,13 @@
-import React, { lazy, Suspense, useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  lazy,
+  Suspense,
+  useCallback,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { Spinner } from '@patternfly/react-core/dist/dynamic/components/Spinner';
 import {
@@ -53,6 +62,12 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
   const [isNavigatingToReview, setIsNavigatingToReview] = useState(false);
   const [isYamlEditorOpen, setIsYamlEditorOpen] = useState(false);
   const yamlEditorRef = useRef<YamlEditorHandle>(null);
+  const wizardViewRef = useRef<HTMLDivElement>(null);
+  const errorViewRef = useRef<HTMLElement>(null);
+  const yamlViewRef = useRef<HTMLDivElement>(null);
+  const editYamlButtonRef = useRef<HTMLButtonElement>(null);
+  const submitErrorTitleId = useId();
+  const submitErrorMessageId = useId();
 
   const getFormYaml = useCallback(
     () => resourceGenerator.renderYaml(getValues()),
@@ -100,6 +115,25 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
   const rosaStrings = useRosaHcpWizardStrings();
   const { wizard, yamlEditor: yamlStrings } = rosaStrings;
   const sl = wizard.stepLabels;
+  const view = onSubmitError ? 'error' : isYamlEditorOpen ? 'yaml' : 'wizard';
+  const previousViewRef = useRef(view);
+
+  useLayoutEffect(() => {
+    if (view === 'error') {
+      errorViewRef.current?.focus();
+    } else if (view === 'yaml') {
+      yamlViewRef.current?.focus();
+    } else if (previousViewRef.current !== 'wizard') {
+      if (editYamlButtonRef.current) {
+        editYamlButtonRef.current.focus();
+      } else {
+        wizardViewRef.current
+          ?.querySelector<HTMLButtonElement>('button[aria-current="step"]')
+          ?.focus();
+      }
+    }
+    previousViewRef.current = view;
+  }, [view]);
 
   const yamlEditorFooter = useMemo(
     () => (
@@ -116,15 +150,29 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
 
   return (
     <div
+      ref={wizardViewRef}
       className={`rosa-hcp-wizard${isYamlEditorOpen && !onSubmitError ? ' rosa-hcp-wizard--yaml-editor-open' : ''}`}
     >
       {onSubmitError ? (
-        <RosaWizardSubmitError
-          onSubmitError={onSubmitError}
-          onBackToReviewStep={onBackToReviewStep ? handleBackToReviewStep : undefined}
-          isNavigatingToReview={isNavigatingToReview}
-          onCancel={onCancel}
-        />
+        <section
+          ref={errorViewRef}
+          tabIndex={-1}
+          aria-labelledby={submitErrorTitleId}
+          aria-describedby={
+            typeof onSubmitError === 'string' && onSubmitError.length > 0
+              ? submitErrorMessageId
+              : undefined
+          }
+        >
+          <RosaWizardSubmitError
+            titleId={submitErrorTitleId}
+            messageId={submitErrorMessageId}
+            onSubmitError={onSubmitError}
+            onBackToReviewStep={onBackToReviewStep ? handleBackToReviewStep : undefined}
+            isNavigatingToReview={isNavigatingToReview}
+            onCancel={onCancel}
+          />
+        </section>
       ) : null}
       <Wizard
         footer={footer}
@@ -217,22 +265,34 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
           }
         >
           {isYamlEditorOpen ? (
-            <Suspense
-              fallback={
-                <div className="pf-v6-u-p-lg pf-v6-u-text-align-center">
-                  <Spinner size="lg" aria-label={yamlStrings.title} />
-                </div>
-              }
+            <div
+              ref={yamlViewRef}
+              className="rosa-hcp-yaml-editor-view"
+              role="region"
+              aria-label={yamlStrings.title}
+              tabIndex={-1}
             >
-              <RosaHcpYamlEditorStep
-                ref={yamlEditorRef}
-                onClose={handleCloseYamlEditor}
-                onCancel={onCancel}
-                resourceGenerator={resourceGenerator}
-              />
-            </Suspense>
+              <Suspense
+                fallback={
+                  <div className="pf-v6-u-p-lg pf-v6-u-text-align-center">
+                    <Spinner size="lg" aria-label={yamlStrings.title} />
+                  </div>
+                }
+              >
+                <RosaHcpYamlEditorStep
+                  ref={yamlEditorRef}
+                  onClose={handleCloseYamlEditor}
+                  onCancel={onCancel}
+                  resourceGenerator={resourceGenerator}
+                />
+              </Suspense>
+            </div>
           ) : (
-            <Review vpcList={wizardData.vpcList} onOpenYamlEditor={openYamlEditor} />
+            <Review
+              vpcList={wizardData.vpcList}
+              onOpenYamlEditor={openYamlEditor}
+              editInYamlButtonRef={editYamlButtonRef}
+            />
           )}
         </WizardStep>
       </Wizard>
