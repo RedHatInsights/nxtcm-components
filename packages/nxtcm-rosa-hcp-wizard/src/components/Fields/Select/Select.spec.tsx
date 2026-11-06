@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 import { expect, test } from '@/playwright/ct-fixture';
 import { checkAccessibility } from '@/playwright/test-helpers';
@@ -16,6 +16,7 @@ import type {
   DisabledTypeaheadHarness,
   GroupedLoadingTypeaheadHarness,
   GroupedTypeaheadHarness,
+  KeyboardTypeaheadHarness,
   LoadingTypeaheadHarness,
   PlainMenuHarness,
   PreselectedTypeaheadHarness,
@@ -36,6 +37,16 @@ async function checkMenuAccessibility(page: Page): Promise<void> {
     );
   });
   await checkAccessibility({ component: body });
+}
+
+async function expectPopupReferences(page: Page, combo: Locator): Promise<void> {
+  const ids = (await combo.getAttribute('aria-controls'))?.trim().split(/\s+/) ?? [];
+  expect(ids.length).toBeGreaterThan(0);
+  for (const id of ids) {
+    const list = page.locator(`[id="${id}"]`);
+    await expect(list).toBeVisible();
+    await expect(list).toHaveAttribute('role', 'listbox');
+  }
 }
 
 test.describe('Select', () => {
@@ -108,7 +119,11 @@ test.describe('Select', () => {
     await component.getByRole('button', { name: /select the region/i }).click();
     await expect(page.getByText('Americas', { exact: true })).toBeVisible();
     await expect(page.getByText('Europe', { exact: true })).toBeVisible();
-    await expect(page.getByRole('option', { name: 'eu-west-1' })).toBeVisible();
+    const americas = page.getByRole('listbox', { name: 'Region: Americas' });
+    const europe = page.getByRole('listbox', { name: 'Region: Europe' });
+    await expect(americas.locator(':scope > li')).toHaveCount(1);
+    await expect(europe.locator(':scope > li')).toHaveCount(1);
+    await expect(europe.getByRole('option', { name: 'eu-west-1' })).toBeVisible();
     await checkMenuAccessibility(page);
   });
 
@@ -126,7 +141,27 @@ test.describe('Select', () => {
     await component.getByRole('combobox', { name: 'Region' }).click();
     await expect(page.getByText('Americas', { exact: true })).toBeVisible();
     await expect(page.getByText('Europe', { exact: true })).toBeVisible();
-    await expect(page.getByRole('option', { name: 'eu-west-1' })).toBeVisible();
+    const americas = page.getByRole('listbox', { name: 'Region: Americas' });
+    const europe = page.getByRole('listbox', { name: 'Region: Europe' });
+    await expect(americas.locator(':scope > li')).toHaveCount(1);
+    await expect(europe.locator(':scope > li')).toHaveCount(1);
+    await expect(europe.getByRole('option', { name: 'eu-west-1' })).toBeVisible();
+    await expectPopupReferences(page, component.getByRole('combobox', { name: 'Region' }));
+    await checkMenuAccessibility(page);
+  });
+
+  test('uses the configured heading level for option groups', async ({ mount, page }) => {
+    const component = await mount<typeof PlainMenuHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/PlainMenuHarness',
+      {
+        optionGroups: [{ label: 'Americas', options: ['us-east-1'] }],
+        groupHeadingLevel: 'h4',
+        headingContext: true,
+      }
+    );
+    await component.getByRole('button', { name: /select the region/i }).click();
+    await expect(component.getByRole('heading', { name: 'Details', level: 3 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Americas', level: 4 })).toBeVisible();
     await checkMenuAccessibility(page);
   });
 
@@ -149,6 +184,7 @@ test.describe('Select', () => {
     const combo = component.getByRole('combobox', { name: 'Region' });
     await combo.click();
     await expect(page.getByText('No results found', { exact: true })).toBeVisible();
+    await expectPopupReferences(page, combo);
     await checkMenuAccessibility(page);
   });
 
@@ -161,6 +197,7 @@ test.describe('Select', () => {
     await combo.click();
     await combo.fill('no-such-region');
     await expect(page.getByText('No results found', { exact: true })).toBeVisible();
+    await expectPopupReferences(page, combo);
     await checkMenuAccessibility(page);
   });
 
@@ -176,6 +213,7 @@ test.describe('Select', () => {
     await combo.click();
     await combo.fill('no-such-region');
     await expect(page.getByText('No results found', { exact: true })).toBeVisible();
+    await expectPopupReferences(page, combo);
     await checkMenuAccessibility(page);
   });
 
@@ -296,6 +334,102 @@ test.describe('Select', () => {
     await checkMenuAccessibility(page);
     await expect(combo).toHaveAttribute('aria-controls', 'ct-menu-ta-listbox');
     await expect(page.locator('#ct-menu-ta-listbox')).toBeVisible();
+    await expectPopupReferences(page, combo);
+  });
+
+  test('opens, navigates enabled options, and selects with only the keyboard', async ({
+    mount,
+    page,
+  }) => {
+    await mount<typeof KeyboardTypeaheadHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/KeyboardTypeaheadHarness'
+    );
+    const combo = page.getByRole('combobox', { name: 'Subnet' });
+    await page.getByRole('button', { name: 'Before subnet' }).focus();
+    await page.keyboard.press('Tab');
+    await expect(combo).toBeFocused();
+
+    await page.keyboard.press('ArrowDown');
+    await expectPopupReferences(page, combo);
+    await expect(combo).toHaveAttribute('aria-activedescendant', 'ct-menu-ta-keyboard-option-0');
+    await expect(page.locator('#ct-menu-ta-keyboard-option-0')).toHaveAttribute('role', 'option');
+    await expect(page.getByRole('option', { name: 'Disabled subnet' })).toBeDisabled();
+    await expect(page.getByRole('option', { name: 'Unavailable subnet' })).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    );
+    await checkMenuAccessibility(page);
+
+    await page.keyboard.press('ArrowDown');
+    await expect(combo).toHaveAttribute('aria-activedescendant', 'ct-menu-ta-keyboard-option-2');
+    await page.keyboard.press('ArrowUp');
+    await expect(combo).toHaveAttribute('aria-activedescendant', 'ct-menu-ta-keyboard-option-0');
+    await page.keyboard.press('ArrowDown');
+    await expect(combo).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page.getByTestId('ta-keyboard-val')).toHaveText('subnet-b');
+    await expect(combo).toBeFocused();
+    await expect(combo).not.toHaveAttribute('aria-activedescendant');
+    await expect(combo).not.toHaveAttribute('aria-controls');
+  });
+
+  test('Escape keeps input focus and Tab moves focus forward', async ({ mount, page }) => {
+    await mount<typeof KeyboardTypeaheadHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/KeyboardTypeaheadHarness'
+    );
+    const combo = page.getByRole('combobox', { name: 'Subnet' });
+    await page.getByRole('button', { name: 'Before subnet' }).focus();
+    await page.keyboard.press('Tab');
+    await expect(combo).toBeFocused();
+
+    await page.keyboard.press('Enter');
+    await expectPopupReferences(page, combo);
+    await page.keyboard.press('ArrowUp');
+    await expect(combo).toHaveAttribute('aria-activedescendant', 'ct-menu-ta-keyboard-option-2');
+    await page.keyboard.press('Escape');
+    await expect(combo).toBeFocused();
+    await expect(combo).not.toHaveAttribute('aria-controls');
+    await expect(combo).not.toHaveAttribute('aria-activedescendant');
+
+    await page.keyboard.press('ArrowDown');
+    await expectPopupReferences(page, combo);
+    await checkMenuAccessibility(page);
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('button', { name: 'After subnet' })).toBeFocused();
+    await expect(combo).not.toHaveAttribute('aria-controls');
+  });
+
+  test('removes stale active options when filtering or updating options', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof PlainMenuHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/PlainMenuHarness',
+      { isTypeAhead: true, options: ['alpha', 'beta'] }
+    );
+    const combo = page.getByRole('combobox', { name: 'Region' });
+    await combo.click();
+    await page.keyboard.press('ArrowDown');
+    await expect(combo).toHaveAttribute('aria-activedescendant', 'ct-menu-plain-option-0');
+
+    await combo.fill('beta');
+    await expect(combo).not.toHaveAttribute('aria-activedescendant');
+    await expectPopupReferences(page, combo);
+    await page.keyboard.press('ArrowDown');
+    await expect(combo).toHaveAttribute('aria-activedescendant', 'ct-menu-plain-option-0');
+    await expect(page.locator('#ct-menu-plain-option-0')).toHaveText('beta');
+
+    await component.update({ isTypeAhead: true, options: ['gamma'] });
+    await expect(combo).not.toHaveAttribute('aria-activedescendant');
+    await expect(page.getByText('No results found', { exact: true })).toBeVisible();
+    await expectPopupReferences(page, combo);
+    await page.keyboard.press('Enter');
+    await expect(page.getByTestId('menu-val')).toHaveText('none');
+    await combo.fill('gamma');
+    await page.keyboard.press('ArrowDown');
+    await expect(combo).toHaveAttribute('aria-activedescendant', 'ct-menu-plain-option-0');
+    await page.keyboard.press('Enter');
+    await expect(page.getByTestId('menu-val')).toHaveText('gamma');
   });
 
   test('shows all options when reopening a typeahead after selection', async ({ mount, page }) => {
@@ -312,6 +446,7 @@ test.describe('Select', () => {
     await combo.click();
     await expect(page.getByRole('option', { name: 'subnet-a' })).toBeVisible();
     await expect(page.getByRole('option', { name: 'subnet-b' })).toBeVisible();
+    await expectPopupReferences(page, combo);
     await expect(page.getByRole('option', { name: 'other-net' })).toBeVisible();
   });
 
@@ -327,6 +462,11 @@ test.describe('Select', () => {
     );
     await expect(page.getByRole('option', { name: 'subnet-a' })).toBeVisible();
     await expect(page.getByRole('option', { name: 'subnet-b' })).toBeVisible();
+    await expectPopupReferences(page, combo);
+    await combo.fill('subnet-b');
+    await expect(combo).toHaveAttribute('aria-controls', 'ct-menu-ta-grouped-listbox-0');
+    await expectPopupReferences(page, combo);
+    await expect(page.getByRole('option', { name: 'subnet-a' })).toHaveCount(0);
   });
 
   test('keeps aria-controls connected while a typeahead menu is loading', async ({
@@ -340,6 +480,7 @@ test.describe('Select', () => {
     await combo.click();
     await expect(combo).toHaveAttribute('aria-controls', 'ct-menu-ta-loading-listbox');
     await expect(page.locator('#ct-menu-ta-loading-listbox')).toBeVisible();
+    await expectPopupReferences(page, combo);
   });
 
   test('keeps aria-controls connected while a grouped typeahead menu is loading', async ({
@@ -353,6 +494,7 @@ test.describe('Select', () => {
     await combo.click();
     await expect(combo).toHaveAttribute('aria-controls', 'ct-menu-ta-grouped-loading-listbox');
     await expect(page.locator('#ct-menu-ta-grouped-loading-listbox')).toBeVisible();
+    await expectPopupReferences(page, combo);
   });
 
   test('re-selecting the same typeahead option keeps the selection', async ({ mount, page }) => {

@@ -1,4 +1,5 @@
 import {
+  type ComponentProps,
   type FocusEventHandler,
   type FormEvent,
   Fragment,
@@ -45,6 +46,11 @@ import { toDisplayString } from './SelectOptions';
 import { extractOptionValue, type Option, type OptionGroup, type OptionType } from './SelectTypes';
 import { useSelectDerived } from './useSelectDerived';
 
+interface RenderedOption<T> {
+  option: OptionType<T>;
+  menuId: string;
+}
+
 export interface SelectProps<T = unknown> {
   /** Stable field id (toggle and listbox wiring). */
   id: string;
@@ -77,6 +83,8 @@ export interface SelectProps<T = unknown> {
   keyPath?: string;
   options?: (Option<T> | string | number)[];
   optionGroups?: OptionGroup<T>[];
+  /** Heading level for option group labels; match the surrounding page headings. */
+  groupHeadingLevel?: ComponentProps<typeof SelectGroup>['labelHeadingLevel'];
   isFill?: boolean;
   /** Invoked when the refresh control is pressed. */
   onRefresh?: () => void;
@@ -115,6 +123,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     keyPath = 'value',
     options,
     optionGroups,
+    groupHeadingLevel,
     isFill = true,
     onRefresh,
     isLoading,
@@ -135,6 +144,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
 
   const [open, setOpen] = useState(false);
   const [typeaheadQuery, setTypeaheadQuery] = useState('');
+  const [activeOption, setActiveOption] = useState<OptionType<T> | undefined>();
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const textInputRef = useRef<HTMLInputElement>(null);
   const tooltipTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -158,10 +168,10 @@ export function Select<T = unknown>(props: SelectProps<T>) {
 
   const {
     normalizedFlat,
+    normalizedGroups,
     hasGroups,
     displayedFlat,
     displayedGroups,
-    flatForLookup,
     selectedOption,
   } = useSelectDerived({
     options,
@@ -172,9 +182,33 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     typeaheadQuery,
   });
   const displayedGroupsWithOptions = displayedGroups.filter((group) => group.options.length > 0);
-  const groupedTypeaheadListboxIds = displayedGroupsWithOptions
-    .map((_, index) => `${id}-listbox-${index}`)
-    .join(' ');
+  // Field-scoped menu IDs also identify options for aria-activedescendant.
+  const groupedRows = displayedGroupsWithOptions.map((group, groupIndex) => ({
+    label: group.label,
+    listId: `${id}-listbox-${groupIndex}`,
+    rows: group.options.map((option, optionIndex): RenderedOption<T> => ({
+      option,
+      menuId: `${id}-option-${groupIndex}-${optionIndex}`,
+    })),
+  }));
+  const flatRows = (isTypeAhead ? displayedFlat : (normalizedFlat ?? [])).map(
+    (option, optionIndex): RenderedOption<T> => ({
+      option,
+      menuId: `${id}-option-${optionIndex}`,
+    })
+  );
+  const displayedRows = isLoading
+    ? []
+    : hasGroups
+      ? groupedRows.flatMap((group) => group.rows)
+      : flatRows;
+  const navigableRows = displayedRows.filter(
+    ({ option }) => !option.disabled && !option.ariaDisabled
+  );
+  // An option removed or disabled by new props cannot leave a stale active reference.
+  const activeRow =
+    open && isTypeAhead ? navigableRows.find(({ option }) => option === activeOption) : undefined;
+  const groupedTypeaheadListboxIds = groupedRows.map(({ listId }) => listId).join(' ');
   const typeaheadListboxIds =
     !isLoading && hasGroups && groupedTypeaheadListboxIds
       ? groupedTypeaheadListboxIds
@@ -202,54 +236,58 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     [isTypeAhead, toggleLabel]
   );
 
-  const handleSelectById = useCallback(
-    (optionId: string | undefined) => {
-      if (isSyntheticOptionId(optionId)) {
-        return;
-      }
-      if (optionId == null || optionId === '') {
-        /**
-         * PatternFly can emit `onSelect` with an empty selection while the menu is closing or
-         * during option transitions. Clearing the RHF value here briefly fails `.required()` and
-         * flashes the error state. Plain selects have no in-menu "clear"; use {@link onClearTypeahead}
-         * for typeahead clears.
-         */
-        if (isTypeAhead) {
-          onChange(undefined);
-        }
-        setOpen(false);
-        syncTypeaheadQueryForOpenState(false);
-        return;
-      }
-      const opt = flatForLookup.find((o) => o.id === optionId);
-      if (opt) {
-        onChange(opt.value);
+  const handleSelectById = (optionId: string | undefined): void => {
+    if (isSyntheticOptionId(optionId)) {
+      return;
+    }
+    if (optionId == null || optionId === '') {
+      /**
+       * PatternFly can emit `onSelect` with an empty selection while the menu is closing or
+       * during option transitions. Clearing the RHF value here briefly fails `.required()` and
+       * flashes the error state. Plain selects have no in-menu "clear"; use {@link onClearTypeahead}
+       * for typeahead clears.
+       */
+      if (isTypeAhead) {
+        onChange(undefined);
       }
       setOpen(false);
+      setActiveOption(undefined);
       syncTypeaheadQueryForOpenState(false);
-    },
-    [flatForLookup, isTypeAhead, onChange, syncTypeaheadQueryForOpenState]
-  );
+      return;
+    }
+    const row = navigableRows.find(({ menuId }) => menuId === optionId);
+    if (!row) {
+      return;
+    }
+    onChange(row.option.value);
+    setOpen(false);
+    setActiveOption(undefined);
+    syncTypeaheadQueryForOpenState(false);
+    if (isTypeAhead) {
+      textInputRef.current?.focus();
+    }
+  };
 
-  const onPfSelect = useCallback(
-    (_event: MouseEvent<Element> | undefined, val: unknown) => {
-      handleSelectById(extractOptionValue(val));
-    },
-    [handleSelectById]
-  );
+  const onPfSelect = (_event: MouseEvent<Element> | undefined, val: unknown): void => {
+    handleSelectById(extractOptionValue(val));
+  };
 
-  const selectedForMenu = selectedOption?.id ?? '';
+  const selectedForMenu =
+    displayedRows.find(({ option }) => option === selectedOption)?.menuId ?? '';
 
   /** Visible text in the typeahead input (loading placeholder vs filter query). */
   const typeaheadToggleDisplay = isLoading && !toggleLabel ? 'Loading...' : typeaheadQuery;
 
-  const renderSelectOptionRow = (opt: OptionType<T>, optId: string) => {
+  const renderSelectOptionRow = ({
+    option: opt,
+    menuId,
+  }: RenderedOption<T>): React.ReactElement => {
     const isAriaDisabled = Boolean(opt.ariaDisabled);
     return (
       <SelectOption
-        id={optId}
-        key={optId}
-        value={optId}
+        id={menuId}
+        key={menuId}
+        value={menuId}
         title={typeof opt.title === 'string' && opt.title ? opt.title : undefined}
         description={
           !isAriaDisabled && typeof opt.description === 'string' ? opt.description : undefined
@@ -257,14 +295,15 @@ export function Select<T = unknown>(props: SelectProps<T>) {
         isDisabled={Boolean(opt.disabled) && !isAriaDisabled}
         isAriaDisabled={isAriaDisabled}
         tooltipProps={isAriaDisabled ? opt.tooltipProps : undefined}
-        isSelected={opt.id === selectedForMenu && !isAriaDisabled}
+        isSelected={menuId === selectedForMenu}
+        isFocused={menuId === activeRow?.menuId}
       >
         {toDisplayString(opt.label) || toDisplayString(opt.value)}
       </SelectOption>
     );
   };
 
-  const renderMenuBody = () => {
+  const renderMenuBody = (): React.ReactElement => {
     if (isLoading) {
       return (
         <SelectList id={isTypeAhead ? `${id}-listbox` : undefined} aria-label={menuLabel}>
@@ -282,8 +321,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     }
 
     if (hasGroups) {
-      const toRender = displayedGroupsWithOptions;
-      if (toRender.length === 0) {
+      if (groupedRows.length === 0) {
         return (
           <SelectList id={isTypeAhead ? `${id}-listbox` : undefined} aria-label={menuLabel}>
             <SelectOption id={`${id}-no-results`} isAriaDisabled value="no-results">
@@ -294,17 +332,15 @@ export function Select<T = unknown>(props: SelectProps<T>) {
       }
       return (
         <>
-          {toRender.map((group, index) => (
+          {groupedRows.map((group, index) => (
             <Fragment key={group.label}>
               {index > 0 ? <Divider /> : null}
-              <SelectGroup label={group.label}>
+              <SelectGroup label={group.label} labelHeadingLevel={groupHeadingLevel}>
                 <SelectList
-                  id={isTypeAhead ? `${id}-listbox-${index}` : undefined}
+                  id={isTypeAhead ? group.listId : undefined}
                   aria-label={`${menuLabel}: ${group.label}`}
                 >
-                  {group.options.map((opt: OptionType<T>, optIdx: number) =>
-                    renderSelectOptionRow(opt, opt.id || `option-${group.label}-${optIdx}`)
-                  )}
+                  {group.rows.map(renderSelectOptionRow)}
                 </SelectList>
               </SelectGroup>
             </Fragment>
@@ -333,17 +369,17 @@ export function Select<T = unknown>(props: SelectProps<T>) {
       );
     }
 
-    const listRows = isTypeAhead ? displayedFlat : flatOpts;
-
     return (
       <SelectList id={`${id}-listbox`} aria-label={menuLabel}>
-        {listRows.map((opt, idx) => renderSelectOptionRow(opt, opt.id || `opt-${idx}`))}
+        {flatRows.map(renderSelectOptionRow)}
       </SelectList>
     );
   };
 
-  const onTypeaheadInputChange = useCallback((_e: FormEvent<HTMLInputElement>, v: string) => {
+  const onTypeaheadInputChange = useCallback((_e: FormEvent<HTMLInputElement>, v: string): void => {
     setTypeaheadQuery(v);
+    setActiveOption(undefined);
+    setOpen(true);
   }, []);
 
   const onClearTypeahead = useCallback(
@@ -352,6 +388,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
       event.stopPropagation();
       onChange(undefined);
       setTypeaheadQuery('');
+      setActiveOption(undefined);
       textInputRef.current?.focus();
     },
     [onChange]
@@ -363,8 +400,71 @@ export function Select<T = unknown>(props: SelectProps<T>) {
     }
     const next = !open;
     setOpen(next);
+    setActiveOption(undefined);
     syncTypeaheadQueryForOpenState(next);
   }, [disabled, open, syncTypeaheadQueryForOpenState]);
+
+  // Close on Tab without preventing the browser's forward focus movement.
+  const onTypeaheadKeydown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (disabled) {
+      return;
+    }
+
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      if (!open) {
+        const allOptions = hasGroups
+          ? (normalizedGroups ?? []).flatMap((group) => group.options)
+          : (normalizedFlat ?? []);
+        const enabledOptions = isLoading
+          ? []
+          : allOptions.filter((option) => !option.disabled && !option.ariaDisabled);
+        setOpen(true);
+        syncTypeaheadQueryForOpenState(true);
+        setActiveOption(
+          event.key === 'ArrowDown' ? enabledOptions[0] : enabledOptions[enabledOptions.length - 1]
+        );
+        return;
+      }
+
+      const activeIndex = navigableRows.findIndex(({ option }) => option === activeOption);
+      const nextIndex =
+        activeIndex < 0
+          ? event.key === 'ArrowDown'
+            ? 0
+            : navigableRows.length - 1
+          : (activeIndex + (event.key === 'ArrowDown' ? 1 : -1) + navigableRows.length) %
+            navigableRows.length;
+      setActiveOption(navigableRows[nextIndex]?.option);
+      return;
+    }
+
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      if (!open) {
+        setOpen(true);
+        setActiveOption(undefined);
+        syncTypeaheadQueryForOpenState(true);
+      } else if (activeRow) {
+        handleSelectById(activeRow.menuId);
+      }
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      if (open) {
+        event.stopPropagation();
+      }
+      setOpen(false);
+      setActiveOption(undefined);
+      syncTypeaheadQueryForOpenState(false);
+      textInputRef.current?.focus();
+    } else if (event.key === 'Tab' && open) {
+      setOpen(false);
+      setActiveOption(undefined);
+      syncTypeaheadQueryForOpenState(false);
+    }
+  };
 
   const describedBy = helperTextId({
     id,
@@ -454,9 +554,11 @@ export function Select<T = unknown>(props: SelectProps<T>) {
               'aria-describedby': describedBy || undefined,
               'aria-invalid': isError || undefined,
               autoComplete: 'off',
+              onKeyDown: onTypeaheadKeydown,
             }}
             role="combobox"
             aria-controls={open ? typeaheadListboxIds : undefined}
+            aria-activedescendant={activeRow?.menuId}
             id={`${id}-typeahead-input`}
           />
           <TextInputGroupUtilities
@@ -480,6 +582,9 @@ export function Select<T = unknown>(props: SelectProps<T>) {
   const handleOpenChange = useCallback(
     (isOpen: boolean) => {
       setOpen(isOpen);
+      if (!isOpen) {
+        setActiveOption(undefined);
+      }
       syncTypeaheadQueryForOpenState(isOpen);
     },
     [syncTypeaheadQueryForOpenState]
@@ -501,6 +606,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
           selected={selectedForMenu}
           onSelect={onPfSelect}
           onOpenChange={handleOpenChange}
+          onOpenChangeKeys={isTypeAhead ? ['Escape'] : undefined}
           toggle={isTypeAhead ? typeaheadToggle : plainToggle}
           variant={isTypeAhead ? 'typeahead' : undefined}
           shouldFocusToggleOnSelect={!isTypeAhead}
