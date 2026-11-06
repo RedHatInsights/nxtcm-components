@@ -84,6 +84,43 @@ export function RosaHcpWizardBodyErrorThenBackMount(props: RosaHcpWizardBodyMoun
   );
 }
 
+/** Lets tests enter the submission-error view after the wizard has rendered. */
+export function RosaHcpWizardBodyErrorTransitionMount(
+  props: RosaHcpWizardBodyMountProps = {}
+): React.ReactElement {
+  const [submitError, setSubmitError] = React.useState<string | boolean>(false);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setSubmitError('There has been an error creating the cluster')}
+      >
+        Simulate submission error
+      </button>
+      <RosaHcpWizardBodyMountComponent
+        {...props}
+        onSubmitError={submitError}
+        onBackToReviewStep={() => setSubmitError(false)}
+      />
+    </>
+  );
+}
+
+/** Uses schema-valid YAML so tests can complete the editor submission path. */
+export function RosaHcpWizardBodyYamlApplyMount(props: RosaHcpWizardBodyMountProps = {}) {
+  return (
+    <RosaHcpWizardBodyMountComponent
+      {...props}
+      resourceGenerator={{
+        ...defaultWizardProps.resourceGenerator,
+        resourceSchemas: [],
+        validateYaml: () => [],
+      }}
+    />
+  );
+}
+
 type BrowserProps = NonNullable<React.ComponentProps<typeof RosaHcpWizardBodyMountComponent>>;
 
 export type RosaHcpWizardBodyMountGalleryProps = Omit<

@@ -17,8 +17,18 @@ test.describe('ROSA Wizard - YAML Editor', () => {
     test('opens YAML editor from review page', async ({ page }) => {
       await navigateToYamlEditor(page);
 
-      // Verify Monaco editor is loaded
+      const yamlView = page.getByRole('region', { name: /YAML Configuration/i });
+      await expect(yamlView).toBeFocused();
+      await expect(page.getByRole('navigation', { name: /Wizard steps/i })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: /Edit in YAML/i })).toHaveCount(0);
+
+      // Verify Monaco editor is loaded before following the next keyboard stop.
       await expect(page.locator('.monaco-editor')).toBeVisible();
+      await page.keyboard.press('Tab');
+      await expect
+        .poll(() => yamlView.evaluate((element) => element.contains(document.activeElement)))
+        .toBe(true);
+
       await expect(page.locator('.view-lines')).toBeVisible();
     });
 
@@ -38,7 +48,8 @@ test.describe('ROSA Wizard - YAML Editor', () => {
       await page.getByRole('button', { name: /Yes/i }).click();
 
       // Back to review page
-      await expect(page.getByRole('button', { name: /Edit in YAML/i })).toBeVisible();
+      await expect(page.getByRole('button', { name: /Edit in YAML/i })).toBeFocused();
+      await expect(page.getByRole('navigation', { name: /Wizard steps/i })).toBeVisible();
       await expect(page.locator('.monaco-editor')).toBeHidden();
     });
 
@@ -55,6 +66,9 @@ test.describe('ROSA Wizard - YAML Editor', () => {
 
       // Still in YAML editor
       await expect(page.locator('.monaco-editor')).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /Discard changes and go back to Review step/i })
+      ).toBeFocused();
     });
   });
 
