@@ -190,6 +190,8 @@ export type RosaHcpWizardStrings = {
     title: string;
     description: string;
     parseErrorTitle: string;
+    /** Validation banner text. `count` is the number of schema errors (at least 1). */
+    validationErrorsFound: (count: number) => string;
     convertError: string;
     invalidYaml: string;
     discardChanges: string;

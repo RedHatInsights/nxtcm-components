@@ -64,6 +64,8 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     title: 'YAML Configuration',
     description: 'Review and edit the YAML configuration.',
     parseErrorTitle: 'YAML Schema Validation Error',
+    validationErrorsFound: (count: number) =>
+      `${count} validation error${count === 1 ? '' : 's'} found`,
     convertError: 'Error converting form data to YAML',
     invalidYaml: 'Invalid YAML syntax',
     discardChanges: 'Discard changes and go back to Review step',

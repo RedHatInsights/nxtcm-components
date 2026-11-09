@@ -119,6 +119,12 @@ YAML editor opened from Review. Required even when optional steps are hidden.
 | `yamlEditor.shortcutPreviousProblem` | Go to previous problem | |
 | `yamlEditor.shortcutCommandPalette` | Show all editor commands | |
 
+Function-valued keys must keep the same parameters.
+
+| Key | Signature | Default English |
+| --- | --- | --- |
+| `yamlEditor.validationErrorsFound` | `(count: number) => string` | {count} validation error(s) found. `count` is at least 1. |
+
 ### `associateAwsDrawer`
 
 "Associate a new AWS account" drawer, opened from Details.

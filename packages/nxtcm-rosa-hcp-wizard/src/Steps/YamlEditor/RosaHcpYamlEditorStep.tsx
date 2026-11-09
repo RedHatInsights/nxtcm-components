@@ -94,7 +94,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
     const [yamlContent, setYamlContent] = useState(() =>
       generator.renderYaml(watchedValues as Partial<ROSAHCPCluster>)
     );
-    const [parseError, setParseError] = useState('');
+    const [bannerErrorCount, setBannerErrorCount] = useState(0);
     const [showSchema, setShowSchema] = useState(true);
 
     const instructionsId = useId();
@@ -145,11 +145,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
           if (errorCount > 0) {
             bannerShownRef.current = true;
           }
-          setParseError(
-            errorCount > 0
-              ? `${errorCount} validation error${errorCount !== 1 ? 's' : ''} found`
-              : ''
-          );
+          setBannerErrorCount(errorCount);
         }
       },
       [generator]
@@ -163,7 +159,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
         }
         pendingYamlRef.current = rendered;
         setYamlContent(rendered);
-        setParseError('');
+        setBannerErrorCount(0);
         hasSchemaErrorsRef.current = false;
         bannerShownRef.current = false;
         if (editorRef.current) {
@@ -339,15 +335,15 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
           {yamlStrings.editorInstructions}
         </span>
         <AlertGroup isLiveRegion data-testid="yaml-validation-live-region">
-          {/* Not &&: AlertGroup would wrap '' in an empty <li>. */}
-          {parseError ? (
+          {/* Not &&: AlertGroup would wrap a 0 in its own <li>. */}
+          {bannerErrorCount > 0 ? (
             <Alert
               variant="danger"
               isInline
               title={yamlStrings.parseErrorTitle}
               className="pf-v6-u-mb-sm"
             >
-              {parseError}
+              {yamlStrings.validationErrorsFound(bannerErrorCount)}
             </Alert>
           ) : null}
         </AlertGroup>
