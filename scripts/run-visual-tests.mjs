@@ -39,6 +39,21 @@ const engine = engines.find(
 );
 if (!engine) throw new Error('Start Docker or rootless Podman, then retry.');
 
+let rootlessDocker = false;
+if (engine === 'docker') {
+  const info = spawnSync(engine, ['info', '--format', '{{json .SecurityOptions}}'], {
+    encoding: 'utf8',
+  });
+  if (info.error || info.status !== 0) {
+    throw new Error('Could not determine Docker user mapping from its security options.');
+  }
+  const securityOptions = JSON.parse(info.stdout);
+  if (!Array.isArray(securityOptions)) {
+    throw new Error('Docker returned invalid security options; cannot determine user mapping.');
+  }
+  rootlessDocker = securityOptions.includes('name=rootless');
+}
+
 const lock = JSON.parse(readFileSync(join(root, 'package-lock.json'), 'utf8'));
 const playwrightVersion = lock.packages['node_modules/@playwright/test'].version;
 const dockerfile = readFileSync(join(root, 'playwright/visual.Dockerfile'), 'utf8');
@@ -72,7 +87,10 @@ const buildStatus = run(engine, [
 if (buildStatus !== 0) process.exit(buildStatus);
 
 const containerArgs = ['run', '--rm', '--init', '--ipc=host', '--platform', 'linux/amd64'];
-if (process.getuid && process.getgid) {
+if (rootlessDocker) {
+  // Rootless Docker maps container root to the host user that owns the bind mounts.
+  containerArgs.push('--user', '0:0');
+} else if (process.getuid && process.getgid) {
   if (engine === 'podman') containerArgs.push('--userns=keep-id');
   containerArgs.push('--user', `${process.getuid()}:${process.getgid()}`);
 }
