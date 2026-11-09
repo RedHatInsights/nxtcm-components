@@ -7,6 +7,12 @@ const major = process.argv[2];
 assert.ok(['18', '19'].includes(major), 'Usage: node scripts/setup-react-version.mjs <18|19>');
 
 const packages = ['react', 'react-dom', '@types/react', '@types/react-dom'];
+const rootRequire = createRequire(resolve('package.json'));
+// npm can re-resolve other root peers when switching React. Keep the host's
+// PatternFly installation at its npm ci version, including its icon dependencies.
+const pinnedPeers = Object.keys(rootRequire('./package.json').peerDependencies)
+  .filter((name) => !packages.includes(name))
+  .map((name) => `${name}@${rootRequire(`${name}/package.json`).version}`);
 
 // Start from npm ci in each job, then overlay only the selected React major.
 // --no-save keeps the manifests and lockfile unchanged while still reading the
@@ -19,12 +25,13 @@ execFileSync(
     '--ignore-scripts',
     '--no-audit',
     '--no-fund',
+    '--prefer-dedupe',
     ...packages.map((name) => `${name}@${major}`),
+    ...pinnedPeers,
   ],
   { stdio: 'inherit' }
 );
 
-const rootRequire = createRequire(resolve('package.json'));
 for (const directory of ['.', 'packages/nxtcm-dashboard', 'packages/nxtcm-rosa-hcp-wizard']) {
   const require = createRequire(resolve(directory, 'package.json'));
   for (const name of packages) {
