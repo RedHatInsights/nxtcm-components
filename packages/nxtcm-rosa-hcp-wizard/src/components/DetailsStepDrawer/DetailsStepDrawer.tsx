@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useId } from 'react';
 
 import { Button, ButtonVariant } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { Content, ContentVariants } from '@patternfly/react-core/dist/dynamic/components/Content';
@@ -25,39 +25,40 @@ import { UserRole } from './UserRole';
 type StepDrawerProps = {
   isDrawerExpanded: boolean;
   setIsDrawerExpanded: (expanded: boolean) => void;
-  /** the opening trigger, which regains focus when either close control is activated */
-  triggerRef: React.RefObject<HTMLButtonElement | null>;
   /** The consuming product. Determines which ROSA login command is shown. Defaults to 'acm'. */
   product?: RosaLoginProduct;
   children: React.ReactNode;
 };
 
 export const DetailsStepDrawer = (props: StepDrawerProps): React.ReactElement => {
-  const { isDrawerExpanded, triggerRef, setIsDrawerExpanded, product } = props;
+  const { isDrawerExpanded, setIsDrawerExpanded, product } = props;
   const d = useRosaHcpWizardStrings().associateAwsDrawer;
-  const panelTitleRef = useRef<HTMLSpanElement>(null);
-  const onExpand = (): void => {
-    // Focus the visible title after the opening animation so users start at the instructions.
-    if (isDrawerExpanded) panelTitleRef.current?.focus();
-  };
+  const panelTitleId = useId();
+  const panelCloseButtonId = useId();
   const onClose = (): void => {
-    triggerRef.current?.focus();
     setIsDrawerExpanded(false);
   };
 
   return (
-    <Drawer isExpanded={isDrawerExpanded} onExpand={onExpand}>
+    <Drawer isExpanded={isDrawerExpanded}>
       <DrawerContent
         panelContent={
-          <DrawerPanelContent isResizable={true} defaultSize="40%">
+          <DrawerPanelContent
+            isResizable={true}
+            defaultSize="40%"
+            focusTrap={{
+              enabled: true,
+              // Focus the header close button after the panel mounts and the drawer opens.
+              elementToFocusOnExpand: `[id="${panelCloseButtonId}"]`,
+              'aria-labelledby': panelTitleId,
+            }}
+          >
             <DrawerHead>
               <Content component={ContentVariants.h2}>
-                <span ref={panelTitleRef} tabIndex={-1}>
-                  {d.panelTitle}
-                </span>
+                <span id={panelTitleId}>{d.panelTitle}</span>
               </Content>
               <DrawerActions>
-                <DrawerCloseButton onClick={onClose} />
+                <DrawerCloseButton onClose={onClose} buttonProps={{ id: panelCloseButtonId }} />
               </DrawerActions>
             </DrawerHead>
             <DrawerPanelBody>

@@ -1,6 +1,7 @@
 import { expect, test } from '@/playwright/ct-fixture';
 
 import rosaHcpWizardFixtures from '../../../ROSAHCPWizard.fixtures';
+import type { RosaHcpWizardBodyMount } from '../../../ROSAHCPWizardBody.story';
 import { defaultRosaHcpWizardStrings } from '../../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { checkAccessibility } from '../../../test-helpers';
 import type { Resource, Role } from '../../../types';
@@ -125,13 +126,17 @@ test.describe('Details (ROSA HCP)', () => {
         exact: true,
       });
       const closeButton = component.getByRole('button', { name: closeName, exact: true });
+      const headerCloseButton = component.getByRole('button', {
+        name: 'Close drawer panel',
+        exact: true,
+      });
 
       await trigger.focus();
       await expect(trigger).toBeFocused();
       await expect(trigger).toHaveAttribute('aria-expanded', 'false');
       await page.keyboard.press(key);
       await expect(title).toBeVisible();
-      await expect(title).toBeFocused();
+      await expect(headerCloseButton).toBeFocused();
       await expect(trigger).toHaveAttribute('aria-expanded', 'true');
 
       await closeButton.focus();
@@ -142,10 +147,10 @@ test.describe('Details (ROSA HCP)', () => {
       await expect(trigger).toBeFocused();
       await expect(trigger).toHaveAttribute('aria-expanded', 'false');
 
-      // Reopening must focus the attached title again, then return focus on close.
+      // Reopening must focus the header close button again, then return focus on close.
       await page.keyboard.press(key);
       await expect(title).toBeVisible();
-      await expect(title).toBeFocused();
+      await expect(headerCloseButton).toBeFocused();
       await expect(trigger).toHaveAttribute('aria-expanded', 'true');
       await closeButton.focus();
       await page.keyboard.press(key);
@@ -153,7 +158,46 @@ test.describe('Details (ROSA HCP)', () => {
       await expect(trigger).toBeFocused();
       await expect(trigger).toHaveAttribute('aria-expanded', 'false');
     });
+
+    test(`returns focus to the AWS account trigger after pointer opening and closing with ${closeName}`, async ({
+      mount,
+    }) => {
+      const component = await mount<typeof DetailsMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
+      );
+      const trigger = component.getByRole('button', { name: d.associateNewAccount, exact: true });
+      const title = component.getByText(defaultRosaHcpWizardStrings.associateAwsDrawer.panelTitle, {
+        exact: true,
+      });
+
+      await trigger.click();
+      await expect(
+        component.getByRole('button', { name: 'Close drawer panel', exact: true })
+      ).toBeFocused();
+      await component.getByRole('button', { name: closeName, exact: true }).click();
+      await expect(title).toBeHidden();
+      await expect(trigger).toBeFocused();
+      await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    });
   }
+
+  test('focuses the drawer close button when opened from the full wizard', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof RosaHcpWizardBodyMount>(
+      'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount'
+    );
+    const trigger = component.getByRole('button', { name: d.associateNewAccount, exact: true });
+    const closeButton = component.getByRole('button', { name: 'Close drawer panel', exact: true });
+
+    await trigger.click();
+    await expect(closeButton).toBeVisible();
+    await expect(closeButton).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(closeButton).toBeHidden();
+    await expect(trigger).toBeFocused();
+  });
 
   test.describe('Details — cluster name validation', () => {
     test('should display validation error for cluster name with invalid characters', async ({

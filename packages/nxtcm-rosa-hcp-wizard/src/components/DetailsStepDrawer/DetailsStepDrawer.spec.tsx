@@ -4,7 +4,7 @@ import { checkAccessibility } from '../../test-helpers';
 import type { DetailsStepDrawerMount } from './DetailsStepDrawer.story';
 
 test.describe('DetailsStepDrawer', () => {
-  test('focuses the visible title on keyboard opening and tabs to the header close control', async ({
+  test('focuses the header close button, traps keyboard focus in the named dialog, and restores focus on close', async ({
     mount,
     page,
   }) => {
@@ -13,15 +13,28 @@ test.describe('DetailsStepDrawer', () => {
     );
     const trigger = component.getByRole('button', { name: 'Associate a new AWS account' });
     const title = component.getByText('How to associate a new AWS account', { exact: true });
+    const dialog = component.getByRole('dialog', { name: 'How to associate a new AWS account' });
     const closeButton = component.getByRole('button', { name: 'Close drawer panel', exact: true });
+    const resizeHandle = dialog.getByRole('separator', { name: 'Resize', exact: true });
+    const bottomCloseButton = dialog.getByRole('button', { name: 'Close', exact: true });
 
     await trigger.focus();
     await page.keyboard.press('Enter');
     await expect(title).toBeVisible();
-    await expect(title).toBeFocused();
+    await expect(closeButton).toBeVisible();
+    await expect(closeButton).toBeFocused();
+    await expect(dialog).toHaveAccessibleName('How to associate a new AWS account');
+    await expect(dialog).toHaveAttribute('aria-modal', 'true');
+    await page.keyboard.press('Shift+Tab');
+    await expect(resizeHandle).toBeFocused();
+    await page.keyboard.press('Shift+Tab');
+    await expect(bottomCloseButton).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(resizeHandle).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(closeButton).toBeFocused();
     await page.keyboard.press('Space');
+    await expect(dialog).toBeHidden();
     await expect(title).toBeHidden();
     await expect(closeButton).toBeHidden();
     await expect(trigger).toBeFocused();
