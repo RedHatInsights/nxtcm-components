@@ -190,6 +190,8 @@ export type RosaHcpWizardStrings = {
     title: string;
     description: string;
     parseErrorTitle: string;
+    /** Validation banner text. `count` is the number of schema errors (at least 1). */
+    validationErrorsFound: (count: number) => string;
     convertError: string;
     invalidYaml: string;
     discardChanges: string;
@@ -203,6 +205,16 @@ export type RosaHcpWizardStrings = {
     schemaHideTooltip: string;
     schemaSearchPlaceholder: string;
     schemaTreeAriaLabel: string;
+    editorInstructions: string;
+    shortcutsButtonText: string;
+    shortcutsAriaLabel: string;
+    shortcutsMacLabel: string;
+    shortcutStartEditing: string;
+    shortcutLeaveEditor: string;
+    shortcutToggleTabFocus: string;
+    shortcutNextProblem: string;
+    shortcutPreviousProblem: string;
+    shortcutCommandPalette: string;
   };
   associateAwsDrawer: {
     panelTitle: string;

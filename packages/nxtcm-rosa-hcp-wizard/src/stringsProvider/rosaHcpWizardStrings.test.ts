@@ -73,3 +73,18 @@ describe('wizard string bundle merging', () => {
     expect(result.validators.clusterName).toBe(defaultRosaHcpWizardValidatorStrings.clusterName);
   });
 });
+
+describe('yamlEditor.validationErrorsFound', () => {
+  it('pluralizes the default English by count', () => {
+    const { validationErrorsFound } = defaultRosaHcpWizardStrings.yamlEditor;
+    expect(validationErrorsFound(1)).toBe('1 validation error found');
+    expect(validationErrorsFound(3)).toBe('3 validation errors found');
+  });
+
+  it('uses a host-provided formatter in place of the default', () => {
+    const result = mergeRosaHcpWizardStrings({
+      yamlEditor: { validationErrorsFound: (count: number) => `${count} errores` },
+    });
+    expect(result.yamlEditor.validationErrorsFound(2)).toBe('2 errores');
+  });
+});
