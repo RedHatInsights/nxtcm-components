@@ -12,6 +12,20 @@ const oidcHint = defaultRosaHcpWizardStrings.oidcHint;
 const { mockRoles, mockOicdConfig } = fixtures;
 const INSTALLER_ARN = mockRoles[0].installerRole.value;
 
+function rolesWithInstallerVersion(roleVersion: string) {
+  return {
+    data: [
+      {
+        installerRole: { ...mockRoles[0].installerRole, roleVersion },
+        supportRole: mockRoles[0].supportRole,
+        workerRole: mockRoles[0].workerRole,
+      },
+    ],
+    isFetching: false,
+    error: null,
+  };
+}
+
 function installerRoleCombo(root: MountResult | Page) {
   return root.getByTestId('installer-role-select').getByRole('combobox');
 }
@@ -136,64 +150,36 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
       await expect(refreshButton).toBeDisabled();
     });
 
-    test('should mark installer role option aria-disabled when role version is below selected cluster version', async ({
+    test('should disable installer role option and describe supported version when role version is below selected cluster version', async ({
       mount,
       page,
     }) => {
-      const roles = {
-        data: [
-          {
-            installerRole: {
-              ...mockRoles[0].installerRole,
-              roleVersion: '4.11.0',
-            },
-            supportRole: mockRoles[0].supportRole,
-            workerRole: mockRoles[0].workerRole,
-          },
-        ],
-        isFetching: false,
-        error: null,
-      };
-      const component = await mount<typeof RolesAndPoliciesMount>(
-        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
-        { roles: roles, defaultValues: { cluster_version: '4.12.0' } }
-      );
-
-      await installerRoleCombo(component).click();
-      await expect(
-        page.getByRole('option', { name: mockRoles[0].installerRole.label })
-      ).toBeDisabled();
-    });
-
-    test('should show tooltip on disabled installer role option when account role does not support selected OpenShift version', async ({
-      mount,
-      page,
-    }) => {
-      const installerRoleDisabledDescription = rp.installerRoleOptionDisabledDescription;
-      const roles = {
-        data: [
-          {
-            installerRole: {
-              ...mockRoles[0].installerRole,
-              roleVersion: '4.11.0',
-            },
-            supportRole: mockRoles[0].supportRole,
-            workerRole: mockRoles[0].workerRole,
-          },
-        ],
-        isFetching: false,
-        error: null,
-      };
       await mount<typeof RolesAndPoliciesMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
-        { roles: roles, defaultValues: { cluster_version: '4.12.0' } }
+        { roles: rolesWithInstallerVersion('4.11.0'), defaultValues: { cluster_version: '4.12.0' } }
       );
 
       await installerRoleCombo(page).click();
-      await page.getByRole('option', { name: mockRoles[0].installerRole.label }).hover();
-      await expect(
-        page.getByRole('tooltip', { name: installerRoleDisabledDescription, exact: true })
-      ).toBeVisible();
+      const option = page.getByRole('option', { name: mockRoles[0].installerRole.label });
+      await expect(option).toBeDisabled();
+      await expect(option).toContainText(
+        rp.installerRoleOptionDisabledDescription('4.12.0', '4.11.0')
+      );
+    });
+
+    test('should not show a version description on installer role option that supports selected OpenShift version', async ({
+      mount,
+      page,
+    }) => {
+      await mount<typeof RolesAndPoliciesMount>(
+        'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/RolesAndPolicies/RolesAndPolicies/RolesAndPoliciesMount',
+        { roles: rolesWithInstallerVersion('4.14.0'), defaultValues: { cluster_version: '4.12.0' } }
+      );
+
+      await installerRoleCombo(page).click();
+      const option = page.getByRole('option', { name: mockRoles[0].installerRole.label });
+      await expect(option).toBeEnabled();
+      await expect(option).toHaveText(mockRoles[0].installerRole.label);
     });
   });
 

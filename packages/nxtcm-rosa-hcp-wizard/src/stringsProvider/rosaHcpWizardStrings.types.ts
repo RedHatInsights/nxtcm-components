@@ -291,7 +291,10 @@ export type RosaHcpWizardStrings = {
     accountRolesSection: string;
     installerRoleLabel: string;
     installerPlaceholder: string;
-    installerRoleOptionDisabledDescription: string;
+    installerRoleOptionDisabledDescription: (
+      selectedVersion: string,
+      roleVersion: string
+    ) => string;
     installerHelpLead: string;
     installerLearnMoreLink: string;
     arnsToggle: string;

@@ -240,7 +240,6 @@ Roles and policies step.
 | `rolesAndPolicies.accountRolesSection` | Account roles | |
 | `rolesAndPolicies.installerRoleLabel` | Installer role | |
 | `rolesAndPolicies.installerPlaceholder` | Select an installer role | |
-| `rolesAndPolicies.installerRoleOptionDisabledDescription` | This account role does not support the selected OpenShift version. | |
 | `rolesAndPolicies.installerHelpLead` | An AWS IAM role used by the ROSA installer | |
 | `rolesAndPolicies.installerLearnMoreLink` | Learn more about roles. | |
 | `rolesAndPolicies.arnsToggle` | Amazon Resource Names (ARNs) | |
@@ -267,6 +266,12 @@ Roles and policies step.
 | `rolesAndPolicies.rolesAlertTitle` | Some roles are missing | |
 | `rolesAndPolicies.accountRolesHelp` | Missing account roles | |
 | `rolesAndPolicies.userRolesHelp` | Missing user role | |
+
+Description under an installer role option that is disabled because the role does not support the selected OpenShift version.
+
+| Key | Signature | Default English |
+| --- | --- | --- |
+| `rolesAndPolicies.installerRoleOptionDisabledDescription` | `(selectedVersion: string, roleVersion: string) => string` | Incompatible with OpenShift {selectedVersion}. Supported on versions up to {roleVersion}. |
 
 ### `oidcHint`
 
