@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 
-import { Select } from './Select';
+import { Select, type SelectProps } from './Select';
 import type { OptionGroup } from './SelectTypes';
 
 export interface PlainMenuHarnessProps {
@@ -24,6 +24,10 @@ export interface PlainMenuHarnessProps {
   options?: string[];
   /** grouped options to display */
   optionGroups?: OptionGroup<string>[];
+  /** heading level for grouped option labels */
+  groupHeadingLevel?: SelectProps<string>['groupHeadingLevel'];
+  /** adds the heading hierarchy around the grouped field */
+  headingContext?: boolean;
   /** enables filtering through a combobox */
   isTypeAhead?: boolean;
 }
@@ -31,11 +35,19 @@ export interface PlainMenuHarnessProps {
 export function PlainMenuHarness({
   options,
   optionGroups,
+  headingContext,
   ...fieldProps
 }: PlainMenuHarnessProps = {}): React.ReactElement {
   const [value, setValue] = useState<string | number | undefined>();
   return (
     <Form>
+      {headingContext ? (
+        <>
+          <h1>Wizard</h1>
+          <h2>Basic setup</h2>
+          <h3>Details</h3>
+        </>
+      ) : null}
       <Select<string>
         id="ct-menu-plain"
         label="Region"
@@ -63,6 +75,30 @@ export function TypeaheadHarness() {
         isTypeAhead
       />
       <span data-testid="ta-val">{value === undefined ? 'none' : String(value)}</span>
+    </Form>
+  );
+}
+
+export function KeyboardTypeaheadHarness(): React.ReactElement {
+  const [value, setValue] = useState<string | number | undefined>();
+  return (
+    <Form>
+      <button type="button">Before subnet</button>
+      <Select<string>
+        id="ct-menu-ta-keyboard"
+        label="Subnet"
+        value={value}
+        onChange={setValue}
+        options={[
+          'subnet-a',
+          { label: 'Disabled subnet', value: 'disabled-subnet', disabled: true },
+          'subnet-b',
+          { label: 'Unavailable subnet', value: 'unavailable-subnet', ariaDisabled: true },
+        ]}
+        isTypeAhead
+      />
+      <button type="button">After subnet</button>
+      <span data-testid="ta-keyboard-val">{value === undefined ? 'none' : String(value)}</span>
     </Form>
   );
 }
