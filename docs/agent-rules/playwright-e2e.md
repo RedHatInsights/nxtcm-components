@@ -10,8 +10,10 @@ playwright/
     fixtures.ts              # extends base test; optional coverage capture
     rosa-wizard.spec.ts      # wizard flows, CIDR, navigation
     rosa-wizard-yaml-editor.spec.ts
+    rosa-wizard-yaml-editor-keyboard.spec.ts # keyboard-only YAML editor flows
     helpers/
-      yaml-editor-helpers.ts # navigateToYamlEditor, getMonacoYaml, step fillers
+      yaml-editor-helpers.ts # navigateToYamlEditor, navigateToReview, enterYamlEditor, getMonacoYaml
+      focus-helpers.ts       # tabUntilFocused, expectFocusVisible
   index.tsx                  # E2E app entry
 playwright.config.ts         # root E2E config (port ~3200)
 ```

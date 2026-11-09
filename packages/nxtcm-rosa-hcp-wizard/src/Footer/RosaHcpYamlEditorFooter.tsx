@@ -111,13 +111,16 @@ export function RosaHcpYamlEditorFooter({
         isOpen={isDiscardModalOpen}
         onClose={handleDiscardCancel}
         aria-labelledby="rosa-hcp-yaml-discard-modal-title"
+        aria-describedby="rosa-hcp-yaml-discard-modal-body"
       >
         <ModalHeader
           title={yamlStrings.discardConfirmTitle}
           titleIconVariant="warning"
           labelId="rosa-hcp-yaml-discard-modal-title"
         />
-        <ModalBody>{yamlStrings.discardConfirmBody}</ModalBody>
+        <ModalBody id="rosa-hcp-yaml-discard-modal-body">
+          {yamlStrings.discardConfirmBody}
+        </ModalBody>
         <ModalFooter>
           <Button variant={ButtonVariant.primary} onClick={handleDiscardConfirm}>
             {yamlStrings.discardConfirmYes}

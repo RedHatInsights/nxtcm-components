@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 
 /**
  * Navigate from wizard start to YAML editor
@@ -93,4 +93,45 @@ async function fillNetworkingStep(page: Page): Promise<void> {
   await page.getByRole('button', { name: /public subnet name/i }).click();
   await page.getByRole('option', { name: /test-1-subnet-public1-us-east-1a/i }).click();
   await page.getByRole('button', { name: /Next/i }).click();
+}
+
+export const YAML_EDITOR_NAME = 'YAML Configuration';
+
+// Invalid YAML that Monaco won't auto-close, so Backspace undoes it.
+export const INVALID_YAML_SUFFIX = ' x: :';
+
+/** Fill every step and stop on Review. */
+export async function navigateToReview(page: Page): Promise<void> {
+  await fillDetailsStep(page);
+  await fillRolesStep(page);
+  await fillMachinePoolsStep(page);
+  await fillNetworkingStep(page);
+  await page.getByRole('button', { name: /Next/i }).click(); // Encryption
+  await page.getByRole('button', { name: /Next/i }).click(); // Updates
+  await page.getByRole('button', { name: /Edit in YAML/i }).waitFor();
+}
+
+/** Wait until Monaco has loaded the generated YAML. */
+export async function waitForYamlEditorReady(page: Page): Promise<void> {
+  await page.locator('.monaco-editor').waitFor({ state: 'visible' });
+  await page.waitForFunction(() => {
+    const editor = (window as Window & { monacoEditor?: { getValue: () => string } }).monacoEditor;
+    return !!editor && editor.getValue().includes('kind:');
+  });
+}
+
+/** Focus the editor wrapper, then Down Arrow. Never click into Monaco. */
+export async function enterYamlEditor(page: Page): Promise<void> {
+  const wrapper = page.getByRole('group', { name: YAML_EDITOR_NAME });
+  await wrapper.focus();
+  await page.keyboard.press('ArrowDown');
+  await expect(page.getByRole('textbox', { name: YAML_EDITOR_NAME })).toBeFocused();
+}
+
+/** Enter the editor and append invalid YAML to the first line. Focus stays in the editor. */
+export async function makeFirstLineInvalid(page: Page): Promise<void> {
+  await enterYamlEditor(page);
+  await page.keyboard.press('End');
+  await page.keyboard.type(INVALID_YAML_SUFFIX);
+  await page.keyboard.press('Escape'); // close suggestions
 }
