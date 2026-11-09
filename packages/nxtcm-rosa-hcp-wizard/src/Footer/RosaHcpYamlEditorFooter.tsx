@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import {
   ActionList,
@@ -67,27 +67,6 @@ export function RosaHcpYamlEditorFooter({
     onClose();
   }, [onClose]);
 
-  // PatternFly 6 has no Modal prop for the built-in close button's name, so
-  // relabel it on the DOM (same approach as the YAML editor wrapper).
-  // PatternFly's ModalContent renders the modal box one commit after isOpen
-  // flips (its isRendered state is set in an effect), and on React 18 that
-  // commit lands after this effect has already run. Watch for the button to
-  // appear so the relabel works on both React versions.
-  useEffect(() => {
-    if (!isDiscardModalOpen) return;
-
-    const relabelCloseButton = () =>
-      document
-        .querySelector('#rosa-hcp-yaml-discard-modal button[aria-label="Close"]')
-        ?.setAttribute('aria-label', yamlStrings.discardModalCloseAriaLabel);
-
-    relabelCloseButton();
-
-    const observer = new MutationObserver(relabelCloseButton);
-    observer.observe(document.body, { childList: true, subtree: true });
-    return () => observer.disconnect();
-  }, [isDiscardModalOpen, yamlStrings.discardModalCloseAriaLabel]);
-
   return (
     <WizardFooterWrapper>
       <ActionList>
@@ -128,7 +107,6 @@ export function RosaHcpYamlEditorFooter({
         </ActionListGroup>
       </ActionList>
       <Modal
-        id="rosa-hcp-yaml-discard-modal"
         variant={ModalVariant.small}
         isOpen={isDiscardModalOpen}
         onClose={handleDiscardCancel}

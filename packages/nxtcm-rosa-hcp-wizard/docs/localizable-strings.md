@@ -101,16 +101,13 @@ YAML editor opened from Review. Required even when optional steps are hidden.
 | `yamlEditor.discardConfirmTitle` | Discard YAML changes? | |
 | `yamlEditor.discardConfirmBody` | Any changes you made to the YAML configuration will be lost. | |
 | `yamlEditor.discardConfirmYes` | Yes | |
-| `yamlEditor.discardModalCloseAriaLabel` | Close discard changes dialog | |
 | `yamlEditor.cancelCreation` | Cancel cluster creation | |
 | `yamlEditor.schemaTitle` | ROSAControlPlane schema | |
 | `yamlEditor.schemaToggleAriaLabel` | Toggle schema panel | |
-| `yamlEditor.schemaCloseAriaLabel` | Close schema panel | |
 | `yamlEditor.schemaShowTooltip` | Show schema | |
 | `yamlEditor.schemaHideTooltip` | Hide sidebar | |
 | `yamlEditor.schemaSearchPlaceholder` | Search schema fields... | |
 | `yamlEditor.schemaTreeAriaLabel` | Schema fields | |
-| `yamlEditor.editorAriaLabel` | Cluster YAML editor | |
 | `yamlEditor.editorInstructions` | Press Down Arrow to start editing. Press Shift+Tab to leave the editor. | |
 | `yamlEditor.shortcutsButtonText` | View shortcuts | |
 | `yamlEditor.shortcutsAriaLabel` | Keyboard shortcuts | |

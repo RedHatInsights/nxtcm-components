@@ -119,7 +119,7 @@ test.describe('Page-level accessibility', () => {
 
   test('scans the YAML editor with the schema panel closed', async ({ page }) => {
     await navigateToYamlEditor(page);
-    await page.getByRole('button', { name: 'Toggle schema panel' }).press('Enter');
+    await page.getByTestId('schema-panel-toggle').press('Enter');
     await expect(page.getByRole('heading', { name: /ROSAControlPlane schema/i })).toBeHidden();
     // Same color-contrast exception as the default editor scan.
     await checkPageAccessibility(page, 'YAML editor schema panel closed', [

@@ -189,9 +189,9 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
       const wrapper = editorWrapperRef.current;
       if (!wrapper) return;
       wrapper.setAttribute('role', 'group');
-      wrapper.setAttribute('aria-label', yamlStrings.editorAriaLabel);
+      wrapper.setAttribute('aria-label', yamlStrings.title);
       wrapper.setAttribute('aria-describedby', instructionsId);
-    }, [yamlStrings.editorAriaLabel, instructionsId]);
+    }, [yamlStrings.title, instructionsId]);
 
     useEffect(() => {
       labelEditorWrapper();
@@ -377,7 +377,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
                 shortcutsPopoverButtonText={yamlStrings.shortcutsButtonText}
                 shortcutsPopoverProps={shortcutsPopoverProps}
                 options={{
-                  ariaLabel: yamlStrings.editorAriaLabel,
+                  ariaLabel: yamlStrings.title,
                   // 'auto' never detects a screen reader in browsers.
                   accessibilitySupport: 'on',
                   minimap: { enabled: false },

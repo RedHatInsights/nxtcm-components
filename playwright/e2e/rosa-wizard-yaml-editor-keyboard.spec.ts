@@ -14,7 +14,8 @@ import {
 const editorWrapper = (page: Page) => page.getByRole('group', { name: YAML_EDITOR_NAME });
 const editorTextbox = (page: Page) => page.getByRole('textbox', { name: YAML_EDITOR_NAME });
 const validationRegion = (page: Page) => page.getByTestId('yaml-validation-live-region');
-const schemaToggle = (page: Page) => page.getByRole('button', { name: 'Toggle schema panel' });
+// The panel's close button shares the toggle's name, so find the toggle by test id.
+const schemaToggle = (page: Page) => page.getByTestId('schema-panel-toggle');
 const schemaHeading = (page: Page) =>
   page.getByRole('heading', { name: /ROSAControlPlane schema/i });
 const discardButton = (page: Page) =>
@@ -123,7 +124,10 @@ test.describe('ROSA Wizard - YAML Editor keyboard access', () => {
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
     await expect(toggle).toBeFocused();
 
-    const closeButton = page.getByRole('button', { name: 'Close schema panel' });
+    const panelId = await toggle.getAttribute('aria-controls');
+    const closeButton = page
+      .locator(`[id="${panelId}"]`)
+      .getByRole('button', { name: 'Toggle schema panel' });
     await tabUntilFocused(page, closeButton);
     await page.keyboard.press('Enter');
     await expect(schemaHeading(page)).toBeHidden();
@@ -179,9 +183,7 @@ test.describe('ROSA Wizard - YAML Editor keyboard access', () => {
 
     const dialog = page.getByRole('dialog', { name: /Discard YAML changes/i });
     await expect(dialog).toBeVisible();
-    await expect(
-      dialog.getByRole('button', { name: 'Close discard changes dialog' })
-    ).toBeFocused();
+    await expect(dialog.getByRole('button', { name: 'Close' })).toBeFocused();
 
     for (let i = 0; i < 4; i++) {
       await page.keyboard.press('Tab');

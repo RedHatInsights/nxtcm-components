@@ -11,7 +11,7 @@ import type {
 } from './RosaHcpYamlEditorStep.story';
 
 const s = defaultRosaHcpWizardStrings.yamlEditor;
-const EDITOR_NAME = s.editorAriaLabel;
+const EDITOR_NAME = s.title;
 const VALIDATION_STORY =
   'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepValidationMount';
 const NO_PRIMARY_STORY =
@@ -19,8 +19,18 @@ const NO_PRIMARY_STORY =
 
 type MonacoTestHandle = { getValue: () => string; setValue: (value: string) => void };
 
+// The panel's close button shares the toggle's name, so find the toggle by test id.
+const schemaToggle = (component: Locator) => component.getByTestId('schema-panel-toggle');
+
+async function schemaPanelCloseButton(component: Locator): Promise<Locator> {
+  const panelId = await schemaToggle(component).getAttribute('aria-controls');
+  return component
+    .locator(`[id="${panelId}"]`)
+    .getByRole('button', { name: s.schemaToggleAriaLabel });
+}
+
 async function expectTogglePointsAtPanel(component: Locator): Promise<void> {
-  const toggle = component.getByRole('button', { name: s.schemaToggleAriaLabel });
+  const toggle = schemaToggle(component);
   await expect(toggle).toHaveAttribute('aria-controls', /.+/);
   const panelId = (await toggle.getAttribute('aria-controls')) ?? '';
   await expect(
@@ -122,8 +132,9 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
 
       await waitForMonaco(component);
 
-      const toggle = component.getByRole('button', { name: s.schemaToggleAriaLabel });
+      const toggle = schemaToggle(component);
       const schemaHeading = component.getByRole('heading', { name: /ROSAControlPlane schema/i });
+      await expect(toggle).toHaveAccessibleName(s.schemaToggleAriaLabel);
       await expect(toggle).toHaveAttribute('aria-expanded', 'true');
       await expectTogglePointsAtPanel(component);
 
@@ -147,9 +158,9 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
 
       await waitForMonaco(component);
 
-      await component.getByRole('button', { name: s.schemaCloseAriaLabel }).press('Enter');
+      await (await schemaPanelCloseButton(component)).press('Enter');
 
-      const toggle = component.getByRole('button', { name: s.schemaToggleAriaLabel });
+      const toggle = schemaToggle(component);
       await expect(
         component.getByRole('heading', { name: /ROSAControlPlane schema/i })
       ).toBeHidden();
@@ -163,7 +174,7 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
       );
 
       await waitForMonaco(component);
-      await component.getByRole('button', { name: s.schemaToggleAriaLabel }).press('Enter');
+      await schemaToggle(component).press('Enter');
       await expect(
         component.getByRole('heading', { name: /ROSAControlPlane schema/i })
       ).toBeHidden();
@@ -188,9 +199,13 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
       await copy.focus();
       await expect(copy).toBeFocused();
 
-      for (const name of ['Download code', s.schemaToggleAriaLabel, s.shortcutsButtonText]) {
+      for (const control of [
+        component.getByRole('button', { name: 'Download code' }),
+        schemaToggle(component),
+        component.getByRole('button', { name: s.shortcutsButtonText }),
+      ]) {
         await page.keyboard.press('Tab');
-        await expect(component.getByRole('button', { name })).toBeFocused();
+        await expect(control).toBeFocused();
       }
     });
   });

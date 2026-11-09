@@ -95,7 +95,7 @@ async function fillNetworkingStep(page: Page): Promise<void> {
   await page.getByRole('button', { name: /Next/i }).click();
 }
 
-export const YAML_EDITOR_NAME = 'Cluster YAML editor';
+export const YAML_EDITOR_NAME = 'YAML Configuration';
 
 // Invalid YAML that Monaco won't auto-close, so Backspace undoes it.
 export const INVALID_YAML_SUFFIX = ' x: :';

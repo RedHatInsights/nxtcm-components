@@ -196,16 +196,13 @@ export type RosaHcpWizardStrings = {
     discardConfirmTitle: string;
     discardConfirmBody: string;
     discardConfirmYes: string;
-    discardModalCloseAriaLabel: string;
     cancelCreation: string;
     schemaTitle: string;
     schemaToggleAriaLabel: string;
-    schemaCloseAriaLabel: string;
     schemaShowTooltip: string;
     schemaHideTooltip: string;
     schemaSearchPlaceholder: string;
     schemaTreeAriaLabel: string;
-    editorAriaLabel: string;
     editorInstructions: string;
     shortcutsButtonText: string;
     shortcutsAriaLabel: string;

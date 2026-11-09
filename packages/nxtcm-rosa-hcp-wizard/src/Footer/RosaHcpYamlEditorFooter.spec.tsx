@@ -153,10 +153,8 @@ test.describe('RosaHcpYamlEditorFooter', () => {
         const dialog = page.getByRole('dialog', { name: s.discardConfirmTitle });
         await expect(dialog).toBeVisible();
         await expect(dialog).toHaveAccessibleDescription(s.discardConfirmBody);
-        // Modal focuses its first tabbable element: the close button.
-        await expect(
-          dialog.getByRole('button', { name: s.discardModalCloseAriaLabel })
-        ).toBeFocused();
+        // Modal focuses its first tabbable element: Close.
+        await expect(dialog.getByRole('button', { name: 'Close' })).toBeFocused();
       });
     }
 
@@ -165,7 +163,7 @@ test.describe('RosaHcpYamlEditorFooter', () => {
       await component.getByRole('button', { name: s.discardChanges }).press('Enter');
 
       const dialog = page.getByRole('dialog', { name: s.discardConfirmTitle });
-      const close = dialog.getByRole('button', { name: s.discardModalCloseAriaLabel });
+      const close = dialog.getByRole('button', { name: 'Close' });
       const confirm = dialog.getByRole('button', { name: s.discardConfirmYes });
       const cancel = dialog.getByRole('button', { name: w.cancel, exact: true });
       await expect(close).toBeFocused();

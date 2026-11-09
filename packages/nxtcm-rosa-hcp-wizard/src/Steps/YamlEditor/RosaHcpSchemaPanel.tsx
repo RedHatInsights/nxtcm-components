@@ -131,7 +131,7 @@ export const RosaHcpSchemaPanel = ({ onClose, schema, id }: RosaHcpSchemaPanelPr
           {yamlEditor.schemaTitle}
         </Title>
         <DrawerActions>
-          <DrawerCloseButton onClick={onClose} aria-label={yamlEditor.schemaCloseAriaLabel} />
+          <DrawerCloseButton onClick={onClose} aria-label={yamlEditor.schemaToggleAriaLabel} />
         </DrawerActions>
       </DrawerHead>
       <DrawerPanelBody>
