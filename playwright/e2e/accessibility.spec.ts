@@ -1,52 +1,6 @@
-import type { Page } from './fixtures';
 import { expect, test } from './fixtures';
-import { checkPageAccessibility } from './helpers/accessibility-helpers';
-import { navigateToYamlEditor } from './helpers/yaml-editor-helpers';
-
-// The E2E harness mounts the library without a consuming application's shell.
-// These structural rules are covered by the host application and are not
-// meaningful for this repository-level page fixture.
-const harnessRules = ['landmark-one-main', 'page-has-heading-one', 'region'];
-
-async function fillDetailsStep(page: Page): Promise<void> {
-  await page.getByRole('textbox', { name: /Cluster name/i }).fill('test-cluster');
-  await page.getByRole('textbox', { name: /Cluster name/i }).press('Tab');
-  await page.getByRole('combobox', { name: /^OpenShift version$/i }).click();
-  await page.getByRole('option', { name: /OpenShift 4\.12\.0/i }).click();
-  await page.getByRole('combobox', { name: /Associated AWS infrastructure account/i }).click();
-  await page.getByRole('option', { name: /AWS Account - Production \(123456789012\)/i }).click();
-  await page.getByRole('combobox', { name: /Associated AWS billing account/i }).click();
-  await page.getByRole('option', { name: /Billing Account - Main \(123456789012\)/i }).click();
-  await page.getByRole('combobox', { name: /^Region$/i }).click();
-  await page.getByRole('option', { name: /US East \(N\. Virginia\)/i }).click();
-  await page.getByRole('button', { name: /Next/i }).click();
-}
-
-async function navigateToReview(page: Page): Promise<void> {
-  await fillDetailsStep(page);
-  await page.getByTestId('installer-role-select').click();
-  await page.getByRole('option', { name: /ManagedOpenShift-HCP-ROSA-Installer-Role/ }).click();
-  await page.getByTestId('oidc-config-select').click();
-  await page.getByRole('option', { name: /2kl4t2st8eg2u5jppv8kjeemkvimfm99/i }).click();
-  await page.getByRole('button', { name: /Next/i }).click();
-  await page
-    .getByRole('combobox', {
-      name: /Select a VPC to install your machine pool into your selected region: us-east-1/i,
-    })
-    .click();
-  await page.getByRole('option', { name: /test-vpc-1/i }).click();
-  await page.getByRole('combobox', { name: /Private subnet name/i }).click();
-  await page.getByRole('option', { name: /test-1-subnet-private1-us-east-1a/i }).click();
-  await page.getByRole('combobox', { name: /Compute node instance type/i }).click();
-  await page.getByRole('option', { name: /m5a\.xlarge/i }).click();
-  await page.getByRole('button', { name: /Next/i }).click();
-  await page.getByRole('button', { name: /public subnet name/i }).click();
-  await page.getByRole('option', { name: /test-1-subnet-public1-us-east-1a/i }).click();
-  await page.getByRole('button', { name: /Next/i }).click();
-  await page.getByRole('button', { name: /Next/i }).click();
-  await page.getByRole('button', { name: /Next/i }).click();
-  await expect(page.getByRole('button', { name: /Create cluster/i })).toBeVisible();
-}
+import { checkPageAccessibility, harnessRules } from './helpers/accessibility-helpers';
+import { navigateToReview, navigateToYamlEditor } from './helpers/yaml-editor-helpers';
 
 test.describe('Page-level accessibility', () => {
   test.beforeEach(async ({ page }) => {
@@ -61,23 +15,7 @@ test.describe('Page-level accessibility', () => {
   test('scans an open select portal', async ({ page }) => {
     await page.getByRole('combobox', { name: /^OpenShift version$/i }).click();
     await expect(page.getByRole('option', { name: /OpenShift 4\.12\.0/i })).toBeVisible();
-    // Keep the rest of the wizard covered with the normal rules. PatternFly's
-    // current typeahead popup has known findings tracked by FCN-815/FCN-829
-    // and FCN-821, so apply those exceptions only to the popup scan.
-    await checkPageAccessibility(page, 'open version select page', harnessRules, {
-      exclude: '[role="listbox"], [aria-controls="cluster_version-listbox"]',
-    });
-    await checkPageAccessibility(
-      page,
-      'open version select popup',
-      [
-        'aria-input-field-name',
-        'aria-required-children',
-        'aria-valid-attr-value',
-        'color-contrast',
-      ],
-      { include: '[role="listbox"]' }
-    );
+    await checkPageAccessibility(page, 'open version select', harnessRules);
   });
 
   test('scans the review page', async ({ page }) => {

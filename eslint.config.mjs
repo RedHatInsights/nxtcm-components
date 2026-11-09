@@ -191,6 +191,12 @@ export default [
         {
           assertFunctionNames: [
             'checkAccessibility',
+            'checkPageAccessibility',
+            'expectDisplay',
+            'expectFocusIndicator',
+            'expectFooterReachable',
+            'expectNoHorizontalOverflow',
+            'expectReachable',
             'expectWizardNavError',
             'expectWizardNavNoError',
           ],

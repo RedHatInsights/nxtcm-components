@@ -4,13 +4,7 @@ import type { Page } from '@playwright/test';
  * Navigate from wizard start to YAML editor
  */
 export async function navigateToYamlEditor(page: Page): Promise<void> {
-  // Fill wizard steps to reach review
-  await fillDetailsStep(page);
-  await fillRolesStep(page);
-  await fillMachinePoolsStep(page);
-  await fillNetworkingStep(page);
-  await page.getByRole('button', { name: /Next/i }).click(); // Encryption
-  await page.getByRole('button', { name: /Next/i }).click(); // Updates
+  await navigateToReview(page);
 
   // Open YAML editor from review page
   await page.getByRole('button', { name: /Edit in YAML/i }).click();
@@ -28,6 +22,18 @@ export async function navigateToYamlEditor(page: Page): Promise<void> {
 
   // Give Monaco a moment to load content
   await page.waitForTimeout(500);
+}
+
+/**
+ * Fill the required wizard steps and advance to the Review step
+ */
+export async function navigateToReview(page: Page): Promise<void> {
+  await fillDetailsStep(page);
+  await fillRolesStep(page);
+  await fillMachinePoolsStep(page);
+  await fillNetworkingStep(page);
+  await page.getByRole('button', { name: /Next/i }).click(); // Encryption
+  await page.getByRole('button', { name: /Next/i }).click(); // Updates
 }
 
 /**
