@@ -34,7 +34,6 @@ export const DetailsStepDrawer = (props: StepDrawerProps): React.ReactElement =>
   const { isDrawerExpanded, setIsDrawerExpanded, product } = props;
   const d = useRosaHcpWizardStrings().associateAwsDrawer;
   const panelTitleId = useId();
-  const panelCloseButtonId = useId();
   const onClose = (): void => {
     setIsDrawerExpanded(false);
   };
@@ -48,8 +47,7 @@ export const DetailsStepDrawer = (props: StepDrawerProps): React.ReactElement =>
             defaultSize="40%"
             focusTrap={{
               enabled: true,
-              // Focus the header close button after the panel mounts and the drawer opens.
-              elementToFocusOnExpand: `[id="${panelCloseButtonId}"]`,
+              elementToFocusOnExpand: `[aria-labelledby="${panelTitleId}"] button[aria-label="Close drawer panel"]`,
               'aria-labelledby': panelTitleId,
             }}
           >
@@ -58,7 +56,7 @@ export const DetailsStepDrawer = (props: StepDrawerProps): React.ReactElement =>
                 <span id={panelTitleId}>{d.panelTitle}</span>
               </Content>
               <DrawerActions>
-                <DrawerCloseButton onClose={onClose} buttonProps={{ id: panelCloseButtonId }} />
+                <DrawerCloseButton onClose={onClose} aria-label="Close drawer panel" />
               </DrawerActions>
             </DrawerHead>
             <DrawerPanelBody>
