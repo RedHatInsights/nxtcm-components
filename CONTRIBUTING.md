@@ -151,6 +151,45 @@ npx playwright test --project=components --ui
 - test behavior, not implementation details
 - cover: happy path, loading state, error state, empty state, user interactions
 
+### Visual comparisons
+
+Screenshot baselines are shared across host operating systems. Generate and compare them
+inside the pinned Linux/amd64 Playwright container so browser binaries, fonts, and rendering
+match CI. Native runs can render differently, even with the same viewport.
+
+Native `npm run test:e2e` and `npm run test:e2e:coverage` runs exclude `*-visual.spec.ts`
+files. Use the container commands below for screenshot comparisons. The container runner
+enables these specs for both visual-only runs and the full E2E suite (`--all`).
+
+Start Docker or rootless Podman, then run:
+
+```bash
+npm run test:visual                 # compare the two visual smoke tests
+npm run test:visual:update          # regenerate intentional changes
+npm run test:e2e:container          # all E2E tests, including screenshots
+```
+
+The runner prefers Docker and falls back to Podman. Set `CONTAINER_ENGINE=podman` or
+`CONTAINER_ENGINE=docker` to select one explicitly. On ARM hosts it runs the amd64 image
+through the container runtime's emulation support.
+
+Dependencies are installed inside the image; host `node_modules` is not used or changed.
+Baselines remain in the spec's `*-snapshots/` directory, using `-e2e.png` names without
+OS suffixes. Reports and expected/actual/diff PNGs are written to `playwright-report/`
+and `test-results/`. Comparison runs mount the baselines read-only. CI never creates
+or updates them; commit regenerated images after reviewing the changes.
+
+CI runs the same image against both supported React versions. To reproduce a matrix run:
+
+```bash
+PLAYWRIGHT_REACT_VERSION=18 npm run test:e2e:container
+PLAYWRIGHT_REACT_VERSION=19 npm run test:e2e:container
+```
+
+The image pins Node and Playwright in `playwright/visual.Dockerfile`. When upgrading
+Playwright, update its image version to match `package-lock.json` and regenerate the
+baselines in the new image. No extra browser installation is needed inside the container.
+
 ### Mutation testing (Stryker)
 
 stryker runs on top of playwright CT specs to measure test effectiveness. not part of CI — run locally on demand:

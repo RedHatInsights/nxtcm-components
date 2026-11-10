@@ -10,8 +10,10 @@ playwright/
     fixtures.ts              # extends base test; optional coverage capture
     rosa-wizard.spec.ts      # wizard flows, CIDR, navigation
     rosa-wizard-yaml-editor.spec.ts
+    rosa-wizard-yaml-editor-keyboard.spec.ts # keyboard-only YAML editor flows
     helpers/
-      yaml-editor-helpers.ts # navigateToYamlEditor, getMonacoYaml, step fillers
+      yaml-editor-helpers.ts # navigateToYamlEditor, navigateToReview, enterYamlEditor, getMonacoYaml
+      focus-helpers.ts       # tabUntilFocused, expectFocusVisible
   index.tsx                  # E2E app entry
 playwright.config.ts         # root E2E config (port ~3200)
 ```
@@ -27,6 +29,12 @@ npm run test:e2e
 npm run test:e2e:coverage   # COVERAGE=true + nyc report
 npx playwright test playwright/e2e/rosa-wizard.spec.ts
 ```
+
+Native E2E runs exclude `*-visual.spec.ts` files. Run screenshot comparisons in the
+pinned Linux container with `npm run test:visual`, or run the full suite including
+visual specs with `npm run test:e2e:container`. Use `npm run test:visual:update` to
+regenerate intentional baseline changes. The container runner sets
+`PLAYWRIGHT_INCLUDE_VISUAL_TESTS=true` internally to include visual specs in either mode.
 
 ## selector audit (static review)
 

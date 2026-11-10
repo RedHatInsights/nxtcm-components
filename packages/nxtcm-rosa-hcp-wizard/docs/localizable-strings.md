@@ -108,6 +108,22 @@ YAML editor opened from Review. Required even when optional steps are hidden.
 | `yamlEditor.schemaHideTooltip` | Hide sidebar | |
 | `yamlEditor.schemaSearchPlaceholder` | Search schema fields... | |
 | `yamlEditor.schemaTreeAriaLabel` | Schema fields | |
+| `yamlEditor.editorInstructions` | Press Down Arrow to start editing. Press Shift+Tab to leave the editor. | |
+| `yamlEditor.shortcutsButtonText` | View shortcuts | |
+| `yamlEditor.shortcutsAriaLabel` | Keyboard shortcuts | |
+| `yamlEditor.shortcutsMacLabel` | macOS | |
+| `yamlEditor.shortcutStartEditing` | Start editing when the editor is focused | |
+| `yamlEditor.shortcutLeaveEditor` | Leave the editor | |
+| `yamlEditor.shortcutToggleTabFocus` | Switch Tab between indenting and moving focus | |
+| `yamlEditor.shortcutNextProblem` | Go to next problem | |
+| `yamlEditor.shortcutPreviousProblem` | Go to previous problem | |
+| `yamlEditor.shortcutCommandPalette` | Show all editor commands | |
+
+Function-valued keys must keep the same parameters.
+
+| Key | Signature | Default English |
+| --- | --- | --- |
+| `yamlEditor.validationErrorsFound` | `(count: number) => string` | {count} validation error(s) found. `count` is at least 1. |
 
 ### `associateAwsDrawer`
 
