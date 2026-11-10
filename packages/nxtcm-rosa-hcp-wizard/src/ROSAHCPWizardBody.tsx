@@ -142,10 +142,11 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
         onClose={handleCloseYamlEditor}
         onCancel={onCancel}
         onSubmit={onSubmit}
+        onSubmitError={onSubmitError}
       />
     ),
 
-    [handleCloseYamlEditor, onCancel, onSubmit]
+    [handleCloseYamlEditor, onCancel, onSubmit, onSubmitError]
   );
 
   return (

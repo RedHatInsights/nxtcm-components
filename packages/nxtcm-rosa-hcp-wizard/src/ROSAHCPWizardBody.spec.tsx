@@ -6,6 +6,7 @@ import type {
   RosaHcpWizardBodyErrorThenBackMount,
   RosaHcpWizardBodyErrorTransitionMount,
   RosaHcpWizardBodyMount,
+  RosaHcpWizardBodyYamlApplyErrorMount,
   RosaHcpWizardBodyYamlApplyMount,
 } from './ROSAHCPWizardBody.story';
 import { defaultRosaHcpWizardStrings } from './stringsProvider/rosaHcpWizardStrings.defaults';
@@ -215,6 +216,26 @@ test.describe('ROSAHCPWizardBody', () => {
     await expect(component.getByRole('button', { name: /Edit in YAML/i })).toBeFocused();
     await expect(component.getByRole('navigation', { name: /Wizard steps/i })).toBeVisible();
     await expect(component.locator('.monaco-editor')).toBeHidden();
+  });
+
+  test('keeps the YAML editor open when a resolved submission reports an error', async ({
+    mount,
+  }) => {
+    const component = await mount<typeof RosaHcpWizardBodyYamlApplyErrorMount>(
+      'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyYamlApplyErrorMount',
+      { enableAllWizardNavSteps: true }
+    );
+    await component.getByRole('button', { name: wizard.stepLabels.review }).click();
+    await component.getByRole('button', { name: /Edit in YAML/i }).click();
+    const yamlEditor = component.getByRole('region', { name: /YAML Configuration/i });
+    await expect(yamlEditor.getByRole('textbox', { name: 'Editor content' })).toBeVisible();
+
+    await component.getByRole('button', { name: wizard.createCluster }).click();
+    await expect(component.getByRole('heading', { name: submitErrorStrings.title })).toBeVisible();
+    await component.getByRole('button', { name: submitErrorStrings.backToReviewStep }).click();
+
+    await expect(yamlEditor).toBeVisible();
+    await expect(yamlEditor).toBeFocused();
   });
 
   test.describe('docsVersions prop — versioned docs links', () => {
