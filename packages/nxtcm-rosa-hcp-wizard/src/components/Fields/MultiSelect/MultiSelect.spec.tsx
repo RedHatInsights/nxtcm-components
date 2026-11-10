@@ -219,9 +219,9 @@ test.describe('MultiSelect', () => {
       'nxtcm-rosa-hcp-wizard/components/Fields/MultiSelect/MultiSelect/MultiLoadingHarness'
     );
     await page.getByRole('button', { name: /^loading/i }).click();
-    const listbox = page.locator('#ct-multi-loading-listbox');
-    await expect(listbox).toBeVisible();
-    await expect(listbox.getByText('Loading...')).toBeVisible();
+    const menu = page.getByRole('menu', { name: 'Loading list', exact: true });
+    await expect(menu).toBeVisible();
+    await expect(menu.getByText('Loading...')).toBeVisible();
     await checkMenuAccessibility(page);
   });
 
@@ -234,14 +234,14 @@ test.describe('MultiSelect', () => {
     );
     const toggle = page.getByRole('button', { name: /select the regions/i });
     await toggle.click();
-    const listbox = page.locator('#ct-multi-badge-listbox');
-    await expect(listbox).toBeVisible();
-    await listbox.getByText('us-east-1', { exact: true }).click();
-    await listbox.getByText('eu-west-1', { exact: true }).click();
+    const menu = page.getByRole('menu', { name: 'Regions', exact: true });
+    await expect(menu).toBeVisible();
+    await menu.getByText('us-east-1', { exact: true }).click();
+    await menu.getByText('eu-west-1', { exact: true }).click();
     await expect(toggle).toContainText('2');
     await expect(toggle).toHaveAccessibleName(/^Regions Select the regions 2\s*regions selected$/);
-    await listbox.getByText('us-east-1', { exact: true }).click();
-    await listbox.getByText('eu-west-1', { exact: true }).click();
+    await menu.getByText('us-east-1', { exact: true }).click();
+    await menu.getByText('eu-west-1', { exact: true }).click();
     await expect(toggle).toHaveAccessibleName('Regions Select the regions');
   });
 
@@ -252,11 +252,11 @@ test.describe('MultiSelect', () => {
     const toggle = page.getByRole('button', { name: /^Legacy toggle / });
     await expect(toggle).toHaveAccessibleName('Legacy toggle Select the legacy toggle');
     await toggle.click();
-    const listbox = page.locator('#ct-multi-legacy-listbox');
-    await expect(listbox).toBeVisible();
-    await listbox.getByText('solo', { exact: true }).click();
+    const menu = page.getByRole('menu', { name: 'Legacy toggle', exact: true });
+    await expect(menu).toBeVisible();
+    await menu.getByText('solo', { exact: true }).click();
     await expect(toggle).toHaveAccessibleName('Legacy toggle solo');
-    await listbox.getByText('pair-a', { exact: true }).click();
+    await menu.getByText('pair-a', { exact: true }).click();
     await expect(toggle).toHaveAccessibleName('Legacy toggle 2 selected');
     await expect(page.getByTestId('multi-legacy-val')).toHaveText('solo,pair-a');
   });

@@ -80,7 +80,7 @@ test.describe('ExpiredTrials', () => {
     );
 
     await expect(component.getByText('test')).toBeVisible();
-    const trialButtons = component.locator('[data-testid^="trial-link-"]');
+    const trialButtons = component.getByTestId(/^trial-link-/);
     await expect(trialButtons).toHaveCount(0);
   });
 
@@ -99,7 +99,7 @@ test.describe('ExpiredTrials', () => {
       { data: defaultData }
     );
 
-    const kebabs = component.locator('[aria-label="Kebab toggle"]');
+    const kebabs = component.getByRole('button', { name: 'Kebab toggle', exact: true });
     await expect(kebabs).toHaveCount(defaultData.trials.length);
   });
 
@@ -109,7 +109,7 @@ test.describe('ExpiredTrials', () => {
       { data: defaultData }
     );
 
-    const kebabs = component.locator('[aria-label="Kebab toggle"]');
+    const kebabs = component.getByRole('button', { name: 'Kebab toggle', exact: true });
     await expect(kebabs).toHaveCount(0);
   });
 
@@ -122,7 +122,7 @@ test.describe('ExpiredTrials', () => {
       }
     );
 
-    await expect(component.locator('.pf-v6-c-pagination')).toBeVisible();
+    await expect(component.getByRole('navigation', { name: 'Pagination' })).toBeVisible();
   });
 
   test('should not render pagination when onPageChange is not provided', async ({ mount }) => {
@@ -131,7 +131,7 @@ test.describe('ExpiredTrials', () => {
       { data: defaultData }
     );
 
-    await expect(component.locator('.pf-v6-c-pagination')).toHaveCount(0);
+    await expect(component.getByRole('navigation', { name: 'Pagination' })).toHaveCount(0);
   });
 
   test('should call onPageChange when next page is clicked', async ({ mount }) => {
@@ -167,7 +167,7 @@ test.describe('ExpiredTrials', () => {
     );
 
     // pf6 portals the dropdown menu to document body, so query via page
-    await component.locator('.pf-v6-c-pagination .pf-v6-c-menu-toggle').click();
+    await component.getByRole('button', { name: '1 - 10 of 25', exact: true }).click();
     await page.getByRole('menuitem', { name: /20 per page/i }).click();
     await expect
       .poll(

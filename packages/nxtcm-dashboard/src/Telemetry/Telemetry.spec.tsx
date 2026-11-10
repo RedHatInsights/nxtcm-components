@@ -69,7 +69,7 @@ test.describe('Telemetry', () => {
         data: defaultData,
       }
     );
-    const divider = component.locator('hr');
+    const divider = component.getByRole('separator');
     await expect(divider).toBeVisible();
   });
 

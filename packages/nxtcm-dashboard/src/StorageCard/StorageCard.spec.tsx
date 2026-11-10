@@ -35,12 +35,9 @@ test.describe('StorageCard', () => {
       mockStorageData.aroClusters +
       mockStorageData.osdClusters
     ).toFixed(2);
-    // Find the label, then navigate to its parent container that has both the value and label
-    const totalStorageContainer = component
-      .getByText('Total storage used', { exact: true })
-      .locator('..');
+    const totalStorageContainer = component.getByTestId('total-used');
 
-    await expect(totalStorageContainer).toContainText('Total storage used');
+    await expect(component.getByText('Total storage used', { exact: true })).toBeVisible();
     await expect(totalStorageContainer).toContainText(`${totalUsed} TiB`);
   });
 
@@ -67,7 +64,7 @@ test.describe('StorageCard', () => {
       }
     );
 
-    const rosaClustersContainer = component.getByText('ROSA clusters').locator('..');
+    const rosaClustersContainer = component.getByTestId('rosaClusters');
     await expect(rosaClustersContainer).toContainText(`${mockStorageData.rosaClusters} TiB`);
   });
 
@@ -79,7 +76,7 @@ test.describe('StorageCard', () => {
       }
     );
 
-    const aroClustersContainer = component.getByText('ARO Clusters').locator('..');
+    const aroClustersContainer = component.getByTestId('aroClusters');
     await expect(aroClustersContainer).toContainText(`${mockStorageData.aroClusters} TiB`);
   });
 
@@ -91,7 +88,7 @@ test.describe('StorageCard', () => {
       }
     );
 
-    const osdClustersContainer = component.getByText('OSD Clusters').locator('..');
+    const osdClustersContainer = component.getByTestId('osdClusters');
     await expect(osdClustersContainer).toContainText(`${mockStorageData.osdClusters} TiB`);
   });
 
@@ -102,7 +99,7 @@ test.describe('StorageCard', () => {
         storageData: mockStorageData,
       }
     );
-    const availableContainer = component.getByText('Available').locator('..');
+    const availableContainer = component.getByTestId('available');
     await expect(availableContainer).toContainText(`${mockStorageData.available} TiB`);
   });
 
@@ -194,16 +191,16 @@ test.describe('StorageCard', () => {
       }
     );
 
-    const rosaClustersContainer = component.getByText('ROSA clusters').locator('..');
+    const rosaClustersContainer = component.getByTestId('rosaClusters');
     await expect(rosaClustersContainer).toContainText(`${preciseData.rosaClusters.toFixed(2)} TiB`);
 
-    const aroClustersContainer = component.getByText('ARO Clusters').locator('..');
+    const aroClustersContainer = component.getByTestId('aroClusters');
     await expect(aroClustersContainer).toContainText(`${preciseData.aroClusters.toFixed(2)} TiB`);
 
-    const osdClustersContainer = component.getByText('OSD Clusters').locator('..');
+    const osdClustersContainer = component.getByTestId('osdClusters');
     await expect(osdClustersContainer).toContainText(`${preciseData.osdClusters.toFixed(2)} TiB`);
 
-    const availableContainer = component.getByText('Available').locator('..');
+    const availableContainer = component.getByTestId('available');
     await expect(availableContainer).toContainText(`${preciseData.available.toFixed(2)} TiB`);
   });
 
