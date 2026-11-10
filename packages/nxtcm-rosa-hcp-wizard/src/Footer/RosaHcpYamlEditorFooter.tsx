@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   ActionList,
@@ -25,6 +25,7 @@ export type RosaHcpYamlEditorFooterProps = {
   onClose: () => void;
   onCancel?: () => void;
   onSubmit: (yamlString: string) => Promise<void>;
+  onSubmitError?: string | boolean;
 };
 
 export function RosaHcpYamlEditorFooter({
@@ -32,6 +33,7 @@ export function RosaHcpYamlEditorFooter({
   onClose,
   onCancel,
   onSubmit,
+  onSubmitError,
 }: RosaHcpYamlEditorFooterProps) {
   const getYaml = useCallback(() => editorRef.current?.getYaml() ?? '', [editorRef]);
   const { isSubmitting, submitWizard } = useRosaHcpWizardSubmit({
@@ -41,6 +43,15 @@ export function RosaHcpYamlEditorFooter({
   });
   const { wizard, yamlEditor: yamlStrings } = useRosaHcpWizardStrings();
   const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
+  const [resolvedSubmissionCount, setResolvedSubmissionCount] = useState(0);
+  const handledSubmissionCountRef = useRef(0);
+
+  // Check errors after React applies any onSubmitError update made by onSubmit.
+  useEffect(() => {
+    if (resolvedSubmissionCount === handledSubmissionCountRef.current) return;
+    handledSubmissionCountRef.current = resolvedSubmissionCount;
+    if (!onSubmitError) onClose();
+  }, [onClose, onSubmitError, resolvedSubmissionCount]);
 
   const handleApply = useCallback(() => {
     if (!editorRef.current || editorRef.current.hasSchemaErrors()) return;
@@ -48,13 +59,13 @@ export function RosaHcpYamlEditorFooter({
     void (async () => {
       try {
         if (await submitWizard()) {
-          onClose();
+          setResolvedSubmissionCount((count) => count + 1);
         }
       } catch {
         // keep the editor open so the user can correct the issue
       }
     })();
-  }, [editorRef, onClose, submitWizard]);
+  }, [editorRef, submitWizard]);
 
   const handleDiscardClick = useCallback(() => {
     setIsDiscardModalOpen(true);

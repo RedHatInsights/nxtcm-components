@@ -121,6 +121,23 @@ export function RosaHcpWizardBodyYamlApplyMount(props: RosaHcpWizardBodyMountPro
   );
 }
 
+/** Reports a submit error without rejecting the submit promise. */
+export function RosaHcpWizardBodyYamlApplyErrorMount(props: RosaHcpWizardBodyMountProps = {}) {
+  const [submitError, setSubmitError] = React.useState<string | boolean>(false);
+
+  return (
+    <RosaHcpWizardBodyYamlApplyMount
+      {...props}
+      onSubmitError={submitError}
+      onSubmit={() => {
+        setSubmitError('There has been an error creating the cluster');
+        return Promise.resolve();
+      }}
+      onBackToReviewStep={() => setSubmitError(false)}
+    />
+  );
+}
+
 type BrowserProps = NonNullable<React.ComponentProps<typeof RosaHcpWizardBodyMountComponent>>;
 
 export type RosaHcpWizardBodyMountGalleryProps = Omit<
