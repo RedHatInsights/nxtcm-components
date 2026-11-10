@@ -143,6 +143,7 @@ Function-valued keys must keep the same parameters.
 | `associateAwsDrawer.createOCMRoleAriaLabel` | Copyable ROSA create ocm-role |
 | `associateAwsDrawer.createOCMRoleAdminAriaLabel` | Copyable ROSA create ocm-role --admin |
 | `associateAwsDrawer.linkOCMRoleAriaLabel` | Copyable rosa link ocm-role <arn> command |
+| `associateAwsDrawer.closeDrawerButtonLabel` | Close drawer panel |
 
 ### `ocmRole`
 

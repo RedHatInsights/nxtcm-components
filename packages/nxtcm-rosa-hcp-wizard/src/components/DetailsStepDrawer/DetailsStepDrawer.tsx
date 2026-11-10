@@ -38,8 +38,14 @@ export const DetailsStepDrawer = (props: StepDrawerProps): React.ReactElement =>
     setIsDrawerExpanded(false);
   };
 
+  const onEscape = (event: React.KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      setIsDrawerExpanded(false);
+    }
+  };
+
   return (
-    <Drawer isExpanded={isDrawerExpanded}>
+    <Drawer isExpanded={isDrawerExpanded} onKeyDown={onEscape}>
       <DrawerContent
         panelContent={
           <DrawerPanelContent
@@ -47,7 +53,7 @@ export const DetailsStepDrawer = (props: StepDrawerProps): React.ReactElement =>
             defaultSize="40%"
             focusTrap={{
               enabled: true,
-              elementToFocusOnExpand: `[aria-labelledby="${panelTitleId}"] button[aria-label="Close drawer panel"]`,
+              elementToFocusOnExpand: `[aria-labelledby="${panelTitleId}"] button[aria-label="${d.closeDrawerButtonLabel}"]`,
               'aria-labelledby': panelTitleId,
             }}
           >
@@ -56,7 +62,7 @@ export const DetailsStepDrawer = (props: StepDrawerProps): React.ReactElement =>
                 <span id={panelTitleId}>{d.panelTitle}</span>
               </Content>
               <DrawerActions>
-                <DrawerCloseButton onClose={onClose} aria-label="Close drawer panel" />
+                <DrawerCloseButton onClose={onClose} aria-label={d.closeDrawerButtonLabel} />
               </DrawerActions>
             </DrawerHead>
             <DrawerPanelBody>

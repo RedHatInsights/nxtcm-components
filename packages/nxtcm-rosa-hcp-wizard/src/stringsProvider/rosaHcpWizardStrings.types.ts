@@ -229,6 +229,7 @@ export type RosaHcpWizardStrings = {
     createOCMRoleAriaLabel: string;
     createOCMRoleAdminAriaLabel: string;
     linkOCMRoleAriaLabel: string;
+    closeDrawerButtonLabel: string;
   };
   ocmRole: {
     checkLinkedTitle: string;
