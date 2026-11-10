@@ -228,7 +228,9 @@ test.describe('ROSAHCPWizardBody', () => {
     await component.getByRole('button', { name: wizard.stepLabels.review }).click();
     await component.getByRole('button', { name: /Edit in YAML/i }).click();
     const yamlEditor = component.getByRole('region', { name: /YAML Configuration/i });
-    await expect(yamlEditor.getByRole('textbox', { name: 'Editor content' })).toBeVisible();
+    await expect(
+      yamlEditor.getByRole('textbox', { name: defaultRosaHcpWizardStrings.yamlEditor.title })
+    ).toBeVisible();
 
     await component.getByRole('button', { name: wizard.createCluster }).click();
     await expect(component.getByRole('heading', { name: submitErrorStrings.title })).toBeVisible();
