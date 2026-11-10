@@ -291,10 +291,14 @@ export type RosaHcpWizardStrings = {
     accountRolesSection: string;
     installerRoleLabel: string;
     installerPlaceholder: string;
-    installerRoleOptionDisabledDescription: (
-      selectedVersion: string,
-      roleVersion: string
-    ) => string;
+    /**
+     * @deprecated Not read anymore. The wizard builds the disabled-option description from
+     * `installerRoleOptionIncompatibleLead` and `installerRoleOptionSupportedUpToLead` instead.
+     * Kept on the types so existing overrides of this key keep compiling.
+     */
+    installerRoleOptionDisabledDescription: string;
+    installerRoleOptionIncompatibleLead: string;
+    installerRoleOptionSupportedUpToLead: string;
     installerHelpLead: string;
     installerLearnMoreLink: string;
     arnsToggle: string;

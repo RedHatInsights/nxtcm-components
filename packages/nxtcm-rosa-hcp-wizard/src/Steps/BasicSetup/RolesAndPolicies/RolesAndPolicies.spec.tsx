@@ -163,7 +163,10 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
       const option = page.getByRole('option', { name: mockRoles[0].installerRole.label });
       await expect(option).toBeDisabled();
       await expect(option).toContainText(
-        rp.installerRoleOptionDisabledDescription('4.12.0', '4.11.0')
+        [
+          `${rp.installerRoleOptionIncompatibleLead} 4.12.0.`,
+          `${rp.installerRoleOptionSupportedUpToLead} 4.11.0.`,
+        ].join(' ')
       );
     });
 

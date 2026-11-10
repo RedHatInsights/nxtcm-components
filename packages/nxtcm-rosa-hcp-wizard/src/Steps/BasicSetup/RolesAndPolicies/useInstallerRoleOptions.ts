@@ -8,7 +8,8 @@ import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardS
 import { type InstallerRole, RolesResource, type ROSAHCPCluster } from '../../../types';
 
 export const useInstallerRoleOptions = (roles: RolesResource): InstallerRole[] => {
-  const { installerRoleOptionDisabledDescription } = useRosaHcpWizardStrings().rolesAndPolicies;
+  const { installerRoleOptionIncompatibleLead, installerRoleOptionSupportedUpToLead } =
+    useRosaHcpWizardStrings().rolesAndPolicies;
   const selectedClusterVersion = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({
     name: FIELD_NAME.CLUSTER_VERSION,
   });
@@ -26,14 +27,19 @@ export const useInstallerRoleOptions = (roles: RolesResource): InstallerRole[] =
         ? {
             ...role,
             ariaDisabled: true,
-            description: installerRoleOptionDisabledDescription(
-              selectedClusterVersion,
-              role.roleVersion
-            ),
+            description: [
+              `${installerRoleOptionIncompatibleLead} ${selectedClusterVersion}.`,
+              `${installerRoleOptionSupportedUpToLead} ${role.roleVersion}.`,
+            ].join(' '),
           }
         : role;
     });
-  }, [roles.data, selectedClusterVersion, installerRoleOptionDisabledDescription]);
+  }, [
+    roles.data,
+    selectedClusterVersion,
+    installerRoleOptionIncompatibleLead,
+    installerRoleOptionSupportedUpToLead,
+  ]);
 
   return installerRoleOptions;
 };

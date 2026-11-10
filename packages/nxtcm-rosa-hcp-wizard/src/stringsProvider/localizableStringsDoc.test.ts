@@ -249,6 +249,7 @@ describe('localizable strings reference', () => {
       'yamlEditor.invalidYaml',
       'rolesAndPolicies.copyHover',
       'rolesAndPolicies.copyClicked',
+      'rolesAndPolicies.installerRoleOptionDisabledDescription',
       'rolesAndPolicies.supportPlaceholder',
       'rolesAndPolicies.workerPlaceholder',
       'machinePools.machinePoolLabel',

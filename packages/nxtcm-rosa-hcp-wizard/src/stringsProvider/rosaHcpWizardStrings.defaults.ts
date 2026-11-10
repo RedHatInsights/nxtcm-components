@@ -187,8 +187,10 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     accountRolesSection: 'Account roles',
     installerRoleLabel: 'Installer role',
     installerPlaceholder: 'Select an installer role',
-    installerRoleOptionDisabledDescription: (selectedVersion: string, roleVersion: string) =>
-      `Incompatible with OpenShift ${selectedVersion}. Supported on versions up to ${roleVersion}.`,
+    installerRoleOptionDisabledDescription:
+      'This account role does not support the selected OpenShift version.',
+    installerRoleOptionIncompatibleLead: 'Incompatible with OpenShift',
+    installerRoleOptionSupportedUpToLead: 'Supported on versions up to',
     installerHelpLead: 'An AWS IAM role used by the ROSA installer',
     installerLearnMoreLink: 'Learn more about roles.',
     arnsToggle: 'Amazon Resource Names (ARNs)',
