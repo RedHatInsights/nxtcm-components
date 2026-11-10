@@ -22,6 +22,7 @@ export async function navigateToYamlEditor(page: Page): Promise<void> {
       ).monacoEditor;
       return editor?.getModel?.() != null;
     },
+    undefined,
     { timeout: 10000 }
   );
 }
@@ -36,6 +37,7 @@ export async function navigateToReview(page: Page): Promise<void> {
   await fillNetworkingStep(page);
   await page.getByRole('button', { name: /Next/i }).click(); // Encryption
   await page.getByRole('button', { name: /Next/i }).click(); // Updates
+  await page.getByRole('button', { name: /Edit in YAML/i }).waitFor({ state: 'visible' });
 }
 
 /**
