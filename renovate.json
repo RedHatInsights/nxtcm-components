@@ -58,6 +58,8 @@
   ],
   "reviewersSampleSize": 2,
   "dependencyDashboard": true,
+  "timezone": "America/New_York",
+  "schedule": ["* * * * 0,6"],
   "minimumReleaseAge": "4 days",
   "prConcurrentLimit": 10,
   "prHourlyLimit": 4,
