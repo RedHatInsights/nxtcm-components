@@ -102,6 +102,11 @@ export async function expectFocusIndicator(control: Locator): Promise<void> {
     width: box.width + margin * 2,
     height: box.height + margin * 2,
   };
+  // Prevent a text-input caret from making the screenshots differ when the
+  // control has no visible focus indicator.
+  await control.evaluate((el) => {
+    (el as HTMLElement).style.caretColor = 'transparent';
+  });
   const before = await page.screenshot({ clip, animations: 'disabled' });
   // A key press makes the following programmatic focus match :focus-visible.
   await page.keyboard.press('Shift');

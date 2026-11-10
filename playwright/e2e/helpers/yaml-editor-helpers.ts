@@ -10,18 +10,20 @@ export async function navigateToYamlEditor(page: Page): Promise<void> {
   await page.getByRole('button', { name: /Edit in YAML/i }).click();
 
   // Wait for Monaco editor to be fully initialized
-  await page.locator('.monaco-editor').waitFor({ state: 'visible' });
+  await page.locator('.monaco-editor').waitFor({ state: 'visible', timeout: 10000 });
 
   // Wait for Monaco editor to be available on window
   await page.waitForFunction(
     () => {
-      return (window as Window & { monacoEditor?: unknown }).monacoEditor !== undefined;
+      const editor = (
+        window as Window & {
+          monacoEditor?: { getModel?: () => unknown };
+        }
+      ).monacoEditor;
+      return editor?.getModel?.() != null;
     },
-    { timeout: 5000 }
+    { timeout: 10000 }
   );
-
-  // Give Monaco a moment to load content
-  await page.waitForTimeout(500);
 }
 
 /**
