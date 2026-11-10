@@ -48,9 +48,8 @@ async function showSchemaErrors(component: Locator): Promise<void> {
 // Helper to wait for Monaco editor to be ready
 
 async function waitForMonaco(component: Locator): Promise<void> {
-  // Wait for the accessible editor and its initial YAML content.
-  await component.getByRole('textbox', { name: /editor content/i }).waitFor({ timeout: 10000 });
-  await component.getByText('ROSAControlPlane', { exact: true }).waitFor({ timeout: 10000 });
+  // Some stories have no generated YAML, so wait for the accessible editor itself.
+  await component.getByRole('textbox', { name: EDITOR_NAME }).waitFor({ timeout: 10000 });
 }
 
 test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
@@ -62,7 +61,7 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
     await waitForMonaco(component);
 
     // Verify Monaco editor is rendered
-    await expect(component.getByRole('textbox', { name: /editor content/i })).toBeVisible();
+    await expect(component.getByRole('textbox', { name: EDITOR_NAME })).toBeVisible();
     await expect(component.getByText('ROSAControlPlane', { exact: true })).toBeVisible();
   });
 
@@ -237,7 +236,7 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
       );
 
       await waitForMonaco(component);
-      await expect(component.getByRole('textbox', { name: /editor content/i })).toBeVisible();
+      await expect(component.getByRole('textbox', { name: EDITOR_NAME })).toBeVisible();
     });
 
     test('renders without errors when onCancel prop is provided', async ({ mount }) => {
@@ -249,7 +248,7 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
       );
 
       await waitForMonaco(component);
-      await expect(component.getByRole('textbox', { name: /editor content/i })).toBeVisible();
+      await expect(component.getByRole('textbox', { name: EDITOR_NAME })).toBeVisible();
     });
   });
 
@@ -300,7 +299,7 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
       await waitForMonaco(component);
 
       // Monaco creates a textarea for accessibility
-      const textarea = component.getByRole('textbox', { name: /editor content/i });
+      const textarea = component.getByRole('textbox', { name: EDITOR_NAME });
       await expect(textarea).toBeVisible();
     });
 
