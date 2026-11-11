@@ -128,6 +128,10 @@ await component.evaluate(async (el) => {
 await checkAccessibility({ component });
 ```
 
+## display settings (dark theme, reflow, text size, forced colors)
+
+use the helpers in `playwright/display-a11y-helpers.ts` (`setDarkTheme`, `setTextScale`, `REFLOW_VIEWPORT`, `expectNoHorizontalOverflow`, `expectReachable`, `expectFocusIndicator`). to cover a new view under all four conditions, add it to the `views` list in that package's `displayAccessibility.spec.tsx`. coverage matrix, exceptions, and manual checklist: [display-coverage.md](../accessibility/display-coverage.md).
+
 ## common pitfalls
 
 - **CSS class selectors** — will break on PF upgrade. use role-based.

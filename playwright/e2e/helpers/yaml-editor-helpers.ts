@@ -4,30 +4,40 @@ import { expect, type Page } from '@playwright/test';
  * Navigate from wizard start to YAML editor
  */
 export async function navigateToYamlEditor(page: Page): Promise<void> {
-  // Fill wizard steps to reach review
+  await navigateToReview(page);
+
+  // Open YAML editor from review page
+  await page.getByRole('button', { name: /Edit in YAML/i }).click();
+
+  // Wait for Monaco editor to be fully initialized
+  await page.locator('.monaco-editor').waitFor({ state: 'visible', timeout: 10000 });
+
+  // Wait for Monaco editor to be available on window
+  await page.waitForFunction(
+    () => {
+      const editor = (
+        window as Window & {
+          monacoEditor?: { getModel?: () => unknown };
+        }
+      ).monacoEditor;
+      return editor?.getModel?.() != null;
+    },
+    undefined,
+    { timeout: 10000 }
+  );
+}
+
+/**
+ * Fill the required wizard steps and advance to the Review step
+ */
+export async function navigateToReview(page: Page): Promise<void> {
   await fillDetailsStep(page);
   await fillRolesStep(page);
   await fillMachinePoolsStep(page);
   await fillNetworkingStep(page);
   await page.getByRole('button', { name: /Next/i }).click(); // Encryption
   await page.getByRole('button', { name: /Next/i }).click(); // Updates
-
-  // Open YAML editor from review page
-  await page.getByRole('button', { name: /Edit in YAML/i }).click();
-
-  // Wait for Monaco editor to be fully initialized
-  await page.locator('.monaco-editor').waitFor({ state: 'visible' });
-
-  // Wait for Monaco editor to be available on window
-  await page.waitForFunction(
-    () => {
-      return (window as Window & { monacoEditor?: unknown }).monacoEditor !== undefined;
-    },
-    { timeout: 5000 }
-  );
-
-  // Give Monaco a moment to load content
-  await page.waitForTimeout(500);
+  await page.getByRole('button', { name: /Edit in YAML/i }).waitFor({ state: 'visible' });
 }
 
 /**
@@ -99,17 +109,6 @@ export const YAML_EDITOR_NAME = 'YAML Configuration';
 
 // Invalid YAML that Monaco won't auto-close, so Backspace undoes it.
 export const INVALID_YAML_SUFFIX = ' x: :';
-
-/** Fill every step and stop on Review. */
-export async function navigateToReview(page: Page): Promise<void> {
-  await fillDetailsStep(page);
-  await fillRolesStep(page);
-  await fillMachinePoolsStep(page);
-  await fillNetworkingStep(page);
-  await page.getByRole('button', { name: /Next/i }).click(); // Encryption
-  await page.getByRole('button', { name: /Next/i }).click(); // Updates
-  await page.getByRole('button', { name: /Edit in YAML/i }).waitFor();
-}
 
 /** Wait until Monaco has loaded the generated YAML. */
 export async function waitForYamlEditorReady(page: Page): Promise<void> {
