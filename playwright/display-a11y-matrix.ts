@@ -21,6 +21,8 @@ export type DisplayView = {
   textEquivalents: (string | RegExp)[];
   /** primary interactive control, checked for reachability and a visible focus indicator */
   control?: (component: Locator, page: Page) => Locator;
+  /** additional assertions for state-specific affordances in forced colors */
+  forcedColorsCheck?: (component: Locator, page: Page) => Promise<void>;
 };
 
 async function expectTextEquivalents(page: Page, view: DisplayView): Promise<void> {
@@ -68,5 +70,6 @@ export const displayChecks: Record<
     await view.prepare?.(component, page);
     await expectTextEquivalents(page, view);
     if (view.control) await expectFocusIndicator(view.control(component, page));
+    await view.forcedColorsCheck?.(component, page);
   },
 };

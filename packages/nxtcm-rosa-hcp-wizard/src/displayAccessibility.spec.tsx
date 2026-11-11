@@ -1,3 +1,5 @@
+import { expect } from '@playwright/test';
+
 import { test } from '@/playwright/ct-fixture';
 import { displayChecks, type DisplayView } from '@/playwright/display-a11y-matrix';
 
@@ -67,6 +69,13 @@ const views: DisplayView[] = [
       ),
     textEquivalents: ['US East'],
     control: (component) => component.getByRole('radio', { name: 'US East' }),
+    forcedColorsCheck: async (component) => {
+      const selected = component.getByRole('radio', { name: 'US East' });
+      const unselected = component.getByRole('radio', { name: 'US West' });
+      await expect(selected).toBeChecked();
+      await expect(unselected).not.toBeChecked();
+      expect(await selected.screenshot()).not.toEqual(await unselected.screenshot());
+    },
   },
   {
     name: 'Details drawer',
