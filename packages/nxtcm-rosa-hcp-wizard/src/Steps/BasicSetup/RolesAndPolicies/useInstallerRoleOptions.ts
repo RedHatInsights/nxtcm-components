@@ -7,6 +7,15 @@ import { FIELD_NAME } from '../../../constants';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
 import { type InstallerRole, RolesResource, type ROSAHCPCluster } from '../../../types';
 
+/**
+ * Builds the installer role dropdown options for the selected OpenShift version.
+ * Roles whose version is lower than the selected cluster version are marked `ariaDisabled`
+ * and get a description of the incompatibility and the highest version they support.
+ * Roles without a version, or with no cluster version selected, are returned unchanged.
+ *
+ * @param roles - Roles resource whose installer roles populate the options.
+ * @returns Installer roles, with incompatible ones disabled and described.
+ */
 export const useInstallerRoleOptions = (roles: RolesResource): InstallerRole[] => {
   const { installerRoleOptionIncompatibleLead, installerRoleOptionSupportedUpToLead } =
     useRosaHcpWizardStrings().rolesAndPolicies;
