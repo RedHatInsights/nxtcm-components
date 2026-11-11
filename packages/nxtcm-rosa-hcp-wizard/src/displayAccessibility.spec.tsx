@@ -74,7 +74,15 @@ const views: DisplayView[] = [
       const unselected = component.getByRole('radio', { name: 'US West' });
       await expect(selected).toBeChecked();
       await expect(unselected).not.toBeChecked();
-      expect(await selected.screenshot()).not.toEqual(await unselected.screenshot());
+      await selected.focus();
+      const checkedImage = await selected.screenshot();
+      await selected.evaluate((element) => {
+        (element as HTMLInputElement).checked = false;
+      });
+      const uncheckedImage = await selected.screenshot();
+      if (checkedImage.equals(uncheckedImage)) {
+        throw new Error('The selected radio did not change appearance when unchecked.');
+      }
     },
   },
   {
