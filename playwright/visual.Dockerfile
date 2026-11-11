@@ -1,4 +1,4 @@
-FROM docker.io/library/node:26.8.1-bookworm-slim AS node
+FROM docker.io/library/node:26.13.0-bookworm-slim AS node
 FROM mcr.microsoft.com/playwright:v1.62.1-noble
 
 # Use the same Node runtime locally and in CI, satisfying package.json engines.
