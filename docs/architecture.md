@@ -199,7 +199,7 @@ Additional workflows:
 |----------|---------|---------|
 | `ct-triage-comment.yml` | `workflow_run` after CI completes (failure + PR) | posts CT failure summaries as PR comments |
 | `publish-package.yml` | release published | publishes workspace packages to npm |
-| `deploy-storybook.yml` | push to main | deploys Storybook to GitHub Pages |
+| `deploy-storybook.yml` | push to main, after publish, manual | deploys combined Storybook to GitHub Pages (`/` = release, `/next/` = preview) |
 | `check-links.yml` | schedule + manual | validates external links and reports failures |
 
 ---
