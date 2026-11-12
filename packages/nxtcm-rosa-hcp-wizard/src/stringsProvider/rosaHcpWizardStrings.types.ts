@@ -97,7 +97,6 @@ export type RosaHcpWizardAwsMachineCidrValidatorStrings = {
 /** Service CIDR and related subnet mask bounds (networking step). */
 export type RosaHcpWizardServiceCidrValidatorStrings = {
   maskTooSmall: (maxMask: number, maxServices: number) => string;
-  subnetMaskBetween: (min: number, max: number) => string;
   subnetMaskBetweenOneAnd: (max: number) => string;
 };
 
@@ -143,7 +142,6 @@ export type RosaHcpWizardValidatorStrings = {
   ca: RosaHcpWizardCaValidatorStrings;
   rootDisk: RosaHcpWizardRootDiskValidatorStrings;
   replicas: RosaHcpWizardReplicaValidatorStrings;
-  proxyConfigureAtLeastOne: string;
   cidr: RosaHcpWizardCidrValidatorStrings; // notsecret
   validateRange: RosaHcpWizardValidateRangeValidatorStrings; // notsecret
   awsMachineCidr: RosaHcpWizardAwsMachineCidrValidatorStrings; // notsecret
@@ -188,12 +186,9 @@ export type RosaHcpWizardStrings = {
   };
   yamlEditor: {
     title: string;
-    description: string;
     parseErrorTitle: string;
     /** Validation banner text. `count` is the number of schema errors (at least 1). */
     validationErrorsFound: (count: number) => string;
-    convertError: string;
-    invalidYaml: string;
     discardChanges: string;
     discardConfirmTitle: string;
     discardConfirmBody: string;
@@ -296,10 +291,8 @@ export type RosaHcpWizardStrings = {
     installerLearnMoreLink: string;
     arnsToggle: string;
     supportRoleLabel: string;
-    supportPlaceholder: string;
     supportHelp: string;
     workerRoleLabel: string;
-    workerPlaceholder: string;
     workerHelp: string;
     operatorRolesSection: string;
     oidcLabel: string;
@@ -313,8 +306,6 @@ export type RosaHcpWizardStrings = {
     operatorRolesCreateLabel: string;
     operatorRolesCreateInstructions: string;
     operatorRolesCreateCommandAriaLabel: string;
-    copyHover: string;
-    copyClicked: string;
     rolesAlertTitle: string;
     accountRolesHelp: string;
     userRolesHelp: string;
@@ -341,7 +332,6 @@ export type RosaHcpWizardStrings = {
     advancedToggle: string;
     proxyCheckboxLabel: string;
     proxyCheckboxHelp: string;
-    proxyNextStepInfo: string;
     cidrAlertTitle: string;
     cidrAlertBody: string;
     cidrLearnMoreLink: string;
@@ -369,11 +359,8 @@ export type RosaHcpWizardStrings = {
     vpcPlaceholder: string;
     vpcHelpLead: string;
     vpcLearnMoreLink: string;
-    machinePoolLabel: string;
     subnetLabel: string;
-    addPoolButton: string;
     subnetPlaceholder: string;
-    settingsSectionLabel: string;
     instanceTypeLabel: string;
     instanceTypeHelpLead: string;
     instanceTypeLearnMore: string;
@@ -386,11 +373,8 @@ export type RosaHcpWizardStrings = {
     imdsV2Label: string;
     imdsV2Description: string;
     rootDiskLabel: string;
-    rootDiskHelp: string;
-    securityGroupsToggle: string;
   };
   autoscaling: {
-    title: string;
     helperLead: string;
     learnMoreAutoscaling: string;
     enableLabel: string;
@@ -407,7 +391,6 @@ export type RosaHcpWizardStrings = {
     emptyBodyPrefix: string;
     emptyBodySuffix: string;
     emptyConsoleLink: string;
-    refreshLink: string;
     noEditTitle: string;
     formLabel: string;
     selectToggle: string;
@@ -415,7 +398,6 @@ export type RosaHcpWizardStrings = {
     readOnlyEmpty: string;
     badgeSrText: string;
     optionsMenuAria: string;
-    selectAriaLabelledBy: string;
     noEditViewMoreInfo: string;
     noEditAwsConsoleLink: string;
     incompatibleVersion: string;
@@ -445,7 +427,6 @@ export type RosaHcpWizardStrings = {
     customKms: string;
     keyArnLabel: string;
     keyArnHelp: string;
-    etcdTitle: string;
     etcdLabel: string;
     etcdHelperLead: string;
     etcdLearnMore: string;
@@ -482,38 +463,11 @@ export type RosaHcpWizardStrings = {
     sectionLabel: string;
     alertTitle: string;
     lockedSettings: string;
-    detailsToggle: string;
-    rolesToggle: string;
-    networkingToggle: string;
-    encryptionToggle: string;
-    optionalNetworkingToggle: string;
-    clusterUpdatesToggle: string;
     editStep: string;
     editInYaml: string;
-    clusterName: string;
-    openShiftVersion: string;
-    awsInfra: string;
-    awsBilling: string;
-    region: string;
-    installerRole: string;
-    oidcConfigId: string;
-    operatorPrefix: string;
-    publicSubnet: string;
-    installVpc: string;
-    instanceType: string;
-    computeCount: string;
-    machinePoolsHeading: string;
-    additionalEtcd: string;
-    encryptionKeys: string;
-    machineCidr: string;
-    serviceCidr: string;
-    podCidr: string;
-    hostPrefix: string;
     updateStrategy: string;
     strategyIndividual: string;
     strategyAutomatic: string;
-    autoscalingMinPrefix: string;
-    autoscalingMaxPrefix: string;
     showMore: string;
     showLess: string;
   };
