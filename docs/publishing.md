@@ -70,7 +70,7 @@ The Storybook manager UI displays package versions in the sidebar brand and an "
 
 ### Independent package releases
 
-Dashboard and wizard release independently. The root storybook is built from whichever release tag was created most recently — the latest stable snapshot of the monorepo. Both package versions are displayed so it's clear what was published.
+Dashboard and wizard release independently, but the root storybook is always built from a single commit — whichever release tag was created most recently. This means both packages' code at that commit is included; if the dashboard has unreleased changes at the time of a wizard release, those changes will appear in the root storybook. Both package versions are displayed so it's clear what versions are in the build.
 
 ### Failure behavior
 
