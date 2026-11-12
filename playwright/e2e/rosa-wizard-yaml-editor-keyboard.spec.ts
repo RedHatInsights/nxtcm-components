@@ -41,8 +41,7 @@ test.describe('ROSA Wizard - YAML Editor keyboard access', () => {
     await page.keyboard.press('Enter');
     await waitForYamlEditorReady(page);
 
-    // Review unmounts, so focus falls back to <body>.
-    expect(await page.evaluate(() => document.activeElement === document.body)).toBe(true);
+    await expect(page.getByRole('region', { name: YAML_EDITOR_NAME })).toBeFocused();
   });
 
   test('enters, edits, and leaves the editor with the keyboard', async ({ page }) => {

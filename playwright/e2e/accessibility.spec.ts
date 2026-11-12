@@ -98,6 +98,9 @@ test.describe('Page-level accessibility', () => {
     await checkPageAccessibility(page, 'YAML discard dialog contrast', harnessRules, {
       include: '[role="dialog"]',
     });
+    await page.getByRole('button', { name: /^Yes$/i }).click();
+    await expect(page.getByRole('button', { name: /Edit in YAML/i })).toBeFocused();
+    await checkPageAccessibility(page, 'review after YAML discard', harnessRules);
   });
 
   test('scans the YAML editor with a validation error', async ({ page }) => {

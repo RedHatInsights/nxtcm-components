@@ -360,6 +360,32 @@ export const SubmitError: Story = {
   },
 };
 
+/** Opens directly on the submission-error empty state; Back restores the wizard. */
+function SubmitErrorEmptyStateWrapper(props: React.ComponentProps<typeof ROSAHCPWizard>) {
+  const [submitError, setSubmitError] = React.useState<string | undefined>(
+    'There has been an error creating the cluster.'
+  );
+
+  return (
+    <ROSAHCPWizard
+      {...props}
+      onSubmitError={submitError}
+      onBackToReviewStep={() => setSubmitError(undefined)}
+    />
+  );
+}
+
+export const SubmitErrorEmptyState: Story = {
+  render: (args) => <SubmitErrorEmptyStateWrapper {...args} />,
+  args: {
+    title: 'Create ROSA Cluster',
+    resourceGenerator: storyAcmGenerator,
+    wizardData: createMockRosaHcpWizardData(),
+    onSubmit: onWizardSubmit,
+    onCancel: onWizardCancel,
+  },
+};
+
 /**
  * Wizard with no account roles available. Navigate to the Roles & Policies step to see
  * the "Missing account roles" danger alert with a `rosa create account-role` copy instruction.
