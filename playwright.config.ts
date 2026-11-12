@@ -72,7 +72,10 @@ export default defineConfig({
         baseURL: 'http://localhost:3200',
         trace: 'on-first-retry',
       },
-    }),
+    }).map((project) =>
+      // Screenshot baselines are only generated for Chromium in the pinned container.
+      project.name === 'e2e-chromium' ? project : { ...project, testIgnore: '**/*-visual.spec.ts' }
+    ),
   ],
   webServer: [
     ...(suiteIsSelected('components') && components.webServer
