@@ -13,6 +13,7 @@ import {
   WIZ_SELECT_EXPLICIT_HELPER,
 } from '../../WizFields/WizSelect/WizSelect.story-data';
 import type {
+  AriaDisabledOptionHarness,
   DisabledTypeaheadHarness,
   GroupedLoadingTypeaheadHarness,
   GroupedTypeaheadHarness,
@@ -555,5 +556,17 @@ test.describe('Select', () => {
     );
     await page.getByRole('button', { name: 'Refresh' }).click();
     await expect(page.getByTestId('refresh-count')).toHaveText('1');
+  });
+
+  test('shows the description of an aria-disabled option', async ({ mount, page }) => {
+    await mount<typeof AriaDisabledOptionHarness>(
+      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/AriaDisabledOptionHarness'
+    );
+    await page.getByRole('button', { name: /Role/ }).click();
+
+    const option = page.getByRole('option', { name: /role-old/ });
+    await expect(option).toBeDisabled();
+    await expect(option).toContainText('Incompatible with this version.');
+    await checkMenuAccessibility(page);
   });
 });

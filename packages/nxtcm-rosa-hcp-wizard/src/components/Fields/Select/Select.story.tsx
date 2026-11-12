@@ -206,3 +206,24 @@ export function RefreshHarness() {
     </Form>
   );
 }
+
+export function AriaDisabledOptionHarness() {
+  return (
+    <Form>
+      <Select<string>
+        id="ct-menu-aria-disabled"
+        label="Role"
+        value={undefined}
+        onChange={() => undefined}
+        options={[
+          {
+            label: 'role-old',
+            value: 'role-old',
+            description: 'Incompatible with this version.',
+            ariaDisabled: true,
+          },
+        ]}
+      />
+    </Form>
+  );
+}
