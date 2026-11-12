@@ -286,6 +286,7 @@ jobs:
 
       - name: Run E2E and visual tests in the shared Linux container
         env:
+          PLAYWRIGHT_BROWSER: ${{ matrix.browser }}
           PLAYWRIGHT_REACT_VERSION: ${{ matrix.react }}
           PLAYWRIGHT_JSON_OUTPUT_NAME: test-results/playwright-e2e-results.json
         run: npm run test:e2e:container -- --reporter=list,html,json
