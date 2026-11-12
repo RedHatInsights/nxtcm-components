@@ -105,6 +105,7 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     createOCMRoleAriaLabel: 'Copyable ROSA create ocm-role',
     createOCMRoleAdminAriaLabel: 'Copyable ROSA create ocm-role --admin',
     linkOCMRoleAriaLabel: 'Copyable rosa link ocm-role <arn> command',
+    closeDrawerButtonLabel: 'Close drawer panel',
   },
   ocmRole: {
     checkLinkedTitle: 'First, check if a role exists and is linked with:',
