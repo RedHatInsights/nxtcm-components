@@ -567,17 +567,6 @@ test.describe('Select', () => {
     const option = page.getByRole('option', { name: /role-old/ });
     await expect(option).toBeDisabled();
     await expect(option).toContainText('Incompatible with this version.');
-  });
-
-  test('passes accessibility check with the menu open and an aria-disabled option', async ({
-    mount,
-    page,
-  }) => {
-    await mount<typeof AriaDisabledOptionHarness>(
-      'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/AriaDisabledOptionHarness'
-    );
-    await page.getByRole('button', { name: /Role/ }).click();
-    await expect(page.getByRole('option', { name: /role-old/ })).toBeDisabled();
     await checkMenuAccessibility(page);
   });
 });
