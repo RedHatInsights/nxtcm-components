@@ -49,14 +49,19 @@ if (metadata.deploymentType === 'preview') {
     top: '0',
     left: '0',
     right: '0',
-    height: '28px',
     zIndex: '9999',
     background: '#f0ab00',
     color: '#151515',
     textAlign: 'center',
-    lineHeight: '28px',
+    padding: '4px 12px',
     fontSize: '13px',
     fontFamily: 'RedHatText, Overpass, sans-serif',
   });
   document.body.prepend(banner);
+
+  // Set CSS variable so the manager offset matches the actual banner height
+  requestAnimationFrame(() => {
+    const h = banner.offsetHeight;
+    document.documentElement.style.setProperty('--preview-banner-height', `${h}px`);
+  });
 }

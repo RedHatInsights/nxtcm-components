@@ -20,7 +20,7 @@ const config: StorybookConfig = {
     if (deploymentType === 'preview') {
       return (
         metadataTag +
-        '<style>.preview-banner-active #root > div { height: calc(100dvh - 28px) !important; margin-top: 28px !important; }</style>'
+        '<style>.preview-banner-active #root > div { height: calc(100dvh - var(--preview-banner-height, 28px)) !important; margin-top: var(--preview-banner-height, 28px) !important; }</style>'
       );
     }
     return metadataTag;

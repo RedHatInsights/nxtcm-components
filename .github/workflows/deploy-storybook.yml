@@ -8,8 +8,17 @@ on:
     types: [completed]
   workflow_dispatch:
 
+# Unsuccessful workflow_run events get an isolated group (run_id) so they
+# cannot cancel an in-flight deployment.  All real deployments share the
+# 'deploy-storybook' group with cancel-in-progress.
 concurrency:
-  group: deploy-storybook
+  group: >-
+    deploy-storybook-${{
+      github.event_name == 'workflow_run'
+        && github.event.workflow_run.conclusion != 'success'
+        && github.run_id
+        || 'main'
+    }}
   cancel-in-progress: true
 
 permissions:
@@ -65,6 +74,13 @@ jobs:
                 || ''
             }}
 
+      # Checkout current workflow scripts into a separate directory.
+      # Release tags that predate this PR lack the metadata/assertion scripts.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: _workflow-scripts
+          sparse-checkout: scripts
+
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: 'package.json'
@@ -88,13 +104,10 @@ jobs:
           STORYBOOK_COMMIT_SHA: ${{ needs.resolve-release.outputs.release-sha || github.sha }}
 
       - name: Write metadata
-        run: node scripts/write-storybook-metadata.mjs storybook-static
+        run: node _workflow-scripts/scripts/write-storybook-metadata.mjs storybook-static
         env:
           STORYBOOK_DEPLOYMENT_TYPE: release
           STORYBOOK_COMMIT_SHA: ${{ needs.resolve-release.outputs.release-sha || github.sha }}
-
-      - name: Assert public Storybook index
-        run: npm run storybook:assert-public
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -110,6 +123,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event_name == 'workflow_run' && 'main' || '' }}
+
+      - name: Resolve checked-out commit
+        id: head
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
@@ -131,13 +148,13 @@ jobs:
           STORYBOOK_DEPLOYMENT_TYPE: preview
           STORYBOOK_DASHBOARD_VERSION: ${{ steps.versions.outputs.dashboard }}
           STORYBOOK_WIZARD_VERSION: ${{ steps.versions.outputs.wizard }}
-          STORYBOOK_COMMIT_SHA: ${{ github.sha }}
+          STORYBOOK_COMMIT_SHA: ${{ steps.head.outputs.sha }}
 
       - name: Write metadata
         run: node scripts/write-storybook-metadata.mjs storybook-static
         env:
           STORYBOOK_DEPLOYMENT_TYPE: preview
-          STORYBOOK_COMMIT_SHA: ${{ github.sha }}
+          STORYBOOK_COMMIT_SHA: ${{ steps.head.outputs.sha }}
 
       - name: Assert public Storybook index
         run: npm run storybook:assert-public
