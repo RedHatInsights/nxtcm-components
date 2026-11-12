@@ -21,8 +21,14 @@ if (args.includes('--inside-container')) {
     const status = run('node', ['scripts/setup-react-version.mjs', react]);
     if (status !== 0) process.exit(status);
   }
+  // Run Playwright directly: the `test:e2e` script already pins a project, and repeated
+  // `--project` flags are combined, so it cannot be narrowed to another engine.
+  const browser = process.env.PLAYWRIGHT_BROWSER ?? 'chromium';
+  if (!['chromium', 'firefox', 'webkit'].includes(browser)) {
+    throw new Error('PLAYWRIGHT_BROWSER must be chromium, firefox or webkit.');
+  }
   process.exit(
-    run('npm', ['run', 'test:e2e', '--', ...args], {
+    run('npx', ['playwright', 'test', `--project=e2e-${browser}`, ...args], {
       env: { ...process.env, PLAYWRIGHT_INCLUDE_VISUAL_TESTS: 'true' },
     })
   );
@@ -94,7 +100,12 @@ if (rootlessDocker) {
   if (engine === 'podman') containerArgs.push('--userns=keep-id');
   containerArgs.push('--user', `${process.getuid()}:${process.getgid()}`);
 }
-for (const name of ['CI', 'PLAYWRIGHT_REACT_VERSION', 'PLAYWRIGHT_JSON_OUTPUT_NAME']) {
+for (const name of [
+  'CI',
+  'PLAYWRIGHT_BROWSER',
+  'PLAYWRIGHT_REACT_VERSION',
+  'PLAYWRIGHT_JSON_OUTPUT_NAME',
+]) {
   if (process.env[name]) containerArgs.push('--env', `${name}=${process.env[name]}`);
 }
 const snapshots = (
