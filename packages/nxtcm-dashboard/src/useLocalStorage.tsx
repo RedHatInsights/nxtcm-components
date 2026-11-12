@@ -1,5 +1,54 @@
 import React, { Dispatch, SetStateAction } from 'react';
 
+/**
+ * Runtime type guard that validates a parsed value has a compatible structure
+ * with the reference value. Checks typeof match for primitives, array vs object
+ * distinction, and recursively validates property value shapes and array element
+ * types for objects and arrays.
+ *
+ * Returns true (narrowing `value` to `T`) when the parsed value is structurally
+ * compatible with `reference`. Returns false when the value is malformed, causing
+ * callers to fall back to a safe default.
+ */
+export function hasMatchingStructure<T>(value: unknown, reference: T): value is T {
+  if (value === null || value === undefined) {
+    return value === reference;
+  }
+
+  if (reference === null || reference === undefined) {
+    return value === null || value === undefined;
+  }
+
+  if (typeof value !== typeof reference) {
+    return false;
+  }
+
+  // Primitives: typeof match is sufficient for type safety
+  if (typeof value !== 'object' || typeof reference !== 'object') {
+    return true;
+  }
+
+  // Array vs plain-object mismatch
+  if (Array.isArray(reference) !== Array.isArray(value)) {
+    return false;
+  }
+
+  // Arrays: validate element types against first reference element when available
+  if (Array.isArray(reference) && Array.isArray(value)) {
+    if (reference.length === 0 || value.length === 0) {
+      return true;
+    }
+    return value.every((element: unknown) => hasMatchingStructure(element, reference[0]));
+  }
+
+  // Objects: verify every key from the reference exists with a matching value shape
+  const refRecord = reference as Record<string, unknown>;
+  const valRecord = value as Record<string, unknown>;
+  return Object.keys(refRecord).every(
+    (key) => key in valRecord && hasMatchingStructure(valRecord[key], refRecord[key])
+  );
+}
+
 function useLocalStorage(
   key: string,
   initialValue: string = ''
@@ -34,12 +83,27 @@ export function useLocalStorageWithObject<T>(
   initialValue: T
 ): [T, Dispatch<SetStateAction<T>>, () => void] {
   const [state, setState, clear] = useLocalStorage(key, JSON.stringify(initialValue));
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- JSON.parse returns `any`; proper fix tracked in FCN-787
-  const item: T = JSON.parse(state);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(state);
+  } catch {
+    parsed = undefined;
+  }
+  const item: T = hasMatchingStructure(parsed, initialValue) ? parsed : initialValue;
   const setItem = (value: SetStateAction<T>) => {
     if (value instanceof Function) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- JSON.parse returns `any`; proper fix tracked in FCN-787
-      setState((prevState) => JSON.stringify(value(JSON.parse(prevState))));
+      setState((prevState) => {
+        let prevParsed: unknown;
+        try {
+          prevParsed = JSON.parse(prevState);
+        } catch {
+          prevParsed = undefined;
+        }
+        const prevValidated: T = hasMatchingStructure(prevParsed, initialValue)
+          ? prevParsed
+          : initialValue;
+        return JSON.stringify(value(prevValidated));
+      });
       return;
     }
     setState(JSON.stringify(value));
