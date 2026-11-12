@@ -62,6 +62,7 @@
     "build-storybook": "storybook build",
     "build-storybook:internal": "STORYBOOK_INCLUDE_INTERNAL=true storybook build",
     "storybook:assert-public": "node scripts/assert-storybook-public.mjs",
+    "storybook:write-metadata": "node scripts/write-storybook-metadata.mjs",
     "check:peers": "node scripts/check-peer-dep-versions.mjs",
     "test:react-compat": "node scripts/test-react-compatibility.mjs",
     "allthethings": "npm run prettier:fix && npm run lint:fix && npm run type-check && npm run test && npm run test:ct",

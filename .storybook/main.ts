@@ -10,6 +10,21 @@ function includeInternalStories(): boolean {
 }
 
 const config: StorybookConfig = {
+  managerHead: () => {
+    const deploymentType = process.env.STORYBOOK_DEPLOYMENT_TYPE || '';
+    const dashboardVersion = process.env.STORYBOOK_DASHBOARD_VERSION || '';
+    const wizardVersion = process.env.STORYBOOK_WIZARD_VERSION || '';
+    if (!deploymentType) return '';
+    const json = JSON.stringify({ deploymentType, dashboardVersion, wizardVersion });
+    const metadataTag = '<script>window.__STORYBOOK_METADATA__=' + json + ';</scr' + 'ipt>';
+    if (deploymentType === 'preview') {
+      return (
+        metadataTag +
+        '<style>.preview-banner-active #root > div { height: calc(100dvh - 28px) !important; margin-top: 28px !important; }</style>'
+      );
+    }
+    return metadataTag;
+  },
   stories: [
     '../src/**/*.mdx',
     '../packages/nxtcm-dashboard/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
