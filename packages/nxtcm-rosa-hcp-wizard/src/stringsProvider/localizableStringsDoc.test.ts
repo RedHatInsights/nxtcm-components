@@ -241,9 +241,9 @@ describe('localizable strings reference', () => {
     expect(omitSection).not.toContain('`review.updateStrategy`');
   });
 
-  it('marks every unused key that is still on the string types', () => {
-    const rowsByKey = new Map(parseCatalog(doc).map((row) => [row.key, row]));
-    const unread = [
+  it('does not keep keys the wizard never reads', () => {
+    const rows = parseCatalog(doc);
+    const removed = [
       'yamlEditor.description',
       'yamlEditor.convertError',
       'yamlEditor.invalidYaml',
@@ -251,6 +251,7 @@ describe('localizable strings reference', () => {
       'rolesAndPolicies.copyClicked',
       'rolesAndPolicies.supportPlaceholder',
       'rolesAndPolicies.workerPlaceholder',
+      'networking.proxyNextStepInfo',
       'machinePools.machinePoolLabel',
       'machinePools.addPoolButton',
       'machinePools.settingsSectionLabel',
@@ -260,8 +261,40 @@ describe('localizable strings reference', () => {
       'securityGroups.refreshLink',
       'securityGroups.selectAriaLabelledBy',
       'encryption.etcdTitle',
+      'review.detailsToggle',
+      'review.rolesToggle',
+      'review.networkingToggle',
+      'review.encryptionToggle',
+      'review.optionalNetworkingToggle',
+      'review.clusterUpdatesToggle',
+      'review.clusterName',
+      'review.openShiftVersion',
+      'review.awsInfra',
+      'review.awsBilling',
+      'review.region',
+      'review.installerRole',
+      'review.oidcConfigId',
+      'review.operatorPrefix',
+      'review.publicSubnet',
+      'review.installVpc',
+      'review.instanceType',
+      'review.computeCount',
+      'review.machinePoolsHeading',
+      'review.additionalEtcd',
+      'review.encryptionKeys',
+      'review.machineCidr',
+      'review.serviceCidr',
+      'review.podCidr',
+      'review.hostPrefix',
+      'review.autoscalingMinPrefix',
+      'review.autoscalingMaxPrefix',
+      'validators.proxyConfigureAtLeastOne',
+      'validators.serviceCidr.subnetMaskBetween',
     ];
-    const missing = unread.filter((key) => !rowsByKey.get(key)?.notes.includes('Not read'));
-    expect(missing).toEqual([]);
+    const stillListed = removed.filter(
+      (key) => rows.some((row) => row.key === key) || doc.includes(`\`${key}\``)
+    );
+    expect(stillListed).toEqual([]);
+    expect(doc).not.toContain('Not read');
   });
 });

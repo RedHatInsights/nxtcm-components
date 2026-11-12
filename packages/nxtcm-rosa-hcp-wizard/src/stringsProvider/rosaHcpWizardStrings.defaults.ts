@@ -62,12 +62,9 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
   },
   yamlEditor: {
     title: 'YAML Configuration',
-    description: 'Review and edit the YAML configuration.',
     parseErrorTitle: 'YAML Schema Validation Error',
     validationErrorsFound: (count: number) =>
       `${count} validation error${count === 1 ? '' : 's'} found`,
-    convertError: 'Error converting form data to YAML',
-    invalidYaml: 'Invalid YAML syntax',
     discardChanges: 'Discard changes and go back to Review step',
     discardConfirmTitle: 'Discard YAML changes?',
     discardConfirmBody: 'Any changes you made to the YAML configuration will be lost.',
@@ -193,11 +190,9 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     installerLearnMoreLink: 'Learn more about roles.',
     arnsToggle: 'Amazon Resource Names (ARNs)',
     supportRoleLabel: 'Support role',
-    supportPlaceholder: 'Select a support role',
     supportHelp:
       'An IAM role used by the Red Hat Site Reliability Engineering (SRE) support team. The role is used with the corresponding policy resource to provide the Red Hat SRE support team with the permissions required to support ROSA clusters.',
     workerRoleLabel: 'Worker role',
-    workerPlaceholder: 'Select a worker role',
     workerHelp:
       'An IAM role used by the ROSA compute instances. The role is used with the corresponding policy resource to provide the compute instances with the permissions required to manage their components.',
     operatorRolesSection: 'Operator roles',
@@ -214,8 +209,6 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     operatorRolesCreateInstructions:
       'Create operator AWS IAM roles by running the following commands in your CLI. You must complete this step before your cluster can be created.',
     operatorRolesCreateCommandAriaLabel: 'Copyable ROSA create operator-roles command',
-    copyHover: 'Copy',
-    copyClicked: 'Copied',
     rolesAlertTitle: 'Some roles are missing',
     accountRolesHelp: 'Missing account roles',
     userRolesHelp: 'Missing user role',
@@ -249,7 +242,6 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     proxyCheckboxLabel: 'Configure a cluster-wide proxy',
     proxyCheckboxHelp:
       'Enable an HTTP or HTTPS proxy to deny direct access to the internet from your cluster on the next step.',
-    proxyNextStepInfo: 'You will be able to configure cluster-wide proxy details in the next step',
     cidrAlertTitle: 'CIDR ranges cannot be changed after you create your cluster',
     cidrAlertBody:
       'Specify non-overlapping CIDR ranges for the machine, service, and pod fields. Enter the network address for each range—the first IP address in the subnet (for example, 10.0.0.0/16, not 10.0.0.1/16). Ensure these ranges do not overlap with each other or with networks already in use in your environment, including your VPC subnets.',
@@ -285,11 +277,8 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     vpcHelpLead:
       'To create a cluster hosted by Red Hat, you must have a Virtual Private Cloud (VPC) available to create clusters on.',
     vpcLearnMoreLink: 'Learn more about VPCs.',
-    machinePoolLabel: 'Machine pool',
     subnetLabel: 'Private subnet name',
-    addPoolButton: 'Add machine pool',
     subnetPlaceholder: 'Select private subnet',
-    settingsSectionLabel: 'Machine pool settings',
     instanceTypeLabel: 'Compute node instance type',
     instanceTypeHelpLead:
       'Instance types are made from varying combinations of CPU, memory, storage, and networking capacity. Instance type availability depends on regional availability and your AWS account configuration.',
@@ -304,12 +293,8 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     imdsV2Label: 'Use IMDSv2 only',
     imdsV2Description: 'A session-oriented method with enhanced security',
     rootDiskLabel: 'Root disk size',
-    rootDiskHelp:
-      'Root disks are AWS EBS volumes attached as the primary disk for AWS EC2 instances. The root disk size for this machine pool group of nodes must be between 75GiB and 16384GiB.',
-    securityGroupsToggle: 'Additional security groups (optional)',
   },
   autoscaling: {
-    title: 'Autoscaling',
     helperLead:
       'Autoscaling automatically adds and removes nodes from the machine pool based on resource requirements.',
     learnMoreAutoscaling: 'Learn more about autoscaling with ROSA.',
@@ -327,7 +312,6 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     emptyBodyPrefix: 'To add security groups, go to the',
     emptyBodySuffix: 'of your AWS console.',
     emptyConsoleLink: 'Security groups section',
-    refreshLink: 'Refresh Security Groups',
     noEditTitle:
       'You cannot add or edit security groups associated with machine pools that were created during cluster creation.',
     formLabel: 'Security groups',
@@ -336,7 +320,6 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     readOnlyEmpty: 'This machine pool does not have additional security groups.',
     badgeSrText: 'some items',
     optionsMenuAria: 'Options menu',
-    selectAriaLabelledBy: 'Select AWS security groups',
     noEditViewMoreInfo: 'View more information',
     noEditAwsConsoleLink: 'AWS security groups console',
     incompatibleVersion: 'To use securityGroups, your cluster must be version 4.14.x or newer.',
@@ -369,7 +352,6 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     keyArnLabel: 'Key ARN',
     keyArnHelp:
       'The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID.',
-    etcdTitle: 'etcd encryption',
     etcdLabel: 'Enable additional etcd encryption',
     etcdHelperLead: 'Optionally, add a unique customer-managed AWS KMS key to encrypt etcd.',
     etcdLearnMore: 'Learn more',
@@ -412,38 +394,11 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     sectionLabel: 'Review your ROSA cluster',
     alertTitle: 'Double check your settings.',
     lockedSettings: 'Locked settings cannot be changed later.',
-    detailsToggle: 'Details',
-    rolesToggle: 'Roles and policies',
-    networkingToggle: 'Networking and subnets',
-    encryptionToggle: 'Encryption (optional)',
-    optionalNetworkingToggle: 'Networking (optional)',
-    clusterUpdatesToggle: 'Cluster updates (optional)',
     editStep: 'Edit step',
     editInYaml: 'Edit in YAML',
-    clusterName: 'Cluster name',
-    openShiftVersion: 'OpenShift version',
-    awsInfra: 'Associated AWS infrastructure account',
-    awsBilling: 'AWS billing account',
-    region: 'Region',
-    installerRole: 'Installer role',
-    oidcConfigId: 'OIDC Config ID',
-    operatorPrefix: 'Operator roles prefix',
-    publicSubnet: 'Public subnet name',
-    installVpc: 'Install to selected VPC',
-    instanceType: 'Compute node instance type',
-    computeCount: 'Compute node count',
-    machinePoolsHeading: 'Machine pools',
-    additionalEtcd: 'Additional etcd encryption',
-    encryptionKeys: 'Encryption keys',
-    machineCidr: 'Machine CIDR',
-    serviceCidr: 'Service CIDR',
-    podCidr: 'Pod CIDR',
-    hostPrefix: 'Host prefix',
     updateStrategy: 'Cluster update strategy',
     strategyIndividual: 'Manual updates',
     strategyAutomatic: 'Automatic updates',
-    autoscalingMinPrefix: 'Min:',
-    autoscalingMaxPrefix: 'Max:',
     showMore: 'Show more',
     showLess: 'Show less',
   },
@@ -508,7 +463,6 @@ export const defaultRosaHcpWizardValidatorStrings: RosaHcpWizardValidatorStrings
     maxLessThanMin: 'Max nodes must be greater than or equal to min nodes.',
     computeMinTwo: 'Input cannot be less than 2 nodes.',
   },
-  proxyConfigureAtLeastOne: 'Configure at least one of the cluster-wide proxy fields.',
   cidr: {
     invalidNotation: (value: string) =>
       `IP address range '${value}' isn't valid CIDR notation. It must follow the RFC-4632 format: '192.168.0.0/16'.`,
@@ -527,8 +481,6 @@ export const defaultRosaHcpWizardValidatorStrings: RosaHcpWizardValidatorStrings
   serviceCidr: {
     maskTooSmall: (maxMask: number, maxServices: number) =>
       `The subnet mask can't be smaller than '/${maxMask}', which provides up to ${maxServices} services.`,
-    subnetMaskBetween: (min: number, max: number) =>
-      `Subnet mask must be between /${min} and /${max}.`,
     subnetMaskBetweenOneAnd: (max: number) => `Subnet mask must be between /1 and /${max}.`,
   },
   podCidr: {
