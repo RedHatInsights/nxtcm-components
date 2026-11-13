@@ -226,7 +226,12 @@ npm run storybook          # dev server on port 6006
 npm run build-storybook    # static build
 ```
 
-storybook is also published on github pages for external viewing: [redhatinsights.github.io/nxtcm-components](https://redhatinsights.github.io/nxtcm-components/?path=/docs/components-dashboard-advisorcategories--docs).
+storybook is published on github pages at two paths:
+
+- **[Released docs](https://redhatinsights.github.io/nxtcm-components/)** (`/`) — built from the latest npm release tag. Updates after successful `Publish Package` workflow.
+- **[Preview docs](https://redhatinsights.github.io/nxtcm-components/next/)** (`/next/`) — built from `main` HEAD. Updates on every push to `main`. Labeled as unreleased.
+
+both paths are deployed atomically as one combined site so neither overwrites the other. see [docs/publishing.md](docs/publishing.md) for full deployment details.
 
 ### Writing stories
 
