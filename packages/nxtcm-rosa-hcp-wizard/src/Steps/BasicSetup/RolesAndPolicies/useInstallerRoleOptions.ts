@@ -5,10 +5,20 @@ import semver from 'semver';
 
 import { FIELD_NAME } from '../../../constants';
 import { useRosaHcpWizardStrings } from '../../../stringsProvider/RosaHcpWizardStringsContext';
-import { RolesResource, type ROSAHCPCluster } from '../../../types';
+import { type InstallerRole, RolesResource, type ROSAHCPCluster } from '../../../types';
 
-export const useInstallerRoleOptions = (roles: RolesResource) => {
-  const rp = useRosaHcpWizardStrings().rolesAndPolicies;
+/**
+ * Builds the installer role dropdown options for the selected OpenShift version.
+ * Roles whose version is lower than the selected cluster version are marked `ariaDisabled`
+ * and get a description of the incompatibility and the highest version they support.
+ * Roles without a version, or with no cluster version selected, are returned unchanged.
+ *
+ * @param roles - Roles resource whose installer roles populate the options.
+ * @returns Installer roles, with incompatible ones disabled and described.
+ */
+export const useInstallerRoleOptions = (roles: RolesResource): InstallerRole[] => {
+  const { installerRoleOptionIncompatibleLead, installerRoleOptionSupportedUpToLead } =
+    useRosaHcpWizardStrings().rolesAndPolicies;
   const selectedClusterVersion = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CLUSTER_VERSION>({
     name: FIELD_NAME.CLUSTER_VERSION,
   });
@@ -26,11 +36,19 @@ export const useInstallerRoleOptions = (roles: RolesResource) => {
         ? {
             ...role,
             ariaDisabled: true,
-            tooltipProps: { content: rp.installerRoleOptionDisabledDescription },
+            description: [
+              `${installerRoleOptionIncompatibleLead} ${selectedClusterVersion}.`,
+              `${installerRoleOptionSupportedUpToLead} ${role.roleVersion}.`,
+            ].join(' '),
           }
-        : { ...role };
+        : role;
     });
-  }, [roles.data, selectedClusterVersion, rp.installerRoleOptionDisabledDescription]);
+  }, [
+    roles.data,
+    selectedClusterVersion,
+    installerRoleOptionIncompatibleLead,
+    installerRoleOptionSupportedUpToLead,
+  ]);
 
   return installerRoleOptions;
 };

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import { FIELD_NAME, STEP_IDS } from './constants';
 import ROSAHCPWizard from './ROSAHCPWizard';
@@ -404,6 +405,68 @@ export const RolesAlertMissingUserRole: Story = {
         fetch: async () => {},
       },
     }),
+  },
+};
+
+/**
+ * Wizard with installer roles older than the default OpenShift version (4.12.0). A play function
+ * selects the default version, opens the Roles and policies step and expands the installer role
+ * select, showing the incompatible roles disabled with their supported-version description.
+ */
+export const RolesInstallerRoleIncompatibleVersion: Story = {
+  args: {
+    title: 'Create ROSA Cluster — incompatible installer roles',
+    resourceGenerator: storyAcmGenerator,
+    enableAllWizardNavSteps: true,
+    onSubmit: onWizardSubmit,
+    onCancel: onWizardCancel,
+    wizardData: createMockRosaHcpWizardData({
+      roles: {
+        data: [
+          {
+            ...fixtures.mockRoles[0],
+            installerRole: { ...fixtures.mockRoles[0].installerRole, roleVersion: '4.11.0' },
+          },
+          {
+            ...fixtures.mockRoles[1],
+            installerRole: { ...fixtures.mockRoles[1].installerRole, roleVersion: '4.10.0' },
+          },
+          fixtures.mockRoles[2],
+        ],
+        error: null,
+        isFetching: false,
+        ocmRoleError: null,
+        userRoleError: null,
+        ocmRoleARN: null,
+        fetch: async () => {},
+      },
+    }),
+  },
+  play: async ({ canvasElement }) => {
+    const { details, rolesAndPolicies } = defaultRosaHcpWizardStrings;
+    const canvas = within(canvasElement);
+    const body = within(canvasElement.ownerDocument.body);
+
+    await userEvent.click(
+      await canvas.findByRole('combobox', { name: details.openShiftVersionLabel })
+    );
+    await userEvent.click(await body.findByText('OpenShift 4.12.0', { exact: true }));
+
+    await userEvent.click(
+      await canvas.findByRole('button', {
+        name: defaultRosaHcpWizardStrings.wizard.stepLabels.rolesAndPolicies,
+      })
+    );
+    const installerRoleSelect = await canvas.findByTestId('installer-role-select');
+    await userEvent.click(within(installerRoleSelect).getByRole('combobox'));
+
+    const disabledOption = await body.findByRole('option', {
+      name: new RegExp(fixtures.mockRoles[0].installerRole.label),
+    });
+    await waitFor(() => expect(disabledOption).toHaveAttribute('aria-disabled', 'true'));
+    await expect(disabledOption).toHaveTextContent(
+      `${rolesAndPolicies.installerRoleOptionIncompatibleLead} 4.12.0.`
+    );
   },
 };
 

@@ -60,7 +60,12 @@ test.describe('RosaHcpSchemaPanel', () => {
 
   test('renders the schema fields as a named tree', async ({ mount }) => {
     const component = await mount<typeof SchemaPanelMount>(SCHEMA_PANEL_STORY);
-    await expect(component.getByRole('tree', { name: s.schemaTreeAriaLabel })).toBeVisible();
+    const tree = component.getByRole('tree', { name: s.schemaTreeAriaLabel });
+    await expect(tree).toBeVisible();
+    await expect(tree).toHaveAccessibleName(s.schemaTreeAriaLabel);
+    await expect(component.getByRole('button', { name: /^autoNode\b/ })).toHaveAccessibleName(
+      /^autoNode\b/
+    );
     await expect(component.getByRole('treeitem', { name: /^autoNode/ })).toHaveAttribute(
       'aria-expanded',
       'false'
@@ -98,15 +103,20 @@ test.describe('RosaHcpSchemaPanel', () => {
   test('navigates and expands nested fields with the keyboard', async ({ mount, page }) => {
     const component = await mount<typeof SchemaPanelMount>(SCHEMA_PANEL_STORY);
     await component.getByPlaceholder(s.schemaSearchPlaceholder).fill('autoNode');
-    const autoNode = component.getByRole('button', { name: /^autoNode/ });
+    const autoNode = component.getByRole('button', { name: /^autoNode\b/ });
+    const autoNodeItem = component.getByRole('treeitem', { name: /^autoNode\b/ });
 
     await page.keyboard.press('Tab');
     await expect(component.getByRole('button', { name: 'Reset' })).toBeFocused();
 
     await page.keyboard.press('Tab');
     await expect(autoNode).toBeFocused();
+    await expect(autoNode).toHaveAccessibleName(/^autoNode\b/);
+    await expect(autoNodeItem).toHaveAttribute('aria-expanded', 'false');
 
     await page.keyboard.press('Space');
+    await expect(autoNode).toBeFocused();
+    await expect(autoNodeItem).toHaveAttribute('aria-expanded', 'true');
     await expect(component.getByText('roleARN', { exact: true })).toBeVisible();
 
     await page.keyboard.press('ArrowDown');
@@ -120,25 +130,68 @@ test.describe('RosaHcpSchemaPanel', () => {
 
     await page.keyboard.press('ArrowLeft');
     await expect(component.getByText('roleARN', { exact: true })).toBeHidden();
-
-    await page.keyboard.press('ArrowRight');
-    await expect(component.getByRole('treeitem', { name: /^autoNode/ })).toHaveAttribute(
-      'aria-expanded',
-      'true'
-    );
+    await expect(autoNodeItem).toHaveAttribute('aria-expanded', 'false');
     await expect(autoNode).toBeFocused();
 
-    await page.keyboard.press('Tab');
-    await expect(component.getByRole('button', { name: /^mode/ })).toBeFocused();
+    await page.keyboard.press('ArrowRight');
+    await expect(autoNodeItem).toHaveAttribute('aria-expanded', 'true');
+    await expect(autoNode).toBeFocused();
+
+    await page.keyboard.press('Enter');
+    await expect(autoNodeItem).toHaveAttribute('aria-expanded', 'false');
+    await expect(autoNode).toBeFocused();
+    await expect(component.getByText('roleARN', { exact: true })).toBeHidden();
+
+    await page.keyboard.press('Enter');
+    await expect(autoNodeItem).toHaveAttribute('aria-expanded', 'true');
+    await expect(autoNode).toBeFocused();
+    await expect(component.getByText('roleARN', { exact: true })).toBeVisible();
   });
 
-  test('nests deeply nested fields in tree groups and keeps them accessible', async ({ mount }) => {
+  test('expands a second-level field with the keyboard and keeps it accessible', async ({
+    mount,
+    page,
+  }) => {
     const component = await mount<typeof SchemaPanelMount>(SCHEMA_PANEL_STORY);
-    await component.getByRole('button', { name: /^defaultMachinePoolSpec/ }).click();
-    await component.getByRole('button', { name: /^autoscaling/ }).click();
+    const machinePool = component.getByRole('button', { name: /^defaultMachinePoolSpec\b/ });
+    const machinePoolItem = component.getByRole('treeitem', { name: /^defaultMachinePoolSpec\b/ });
+    const autoscaling = component.getByRole('button', { name: /^autoscaling\b/ });
+    const autoscalingItem = component.getByRole('treeitem', { name: /^autoscaling\b/ });
 
-    await expect(component.getByRole('treeitem', { name: /^maxReplicas/ })).toBeVisible();
+    await expect(machinePool).toHaveAccessibleName(/^defaultMachinePoolSpec\b/);
+    await expect(machinePoolItem).toHaveAttribute('aria-expanded', 'false');
+    await machinePool.focus();
+    await page.keyboard.press('Enter');
+    await expect(machinePool).toBeFocused();
+    await expect(machinePoolItem).toHaveAttribute('aria-expanded', 'true');
+
+    await page.keyboard.press('ArrowDown');
+    await expect(autoscaling).toBeFocused();
+    await expect(autoscaling).toHaveAccessibleName(/^autoscaling\b/);
+    await expect(autoscalingItem).toHaveAttribute('aria-expanded', 'false');
+
+    await page.keyboard.press('Space');
+    await expect(autoscaling).toBeFocused();
+    await expect(autoscalingItem).toHaveAttribute('aria-expanded', 'true');
+    await expect(component.getByRole('treeitem', { name: /^maxReplicas\b/ })).toBeVisible();
+
+    await page.keyboard.press('Space');
+    await expect(autoscaling).toBeFocused();
+    await expect(autoscalingItem).toHaveAttribute('aria-expanded', 'false');
+    await expect(component.getByRole('treeitem', { name: /^maxReplicas\b/ })).toBeHidden();
+
+    await page.keyboard.press('Enter');
+    await expect(autoscaling).toBeFocused();
+    await expect(autoscalingItem).toHaveAttribute('aria-expanded', 'true');
+
+    await expect(component.getByRole('treeitem', { name: /^maxReplicas\b/ })).toBeVisible();
     await expect(component.getByRole('group')).toHaveCount(2);
+    await component.evaluate(async (element) => {
+      await new Promise(requestAnimationFrame);
+      await Promise.allSettled(
+        element.getAnimations({ subtree: true }).map((animation) => animation.finished)
+      );
+    });
     await checkAccessibility({ component });
   });
 
