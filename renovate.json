@@ -3,7 +3,18 @@
   "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
   "packageRules": [
     {
-      "description": "Disable all major updates",
+      "description": "Disable major updates for peerDependency packages across all depTypes (including sibling devDependencies). These names are the peerDependencies from root and workspace package.json files, update this list whenever those peers change.",
+      "matchPackageNames": [
+        "@monaco-editor/react",
+        "@patternfly/**",
+        "@types/react",
+        "@types/react-dom",
+        "js-yaml",
+        "monaco-editor",
+        "monaco-yaml",
+        "react",
+        "react-dom"
+      ],
       "matchUpdateTypes": ["major"],
       "enabled": false
     },
