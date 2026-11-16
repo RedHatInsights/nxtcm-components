@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   ActionList,
@@ -22,6 +22,7 @@ import { useRosaHcpWizardReviewSections } from '../Steps/Review/ROSAHCPWizardRev
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster, WizardFieldPath } from '../types';
 import {
+  findFirstInvalidFocusTarget,
   isRosaHcpWizardBackDisabled,
   isRosaHcpWizardSkipToReviewVisible,
 } from './rosaHcpWizardFooter.utils';
@@ -55,7 +56,8 @@ function RosaHcpWizardFooter({
   getYaml,
   enableAllWizardNavSteps = false,
 }: RosaHcpWizardFooterProps) {
-  const { goToStepById } = useWizardContext();
+  const { goToStepById, mainWrapperRef, shouldFocusContent } = useWizardContext();
+  const [invalidFocusRequest, setInvalidFocusRequest] = useState(0);
   const reviewSections = useRosaHcpWizardReviewSections();
   const { wizard } = useRosaHcpWizardStrings();
   const {
@@ -125,9 +127,18 @@ function RosaHcpWizardFooter({
         markValidationAttempted(stepId);
       }
       setValidationAlertStepId(activeStepId);
+      setInvalidFocusRequest((count) => count + 1);
     },
     [activeStepId, markValidationAttempted, revealInvalidFields, setValidationAlertStepId]
   );
+
+  // Runs after the render that reveals field errors, so aria-invalid is already on the controls.
+  useEffect(() => {
+    if (invalidFocusRequest === 0 || !mainWrapperRef.current) {
+      return;
+    }
+    findFirstInvalidFocusTarget(mainWrapperRef.current)?.focus();
+  }, [invalidFocusRequest, mainWrapperRef]);
 
   // Re-run Yup when the user edits after a failed Next/Submit so derived fields and the alert stay in sync.
   // Depends on watched field values (not the attempted flag) so marking attempted does not clear
@@ -230,9 +241,13 @@ function RosaHcpWizardFooter({
     void (async () => {
       if (await validateActiveStep()) {
         goToStepById(STEP_IDS.REVIEW);
+        // Unlike onNext/onBack, goToStepById does not move focus, and this button is gone on Review.
+        if (shouldFocusContent) {
+          setTimeout(() => mainWrapperRef.current?.focus(), 0);
+        }
       }
     })();
-  }, [goToStepById, validateActiveStep]);
+  }, [goToStepById, mainWrapperRef, shouldFocusContent, validateActiveStep]);
 
   return (
     <WizardFooterWrapper>

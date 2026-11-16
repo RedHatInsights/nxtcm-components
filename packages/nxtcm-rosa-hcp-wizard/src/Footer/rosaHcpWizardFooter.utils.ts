@@ -46,6 +46,27 @@ export function pathsHaveValidationIssues<TFieldValues extends FieldValues>(
   });
 }
 
+const FOCUSABLE_SELECTOR =
+  'input:not([type="hidden"]):not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled), [tabindex]';
+
+/**
+ * First control in document order flagged `aria-invalid="true"`, or its first focusable descendant
+ * when the flag sits on a wrapper. Used to move focus to the first error after a failed Next.
+ */
+export function findFirstInvalidFocusTarget(container: ParentNode): HTMLElement | null {
+  for (const invalid of Array.from(
+    container.querySelectorAll<HTMLElement>('[aria-invalid="true"]')
+  )) {
+    const target = invalid.matches(FOCUSABLE_SELECTOR)
+      ? invalid
+      : invalid.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+    if (target) {
+      return target;
+    }
+  }
+  return null;
+}
+
 /** Steps under Additional setup that show Skip to review in the footer. */
 const ROSA_HCP_SKIP_TO_REVIEW_STEP_IDS: readonly string[] = [
   STEP_IDS.ENCRYPTION,

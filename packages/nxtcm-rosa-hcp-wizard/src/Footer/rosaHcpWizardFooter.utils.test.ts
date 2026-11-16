@@ -3,6 +3,7 @@ import type { UseFormGetFieldState } from 'react-hook-form';
 import { STEP_IDS } from '../constants';
 import { WizardFieldPath, WizardFormValues } from '../types';
 import {
+  findFirstInvalidFocusTarget,
   isRosaHcpWizardBackDisabled,
   isRosaHcpWizardSkipToReviewVisible,
   pathsHaveValidationIssues,
@@ -73,5 +74,38 @@ describe('isRosaHcpWizardSkipToReviewVisible', () => {
     expect(isRosaHcpWizardSkipToReviewVisible(STEP_IDS.DETAILS)).toBe(false);
     expect(isRosaHcpWizardSkipToReviewVisible(STEP_IDS.REVIEW)).toBe(false);
     expect(isRosaHcpWizardSkipToReviewVisible(STEP_IDS.OPTIONAL_SETUP)).toBe(false);
+  });
+});
+
+describe('findFirstInvalidFocusTarget', () => {
+  const render = (html: string): HTMLElement => {
+    const container = document.createElement('div');
+    container.innerHTML = html;
+    return container;
+  };
+
+  it('returns the first aria-invalid control in document order', () => {
+    const container = render(
+      '<input id="valid" aria-invalid="false" /><input id="first" aria-invalid="true" /><input id="second" aria-invalid="true" />'
+    );
+    expect(findFirstInvalidFocusTarget(container)?.id).toBe('first');
+  });
+
+  it('falls back to a focusable descendant when the flag is on a wrapper', () => {
+    const container = render(
+      '<div aria-invalid="true"><span>label</span><button id="inner">Choose</button></div>'
+    );
+    expect(findFirstInvalidFocusTarget(container)?.id).toBe('inner');
+  });
+
+  it('skips invalid wrappers and disabled controls that cannot take focus', () => {
+    const container = render(
+      '<div aria-invalid="true"><span>nothing focusable</span></div><input id="disabled" aria-invalid="true" disabled /><input id="target" aria-invalid="true" />'
+    );
+    expect(findFirstInvalidFocusTarget(container)?.id).toBe('target');
+  });
+
+  it('returns null when nothing is invalid', () => {
+    expect(findFirstInvalidFocusTarget(render('<input aria-invalid="false" />'))).toBeNull();
   });
 });
