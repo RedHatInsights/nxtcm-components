@@ -8,8 +8,8 @@ test.describe('ROSAHCPWizard', () => {
     const component = await mount<typeof ROSAHCPWizardMount>(
       'nxtcm-rosa-hcp-wizard/ROSAHCPWizard/ROSAHCPWizardMount'
     );
-    // Wizard should render with PatternFly wizard structure
-    await expect(component.locator('.pf-v6-c-wizard')).toBeVisible();
+    // The wizard exposes its step navigation.
+    await expect(component.getByRole('navigation', { name: 'Steps' })).toBeVisible();
   });
 
   test('should render wizard steps', async ({ mount }) => {
@@ -17,7 +17,7 @@ test.describe('ROSAHCPWizard', () => {
       'nxtcm-rosa-hcp-wizard/ROSAHCPWizard/ROSAHCPWizardMount'
     );
     // Should have navigation (step list)
-    const nav = component.locator('.pf-v6-c-wizard__nav');
+    const nav = component.getByRole('navigation', { name: 'Steps' });
     await expect(nav).toBeVisible();
   });
 
@@ -62,7 +62,7 @@ test.describe('ROSAHCPWizard', () => {
       }
     );
     // Wizard should still render even with hidden steps configured
-    await expect(component.locator('.pf-v6-c-wizard')).toBeVisible();
+    await expect(component.getByRole('navigation', { name: 'Steps' })).toBeVisible();
   });
 
   test('should pass accessibility tests', async ({ mount }) => {
