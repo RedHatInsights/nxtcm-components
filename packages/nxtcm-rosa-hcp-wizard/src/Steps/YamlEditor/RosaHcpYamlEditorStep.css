@@ -4,6 +4,7 @@
  */
 .rosa-hcp-wizard--yaml-editor-open .rosa-hcp-yaml-editor-wizard-main,
 .rosa-hcp-wizard--yaml-editor-open .rosa-hcp-yaml-editor-wizard-main .pf-v6-c-wizard__main-body,
+.rosa-hcp-wizard--yaml-editor-open .rosa-hcp-yaml-editor-view,
 .rosa-hcp-wizard--yaml-editor-open .rosa-hcp-yaml-editor-step,
 .rosa-hcp-wizard--yaml-editor-open .rosa-hcp-yaml-editor-step > .pf-v6-c-drawer {
   flex: 1 1 0%;
@@ -12,6 +13,7 @@
 }
 
 .rosa-hcp-wizard--yaml-editor-open .rosa-hcp-yaml-editor-wizard-main .pf-v6-c-wizard__main-body,
+.rosa-hcp-wizard--yaml-editor-open .rosa-hcp-yaml-editor-view,
 .rosa-hcp-wizard--yaml-editor-open .rosa-hcp-yaml-editor-step {
   display: flex;
   flex-direction: column;

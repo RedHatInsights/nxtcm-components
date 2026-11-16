@@ -10,6 +10,10 @@ import {
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
 
 export type RosaWizardSubmitErrorProps = {
+  /** Id of the error heading used by the focused error view. */
+  titleId?: string;
+  /** Id of the error message used by the focused error view. */
+  messageId?: string;
   /** Error message or flag from parent (e.g. submit failure). */
   onSubmitError: string | boolean;
   /** When provided, "Back to the wizard" is shown and this is called when it is clicked. */
@@ -20,13 +24,20 @@ export type RosaWizardSubmitErrorProps = {
 };
 
 export function RosaWizardSubmitError(props: RosaWizardSubmitErrorProps) {
-  const { onSubmitError, onBackToReviewStep, isNavigatingToReview, onCancel } = props;
+  const { titleId, messageId, onSubmitError, onBackToReviewStep, isNavigatingToReview, onCancel } =
+    props;
   const { submitError } = useRosaHcpWizardStrings();
 
   return (
-    <EmptyState status={EmptyStateStatus.danger} titleText={submitError.title} headingLevel="h2">
+    <EmptyState
+      status={EmptyStateStatus.danger}
+      titleText={<span id={titleId}>{submitError.title}</span>}
+      headingLevel="h2"
+    >
       {typeof onSubmitError === 'string' && onSubmitError.length > 0 && (
-        <EmptyStateBody>{onSubmitError}</EmptyStateBody>
+        <EmptyStateBody>
+          <span id={messageId}>{onSubmitError}</span>
+        </EmptyStateBody>
       )}
       <EmptyStateFooter>
         <EmptyStateActions>
