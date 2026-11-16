@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import type { ROSAHCPCluster } from '../../types';
@@ -28,10 +29,10 @@ export const DetailsStepDrawerMount: React.FC<DetailsStepDrawerMountProps> = ({
       <DetailsStepDrawer
         isDrawerExpanded={isDrawerExpanded}
         setIsDrawerExpanded={setIsDrawerExpanded}
-        onWizardExpand={() => setIsDrawerExpanded(true)}
         product={product}
       >
         <div data-testid="drawer-main-content">Main wizard content</div>
+        <Button onClick={() => setIsDrawerExpanded(true)}>Associate a new AWS account</Button>
       </DetailsStepDrawer>
     </FormProvider>
   );

@@ -289,9 +289,7 @@ export function Select<T = unknown>(props: SelectProps<T>) {
         key={menuId}
         value={menuId}
         title={typeof opt.title === 'string' && opt.title ? opt.title : undefined}
-        description={
-          !isAriaDisabled && typeof opt.description === 'string' ? opt.description : undefined
-        }
+        description={opt.description}
         isDisabled={Boolean(opt.disabled) && !isAriaDisabled}
         isAriaDisabled={isAriaDisabled}
         tooltipProps={isAriaDisabled ? opt.tooltipProps : undefined}

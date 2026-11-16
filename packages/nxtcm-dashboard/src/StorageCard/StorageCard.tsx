@@ -82,7 +82,7 @@ export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMor
 
   return (
     <>
-      <div className={styles.content}>
+      <Flex className={styles.content}>
         <div className={styles.chartWrapper}>
           <ChartDonutUtilization
             ariaDesc="Storage utilization"
@@ -126,7 +126,7 @@ export const StorageCard: React.FC<StorageCardProps> = ({ storageData, onViewMor
             </div>
           </div>
         </div>
-      </div>
+      </Flex>
       {onViewMore && (
         <FlexItem className={styles.viewLink}>
           <Button variant="link" isInline onClick={onViewMore}>
