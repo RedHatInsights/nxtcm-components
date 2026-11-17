@@ -31,15 +31,13 @@ import {
   touchInvalidPaths,
   validateWizardStepFields,
 } from './rosaHcpWizardFooter.validation';
-import { useRosaHcpWizardSubmit } from './useRosaHcpWizardSubmit';
 
 type RosaHcpWizardFooterProps = Pick<
   WizardFooterProps,
   'activeStep' | 'onNext' | 'onBack' | 'onClose'
 > & {
-  onSubmit: (yamlString: string) => Promise<void>;
-  /** Produces the YAML string to pass to onSubmit. Renders current form values via resourceGenerator.renderYaml. */
-  getYaml: () => string;
+  isSubmitting: boolean;
+  submitWizard: () => Promise<boolean>;
   enableAllWizardNavSteps?: boolean;
 };
 
@@ -52,11 +50,11 @@ function RosaHcpWizardFooter({
   onNext,
   onBack,
   onClose,
-  onSubmit,
-  getYaml,
+  isSubmitting,
+  submitWizard,
   enableAllWizardNavSteps = false,
 }: RosaHcpWizardFooterProps) {
-  const { goToStepById, mainWrapperRef, shouldFocusContent } = useWizardContext();
+  const { getStep, goToStepByIndex, mainWrapperRef, shouldFocusContent } = useWizardContext();
   const [invalidFocusRequest, setInvalidFocusRequest] = useState(0);
   const reviewSections = useRosaHcpWizardReviewSections();
   const { wizard } = useRosaHcpWizardStrings();
@@ -74,7 +72,6 @@ function RosaHcpWizardFooter({
     getFieldState,
     formState: { errors },
   } = useFormContext<Partial<ROSAHCPCluster>>();
-  const { isSubmitting, submitWizard } = useRosaHcpWizardSubmit({ onSubmit, getYaml });
 
   const clusterWideProxySelected = useWatch<ROSAHCPCluster, typeof FIELD_NAME.CONFIGURE_PROXY>({
     name: FIELD_NAME.CONFIGURE_PROXY,
@@ -240,14 +237,14 @@ function RosaHcpWizardFooter({
   const handleSkipToReview = useCallback(() => {
     void (async () => {
       if (await validateActiveStep()) {
-        goToStepById(STEP_IDS.REVIEW);
+        goToStepByIndex(getStep(STEP_IDS.REVIEW).index);
         // Unlike onNext/onBack, goToStepById does not move focus, and this button is gone on Review.
         if (shouldFocusContent) {
           setTimeout(() => mainWrapperRef.current?.focus(), 0);
         }
       }
     })();
-  }, [goToStepById, mainWrapperRef, shouldFocusContent, validateActiveStep]);
+  }, [goToStepByIndex, getStep, mainWrapperRef, shouldFocusContent, validateActiveStep]);
 
   return (
     <WizardFooterWrapper>
@@ -318,18 +315,18 @@ function RosaHcpWizardFooter({
   );
 }
 
-/** Footer factory wired to {@link RosaHCPWizardProps.onSubmit}. */
+/** Footer factory wired to the submission state owned by the wizard body. */
 export function createRosaHcpWizardFooter(
-  onSubmit: (yamlString: string) => Promise<void>,
-  getYaml: () => string,
+  isSubmitting: boolean,
+  submitWizard: () => Promise<boolean>,
   enableAllWizardNavSteps = false
 ): CustomWizardFooterFunction {
   return function RosaHcpWizardFooterSlot(activeStep, onNext, onBack, onClose) {
     return (
       <RosaHcpWizardFooter
         activeStep={activeStep}
-        onSubmit={onSubmit}
-        getYaml={getYaml}
+        isSubmitting={isSubmitting}
+        submitWizard={submitWizard}
         enableAllWizardNavSteps={enableAllWizardNavSteps}
         onNext={(event) => {
           void onNext(event);
@@ -344,9 +341,3 @@ export function createRosaHcpWizardFooter(
     );
   };
 }
-
-/** No-op submit for tests and mounts that do not wire {@link RosaHCPWizardProps.onSubmit}. */
-export const rosaHcpWizardFooter = createRosaHcpWizardFooter(
-  async () => {},
-  () => ''
-);

@@ -45,8 +45,9 @@ import {
   type VersionsResource,
 } from '../types';
 import { createClusterValidationResolver } from '../utilities/clusterValidationResolver';
-import { createRosaHcpWizardFooter, rosaHcpWizardFooter } from './RosaHcpWizardFooter';
+import { createRosaHcpWizardFooter } from './RosaHcpWizardFooter';
 import { FOOTER_CT_BASE_FORM_VALUES } from './rosaHcpWizardFooter.ctDefaults';
+import { useRosaHcpWizardSubmit } from './useRosaHcpWizardSubmit';
 
 export type RosaHcpWizardValidationMountProps = {
   defaultValues?: Partial<ROSAHCPCluster>;
@@ -56,6 +57,29 @@ export type RosaHcpWizardValidationMountProps = {
 
 /** Minimal YAML stub returned by getYaml when onSubmit is wired in tests. */
 const STUB_FORM_YAML = 'kind: ROSAControlPlane\nmetadata:\n  name: stub';
+const noopSubmit = async (): Promise<void> => {};
+
+function RosaHcpWizardSubmissionMount({
+  children,
+  onSubmit,
+  getYaml,
+}: {
+  children: React.ReactNode;
+  onSubmit: (yamlString: string) => Promise<void>;
+  getYaml: () => string;
+}): React.ReactElement {
+  const { isSubmitting, submitWizard } = useRosaHcpWizardSubmit({ onSubmit, getYaml });
+  const footer = useMemo(
+    () => createRosaHcpWizardFooter(isSubmitting, submitWizard),
+    [isSubmitting, submitWizard]
+  );
+
+  return (
+    <Wizard height={720} footer={footer} isVisitRequired>
+      {children}
+    </Wizard>
+  );
+}
 
 const RosaHcpWizardValidationMountComponent: React.FC<RosaHcpWizardValidationMountProps> = ({
   defaultValues = {},
@@ -66,11 +90,6 @@ const RosaHcpWizardValidationMountComponent: React.FC<RosaHcpWizardValidationMou
     []
   );
   const getFormYaml = useCallback(() => STUB_FORM_YAML, []);
-  const footer = useMemo(
-    () => (onSubmit ? createRosaHcpWizardFooter(onSubmit, getFormYaml) : rosaHcpWizardFooter),
-    [onSubmit, getFormYaml]
-  );
-
   const methods = useForm<ROSAHCPCluster>({
     defaultValues: { ...FOOTER_CT_BASE_FORM_VALUES, ...defaultValues },
     resolver,
@@ -173,7 +192,7 @@ const RosaHcpWizardValidationMountComponent: React.FC<RosaHcpWizardValidationMou
     <FormProvider {...methods}>
       <RosaHcpWizardValidationProvider>
         <WizardFieldMetaChangeEffectsRunner wizardData={wizardData} />
-        <Wizard height={720} footer={footer} isVisitRequired>
+        <RosaHcpWizardSubmissionMount onSubmit={onSubmit ?? noopSubmit} getYaml={getFormYaml}>
           <WizardStep
             isExpandable
             name={sl.basicSetup}
@@ -231,7 +250,7 @@ const RosaHcpWizardValidationMountComponent: React.FC<RosaHcpWizardValidationMou
           <WizardStep name={sl.review} id={STEP_IDS.REVIEW} key={STEP_IDS.REVIEW}>
             <Review vpcList={vpcListProps} />
           </WizardStep>
-        </Wizard>
+        </RosaHcpWizardSubmissionMount>
       </RosaHcpWizardValidationProvider>
     </FormProvider>
   );

@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import {
   ActionList,
@@ -18,49 +18,31 @@ import { WizardFooterWrapper } from '@patternfly/react-core/dist/dynamic/compone
 
 import type { YamlEditorHandle } from '../Steps/YamlEditor/RosaHcpYamlEditorStep';
 import { useRosaHcpWizardStrings } from '../stringsProvider/RosaHcpWizardStringsContext';
-import { useRosaHcpWizardSubmit } from './useRosaHcpWizardSubmit';
 
 export type RosaHcpYamlEditorFooterProps = {
   editorRef: React.RefObject<YamlEditorHandle | null>;
   onClose: () => void;
   onCancel?: () => void;
-  onSubmit: (yamlString: string) => Promise<void>;
-  onSubmitError?: string | boolean;
+  isSubmitting: boolean;
+  submitWizard: () => Promise<boolean>;
 };
 
 export function RosaHcpYamlEditorFooter({
   editorRef,
   onClose,
   onCancel,
-  onSubmit,
-  onSubmitError,
+  isSubmitting,
+  submitWizard,
 }: RosaHcpYamlEditorFooterProps) {
-  const getYaml = useCallback(() => editorRef.current?.getYaml() ?? '', [editorRef]);
-  const { isSubmitting, submitWizard } = useRosaHcpWizardSubmit({
-    onSubmit,
-    getYaml,
-    skipFormValidation: true,
-  });
   const { wizard, yamlEditor: yamlStrings } = useRosaHcpWizardStrings();
   const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
-  const [resolvedSubmissionCount, setResolvedSubmissionCount] = useState(0);
-  const handledSubmissionCountRef = useRef(0);
-
-  // Check errors after React applies any onSubmitError update made by onSubmit.
-  useEffect(() => {
-    if (resolvedSubmissionCount === handledSubmissionCountRef.current) return;
-    handledSubmissionCountRef.current = resolvedSubmissionCount;
-    if (!onSubmitError) onClose();
-  }, [onClose, onSubmitError, resolvedSubmissionCount]);
 
   const handleApply = useCallback(() => {
     if (!editorRef.current || editorRef.current.hasSchemaErrors()) return;
 
     void (async () => {
       try {
-        if (await submitWizard()) {
-          setResolvedSubmissionCount((count) => count + 1);
-        }
+        await submitWizard();
       } catch {
         // keep the editor open so the user can correct the issue
       }

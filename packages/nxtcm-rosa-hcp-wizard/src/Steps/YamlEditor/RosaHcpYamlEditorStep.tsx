@@ -78,21 +78,23 @@ const ShortcutKeys = ({ keys, platform }: ShortcutKeyCombo): ReactElement => (
 );
 
 export type RosaHcpYamlEditorStepProps = {
+  /** YAML draft restored after a submission error. */
+  initialYaml?: string;
   onClose?: () => void;
   onCancel?: () => void;
   resourceGenerator: YamlResourceGenerator;
 };
 
 export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEditorStepProps>(
-  ({ onClose, onCancel: _onCancel, resourceGenerator }, ref) => {
+  ({ initialYaml, onClose, onCancel: _onCancel, resourceGenerator }, ref) => {
     const watchedValues = useWatch<Partial<ROSAHCPCluster>>();
 
     const { yamlEditor: yamlStrings } = useRosaHcpWizardStrings();
 
     const generator = resourceGenerator;
 
-    const [yamlContent, setYamlContent] = useState(() =>
-      generator.renderYaml(watchedValues as Partial<ROSAHCPCluster>)
+    const [yamlContent, setYamlContent] = useState(
+      () => initialYaml ?? generator.renderYaml(watchedValues as Partial<ROSAHCPCluster>)
     );
     const [bannerErrorCount, setBannerErrorCount] = useState(0);
     const [showSchema, setShowSchema] = useState(true);
@@ -109,7 +111,7 @@ export const RosaHcpYamlEditorStep = forwardRef<YamlEditorHandle, RosaHcpYamlEdi
     const validationTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
     const isInitializedRef = useRef(false);
     const pendingYamlRef = useRef(yamlContent);
-    const userHasEditedRef = useRef(false);
+    const userHasEditedRef = useRef(initialYaml !== undefined);
     const hasSchemaErrorsRef = useRef(false);
     const bannerShownRef = useRef(false);
 
