@@ -89,7 +89,7 @@ export function RosaHcpYamlEditorFooter({
               variant={ButtonVariant.primary}
               type="button"
               isLoading={isSubmitting}
-              isDisabled={isSubmitting}
+              isAriaDisabled={isSubmitting}
               onClick={handleApply}
             >
               {wizard.createCluster}

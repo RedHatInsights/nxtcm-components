@@ -1,7 +1,39 @@
 import { expect, test } from '@/playwright/ct-fixture';
+import { expectFocusVisible } from '@/playwright/e2e/helpers/focus-helpers';
 
+import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { checkAccessibility } from '../../test-helpers';
 import type { DetailsStepDrawerMount } from './DetailsStepDrawer.story';
+
+/** Waits for the drawer's slide animation to finish. */
+async function waitForDrawerToSettle(dialog: import('@playwright/test').Locator): Promise<void> {
+  await dialog.evaluate(async () => {
+    await new Promise(requestAnimationFrame);
+    await Promise.allSettled(document.getAnimations().map((animation) => animation.finished));
+  });
+}
+
+/** Presses Tab until `lastName` is focused, asserting focus stays inside the dialog throughout. */
+async function tabThroughDialog(
+  page: import('@playwright/test').Page,
+  lastName: string,
+  maxTabs = 60
+): Promise<string[]> {
+  const visited: string[] = [];
+  for (let i = 0; i < maxTabs && visited.at(-1) !== lastName; i += 1) {
+    await page.keyboard.press('Tab');
+    const focused = await page.evaluate(() => {
+      const element = document.activeElement as HTMLElement | null;
+      return {
+        insideDialog: !!element?.closest('[role="dialog"]'),
+        name: element?.getAttribute('aria-label') ?? (element?.textContent ?? '').trim(),
+      };
+    });
+    expect(focused.insideDialog, `focus left the drawer after: ${visited.join(' | ')}`).toBe(true);
+    visited.push(focused.name);
+  }
+  return visited;
+}
 
 test.describe('DetailsStepDrawer', () => {
   test('focuses the header close button, traps keyboard focus in the named dialog, and restores focus on close', async ({
@@ -179,5 +211,79 @@ test.describe('DetailsStepDrawer', () => {
       { initiallyExpanded: true }
     );
     await checkAccessibility({ component });
+  });
+});
+
+test.describe('DetailsStepDrawer — keyboard', () => {
+  const path =
+    'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount';
+  const strings = defaultRosaHcpWizardStrings.associateAwsDrawer;
+
+  test('shows a visible focus indicator on the close button after keyboard opening', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof DetailsStepDrawerMount>(path);
+
+    await component.getByRole('button', { name: 'Associate a new AWS account' }).focus();
+    await page.keyboard.press('Enter');
+    await expect(component.getByRole('dialog', { name: strings.panelTitle })).toBeVisible();
+
+    await expectFocusVisible(
+      component.getByRole('button', { name: strings.closeDrawerButtonLabel, exact: true })
+    );
+  });
+
+  test('Tab visits every control inside the drawer in order from the header to the bottom Close', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof DetailsStepDrawerMount>(path);
+    const dialog = component.getByRole('dialog', { name: strings.panelTitle });
+    await component.getByRole('button', { name: 'Associate a new AWS account' }).focus();
+    await page.keyboard.press('Enter');
+    await expect(dialog).toBeVisible();
+
+    // Expand every section by keyboard so the whole panel is in the tab sequence.
+    for (const title of [strings.step1Title, strings.step2Title, strings.step3Title]) {
+      const toggle = dialog.getByRole('button', { name: title, exact: true });
+      await toggle.focus();
+      await page.keyboard.press('Enter');
+      await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    }
+    await waitForDrawerToSettle(dialog);
+    await dialog.getByRole('button', { name: strings.closeDrawerButtonLabel, exact: true }).focus();
+
+    const visited = await tabThroughDialog(page, strings.closeButton);
+
+    const order = [
+      strings.stepLoginTitle,
+      strings.step1Title,
+      strings.step2Title,
+      strings.step3Title,
+      strings.closeButton,
+    ].map((title) => visited.indexOf(title));
+    expect(order, `Missing from tab order: ${visited.join(' | ')}`).not.toContain(-1);
+    expect(order).toEqual([...order].sort((a, b) => a - b));
+    expect(visited.at(-1)).toBe(strings.closeButton);
+  });
+
+  test('Escape closes the drawer and returns focus to the trigger', async ({ mount, page }) => {
+    const component = await mount<typeof DetailsStepDrawerMount>(path);
+    const trigger = component.getByRole('button', { name: 'Associate a new AWS account' });
+    const dialog = component.getByRole('dialog', { name: strings.panelTitle });
+
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+    await expect(dialog).toBeVisible();
+    await waitForDrawerToSettle(dialog);
+    await expect(
+      dialog.getByRole('button', { name: strings.closeDrawerButtonLabel, exact: true })
+    ).toBeFocused();
+
+    await page.keyboard.press('Escape');
+
+    await expect(dialog).toBeHidden();
+    await expect(trigger).toBeFocused();
   });
 });

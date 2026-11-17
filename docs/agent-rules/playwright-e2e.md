@@ -11,8 +11,9 @@ playwright/
     rosa-wizard.spec.ts      # wizard flows, CIDR, navigation
     rosa-wizard-yaml-editor.spec.ts
     rosa-wizard-yaml-editor-keyboard.spec.ts # keyboard-only YAML editor flows
+    rosa-wizard-keyboard.spec.ts # keyboard navigation, validation focus, and Skip to review focus
     helpers/
-      yaml-editor-helpers.ts # navigateToYamlEditor, navigateToReview, enterYamlEditor, getMonacoYaml
+      yaml-editor-helpers.ts # navigateToYamlEditor, navigateToReview, enterYamlEditor, getMonacoYaml, fill*Step helpers
       focus-helpers.ts       # tabUntilFocused, expectFocusVisible
   index.tsx                  # E2E app entry
 playwright.config.ts         # root E2E config (port ~3200)

@@ -39,6 +39,25 @@ test.describe('ROSAHCPWizardBody', () => {
     await checkAccessibility({ component });
   });
 
+  test('keeps focus on Create cluster and announces the alert when Review is submitted with invalid steps', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof RosaHcpWizardBodyMount>(
+      'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount',
+      { enableAllWizardNavSteps: true }
+    );
+    await component.getByRole('button', { name: wizard.stepLabels.review }).click();
+    await expect(component.getByRole('button', { name: /Edit in YAML/i })).toBeVisible();
+    const createCluster = component.getByRole('button', { name: wizard.createCluster });
+
+    await createCluster.focus();
+    await page.keyboard.press('Enter');
+
+    await expect(component.getByRole('alert')).toContainText(wizard.fixValidationErrors);
+    await expect(createCluster).toBeFocused();
+  });
+
   test.describe('submit error state', () => {
     test('moves focus into the error and restores the current wizard step on return', async ({
       mount,

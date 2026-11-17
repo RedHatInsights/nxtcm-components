@@ -12,6 +12,7 @@ import type {
   MultiAriaDisabledSelectedHarness,
   MultiBadgeHarness,
   MultiGroupedHarness,
+  MultiKeyboardHarness,
   MultiLegacyToggleHarness,
   MultiLoadingHarness,
   MultiPlainHarness,
@@ -259,5 +260,81 @@ test.describe('MultiSelect', () => {
     await menu.getByText('pair-a', { exact: true }).click();
     await expect(toggle).toHaveAccessibleName('Legacy toggle 2 selected');
     await expect(page.getByTestId('multi-legacy-val')).toHaveText('solo,pair-a');
+  });
+});
+
+test.describe('MultiSelect — keyboard and focus', () => {
+  const path =
+    'nxtcm-rosa-hcp-wizard/components/Fields/MultiSelect/MultiSelect/MultiKeyboardHarness';
+
+  for (const key of ['Enter', 'Space'] as const) {
+    test(`${key} opens the menu and keeps focus on the toggle`, async ({ mount, page }) => {
+      await mount<typeof MultiKeyboardHarness>(path);
+      const toggle = page.getByRole('button', { name: /^Zones/ });
+
+      await toggle.focus();
+      await page.keyboard.press(key);
+
+      await expect(page.getByRole('menu', { name: 'Zones', exact: true })).toBeVisible();
+      await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+      await expect(toggle).toBeFocused();
+    });
+  }
+
+  test('Tab from an open menu closes it without losing focus, and the next Tab moves on', async ({
+    mount,
+    page,
+  }) => {
+    await mount<typeof MultiKeyboardHarness>(path);
+    const toggle = page.getByRole('button', { name: /^Zones/ });
+    const menu = page.getByRole('menu', { name: 'Zones', exact: true });
+    await page.getByRole('button', { name: 'Before zones' }).focus();
+    await page.keyboard.press('Tab');
+    await expect(toggle).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(menu).toBeVisible();
+
+    await page.keyboard.press('Tab');
+    await expect(menu).toBeHidden();
+    await expect(toggle).toBeFocused();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('button', { name: 'After zones' })).toBeFocused();
+    await expect(page.getByTestId('multi-keyboard-val')).toHaveText('none');
+  });
+
+  test('a disabled multiselect is skipped by Tab in both directions', async ({ mount, page }) => {
+    await mount<typeof MultiKeyboardHarness>(path, { isDisabled: true });
+    const toggle = page.getByRole('button', { name: /^Zones/ });
+    const before = page.getByRole('button', { name: 'Before zones' });
+    const after = page.getByRole('button', { name: 'After zones' });
+    await expect(toggle).toBeDisabled();
+
+    await before.focus();
+    await page.keyboard.press('Tab');
+    await expect(after).toBeFocused();
+    await page.keyboard.press('Shift+Tab');
+    await expect(before).toBeFocused();
+    await expect(toggle).not.toBeFocused();
+  });
+
+  test('a loading menu offers nothing to focus and Escape still returns focus to the toggle', async ({
+    mount,
+    page,
+  }) => {
+    await mount<typeof MultiKeyboardHarness>(path, { isLoading: true });
+    const toggle = page.getByRole('button', { name: /^Zones/ });
+    await toggle.focus();
+    await page.keyboard.press('Enter');
+    const menu = page.getByRole('menu', { name: 'Zones', exact: true });
+    await expect(menu.getByText('Loading...')).toBeVisible();
+
+    await page.keyboard.press('ArrowDown');
+    await expect(toggle).toBeFocused();
+
+    await page.keyboard.press('Escape');
+    await expect(menu).toBeHidden();
+    await expect(toggle).toBeFocused();
   });
 });
