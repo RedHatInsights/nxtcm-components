@@ -119,6 +119,26 @@ describe('findFirstInvalidFocusTarget', () => {
     expect(findFirstInvalidFocusTarget(container)?.id).toBe('visible');
   });
 
+  it('asks checkVisibility to include CSS visibility, so visibility-hidden controls are skipped', () => {
+    // jsdom has no checkVisibility; this stub only reports visibility-hidden elements when asked to.
+    const checkVisibility = jest.fn(function (this: HTMLElement, options?: CheckVisibilityOptions) {
+      return !(options?.visibilityProperty && this.style.visibility === 'hidden');
+    });
+    Object.defineProperty(HTMLElement.prototype, 'checkVisibility', {
+      configurable: true,
+      value: checkVisibility,
+    });
+    try {
+      const container = render(
+        '<input id="invisible" aria-invalid="true" style="visibility: hidden" /><input id="target" aria-invalid="true" />'
+      );
+      expect(findFirstInvalidFocusTarget(container)?.id).toBe('target');
+      expect(checkVisibility).toHaveBeenCalledWith({ visibilityProperty: true });
+    } finally {
+      delete (HTMLElement.prototype as Partial<HTMLElement>).checkVisibility;
+    }
+  });
+
   it('returns null when every invalid control is hidden', () => {
     expect(
       findFirstInvalidFocusTarget(render('<div hidden><input aria-invalid="true" /></div>'))

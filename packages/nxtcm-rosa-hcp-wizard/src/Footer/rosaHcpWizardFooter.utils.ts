@@ -54,7 +54,10 @@ function canReceiveFocus(element: HTMLElement): boolean {
   if (element.closest('[hidden], [inert]')) {
     return false;
   }
-  return typeof element.checkVisibility !== 'function' || element.checkVisibility();
+  return (
+    typeof element.checkVisibility !== 'function' ||
+    element.checkVisibility({ visibilityProperty: true })
+  );
 }
 
 /**

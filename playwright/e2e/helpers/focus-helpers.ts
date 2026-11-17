@@ -50,15 +50,21 @@ export async function expectFocusVisible(target: Locator): Promise<void> {
 }
 
 /**
- * Focus rests on a container holding `content` (not `<body>`) and that container shows a focus ring.
- * Use for focus targets without a role, such as wizard step content.
+ * Focus rests on a container holding `content` (not `<body>` and not `content` itself) and that
+ * container shows a focus ring. Use for focus targets without a role, such as wizard step content.
  */
 export async function expectFocusVisibleOnContainerOf(content: Locator): Promise<void> {
   await expect
     .poll(() =>
       content.evaluate((element) => {
         const focused = document.activeElement as HTMLElement | null;
-        if (!focused || focused === document.body || !focused.contains(element)) {
+        if (!focused || focused === document.body) {
+          return 'focus is not on a container of the content';
+        }
+        if (focused === element) {
+          return 'focus is on the content itself, not on a container of it';
+        }
+        if (!focused.contains(element)) {
           return 'focus is not on a container of the content';
         }
         if (!focused.matches(':focus-visible')) {
