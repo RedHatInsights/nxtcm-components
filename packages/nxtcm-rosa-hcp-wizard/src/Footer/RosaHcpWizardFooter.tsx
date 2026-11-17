@@ -280,7 +280,7 @@ function RosaHcpWizardFooter({
               variant={ButtonVariant.primary}
               type="button"
               isLoading={isReviewStep && isSubmitting}
-              isDisabled={isSubmitting}
+              isAriaDisabled={isSubmitting}
               onClick={handlePrimaryAction}
             >
               {primaryButtonLabel}

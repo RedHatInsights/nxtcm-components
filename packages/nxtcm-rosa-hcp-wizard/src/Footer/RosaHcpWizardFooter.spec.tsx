@@ -785,4 +785,27 @@ test.describe('RosaHcpWizardFooter — keyboard and focus', () => {
     await expect(component.getByRole('button', { name: SKIP_TO_REVIEW })).toBeHidden();
     await expectStepContentFocused(reviewContent);
   });
+
+  test('keeps focus on Create cluster, marked unavailable, while the submission is pending', async ({
+    mount,
+    page,
+  }) => {
+    test.setTimeout(30_000);
+    const component = await mount<typeof RosaHcpWizardValidationMount>(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: VALID_REVIEW_SUBMIT_FORM_VALUES, onSubmit: true, holdSubmit: true }
+    );
+
+    await advanceToReviewStep(component);
+    const submit = component.getByRole('button', { name: FOOTER_SUBMIT });
+    await submit.focus();
+    await page.keyboard.press('Enter');
+
+    await expect(component.getByTestId('onSubmit-count')).toHaveValue('1');
+    await expect(submit).toBeFocused();
+    await expect(submit).toHaveAttribute('aria-disabled', 'true');
+
+    await component.getByRole('button', { name: 'Finish submission', exact: true }).click();
+    await expect(submit).not.toHaveAttribute('aria-disabled', 'true');
+  });
 });
