@@ -6,7 +6,11 @@
  */
 
 import { expect, test } from './fixtures';
-import { getMonacoYaml, navigateToYamlEditor } from './helpers/yaml-editor-helpers';
+import {
+  getMonacoYaml,
+  navigateToYamlEditor,
+  YAML_EDITOR_NAME,
+} from './helpers/yaml-editor-helpers';
 
 test.describe('ROSA Wizard - YAML Editor', () => {
   test.beforeEach(async ({ page }) => {
@@ -18,8 +22,8 @@ test.describe('ROSA Wizard - YAML Editor', () => {
       await navigateToYamlEditor(page);
 
       // Verify Monaco editor is loaded
-      await expect(page.locator('.monaco-editor')).toBeVisible();
-      await expect(page.locator('.view-lines')).toBeVisible();
+      await expect(page.getByRole('textbox', { name: YAML_EDITOR_NAME })).toBeVisible();
+      await expect(page.getByText('ROSAControlPlane', { exact: true })).toBeVisible();
     });
 
     test('closes YAML editor with Discard button and confirmation', async ({ page }) => {
@@ -39,7 +43,7 @@ test.describe('ROSA Wizard - YAML Editor', () => {
 
       // Back to review page
       await expect(page.getByRole('button', { name: /Edit in YAML/i })).toBeVisible();
-      await expect(page.locator('.monaco-editor')).toBeHidden();
+      await expect(page.getByRole('textbox', { name: YAML_EDITOR_NAME })).toBeHidden();
     });
 
     test('cancels discard confirmation', async ({ page }) => {
@@ -54,7 +58,7 @@ test.describe('ROSA Wizard - YAML Editor', () => {
         .click();
 
       // Still in YAML editor
-      await expect(page.locator('.monaco-editor')).toBeVisible();
+      await expect(page.getByRole('textbox', { name: YAML_EDITOR_NAME })).toBeVisible();
     });
   });
 

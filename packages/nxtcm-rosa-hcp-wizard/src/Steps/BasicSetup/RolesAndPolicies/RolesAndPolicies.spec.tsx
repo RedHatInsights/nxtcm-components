@@ -231,7 +231,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
 
       await component.getByText(rp.arnsToggle, { exact: true }).click();
 
-      await expect(component.locator('#support_role_arn')).toHaveValue(
+      await expect(component.getByRole('textbox', { name: rp.supportRoleLabel })).toHaveValue(
         mockRoles[0].supportRole[0].value
       );
     });
@@ -249,7 +249,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
 
       await component.getByText(rp.arnsToggle, { exact: true }).click();
 
-      await expect(component.locator('#worker_role_arn')).toHaveValue(
+      await expect(component.getByRole('textbox', { name: rp.workerRoleLabel })).toHaveValue(
         mockRoles[0].workerRole[0].value
       );
     });
@@ -261,7 +261,7 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
 
       await component.getByText(rp.arnsToggle, { exact: true }).click();
 
-      await expect(component.locator('#support_role_arn')).toHaveAttribute(
+      await expect(component.getByRole('textbox', { name: rp.supportRoleLabel })).toHaveAttribute(
         'placeholder',
         rp.installerPlaceholder
       );
@@ -275,7 +275,10 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
 
       await component.getByText(rp.arnsToggle, { exact: true }).click();
 
-      await expect(component.locator('#support_role_arn')).toHaveAttribute('readonly', '');
+      await expect(component.getByRole('textbox', { name: rp.supportRoleLabel })).toHaveAttribute(
+        'readonly',
+        ''
+      );
     });
 
     test('should have worker role field read-only', async ({ mount }) => {
@@ -286,7 +289,10 @@ test.describe('RolesAndPolicies (ROSA HCP)', () => {
 
       await component.getByText(rp.arnsToggle, { exact: true }).click();
 
-      await expect(component.locator('#worker_role_arn')).toHaveAttribute('readonly', '');
+      await expect(component.getByRole('textbox', { name: rp.workerRoleLabel })).toHaveAttribute(
+        'readonly',
+        ''
+      );
     });
   });
 

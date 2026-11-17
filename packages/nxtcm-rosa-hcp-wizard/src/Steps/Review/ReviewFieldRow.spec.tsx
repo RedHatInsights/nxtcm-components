@@ -66,8 +66,8 @@ test.describe('ReviewFieldRow', () => {
       { labelText: 'Collapsed Field', value: 'Hidden content', collapseOnRequired: true }
     );
     // Value should not be visible until expanded
-    const preElement = component.locator('pre');
-    await expect(preElement).toBeHidden();
+    const content = component.getByText('Hidden content', { exact: true });
+    await expect(content).toBeHidden();
   });
 
   test('should expand to show value when toggle clicked', async ({ mount }) => {
@@ -78,8 +78,8 @@ test.describe('ReviewFieldRow', () => {
     const toggle = component.getByRole('button', { name: /show more/i });
     await toggle.click();
 
-    // Value should now be visible in pre tag
-    await expect(component.locator('pre')).toBeVisible();
+    // The expanded content is visible.
+    await expect(component.getByText('Expandable content', { exact: true })).toBeVisible();
     await expect(component.getByText('Expandable content')).toBeVisible();
   });
 
@@ -107,8 +107,8 @@ test.describe('ReviewFieldRow', () => {
     const showLessToggle = component.getByRole('button', { name: /show less/i });
     await showLessToggle.click();
 
-    // Pre element should be hidden again
-    await expect(component.locator('pre')).toBeHidden();
+    // The content is hidden again.
+    await expect(component.getByText('Collapsible content', { exact: true })).toBeHidden();
   });
 
   test('should show value directly when collapseOnRequired is false', async ({ mount }) => {

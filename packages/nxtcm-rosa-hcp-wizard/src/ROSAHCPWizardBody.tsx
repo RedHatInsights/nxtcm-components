@@ -1,4 +1,13 @@
-import React, { lazy, Suspense, useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  lazy,
+  Suspense,
+  useCallback,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { Spinner } from '@patternfly/react-core/dist/dynamic/components/Spinner';
 import {
@@ -52,7 +61,16 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
   const { getValues } = useFormContext<Partial<ROSAHCPCluster>>();
   const [isNavigatingToReview, setIsNavigatingToReview] = useState(false);
   const [isYamlEditorOpen, setIsYamlEditorOpen] = useState(false);
+  const [wizardStartIndex, setWizardStartIndex] = useState(1);
+  // The first wizard step is the Basic setup parent; Details is its first focusable substep.
+  const lastWizardStepIndexRef = useRef(2);
   const yamlEditorRef = useRef<YamlEditorHandle>(null);
+  const wizardViewRef = useRef<HTMLDivElement>(null);
+  const errorViewRef = useRef<HTMLElement>(null);
+  const yamlViewRef = useRef<HTMLDivElement>(null);
+  const editYamlButtonRef = useRef<HTMLButtonElement>(null);
+  const submitErrorTitleId = useId();
+  const submitErrorMessageId = useId();
 
   const getFormYaml = useCallback(
     () => resourceGenerator.renderYaml(getValues()),
@@ -61,6 +79,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
 
   const handleBackToReviewStep = useCallback(async () => {
     if (!onBackToReviewStep) return;
+    setWizardStartIndex(lastWizardStepIndexRef.current);
     setIsNavigatingToReview(true);
     try {
       await onBackToReviewStep();
@@ -76,6 +95,9 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
     NonNullable<React.ComponentProps<typeof Wizard>['onStepChange']>
   >(
     (_event, newStep) => {
+      if (newStep?.index) {
+        lastWizardStepIndexRef.current = newStep.index;
+      }
       if (isYamlEditorOpen && newStep?.id !== STEP_IDS.REVIEW) {
         setIsYamlEditorOpen(false);
       }
@@ -100,6 +122,29 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
   const rosaStrings = useRosaHcpWizardStrings();
   const { wizard, yamlEditor: yamlStrings } = rosaStrings;
   const sl = wizard.stepLabels;
+  const view = onSubmitError ? 'error' : isYamlEditorOpen ? 'yaml' : 'wizard';
+  const previousViewRef = useRef(view);
+
+  useLayoutEffect(() => {
+    if (view === 'error') {
+      errorViewRef.current?.focus();
+    } else if (view === 'yaml') {
+      yamlViewRef.current?.focus();
+    } else if (previousViewRef.current !== 'wizard') {
+      const focusTimer = window.setTimeout(() => {
+        if (editYamlButtonRef.current) {
+          editYamlButtonRef.current.focus();
+        } else {
+          wizardViewRef.current
+            ?.querySelector<HTMLButtonElement>('button[aria-current="step"]')
+            ?.focus();
+        }
+      }, 0);
+      previousViewRef.current = view;
+      return () => window.clearTimeout(focusTimer);
+    }
+    previousViewRef.current = view;
+  }, [view]);
 
   const yamlEditorFooter = useMemo(
     () => (
@@ -108,134 +153,166 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
         onClose={handleCloseYamlEditor}
         onCancel={onCancel}
         onSubmit={onSubmit}
+        onSubmitError={onSubmitError}
       />
     ),
 
-    [handleCloseYamlEditor, onCancel, onSubmit]
+    [handleCloseYamlEditor, onCancel, onSubmit, onSubmitError]
   );
 
   return (
     <div
+      ref={wizardViewRef}
       className={`rosa-hcp-wizard${isYamlEditorOpen && !onSubmitError ? ' rosa-hcp-wizard--yaml-editor-open' : ''}`}
     >
       {onSubmitError ? (
-        <RosaWizardSubmitError
-          onSubmitError={onSubmitError}
-          onBackToReviewStep={onBackToReviewStep ? handleBackToReviewStep : undefined}
-          isNavigatingToReview={isNavigatingToReview}
-          onCancel={onCancel}
-        />
-      ) : null}
-      <Wizard
-        footer={footer}
-        onClose={onCancel}
-        onStepChange={handleWizardStepChange}
-        isVisitRequired={!enableAllWizardNavSteps}
-        style={onSubmitError ? { display: 'none' } : undefined}
-      >
-        <WizardStep
-          isExpandable
-          name={sl.basicSetup}
-          id={STEP_IDS.BASIC_SETUP}
-          steps={[
-            <WizardStep name={sl.details} id={STEP_IDS.DETAILS} key={STEP_IDS.DETAILS}>
-              <Details {...wizardData} product={product} />
-            </WizardStep>,
-            <WizardStep
-              name={sl.rolesAndPolicies}
-              id={STEP_IDS.ROLES_AND_POLICIES}
-              key={STEP_IDS.ROLES_AND_POLICIES}
-            >
-              <RolesAndPolicies {...wizardData} product={product} selectedSecret={selectedSecret} />
-            </WizardStep>,
-            <WizardStep
-              name={sl.machinePools}
-              id={STEP_IDS.MACHINE_POOLS}
-              key={STEP_IDS.MACHINE_POOLS}
-            >
-              <MachinePools {...wizardData} />
-            </WizardStep>,
-            <WizardStep name={sl.networking} id={STEP_IDS.NETWORKING} key={STEP_IDS.NETWORKING}>
-              <Networking {...wizardData} />
-            </WizardStep>,
-            ...(clusterWideProxySelected && !isClusterWideProxyHidden
-              ? [
-                  <WizardStep
-                    name={sl.clusterWideProxy}
-                    id={STEP_IDS.CLUSTER_WIDE_PROXY}
-                    key={STEP_IDS.CLUSTER_WIDE_PROXY}
-                  >
-                    <ClusterWideProxy />
-                  </WizardStep>,
-                ]
-              : []),
-          ]}
-        />
-
-        {(() => {
-          const optionalSteps = [
-            <WizardStep
-              name={sl.encryptionOptional}
-              id={STEP_IDS.ENCRYPTION}
-              key={STEP_IDS.ENCRYPTION}
-            >
-              <Encryption />
-            </WizardStep>,
-            !isClusterUpdatesHidden && (
-              <WizardStep
-                name={sl.clusterUpdatesOptional}
-                id={STEP_IDS.CLUSTER_UPDATES}
-                key={STEP_IDS.CLUSTER_UPDATES}
-              >
-                <ClusterUpdates />
-              </WizardStep>
-            ),
-          ].filter((s): s is React.ReactElement<WizardStepProps> => Boolean(s));
-
-          if (optionalSteps.length === 0) return null;
-
-          return (
-            <WizardStep
-              isExpandable
-              name={sl.additionalSetup}
-              id={STEP_IDS.OPTIONAL_SETUP}
-              key={STEP_IDS.OPTIONAL_SETUP}
-              steps={optionalSteps}
-            />
-          );
-        })()}
-
-        <WizardStep
-          name={sl.review}
-          id={STEP_IDS.REVIEW}
-          key={STEP_IDS.REVIEW}
-          footer={isYamlEditorOpen ? yamlEditorFooter : undefined}
-          body={
-            isYamlEditorOpen
-              ? { className: 'rosa-hcp-yaml-editor-wizard-main', hasNoPadding: true }
+        <section
+          ref={errorViewRef}
+          tabIndex={-1}
+          aria-labelledby={submitErrorTitleId}
+          aria-describedby={
+            typeof onSubmitError === 'string' && onSubmitError.length > 0
+              ? submitErrorMessageId
               : undefined
           }
         >
-          {isYamlEditorOpen ? (
-            <Suspense
-              fallback={
-                <div className="pf-v6-u-p-lg pf-v6-u-text-align-center">
-                  <Spinner size="lg" aria-label={yamlStrings.title} />
-                </div>
-              }
-            >
-              <RosaHcpYamlEditorStep
-                ref={yamlEditorRef}
-                onClose={handleCloseYamlEditor}
-                onCancel={onCancel}
-                resourceGenerator={resourceGenerator}
+          <RosaWizardSubmitError
+            titleId={submitErrorTitleId}
+            messageId={submitErrorMessageId}
+            onSubmitError={onSubmitError}
+            onBackToReviewStep={onBackToReviewStep ? handleBackToReviewStep : undefined}
+            isNavigatingToReview={isNavigatingToReview}
+            onCancel={onCancel}
+          />
+        </section>
+      ) : (
+        <Wizard
+          footer={footer}
+          onClose={onCancel}
+          onStepChange={handleWizardStepChange}
+          startIndex={wizardStartIndex}
+          isVisitRequired={!enableAllWizardNavSteps}
+        >
+          <WizardStep
+            isExpandable
+            name={sl.basicSetup}
+            id={STEP_IDS.BASIC_SETUP}
+            steps={[
+              <WizardStep name={sl.details} id={STEP_IDS.DETAILS} key={STEP_IDS.DETAILS}>
+                <Details {...wizardData} product={product} />
+              </WizardStep>,
+              <WizardStep
+                name={sl.rolesAndPolicies}
+                id={STEP_IDS.ROLES_AND_POLICIES}
+                key={STEP_IDS.ROLES_AND_POLICIES}
+              >
+                <RolesAndPolicies
+                  {...wizardData}
+                  product={product}
+                  selectedSecret={selectedSecret}
+                />
+              </WizardStep>,
+              <WizardStep
+                name={sl.machinePools}
+                id={STEP_IDS.MACHINE_POOLS}
+                key={STEP_IDS.MACHINE_POOLS}
+              >
+                <MachinePools {...wizardData} />
+              </WizardStep>,
+              <WizardStep name={sl.networking} id={STEP_IDS.NETWORKING} key={STEP_IDS.NETWORKING}>
+                <Networking {...wizardData} />
+              </WizardStep>,
+              ...(clusterWideProxySelected && !isClusterWideProxyHidden
+                ? [
+                    <WizardStep
+                      name={sl.clusterWideProxy}
+                      id={STEP_IDS.CLUSTER_WIDE_PROXY}
+                      key={STEP_IDS.CLUSTER_WIDE_PROXY}
+                    >
+                      <ClusterWideProxy />
+                    </WizardStep>,
+                  ]
+                : []),
+            ]}
+          />
+
+          {(() => {
+            const optionalSteps = [
+              <WizardStep
+                name={sl.encryptionOptional}
+                id={STEP_IDS.ENCRYPTION}
+                key={STEP_IDS.ENCRYPTION}
+              >
+                <Encryption />
+              </WizardStep>,
+              !isClusterUpdatesHidden && (
+                <WizardStep
+                  name={sl.clusterUpdatesOptional}
+                  id={STEP_IDS.CLUSTER_UPDATES}
+                  key={STEP_IDS.CLUSTER_UPDATES}
+                >
+                  <ClusterUpdates />
+                </WizardStep>
+              ),
+            ].filter((s): s is React.ReactElement<WizardStepProps> => Boolean(s));
+
+            if (optionalSteps.length === 0) return null;
+
+            return (
+              <WizardStep
+                isExpandable
+                name={sl.additionalSetup}
+                id={STEP_IDS.OPTIONAL_SETUP}
+                key={STEP_IDS.OPTIONAL_SETUP}
+                steps={optionalSteps}
               />
-            </Suspense>
-          ) : (
-            <Review vpcList={wizardData.vpcList} onOpenYamlEditor={openYamlEditor} />
-          )}
-        </WizardStep>
-      </Wizard>
+            );
+          })()}
+
+          <WizardStep
+            name={sl.review}
+            id={STEP_IDS.REVIEW}
+            key={STEP_IDS.REVIEW}
+            footer={isYamlEditorOpen ? yamlEditorFooter : undefined}
+            body={
+              isYamlEditorOpen
+                ? { className: 'rosa-hcp-yaml-editor-wizard-main', hasNoPadding: true }
+                : undefined
+            }
+          >
+            {isYamlEditorOpen ? (
+              <div
+                ref={yamlViewRef}
+                className="rosa-hcp-yaml-editor-view"
+                role="region"
+                aria-label={yamlStrings.title}
+                tabIndex={-1}
+              >
+                <Suspense
+                  fallback={
+                    <div className="pf-v6-u-p-lg pf-v6-u-text-align-center">
+                      <Spinner size="lg" aria-label={yamlStrings.title} />
+                    </div>
+                  }
+                >
+                  <RosaHcpYamlEditorStep
+                    ref={yamlEditorRef}
+                    onClose={handleCloseYamlEditor}
+                    onCancel={onCancel}
+                    resourceGenerator={resourceGenerator}
+                  />
+                </Suspense>
+              </div>
+            ) : (
+              <Review
+                vpcList={wizardData.vpcList}
+                onOpenYamlEditor={openYamlEditor}
+                editInYamlButtonRef={editYamlButtonRef}
+              />
+            )}
+          </WizardStep>
+        </Wizard>
+      )}
     </div>
   );
 };

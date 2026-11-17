@@ -1,3 +1,5 @@
+import type { Locator } from '@playwright/test';
+
 import { expect, MountResult, test } from '@/playwright/ct-fixture';
 import { checkAccessibility } from '@/playwright/test-helpers';
 
@@ -13,12 +15,8 @@ const defaultProps = {
   onCategoryClick: true,
 };
 
-const getCriticalCount = (component: MountResult, value: string) => {
-  return component
-    .locator('text="Critical recommendations"')
-    .locator('..') // go up one level
-    .locator('..') // go to parent div
-    .getByText(value);
+const getCriticalCount = (component: MountResult, value: string): Locator => {
+  return component.getByText(value, { exact: true });
 };
 
 test.describe('ClusterRecommendations', () => {
@@ -167,8 +165,7 @@ test.describe('ClusterRecommendations', () => {
       { ...defaultProps }
     );
 
-    // NOTE svgs are hidden so won't be picked up by .getByRole('img')
-    // I'm not sure this test is providing any value
+    // Decorative icons are intentionally hidden from the accessibility tree.
     const icons = page.locator('svg[role="img"]');
     await expect(icons).toHaveCount(5);
   });
