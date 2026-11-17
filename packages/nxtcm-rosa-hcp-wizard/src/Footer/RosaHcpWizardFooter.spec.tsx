@@ -33,6 +33,7 @@ const REQUIRED_FIELD_MESSAGE = defaultRosaHcpWizardValidatorStrings.commonRequir
 const rp = defaultRosaHcpWizardStrings.rolesAndPolicies;
 const review = defaultRosaHcpWizardStrings.review;
 const encryption = defaultRosaHcpWizardStrings.encryption;
+const networking = defaultRosaHcpWizardStrings.networking;
 
 /** PatternFly danger Alert exposes the title as a heading (e.g. "Danger alert: …"). */
 const validationAlertHeading = { name: new RegExp(FIX_VALIDATION_ALERT) };
@@ -745,6 +746,41 @@ test.describe('RosaHcpWizardFooter — keyboard and focus', () => {
     await expect(component.getByRole('heading', validationAlertHeading)).toBeVisible();
     await expect(region).toBeFocused();
     await expect(region).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  test('skips an invalid field in a collapsed section and focuses it once the section is expanded', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof RosaHcpWizardValidationMount>(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      {
+        defaultValues: {
+          ...VALID_REVIEW_SUBMIT_FORM_VALUES,
+          cidr_default: false,
+          network_machine_cidr: 'not-a-cidr',
+        },
+      }
+    );
+    await clickNextTimes(component, 3);
+    const next = component.getByRole('button', { name: FOOTER_NEXT });
+    const machineCidr = component.getByRole('textbox', {
+      name: networking.machineCidrLabel,
+      includeHidden: true,
+    });
+    await expect(machineCidr).toBeHidden();
+
+    await next.focus();
+    await page.keyboard.press('Enter');
+    await expect(component.getByRole('heading', validationAlertHeading)).toBeVisible();
+    await expect(next).toBeFocused();
+
+    await component.getByRole('button', { name: networking.advancedToggle }).click();
+    await expect(machineCidr).toBeVisible();
+    await next.focus();
+    await page.keyboard.press('Enter');
+    await expect(machineCidr).toBeFocused();
+    await expect(machineCidr).toHaveAttribute('aria-invalid', 'true');
   });
 
   test('moves focus to the first invalid field when Skip to review fails', async ({

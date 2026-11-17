@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import { Button, ButtonVariant } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 
 import { Select, type SelectProps } from './Select';
@@ -90,7 +91,7 @@ export function KeyboardPlainHarness(props: KeyboardPlainHarnessProps = {}): Rea
   const [value, setValue] = useState<string | number | undefined>();
   return (
     <Form>
-      <button type="button">Before region</button>
+      <Button variant={ButtonVariant.secondary}>Before region</Button>
       <Select<string>
         id="ct-menu-plain-keyboard"
         label="Region"
@@ -103,7 +104,7 @@ export function KeyboardPlainHarness(props: KeyboardPlainHarnessProps = {}): Rea
         ]}
         {...props}
       />
-      <button type="button">After region</button>
+      <Button variant={ButtonVariant.secondary}>After region</Button>
       <span data-testid="plain-keyboard-val">{value === undefined ? 'none' : String(value)}</span>
     </Form>
   );
@@ -113,7 +114,7 @@ export function KeyboardTypeaheadHarness(): React.ReactElement {
   const [value, setValue] = useState<string | number | undefined>();
   return (
     <Form>
-      <button type="button">Before subnet</button>
+      <Button variant={ButtonVariant.secondary}>Before subnet</Button>
       <Select<string>
         id="ct-menu-ta-keyboard"
         label="Subnet"
@@ -127,7 +128,7 @@ export function KeyboardTypeaheadHarness(): React.ReactElement {
         ]}
         isTypeAhead
       />
-      <button type="button">After subnet</button>
+      <Button variant={ButtonVariant.secondary}>After subnet</Button>
       <span data-testid="ta-keyboard-val">{value === undefined ? 'none' : String(value)}</span>
     </Form>
   );

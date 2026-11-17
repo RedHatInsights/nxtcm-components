@@ -1,6 +1,10 @@
 /** Keyboard-driven wizard navigation and validation flows, with explicit focus assertions. */
 import { expect, type Page, test } from './fixtures';
-import { expectFocusVisible, tabUntilFocused } from './helpers/focus-helpers';
+import {
+  expectFocusVisible,
+  expectFocusVisibleOnContainerOf,
+  tabUntilFocused,
+} from './helpers/focus-helpers';
 import {
   fillDetailsStep,
   fillMachinePoolsStep,
@@ -17,18 +21,6 @@ const wizardNav = (page: Page) => page.getByRole('navigation', { name: 'Wizard s
 const detailsContent = (page: Page) => page.getByRole('textbox', { name: /Cluster name/i });
 const rolesContent = (page: Page) => page.getByText('Account roles', { exact: true });
 const reviewContent = (page: Page) => page.getByRole('button', { name: /Edit in YAML/i });
-
-/** Focus rests on the step content container that holds `content`, not on <body>, nav, or footer. */
-async function expectStepContentFocused(content: ReturnType<typeof detailsContent>) {
-  await expect
-    .poll(() =>
-      content.evaluate(
-        (element) =>
-          document.activeElement !== document.body && !!document.activeElement?.contains(element)
-      )
-    )
-    .toBe(true);
-}
 
 /** Fills Details, Roles, Machine pools, and Networking; ends on Encryption. */
 async function navigateToEncryption(page: Page): Promise<void> {
@@ -62,7 +54,7 @@ test.describe('ROSA Wizard - keyboard and focus', () => {
     await expect(firstInvalid).toBeFocused();
   });
 
-  test('Enter on Back and Next moves between steps and focuses the step content', async ({
+  test('Enter on Back and Next moves between steps and shows a focus ring on the step content', async ({
     page,
   }) => {
     await fillDetailsStep(page);
@@ -71,12 +63,12 @@ test.describe('ROSA Wizard - keyboard and focus', () => {
     await backButton(page).focus();
     await page.keyboard.press('Enter');
     await expect(detailsContent(page)).toBeVisible();
-    await expectStepContentFocused(detailsContent(page));
+    await expectFocusVisibleOnContainerOf(detailsContent(page));
 
     await nextButton(page).focus();
     await page.keyboard.press('Enter');
     await expect(rolesContent(page)).toBeVisible();
-    await expectStepContentFocused(rolesContent(page));
+    await expectFocusVisibleOnContainerOf(rolesContent(page));
   });
 
   test('Tab reaches Next with a visible focus indicator and Enter advances', async ({ page }) => {
@@ -119,7 +111,9 @@ test.describe('ROSA Wizard - keyboard and focus', () => {
     await expect(etcdKeyArn).toHaveAttribute('aria-invalid', 'true');
   });
 
-  test('moves focus to the Review content when Skip to review succeeds', async ({ page }) => {
+  test('moves visible focus to the Review content when Skip to review succeeds', async ({
+    page,
+  }) => {
     await navigateToEncryption(page);
 
     await skipToReviewButton(page).focus();
@@ -127,6 +121,6 @@ test.describe('ROSA Wizard - keyboard and focus', () => {
 
     await expect(reviewContent(page)).toBeVisible();
     await expect(skipToReviewButton(page)).toBeHidden();
-    await expectStepContentFocused(reviewContent(page));
+    await expectFocusVisibleOnContainerOf(reviewContent(page));
   });
 });

@@ -7,38 +7,39 @@ Specs live in two Playwright projects, both run in CI: component tests (CT, next
 ## How focus is asserted
 
 - Locators are semantic (`getByRole` first). Focus is asserted with `toBeFocused()`; where the ticket requires a visible destination, `expectFocusVisible()` also checks `:focus-visible` and an outline or box-shadow.
-- `playwright/e2e/helpers/focus-helpers.ts` provides `tabUntilFocused` (lists the elements visited on failure) and `expectFocusVisible`.
-- Step content has no role, so specs check that the focused element is the container holding a known piece of that step, and not `<body>`, the nav, or the footer.
+- `playwright/e2e/helpers/focus-helpers.ts` provides `tabUntilFocused` (lists the elements visited on failure), `expectFocusVisible`, and `expectFocusVisibleOnContainerOf`.
+- Step content has no role, so specs check that the focused element is the container holding a known piece of that step, and not `<body>`, the nav, or the footer. E2E specs use `expectFocusVisibleOnContainerOf` to also check its focus ring.
 
 ## Where each destination is implemented
 
-| Behavior                                         | Implemented in                                                                               |
-| ------------------------------------------------ | -------------------------------------------------------------------------------------------- |
-| Focus after Next and Back                        | PatternFly `Wizard` (`shouldFocusContent`, on by default), which focuses the step content    |
-| Focus after a failed Next or Skip to review      | `Footer/RosaHcpWizardFooter.tsx`: first `aria-invalid="true"` control in the step content    |
-| Focus after Skip to review succeeds              | `Footer/RosaHcpWizardFooter.tsx`: step content, as Next and Back do                          |
-| Create cluster stays focused while submitting    | `Footer/RosaHcpWizardFooter.tsx` and `Footer/RosaHcpYamlEditorFooter.tsx` (`isAriaDisabled`) |
-| Focus across submit error, YAML editor, and back | `ROSAHCPWizardBody.tsx`: layout effect on view changes (FCN-832)                             |
-| Details drawer                                   | PatternFly `Drawer` focus trap, configured in `DetailsStepDrawer.tsx`                        |
-| Discard dialog (YAML editor)                     | PatternFly `Modal` in `Footer/RosaHcpYamlEditorFooter.tsx`                                   |
+| Behavior                                         | Implemented in                                                                                    |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| Focus after Next and Back                        | PatternFly `Wizard` (`shouldFocusContent`, on by default), which focuses the step content         |
+| Focus after a failed Next or Skip to review      | `Footer/RosaHcpWizardFooter.tsx`: first visible `aria-invalid="true"` control in the step content |
+| Focus after Skip to review succeeds              | `Footer/RosaHcpWizardFooter.tsx`: step content, as Next and Back do                               |
+| Create cluster stays focused while submitting    | `Footer/RosaHcpWizardFooter.tsx` and `Footer/RosaHcpYamlEditorFooter.tsx` (`isAriaDisabled`)      |
+| Focus across submit error, YAML editor, and back | `ROSAHCPWizardBody.tsx`: layout effect on view changes (FCN-832)                                  |
+| Details drawer                                   | PatternFly `Drawer` focus trap, configured in `DetailsStepDrawer.tsx`                             |
+| Discard dialog (YAML editor)                     | PatternFly `Modal` in `Footer/RosaHcpYamlEditorFooter.tsx`                                        |
 
 ## Wizard navigation and footer
 
 Specs: `packages/nxtcm-rosa-hcp-wizard/src/Footer/RosaHcpWizardFooter.spec.tsx` (the "keyboard and focus" block, CT), `playwright/e2e/rosa-wizard-keyboard.spec.ts` (E2E), and `packages/nxtcm-rosa-hcp-wizard/src/Footer/rosaHcpWizardFooter.utils.test.ts` (unit tests for the first-invalid-control lookup).
 
-| Interaction                                           | Focus destination                                      | CT  | E2E |
-| ----------------------------------------------------- | ------------------------------------------------------ | --- | --- |
-| Enter or Space on Next / Back                         | Step content of the new step                           | ✓   | ✓   |
-| Tab to Next, then Enter                               | Next is focused (E2E also checks a visible ring)       | ✓   | ✓   |
-| Next fails validation                                 | First invalid control (E2E also checks a visible ring) | ✓   | ✓   |
-| Next fails again after a retry                        | First invalid control again                            | ✓   | ✓   |
-| First invalid control is a select                     | The select's combobox                                  | ✓   | —   |
-| Skip to review fails validation                       | First invalid control (E2E also checks a visible ring) | ✓   | ✓   |
-| Skip to review succeeds                               | Review step content; the Skip button is gone           | ✓   | ✓   |
-| Enter on a visited step in the left nav               | Stays on that nav item; the step opens                 | —   | ✓   |
-| Shift+Tab from Next on the Details step               | Skips the disabled Back button                         | ✓   | —   |
-| Create cluster pressed on Review (submission pending) | Stays on Create cluster, `aria-disabled="true"`        | ✓   | —   |
-| Create cluster pressed in the YAML editor (pending)   | Stays on Create cluster, `aria-disabled="true"`        | ✓   | —   |
+| Interaction                                           | Focus destination                                                        | CT  | E2E |
+| ----------------------------------------------------- | ------------------------------------------------------------------------ | --- | --- |
+| Enter or Space on Next / Back                         | Step content of the new step (E2E checks a visible ring)                 | ✓   | ✓   |
+| Tab to Next, then Enter                               | Next is focused (E2E also checks a visible ring)                         | ✓   | ✓   |
+| Next fails validation                                 | First invalid control (E2E also checks a visible ring)                   | ✓   | ✓   |
+| Next fails again after a retry                        | First invalid control again                                              | ✓   | ✓   |
+| First invalid control is a select                     | The select's combobox                                                    | ✓   | —   |
+| Skip to review fails validation                       | First invalid control (E2E also checks a visible ring)                   | ✓   | ✓   |
+| Skip to review succeeds                               | Review step content; the Skip button is gone (E2E checks a visible ring) | ✓   | ✓   |
+| First invalid control is in a collapsed section       | Skipped; the first visible invalid control, or Next if there is none     | ✓   | —   |
+| Enter on a visited step in the left nav               | Stays on that nav item; the step opens                                   | —   | ✓   |
+| Shift+Tab from Next on the Details step               | Skips the disabled Back button                                           | ✓   | —   |
+| Create cluster pressed on Review (submission pending) | Stays on Create cluster, `aria-disabled="true"`                          | ✓   | —   |
+| Create cluster pressed in the YAML editor (pending)   | Stays on Create cluster, `aria-disabled="true"`                          | ✓   | —   |
 
 The pending-submission rows are CT-only because the E2E app's `onSubmit` resolves immediately.
 
@@ -101,6 +102,7 @@ The role tabs in the drawer are a PatternFly `ToggleGroup`: buttons with `aria-p
 | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
 | Tab from an open plain Select or MultiSelect menu takes two presses, while the typeahead takes one | PatternFly's default closes the menu and keeps focus on the toggle; the typeahead overrides it. Focus is never lost or trapped.                                                                                   | Left as is |
 | Create cluster fails validation on Review                                                          | The invalid fields live on earlier steps, so Review has nothing to focus. Only reachable with `enableAllWizardNavSteps`. The alert is announced and focus stays on Create cluster (`ROSAHCPWizardBody.spec.tsx`). | Left as is |
+| Invalid field inside a collapsed section (for example Networking's advanced CIDR fields)           | Collapsed sections are not expanded automatically, so the field cannot take focus. Focus moves to the first visible invalid control, or stays on Next; the alert is announced.                                    | Left as is |
 | Screen reader announcements (alert text, field errors, button state)                               | Not automated; see below.                                                                                                                                                                                         | Manual     |
 
 Dashboard keyboard behavior (notification rows) is covered by FCN-814 and FCN-827, not here.

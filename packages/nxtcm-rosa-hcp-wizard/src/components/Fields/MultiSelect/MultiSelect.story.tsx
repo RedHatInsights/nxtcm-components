@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { Button, ButtonVariant } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 
 import type { OptionGroup } from '../Select/SelectTypes';
@@ -44,7 +45,7 @@ export function MultiKeyboardHarness(props: MultiKeyboardHarnessProps = {}): Rea
   const [value, setValue] = useState<string[]>([]);
   return (
     <Form>
-      <button type="button">Before zones</button>
+      <Button variant={ButtonVariant.secondary}>Before zones</Button>
       <MultiSelect
         id="ct-multi-keyboard"
         label="Zones"
@@ -53,7 +54,7 @@ export function MultiKeyboardHarness(props: MultiKeyboardHarnessProps = {}): Rea
         options={['a', 'b', 'c']}
         {...props}
       />
-      <button type="button">After zones</button>
+      <Button variant={ButtonVariant.secondary}>After zones</Button>
       <span data-testid="multi-keyboard-val">{value.length === 0 ? 'none' : value.join(',')}</span>
     </Form>
   );

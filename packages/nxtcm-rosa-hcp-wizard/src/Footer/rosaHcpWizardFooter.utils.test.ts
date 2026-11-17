@@ -105,6 +105,26 @@ describe('findFirstInvalidFocusTarget', () => {
     expect(findFirstInvalidFocusTarget(container)?.id).toBe('target');
   });
 
+  it('skips invalid controls inside collapsed or inert sections', () => {
+    const container = render(
+      '<div hidden><input id="collapsed" aria-invalid="true" /></div><div inert><input id="inert" aria-invalid="true" /></div><input id="target" aria-invalid="true" />'
+    );
+    expect(findFirstInvalidFocusTarget(container)?.id).toBe('target');
+  });
+
+  it('skips a hidden focusable descendant of an invalid wrapper in favor of a visible one', () => {
+    const container = render(
+      '<div aria-invalid="true"><button id="hidden" hidden>Hidden</button><button id="visible">Choose</button></div>'
+    );
+    expect(findFirstInvalidFocusTarget(container)?.id).toBe('visible');
+  });
+
+  it('returns null when every invalid control is hidden', () => {
+    expect(
+      findFirstInvalidFocusTarget(render('<div hidden><input aria-invalid="true" /></div>'))
+    ).toBeNull();
+  });
+
   it('returns null when nothing is invalid', () => {
     expect(findFirstInvalidFocusTarget(render('<input aria-invalid="false" />'))).toBeNull();
   });

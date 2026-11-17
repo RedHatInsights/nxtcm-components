@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 
+import { Button, ButtonVariant } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { RosaHcpWizardValidationProvider } from '../rosaHcpWizardValidationContext';
@@ -120,15 +121,15 @@ export function YamlEditorFooterMount(
     <>
       <YamlEditorFooterMountComponent {...browserProps} />
       {finishSubmission && (
-        <button
-          type="button"
+        <Button
+          variant={ButtonVariant.secondary}
           onClick={() => {
             finishSubmission();
             setFinishSubmission(null);
           }}
         >
           Finish submission
-        </button>
+        </Button>
       )}
       <div hidden>
         <input data-testid="onClose-calls" readOnly value={JSON.stringify(onCloseCalls)} />
