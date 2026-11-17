@@ -78,4 +78,32 @@ test.describe('AssociateAWSAccountInfo', () => {
     );
     await checkAccessibility({ component });
   });
+
+  for (const key of ['Enter', 'Space'] as const) {
+    test(`${key} expands and collapses the section and keeps focus on the toggle`, async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount<typeof AssociateAWSAccountInfoMount>(
+        'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/AssociateAWSAccountInfo/AssociateAWSAccountInfoMount',
+        { title: 'Step 1: Login', childVariant: 'expandable' }
+      );
+      const toggle = component.getByRole('button', { name: /step 1: login/i });
+      const content = component.getByText('Expandable content');
+
+      await toggle.focus();
+      await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+      await expect(content).toBeHidden();
+
+      await page.keyboard.press(key);
+      await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+      await expect(content).toBeVisible();
+      await expect(toggle).toBeFocused();
+
+      await page.keyboard.press(key);
+      await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+      await expect(content).toBeHidden();
+      await expect(toggle).toBeFocused();
+    });
+  }
 });

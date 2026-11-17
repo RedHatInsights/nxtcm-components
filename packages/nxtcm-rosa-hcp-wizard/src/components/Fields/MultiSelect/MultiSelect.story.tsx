@@ -33,6 +33,32 @@ export function MultiPlainHarness(fieldProps: MultiPlainHarnessProps = {}): Reac
   );
 }
 
+export interface MultiKeyboardHarnessProps {
+  /** disables the field */
+  isDisabled?: boolean;
+  /** shows the loading state */
+  isLoading?: boolean;
+}
+
+export function MultiKeyboardHarness(props: MultiKeyboardHarnessProps = {}): React.ReactElement {
+  const [value, setValue] = useState<string[]>([]);
+  return (
+    <Form>
+      <button type="button">Before zones</button>
+      <MultiSelect
+        id="ct-multi-keyboard"
+        label="Zones"
+        value={value}
+        onChange={setValue}
+        options={['a', 'b', 'c']}
+        {...props}
+      />
+      <button type="button">After zones</button>
+      <span data-testid="multi-keyboard-val">{value.length === 0 ? 'none' : value.join(',')}</span>
+    </Form>
+  );
+}
+
 export function MultiRefreshHarness() {
   const [value, setValue] = useState<string[]>([]);
   const [refreshed, setRefreshed] = useState(0);

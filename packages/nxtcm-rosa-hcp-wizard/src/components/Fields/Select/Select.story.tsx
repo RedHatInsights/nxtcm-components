@@ -79,6 +79,36 @@ export function TypeaheadHarness() {
   );
 }
 
+export interface KeyboardPlainHarnessProps {
+  /** disables the field */
+  isDisabled?: boolean;
+  /** shows the loading state */
+  isLoading?: boolean;
+}
+
+export function KeyboardPlainHarness(props: KeyboardPlainHarnessProps = {}): React.ReactElement {
+  const [value, setValue] = useState<string | number | undefined>();
+  return (
+    <Form>
+      <button type="button">Before region</button>
+      <Select<string>
+        id="ct-menu-plain-keyboard"
+        label="Region"
+        value={value}
+        onChange={setValue}
+        options={[
+          'us-east-1',
+          { label: 'Disabled region', value: 'disabled-region', disabled: true },
+          'eu-west-1',
+        ]}
+        {...props}
+      />
+      <button type="button">After region</button>
+      <span data-testid="plain-keyboard-val">{value === undefined ? 'none' : String(value)}</span>
+    </Form>
+  );
+}
+
 export function KeyboardTypeaheadHarness(): React.ReactElement {
   const [value, setValue] = useState<string | number | undefined>();
   return (
