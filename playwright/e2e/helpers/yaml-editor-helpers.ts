@@ -10,7 +10,9 @@ export async function navigateToYamlEditor(page: Page): Promise<void> {
   await page.getByRole('button', { name: /Edit in YAML/i }).click();
 
   // Wait for Monaco editor to be fully initialized
-  await page.locator('.monaco-editor').waitFor({ state: 'visible', timeout: 10000 });
+  await page
+    .getByRole('textbox', { name: YAML_EDITOR_NAME })
+    .waitFor({ state: 'visible', timeout: 10000 });
 
   // Wait for Monaco editor to be available on window
   await page.waitForFunction(
@@ -112,7 +114,7 @@ export const INVALID_YAML_SUFFIX = ' x: :';
 
 /** Wait until Monaco has loaded the generated YAML. */
 export async function waitForYamlEditorReady(page: Page): Promise<void> {
-  await page.locator('.monaco-editor').waitFor({ state: 'visible' });
+  await page.getByRole('textbox', { name: YAML_EDITOR_NAME }).waitFor({ state: 'visible' });
   await page.waitForFunction(() => {
     const editor = (window as Window & { monacoEditor?: { getValue: () => string } }).monacoEditor;
     return !!editor && editor.getValue().includes('kind:');

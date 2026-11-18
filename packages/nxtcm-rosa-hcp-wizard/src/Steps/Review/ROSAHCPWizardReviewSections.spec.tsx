@@ -19,7 +19,7 @@ test.describe('ROSAHCPWizardReviewSections', () => {
       'nxtcm-rosa-hcp-wizard/Steps/Review/ROSAHCPWizardReviewSections/ROSAHCPWizardReviewSectionsMount'
     );
     // Check that at least one section is rendered
-    const sections = component.locator('[data-testid^="section-"]');
+    const sections = component.getByTestId(/^section-/);
     await expect(sections.first()).toBeVisible();
   });
 

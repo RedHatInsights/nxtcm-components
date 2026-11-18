@@ -48,10 +48,8 @@ async function showSchemaErrors(component: Locator): Promise<void> {
 // Helper to wait for Monaco editor to be ready
 
 async function waitForMonaco(component: Locator): Promise<void> {
-  // Wait for Monaco editor and its content to render
-  await component.locator('.monaco-editor').waitFor({ timeout: 10000 });
-  // Wait for view-lines (Monaco's content area) to be visible
-  await component.locator('.view-lines').waitFor({ timeout: 10000 });
+  // Some stories have no generated YAML, so wait for the accessible editor itself.
+  await component.getByRole('textbox', { name: EDITOR_NAME }).waitFor({ timeout: 10000 });
 }
 
 test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
@@ -63,8 +61,8 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
     await waitForMonaco(component);
 
     // Verify Monaco editor is rendered
-    await expect(component.locator('.monaco-editor')).toBeVisible();
-    await expect(component.locator('.view-lines')).toBeVisible();
+    await expect(component.getByRole('textbox', { name: EDITOR_NAME })).toBeVisible();
+    await expect(component.getByText('ROSAControlPlane', { exact: true })).toBeVisible();
   });
 
   test('displays CodeEditor component', async ({ mount }) => {
@@ -74,8 +72,8 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
 
     await waitForMonaco(component);
 
-    // Verify PatternFly CodeEditor wrapper is present
-    await expect(component.locator('.pf-v6-c-code-editor')).toBeVisible();
+    // The code editor exposes its copy action.
+    await expect(component.getByRole('button', { name: /Copy/ })).toBeVisible();
   });
 
   test.describe('Schema Panel Toggle', () => {
@@ -238,7 +236,7 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
       );
 
       await waitForMonaco(component);
-      await expect(component.locator('.monaco-editor')).toBeVisible();
+      await expect(component.getByRole('textbox', { name: EDITOR_NAME })).toBeVisible();
     });
 
     test('renders without errors when onCancel prop is provided', async ({ mount }) => {
@@ -250,22 +248,21 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
       );
 
       await waitForMonaco(component);
-      await expect(component.locator('.monaco-editor')).toBeVisible();
+      await expect(component.getByRole('textbox', { name: EDITOR_NAME })).toBeVisible();
     });
   });
 
   test.describe('Monaco Configuration', () => {
-    test('sets up YAML language mode', async ({ mount }) => {
+    test('displays the initial YAML content', async ({ mount }) => {
       const component = await mount<typeof YamlEditorStepMount>(
         'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepMount'
       );
 
       await waitForMonaco(component);
 
-      // Check that Monaco is configured for YAML
-      // The .view-lines should contain YAML syntax highlighting
-      const viewLines = component.locator('.view-lines');
-      await expect(viewLines).toBeVisible();
+      // Verify content is rendered in the editor.
+      const yamlContent = component.getByText('ROSAControlPlane', { exact: true });
+      await expect(yamlContent).toBeVisible();
     });
 
     test('enables copy functionality', async ({ mount }) => {
@@ -276,7 +273,7 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
       await waitForMonaco(component);
 
       // CodeEditor should have copy button
-      const copyButton = component.locator('button[aria-label*="Copy"]');
+      const copyButton = component.getByRole('button', { name: /Copy/ });
       await expect(copyButton).toBeVisible();
     });
 
@@ -288,7 +285,7 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
       await waitForMonaco(component);
 
       // CodeEditor should have download button
-      const downloadButton = component.locator('button[aria-label*="Download"]');
+      const downloadButton = component.getByRole('button', { name: /Download/ });
       await expect(downloadButton).toBeVisible();
     });
   });
@@ -302,7 +299,7 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
       await waitForMonaco(component);
 
       // Monaco creates a textarea for accessibility
-      const textarea = component.locator('.monaco-editor textarea');
+      const textarea = component.getByRole('textbox', { name: EDITOR_NAME });
       await expect(textarea).toBeVisible();
     });
 
