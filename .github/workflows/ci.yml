@@ -17,6 +17,7 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -51,6 +52,7 @@ jobs:
   type-check:
     name: Type Check
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -69,6 +71,7 @@ jobs:
   unit-test:
     name: Unit Tests (React ${{ matrix.react }})
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -107,6 +110,7 @@ jobs:
   unit-test-summary:
     name: Unit Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: unit-test
     if: always()
     steps:
@@ -122,6 +126,7 @@ jobs:
   test:
     name: Component Tests (React ${{ matrix.react }})
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
@@ -185,6 +190,7 @@ jobs:
   component-test-summary:
     name: Component Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: test
     if: always()
     steps:
@@ -200,6 +206,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -228,6 +235,7 @@ jobs:
     name: Published packages on React 18 and 19
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -255,6 +263,7 @@ jobs:
   e2e:
     name: E2E Tests (React ${{ matrix.react }})
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     strategy:
       fail-fast: false
       matrix:
@@ -287,6 +296,7 @@ jobs:
   e2e-summary:
     name: E2E Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: e2e
     if: always()
     steps:
@@ -302,6 +312,7 @@ jobs:
   coverage-contract:
     name: Assemble Coverage Contract (React ${{ matrix.react }})
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [unit-test, test, e2e]
     if: always()
     strategy:
@@ -366,6 +377,7 @@ jobs:
   storybook:
     name: Build Storybook
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 

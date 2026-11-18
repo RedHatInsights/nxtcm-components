@@ -12,6 +12,7 @@ jobs:
     name: Resolve package from release tag
     if: github.event.release.target_commitish == 'main'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     outputs:
       package-dir: ${{ steps.resolve.outputs.package-dir }}
       display-name: ${{ steps.resolve.outputs.display-name }}
@@ -44,6 +45,7 @@ jobs:
     needs: resolve
     if: needs.resolve.outputs.package-dir != ''
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -110,6 +112,7 @@ jobs:
     needs: [resolve, quality-gates]
     if: github.repository == 'RedHatInsights/nxtcm-components' && needs.resolve.outputs.package-dir != ''
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment: npm-publish
     permissions:
       contents: read
