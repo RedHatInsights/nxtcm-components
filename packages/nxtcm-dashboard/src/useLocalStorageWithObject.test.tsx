@@ -159,35 +159,32 @@ describe('useLocalStorageWithObject', () => {
 
     it('falls back to initialValue in updater when stored JSON is invalid', () => {
       const initial = { count: 0 };
+      // Seed corrupt data BEFORE mounting so the hook initializes from invalid storage
+      localStorage.setItem('corrupt-updater', 'not-json');
+
       const { result, rerender, unmount } = renderHook(() =>
         useLocalStorageWithObject('corrupt-updater', initial)
       );
 
-      // Corrupt localStorage after initial render
-      localStorage.setItem('corrupt-updater', 'not-json');
-
-      // Force a re-render to pick up corruption, then use updater
-      rerender();
       act(() => {
         result.current[1]((prev) => ({ count: prev.count + 100 }));
       });
       rerender();
 
-      // The updater parses prevState from localStorage — invalid JSON → initialValue fallback
+      // The updater parses prevState from storage — invalid JSON → initialValue fallback
       expect(result.current[0]).toEqual({ count: 100 });
       unmount();
     });
 
     it('falls back to initialValue in updater when stored value has wrong structure', () => {
       const initial = { name: 'default', active: true };
+      // Seed structurally incompatible data BEFORE mounting so the hook initializes from it
+      localStorage.setItem('wrong-struct-updater', JSON.stringify({ unrelated: 123 }));
+
       const { result, rerender, unmount } = renderHook(() =>
         useLocalStorageWithObject('wrong-struct-updater', initial)
       );
 
-      // Overwrite with structurally incompatible value
-      localStorage.setItem('wrong-struct-updater', JSON.stringify({ unrelated: 123 }));
-
-      rerender();
       act(() => {
         result.current[1]((prev) => ({ ...prev, active: false }));
       });
