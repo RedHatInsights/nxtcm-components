@@ -249,6 +249,7 @@ describe('localizable strings reference', () => {
       'yamlEditor.invalidYaml',
       'rolesAndPolicies.copyHover',
       'rolesAndPolicies.copyClicked',
+      'rolesAndPolicies.installerRoleOptionDisabledDescription',
       'rolesAndPolicies.supportPlaceholder',
       'rolesAndPolicies.workerPlaceholder',
       'networking.proxyNextStepInfo',
@@ -295,12 +296,6 @@ describe('localizable strings reference', () => {
       (key) => rows.some((row) => row.key === key) || doc.includes(`\`${key}\``)
     );
     expect(stillListed).toEqual([]);
-    expect(
-      rows.find((row) => row.key === 'rolesAndPolicies.installerRoleOptionDisabledDescription')
-        ?.notes
-    ).toContain('kept for backward compatibility');
-    expect(doc.replaceAll('Not read — kept for backward compatibility', '')).not.toContain(
-      'Not read'
-    );
+    expect(doc).not.toContain('Not read');
   });
 });
