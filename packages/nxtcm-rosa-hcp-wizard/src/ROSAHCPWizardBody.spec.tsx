@@ -64,6 +64,8 @@ test.describe('ROSAHCPWizardBody', () => {
       const component = await mount<typeof RosaHcpWizardBodyPendingSubmissionMount>(
         'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyPendingSubmissionMount'
       );
+      const wizardView = component.getByTestId('rosa-hcp-wizard-view');
+      await expect(wizardView).toBeAttached();
       const reviewStep = component.getByRole('button', { name: wizard.stepLabels.review });
       await reviewStep.click();
 
@@ -76,13 +78,14 @@ test.describe('ROSAHCPWizardBody', () => {
         loadingView.getByRole('heading', { name: createCluster.inProgressTitle })
       ).toBeVisible();
       await expect(loadingView.getByRole('progressbar')).toBeVisible();
-      await expect(component.getByRole('navigation', { name: /Wizard steps/i })).toHaveCount(0);
+      await expect(wizardView).not.toBeAttached();
       await expect(component.getByRole('button', { name: wizard.createCluster })).toHaveCount(0);
       await expect(component.getByTestId('submitted-yaml')).not.toHaveValue('');
       await checkAccessibility({ component });
 
       await component.getByRole('button', { name: 'Finish submission successfully' }).click();
       await expect(loadingView).toHaveCount(0);
+      await expect(wizardView).toBeAttached();
       await expect(reviewStep).toHaveAttribute('aria-current', 'step');
     });
 
@@ -92,6 +95,8 @@ test.describe('ROSAHCPWizardBody', () => {
       const component = await mount<typeof RosaHcpWizardBodyPendingSubmissionMount>(
         'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyPendingSubmissionMount'
       );
+      const wizardView = component.getByTestId('rosa-hcp-wizard-view');
+      await expect(wizardView).toBeAttached();
       await component.getByRole('button', { name: wizard.stepLabels.review }).click();
       await component.getByRole('button', { name: /Edit in YAML/i }).click();
       const yamlView = component.getByRole('region', { name: /YAML Configuration/i });
@@ -104,8 +109,8 @@ test.describe('ROSAHCPWizardBody', () => {
       await expect(loadingView).toBeVisible();
       await expect(loadingView).toBeFocused();
       await expect(loadingView.getByRole('progressbar')).toBeVisible();
+      await expect(wizardView).not.toBeAttached();
       await expect(yamlView).toHaveCount(0);
-      await expect(component.getByRole('navigation', { name: /Wizard steps/i })).toHaveCount(0);
       await expect(component.getByTestId('submitted-yaml')).not.toHaveValue('');
 
       await component.getByRole('button', { name: 'Finish submission with error' }).click();
@@ -115,6 +120,7 @@ test.describe('ROSAHCPWizardBody', () => {
         component.getByRole('button', { name: submitErrorStrings.exitWizard })
       ).toBeVisible();
       await component.getByRole('button', { name: submitErrorStrings.backToReviewStep }).click();
+      await expect(wizardView).toBeAttached();
       await expect(yamlView).toBeFocused();
       await expect(yamlView.locator('.monaco-editor')).toBeVisible();
     });

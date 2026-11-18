@@ -241,6 +241,7 @@ export const ROSAHCPWizardBody = (props: RosaHCPWizardProps) => {
   return (
     <div
       ref={wizardViewRef}
+      data-testid="rosa-hcp-wizard-view"
       className={`rosa-hcp-wizard${isYamlEditorOpen ? ' rosa-hcp-wizard--yaml-editor-open' : ''}`}
     >
       <Wizard
