@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 
+import { Button, ButtonVariant } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { RosaHcpWizardValidationProvider } from '../rosaHcpWizardValidationContext';
@@ -74,6 +75,8 @@ export type YamlEditorFooterMountGalleryProps = Omit<
   onClose?: boolean;
   onCancel?: boolean;
   onSubmit?: boolean;
+  /** Keep onSubmit pending until the story's completion button is clicked. */
+  holdSubmit?: boolean;
 };
 
 export function YamlEditorFooterMount(
@@ -88,6 +91,7 @@ export function YamlEditorFooterMount(
   const [onSubmitCalls, setOnSubmitCalls] = React.useState<
     Parameters<NonNullable<BrowserProps['onSubmit']>>[]
   >([]);
+  const [finishSubmission, setFinishSubmission] = React.useState<(() => void) | null>(null);
   const browserProps = React.useMemo<BrowserProps>(
     () => ({
       ...props,
@@ -104,6 +108,9 @@ export function YamlEditorFooterMount(
       onSubmit: props.onSubmit
         ? (...args) => {
             setOnSubmitCalls((calls) => [...calls, args]);
+            if (props.holdSubmit) {
+              return new Promise<void>((resolve) => setFinishSubmission(() => resolve));
+            }
             return Promise.resolve();
           }
         : undefined,
@@ -113,6 +120,17 @@ export function YamlEditorFooterMount(
   return (
     <>
       <YamlEditorFooterMountComponent {...browserProps} />
+      {finishSubmission && (
+        <Button
+          variant={ButtonVariant.secondary}
+          onClick={() => {
+            finishSubmission();
+            setFinishSubmission(null);
+          }}
+        >
+          Finish submission
+        </Button>
+      )}
       <div hidden>
         <input data-testid="onClose-calls" readOnly value={JSON.stringify(onCloseCalls)} />
         <input data-testid="onClose-count" readOnly value={String(onCloseCalls.length)} />

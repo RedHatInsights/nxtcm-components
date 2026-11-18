@@ -105,4 +105,39 @@ test.describe('TabGroup', () => {
     await component.getByRole('button', { name: 'Tab 2' }).click();
     await checkAccessibility({ component });
   });
+
+  test('reaches each toggle with Tab and switches content with Enter and Space', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof TabGroupMount>(
+      'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/TabGroup/TabGroupMount'
+    );
+    const first = component.getByRole('button', { name: 'Tab 1' });
+    const second = component.getByRole('button', { name: 'Tab 2' });
+    const third = component.getByRole('button', { name: 'Tab 3' });
+
+    await page.keyboard.press('Tab');
+    await expect(first).toBeFocused();
+    await expect(first).toHaveAttribute('aria-pressed', 'true');
+
+    await page.keyboard.press('Tab');
+    await expect(second).toBeFocused();
+    await expect(second).toHaveAttribute('aria-pressed', 'false');
+    await page.keyboard.press('Enter');
+    await expect(component.getByText('Tab 2 Content')).toBeVisible();
+    await expect(component.getByText('Tab 1 Content')).toBeHidden();
+    await expect(second).toHaveAttribute('aria-pressed', 'true');
+    await expect(first).toHaveAttribute('aria-pressed', 'false');
+    await expect(second).toBeFocused();
+
+    await page.keyboard.press('Tab');
+    await expect(third).toBeFocused();
+    await page.keyboard.press('Space');
+    await expect(component.getByText('Tab 3 Content')).toBeVisible();
+    await expect(component.getByText('Tab 2 Content')).toBeHidden();
+    await expect(third).toHaveAttribute('aria-pressed', 'true');
+    await expect(second).toHaveAttribute('aria-pressed', 'false');
+    await expect(third).toBeFocused();
+  });
 });

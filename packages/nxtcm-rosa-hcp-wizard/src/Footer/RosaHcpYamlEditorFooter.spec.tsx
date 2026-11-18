@@ -253,6 +253,26 @@ test.describe('RosaHcpYamlEditorFooter', () => {
       await expect(createCluster).toBeFocused();
     });
 
+    test('keeps focus on Create cluster, marked unavailable, while the submission is pending', async ({
+      mount,
+    }) => {
+      const component = await mount<typeof YamlEditorFooterMount>(STORY, {
+        yamlContent: 'kind: ROSAControlPlane',
+        onSubmit: true,
+        holdSubmit: true,
+      });
+      const createCluster = component.getByRole('button', { name: w.createCluster });
+
+      await createCluster.press('Enter');
+
+      await expect(component.getByTestId('onSubmit-count')).toHaveValue('1');
+      await expect(createCluster).toBeFocused();
+      await expect(createCluster).toHaveAttribute('aria-disabled', 'true');
+
+      await component.getByRole('button', { name: 'Finish submission', exact: true }).click();
+      await expect(createCluster).not.toHaveAttribute('aria-disabled', 'true');
+    });
+
     test('Enter on Cancel cluster creation calls onCancel', async ({ mount }) => {
       const component = await mount<typeof YamlEditorFooterMount>(STORY, { onCancel: true });
 

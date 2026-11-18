@@ -2,6 +2,7 @@ import type { Locator } from '@playwright/test';
 import * as yaml from 'js-yaml';
 
 import { expect, type MountResult, test } from '@/playwright/ct-fixture';
+import { tabUntilFocused } from '@/playwright/e2e/helpers/focus-helpers';
 
 import { STEP_IDS } from '../constants';
 import fixtures from '../ROSAHCPWizard.fixtures';
@@ -32,6 +33,7 @@ const REQUIRED_FIELD_MESSAGE = defaultRosaHcpWizardValidatorStrings.commonRequir
 const rp = defaultRosaHcpWizardStrings.rolesAndPolicies;
 const review = defaultRosaHcpWizardStrings.review;
 const encryption = defaultRosaHcpWizardStrings.encryption;
+const networking = defaultRosaHcpWizardStrings.networking;
 
 /** PatternFly danger Alert exposes the title as a heading (e.g. "Danger alert: …"). */
 const validationAlertHeading = { name: new RegExp(FIX_VALIDATION_ALERT) };
@@ -108,6 +110,20 @@ async function selectAwsInfrastructureAccount(
   await combo.click();
   await combo.fill(accountLabel.includes('Staging') ? 'Staging' : accountLabel);
   await page.getByRole('option', { name: accountLabel, exact: true }).click();
+}
+
+/** Focus rests on the step content container that holds `content`, not on <body>, nav, or footer. */
+async function expectStepContentFocused(
+  content: import('@playwright/test').Locator
+): Promise<void> {
+  await expect
+    .poll(() =>
+      content.evaluate(
+        (element) =>
+          document.activeElement !== document.body && !!document.activeElement?.contains(element)
+      )
+    )
+    .toBe(true);
 }
 
 test('RosaHcpWizardFooter passes accessibility check during normal navigation', async ({
@@ -633,5 +649,199 @@ test.describe('RosaHcpWizardFooter — validation alert after failed Review Subm
     await page.getByRole('option', { name: fixtures.mockOicdConfig[0].label }).click();
 
     await expect(component.getByRole('heading', validationAlertHeading)).toBeHidden();
+  });
+});
+
+test.describe('RosaHcpWizardFooter — keyboard and focus', () => {
+  for (const key of ['Enter', 'Space'] as const) {
+    test(`${key} on Next and Back changes steps and moves focus to the step content`, async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount<typeof RosaHcpWizardValidationMount>(
+        'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+        { defaultValues: VALID_DETAILS_FORM_VALUES }
+      );
+      const rolesContent = component.getByText(rp.accountRolesSection, { exact: true });
+      const detailsContent = component.getByText(d.sectionLabel, { exact: true });
+
+      await component.getByRole('button', { name: FOOTER_NEXT }).focus();
+      await page.keyboard.press(key);
+      await expect(rolesContent).toBeVisible();
+      await expectStepContentFocused(rolesContent);
+
+      await component.getByRole('button', { name: FOOTER_BACK }).focus();
+      await page.keyboard.press(key);
+      await expect(detailsContent).toBeVisible();
+      await expectStepContentFocused(detailsContent);
+    });
+  }
+
+  test('Tab from the page start reaches Next and Enter advances to the next step', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof RosaHcpWizardValidationMount>(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: VALID_DETAILS_FORM_VALUES }
+    );
+
+    await tabUntilFocused(page, component.getByRole('button', { name: FOOTER_NEXT }), 150);
+    await page.keyboard.press('Enter');
+
+    await expect(component.getByText(rp.accountRolesSection, { exact: true })).toBeVisible();
+  });
+
+  test('Back is disabled on Details and is skipped when tabbing backward from Next', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof RosaHcpWizardValidationMount>(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount'
+    );
+    const back = component.getByRole('button', { name: FOOTER_BACK });
+
+    await component.getByRole('button', { name: FOOTER_NEXT }).focus();
+    await page.keyboard.press('Shift+Tab');
+
+    await expect(back).toBeDisabled();
+    await expect(back).not.toBeFocused();
+  });
+
+  test('moves focus to the first invalid field when Next fails, and again on every retry', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof RosaHcpWizardValidationMount>(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: { ...VALID_DETAILS_FORM_VALUES, name: '' } }
+    );
+    const next = component.getByRole('button', { name: FOOTER_NEXT });
+    const clusterName = component.getByRole('textbox', { name: /Cluster name/i });
+
+    await next.focus();
+    await page.keyboard.press('Enter');
+    await expect(component.getByRole('heading', validationAlertHeading)).toBeVisible();
+    await expect(clusterName).toBeFocused();
+    await expect(clusterName).toHaveAttribute('aria-invalid', 'true');
+
+    await next.focus();
+    await page.keyboard.press('Enter');
+    await expect(clusterName).toBeFocused();
+  });
+
+  test('moves focus to an invalid select when it is the first invalid control', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof RosaHcpWizardValidationMount>(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: { ...VALID_DETAILS_FORM_VALUES, region: undefined } }
+    );
+
+    await component.getByRole('button', { name: FOOTER_NEXT }).focus();
+    await page.keyboard.press('Enter');
+
+    const region = component.getByRole('combobox', { name: new RegExp(`^${d.regionLabel}`) });
+    await expect(component.getByRole('heading', validationAlertHeading)).toBeVisible();
+    await expect(region).toBeFocused();
+    await expect(region).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  test('skips an invalid field in a collapsed section and focuses it once the section is expanded', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof RosaHcpWizardValidationMount>(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      {
+        defaultValues: {
+          ...VALID_REVIEW_SUBMIT_FORM_VALUES,
+          cidr_default: false,
+          network_machine_cidr: 'not-a-cidr',
+        },
+      }
+    );
+    await clickNextTimes(component, 3);
+    const next = component.getByRole('button', { name: FOOTER_NEXT });
+    const machineCidr = component.getByRole('textbox', {
+      name: networking.machineCidrLabel,
+      includeHidden: true,
+    });
+    await expect(machineCidr).toBeHidden();
+
+    await next.focus();
+    await page.keyboard.press('Enter');
+    await expect(component.getByRole('heading', validationAlertHeading)).toBeVisible();
+    await expect(next).toBeFocused();
+
+    await component.getByRole('button', { name: networking.advancedToggle }).click();
+    await expect(machineCidr).toBeVisible();
+    await next.focus();
+    await page.keyboard.press('Enter');
+    await expect(machineCidr).toBeFocused();
+    await expect(machineCidr).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  test('moves focus to the first invalid field when Skip to review fails', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof RosaHcpWizardValidationMount>(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: VALID_REVIEW_SUBMIT_FORM_VALUES }
+    );
+
+    await advanceToEncryptionStep(component);
+    await component.getByRole('checkbox', { name: encryption.etcdLabel }).check();
+    await component.getByRole('button', { name: SKIP_TO_REVIEW }).focus();
+    await page.keyboard.press('Enter');
+
+    const etcdKeyArn = component.getByRole('textbox');
+    await expect(component.getByRole('heading', validationAlertHeading)).toBeVisible();
+    await expect(etcdKeyArn).toBeFocused();
+    await expect(etcdKeyArn).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  test('moves focus to the Review content when Skip to review succeeds', async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount<typeof RosaHcpWizardValidationMount>(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: VALID_REVIEW_SUBMIT_FORM_VALUES }
+    );
+
+    await advanceToEncryptionStep(component);
+    await component.getByRole('button', { name: SKIP_TO_REVIEW }).focus();
+    await page.keyboard.press('Enter');
+
+    const reviewContent = component.getByText(review.sectionLabel, { exact: true });
+    await expect(reviewContent).toBeVisible();
+    await expect(component.getByRole('button', { name: SKIP_TO_REVIEW })).toBeHidden();
+    await expectStepContentFocused(reviewContent);
+  });
+
+  test('keeps focus on Create cluster, marked unavailable, while the submission is pending', async ({
+    mount,
+    page,
+  }) => {
+    test.setTimeout(30_000);
+    const component = await mount<typeof RosaHcpWizardValidationMount>(
+      'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
+      { defaultValues: VALID_REVIEW_SUBMIT_FORM_VALUES, onSubmit: true, holdSubmit: true }
+    );
+
+    await advanceToReviewStep(component);
+    const submit = component.getByRole('button', { name: FOOTER_SUBMIT });
+    await submit.focus();
+    await page.keyboard.press('Enter');
+
+    await expect(component.getByTestId('onSubmit-count')).toHaveValue('1');
+    await expect(submit).toBeFocused();
+    await expect(submit).toHaveAttribute('aria-disabled', 'true');
+
+    await component.getByRole('button', { name: 'Finish submission', exact: true }).click();
+    await expect(submit).not.toHaveAttribute('aria-disabled', 'true');
   });
 });

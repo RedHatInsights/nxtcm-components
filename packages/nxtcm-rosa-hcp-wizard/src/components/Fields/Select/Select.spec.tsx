@@ -17,6 +17,7 @@ import type {
   DisabledTypeaheadHarness,
   GroupedLoadingTypeaheadHarness,
   GroupedTypeaheadHarness,
+  KeyboardPlainHarness,
   KeyboardTypeaheadHarness,
   LoadingTypeaheadHarness,
   PlainMenuHarness,
@@ -568,5 +569,119 @@ test.describe('Select', () => {
     await expect(option).toBeDisabled();
     await expect(option).toContainText('Incompatible with this version.');
     await checkMenuAccessibility(page);
+  });
+});
+
+test.describe('Select — plain menu keyboard', () => {
+  const path = 'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/KeyboardPlainHarness';
+
+  for (const key of ['Enter', 'Space'] as const) {
+    test(`${key} opens the menu and keeps focus on the toggle`, async ({ mount, page }) => {
+      await mount<typeof KeyboardPlainHarness>(path);
+      const toggle = page.getByRole('button', { name: /^Region / });
+
+      await toggle.focus();
+      await page.keyboard.press(key);
+
+      await expect(page.getByRole('option', { name: 'us-east-1' })).toBeVisible();
+      await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+      await expect(toggle).toBeFocused();
+    });
+  }
+
+  test('arrow keys skip disabled options, Enter selects, and focus returns to the toggle', async ({
+    mount,
+    page,
+  }) => {
+    await mount<typeof KeyboardPlainHarness>(path);
+    const toggle = page.getByRole('button', { name: /^Region / });
+    await toggle.focus();
+    await page.keyboard.press('Enter');
+
+    await page.keyboard.press('ArrowDown');
+    await expect(page.getByRole('option', { name: 'us-east-1' })).toBeFocused();
+    await page.keyboard.press('ArrowDown');
+    await expect(page.getByRole('option', { name: 'eu-west-1' })).toBeFocused();
+    await expect(page.getByRole('option', { name: 'Disabled region' })).toBeDisabled();
+
+    await page.keyboard.press('Enter');
+    await expect(page.getByTestId('plain-keyboard-val')).toHaveText('eu-west-1');
+    await expect(page.getByRole('option', { name: 'eu-west-1' })).toBeHidden();
+    await expect(toggle).toBeFocused();
+  });
+
+  test('Escape closes the menu without selecting and returns focus to the toggle', async ({
+    mount,
+    page,
+  }) => {
+    await mount<typeof KeyboardPlainHarness>(path);
+    const toggle = page.getByRole('button', { name: /^Region / });
+    await toggle.focus();
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('ArrowDown');
+    await expect(page.getByRole('option', { name: 'us-east-1' })).toBeFocused();
+
+    await page.keyboard.press('Escape');
+
+    await expect(page.getByRole('option', { name: 'us-east-1' })).toBeHidden();
+    await expect(page.getByTestId('plain-keyboard-val')).toHaveText('none');
+    await expect(toggle).toBeFocused();
+  });
+
+  test('Tab from an open menu closes it without losing focus, and the next Tab moves on', async ({
+    mount,
+    page,
+  }) => {
+    await mount<typeof KeyboardPlainHarness>(path);
+    const toggle = page.getByRole('button', { name: /^Region / });
+    await page.getByRole('button', { name: 'Before region' }).focus();
+    await page.keyboard.press('Tab');
+    await expect(toggle).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('option', { name: 'us-east-1' })).toBeVisible();
+
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('option', { name: 'us-east-1' })).toBeHidden();
+    await expect(toggle).toBeFocused();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('button', { name: 'After region' })).toBeFocused();
+    await expect(page.getByTestId('plain-keyboard-val')).toHaveText('none');
+  });
+
+  test('a disabled select is skipped by Tab in both directions', async ({ mount, page }) => {
+    await mount<typeof KeyboardPlainHarness>(path, { isDisabled: true });
+    const toggle = page.getByRole('button', { name: /^Region / });
+    const before = page.getByRole('button', { name: 'Before region' });
+    const after = page.getByRole('button', { name: 'After region' });
+    await expect(toggle).toBeDisabled();
+
+    await before.focus();
+    await page.keyboard.press('Tab');
+    await expect(after).toBeFocused();
+    await page.keyboard.press('Shift+Tab');
+    await expect(before).toBeFocused();
+    await expect(toggle).not.toBeFocused();
+  });
+
+  test('a loading menu offers no focusable option and Escape still returns focus to the toggle', async ({
+    mount,
+    page,
+  }) => {
+    await mount<typeof KeyboardPlainHarness>(path, { isLoading: true });
+    const toggle = page.getByRole('button', { name: /^Region / });
+    await toggle.focus();
+    await page.keyboard.press('Enter');
+    const loadingOption = page.getByRole('option', { name: 'Loading...' });
+    await expect(loadingOption).toBeVisible();
+    await expect(loadingOption).toBeDisabled();
+
+    await page.keyboard.press('ArrowDown');
+    await expect(loadingOption).not.toBeFocused();
+
+    await page.keyboard.press('Escape');
+    await expect(loadingOption).toBeHidden();
+    await expect(toggle).toBeFocused();
   });
 });

@@ -3,6 +3,7 @@ import type { UseFormGetFieldState } from 'react-hook-form';
 import { STEP_IDS } from '../constants';
 import { WizardFieldPath, WizardFormValues } from '../types';
 import {
+  findFirstInvalidFocusTarget,
   isRosaHcpWizardBackDisabled,
   isRosaHcpWizardSkipToReviewVisible,
   pathsHaveValidationIssues,
@@ -73,5 +74,78 @@ describe('isRosaHcpWizardSkipToReviewVisible', () => {
     expect(isRosaHcpWizardSkipToReviewVisible(STEP_IDS.DETAILS)).toBe(false);
     expect(isRosaHcpWizardSkipToReviewVisible(STEP_IDS.REVIEW)).toBe(false);
     expect(isRosaHcpWizardSkipToReviewVisible(STEP_IDS.OPTIONAL_SETUP)).toBe(false);
+  });
+});
+
+describe('findFirstInvalidFocusTarget', () => {
+  const render = (html: string): HTMLElement => {
+    const container = document.createElement('div');
+    container.innerHTML = html;
+    return container;
+  };
+
+  it('returns the first aria-invalid control in document order', () => {
+    const container = render(
+      '<input id="valid" aria-invalid="false" /><input id="first" aria-invalid="true" /><input id="second" aria-invalid="true" />'
+    );
+    expect(findFirstInvalidFocusTarget(container)?.id).toBe('first');
+  });
+
+  it('falls back to a focusable descendant when the flag is on a wrapper', () => {
+    const container = render(
+      '<div aria-invalid="true"><span>label</span><button id="inner">Choose</button></div>'
+    );
+    expect(findFirstInvalidFocusTarget(container)?.id).toBe('inner');
+  });
+
+  it('skips invalid wrappers and disabled controls that cannot take focus', () => {
+    const container = render(
+      '<div aria-invalid="true"><span>nothing focusable</span></div><input id="disabled" aria-invalid="true" disabled /><input id="target" aria-invalid="true" />'
+    );
+    expect(findFirstInvalidFocusTarget(container)?.id).toBe('target');
+  });
+
+  it('skips invalid controls inside collapsed or inert sections', () => {
+    const container = render(
+      '<div hidden><input id="collapsed" aria-invalid="true" /></div><div inert><input id="inert" aria-invalid="true" /></div><input id="target" aria-invalid="true" />'
+    );
+    expect(findFirstInvalidFocusTarget(container)?.id).toBe('target');
+  });
+
+  it('skips a hidden focusable descendant of an invalid wrapper in favor of a visible one', () => {
+    const container = render(
+      '<div aria-invalid="true"><button id="hidden" hidden>Hidden</button><button id="visible">Choose</button></div>'
+    );
+    expect(findFirstInvalidFocusTarget(container)?.id).toBe('visible');
+  });
+
+  it('asks checkVisibility to include CSS visibility, so visibility-hidden controls are skipped', () => {
+    // jsdom has no checkVisibility; this stub only reports visibility-hidden elements when asked to.
+    const checkVisibility = jest.fn(function (this: HTMLElement, options?: CheckVisibilityOptions) {
+      return !(options?.visibilityProperty && this.style.visibility === 'hidden');
+    });
+    Object.defineProperty(HTMLElement.prototype, 'checkVisibility', {
+      configurable: true,
+      value: checkVisibility,
+    });
+    try {
+      const container = render(
+        '<input id="invisible" aria-invalid="true" style="visibility: hidden" /><input id="target" aria-invalid="true" />'
+      );
+      expect(findFirstInvalidFocusTarget(container)?.id).toBe('target');
+      expect(checkVisibility).toHaveBeenCalledWith({ visibilityProperty: true });
+    } finally {
+      delete (HTMLElement.prototype as Partial<HTMLElement>).checkVisibility;
+    }
+  });
+
+  it('returns null when every invalid control is hidden', () => {
+    expect(
+      findFirstInvalidFocusTarget(render('<div hidden><input aria-invalid="true" /></div>'))
+    ).toBeNull();
+  });
+
+  it('returns null when nothing is invalid', () => {
+    expect(findFirstInvalidFocusTarget(render('<input aria-invalid="false" />'))).toBeNull();
   });
 });

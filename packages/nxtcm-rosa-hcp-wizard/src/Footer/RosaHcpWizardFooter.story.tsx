@@ -4,6 +4,7 @@
  */
 import React, { useCallback, useMemo } from 'react';
 
+import { Button, ButtonVariant } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { Wizard, WizardStep } from '@patternfly/react-core/dist/dynamic/components/Wizard';
 import { FormProvider, useForm } from 'react-hook-form';
 
@@ -270,15 +271,15 @@ export function RosaHcpWizardValidationMount(
     <>
       <RosaHcpWizardValidationMountComponent {...browserProps} />
       {finishSubmission && (
-        <button
-          type="button"
+        <Button
+          variant={ButtonVariant.secondary}
           onClick={() => {
             finishSubmission();
             setFinishSubmission(null);
           }}
         >
           Finish submission
-        </button>
+        </Button>
       )}
       <div hidden>
         <input data-testid="onSubmit-calls" readOnly value={JSON.stringify(onSubmitCalls)} />
