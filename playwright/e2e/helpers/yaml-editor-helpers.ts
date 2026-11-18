@@ -72,7 +72,7 @@ export async function fillDetailsStep(page: Page): Promise<void> {
 /**
  * Fill Roles step (installer role, OIDC config)
  */
-async function fillRolesStep(page: Page): Promise<void> {
+export async function fillRolesStep(page: Page): Promise<void> {
   await page.getByTestId('installer-role-select').click();
   await page.getByRole('option', { name: /ManagedOpenShift-HCP-ROSA-Installer-Role/ }).click();
   await page.getByTestId('oidc-config-select').click();
@@ -83,7 +83,7 @@ async function fillRolesStep(page: Page): Promise<void> {
 /**
  * Fill Machine Pools step (VPC, subnet, instance type)
  */
-async function fillMachinePoolsStep(page: Page): Promise<void> {
+export async function fillMachinePoolsStep(page: Page): Promise<void> {
   await page
     .getByRole('combobox', {
       name: /Select a VPC to install your machine pool into your selected region: us-east-1/i,
@@ -100,7 +100,7 @@ async function fillMachinePoolsStep(page: Page): Promise<void> {
 /**
  * Fill Networking step (select public subnet for public endpoint access)
  */
-async function fillNetworkingStep(page: Page): Promise<void> {
+export async function fillNetworkingStep(page: Page): Promise<void> {
   // Public endpoint access is selected by default, need to select public subnet
   await page.getByRole('button', { name: /public subnet name/i }).click();
   await page.getByRole('option', { name: /test-1-subnet-public1-us-east-1a/i }).click();

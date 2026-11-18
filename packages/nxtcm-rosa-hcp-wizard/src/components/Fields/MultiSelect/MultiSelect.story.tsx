@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { Button, ButtonVariant } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { Form } from '@patternfly/react-core/dist/dynamic/components/Form';
 
 import type { OptionGroup } from '../Select/SelectTypes';
@@ -29,6 +30,32 @@ export function MultiPlainHarness(fieldProps: MultiPlainHarnessProps = {}): Reac
         {...fieldProps}
       />
       <span data-testid="multi-val">{value.length === 0 ? 'none' : value.join(',')}</span>
+    </Form>
+  );
+}
+
+export interface MultiKeyboardHarnessProps {
+  /** disables the field */
+  isDisabled?: boolean;
+  /** shows the loading state */
+  isLoading?: boolean;
+}
+
+export function MultiKeyboardHarness(props: MultiKeyboardHarnessProps = {}): React.ReactElement {
+  const [value, setValue] = useState<string[]>([]);
+  return (
+    <Form>
+      <Button variant={ButtonVariant.secondary}>Before zones</Button>
+      <MultiSelect
+        id="ct-multi-keyboard"
+        label="Zones"
+        value={value}
+        onChange={setValue}
+        options={['a', 'b', 'c']}
+        {...props}
+      />
+      <Button variant={ButtonVariant.secondary}>After zones</Button>
+      <span data-testid="multi-keyboard-val">{value.length === 0 ? 'none' : value.join(',')}</span>
     </Form>
   );
 }
