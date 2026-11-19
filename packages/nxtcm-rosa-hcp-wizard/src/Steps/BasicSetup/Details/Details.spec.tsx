@@ -161,6 +161,7 @@ test.describe('Details (ROSA HCP)', () => {
 
     test(`returns focus to the AWS account trigger after pointer opening and closing with ${closeName}`, async ({
       mount,
+      expectFocusedAfterClick,
     }) => {
       const component = await mount<typeof DetailsMount>(
         'nxtcm-rosa-hcp-wizard/Steps/BasicSetup/Details/Details/DetailsMount'
@@ -176,7 +177,7 @@ test.describe('Details (ROSA HCP)', () => {
       ).toBeFocused();
       await component.getByRole('button', { name: closeName, exact: true }).click();
       await expect(title).toBeHidden();
-      await expect(trigger).toBeFocused();
+      await expectFocusedAfterClick(trigger);
       await expect(trigger).toHaveAttribute('aria-expanded', 'false');
     });
   }
@@ -184,6 +185,7 @@ test.describe('Details (ROSA HCP)', () => {
   test('focuses the drawer close button when opened from the full wizard', async ({
     mount,
     page,
+    expectFocusedAfterClick,
   }) => {
     const component = await mount<typeof RosaHcpWizardBodyMount>(
       'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyMount'
@@ -196,7 +198,7 @@ test.describe('Details (ROSA HCP)', () => {
     await expect(closeButton).toBeFocused();
     await page.keyboard.press('Enter');
     await expect(closeButton).toBeHidden();
-    await expect(trigger).toBeFocused();
+    await expectFocusedAfterClick(trigger);
   });
 
   test.describe('Details — cluster name validation', () => {

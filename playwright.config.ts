@@ -73,7 +73,7 @@ export default defineConfig({
         trace: 'on-first-retry',
       },
     }).map((project) =>
-      // Screenshot baselines are only generated for Chromium in the pinned container.
+      // Baselines exist for Chromium only.
       project.name === 'e2e-chromium' ? project : { ...project, testIgnore: '**/*-visual.spec.ts' }
     ),
   ],

@@ -158,7 +158,12 @@ test.describe('RosaHcpYamlEditorFooter', () => {
       });
     }
 
-    test('Tab and Shift+Tab keep focus inside the dialog', async ({ mount, page }) => {
+    test('Tab and Shift+Tab keep focus inside the dialog', async ({
+      mount,
+      page,
+      tabKey,
+      shiftTabKey,
+    }) => {
       const component = await mount<typeof YamlEditorFooterMount>(STORY);
       await component.getByRole('button', { name: s.discardChanges }).press('Enter');
 
@@ -169,11 +174,11 @@ test.describe('RosaHcpYamlEditorFooter', () => {
       await expect(close).toBeFocused();
 
       for (const next of [confirm, cancel, close]) {
-        await page.keyboard.press('Tab');
+        await page.keyboard.press(tabKey);
         await expect(next).toBeFocused();
       }
       for (const previous of [cancel, confirm, close]) {
-        await page.keyboard.press('Shift+Tab');
+        await page.keyboard.press(shiftTabKey);
         await expect(previous).toBeFocused();
       }
     });

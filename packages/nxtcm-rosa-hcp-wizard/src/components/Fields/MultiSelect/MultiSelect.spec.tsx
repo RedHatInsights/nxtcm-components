@@ -62,14 +62,18 @@ test.describe('MultiSelect', () => {
     await checkAccessibility({ component });
   });
 
-  test('toggles multiple options and updates value', async ({ mount, page }) => {
+  test('toggles multiple options and updates value', async ({
+    mount,
+    page,
+    expectFocusedAfterClick,
+  }) => {
     const component = await mount<typeof MultiPlainHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/MultiSelect/MultiSelect/MultiPlainHarness'
     );
     const toggle = page.getByRole('button', { name: /^Zones / });
     await expect(toggle).toHaveAttribute('id', 'ct-multi-plain');
     await page.getByText('Zones', { exact: true }).click();
-    await expect(toggle).toBeFocused();
+    await expectFocusedAfterClick(toggle);
     await expect(toggle).toHaveAttribute('aria-haspopup', 'menu');
     const menu = page.getByRole('menu', { name: 'Zones', exact: true });
     await expect(menu).toBeVisible();
@@ -284,27 +288,33 @@ test.describe('MultiSelect — keyboard and focus', () => {
   test('Tab from an open menu closes it without losing focus, and the next Tab moves on', async ({
     mount,
     page,
+    tabKey,
   }) => {
     await mount<typeof MultiKeyboardHarness>(path);
     const toggle = page.getByRole('button', { name: /^Zones/ });
     const menu = page.getByRole('menu', { name: 'Zones', exact: true });
     await page.getByRole('button', { name: 'Before zones' }).focus();
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     await expect(toggle).toBeFocused();
     await page.keyboard.press('Enter');
     await expect(menu).toBeVisible();
 
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     await expect(menu).toBeHidden();
     await expect(toggle).toBeFocused();
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
 
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     await expect(page.getByRole('button', { name: 'After zones' })).toBeFocused();
     await expect(page.getByTestId('multi-keyboard-val')).toHaveText('none');
   });
 
-  test('a disabled multiselect is skipped by Tab in both directions', async ({ mount, page }) => {
+  test('a disabled multiselect is skipped by Tab in both directions', async ({
+    mount,
+    page,
+    tabKey,
+    shiftTabKey,
+  }) => {
     await mount<typeof MultiKeyboardHarness>(path, { isDisabled: true });
     const toggle = page.getByRole('button', { name: /^Zones/ });
     const before = page.getByRole('button', { name: 'Before zones' });
@@ -312,9 +322,9 @@ test.describe('MultiSelect — keyboard and focus', () => {
     await expect(toggle).toBeDisabled();
 
     await before.focus();
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     await expect(after).toBeFocused();
-    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press(shiftTabKey);
     await expect(before).toBeFocused();
     await expect(toggle).not.toBeFocused();
   });

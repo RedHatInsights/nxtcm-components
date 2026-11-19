@@ -21,8 +21,7 @@ if (args.includes('--inside-container')) {
     const status = run('node', ['scripts/setup-react-version.mjs', react]);
     if (status !== 0) process.exit(status);
   }
-  // Run Playwright directly: the `test:e2e` script already pins a project, and repeated
-  // `--project` flags are combined, so it cannot be narrowed to another engine.
+  // Not via `test:e2e`: it pins a project, and repeated --project flags combine.
   const browser = process.env.PLAYWRIGHT_BROWSER ?? 'chromium';
   if (!['chromium', 'firefox', 'webkit'].includes(browser)) {
     throw new Error('PLAYWRIGHT_BROWSER must be chromium, firefox or webkit.');
