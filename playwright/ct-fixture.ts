@@ -1,6 +1,8 @@
-import { expect, type Locator, test as base } from '@playwright/test';
+import { expect, type Locator } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+
+import { focusTest } from './focus-fixtures';
 
 export { expect };
 
@@ -15,7 +17,7 @@ export type MountResult = Locator & {
   unmount(): Promise<void>;
 };
 
-export const test = base.extend<{ _coverageCapture: void }>({
+export const test = focusTest.extend<{ _coverageCapture: void }>({
   _coverageCapture: [
     async ({ page }, runFixture) => {
       await runFixture();

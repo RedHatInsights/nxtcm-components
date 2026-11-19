@@ -124,7 +124,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      # React 18 runs on Chromium only; React 19 also covers Firefox and WebKit.
+      # Firefox and WebKit run on React 19 only.
       matrix:
         react: [18, 19]
         browser: [chromium]
@@ -157,7 +157,7 @@ jobs:
         env:
           PLAYWRIGHT_JSON_OUTPUT_NAME: test-results/playwright-ct-results.json
           PLAYWRIGHT_JUNIT_OUTPUT_NAME: test-results/playwright-ct-junit.xml
-        # Firefox is the slowest engine, so it gets two workers; the other legs keep one.
+        # Firefox is the slowest engine, so it gets two workers.
         run: >-
           npx playwright test --project=components-${{ matrix.browser }}
           --workers=${{ matrix.browser == 'firefox' && 2 || 1 }}
@@ -266,7 +266,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      # React 18 runs on Chromium only; React 19 also covers Firefox and WebKit.
+      # Firefox and WebKit run on React 19 only.
       matrix:
         react: [18, 19]
         browser: [chromium]
@@ -341,8 +341,7 @@ jobs:
           path: artifacts/jest-coverage
         continue-on-error: true
 
-      # The contract only counts the Chromium run, so its totals do not change
-      # with the Firefox and WebKit legs.
+      # Chromium only, so the contract totals do not change.
       - name: Download CT report artifact
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:

@@ -62,6 +62,7 @@ test.describe('ROSAHCPWizardBody', () => {
     test('moves focus into the error and restores the current wizard step on return', async ({
       mount,
       page,
+      tabKey,
     }) => {
       const component = await mount<typeof RosaHcpWizardBodyErrorTransitionMount>(
         'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyErrorTransitionMount'
@@ -76,7 +77,7 @@ test.describe('ROSAHCPWizardBody', () => {
       await expect(component.getByRole('button', { name: wizard.stepLabels.details })).toHaveCount(
         0
       );
-      await page.keyboard.press('Tab');
+      await page.keyboard.press(tabKey);
       await expect(
         component.getByRole('button', { name: submitErrorStrings.backToReviewStep })
       ).toBeFocused();

@@ -1,10 +1,11 @@
 /** Keyboard-driven wizard navigation and validation flows, with explicit focus assertions. */
-import { expect, type Page, test } from './fixtures';
 import {
   expectFocusVisible,
   expectFocusVisibleOnContainerOf,
+  focusWithKeyboard,
   tabUntilFocused,
-} from './helpers/focus-helpers';
+} from '../focus-helpers';
+import { expect, type Page, test } from './fixtures';
 import {
   fillDetailsStep,
   fillMachinePoolsStep,
@@ -56,28 +57,33 @@ test.describe('ROSA Wizard - keyboard and focus', () => {
 
   test('Enter on Back and Next moves between steps and shows a focus ring on the step content', async ({
     page,
+    tabKey,
+    shiftTabKey,
   }) => {
     await fillDetailsStep(page);
     await expect(rolesContent(page)).toBeVisible();
 
-    await backButton(page).focus();
+    await focusWithKeyboard(page, backButton(page), { tabKey, shiftTabKey });
     await page.keyboard.press('Enter');
     await expect(detailsContent(page)).toBeVisible();
     await expectFocusVisibleOnContainerOf(detailsContent(page));
 
-    await nextButton(page).focus();
+    await focusWithKeyboard(page, nextButton(page), { tabKey, shiftTabKey });
     await page.keyboard.press('Enter');
     await expect(rolesContent(page)).toBeVisible();
     await expectFocusVisibleOnContainerOf(rolesContent(page));
   });
 
-  test('Tab reaches Next with a visible focus indicator and Enter advances', async ({ page }) => {
+  test('Tab reaches Next with a visible focus indicator and Enter advances', async ({
+    page,
+    tabKey,
+  }) => {
     await fillDetailsStep(page);
     await backButton(page).focus();
     await page.keyboard.press('Enter');
     await expect(detailsContent(page)).toBeVisible();
 
-    await tabUntilFocused(page, nextButton(page), 80);
+    await tabUntilFocused(page, nextButton(page), { maxTabs: 80, tabKey });
     await expectFocusVisible(nextButton(page));
     await page.keyboard.press('Enter');
 
@@ -113,10 +119,12 @@ test.describe('ROSA Wizard - keyboard and focus', () => {
 
   test('moves visible focus to the Review content when Skip to review succeeds', async ({
     page,
+    tabKey,
+    shiftTabKey,
   }) => {
     await navigateToEncryption(page);
 
-    await skipToReviewButton(page).focus();
+    await focusWithKeyboard(page, skipToReviewButton(page), { tabKey, shiftTabKey });
     await page.keyboard.press('Enter');
 
     await expect(reviewContent(page)).toBeVisible();

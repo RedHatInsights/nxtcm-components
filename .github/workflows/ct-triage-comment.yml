@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      # Mirrors the CT matrix in ci.yml: Firefox and WebKit run on React 19 only.
+      # Keep in sync with the CT matrix in ci.yml.
       matrix:
         react: [18, 19]
         browser: [chromium]

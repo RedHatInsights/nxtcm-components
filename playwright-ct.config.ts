@@ -34,7 +34,7 @@ export default defineConfig({
     stdout: process.env.QUIET === 'true' ? 'ignore' : 'pipe',
     stderr: 'pipe',
   },
-  // WebKit's first page load on shared CI runners can exceed the default 10s test timeout.
+  // WebKit's first page load on CI can exceed the default 10s.
   projects: projectsFor('components').map((project) =>
     project.name === 'components-webkit' ? { ...project, timeout: 20 * 1000 } : project
   ),

@@ -1,5 +1,5 @@
 import { expect, test } from '@/playwright/ct-fixture';
-import { expectFocusVisible } from '@/playwright/e2e/helpers/focus-helpers';
+import { expectFocusVisible } from '@/playwright/focus-helpers';
 
 import { defaultRosaHcpWizardStrings } from '../../stringsProvider/rosaHcpWizardStrings.defaults';
 import { checkAccessibility } from '../../test-helpers';
@@ -17,11 +17,12 @@ async function waitForDrawerToSettle(dialog: import('@playwright/test').Locator)
 async function tabThroughDialog(
   page: import('@playwright/test').Page,
   lastName: string,
+  tabKey: string,
   maxTabs = 60
 ): Promise<string[]> {
   const visited: string[] = [];
   for (let i = 0; i < maxTabs && visited.at(-1) !== lastName; i += 1) {
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     const focused = await page.evaluate(() => {
       const element = document.activeElement as HTMLElement | null;
       return {
@@ -39,6 +40,8 @@ test.describe('DetailsStepDrawer', () => {
   test('focuses the header close button, traps keyboard focus in the named dialog, and restores focus on close', async ({
     mount,
     page,
+    tabKey,
+    shiftTabKey,
   }) => {
     const component = await mount<typeof DetailsStepDrawerMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/DetailsStepDrawer/DetailsStepDrawerMount'
@@ -57,13 +60,13 @@ test.describe('DetailsStepDrawer', () => {
     await expect(closeButton).toBeFocused();
     await expect(dialog).toHaveAccessibleName('How to associate a new AWS account');
     await expect(dialog).toHaveAttribute('aria-modal', 'true');
-    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press(shiftTabKey);
     await expect(resizeHandle).toBeFocused();
-    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press(shiftTabKey);
     await expect(bottomCloseButton).toBeFocused();
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     await expect(resizeHandle).toBeFocused();
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     await expect(closeButton).toBeFocused();
     await page.keyboard.press('Space');
     await expect(dialog).toBeHidden();
@@ -237,6 +240,7 @@ test.describe('DetailsStepDrawer — keyboard', () => {
   test('Tab visits every control inside the drawer in order from the header to the bottom Close', async ({
     mount,
     page,
+    tabKey,
   }) => {
     const component = await mount<typeof DetailsStepDrawerMount>(path);
     const dialog = component.getByRole('dialog', { name: strings.panelTitle });
@@ -254,7 +258,7 @@ test.describe('DetailsStepDrawer — keyboard', () => {
     await waitForDrawerToSettle(dialog);
     await dialog.getByRole('button', { name: strings.closeDrawerButtonLabel, exact: true }).focus();
 
-    const visited = await tabThroughDialog(page, strings.closeButton);
+    const visited = await tabThroughDialog(page, strings.closeButton, tabKey);
 
     const order = [
       strings.stepLoginTitle,
