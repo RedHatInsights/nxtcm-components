@@ -1,53 +1,7 @@
-import React, { act } from 'react';
-import { createRoot, Root } from 'react-dom/client';
+import type { ExtendedTemplateConfig } from '@patternfly/widgetized-dashboard';
+import { act, renderHook } from '@testing-library/react';
 
 import { useLocalStorageWithObject } from './useLocalStorage';
-
-// Enable React concurrent-mode act() warnings in test environment
-(globalThis as Record<string, unknown>).IS_REACT_ACT_ENVIRONMENT = true;
-
-/* ------------------------------------------------------------------ */
-/*  Minimal renderHook helper (no @testing-library/react dependency)  */
-/* ------------------------------------------------------------------ */
-
-interface RenderHookResult<T> {
-  result: { current: T };
-  rerender: (args?: unknown) => void;
-  unmount: () => void;
-}
-
-function renderHook<T>(hookFn: () => T): RenderHookResult<T> {
-  const result: { current: T } = { current: undefined as unknown as T };
-  let container: HTMLDivElement;
-  let root: Root;
-
-  function TestComponent(): null {
-    result.current = hookFn();
-    return null;
-  }
-
-  act(() => {
-    container = document.createElement('div');
-    document.body.appendChild(container);
-    root = createRoot(container);
-    root.render(<TestComponent />);
-  });
-
-  return {
-    result,
-    rerender: () => {
-      act(() => {
-        root.render(<TestComponent />);
-      });
-    },
-    unmount: () => {
-      act(() => {
-        root.unmount();
-      });
-      container.remove();
-    },
-  };
-}
 
 /* ------------------------------------------------------------------ */
 /*  Tests                                                             */
@@ -288,6 +242,164 @@ describe('useLocalStorageWithObject', () => {
       rerender();
 
       expect(result.current[0]).toBe(42);
+      unmount();
+    });
+  });
+
+  describe('real dashboard data (ExtendedTemplateConfig)', () => {
+    const initialDashboardData: ExtendedTemplateConfig = {
+      sm: [
+        {
+          i: 'total-clusters#1',
+          x: 0,
+          y: 0,
+          w: 2,
+          h: 3,
+          widgetType: 'total-clusters',
+          title: 'Total clusters',
+        },
+        {
+          i: 'cluster-providers#1',
+          x: 0,
+          y: 3,
+          w: 2,
+          h: 5,
+          widgetType: 'cluster-providers',
+          title: 'Clusters by provider',
+        },
+      ],
+      md: [
+        {
+          i: 'total-clusters#1',
+          x: 0,
+          y: 0,
+          w: 1,
+          h: 3,
+          widgetType: 'total-clusters',
+          title: 'Total clusters',
+        },
+        {
+          i: 'cluster-providers#1',
+          x: 1,
+          y: 0,
+          w: 1,
+          h: 5,
+          widgetType: 'cluster-providers',
+          title: 'Clusters by provider',
+        },
+      ],
+      lg: [
+        {
+          i: 'total-clusters#1',
+          x: 0,
+          y: 0,
+          w: 1,
+          h: 3,
+          widgetType: 'total-clusters',
+          title: 'Total clusters',
+        },
+      ],
+      xl: [
+        {
+          i: 'total-clusters#1',
+          x: 0,
+          y: 0,
+          w: 1,
+          h: 3,
+          widgetType: 'total-clusters',
+          title: 'Total clusters',
+        },
+      ],
+    };
+
+    it('loads a valid ExtendedTemplateConfig layout from localStorage', () => {
+      const storedLayout: ExtendedTemplateConfig = {
+        sm: [
+          {
+            i: 'total-clusters#1',
+            x: 0,
+            y: 0,
+            w: 2,
+            h: 4,
+            widgetType: 'total-clusters',
+            title: 'Total clusters',
+          },
+          {
+            i: 'update-status#1',
+            x: 0,
+            y: 4,
+            w: 2,
+            h: 3,
+            widgetType: 'update-status',
+            title: 'Update status',
+          },
+        ],
+        md: [
+          {
+            i: 'total-clusters#1',
+            x: 0,
+            y: 0,
+            w: 1,
+            h: 4,
+            widgetType: 'total-clusters',
+            title: 'Total clusters',
+          },
+        ],
+        lg: [
+          {
+            i: 'total-clusters#1',
+            x: 0,
+            y: 0,
+            w: 1,
+            h: 4,
+            widgetType: 'total-clusters',
+            title: 'Total clusters',
+          },
+        ],
+        xl: [
+          {
+            i: 'total-clusters#1',
+            x: 0,
+            y: 0,
+            w: 1,
+            h: 4,
+            widgetType: 'total-clusters',
+            title: 'Total clusters',
+          },
+        ],
+      };
+      localStorage.setItem('dashboard-template-v6', JSON.stringify(storedLayout));
+
+      const { result, unmount } = renderHook(() =>
+        useLocalStorageWithObject<ExtendedTemplateConfig>(
+          'dashboard-template-v6',
+          initialDashboardData
+        )
+      );
+
+      expect(result.current[0]).toEqual(storedLayout);
+      // Verify the stored layout differs from initial — proves we loaded from storage, not default
+      expect(result.current[0].sm).toHaveLength(2);
+      expect(result.current[0].sm[0].h).toBe(4);
+      unmount();
+    });
+
+    it('falls back to initialDashboardData when stored layout has missing props', () => {
+      // Store a value that is missing required ExtendedLayoutItem properties (widgetType, title)
+      const corruptLayout = {
+        sm: [{ i: 'total-clusters#1', x: 0, y: 0, w: 2, h: 3 }],
+        md: [{ i: 'total-clusters#1', x: 0, y: 0, w: 1, h: 3 }],
+        lg: [],
+        xl: [],
+      };
+      localStorage.setItem('dashboard-corrupt', JSON.stringify(corruptLayout));
+
+      const { result, unmount } = renderHook(() =>
+        useLocalStorageWithObject<ExtendedTemplateConfig>('dashboard-corrupt', initialDashboardData)
+      );
+
+      // Missing widgetType and title on stored items → structural mismatch → fallback to initial
+      expect(result.current[0]).toEqual(initialDashboardData);
       unmount();
     });
   });
