@@ -1,6 +1,6 @@
 /** Keyboard-only YAML editor flows. No clicks into Monaco, no setValue(). */
+import { expectFocusVisible, tabUntilFocused } from '../focus-helpers';
 import { expect, type Page, test } from './fixtures';
-import { expectFocusVisible, tabUntilFocused } from './helpers/focus-helpers';
 import {
   getMonacoYaml,
   INVALID_YAML_SUFFIX,
@@ -26,7 +26,7 @@ test.describe('ROSA Wizard - YAML Editor keyboard access', () => {
     await page.goto('/');
   });
 
-  test('opens the YAML editor from Review with the keyboard', async ({ page }) => {
+  test('opens the YAML editor from Review with the keyboard', async ({ page, tabKey }) => {
     await navigateToReview(page);
 
     const editInYaml = page.getByRole('button', { name: /Edit in YAML/i });
@@ -35,7 +35,7 @@ test.describe('ROSA Wizard - YAML Editor keyboard access', () => {
       .getByRole('navigation', { name: 'Wizard steps' })
       .getByRole('button', { name: 'Review' })
       .focus();
-    await tabUntilFocused(page, editInYaml);
+    await tabUntilFocused(page, editInYaml, { tabKey });
     await expectFocusVisible(editInYaml);
 
     await page.keyboard.press('Enter');
@@ -44,11 +44,11 @@ test.describe('ROSA Wizard - YAML Editor keyboard access', () => {
     await expect(page.getByRole('region', { name: YAML_EDITOR_NAME })).toBeFocused();
   });
 
-  test('enters, edits, and leaves the editor with the keyboard', async ({ page }) => {
+  test('enters, edits, and leaves the editor with the keyboard', async ({ page, tabKey }) => {
     await navigateToYamlEditor(page);
 
     await schemaToggle(page).focus();
-    await tabUntilFocused(page, editorWrapper(page));
+    await tabUntilFocused(page, editorWrapper(page), { tabKey });
     await expectFocusVisible(editorWrapper(page));
 
     await page.keyboard.press('ArrowDown');
@@ -104,12 +104,12 @@ test.describe('ROSA Wizard - YAML Editor keyboard access', () => {
     await expect(editorTextbox(page)).toBeFocused();
   });
 
-  test('toggles the schema panel with the keyboard', async ({ page }) => {
+  test('toggles the schema panel with the keyboard', async ({ page, tabKey }) => {
     await navigateToYamlEditor(page);
 
     const toggle = schemaToggle(page);
     await page.getByRole('button', { name: 'Download code' }).focus();
-    await tabUntilFocused(page, toggle);
+    await tabUntilFocused(page, toggle, { tabKey });
     await expectFocusVisible(toggle);
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
 
@@ -127,18 +127,18 @@ test.describe('ROSA Wizard - YAML Editor keyboard access', () => {
     const closeButton = page
       .locator(`[id="${panelId}"]`)
       .getByRole('button', { name: 'Toggle schema panel' });
-    await tabUntilFocused(page, closeButton);
+    await tabUntilFocused(page, closeButton, { tabKey });
     await page.keyboard.press('Enter');
     await expect(schemaHeading(page)).toBeHidden();
     await expect(toggle).toBeFocused();
   });
 
-  test('downloads the YAML with the keyboard', async ({ page }) => {
+  test('downloads the YAML with the keyboard', async ({ page, tabKey }) => {
     await navigateToYamlEditor(page);
 
     const download = page.getByRole('button', { name: 'Download code' });
     await page.getByRole('button', { name: 'Copy code to clipboard' }).focus();
-    await tabUntilFocused(page, download);
+    await tabUntilFocused(page, download, { tabKey });
 
     const downloadEvent = page.waitForEvent('download');
     await page.keyboard.press('Enter');
@@ -174,7 +174,11 @@ test.describe('ROSA Wizard - YAML Editor keyboard access', () => {
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(expected);
   });
 
-  test('keeps focus inside the discard dialog and returns it on close', async ({ page }) => {
+  test('keeps focus inside the discard dialog and returns it on close', async ({
+    page,
+    tabKey,
+    shiftTabKey,
+  }) => {
     await navigateToYamlEditor(page);
 
     await discardButton(page).focus();
@@ -185,11 +189,11 @@ test.describe('ROSA Wizard - YAML Editor keyboard access', () => {
     await expect(dialog.getByRole('button', { name: 'Close' })).toBeFocused();
 
     for (let i = 0; i < 4; i++) {
-      await page.keyboard.press('Tab');
+      await page.keyboard.press(tabKey);
       expect(await dialog.evaluate((el) => el.contains(document.activeElement))).toBe(true);
     }
     for (let i = 0; i < 4; i++) {
-      await page.keyboard.press('Shift+Tab');
+      await page.keyboard.press(shiftTabKey);
       expect(await dialog.evaluate((el) => el.contains(document.activeElement))).toBe(true);
     }
 

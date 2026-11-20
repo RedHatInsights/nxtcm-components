@@ -219,14 +219,18 @@ test.describe('Select', () => {
     await checkMenuAccessibility(page);
   });
 
-  test('selects an option from a plain menu and updates value', async ({ mount, page }) => {
+  test('selects an option from a plain menu and updates value', async ({
+    mount,
+    page,
+    expectFocusedAfterClick,
+  }) => {
     const component = await mount<typeof PlainMenuHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/PlainMenuHarness'
     );
     const toggle = page.getByRole('button', { name: /^Region / });
     await expect(toggle).toHaveAttribute('id', 'ct-menu-plain');
     await page.getByText('Region', { exact: true }).click();
-    await expect(toggle).toBeFocused();
+    await expectFocusedAfterClick(toggle);
     await expect(page.getByRole('option', { name: 'eu-west-1' })).toBeVisible();
     await checkMenuAccessibility(page);
     await page.getByRole('option', { name: 'eu-west-1' }).click();
@@ -375,13 +379,13 @@ test.describe('Select', () => {
     await expect(combo).not.toHaveAttribute('aria-controls');
   });
 
-  test('Escape keeps input focus and Tab moves focus forward', async ({ mount, page }) => {
+  test('Escape keeps input focus and Tab moves focus forward', async ({ mount, page, tabKey }) => {
     await mount<typeof KeyboardTypeaheadHarness>(
       'nxtcm-rosa-hcp-wizard/components/Fields/Select/Select/KeyboardTypeaheadHarness'
     );
     const combo = page.getByRole('combobox', { name: 'Subnet' });
     await page.getByRole('button', { name: 'Before subnet' }).focus();
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     await expect(combo).toBeFocused();
 
     await page.keyboard.press('Enter');
@@ -396,7 +400,7 @@ test.describe('Select', () => {
     await page.keyboard.press('ArrowDown');
     await expectPopupReferences(page, combo);
     await checkMenuAccessibility(page);
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     await expect(page.getByRole('button', { name: 'After subnet' })).toBeFocused();
     await expect(combo).not.toHaveAttribute('aria-controls');
   });
@@ -631,26 +635,32 @@ test.describe('Select — plain menu keyboard', () => {
   test('Tab from an open menu closes it without losing focus, and the next Tab moves on', async ({
     mount,
     page,
+    tabKey,
   }) => {
     await mount<typeof KeyboardPlainHarness>(path);
     const toggle = page.getByRole('button', { name: /^Region / });
     await page.getByRole('button', { name: 'Before region' }).focus();
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     await expect(toggle).toBeFocused();
     await page.keyboard.press('Enter');
     await expect(page.getByRole('option', { name: 'us-east-1' })).toBeVisible();
 
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     await expect(page.getByRole('option', { name: 'us-east-1' })).toBeHidden();
     await expect(toggle).toBeFocused();
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
 
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     await expect(page.getByRole('button', { name: 'After region' })).toBeFocused();
     await expect(page.getByTestId('plain-keyboard-val')).toHaveText('none');
   });
 
-  test('a disabled select is skipped by Tab in both directions', async ({ mount, page }) => {
+  test('a disabled select is skipped by Tab in both directions', async ({
+    mount,
+    page,
+    tabKey,
+    shiftTabKey,
+  }) => {
     await mount<typeof KeyboardPlainHarness>(path, { isDisabled: true });
     const toggle = page.getByRole('button', { name: /^Region / });
     const before = page.getByRole('button', { name: 'Before region' });
@@ -658,9 +668,9 @@ test.describe('Select — plain menu keyboard', () => {
     await expect(toggle).toBeDisabled();
 
     await before.focus();
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     await expect(after).toBeFocused();
-    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press(shiftTabKey);
     await expect(before).toBeFocused();
     await expect(toggle).not.toBeFocused();
   });

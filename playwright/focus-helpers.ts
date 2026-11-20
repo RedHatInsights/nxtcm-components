@@ -18,17 +18,37 @@ async function isFocused(target: Locator): Promise<boolean> {
 }
 
 /** Tab until `target` is focused; on failure, lists the elements visited. */
-export async function tabUntilFocused(page: Page, target: Locator, maxTabs = 40): Promise<void> {
+export async function tabUntilFocused(
+  page: Page,
+  target: Locator,
+  { maxTabs = 40, tabKey = 'Tab' }: { maxTabs?: number; tabKey?: string } = {}
+): Promise<void> {
   const visited: string[] = [];
   for (let i = 0; i < maxTabs; i++) {
     if (await isFocused(target)) return;
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     visited.push(await describeFocused(page));
   }
   await expect(
     target,
     `Not reached after ${maxTabs} Tab presses. Focus visited:\n${visited.join('\n')}`
   ).toBeFocused({ timeout: 1000 });
+}
+
+/**
+ * Focus `target` the way a keyboard user arrives at it: Firefox only draws a focus ring on later
+ * script-driven focus moves if the previous focus came from the keyboard. Needs a focusable
+ * control before `target`.
+ */
+export async function focusWithKeyboard(
+  page: Page,
+  target: Locator,
+  { tabKey = 'Tab', shiftTabKey = 'Shift+Tab' }: { tabKey?: string; shiftTabKey?: string } = {}
+): Promise<void> {
+  await target.focus();
+  await page.keyboard.press(shiftTabKey);
+  await page.keyboard.press(tabKey);
+  await expect(target).toBeFocused();
 }
 
 /** `target` is focused and shows a focus ring. Use after keyboard navigation. */
