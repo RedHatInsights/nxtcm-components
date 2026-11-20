@@ -186,6 +186,9 @@ export type RosaHcpWizardStrings = {
     backToReviewStep: string;
     exitWizard: string;
   };
+  createCluster: {
+    inProgressTitle: string;
+  };
   yamlEditor: {
     title: string;
     description: string;
