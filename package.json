@@ -84,6 +84,7 @@
     "@storybook/addon-themes": "^10.6.2",
     "@storybook/react-vite": "^10.6.2",
     "@stryker-mutator/core": "^9.6.1",
+    "@testing-library/react": "^16.3.3",
     "@types/jest": "^29.5.12",
     "@types/node": "^24.9.1",
     "@types/react": "^19.3.0",
