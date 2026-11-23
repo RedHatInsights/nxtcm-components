@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
+  "extends": ["config:recommended", "helpers:pinGitHubActionDigests", "schedule:weekends"],
   "packageRules": [
     {
       "description": "Disable all major updates",
@@ -58,6 +58,7 @@
   ],
   "reviewersSampleSize": 2,
   "dependencyDashboard": true,
+  "timezone": "America/New_York",
   "minimumReleaseAge": "4 days",
   "prConcurrentLimit": 10,
   "prHourlyLimit": 4,

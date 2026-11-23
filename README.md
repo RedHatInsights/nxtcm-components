@@ -44,9 +44,12 @@ Make sure your application provides compatible versions of the peer dependencies
 
 View our live component documentation and examples at:
 
-**https://redhatinsights.github.io/nxtcm-components/**
+| Path | Content |
+| --- | --- |
+| **https://redhatinsights.github.io/nxtcm-components/** | Released documentation — matches the latest npm-published version |
+| **https://redhatinsights.github.io/nxtcm-components/next/** | Preview documentation — latest `main` branch (unreleased changes) |
 
-The documentation site is automatically updated when changes are merged to the main branch and provides interactive examples of all components.
+The released documentation updates after a successful npm publish. The preview updates on every push to `main`. See [docs/publishing.md](docs/publishing.md) for deployment details.
 
 ## Contributing
 
