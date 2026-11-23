@@ -44,12 +44,13 @@ jobs run in parallel except `coverage-contract` which assembles data from all te
 
 `test` (CT) and `e2e` use a matrix with `react: [18, 19]` and `browser: [chromium]`, plus `include` entries that add Firefox and WebKit for React 19 only. That gives four legs each: React 18 + Chromium, and React 19 + Chromium, Firefox and WebKit.
 
-- each leg runs `npx playwright install --with-deps ${{ matrix.browser }}` (never install all engines) and `--project=components-${{ matrix.browser }}` / `--project=e2e-${{ matrix.browser }}`
+- each CT leg runs `npx playwright install --with-deps ${{ matrix.browser }}` (never install all engines) and `--project=components-${{ matrix.browser }}`
+- each E2E leg runs `npm run test:e2e:container` with `PLAYWRIGHT_BROWSER: ${{ matrix.browser }}` and installs nothing: the pinned Playwright image already contains every engine, and `scripts/run-visual-tests.mjs` runs `--project=e2e-<browser>` inside it. Screenshot (`*-visual.spec.ts`) specs only run on `e2e-chromium`
 - artifacts are per leg: `playwright-ct-report-react-<n>-<browser>` and `playwright-report-react-<n>-<browser>`
 - `coverage-contract` only downloads the `-chromium` artifacts, so the contract totals (including the canonical `test-coverage-data` EPD reads) do not change with the extra engines
 - `ct-triage-comment.yml` uses the same matrix as the CT job (keep the two in sync): each leg downloads its own `playwright-ct-report-react-<n>-<browser>` artifact and posts its own comment, labelled with the React version and browser (`--react-version`, `--browser`)
 - the stable summary jobs (`Unit Tests`, `Component Tests`, `E2E Tests`) wait for every leg, so a Firefox or WebKit failure fails the required check
-- multi-browser coverage is CI-only: the jobs call `playwright test --project=…` directly, while the local `npm run test:ct` / `test:e2e` scripts run Chromium only
+- multi-browser coverage is CI-only: CT legs call `playwright test --project=…` directly and E2E legs go through the container script, while the local `npm run test:ct` / `test:e2e` scripts run Chromium only
 - `react-compatibility` and Stryker stay Chromium-only
 
 ## CT triage pipeline

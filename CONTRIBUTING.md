@@ -219,8 +219,9 @@ The runner prefers Docker and falls back to Podman. Set `CONTAINER_ENGINE=podman
 through the container runtime's emulation support.
 
 Dependencies are installed inside the image; host `node_modules` is not used or changed.
-Baselines remain in the spec's `*-snapshots/` directory, using `-e2e.png` names without
-OS suffixes. Reports and expected/actual/diff PNGs are written to `playwright-report/`
+Baselines remain in the spec's `*-snapshots/` directory, using `-e2e-chromium.png` names without
+OS suffixes. Screenshot comparisons only exist for Chromium, so the Firefox and WebKit projects skip the
+visual specs. Reports and expected/actual/diff PNGs are written to `playwright-report/`
 and `test-results/`. Comparison runs mount the baselines read-only. CI never creates
 or updates them; commit regenerated images after reviewing the changes.
 
@@ -229,6 +230,13 @@ CI runs the same image against both supported React versions. To reproduce a mat
 ```bash
 PLAYWRIGHT_REACT_VERSION=18 npm run test:e2e:container
 PLAYWRIGHT_REACT_VERSION=19 npm run test:e2e:container
+```
+
+The image already includes all three engines. Set `PLAYWRIGHT_BROWSER=firefox` or `webkit` (default
+`chromium`) to run the E2E specs on another engine in it, as the CI matrix legs do:
+
+```bash
+PLAYWRIGHT_BROWSER=firefox npm run test:e2e:container
 ```
 
 The image pins Node and Playwright in `playwright/visual.Dockerfile`. When upgrading

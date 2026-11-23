@@ -7,14 +7,15 @@ rules for ROSA HCP wizard E2E specs under `playwright/e2e/`.
 ```text
 playwright/
   e2e/
-    fixtures.ts              # extends base test; optional coverage capture
+    fixtures.ts              # extends the shared focus test (../focus-fixtures.ts); optional coverage capture
     rosa-wizard.spec.ts      # wizard flows, CIDR, navigation
     rosa-wizard-yaml-editor.spec.ts
     rosa-wizard-yaml-editor-keyboard.spec.ts # keyboard-only YAML editor flows
     rosa-wizard-keyboard.spec.ts # keyboard navigation, validation focus, and Skip to review focus
     helpers/
       yaml-editor-helpers.ts # navigateToYamlEditor, navigateToReview, enterYamlEditor, getMonacoYaml, fill*Step helpers
-      focus-helpers.ts       # tabUntilFocused, expectFocusVisible
+  focus-fixtures.ts          # tabKey, shiftTabKey, expectFocusedAfterClick; shared with CT, set per engine in browsers.ts
+  focus-helpers.ts           # tabUntilFocused, focusWithKeyboard, expectFocusVisible; shared with CT
   index.tsx                  # E2E app entry
 playwright.config.ts         # root E2E config (port ~3200)
 ```
