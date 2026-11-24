@@ -39,16 +39,52 @@ visual specs with `npm run test:e2e:container`. Use `npm run test:visual:update`
 regenerate intentional baseline changes. The container runner sets
 `PLAYWRIGHT_INCLUDE_VISUAL_TESTS=true` internally to include visual specs in either mode.
 
+## visual regression coverage
+
+`rosa-wizard-visual.spec.ts` covers the initial wizard viewport, the Details form,
+Roles and policies, Machine pool, Networking, Encryption, Cluster updates, and the
+populated Review step. It also captures Details required-field errors after **Next**
+and the open OpenShift version dropdown. Each test starts from a fresh wizard and
+uses the mock data in `e2e-app/e2e.tsx`.
+
+Conditional-state coverage includes autoscaling min/max inputs, expanded advanced
+machine pool settings, private endpoint access, overlapping CIDR validation,
+custom KMS and etcd required-field errors, manual updates, and the open update-day
+dropdown. Autoscaling, advanced machine pool, CIDR errors, and custom encryption
+screenshots capture the entire step form, including fields below the viewport.
+
+Viewport screenshots capture the top of the desktop viewport (1280 × 720), with
+the surrounding wizard layout; content below a scroll boundary is not included.
+Tests wait for the intended state and fonts, reset scroll positions, and use the
+shared animation, caret, and comparison settings from `playwright.config.ts`.
+The Roles step uses a fixed custom operator-role prefix entered through the UI,
+so its CLI command and the Review summary remain identical across runs.
+
+```bash
+npm run test:visual                          # compare committed baselines
+npm run test:visual:update                   # regenerate intentional changes
+npm run test:visual -- --reporter=list,html   # generate a report for inspection
+PLAYWRIGHT_REACT_VERSION=18 npm run test:e2e:container
+PLAYWRIGHT_REACT_VERSION=19 npm run test:e2e:container
+```
+
+Generate baselines only in the pinned container. Inspect every added or changed PNG
+under `playwright/e2e/rosa-wizard-visual.spec.ts-snapshots/` before committing, then
+run `npm run test:visual` again without updates. Investigate unexpected differences
+using the HTML report and actual/expected/diff images; do not regenerate baselines
+just to clear a failure. CI compares the same baselines with React 18 and React 19
+and never updates them.
+
 ## selector audit (static review)
 
 When reviewing E2E specs, categorize locators:
 
-| Category | Examples | Preference |
-|----------|----------|------------|
-| Accessibility-first | `getByRole`, `getByLabel`, `getByPlaceholder` | Preferred |
-| Semantic | `getByText`, `getByAltText` | Good |
-| Test ID | `getByTestId` | OK when component exposes stable id (e.g. installer role selects) |
-| CSS/XPath `locator()` | `.pf-v6-*`, structural selectors | Avoid |
+| Category              | Examples                                      | Preference                                                        |
+| --------------------- | --------------------------------------------- | ----------------------------------------------------------------- |
+| Accessibility-first   | `getByRole`, `getByLabel`, `getByPlaceholder` | Preferred                                                         |
+| Semantic              | `getByText`, `getByAltText`                   | Good                                                              |
+| Test ID               | `getByTestId`                                 | OK when component exposes stable id (e.g. installer role selects) |
+| CSS/XPath `locator()` | `.pf-v6-*`, structural selectors              | Avoid                                                             |
 
 Flag:
 
