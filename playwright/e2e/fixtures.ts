@@ -1,7 +1,9 @@
 import type { Page } from '@playwright/test';
-import { expect, test as base } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
+
+import { focusTest as base } from '../focus-fixtures';
 
 export { expect };
 export type { Page };

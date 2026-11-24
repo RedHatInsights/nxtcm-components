@@ -2,13 +2,27 @@
 
 Where keyboard focus lands in the ROSA HCP wizard, and which spec asserts it (FCN-818). Axe scans, labels, and display settings are covered separately; see [`display-coverage.md`](./display-coverage.md).
 
-Specs live in two Playwright projects, both run in CI: component tests (CT, next to each component) and `playwright/e2e`. A focus destination is asserted in CT where the behavior belongs to one component, and in E2E where it depends on how the full wizard is assembled.
+Specs live in two Playwright suites: component tests (CT, next to each component) and `playwright/e2e`. Both run in CI on Chromium, Firefox and WebKit (Firefox and WebKit on React 19 only). A focus destination is asserted in CT where the behavior belongs to one component, and in E2E where it depends on how the full wizard is assembled.
 
 ## How focus is asserted
 
 - Locators are semantic (`getByRole` first). Focus is asserted with `toBeFocused()`; where the ticket requires a visible destination, `expectFocusVisible()` also checks `:focus-visible` and an outline or box-shadow.
-- `playwright/e2e/helpers/focus-helpers.ts` provides `tabUntilFocused` (lists the elements visited on failure), `expectFocusVisible`, and `expectFocusVisibleOnContainerOf`.
+- `playwright/focus-helpers.ts` (shared by CT and E2E) provides `tabUntilFocused` (lists the elements visited on failure), `focusWithKeyboard`, `expectFocusVisible`, and `expectFocusVisibleOnContainerOf`.
 - Step content has no role, so specs check that the focused element is the container holding a known piece of that step, and not `<body>`, the nav, or the footer. E2E specs use `expectFocusVisibleOnContainerOf` to also check its focus ring.
+
+## Browser differences
+
+Every spec runs on all engines, so the keys and click behavior come from the project and are not hard-coded. `playwright/browsers.ts` sets them per engine, and `playwright/focus-fixtures.ts` exposes them to both CT and E2E specs:
+
+| Fixture                            | Chromium and Firefox | WebKit                      | Use it for                                                                                      |
+| ---------------------------------- | -------------------- | --------------------------- | ----------------------------------------------------------------------------------------------- |
+| `tabKey` / `shiftTabKey`           | `Tab` / `Shift+Tab`  | `Alt+Tab` / `Alt+Shift+Tab` | Moving focus onto buttons and links; pass `tabKey` to `tabUntilFocused` and `focusWithKeyboard` |
+| `expectFocusedAfterClick(locator)` | Asserts focus        | No assertion                | Focus after a click on a button or its label                                                    |
+
+- WebKit follows Safari: Tab skips buttons and links (Option+Tab reaches them), and clicking a button does not focus it. This is why "focus returns to the trigger" after a **pointer** open is not asserted in WebKit; the keyboard path is.
+- Firefox only draws a focus ring on a script-driven focus move if the previous focus came from the keyboard. Specs that assert a ring after pressing Enter on a button arrive at it with `focusWithKeyboard`, not `focus()`.
+- The WebKit keys are assumed to apply on every platform, including Linux CI. If that proves wrong, adjust `webkitFocus` in `playwright/browsers.ts`.
+- In new specs, use `tabKey` / `shiftTabKey` whenever Tab must land on a button or link, not the literal `'Tab'`.
 
 ## Where each destination is implemented
 
@@ -103,6 +117,7 @@ The role tabs in the drawer are a PatternFly `ToggleGroup`: buttons with `aria-p
 | Tab from an open plain Select or MultiSelect menu takes two presses, while the typeahead takes one | PatternFly's default closes the menu and keeps focus on the toggle; the typeahead overrides it. Focus is never lost or trapped.                                                                                   | Left as is |
 | Create cluster fails validation on Review                                                          | The invalid fields live on earlier steps, so Review has nothing to focus. Only reachable with `enableAllWizardNavSteps`. The alert is announced and focus stays on Create cluster (`ROSAHCPWizardBody.spec.tsx`). | Left as is |
 | Invalid field inside a collapsed section (for example Networking's advanced CIDR fields)           | Collapsed sections are not expanded automatically, so the field cannot take focus. Focus moves to the first visible invalid control, or stays on Next; the alert is announced.                                    | Left as is |
+| Focus returns to the Details drawer trigger after a pointer open (WebKit)                          | WebKit does not focus a clicked button, so the drawer has nothing to return focus to. Opened by keyboard, it does, and that path is asserted.                                                                     | Left as is |
 | Screen reader announcements (alert text, field errors, button state)                               | Not automated; see below.                                                                                                                                                                                         | Manual     |
 
 Dashboard keyboard behavior (notification rows) is covered by FCN-814 and FCN-827, not here.

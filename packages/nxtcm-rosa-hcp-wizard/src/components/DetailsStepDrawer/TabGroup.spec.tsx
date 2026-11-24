@@ -109,6 +109,7 @@ test.describe('TabGroup', () => {
   test('reaches each toggle with Tab and switches content with Enter and Space', async ({
     mount,
     page,
+    tabKey,
   }) => {
     const component = await mount<typeof TabGroupMount>(
       'nxtcm-rosa-hcp-wizard/components/DetailsStepDrawer/TabGroup/TabGroupMount'
@@ -117,11 +118,11 @@ test.describe('TabGroup', () => {
     const second = component.getByRole('button', { name: 'Tab 2' });
     const third = component.getByRole('button', { name: 'Tab 3' });
 
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     await expect(first).toBeFocused();
     await expect(first).toHaveAttribute('aria-pressed', 'true');
 
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     await expect(second).toBeFocused();
     await expect(second).toHaveAttribute('aria-pressed', 'false');
     await page.keyboard.press('Enter');
@@ -131,7 +132,7 @@ test.describe('TabGroup', () => {
     await expect(first).toHaveAttribute('aria-pressed', 'false');
     await expect(second).toBeFocused();
 
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     await expect(third).toBeFocused();
     await page.keyboard.press('Space');
     await expect(component.getByText('Tab 3 Content')).toBeVisible();

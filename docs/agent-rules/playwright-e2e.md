@@ -7,14 +7,15 @@ rules for ROSA HCP wizard E2E specs under `playwright/e2e/`.
 ```text
 playwright/
   e2e/
-    fixtures.ts              # extends base test; optional coverage capture
+    fixtures.ts              # extends the shared focus test (../focus-fixtures.ts); optional coverage capture
     rosa-wizard.spec.ts      # wizard flows, CIDR, navigation
     rosa-wizard-yaml-editor.spec.ts
     rosa-wizard-yaml-editor-keyboard.spec.ts # keyboard-only YAML editor flows
     rosa-wizard-keyboard.spec.ts # keyboard navigation, validation focus, and Skip to review focus
     helpers/
       yaml-editor-helpers.ts # navigateToYamlEditor, navigateToReview, enterYamlEditor, getMonacoYaml, fill*Step helpers
-      focus-helpers.ts       # tabUntilFocused, expectFocusVisible
+  focus-fixtures.ts          # tabKey, shiftTabKey, expectFocusedAfterClick; shared with CT, set per engine in browsers.ts
+  focus-helpers.ts           # tabUntilFocused, focusWithKeyboard, expectFocusVisible; shared with CT
   index.tsx                  # E2E app entry
 playwright.config.ts         # root E2E config (port ~3200)
 ```
@@ -26,9 +27,10 @@ CT selector rules also apply to E2E: see [`playwright-ct.md`](playwright-ct.md) 
 ## running
 
 ```bash
-npm run test:e2e
+npm run test:e2e            # Chromium only; CI also runs firefox + webkit
 npm run test:e2e:coverage   # COVERAGE=true + nyc report
-npx playwright test playwright/e2e/rosa-wizard.spec.ts
+npm run test:e2e -- playwright/e2e/rosa-wizard.spec.ts
+npm run test:e2e:firefox    # also test:e2e:webkit, test:e2e:all-browsers
 ```
 
 Native E2E runs exclude `*-visual.spec.ts` files. Run screenshot comparisons in the
@@ -93,7 +95,7 @@ See [`YamlEditor/AGENTS.md`](../../packages/nxtcm-rosa-hcp-wizard/src/Steps/Yaml
 1. Prefer extending `rosa-wizard.spec.ts` or a focused `*.spec.ts` beside helpers
 2. Extract repeated step flows to `helpers/`
 3. Mock data comes from the E2E harness (`playwright/index.tsx`), not live APIs
-4. Run targeted file before full suite: `npx playwright test playwright/e2e/rosa-wizard.spec.ts`
+4. Run targeted file before full suite: `npm run test:e2e -- playwright/e2e/rosa-wizard.spec.ts`
 
 ## what not to test in E2E
 

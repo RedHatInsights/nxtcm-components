@@ -38,6 +38,27 @@ describe('ct-triage-comment script', () => {
     expect(output).toContain(`\`playwright-ct-report-react-${reactVersion}\``);
   });
 
+  test.each(['chromium', 'firefox', 'webkit'])(
+    'labels %s failures and their report artifact',
+    (browser) => {
+      const output = runCommentScript({ totals: { total: 1, failed: 1 }, tests: [] }, [
+        '--react-version',
+        '19',
+        '--browser',
+        browser,
+      ]);
+
+      expect(output).toContain(`## CT Triage — React 19 · ${browser}`);
+      expect(output).toContain(`\`playwright-ct-report-react-19-${browser}\``);
+    }
+  );
+
+  test('rejects an unknown browser', () => {
+    expect(() =>
+      runCommentScript({ totals: { total: 1, failed: 1 }, tests: [] }, ['--browser', 'edge'])
+    ).toThrow(/--browser must be chromium, firefox or webkit/);
+  });
+
   test.each(['18', '19'])('does not post a comment for passing React %s tests', (reactVersion) => {
     expect(
       runCommentScript({ totals: { total: 1, passed: 1 }, tests: [] }, [

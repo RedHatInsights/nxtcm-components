@@ -40,7 +40,7 @@ Reference specs:
 - E2E: `playwright/e2e/rosa-wizard-yaml-editor.spec.ts`
 - E2E keyboard: `playwright/e2e/rosa-wizard-yaml-editor-keyboard.spec.ts`
 - Helpers: `playwright/e2e/helpers/yaml-editor-helpers.ts` (`enterYamlEditor`: keyboard entry before typing),
-  `playwright/e2e/helpers/focus-helpers.ts`
+  `playwright/focus-helpers.ts` (shared by CT and E2E)
 
 ## CT limitations
 
@@ -49,7 +49,8 @@ Reference specs:
 2. **Click interception** — Monaco margins/overlays block clicks on nearby buttons;
    avoid flaky click chains through `.monaco-editor`.
 3. **Focus / keyboard** — internal focus management is unreliable in CT; prefer
-   role-based checks on surrounding UI.
+   role-based checks on surrounding UI. Where a test must press Tab onto a button, use
+   the `tabKey` / `shiftTabKey` fixtures, not the literal key (WebKit's Tab skips buttons).
 
 For validation UI in CT, trigger the same code paths the app uses when the model
 changes (test doubles, direct handler invocation, or fixtures documented in the
@@ -57,7 +58,9 @@ YamlEditor spec).
 
 ## keyboard model
 
-Verified in E2E on Chromium (Monaco 0.54, PatternFly CodeEditor 6.5.1).
+Covered by the keyboard E2E spec on Chromium, Firefox and WebKit (Monaco 0.54, PatternFly
+CodeEditor 6.5.1). The specs press the project's `tabKey` / `shiftTabKey`: `Tab` and `Shift+Tab`,
+or `Alt+Tab` and `Alt+Shift+Tab` in WebKit, where plain Tab skips buttons and links.
 
 | Action | Key | Result |
 |--------|-----|--------|
@@ -81,8 +84,9 @@ Locate it with `getByRole('textbox', { name })` on every engine, never `textarea
 `accessibilitySupport: 'auto'` exposes no content (browsers cannot detect a screen
 reader, so `auto` behaves as off). `'on'` exposes the visible content to assistive tech.
 
-Playwright device profiles send a Windows user agent, so Monaco uses Windows/Linux
-bindings in E2E on every host OS (Ctrl+M, not Ctrl+Shift+M).
+The Chromium and Firefox device profiles send a Windows user agent, so Monaco uses
+Windows/Linux bindings in E2E on every host OS (Ctrl+M, not Ctrl+Shift+M). The WebKit
+profile sends a Mac user agent, so there Monaco uses the macOS bindings.
 
 Monaco 0.54 standalone has no accessibility help dialog (Alt+F1 does nothing). F1
 opens the command palette.
@@ -137,6 +141,9 @@ await page.waitForTimeout(500); // initial value applied
 - Expecting `role="alert"` from `monacoEditor.setValue()` alone (`onCodeChange` keeps
   `showBanner` false).
 - Clicking Monaco's input element to focus it (enter with Tab + ArrowDown instead).
+- The literal `'Tab'` / `'Shift+Tab'` to reach a button: use `tabKey` / `shiftTabKey`.
+- `focus()` on a button, then Enter, then asserting a focus ring: Firefox shows no ring
+  for the resulting focus move; arrive with `focusWithKeyboard` instead.
 - Using `setValue()` to simulate user edits in keyboard/validation flows.
 - Unscoped `page.getByRole('alert')` (matches Monaco's internal alert regions).
 - Asserting every schema field in the side panel.
