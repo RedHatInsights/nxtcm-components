@@ -86,6 +86,14 @@ Shown when cluster creation fails.
 | `submitError.backToReviewStep` | Back to the wizard |
 | `submitError.exitWizard` | Exit wizard |
 
+### `createCluster`
+
+Shown while cluster creation is in progress.
+
+| Key | Default English |
+| --- | --- |
+| `createCluster.inProgressTitle` | Creation in progress |
+
 ### `yamlEditor`
 
 YAML editor opened from Review. Required even when optional steps are hidden.

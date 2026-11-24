@@ -6,13 +6,14 @@ import type {
   RosaHcpWizardBodyErrorThenBackMount,
   RosaHcpWizardBodyErrorTransitionMount,
   RosaHcpWizardBodyMount,
+  RosaHcpWizardBodyPendingSubmissionMount,
   RosaHcpWizardBodyYamlApplyErrorMount,
   RosaHcpWizardBodyYamlApplyMount,
 } from './ROSAHCPWizardBody.story';
 import { defaultRosaHcpWizardStrings } from './stringsProvider/rosaHcpWizardStrings.defaults';
 import { checkAccessibility } from './test-helpers';
 
-const { submitError: submitErrorStrings, wizard } = defaultRosaHcpWizardStrings;
+const { createCluster, submitError: submitErrorStrings, wizard } = defaultRosaHcpWizardStrings;
 const ERROR_MESSAGE = 'There has been an error creating the cluster';
 
 const rosaDocsBase = (version: string): string =>
@@ -56,6 +57,73 @@ test.describe('ROSAHCPWizardBody', () => {
 
     await expect(component.getByRole('alert')).toContainText(wizard.fixValidationErrors);
     await expect(createCluster).toBeFocused();
+  });
+
+  test.describe('submission in progress', () => {
+    test('replaces Review with the loading screen until submission succeeds', async ({ mount }) => {
+      const component = await mount<typeof RosaHcpWizardBodyPendingSubmissionMount>(
+        'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyPendingSubmissionMount'
+      );
+      const wizardView = component.getByTestId('rosa-hcp-wizard-view');
+      await expect(wizardView).toBeAttached();
+      const reviewStep = component.getByRole('button', { name: wizard.stepLabels.review });
+      await reviewStep.click();
+
+      await component.getByRole('button', { name: wizard.createCluster }).click();
+
+      const loadingView = component.getByRole('status', { name: createCluster.inProgressTitle });
+      await expect(loadingView).toBeVisible();
+      await expect(loadingView).toBeFocused();
+      await expect(
+        loadingView.getByRole('heading', { name: createCluster.inProgressTitle })
+      ).toBeVisible();
+      await expect(loadingView.getByRole('progressbar')).toBeVisible();
+      await expect(wizardView).not.toBeAttached();
+      await expect(component.getByRole('button', { name: wizard.createCluster })).toHaveCount(0);
+      await expect(component.getByTestId('submitted-yaml')).not.toHaveValue('');
+      await checkAccessibility({ component });
+
+      await component.getByRole('button', { name: 'Finish submission successfully' }).click();
+      await expect(loadingView).toHaveCount(0);
+      await expect(wizardView).toBeAttached();
+      await expect(reviewStep).toHaveAttribute('aria-current', 'step');
+    });
+
+    test('replaces the YAML editor with the loading screen, then restores it after an error', async ({
+      mount,
+    }) => {
+      const component = await mount<typeof RosaHcpWizardBodyPendingSubmissionMount>(
+        'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyPendingSubmissionMount'
+      );
+      const wizardView = component.getByTestId('rosa-hcp-wizard-view');
+      await expect(wizardView).toBeAttached();
+      await component.getByRole('button', { name: wizard.stepLabels.review }).click();
+      await component.getByRole('button', { name: /Edit in YAML/i }).click();
+      const yamlView = component.getByRole('region', { name: /YAML Configuration/i });
+      await expect(yamlView).toBeVisible();
+      await expect(yamlView.locator('.monaco-editor')).toBeVisible();
+
+      await component.getByRole('button', { name: wizard.createCluster }).click();
+
+      const loadingView = component.getByRole('status', { name: createCluster.inProgressTitle });
+      await expect(loadingView).toBeVisible();
+      await expect(loadingView).toBeFocused();
+      await expect(loadingView.getByRole('progressbar')).toBeVisible();
+      await expect(wizardView).not.toBeAttached();
+      await expect(yamlView).toHaveCount(0);
+      await expect(component.getByTestId('submitted-yaml')).not.toHaveValue('');
+
+      await component.getByRole('button', { name: 'Finish submission with error' }).click();
+      await expect(loadingView).toHaveCount(0);
+      await expect(component.getByRole('region', { name: submitErrorStrings.title })).toBeFocused();
+      await expect(
+        component.getByRole('button', { name: submitErrorStrings.exitWizard })
+      ).toBeVisible();
+      await component.getByRole('button', { name: submitErrorStrings.backToReviewStep }).click();
+      await expect(wizardView).toBeAttached();
+      await expect(yamlView).toBeFocused();
+      await expect(yamlView.locator('.monaco-editor')).toBeVisible();
+    });
   });
 
   test.describe('submit error state', () => {
@@ -240,6 +308,7 @@ test.describe('ROSAHCPWizardBody', () => {
 
   test('keeps the YAML editor open when a resolved submission reports an error', async ({
     mount,
+    page,
   }) => {
     const component = await mount<typeof RosaHcpWizardBodyYamlApplyErrorMount>(
       'nxtcm-rosa-hcp-wizard/ROSAHCPWizardBody/RosaHcpWizardBodyYamlApplyErrorMount',
@@ -252,12 +321,37 @@ test.describe('ROSAHCPWizardBody', () => {
       yamlEditor.getByRole('textbox', { name: defaultRosaHcpWizardStrings.yamlEditor.title })
     ).toBeVisible();
 
+    const editedYaml = 'kind: ROSAControlPlane\nmetadata:\n  name: preserved-draft';
+    await page.evaluate((yaml) => {
+      const browserWindow = window as Window & {
+        monacoEditor?: { getValue: () => string; setValue: (value: string) => void };
+        originalMonacoEditor?: unknown;
+      };
+      const editor = browserWindow.monacoEditor;
+      if (!editor) throw new Error('Monaco editor is not ready');
+      browserWindow.originalMonacoEditor = editor;
+      editor.setValue(yaml);
+    }, editedYaml);
+
     await component.getByRole('button', { name: wizard.createCluster }).click();
     await expect(component.getByRole('heading', { name: submitErrorStrings.title })).toBeVisible();
     await component.getByRole('button', { name: submitErrorStrings.backToReviewStep }).click();
 
     await expect(yamlEditor).toBeVisible();
     await expect(yamlEditor).toBeFocused();
+    await expect(yamlEditor.locator('.monaco-editor')).toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const browserWindow = window as Window & {
+            monacoEditor?: { getValue: () => string };
+            originalMonacoEditor?: unknown;
+          };
+          if (browserWindow.monacoEditor === browserWindow.originalMonacoEditor) return undefined;
+          return browserWindow.monacoEditor?.getValue();
+        })
+      )
+      .toBe(editedYaml);
   });
 
   test.describe('docsVersions prop — versioned docs links', () => {

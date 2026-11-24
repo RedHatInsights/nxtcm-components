@@ -60,6 +60,9 @@ export const defaultRosaHcpWizardStrings: RosaHcpWizardStrings = {
     backToReviewStep: 'Back to the wizard',
     exitWizard: 'Exit wizard',
   },
+  createCluster: {
+    inProgressTitle: 'Creation in progress',
+  },
   yamlEditor: {
     title: 'YAML Configuration',
     description: 'Review and edit the YAML configuration.',

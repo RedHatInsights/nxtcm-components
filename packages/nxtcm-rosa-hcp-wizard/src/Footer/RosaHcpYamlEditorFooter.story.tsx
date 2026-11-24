@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 
 import { Button, ButtonVariant } from '@patternfly/react-core/dist/dynamic/components/Button';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -8,6 +8,7 @@ import type { YamlEditorHandle } from '../Steps/YamlEditor/RosaHcpYamlEditorStep
 import { RosaHcpWizardStringsProvider } from '../stringsProvider/RosaHcpWizardStringsContext';
 import type { ROSAHCPCluster } from '../types';
 import { RosaHcpYamlEditorFooter } from './RosaHcpYamlEditorFooter';
+import { useRosaHcpWizardSubmit } from './useRosaHcpWizardSubmit';
 
 export type YamlEditorFooterMountProps = {
   hasSchemaErrors?: boolean;
@@ -46,23 +47,48 @@ function YamlEditorFooterMountInner({
 }: Required<YamlEditorFooterMountProps>) {
   const methods = useForm<ROSAHCPCluster>({ defaultValues: {} });
 
-  const editorRef = useRef<YamlEditorHandle>({
-    discard: () => {},
-    hasSchemaErrors: () => hasSchemaErrors,
-    getYaml: () => yamlContent,
-  });
-
   return (
     <FormProvider {...methods}>
       <RosaHcpWizardValidationProvider>
-        <RosaHcpYamlEditorFooter
-          editorRef={editorRef}
+        <YamlEditorFooterMountContent
+          hasSchemaErrors={hasSchemaErrors}
+          yamlContent={yamlContent}
           onClose={onClose}
           onCancel={onCancel}
           onSubmit={onSubmit}
         />
       </RosaHcpWizardValidationProvider>
     </FormProvider>
+  );
+}
+
+function YamlEditorFooterMountContent({
+  hasSchemaErrors,
+  yamlContent,
+  onClose,
+  onCancel,
+  onSubmit,
+}: Required<YamlEditorFooterMountProps>): React.ReactElement {
+  const editorRef = useRef<YamlEditorHandle>({
+    discard: () => {},
+    hasSchemaErrors: () => hasSchemaErrors,
+    getYaml: () => yamlContent,
+  });
+  const getYaml = useCallback(() => editorRef.current?.getYaml() ?? '', []);
+  const { isSubmitting, submitWizard } = useRosaHcpWizardSubmit({
+    onSubmit,
+    getYaml,
+    skipFormValidation: true,
+  });
+
+  return (
+    <RosaHcpYamlEditorFooter
+      editorRef={editorRef}
+      onClose={onClose}
+      onCancel={onCancel}
+      isSubmitting={isSubmitting}
+      submitWizard={submitWizard}
+    />
   );
 }
 
