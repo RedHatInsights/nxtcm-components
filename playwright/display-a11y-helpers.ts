@@ -108,8 +108,11 @@ export async function expectFocusIndicator(control: Locator): Promise<void> {
     (el as HTMLElement).style.caretColor = 'transparent';
   });
   const before = await page.screenshot({ clip, animations: 'disabled' });
-  // A key press makes the following programmatic focus match :focus-visible.
-  await page.keyboard.press('Shift');
+  // Firefox and WebKit match :focus-visible for script focus only after keyboard focus movement.
+  // Menu items use ArrowDown, since Tab closes the menu.
+  const role = await control.getAttribute('role');
+  await control.focus();
+  await page.keyboard.press(role === 'option' || role === 'menuitem' ? 'ArrowDown' : 'Tab');
   await control.focus();
   await expect(control).toBeFocused();
   const after = await page.screenshot({ clip, animations: 'disabled' });

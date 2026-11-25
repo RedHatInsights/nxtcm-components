@@ -100,16 +100,16 @@ test.describe('RosaHcpSchemaPanel', () => {
     );
   });
 
-  test('navigates and expands nested fields with the keyboard', async ({ mount, page }) => {
+  test('navigates and expands nested fields with the keyboard', async ({ mount, page, tabKey }) => {
     const component = await mount<typeof SchemaPanelMount>(SCHEMA_PANEL_STORY);
     await component.getByPlaceholder(s.schemaSearchPlaceholder).fill('autoNode');
     const autoNode = component.getByRole('button', { name: /^autoNode\b/ });
     const autoNodeItem = component.getByRole('treeitem', { name: /^autoNode\b/ });
 
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     await expect(component.getByRole('button', { name: 'Reset' })).toBeFocused();
 
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey);
     await expect(autoNode).toBeFocused();
     await expect(autoNode).toHaveAccessibleName(/^autoNode\b/);
     await expect(autoNodeItem).toHaveAttribute('aria-expanded', 'false');

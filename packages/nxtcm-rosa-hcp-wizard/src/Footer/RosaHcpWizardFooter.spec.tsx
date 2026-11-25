@@ -2,7 +2,7 @@ import type { Locator } from '@playwright/test';
 import * as yaml from 'js-yaml';
 
 import { expect, type MountResult, test } from '@/playwright/ct-fixture';
-import { tabUntilFocused } from '@/playwright/e2e/helpers/focus-helpers';
+import { tabUntilFocused } from '@/playwright/focus-helpers';
 
 import { STEP_IDS } from '../constants';
 import fixtures from '../ROSAHCPWizard.fixtures';
@@ -680,13 +680,17 @@ test.describe('RosaHcpWizardFooter — keyboard and focus', () => {
   test('Tab from the page start reaches Next and Enter advances to the next step', async ({
     mount,
     page,
+    tabKey,
   }) => {
     const component = await mount<typeof RosaHcpWizardValidationMount>(
       'nxtcm-rosa-hcp-wizard/Footer/RosaHcpWizardFooter/RosaHcpWizardValidationMount',
       { defaultValues: VALID_DETAILS_FORM_VALUES }
     );
 
-    await tabUntilFocused(page, component.getByRole('button', { name: FOOTER_NEXT }), 150);
+    await tabUntilFocused(page, component.getByRole('button', { name: FOOTER_NEXT }), {
+      maxTabs: 150,
+      tabKey,
+    });
     await page.keyboard.press('Enter');
 
     await expect(component.getByText(rp.accountRolesSection, { exact: true })).toBeVisible();

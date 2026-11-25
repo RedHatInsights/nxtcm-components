@@ -186,6 +186,7 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
     test('reaches every toolbar control with Tab, in order, by accessible name', async ({
       mount,
       page,
+      tabKey,
     }) => {
       const component = await mount<typeof YamlEditorStepMount>(
         'nxtcm-rosa-hcp-wizard/Steps/YamlEditor/RosaHcpYamlEditorStep/YamlEditorStepMount'
@@ -202,7 +203,7 @@ test.describe('RosaHcpYamlEditorStep - Monaco Integration', () => {
         schemaToggle(component),
         component.getByRole('button', { name: s.shortcutsButtonText }),
       ]) {
-        await page.keyboard.press('Tab');
+        await page.keyboard.press(tabKey);
         await expect(control).toBeFocused();
       }
     });
