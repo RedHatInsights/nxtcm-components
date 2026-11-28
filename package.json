@@ -117,7 +117,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "lint-staged": "^16.2.6",
     "nyc": "^18.0.0",
-    "prettier": "3.9.10",
+    "prettier": "3.10.1",
     "progress": "^2.0.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
